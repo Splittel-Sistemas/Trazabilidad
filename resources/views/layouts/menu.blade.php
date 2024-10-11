@@ -350,12 +350,12 @@
                 <!--  /Traffic -->
                 <div class="clearfix"></div>
                 <!-- Orders -->
-                <div class="orders">
+                <div class="Pedidos">
                     <div class="row">
                         <div class="col-xl-8">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="box-title">Orders </h4>
+                                    <h4 class="box-title">Pedidos </h4>
                                 </div>
                                 <div class="card-body--">
                                     <div class="table-stats order-table ov-h">
@@ -365,10 +365,10 @@
                                                     <th class="serial">#</th>
                                                     <th class="avatar">Avatar</th>
                                                     <th>ID</th>
-                                                    <th>Name</th>
-                                                    <th>Product</th>
-                                                    <th>Quantity</th>
-                                                    <th>Status</th>
+                                                    <th>NOMBRE</th>
+                                                    <th>Producto</th>
+                                                    <th>Cantidad</th>
+                                                    <th>estatus</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -425,9 +425,9 @@
                                                         </div>
                                                     </td>
                                                     <td> #5466 </td>
-                                                    <td>  <span class="name">Mary Silva</span> </td>
-                                                    <td> <span class="product">Magic Mouse</span> </td>
-                                                    <td><span class="count">250</span></td>
+                                                    <td>  <span class="name"></span> </td>
+                                                    <td> <span class="producion"></span> </td>
+                                                    <td><span class="numero produccion">250</span></td>
                                                     <td>
                                                         <span class="badge badge-pending">Pending</span>
                                                     </td>
@@ -440,9 +440,9 @@
                                                         </div>
                                                     </td>
                                                     <td> #5465 </td>
-                                                    <td>  <span class="name">Johnny Stephens</span> </td>
-                                                    <td> <span class="product">Monitor</span> </td>
-                                                    <td><span class="count">250</span></td>
+                                                    <td>  <span class="name"></span> </td>
+                                                    <td> <span class="producion"></span> </td>
+                                                    <td><span class="numero produccion">250</span></td>
                                                     <td>
                                                         <span class="badge badge-complete">Complete</span>
                                                     </td>
