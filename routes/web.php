@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('Layouts.Menu');
+    return view('layouts.Menu');
     //return "Bienvenido a la pagina";
 });
  /*Route:: get('cursos', function () {
