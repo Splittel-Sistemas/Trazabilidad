@@ -1,7 +1,6 @@
-   
-   #weatherWidget .currentDesc {
-        color: #ffffff!important;
-    }
+        #weatherWidget .currentDesc {
+            color: #ffffff!important;
+        }
         .traffic-chart {
             min-height: 335px;
         }
