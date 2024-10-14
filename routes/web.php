@@ -7,7 +7,7 @@ Route::get('/', function () {
     //return "Bienvenido a la pagina";
 });
 Route::get('/login', function () {
-    return view('layouts.Login');
+    return view('layouts.login');
     //return "Bienvenido a la pagina";
 });
  /*Route:: get('cursos', function () {
