@@ -18,4 +18,4 @@ Route:: get('create', function () {
 });
 Route:: get('cursos/{curso}', function ($curso) {
     return "bienvenido al curso: $curso";
-});*/
+});*/ 
