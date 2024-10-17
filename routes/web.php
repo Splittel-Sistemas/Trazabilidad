@@ -8,8 +8,6 @@ Route::get('/', function () {
 });
 Route::get('/login', function () {
     return view('layouts.login');
-
-    
     //return "Bienvenido a la pagina";
 });
  /*Route:: get('cursos', function () {
