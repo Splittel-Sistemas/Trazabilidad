@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
+
 class LoginController extends Controller
 {
     //
@@ -22,9 +23,10 @@ class LoginController extends Controller
     }
     public function login(Request $request){
         //validacion
+        $hashedPassword = Hash::make($request->password);
         $credentials =[
             "email" => $request->email,
-            "password" => $request->password,
+            "password" => $hashedPassword,
             //"active => true
         ];
         $remember = ($request->Has('remember') ? true : false);
