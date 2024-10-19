@@ -18,27 +18,42 @@ class LoginController extends Controller
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->save();
+
         Auth::login($user);
-        return redirect(route('privada'));
+        return redirect(route('menu'));
     }
     public function login(Request $request){
-        //validacion
-        $hashedPassword = Hash::make($request->password);
-        $credentials =[
-            "email" => $request->email,
-            "password" => $hashedPassword,
-            //"active => true
-        ];
-        $remember = ($request->Has('remember') ? true : false);
-        if(Auth::attempt($credentials,$remember)){
+        //return $request -> email;
+        //$cont=Hash::make($request->password);
+        //return $cont;
 
-            $request->session()->regenerate();
+        // Validación
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-            return redirect()->intended(route('menu'));
+    // Credenciales sin hashear la contraseña
+    $credentials = [
+        'email' => $request->email,
+        'password' =>  $request->password, // Usa la contraseña original
+    ];
 
-        }else{
-            return redirect('login');
-        }
+    $remember = $request->has('remember');
+    //return $remember;
+
+    // Intenta autenticar al usuario
+    if (Auth::attempt($credentials, $remember)) {
+        // Regenera la sesión
+        $request->session()->regenerate(); 
+        
+        return redirect()->intended(route('menu'));
+    } else {
+        // Redirige de nuevo al login con un mensaje de error
+      
+        return redirect('login')->withErrors(['email' => 'Credenciales incorrectas.']);
+    }
+
     }
     public function logout(Request $request){
         Auth::logout();
@@ -51,5 +66,5 @@ class LoginController extends Controller
     public function login_view(){
         return view('layouts.login');
     }
-
 }
+
