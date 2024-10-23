@@ -103,8 +103,9 @@
                     <li class="menu-item-has-children dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Otros</a>
                         <ul class="sub-menu children dropdown-menu">
-                            <li><i class="menu-icon fa fa-sign-in"></i><a href="{{ route('register')}}">register</a></li>
+                            <li><i class="menu-icon fa fa-sign-in"></i><a href="{{ route('registro.index')}}">register</a></li>
                             <li><i class="menu-icon fa fa-sign-in"></i><a href="{{ route('logout') }}">logout</a></li>
+                        </ul>
                         </ul>
                     </li>
                 </ul>
