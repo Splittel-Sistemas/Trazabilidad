@@ -23,6 +23,7 @@ class LoginController extends Controller
         return redirect(route('menu'));
     }
     public function login(Request $request){
+        //return bcrypt('12345');
         //return $request -> email;
         //$cont=Hash::make($request->password);
         //return $cont;
