@@ -18,10 +18,11 @@
     <div class="container">
         <h1>Bienvenido</h1>
         <form method="POST" action="{{route('login_post')}}" class="form">
+            
             @csrf
-            <input name="email" type="text" placeholder="Username">
-            <input name="password" type="password" placeholder="Password">
-            <button type="submit" id="login-button">Login</button>
+            <input name="email" type="text" placeholder="Username" required>
+            <input name="password" type="password" placeholder="Password"required>
+            <button type="submit" id="login-button">Ingresar</button>
         </form>
     </div>
 

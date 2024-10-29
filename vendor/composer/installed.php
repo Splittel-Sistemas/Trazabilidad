@@ -1,12 +1,14 @@
 <?php return array(
     'root' => array(
         'name' => 'laravel/laravel',
-        'pretty_version' => 'v11.0.0',
-        'version' => '11.0.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'reference' => 'ff5dd63fb5dcae34174289663d930f3fb0e0fbea',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
-        'aliases' => array(),
+        'aliases' => array(
+            0 => '11.x-dev',
+        ),
         'dev' => true,
     ),
     'versions' => array(
@@ -376,6 +378,15 @@
                 0 => '*',
             ),
         ),
+        'laravel/breeze' => array(
+            'pretty_version' => 'v2.2.2',
+            'version' => '2.2.2.0',
+            'reference' => '1dd612eb9e1c2632a39e6aa6df4e69cd45129dca',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../laravel/breeze',
+            'aliases' => array(),
+            'dev_requirement' => true,
+        ),
         'laravel/framework' => array(
             'pretty_version' => 'v11.27.2',
             'version' => '11.27.2.0',
@@ -386,12 +397,14 @@
             'dev_requirement' => false,
         ),
         'laravel/laravel' => array(
-            'pretty_version' => 'v11.0.0',
-            'version' => '11.0.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'reference' => 'ff5dd63fb5dcae34174289663d930f3fb0e0fbea',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
-            'aliases' => array(),
+            'aliases' => array(
+                0 => '11.x-dev',
+            ),
             'dev_requirement' => false,
         ),
         'laravel/pint' => array(
@@ -420,6 +433,15 @@
             'install_path' => __DIR__ . '/../laravel/sail',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'laravel/sanctum' => array(
+            'pretty_version' => 'v4.0.3',
+            'version' => '4.0.3.0',
+            'reference' => '54aea9d13743ae8a6cdd3c28dbef128a17adecab',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../laravel/sanctum',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'laravel/serializable-closure' => array(
             'pretty_version' => 'v1.3.5',
