@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use GuzzleHttp\Client;
+use App\Http\Middleware\FuncionesSapService;
 class AppServiceProvider extends ServiceProvider
 
 {
@@ -14,6 +15,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->singleton(FuncionesSapService::class, function ($app) {
+            return new FuncionesSapService();
+        });
+        
         //
     }
 

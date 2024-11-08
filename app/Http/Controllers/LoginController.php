@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 
 class LoginController extends Controller
@@ -22,12 +23,7 @@ class LoginController extends Controller
         Auth::login($user);
         return redirect(route('menu'));
     }
-    public function login(Request $request){
-        //return bcrypt('12345');
-        //return $request -> email;
-        //$cont=Hash::make($request->password);
-        //return $cont;
-
+    public function login(Request $request, ){ 
         // Validación
     $request->validate([
         'email' => 'required|email',
