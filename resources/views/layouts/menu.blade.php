@@ -1,16 +1,14 @@
 <!doctype html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+<html class="no-js" lang=""> 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>@yield('title', 'splittel')</title>
     <meta name="description" content="Ela Admin - HTML5 Admin Template">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="apple-touch-icon" href="https://i.imgur.com/QRAUqs9.png">
-    <link rel="shortcut icon" href="https://i.imgur.com/QRAUqs9.png">
+    <link rel="icon" href="/logo_splitnet.png" type="image/png">
+
+    <link rel="shortcut icon" href="/logo_splitnet.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
@@ -36,10 +34,15 @@
             <div id="main-menu" class="main-menu collapse navbar-collapse">
                 <ul class="nav navbar-nav">
                     <li class="active">
-                        <a href="index.html"><i class="menu-icon fa fa-laptop"></i>Dashboard </a>
+                       
                     </li>
                     <li class="menu-title">UI elements</li><!-- /.menu-title -->
                     <li class="menu-item-has-children dropdown">
+                       
+                        <a href="{{ route('registro.index')}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Registro</a>
+                        <a href="{{ route('suministros.index')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Suministros</a>
+                        <a href="{{ route('ordenes.index')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Ordenes</a>
+                        
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-cogs"></i>Components</a>
                         <ul class="sub-menu children dropdown-menu">                            <li><i class="fa fa-puzzle-piece"></i><a href="ui-buttons.html">Buttons</a></li>
                             <li><i class="fa fa-id-badge"></i><a href="ui-badges.html">Badges</a></li>
@@ -103,11 +106,6 @@
                     <li class="menu-item-has-children dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Otros</a>
                         <ul class="sub-menu children dropdown-menu">
-                            <li><i class="menu-icon fa fa-sign-in"></i><a href="{{ route('registro.index')}}">register</a></li>
-                            <li>
-                                <i class="menu-icon fa fa-sign-in"></i>
-                                <a href="{{ route('logout') }}" class="logout-button">logout</a>
-                            </li>
                         </ul>
                         </ul>
                     </li>
@@ -121,12 +119,17 @@
         <!-- Header-->
         <header id="header" class="header">
             <div class="top-left">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="./"><img src="images/logo.png" alt="Logo"></a>
-                    <a class="navbar-brand hidden" href="./"><img src="images/logo2.png" alt="Logo"></a>
+              
+            </div>  <div class="navbar-header">
+                <a class="navbar-brand" href="./">
+                    <img src="{{ asset('favicon.ico.png') }}" alt="Logo" width="50" height="50">
+                </a>
+                <a class="navbar-brand hidden" href="./">
+                    <img src="{{ asset('favicon.ico.png') }}" alt="Logo">
+                </a>
+                
                     <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
                 </div>
-            </div>
             <div class="top-right">
                 <div class="header-menu">
                     <div class="header-left">
@@ -215,7 +218,8 @@
 
                             <a class="nav-link" href="#"><i class="fa fa -cog"></i>Settings</a>
 
-                            <a class="nav-link" href="#"><i class="fa fa-power -off"></i>Logout</a>
+                            <a class="nav-link" href="{{ route('logout') }}"><i class="fa fa-power -off"></i>logout</a>
+
                         </div>
                     </div>
 
