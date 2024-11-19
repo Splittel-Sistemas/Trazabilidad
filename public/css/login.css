@@ -45,7 +45,7 @@ form {
 }
 
 form input {
-  border: 1px solid #ccc; /* Borde gris claro */
+  border: 1px solid #fdfafa; /* Borde gris claro */
   background-color: rgba(230, 230, 230, 0.9); /* Fondo claro */
   width: 100%; /* Ocupa el 100% del ancho del contenedor */
   border-radius: 5px; /* Bordes redondeados */

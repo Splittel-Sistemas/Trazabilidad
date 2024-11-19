@@ -4,7 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\SapController;
+use App\Http\Controllers\PDFController;
 use App\Http\Controllers\FuncionesGeneralesController;
+use App\Http\Controllers\SuministrosController;
+use App\Http\Controllers\OrdenesController;
 
 // Rutas de autenticación
 Route::get('/login', [LoginController::class,'login_view'])->name('login');
@@ -23,7 +26,13 @@ Route::get('/conexion-sap', [SapController::class, 'conexionSap']);
 Route::get('/datos-sap', [SapController::class, 'obtenerDatosSap']);
 
 
-// Ruta que usará el middleware funciones_sap
-/*Route::get('/conexion-sap', function () {
-    return "Conexión SAP exitosa!";
-})->middleware('FuncionesSap');  */
+Route::get('/generate-pdf', [PDFController::class, 'generatePdf']);
+
+
+
+Route::get('/suministros', [SuministrosController::class, 'index'])->name('suministros.index');
+Route::post('/suministros/enviar', [SuministrosController::class, 'enviar'])->name('suministros.enviar');
+
+
+    Route::get('/ordenes', [OrdenesController::class, 'index'])->name('ordenes.index');
+    Route::post('/enviar', [OrdenesController::class, 'ordenes.enviar'])->name('ordenes.enviar');

@@ -1,0 +1,185 @@
+/* Estilos para el contenedor del formulario */
+.form-container {
+    background-color: #fdfdfd; /* Fondo claro */
+    padding: 30px;
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgb(240, 237, 237); /* Sombra suave */
+    width: 100%; /* Ocupa todo el ancho disponible */
+    height: 100vh; /* Ocupa toda la altura de la página */
+    padding-top: 20px; /* Ajuste de espacio en la parte superior */
+    padding-bottom: 20px; /* Ajuste de espacio en la parte inferior */
+    box-sizing: border-box; /* Asegura que el padding no afecte al tamaño total */
+}
+
+/* Título principal */
+.form-container h1 {
+    color: #343a40; /* Título oscuro */
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Estilos para las etiquetas del formulario */
+.form-group label {
+    font-weight: 500;
+    color: #495057; /* Color más suave para las etiquetas */
+}
+
+/* Estilo de los campos de entrada */
+.form-control {
+    border-radius: 8px; /* Bordes redondeados */
+    padding: 10px; /* Agrega un poco de padding dentro de los inputs */
+    border: 1px solid #ced4da; /* Borde gris claro */
+}
+
+/* Hacer los inputs más pequeños */
+.form-control-sm {
+    width: 20%;  /* Ajustar el ancho del campo a un 40% */
+    padding: 5px; /* Ajustar padding dentro de los inputs */
+    font-size: 50px; /* Ajustar el tamaño de la fuente */
+}
+
+/* Estilo para los botones generales */
+.btn-primary {
+    width: 100%; /* El botón ocupa todo el ancho */
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px; /* Bordes redondeados */
+    background-color: #007bff; /* Color de fondo predeterminado */
+    border: none; /* Elimina el borde predeterminado */
+}
+
+/* Estilos para alertas (mensajes de éxito y error) */
+.alert {
+    font-size: 14px;
+    border-radius: 8px;
+    padding: 10px; /* Padding adicional para mejorar la legibilidad */
+}
+
+/* Estilos para el contenido de la página */
+.content {
+    background-color: white;
+    color: black;
+}
+
+/* Estilos para el botón personalizado (cuadrado y pequeño) */
+.btn-custom-size {
+    width: 70px; /* Ancho fijo */
+    height: 40px; /* Alto fijo */
+    padding: 0; /* Elimina padding extra */
+    font-size: 14px; /* Tamaño de la fuente más pequeño */
+    text-align: center; /* Centrado de texto */
+    border-radius: 5px; /* Bordes redondeados */
+    border: 2px solid #007bff; /* Borde azul */
+    background-color: #007bff; /* Fondo azul */
+    color: white; /* Color de texto blanco */
+    display: inline-flex; /* Hace que se ajuste al contenido */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modificaciones adicionales para el botón cuadrado cuando se pasa el mouse por encima */
+.btn-custom-size:hover {
+    background-color: #0056b3; /* Cambia a un azul más oscuro al hacer hover */
+    border-color: #0056b3; /* Cambia el borde al mismo color */
+    cursor: pointer;
+}
+
+/* Espaciado adicional entre los elementos del formulario */
+.form-inline .form-control {
+    margin-bottom: 50px; /* Margen inferior para los campos */
+}
+
+.form-inline label {
+    margin-right: 20px; /* Margen entre etiquetas y campos */
+}
+/* Estilos para el contenedor del formulario */
+.form-container {
+    background-color: #fdfdfd; /* Fondo claro */
+    padding: 30px;
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgb(240, 237, 237); /* Sombra suave */
+    width: 100%; /* Ocupa todo el ancho disponible */
+    height: auto; /* No necesita altura fija */
+    padding-top: 20px; /* Ajuste de espacio en la parte superior */
+    padding-bottom: 20px; /* Ajuste de espacio en la parte inferior */
+    box-sizing: border-box; /* Asegura que el padding no afecte al tamaño total */
+}
+
+/* Título principal */
+.form-container h1 {
+    color: #343a40; /* Título oscuro */
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Estilos para las etiquetas del formulario */
+.form-group label {
+    font-weight: 500;
+    color: #495057; /* Color más suave para las etiquetas */
+}
+
+/* Estilo de los campos de entrada */
+.form-control {
+    border-radius: 8px; /* Bordes redondeados */
+    padding: 10px; /* Agrega un poco de padding dentro de los inputs */
+    border: 1px solid #ced4da; /* Borde gris claro */
+}
+
+/* Para los inputs pequeños */
+.form-control-sm {
+    font-size: 14px; /* Ajuste del tamaño de la fuente */
+    padding: 8px; /* Ajuste el padding para no estar tan apretado */
+}
+
+/* Estilos para los botones generales */
+.btn-primary {
+    width: 100%; /* El botón ocupa todo el ancho */
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px; /* Bordes redondeados */
+    background-color: #007bff; /* Color de fondo predeterminado */
+    border: none; /* Elimina el borde predeterminado */
+}
+
+/* Estilos para alertas (mensajes de éxito y error) */
+.alert {
+    font-size: 14px;
+    border-radius: 8px;
+    padding: 10px; /* Padding adicional para mejorar la legibilidad */
+}
+
+/* Modificaciones adicionales para el botón cuadrado cuando se pasa el mouse por encima */
+.btn-custom-size {
+    width: auto; /* Ancho automático según el contenido */
+    height: 40px; /* Alto fijo */
+    padding: 0 20px; /* Espaciado horizontal */
+    font-size: 14px; /* Tamaño de la fuente más pequeño */
+    text-align: center; /* Centrado de texto */
+    border-radius: 5px; /* Bordes redondeados */
+    border: 2px solid #007bff; /* Borde azul */
+    background-color: #007bff; /* Fondo azul */
+    color: white; /* Color de texto blanco */
+    display: inline-flex; /* Hace que se ajuste al contenido */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modificaciones para el hover */
+.btn-custom-size:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    cursor: pointer;
+}
+
+/* Espaciado adicional entre los elementos del formulario */
+.form-inline .form-control {
+    margin-bottom: 50px; /* Margen inferior para los campos */
+}
+
+.form-inline label {
+    margin-right: 20px; /* Margen entre etiquetas y campos */
+}
