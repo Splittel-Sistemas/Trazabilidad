@@ -10,7 +10,7 @@ class CreateOrdenFabricacionTable extends Migration
     {
         Schema::create('orden_fabricacion', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('orden_venta_id')->constrained('orden_venta')->onDelete('cascade'); // Relación con orden_venta
+            $table->foreignId('orden_venta_id')->constrained('orden_venta')->onDelete('cascade'); 
             $table->string('numero_fabricacion');
             $table->date('fecha_fabricacion');
             $table->string('estado');
