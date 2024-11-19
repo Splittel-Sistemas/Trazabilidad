@@ -10,7 +10,7 @@ class CreatePartidasOfTable extends Migration
     {
         Schema::create('partidas_of', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('orden_fabricacion_id')->constrained('orden_fabricacion')->onDelete('cascade'); 
+            $table->foreignId('orden_fabricacion_id')->constrained('orden_fabricacion')->onDelete('cascade'); // Relación con orden_fabricacion
             $table->string('codigo_partida');
             $table->integer('cantidad');
             $table->decimal('costo_unitario', 10, 2);
