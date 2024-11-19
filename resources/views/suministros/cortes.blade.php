@@ -1,7 +1,5 @@
 @extends('layouts.menu')
-
 @section('title', 'Suministros')
-
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/FormularioSuministros.css') }}">
@@ -77,7 +75,6 @@
                         <input type="checkbox" class="form-check-input" name="remember"> Remember me
                     </label>
                 </div>
-
                 <button type="submit" class="btn btn-primary btn-custom-size mb-2">Enviar</button>
             </form>
         </div>
