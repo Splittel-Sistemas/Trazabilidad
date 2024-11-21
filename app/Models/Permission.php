@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Permission extends Model
 {
-    protected $fillable = ['name']; // Campos que se pueden llenar masivamente
+    protected $fillable = ['name']; 
 
     public function roles()
     {
-        return $this->belongsToMany(Role::class); // Relación con el modelo Role
+        return $this->belongsToMany(Role::class); 
     }
      public function users()
     {

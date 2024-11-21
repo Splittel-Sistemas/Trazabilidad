@@ -35,7 +35,7 @@
     </script>
 @endsection
 @section('content')
-    <div class="container">
+    <div class="container-fluid">
         <div class="form-container">
             <h1>Ordenes de Fibra Óptica</h1>
 

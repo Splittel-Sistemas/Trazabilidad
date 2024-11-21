@@ -1,5 +1,7 @@
 @extends('layouts.menu')
+
 @section('title', 'Suministros')
+
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/FormularioSuministros.css') }}">
@@ -35,9 +37,9 @@
 @endsection
 
 @section('content')
-    <div class="container">
+    <div class="container-fluid">
         <div class="form-container">
-            <h1>Formulario de Suministros de Fibra Óptica</h1>
+            <h1 class="text-center mb-4">Formulario de Suministros de Fibra Óptica</h1>
 
             @if (session('success'))
                 <div class="alert alert-success">
@@ -53,10 +55,10 @@
                     </ul>
                 </div>
             @endif
-            <form id="form-fibra-optica" action="{{ route('suministros.enviar') }}" method="POST">
+
+            <form id="form-fibra-optica" action="{{ route('suministros.enviar') }}" method="POST" onsubmit="return validateForm()">
                 @csrf
                 <div class="form-row">
-                    
                     <div class="form-group col-md-4">
                         <label for="ordenFabricacion">Orden de Fabricación:</label>
                         <input type="text" class="form-control form-control-sm" id="ordenFabricacion" name="ordenFabricacion" placeholder="Ingrese la orden de fabricación" required>
@@ -70,11 +72,13 @@
                         <input type="number" class="form-control form-control-sm" id="cantidad" name="cantidad" placeholder="Ingrese la cantidad" min="1" required>
                     </div>
                 </div>
+
                 <div class="form-check">
                     <label class="form-check-label">
                         <input type="checkbox" class="form-check-input" name="remember"> Remember me
                     </label>
                 </div>
+
                 <button type="submit" class="btn btn-primary btn-custom-size mb-2">Enviar</button>
             </form>
         </div>
