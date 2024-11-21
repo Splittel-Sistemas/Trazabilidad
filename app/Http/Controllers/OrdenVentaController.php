@@ -10,12 +10,12 @@ class OrdenVentaController extends Controller
 {
     public function index()
     {
-        // Aquí asumo que las órdenes están relacionadas con el modelo Orden
-        $ordenes = User::all();
-        return view('layouts.ordenes.ordenes', compact('ordenes'));
+        
+        $users = User::all();
+        return view('layouts.ordenes.ordenes', compact('users'));
     }
 
-    // Método para actualizar el estado de la orden
+   
     public function updateState($id, Request $request)
     {
         $orden = User::find($id);
