@@ -38,10 +38,12 @@
                     </li>
                     <li class="menu-title">UI elements</li><!-- /.menu-title -->
                     <li class="menu-item-has-children dropdown">
-                       
+
+                        <a href="{{ route('panel.principal')}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>ashboard</a>
                         <a href="{{ route('registro.index')}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Registro</a>
                         <a href="{{ route('suministros.index')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Suministros</a>
                         <a href="{{ route('ordenes.index')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Ordenes</a>
+                        <a href="{{ route('ordenventa')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Orden De Venta</a>
                         
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-cogs"></i>Components</a>
                         <ul class="sub-menu children dropdown-menu">                            <li><i class="fa fa-puzzle-piece"></i><a href="ui-buttons.html">Buttons</a></li>
@@ -119,17 +121,12 @@
         <!-- Header-->
         <header id="header" class="header">
             <div class="top-left">
-              
-            </div>  <div class="navbar-header">
-                <a class="navbar-brand" href="./">
-                    <img src="{{ asset('favicon.ico.png') }}" alt="Logo" width="50" height="50">
-                </a>
-                <a class="navbar-brand hidden" href="./">
-                    <img src="{{ asset('favicon.ico.png') }}" alt="Logo">
-                </a>
-                
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="./"><img src="{{ asset('/favicon.png') }}" alt="Logo" width="50" height="45">
+                    <a class="navbar-brand hidden" href="./"><img src="{{ asset('/favicon.png') }}" alt="Logo" width="50" height="50">
                     <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
                 </div>
+            </div>
             <div class="top-right">
                 <div class="header-menu">
                     <div class="header-left">
@@ -218,8 +215,7 @@
 
                             <a class="nav-link" href="#"><i class="fa fa -cog"></i>Settings</a>
 
-                            <a class="nav-link" href="{{ route('logout') }}"><i class="fa fa-power -off"></i>logout</a>
-
+                            <a class="nav-link" href="{{ route('logout') }}">  <i class="fa fa-power-off"></i> Logout</a>
                         </div>
                     </div>
 
@@ -240,6 +236,7 @@
     <!-- /#right-panel -->
 
     <!-- Scripts -->
+    
     <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
