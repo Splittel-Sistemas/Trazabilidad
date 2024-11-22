@@ -44,6 +44,8 @@
                         <a href="{{ route('suministros.index')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Suministros</a>
                         <a href="{{ route('ordenes.index')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Ordenes</a>
                         <a href="{{ route('ordenventa')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Orden De Venta</a>
+                        <a href="{{ route('leer.codigo.barra')}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Gestion De Productos</a>
+                        <a href="{{ route('ordenes.indexx')}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Gestion De Orden De Venta</a>
                         
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-cogs"></i>Components</a>
                         <ul class="sub-menu children dropdown-menu">                            <li><i class="fa fa-puzzle-piece"></i><a href="ui-buttons.html">Buttons</a></li>

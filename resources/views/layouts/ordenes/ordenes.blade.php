@@ -35,14 +35,12 @@
             </div>
         </div>
 
-        <!-- Columna para el Dropzone y la segunda tabla -->
         <div class="col-md-6">
-            <!-- Dropzone para mover elementos a la Tabla 2 -->
+           
             <div id="dropzone" class="dropzone-area" style="border: 2px dashed #007bff; padding: 20px; text-align: center; min-height: 150px;">
                 <h3>Arrastra aquí</h3>
             </div>
 
-            <!-- Tabla 2: Destino -->
             <div class="table-responsive mt-4">
                 <h4 class="text-center">Usuarios Migrados</h4>
                 <table class="table table-striped table-bordered" id="table-destination">
