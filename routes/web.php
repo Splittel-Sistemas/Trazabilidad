@@ -39,3 +39,14 @@ Route::post('/enviar', [OrdenesController::class, 'ordenes.enviar'])->name('orde
 
 Route::get('/orden-venta', [OrdenVentaController::class, 'index'])->name('ordenventa');
 Route::post('/orden-venta/{id}/update-state', [OrdenVentaController::class, 'updateState'])->name('ordenventa.updateState');
+
+
+use App\Http\Controllers\BarcodeController;
+
+
+Route::get('/leer-codigo-barra', [BarcodeController::class, 'index'])->name('leer.codigo.barra');
+use App\Http\Controllers\OrdenFabricacionController;
+
+Route::get('/ordenes-fabricacion', [OrdenFabricacionController::class,'index'])->name('ordenes.indexx');
+
+

@@ -1,13 +1,15 @@
 @extends('layouts.menu')
 
-@section('title', 'Migrar Datos Entre Tablas')
+@section('title', 'Ordenes De Venta')
 
 @section('content')
 <div class="container mt-5">
-    <h1 class="mb-4 text-center">Migrar Datos Entre Tablas</h1>
+    <h1 class="mb-4 text-center">Ordenes De Venta</h1>
 
     <div class="row">
+        <!-- Columna para las dos tablas -->
         <div class="col-md-6">
+            <!-- Tabla 1: Fuente -->
             <div class="table-responsive mb-4">
                 <h4 class="text-center">Tabla de Usuarios</h4>
                 <table class="table table-striped table-bordered" id="table-source">
@@ -29,19 +31,16 @@
                         </tr>
                         @endforeach
                     </tbody>
-                    
                 </table>
             </div>
         </div>
 
-        
         <div class="col-md-6">
-            
+           
             <div id="dropzone" class="dropzone-area" style="border: 2px dashed #007bff; padding: 20px; text-align: center; min-height: 150px;">
                 <h3>Arrastra aquí</h3>
             </div>
 
-            
             <div class="table-responsive mt-4">
                 <h4 class="text-center">Usuarios Migrados</h4>
                 <table class="table table-striped table-bordered" id="table-destination">
@@ -55,7 +54,7 @@
                         </tr>
                     </thead>
                     <tbody id="table-2-content">
-                        
+                        <!-- Aquí se añadirán las filas movidas -->
                     </tbody>
                 </table>
             </div>
