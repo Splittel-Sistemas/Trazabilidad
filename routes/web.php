@@ -48,5 +48,11 @@ Route::get('/leer-codigo-barra', [BarcodeController::class, 'index'])->name('lee
 use App\Http\Controllers\OrdenFabricacionController;
 
 Route::get('/ordenes-fabricacion', [OrdenFabricacionController::class,'index'])->name('ordenes.indexx');
+//use App\Http\Controllers\OrdenVController;
 
+//Route::get('/ordenesventa',[OrdenesVController::class, 'index'])->name('buscar.orden.venta')
 
+use App\Http\Controllers\GestionOrdenController;
+
+Route::get('/orders', [GestionOrdenController::class, 'index'])->name('orders');
+Route::get('/orders/search', [GestionOrdenController::class, 'search'])->name('orders.search');
