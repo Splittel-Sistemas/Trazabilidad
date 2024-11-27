@@ -69,7 +69,6 @@ class PlaneacionController extends Controller
                 'message' => 'El número de orden no fue proporcionado.'
             ]);
         }
-    
         $sql = 'SELECT 
             T0."DocNum" AS "OV", 
             T1."ItemCode" AS "No. Parte", 
@@ -83,12 +82,11 @@ class PlaneacionController extends Controller
             INNER JOIN ' . $schema . '.RDR1 T1 ON T1."DocEntry" = T0."DocEntry" 
             INNER JOIN ' . $schema . '.OITM T2 ON T2."ItemCode" = T1."ItemCode" 
             WHERE T0."DocNum" = \'' . $ordenventa . '\'
-            ORDER BY T0."DocNum" LIMIT 1';
+            ORDER BY T0."DocNum"';
     
         try {
             $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
-            Log::debug('Datos de partida:', ['partidas' => $partidas]);
-    
+            //print_r($partidas);
             if (empty($partidas)) {
                 return response()->json([
                     'status' => 'error',
@@ -116,38 +114,11 @@ class PlaneacionController extends Controller
                             <td>' . (\Carbon\Carbon::parse($partida['Fecha'])->format('d-m-Y')) . '</td>
                             <td>' . ($partida['Cliente'] ?? 'No disponible') . '</td>
                           </tr>';
-                          
-    
-                // Tabla anidada (ejemplo estático)
-                /*$html .= '<tr>
-                            <td colspan="5">
-                                <table class="table table-sm table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Detalle</th>
-                                            <th>Otro Campo</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Detalle 1</td>
-                                            <td>Dato adicional</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Detalle 2</td>
-                                            <td>Otro dato</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                          </tr>';*/
             }
-    
             $html .= '</tbody></table>';
-    
             return response()->json([
                 'status' => 'success',
-                'html' => $html
+                'message' => $html
             ]);
         } catch (\Exception $e) {
             Log::error('Error al obtener las partidas: ' . $e->getMessage());

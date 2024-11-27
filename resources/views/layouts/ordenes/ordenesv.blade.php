@@ -53,7 +53,10 @@
                     </tr>
                     <!-- Detalles colapsables -->
                     <tr id="details{{ $loop->index }}" class="collapse">
-                        <td colspan="1" class="bg-light">
+                        <td id="details{{ $loop->index."1" }}">
+
+                        </td>
+                        <!--<td colspan="1" class="bg-light">
                             <div class="p-3 border rounded shadow-sm">
                                 <h5 class="text-primary mb-3">Detalles de la Orden</h5>
                                 <ul class="list-unstyled mb-0">
@@ -63,7 +66,7 @@
                                     <li><strong>Total:</strong> ${{ number_format($orden['Total'], 2) }}</li>
                                 </ul>
                             </div>
-                        </td>
+                        </td>-->
                     </tr>
                 @endforeach
                 
@@ -86,9 +89,7 @@
 <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
 
 <script>
-   $(document).ready(function () {
-        
-        
+    $(document).ready(function () {  
         $('.datatable').DataTable({
             paging: true,
             searching: false,
@@ -113,7 +114,6 @@
         let currentDate = moment();
         const datePicker = $('#datePicker');
         datePicker.val(currentDate.format('YYYY-MM-DD'));
-
         
         function filterOrdersByDate(date) {
             let foundAnyOrder = false;
@@ -131,7 +131,6 @@
             $('#noOrdersRow').toggleClass('d-none', foundAnyOrder);
         }
 
-        
         datePicker.on('change', function () {
             filterOrdersByDate($(this).val());
         });
@@ -162,23 +161,21 @@
 
 
     })
+    //Funcion para cargar las partidas por OV
     function loadContent(idcontenedor, docNum) { 
-        //alert('Contenedor: ' + idcontenedor + ' | Orden: ' + docNum);
-        
-            alert(idcontenedor +" "+ docNum  );
-
             $.ajax({
                 url: "{{ route('datospartida') }}",  
                 method: "POST",
                 data: {docNum: docNum,_token: '{{ csrf_token() }}'  
                 },
+                beforeSend: function() {
+                        $('#' + idcontenedor+"1").html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>");
+                },
                 success: function(response) {
                     if (response.status === 'success') {
-                        //html = '<table class="table table-striped table-bordered">';
-                        //html .= '<thead><tr>';
-                        $('#' + idcontenedor).html(response.html);
+                        $('#' + idcontenedor+"1").html(response.message);
                     } else {
-                        $('#' + idcontenedor).html('<p>Error al cargar el contenido.</p>');  
+                        $('#' + idcontenedor+"1").html('<p>Error al cargar el contenido.</p>');  
                     }
                 },
                 error: function(xhr, status, error) {
