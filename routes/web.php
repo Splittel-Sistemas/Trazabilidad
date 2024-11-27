@@ -53,8 +53,6 @@ Route::get('/ordenes-fabricacion', [OrdenFabricacionController::class,'index'])-
 
 //Route::get('/ordenesventa',[OrdenesVController::class, 'index'])->name('buscar.orden.venta')
 
-
-
 Route::get('/orders', [PlaneacionController::class, 'OrdenesVActual'])->name('orders');
 Route::post('/partidas', [PlaneacionController::class, 'DatosDePartida'])->name('datospartida');
 
