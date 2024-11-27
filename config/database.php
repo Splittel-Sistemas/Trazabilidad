@@ -47,7 +47,16 @@ return [
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
-
+        'odbc' => [ 
+            'driver' => 'odbc', 
+            'dsn' => env('DB_ODBC_DSN'), 
+            'username' => env('DB_ODBC_USERNAME'), 
+            'password' => env('DB_ODBC_PASSWORD'), 
+            'charset' => 'utf8',
+            'database' => 'HN_OPTRONICS', // Agregado 'database'
+        
+            
+        ],
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),
