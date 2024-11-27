@@ -1,25 +1,29 @@
 @extends('layouts.menu')
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 
 @section('content')
 <div class="container mt-4">
     <h1 class="text-primary mb-4 text-center">Gestión de Órdenes de Venta</h1>
 
     <!-- Buscador -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <form id="searchForm" action="#" method="GET" class="d-flex align-items-center">
-                <div class="input-group">
-                    <input type="text" name="query" id="ordenSearch" class="form-control" placeholder="Buscar órdenes..." required>
-                    <input type="date" size="15" maxlength="5" id="datePicker" class="form-control form-control-sm text-center w-auto mx-3 shadow-sm border-primary">
-                    <button type="submit" class="btn btn-primary" id="searchBtn">
-                        <i class="bi bi-search"></i> Buscar
-                    </button>
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <form id="searchForm" action="{{ route('orders') }}" method="GET" class="d-flex align-items-center">
+                        <div class="input-group">
+                            <input type="text" name="query" id="datos.partida" class="form-control" placeholder="Buscar órdenes..." required value="{{ request('query') }}">
+                            <input type="date" name="date" id="datePicker" class="form-control form-control-sm text-center w-auto mx-3 shadow-sm border-primary" value="{{ request('date', $fechaHoy) }}">
+                            <button type="submit" class="btn btn-primary" id="searchBtn">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                        </div>
+                    </form>
+                    
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Navegación de Fechas -->
+            </div>
+             <!-- Navegación de Fechas -->
     <div class="d-flex justify-content-center align-items-center mb-4">
         <a href="#" id="prevDayBtn" class="btn btn-outline-secondary me-3">
             <i class="bi bi-chevron-left"></i> Día Anterior
@@ -30,125 +34,44 @@
         </a>
     </div>
 
-    <!-- Acordeón de resultados -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Órdenes de Venta</h5>
         </div>
-        <div class="card-body">
-            <div class="accordion" id="ordersAccordion">
-                <!-- Orden 1 -->
-                <div class="accordion-item order-row" data-date="2024-11-21">
-                    <h2 class="accordion-header" id="headingOne">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Orden #1 - Cliente A - $100.00
-                        </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#ordersAccordion">
-                        <div class="accordion-body">
-                            <table class="table table-bordered table-striped">
-                                <thead class="table-primary">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Cliente</th>
-                                        <th>Fecha</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>Cliente A</td>
-                                        <td>2024-11-21</td>
-                                        <td>$100.00</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <a href="#" class="btn btn-info btn-sm">
-                                <i class="bi bi-eye"></i> Ver Más
-                            </a>
-                        </div>
-                    </div>
-                </div>
+        <div class="row justify-content-center py-4">
+        <div class="col-12">
+            <table class="table table-hover table-bordered shadow-sm w-75 mx-auto">
+                <thead class="table-primary text-center">
+                    <tr>
+                        <td class="fw-bold">Órdenes de Venta</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($ordenesVenta as $orden)
+                    <!-- Fila principal -->
+                    <tr class="table-light" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
+                        <td class="text-center fw-bold align-middle" onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }})">
+                            {{ $orden['OV'] }}
+                        </td>
+                    </tr>
+                    <!-- Detalles colapsables -->
+                    <tr id="details{{ $loop->index }}" class="collapse">
+                        <td colspan="1" class="bg-light">
+                            <div class="p-3 border rounded shadow-sm">
+                                <h5 class="text-primary mb-3">Detalles de la Orden</h5>
+                                <ul class="list-unstyled mb-0">
+                                    <li><strong>Cliente:</strong> {{ isset($orden['Cliente']) ? $orden['Cliente'] : 'No disponible' }}</li>
+                                    <li><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($orden['Fecha'])->format('d-m-Y') }}</li>
+                                    <li><strong>Estado:</strong> {{ $orden['Estado'] == 'O' ? 'Abierta' : 'Cerrada' }}</li>
+                                    <li><strong>Total:</strong> ${{ number_format($orden['Total'], 2) }}</li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
                 
-                <!-- Orden 2 -->
-                <div class="accordion-item order-row" data-date="2024-11-21">
-                    <h2 class="accordion-header" id="headingTwo">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            Orden #2 - Cliente B - $200.00
-                        </button>
-                    </h2>
-                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#ordersAccordion">
-                        <div class="accordion-body">
-                            <table class="table table-bordered table-striped">
-                                <thead class="table-primary">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Cliente</th>
-                                        <th>Fecha</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Cliente B</td>
-                                        <td>2024-11-21</td>
-                                        <td>$200.00</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <a href="#" class="btn btn-info btn-sm">
-                                <i class="bi bi-eye"></i> Ver Más
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Orden 3 -->
-                <div class="accordion-item order-row" data-date="2024-11-20">
-                    <h2 class="accordion-header" id="headingThree">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                            Orden #3 - Cliente C - $150.00
-                        </button>
-                    </h2>
-                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#ordersAccordion">
-                        <div class="accordion-body">
-                            <table class="table table-bordered table-striped">
-                                <thead class="table-primary">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Cliente</th>
-                                        <th>Fecha</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>Cliente C</td>
-                                        <td>2024-11-20</td>
-                                        <td>$150.00</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <a href="#" class="btn btn-info btn-sm">
-                                <i class="bi bi-eye"></i> Ver Más
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-
-            <!-- Mensaje de no hay órdenes -->
-            <div id="noOrdersRow" class="text-center text-muted d-none mt-4">
-                <p>No se encontraron órdenes para la fecha seleccionada.</p>
-            </div>
+                </tbody>
+            </table>
         </div>
+        
     </div>
-</div>
-
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
@@ -163,53 +86,9 @@
 <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
 
 <script>
-    $(document).ready(function () {
-        const datePicker = $('#datePicker');
-        const ordersAccordion = $('#ordersAccordion');
-        const noOrdersRow = $('#noOrdersRow');
-        let currentDate = moment();
-
-        // Inicializar fecha actual
-        datePicker.val(currentDate.format('YYYY-MM-DD'));
-        filterOrdersByDate(currentDate.format('YYYY-MM-DD'));
-
-        function filterOrdersByDate(date) {
-            let foundAnyOrder = false;
-
-            ordersAccordion.find('.order-row').each(function () {
-                const rowDate = $(this).data('date');
-                if (rowDate === date) {
-                    $(this).show();
-                    foundAnyOrder = true;
-                } else {
-                    $(this).hide();
-                }
-            });
-
-            noOrdersRow.toggleClass('d-none', foundAnyOrder);
-        }
-
-        datePicker.on('change', function () {
-            filterOrdersByDate($(this).val());
-        });
-
-        $('#prevDayBtn').on('click', function (e) {
-            e.preventDefault();
-            currentDate.subtract(1, 'days');
-            const newDate = currentDate.format('YYYY-MM-DD');
-            datePicker.val(newDate);
-            filterOrdersByDate(newDate);
-        });
-
-        $('#todayBtn').on('click', function (e) {
-            e.preventDefault();
-            currentDate = moment();
-            const newDate = currentDate.format('YYYY-MM-DD');
-            datePicker.val(newDate);
-            filterOrdersByDate(newDate);
-        });
-    });
-    $(document).ready(function () {
+   $(document).ready(function () {
+        
+        
         $('.datatable').DataTable({
             paging: true,
             searching: false,
@@ -224,13 +103,98 @@
                 emptyTable: 'No hay datos disponibles en la tabla',
             }
         });
-    });
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        let currentDate = moment();
+        const datePicker = $('#datePicker');
+        datePicker.val(currentDate.format('YYYY-MM-DD'));
+
+        
+        function filterOrdersByDate(date) {
+            let foundAnyOrder = false;
+
+            $('.order-row').each(function () {
+                const rowDate = $(this).data('date');
+                if (rowDate === date) {
+                    $(this).show();
+                    foundAnyOrder = true;
+                } else {
+                    $(this).hide();
+                }
+            });
+
+            $('#noOrdersRow').toggleClass('d-none', foundAnyOrder);
+        }
+
+        
+        datePicker.on('change', function () {
+            filterOrdersByDate($(this).val());
+        });
+
+        
+        $('#prevDayBtn').on('click', function (e) {
+            e.preventDefault();
+            currentDate.subtract(1, 'days');
+            datePicker.val(currentDate.format('YYYY-MM-DD'));
+            filterOrdersByDate(currentDate.format('YYYY-MM-DD'));
+        });
+
+       
+        $('#todayBtn').on('click', function (e) {
+            e.preventDefault();
+            currentDate = moment();
+            datePicker.val(currentDate.format('YYYY-MM-DD'));
+            filterOrdersByDate(currentDate.format('YYYY-MM-DD'));
+        });
+
+        $('#searchForm').on('submit', function (e) {
+            e.preventDefault();
+            const docNum = $('#ordenSearch').val();
+
+            
+            loadContent(docNum);
+        });
+
+
+    })
+    function loadContent(idcontenedor, docNum) { 
+        //alert('Contenedor: ' + idcontenedor + ' | Orden: ' + docNum);
+        
+            alert(idcontenedor +" "+ docNum  );
+
+            $.ajax({
+                url: "{{ route('datospartida') }}",  
+                method: "POST",
+                data: {docNum: docNum,_token: '{{ csrf_token() }}'  
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        //html = '<table class="table table-striped table-bordered">';
+                        //html .= '<thead><tr>';
+                        $('#' + idcontenedor).html(response.html);
+                    } else {
+                        $('#' + idcontenedor).html('<p>Error al cargar el contenido.</p>');  
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#' + idcontenedor).html('<p>Error al cargar el contenido.</p>');  
+                }
+            });
+        }
+</script>
+
 </script>
 @section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 @endsection
 @endsection

@@ -8,6 +8,7 @@ use App\Http\Controllers\PDFController;
 use App\Http\Controllers\SuministrosController;
 use App\Http\Controllers\OrdenesController;
 use App\Http\Controllers\PrincipalController;
+use App\Http\Controllers\PlaneacionController;
 
 use App\Http\Controllers\OrdenVentaController;
 
@@ -52,7 +53,8 @@ Route::get('/ordenes-fabricacion', [OrdenFabricacionController::class,'index'])-
 
 //Route::get('/ordenesventa',[OrdenesVController::class, 'index'])->name('buscar.orden.venta')
 
-use App\Http\Controllers\GestionOrdenController;
 
-Route::get('/orders', [GestionOrdenController::class, 'index'])->name('orders');
-Route::get('/orders/search', [GestionOrdenController::class, 'search'])->name('orders.search');
+
+Route::get('/orders', [PlaneacionController::class, 'OrdenesVActual'])->name('orders');
+Route::post('/partidas', [PlaneacionController::class, 'DatosDePartida'])->name('datospartida');
+
