@@ -58,7 +58,6 @@ Route::get('/ordenes-fabricacion', [OrdenFabricacionController::class,'index'])-
 Route::get('/orders', [PlaneacionController::class, 'OrdenesVActual'])->name('orders');
 Route::post('/partidas', [PlaneacionController::class, 'DatosDePartida'])->name('datospartida');
 
-<<<<<<< HEAD
 Route::get('/', function () {
     return view('layouts.Menu');
     //return "Bienvenido a la pagina";
@@ -77,5 +76,3 @@ Route:: get('create', function () {
 Route:: get('cursos/{curso}', function ($curso) {
     return "bienvenido al curso: $curso";
 });*/ 
-=======
->>>>>>> desarrollo
