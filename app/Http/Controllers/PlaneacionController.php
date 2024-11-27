@@ -60,6 +60,10 @@ class PlaneacionController extends Controller
     }
     public function DatosDePartida(Request $request)
     {
+        $query = $request->input('query'); 
+        $fecha = $request->input('date');  
+        $fechaHoy = date('Ymd');
+        $fechaAyer = date('Ymd', strtotime('-1 day'));
         $schema = 'HN_OPTRONICS';
         $ordenventa = $request->input('docNum');  
 
@@ -108,8 +112,7 @@ class PlaneacionController extends Controller
                 ];
             });
 
-            // Devolver la respuesta con los datos
-            if (empty($ordenventa))
+            
             return response()->json([
                 'status' => 'success',
                 'html' => $partidas
@@ -121,8 +124,7 @@ class PlaneacionController extends Controller
                 'message' => 'Error al obtener las partidas: ' . $e->getMessage()
             ]);
         }
-        }
     }
 
-
+}
 
