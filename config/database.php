@@ -43,8 +43,11 @@ return [
             'dsn' => env('DB_ODBC_DSN'), 
             'username' => env('DB_ODBC_USERNAME'), 
             'password' => env('DB_ODBC_PASSWORD'), 
-            'charset' => 'utf8', ], // Otras conexiones de base de datos... ], ];
-
+            'charset' => 'utf8',
+            'database' => 'HN_OPTRONICS', // Agregado 'database'
+        
+            
+        ],
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),
