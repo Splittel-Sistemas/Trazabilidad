@@ -18,10 +18,6 @@ yarn-error.log
 /.idea
 /.vscode
 /database/database.sqlite
-<<<<<<< HEAD
-=======
-
 /storage/logs/laravel.log
->>>>>>> desarrollo
 
 
