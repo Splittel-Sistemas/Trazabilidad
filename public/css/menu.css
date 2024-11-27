@@ -1,5 +1,5 @@
 #weatherWidget .currentDesc {
-    color: #ffffff!important;
+    color: #0c0b0b!important;
 }
     .traffic-chart {
         min-height: 335px;
@@ -31,3 +31,4 @@
     #cellPaiChart{
         height: 160px;
     }
+    

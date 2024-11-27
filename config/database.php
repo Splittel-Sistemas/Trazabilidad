@@ -30,7 +30,16 @@ return [
     */
 
     'connections' => [
-
+        'odbc' => [ 
+            'driver' => 'odbc', 
+            'dsn' => env('DB_ODBC_DSN'), 
+            'username' => env('DB_ODBC_USERNAME'), 
+            'password' => env('DB_ODBC_PASSWORD'), 
+            'charset' => 'utf8',
+            'database' => 'HN_OPTRONICS', // Agregado 'database
+           
+        ],
+     
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DB_URL'),
@@ -58,7 +67,7 @@ return [
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => env('DB_CHARSET', 'utf8mb4'),
-            'collation' => env('DB_COLLATION', 'utf8mb4_0900_ai_ci'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => true,
