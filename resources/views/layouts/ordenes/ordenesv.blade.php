@@ -46,14 +46,14 @@
                 <tbody>
                     @foreach ($ordenesVenta as $orden)
                     <!-- Fila principal -->
-                    <tr class="table-light" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
+                    <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
                         <td class="text-center fw-bold align-middle" onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }})">
                             {{ $orden['OV'] }}
                         </td>
                     </tr>
                     <!-- Detalles colapsables -->
                     <tr id="details{{ $loop->index }}" class="collapse">
-                        <td id="details{{ $loop->index."1" }}">
+                        <td id="details{{ $loop->index."llenar" }}">
 
                         </td>
                         <!--<td colspan="1" class="bg-light">
@@ -163,26 +163,29 @@
     })
     //Funcion para cargar las partidas por OV
     function loadContent(idcontenedor, docNum) { 
-            $.ajax({
-                url: "{{ route('datospartida') }}",  
-                method: "POST",
-                data: {docNum: docNum,_token: '{{ csrf_token() }}'  
-                },
-                beforeSend: function() {
-                        $('#' + idcontenedor+"1").html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>");
-                },
-                success: function(response) {
-                    if (response.status === 'success') {
-                        $('#' + idcontenedor+"1").html(response.message);
-                    } else {
-                        $('#' + idcontenedor+"1").html('<p>Error al cargar el contenido.</p>');  
+        let elemento = document.getElementById(idcontenedor+"cerrar");
+            if (!elemento.classList.contains('collapsed')) {
+                $.ajax({
+                    url: "{{ route('datospartida') }}",  
+                    method: "POST",
+                    data: {docNum: docNum,_token: '{{ csrf_token() }}'  
+                    },
+                    beforeSend: function() {
+                            $('#' + idcontenedor+"llenar").html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>");
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#' + idcontenedor+"llenar").html(response.message);
+                        } else {
+                            $('#' + idcontenedor+"llenar").html('<p>Error al cargar el contenido.</p>');  
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#' + idcontenedor+"llenar").html('<p>Error al cargar el contenido.</p>');  
                     }
-                },
-                error: function(xhr, status, error) {
-                    $('#' + idcontenedor).html('<p>Error al cargar el contenido.</p>');  
-                }
-            });
-        }
+                });
+            }else{$('#' + idcontenedor+"llenar").html('')}
+    }
 </script>
 
 </script>
