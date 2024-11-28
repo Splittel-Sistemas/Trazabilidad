@@ -161,7 +161,6 @@
 
 
     })
-    //Funcion para cargar las partidas por OV
     function loadContent(idcontenedor, docNum) { 
         let elemento = document.getElementById(idcontenedor+"cerrar");
             if (!elemento.classList.contains('collapsed')) {

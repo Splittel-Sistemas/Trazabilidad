@@ -28,8 +28,7 @@ class PlaneacionController extends Controller
         
 
         $sql = 'SELECT T0."DocNum" AS "OV", T0."CardName" AS "Cliente", T0."DocDate" AS "Fecha", 
-                T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" 
-                FROM ' . $schema . '.ORDR T0 
+                T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" FROM ' . $schema . '.ORDR T0 
                 WHERE T0."DocDate" BETWEEN \'' . $fechaAyer . '\' AND \'' . $fechaHoy . '\'';
 
                 $params = [
@@ -62,60 +61,58 @@ class PlaneacionController extends Controller
     {
         $schema = 'HN_OPTRONICS';
         $ordenventa = $request->input('docNum');  
-    
+
         if (empty($ordenventa)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'El número de orden no fue proporcionado.'
             ]);
         }
-        $sql = 'SELECT 
-            T0."DocNum" AS "OV", 
-            T1."ItemCode" AS "No. Parte", 
-            T1."Dscription" AS "Descripción", 
-            CASE WHEN T2."U_TcktCssftion" = \'01\' THEN \'Fabricacion\'
-                 WHEN T2."U_TcktCssftion" = \'02\' THEN \'Internacional\' 
-                 WHEN T2."U_TcktCssftion" = \'03\' THEN \'Nacional\' END AS "Clasificacion Ticket",
-            T0."DocDate" AS "Fecha",
-            T0."CardName" AS "Cliente"
-            FROM ' . $schema . '.ORDR T0 
-            INNER JOIN ' . $schema . '.RDR1 T1 ON T1."DocEntry" = T0."DocEntry" 
-            INNER JOIN ' . $schema . '.OITM T2 ON T2."ItemCode" = T1."ItemCode" 
-            WHERE T0."DocNum" = \'' . $ordenventa . '\'
-            ORDER BY T0."DocNum"';
-    
+
+        $sql = "SELECT 
+                    T1.\"ItemCode\" AS \"Articulo\", 
+                    T1.\"Dscription\" AS \"Descripcion\", 
+                    T2.\"PlannedQty\" AS \"Cantidad OF\",  
+                    T2.\"DueDate\" AS \"Fecha entrega OF\", 
+                    T1.\"PoTrgNum\" AS \"Orden de F.\"
+                FROM {$schema}.\"ORDR\" T0
+                INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
+                LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
+                WHERE T0.\"DocNum\" = '{$ordenventa}'  
+                ORDER BY T1.\"VisOrder\"";
+
         try {
             $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
-            //print_r($partidas);
+
             if (empty($partidas)) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'No se encontraron partidas para esta orden.'
                 ]);
             }
-    
-            // Generar tabla principal
+
             $html = '<table class="table table-striped table-bordered">';
             $html .= '<thead>
                         <tr>
-                            <th>No. Parte</th>
-                            <th>Descripción</th>
-                            <th>Clasificación Ticket</th>
-                            <th>Fecha</th>
-                            <th>Cliente</th>
+                            <th>Articulo</th>
+                            <th>Descripcion</th>
+                            <th>Cantidad OF</th>
+                            <th>Fecha entrega OF</th>
+                            <th>Orden de F.</th>
                         </tr>
-                      </thead><tbody>';
-    
+                    </thead><tbody>';
+
             foreach ($partidas as $partida) {
                 $html .= '<tr>
-                            <td>' . ($partida['No. Parte'] ?? 'No disponible') . '</td>
-                            <td>' . ($partida['Descripción'] ?? 'No disponible') . '</td>
-                            <td>' . ($partida['Clasificacion Ticket'] ?? 'No disponible') . '</td>
-                            <td>' . (\Carbon\Carbon::parse($partida['Fecha'])->format('d-m-Y')) . '</td>
-                            <td>' . ($partida['Cliente'] ?? 'No disponible') . '</td>
-                          </tr>';
+                            <td>' . ($partida['Articulo'] ?? 'No disponible') . '</td>
+                            <td>' . ($partida['Descripcion'] ?? 'No disponible') . '</td>
+                            <td>' . ($partida['Cantidad OF'] ?? 'No disponible') . '</td>
+                            <td>' . (\Carbon\Carbon::parse($partida['Fecha entrega OF'])->format('d-m-Y')) . '</td>
+                            <td>' . ($partida['Orden de F.'] ?? 'No disponible') . '</td>
+                        </tr>';
             }
             $html .= '</tbody></table>';
+
             return response()->json([
                 'status' => 'success',
                 'message' => $html
@@ -128,7 +125,7 @@ class PlaneacionController extends Controller
             ]);
         }
     }
-    
+
 
 }
 
