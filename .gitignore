@@ -18,7 +18,6 @@ yarn-error.log
 /.idea
 /.vscode
 /database/database.sqlite
-
 /storage/logs/laravel.log
 
 

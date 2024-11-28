@@ -56,3 +56,21 @@ Route::get('/ordenes-fabricacion', [OrdenFabricacionController::class,'index'])-
 Route::get('/orders', [PlaneacionController::class, 'OrdenesVActual'])->name('orders');
 Route::post('/partidas', [PlaneacionController::class, 'DatosDePartida'])->name('datospartida');
 
+Route::get('/', function () {
+    return view('layouts.Menu');
+    //return "Bienvenido a la pagina";
+});
+Route::get('/login', function () {
+    return "hola";
+    //return view('layouts.login');
+    //return "Bienvenido a la pagina";
+});
+ /*Route:: get('cursos', function () {
+    return "Bienvenido a la pagina de cursos";
+});
+Route:: get('create', function () {
+    return "podras crear un curso:";
+});
+Route:: get('cursos/{curso}', function ($curso) {
+    return "bienvenido al curso: $curso";
+});*/ 
