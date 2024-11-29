@@ -350,7 +350,9 @@ body {
   font-family: "Open Sans", sans-serif;
   font-size: 16px;
   width: 100%; }
-
+#header {
+    box-shadow: 1px 1px 9px rgba(146, 146, 146, 0.5); /* Horizontal offset, Vertical offset, Blur radius, Color */
+  }
 p {
   font-size: 16px;
   font-family: "Open Sans", sans-serif;
@@ -831,8 +833,9 @@ aside.left-panel {
     float: left; }
   .right-panel .breadcrumbs {
     float: left;
-    margin-top: 30px;
-    padding: 0 1.875em;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0 0.5em;
     width: 100%; }
     .right-panel .breadcrumbs .breadcrumbs-inner {
       background-color: #fff; }
@@ -1204,8 +1207,8 @@ header .form-inline {
   border-radius: 5px;
   padding: 0;
   border: 0px solid transparent;
-  -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
-          box-shadow: 0 0 20px rgba(0, 0, 0, 0.08); }
+  -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.08);
+          box-shadow: 2 2 4px rgba(0, 0, 0, 0.08); }
   .card .box-title {
     font-weight: 600;
     font-size: 1em;
@@ -1557,6 +1560,9 @@ header .form-inline {
   width: 100%;
   z-index: 999; }
 
+.card .card-header{
+  padding: 5px 5px 0 5px;
+}
 .card .card-header .card-actions {
   float: right; }
   .card .card-header .card-actions [class*="btn"] {
