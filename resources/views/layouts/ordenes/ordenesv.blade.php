@@ -11,7 +11,7 @@
                 <div class="card-body bg-light">
                     <form id="searchForm" action="{{ route('orders') }}" method="GET" class="d-flex align-items-center">
                         <div class="input-group">
-                            <input type="text" name="query" id="datospartida" class="form-control" placeholder="Buscar órdenes..." required value="{{ request('query') }}">
+                            <input type="text" name="query" id="orderSearch" class="form-control" placeholder="Buscar órdenes..." required value="{{ request('query') }}">
                             <input type="date" name="date" id="datePicker" class="form-control form-control-sm text-center w-auto mx-3 border-info" value="{{ request('date', $fechaHoy) }}">
                             <button type="submit" class="btn btn-primary shadow">
                                 <i class="bi bi-search"></i> Buscar
