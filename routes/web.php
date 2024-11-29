@@ -9,6 +9,8 @@ use App\Http\Controllers\SuministrosController;
 use App\Http\Controllers\OrdenesController;
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\PlaneacionController;
+use App\Http\Controllers\OrdenFabricacionController;
+use App\Http\Controllers\BarcodeController;
 
 use App\Http\Controllers\OrdenVentaController;
 
@@ -41,38 +43,15 @@ Route::post('/enviar', [OrdenesController::class, 'ordenes.enviar'])->name('orde
 Route::get('/orden-venta', [OrdenVentaController::class, 'index'])->name('ordenventa');
 Route::post('/orden-venta/{id}/update-state', [OrdenVentaController::class, 'updateState'])->name('ordenventa.updateState');
 
-
-use App\Http\Controllers\BarcodeController;
-
-
 Route::get('/leer-codigo-barra', [BarcodeController::class, 'index'])->name('leer.codigo.barra');
-use App\Http\Controllers\OrdenFabricacionController;
 
 Route::get('/ordenes-fabricacion', [OrdenFabricacionController::class,'index'])->name('ordenes.indexx');
-//use App\Http\Controllers\OrdenVController;
-
-//Route::get('/ordenesventa',[OrdenesVController::class, 'index'])->name('buscar.orden.venta')
-
 Route::get('/orders', [PlaneacionController::class, 'OrdenesVActual'])->name('orders');
 Route::post('/partidas', [PlaneacionController::class, 'DatosDePartida'])->name('datospartida');
 Route::post('/upload-file', [PlaneacionController::class, 'uploadFile'])->name('uploadFile');
 
+use App\Http\Controllers\DetallesController;
+Route::get('/orden/{id}', [DetallesController::class, 'show'])->name('orden.show');
 
-Route::get('/', function () {
-    return view('layouts.Menu');
-    //return "Bienvenido a la pagina";
-});
-Route::get('/login', function () {
-    return "hola";
-    //return view('layouts.login');
-    //return "Bienvenido a la pagina";
-});
- /*Route:: get('cursos', function () {
-    return "Bienvenido a la pagina de cursos";
-});
-Route:: get('create', function () {
-    return "podras crear un curso:";
-});
-Route:: get('cursos/{curso}', function ($curso) {
-    return "bienvenido al curso: $curso";
-});*/ 
+
+ 
