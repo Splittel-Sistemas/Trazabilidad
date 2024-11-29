@@ -55,6 +55,8 @@ Route::get('/ordenes-fabricacion', [OrdenFabricacionController::class,'index'])-
 
 Route::get('/orders', [PlaneacionController::class, 'OrdenesVActual'])->name('orders');
 Route::post('/partidas', [PlaneacionController::class, 'DatosDePartida'])->name('datospartida');
+Route::post('/upload-file', [PlaneacionController::class, 'uploadFile'])->name('uploadFile');
+
 
 Route::get('/', function () {
     return view('layouts.Menu');

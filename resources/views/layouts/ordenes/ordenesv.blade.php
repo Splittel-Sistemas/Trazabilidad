@@ -1,13 +1,10 @@
 @extends('layouts.menu')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-
-
 @section('content')
 <div class="container mt-4">
     <h1 class="text-primary mb-4 text-center">Gestión de Órdenes de Venta</h1>
-
     <!-- Buscador -->
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
@@ -20,180 +17,173 @@
                             </button>
                         </div>
                     </form>
-                    
                 </div>
             </div>
-             <!-- Navegación de Fechas -->
-    <div class="d-flex justify-content-center align-items-center mb-4">
-        <a href="#" id="prevDayBtn" class="btn btn-outline-secondary me-3">
-            <i class="bi bi-chevron-left"></i> Día Anterior
-        </a>
-
-        <a href="#" id="todayBtn" class="btn btn-outline-primary ms-3">
-            Día de Hoy <i class="bi bi-house"></i>
-        </a>
-    </div>
-
+            <!-- Navegación de Fechas -->
+            <div class="d-flex justify-content-center align-items-center mb-4">
+                <a href="#" id="prevDayBtn" class="btn btn-outline-secondary me-3">
+                    <i class="bi bi-chevron-left"></i> Día Anterior
+                </a>
+                <a href="#" id="todayBtn" class="btn btn-outline-primary ms-3">
+                    Día de Hoy <i class="bi bi-house"></i>
+                </a>
+            </div>
         </div>
-        <div class="row justify-content-center py-4">
-        <div class="col-12">
-            <table class="table table-hover table-bordered shadow-sm w-75 mx-auto">
-                <thead class="table-primary text-center">
-                    <tr>
-                        <td class="fw-bold">Órdenes de Venta</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($ordenesVenta as $orden)
-                    <!-- Fila principal -->
-                    <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
-                        <td class="text-center fw-bold align-middle" onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }})">
-                            {{ $orden['OV'] }}
-                        </td>
-                    </tr>
-                    <!-- Detalles colapsables -->
-                    <tr id="details{{ $loop->index }}" class="collapse">
-                        <td id="details{{ $loop->index."llenar" }}">
-
-                        </td>
-                        <!--<td colspan="1" class="bg-light">
-                            <div class="p-3 border rounded shadow-sm">
-                                <h5 class="text-primary mb-3">Detalles de la Orden</h5>
-                                <ul class="list-unstyled mb-0">
-                                    <li><strong>Cliente:</strong> {{ isset($orden['Cliente']) ? $orden['Cliente'] : 'No disponible' }}</li>
-                                    <li><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($orden['Fecha'])->format('d-m-Y') }}</li>
-                                    <li><strong>Estado:</strong> {{ $orden['Estado'] == 'O' ? 'Abierta' : 'Cerrada' }}</li>
-                                    <li><strong>Total:</strong> ${{ number_format($orden['Total'], 2) }}</li>
-                                </ul>
-                            </div>
-                        </td>-->
-                    </tr>
-                @endforeach
-                
-                </tbody>
-            </table>
-        </div>
-        
     </div>
+    <!-- Contenedor de las tablas -->
+    <div class="row mb-5">
+        <!-- Columna 1: Tabla de Órdenes de Venta -->
+        <div class="col-md-6 mb-4">
+            <h4 class="text-center">Órdenes de Venta</h4>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered" id="table-source">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th class="fw-bold">Órdenes de Venta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($ordenesVenta as $orden)
+                        <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
+                            <td onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }})">
+                                {{ $orden['OV'] }}
+                            </td>
+                        </tr>
+                        <tr id="details{{ $loop->index }}" class="collapse">
+                            <td id="details{{ $loop->index . 'llenar' }}">
+                                <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Columna 2: Dropzone y Tabla de Migrados -->
+        <div class="col-md-6">
+            <!-- Área de Dropzone -->
+            <div id="dropzone" 
+                 class="dropzone-area border-dashed border-primary p-4 text-center mb-4"
+                 ondragover="allowDrop(event)" 
+                 ondrop="drop(event)" 
+                 style="border: 2px dashed #007bff; padding: 20px; text-align: center; min-height: 150px;">
+                <h4>Arrastra aquí los datos</h4>
+                <p class="text-muted">Suelta los artículos que deseas migrar aquí</p>
+            </div>
+            <!-- Tabla de Migrados -->
+            <div class="table-responsive">
+                <h4 class="text-center">Tabla Migrados</h4>
+                <table class="table table-striped table-bordered" id="table-destination">
+                    <thead>
+                        <tr>
+                            <th>Artículo</th>
+                            <th>Descripción</th>
+                            <th>Cantidad OF</th>
+                            <th>Fecha Entrega OF</th>
+                            <th>Orden De F</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-2-content">
+                        <!-- Aquí se añadirán las filas movidas -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
-<!-- Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- datatables -->
-<link href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" rel="stylesheet">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
-
-<script>
-    $(document).ready(function () {  
-        $('.datatable').DataTable({
-            paging: true,
-            searching: false,
-            info: false,
-            lengthChange: false,
-            pageLength: 5,
-            language: {
-                paginate: {
-                    previous: 'Anterior',
-                    next: 'Siguiente'
-                },
-                emptyTable: 'No hay datos disponibles en la tabla',
-            }
-        });
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-        let currentDate = moment();
-        const datePicker = $('#datePicker');
-        datePicker.val(currentDate.format('YYYY-MM-DD'));
-        
-        function filterOrdersByDate(date) {
-            let foundAnyOrder = false;
-
-            $('.order-row').each(function () {
-                const rowDate = $(this).data('date');
-                if (rowDate === date) {
-                    $(this).show();
-                    foundAnyOrder = true;
-                } else {
-                    $(this).hide();
-                }
-            });
-
-            $('#noOrdersRow').toggleClass('d-none', foundAnyOrder);
-        }
-
-        datePicker.on('change', function () {
-            filterOrdersByDate($(this).val());
-        });
-
-        
-        $('#prevDayBtn').on('click', function (e) {
-            e.preventDefault();
-            currentDate.subtract(1, 'days');
-            datePicker.val(currentDate.format('YYYY-MM-DD'));
-            filterOrdersByDate(currentDate.format('YYYY-MM-DD'));
-        });
-
-       
-        $('#todayBtn').on('click', function (e) {
-            e.preventDefault();
-            currentDate = moment();
-            datePicker.val(currentDate.format('YYYY-MM-DD'));
-            filterOrdersByDate(currentDate.format('YYYY-MM-DD'));
-        });
-
-        $('#searchForm').on('submit', function (e) {
-            e.preventDefault();
-            const docNum = $('#ordenSearch').val();
-
-            
-            loadContent(docNum);
-        });
-
-
-    })
-    function loadContent(idcontenedor, docNum) { 
-        let elemento = document.getElementById(idcontenedor+"cerrar");
-            if (!elemento.classList.contains('collapsed')) {
-                $.ajax({
-                    url: "{{ route('datospartida') }}",  
-                    method: "POST",
-                    data: {docNum: docNum,_token: '{{ csrf_token() }}'  
-                    },
-                    beforeSend: function() {
-                            $('#' + idcontenedor+"llenar").html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>");
-                    },
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            $('#' + idcontenedor+"llenar").html(response.message);
-                        } else {
-                            $('#' + idcontenedor+"llenar").html('<p>Error al cargar el contenido.</p>');  
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        $('#' + idcontenedor+"llenar").html('<p>Error al cargar el contenido.</p>');  
-                    }
-                });
-            }else{$('#' + idcontenedor+"llenar").html('')}
-    }
-</script>
-
-</script>
-@section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
-<meta name="csrf-token" content="{{ csrf_token() }}">
+<script src="{{ asset('js/ordenesv.js') }}"></script>
 
 @endsection
+@section('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+ //
+ $(document).ready(function () {
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+let currentDate = moment();
+const datePicker = $('#datePicker');
+datePicker.val(currentDate.format('YYYY-MM-DD'));
+
+function filterOrdersByDate(date) {
+    let foundAnyOrder = false;
+
+    $('.order-row').each(function () {
+        const rowDate = $(this).data('date');
+        if (rowDate === date) {
+            $(this).show();
+            foundAnyOrder = true;
+        } else {
+            $(this).hide();
+        }
+    });
+
+    $('#noOrdersRow').toggleClass('d-none', foundAnyOrder);
+}
+
+datePicker.on('change', function () {
+    filterOrdersByDate($(this).val());
+});
+
+$('#prevDayBtn').on('click', function (e) {
+    e.preventDefault();
+    currentDate.subtract(1, 'days');
+    datePicker.val(currentDate.format('YYYY-MM-DD'));
+    filterOrdersByDate(currentDate.format('YYYY-MM-DD'));
+});
+
+$('#todayBtn').on('click', function (e) {
+    e.preventDefault();
+    currentDate = moment();
+    datePicker.val(currentDate.format('YYYY-MM-DD'));
+    filterOrdersByDate(currentDate.format('YYYY-MM-DD'));
+});
+
+$('#searchForm').on('submit', function (e) {
+    e.preventDefault();
+    const docNum = $('#ordenSearch').val();
+    loadContent(docNum);
+});
+});
+function loadContent(idcontenedor, docNum) {
+let elemento = document.getElementById(idcontenedor + "cerrar");
+if (!elemento.classList.contains('collapsed')) {
+    $.ajax({
+        url: "{{ route('datospartida') }}",
+        method: "POST",
+        data: {
+            docNum: docNum,
+            _token: '{{ csrf_token() }}'
+        },
+        beforeSend: function () {
+            $('#' + idcontenedor + "llenar").html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>");
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                $('#' + idcontenedor + "llenar").html(response.message);
+            } else {
+                $('#' + idcontenedor + "llenar").html('<p>Error al cargar el contenido.</p>');
+            }
+        },
+        error: function (xhr, status, error) {
+            $('#' + idcontenedor + "llenar").html('<p>Error al cargar el contenido.</p>');
+        }
+    });
+} else {
+    $('#' + idcontenedor + "llenar").html('');
+}
+function drag(event) {
+event.dataTransfer.setData("text", event.target.id);
+}
+}
+</script>
 @endsection

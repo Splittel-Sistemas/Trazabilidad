@@ -1,0 +1,44 @@
+ /* Ajuste del diseño */
+ .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px; /* Espacio entre las columnas */
+}
+
+/* Aseguramos que las tablas ocupen la mitad del ancho */
+.col-md-6 {
+    flex: 0 0 48%; /* 48% de ancho para que haya separación */
+}
+
+.table-responsive {
+    max-height: 500px;
+    /*overflow-y: auto;*/
+}
+
+.dropzone-area {
+    border: 2px dashed #007bff;
+    padding: 20px;
+    text-align: center;
+    min-height: 150px;
+    margin-bottom: 30px;
+}
+
+/* Asegura que las tablas no se desborden */
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Mayor separación entre elementos */
+.mb-4 {
+    margin-bottom: 2rem;
+}
+
+.btn-link {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 1.2rem;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
