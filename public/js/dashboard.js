@@ -345,6 +345,7 @@ function getRandomData() {
 
   var g1;
 
+
   document.addEventListener("DOMContentLoaded", function(event) {
     g1 = new JustGage({
       id: "g1",
