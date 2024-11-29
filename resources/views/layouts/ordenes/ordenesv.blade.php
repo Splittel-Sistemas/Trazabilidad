@@ -1,93 +1,155 @@
 @extends('layouts.menu')
+@section('title', 'Planeacion')
+@section('styles')
 <meta name="csrf-token" content="{{ csrf_token() }}">
+<link rel="stylesheet" href="{{asset('css/Planecion.css')}}">
+@endsection
 @section('content')
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>Planeaci&oacute;n</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li><a href="#">Dashboard</a></li>
+                            <li><a href="#">Planeaci&oacute;n</a></li>
+                            <li class="active">Planeaci&oacute;n Fabricaci&oacute;n</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container mt-4">
-    <h1 class="text-primary mb-4 text-center">Gestión de Órdenes de Venta</h1>
+    <!--<h1 class="text-primary mb-4 text-center">Gestión de Órdenes de Venta</h1>-->
     <!-- Buscador -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <form id="searchForm" action="{{ route('orders') }}" method="GET" class="d-flex align-items-center">
-                        <div class="input-group">
-                            <input type="text" name="query" id="datos.partida" class="form-control" placeholder="Buscar órdenes..." required value="{{ request('query') }}">
-                            <input type="date" name="date" id="datePicker" class="form-control form-control-sm text-center w-auto mx-3 shadow-sm border-primary" value="{{ request('date', $fechaHoy) }}">
-                            <button type="submit" class="btn btn-primary" id="searchBtn">
-                                <i class="bi bi-search"></i> Buscar
-                            </button>
+    <div class="row mb-2">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <strong>Filtrar Ordenes de Venta</strong>
+                    <button id="filtro_ov" type="button" class="btn btn-link float-end collapsed" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#filtro" aria-expanded="true" aria-controls="filtro"><i class="fa fa-chevron-up"></i></button>
+                </div>
+                <div class="card-body card-block collapsed show" id="filtro">
+                    <form action="#" method="post" class="form-horizontal">
+                        <div class="row form-group">
+                            <div class="col col-md-7">
+                                <label  for="" class=" form-control-label me-2 col-12"><strong>Filtro por fecha</strong></label>
+                                <div class="input-group">
+                                    <label for="" class="form-control-label me-2 col-3">fecha inicio:</label>
+                                    <input type="date" name="date" id="datePicker" class="form-control form-control-sm   w-autoborder-primary col-9" value="{{ request('date', $fechaHoy) }}">
+                                </div>
+                                <div class="input-group pt-4">
+                                    <label  for="" class=" form-control-label me-2 col-3">fecha fin:</label>
+                                    <input type="date" name="date" id="datePicker" class="form-control form-control-sm   w-autoborder-primary col-9" value="{{ request('date', $fechaHoy) }}">
+                                </div>
+                                <br>
+                                <button class="btn btn-primary btn-sm float-end">
+                                    <i class="fa fa-search"></i> Filtrar
+                                </button>
+                            </div>
+                            <div class="col col-md-5">
+                                <div class="input-group ">
+                                    <label  for="" class=" form-control-label me-2 col-12"><strong>Filtro por Orden Venta</strong></label>
+                                    <input type="text" placeholder="Ingresa una Orden de Venta" name="date" id="datePicker" class="form-control form-control-sm   w-autoborder-primary col-12">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-primary btn-sm">
+                                            <i class="fa fa-search"></i> buscar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
-            <!-- Navegación de Fechas -->
-            <div class="d-flex justify-content-center align-items-center mb-4">
-                <a href="#" id="prevDayBtn" class="btn btn-outline-secondary me-3">
-                    <i class="bi bi-chevron-left"></i> Día Anterior
-                </a>
-                <a href="#" id="todayBtn" class="btn btn-outline-primary ms-3">
-                    Día de Hoy <i class="bi bi-house"></i>
-                </a>
-            </div>
         </div>
     </div>
     <!-- Contenedor de las tablas -->
-    <div class="row mb-5">
-        <!-- Columna 1: Tabla de Órdenes de Venta -->
-        <div class="col-md-6 mb-4">
-            <h4 class="text-center">Órdenes de Venta</h4>
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered" id="table-source">
-                    <thead class="table-primary text-center">
-                        <tr>
-                            <th class="fw-bold">Órdenes de Venta</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($ordenesVenta as $orden)
-                        <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
-                            <td onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }})">
-                                {{ $orden['OV'] }}
-                            </td>
-                        </tr>
-                        <tr id="details{{ $loop->index }}" class="collapse">
-                            <td id="details{{ $loop->index . 'llenar' }}">
-                                <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    <div class="card p-3">
+        <div class="row mb-5">
+            <!-- Columna 1: Tabla de Órdenes de Venta -->
+            <div class="col-md-6 mb-2">
+                <div id="container_table_OV" class="table-responsive">
+                    <table id="table_OV" class="table table-striped table-bordered" id="table-source">
+                        <thead class="table-primary text-center">
+                            <tr>
+                                <th class="fw-bold">
+                                    Órdenes de Venta <br>de 10-11-2024 a 12-11-2024 
+                                    <div class="input-group ">
+                                        <input type="text" placeholder="Ingresa una Orden de Venta" name="filtro_ov_tabla" oninput="filtro_ov_tabla(this.value);" id="filtro_ov_tabla" class="form-control form-control-sm   w-autoborder-primary col-12">
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-primary btn-sm">
+                                                <i class="fa fa-search"></i> buscar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_OV_body">
+                            @foreach ($ordenesVenta as $orden)
+                            <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
+                                <td onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }})">
+                                    {{ $orden['OV']." - ".$orden['Cliente']}}
+                                </td>
+                            </tr>
+                            <tr id="details{{ $loop->index }}" class="collapse">
+                                <td class="table-border" id="details{{ $loop->index . 'llenar' }}">
+                                    <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-12">
+                    <!-- Navegación de Fechas -->
+                    <div class="d-flex justify-content-center align-items-center mb-4">
+                        <button id="prevDayBtn" class="btn btn-link"><i class="fa fa-arrow-left"></i> Anterior</button>
+                        <button id="todayBtn" class="btn btn-link">Siguiente <i class="fa fa-arrow-right"></i></button>
+                    </div>
+                </div>
             </div>
-        </div>
-        <!-- Columna 2: Dropzone y Tabla de Migrados -->
-        <div class="col-md-6">
-            <!-- Área de Dropzone -->
-            <div id="dropzone" 
-                 class="dropzone-area border-dashed border-primary p-4 text-center mb-4"
-                 ondragover="allowDrop(event)" 
-                 ondrop="drop(event)" 
-                 style="border: 2px dashed #007bff; padding: 20px; text-align: center; min-height: 150px;">
-                <h4>Arrastra aquí los datos</h4>
-                <p class="text-muted">Suelta los artículos que deseas migrar aquí</p>
-            </div>
-            <!-- Tabla de Migrados -->
-            <div class="table-responsive">
-                <h4 class="text-center">Tabla Migrados</h4>
-                <table class="table table-striped table-bordered" id="table-destination">
-                    <thead>
-                        <tr>
-                            <th>Artículo</th>
-                            <th>Descripción</th>
-                            <th>Cantidad OF</th>
-                            <th>Fecha Entrega OF</th>
-                            <th>Orden De F</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-2-content">
-                        <!-- Aquí se añadirán las filas movidas -->
-                    </tbody>
-                </table>
+            <!-- Columna 2: Dropzone y Tabla de Migrados -->
+            <div class="col-md-6 mb-2">
+                <!-- Área de Dropzone -->
+                <div id="dropzone" 
+                    class="dropzone-area border-dashed border-primary p-4 text-center mb-4"
+                    ondragover="allowDrop(event)" 
+                    ondrop="drop(event)" 
+                    style="border: 2px dashed #007bff; padding: 20px; text-align: center; min-height: 150px;">
+                    <h4>Arrastra aquí los datos</h4>
+                    <p class="text-muted">Suelta los artículos que deseas migrar aquí</p>
+                </div>
+                <!-- Tabla de Migrados -->
+                <div class="table-responsive">
+                    <h4 class="text-center">Tabla Migrados</h4>
+                    <table class="table table-striped table-bordered" id="table-destination">
+                        <thead>
+                            <tr>
+                                <th>Artículo</th>
+                                <th>Descripción</th>
+                                <th>Cantidad OF</th>
+                                <th>Fecha Entrega OF</th>
+                                <th>Orden De F</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-2-content">
+                            <!-- Aquí se añadirán las filas movidas -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -155,35 +217,62 @@ $('#searchForm').on('submit', function (e) {
 });
 });
 function loadContent(idcontenedor, docNum) {
-let elemento = document.getElementById(idcontenedor + "cerrar");
-if (!elemento.classList.contains('collapsed')) {
-    $.ajax({
-        url: "{{ route('datospartida') }}",
-        method: "POST",
-        data: {
-            docNum: docNum,
-            _token: '{{ csrf_token() }}'
-        },
-        beforeSend: function () {
-            $('#' + idcontenedor + "llenar").html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>");
-        },
-        success: function (response) {
-            if (response.status === 'success') {
-                $('#' + idcontenedor + "llenar").html(response.message);
-            } else {
+    let elemento = document.getElementById(idcontenedor + "cerrar");
+    if (!elemento.classList.contains('collapsed')) {
+        $.ajax({
+            url: "{{ route('datospartida') }}",
+            method: "POST",
+            data: {
+                docNum: docNum,
+                _token: '{{ csrf_token() }}'
+            },
+            beforeSend: function () {
+                $('#' + idcontenedor + "llenar").html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>");
+            },
+            success: function (response) {
+                if (response.status === 'success') {
+                    $('#' + idcontenedor + "llenar").html(response.message);
+                } else {
+                    $('#' + idcontenedor + "llenar").html('<p>Error al cargar el contenido.</p>');
+                }
+            },
+            error: function (xhr, status, error) {
                 $('#' + idcontenedor + "llenar").html('<p>Error al cargar el contenido.</p>');
             }
-        },
-        error: function (xhr, status, error) {
-            $('#' + idcontenedor + "llenar").html('<p>Error al cargar el contenido.</p>');
+        });
+    } else {
+        $('#' + idcontenedor + "llenar").html('');
+    }
+    function drag(event) {
+        event.dataTransfer.setData("text", event.target.id);
+    }
+}
+document.getElementById('filtro_ov').addEventListener('click', function(event) {
+    btn=document.getElementById('filtro_ov');
+    if (!btn.classList.contains('collapsed')) {
+        btn.innerHTML='<i class="fa fa-chevron-up"></i>';
+    }else{
+        btn.innerHTML='<i class="fa fa-chevron-down"></i>';
+    }
+});
+function filtro_ov_tabla(ov){
+    campo=0;
+    let filas = document.querySelectorAll("#table_OV tbody tr");
+    filas.forEach(fila => {
+    // Obtiene el valor de la celda correspondiente al campo (por ejemplo, "Edad")
+    let valorCelda = fila.cells[campo].innerText.trim();
+    
+    // Si el valor de la celda no coincide con el valor del filtro, oculta la fila
+    if(fila.classList.contains('table-light')){
+        if (valorCelda.includes(ov)) {
+            //alert("entre");
+        fila.style.display = ""; // Ocultar fila
+        } else {
+            //alert("no");
+        fila.style.display = "none"; // Mostrar fila
         }
-    });
-} else {
-    $('#' + idcontenedor + "llenar").html('');
-}
-function drag(event) {
-event.dataTransfer.setData("text", event.target.id);
-}
+    }
+  });
 }
 </script>
 @endsection
