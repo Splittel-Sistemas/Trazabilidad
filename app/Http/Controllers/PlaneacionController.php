@@ -79,15 +79,15 @@ class PlaneacionController extends Controller
                     'message' => 'No se encontraron partidas para esta orden.'
                 ]);
             }
-            $html = '<div class="table-responsive mb-4">';
-            $html .= '<table class="table table-sm" id="table-source">';
+            $html = '<div class="table-responsive table-partidas">';
+            $html .= '<table class=" table-sm" id="table-source">';
             $html .= '<thead>
                         <tr>
+                            <th>Orden Fab.</th>
                             <th>Artículo</th>
                             <th>Descripción</th>
-                            <th>Cantidad OF</th>
-                            <th>Fecha entrega OF</th>
-                            <th>Orden de F.</th>
+                            <th>Cantidad</th>
+                            <th>Fecha entrega</th>
                         </tr>
                     </thead>
                     <tbody>';
@@ -96,11 +96,11 @@ class PlaneacionController extends Controller
                             number_format($partida['Cantidad OF'], 0, '.', '') : 
                             'No disponible';
                 $html .= '<tr id="row-' . $index . '" draggable="true" ondragstart="drag(event)">
+                            <td>' . ($partida['Orden de F.'] ?? 'No disponible') . '</td>
                             <td>' . ($partida['Articulo'] ?? 'No disponible') . '</td>
                             <td>' . ($partida['Descripcion'] ?? 'No disponible') . '</td>
                             <td>' . $cantidadOF . '</td>
                             <td>' . (!empty($partida['Fecha entrega OF']) ? \Carbon\Carbon::parse($partida['Fecha entrega OF'])->format('d-m-Y') : 'No disponible') . '</td>
-                            <td>' . ($partida['Orden de F.'] ?? 'No disponible') . '</td>
                         </tr>';
             }
             $html .= '</tbody></table></div>';

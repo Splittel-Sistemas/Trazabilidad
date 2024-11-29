@@ -1,0 +1,28 @@
+#container_table_OV{
+    height: 30rem;
+    overflow-y: scroll;
+}
+#container_table_OV::-webkit-scrollbar {
+    width: 6px; /* Ajusta el ancho de la barra de desplazamiento */
+}
+#container_table_OV::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color del fondo del track */
+}
+#container_table_OV::-webkit-scrollbar-thumb {
+    background: #acacac; /* Color del thumb */
+    border-radius: 10px; /* Esquinas redondeadas */
+}
+#container_table_OV::-webkit-scrollbar-thumb:hover {
+    background: #8f8f8f; /* Color al pasar el ratón por encima */
+}
+.table-partidas th , .table-partidas td {
+    font-size: 10px; /* Establece el tamaño de la letra lo más pequeño posible */
+    border-collapse: collapse; /* Opcional: Asegura que las celdas se colapsen */
+    background: white;
+}
+#table_OV td{
+    padding-left: 0;  /* Elimina padding izquierdo */
+    padding-right: 0; /* Elimina padding derecho */
+    padding-bottom: 5px;
+    padding-top: 2px;
+}
