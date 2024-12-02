@@ -49,6 +49,7 @@ Route::get('/ordenes-fabricacion', [OrdenFabricacionController::class,'index'])-
 Route::get('/orders', [PlaneacionController::class, 'OrdenesVActual'])->name('orders');
 Route::post('/partidas', [PlaneacionController::class, 'DatosDePartida'])->name('datospartida');
 Route::post('/filtros', [PlaneacionController::class, 'filtros'])->name('filtros');
+Route::post('/filtro', [PlaneacionController::class, 'filtro'])->name('filtro');
 
 use App\Http\Controllers\DetallesController;
 Route::get('/orden/{id}', [DetallesController::class, 'show'])->name('orden.show');

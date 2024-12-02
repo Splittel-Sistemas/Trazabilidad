@@ -32,53 +32,61 @@
 <div class="container mt-4">
     <!--<h1 class="text-primary mb-4 text-center">Gestión de Órdenes de Venta</h1>-->
     <!-- Buscador -->
+   <!-- Buscador -->
     <div class="row mb-2">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <strong>Filtrar Ordenes de Venta</strong>
-                    <button id="filtro_ov" type="button" class="btn btn-link float-end collapsed" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#filtro" aria-expanded="true" aria-controls="filtro"><i class="fa fa-chevron-up"></i></button>
+                    <strong>Filtrar Órdenes de Venta</strong>
+                    <button id="filtro_ov" type="button" class="btn btn-link float-end collapsed" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#filtro" aria-expanded="true" aria-controls="filtro">
+                        <i class="fa fa-chevron-up"></i>
+                    </button>
                 </div>
-                            <div class="card-body card-block collapsed show" id="filtro">
-                                <form id="filtroForm" method="post" action="{{ route('filtros') }}">
-                                    @csrf
-                                    <div class="col col-md-7">
-                                        <label for="" class="form-control-label me-2 col-12">
-                                            <strong>Filtro por fecha</strong>
-                                        </label>
-                                        <div class="input-group">
-                                            <label for="startDate" class="form-control-label me-2 col-3">Fecha inicio:</label>
-                                            <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary col-9" value="{{ old('startDate', $fechaAyer) }}">
-                                        </div>
-                                        <div class="input-group pt-4">
-                                            <label for="endDate" class="form-control-label me-2 col-3">Fecha fin:</label>
-                                            <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary col-9" value="{{ old('endDate', $fechaHoy) }}">
-                                        </div>
-                                        <div class="row form-group pt-3">
-                                            <button type="submit" class="btn btn-primary btn-sm float-end">
-                                                <i class="fa fa-search"></i> Filtrar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
+                <div class="card-body card-block collapsed show" id="filtro">
+                    <form id="filtroForm" method="post" class="form-horizontal" action="{{ route('filtros') }}">
+                        @csrf
+                        <div class="row">
+                            <!-- Filtro por fecha -->
+                            <div class="col-md-6">
+                                <label for="" class="form-control-label me-2 col-12">
+                                    <strong>Filtro por Fecha</strong>
+                                </label>
+                                <div class="input-group">
+                                    <label for="startDate" class="form-control-label me-2 col-4">Fecha inicio:</label>
+                                    <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary col-8" value="{{ old('startDate', $fechaAyer) }}">
+                                </div>
+                                <div class="input-group pt-3">
+                                    <label for="endDate" class="form-control-label me-2 col-4">Fecha fin:</label>
+                                    <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary col-8" value="{{ old('endDate', $fechaHoy) }}">
+                                </div>
+                                <div class="row form-group pt-3">
+                                    <button type="submit" class="btn btn-primary btn-sm float-end">
+                                        <i class="fa fa-search"></i> Filtrar
+                                    </button>
+                                </div>
                             </div>
-                            <div class="col col-md-5">
-                                <div class="input-group ">
-                                    <label  for="" class=" form-control-label me-2 col-12"><strong>Filtro por Orden Venta</strong></label>
-                                    <input type="text" placeholder="Ingresa una Orden de Venta" name="date" id="datePicker" class="form-control form-control-sm   w-autoborder-primary col-12">
+                            <!-- Filtro por Orden de Venta -->
+                            <div class="col-md-6">
+                                <label for="" class="form-control-label me-2 col-12">
+                                    <strong>Filtro por Orden de Venta</strong>
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" placeholder="Ingresa una Orden de Venta" name="query" id="query" class="form-control form-control-sm w-autoborder-primary col-9">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-primary btn-sm">
-                                            <i class="fa fa-search"></i> buscar
+                                        <button id="buscarOV" class="btn btn-primary btn-sm">
+                                            <i class="fa fa-search"></i> Buscar
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                            </div> 
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
     <!-- Contenedor de las tablas -->
     <div class="card p-3">
         <div class="row mb-5">
@@ -171,6 +179,41 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
  //
+ $(document).ready(function () {
+    $('#buscarOV').on('click', function (e) {
+        e.preventDefault();
+
+        var query = $('#query').val().trim(); 
+
+        if (!query) {
+            alert("Por favor, ingresa una Orden de Venta.");
+            return;
+        }
+
+        $.ajax({
+            url: "{{ route('filtro') }}", 
+            method: "POST",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') 
+            },
+            data: {
+                query: query, 
+            },
+            success: function (response) {
+                if (response.status === 'success') {
+                    $('#container_table_OV').html(response.data); 
+                } else {
+                    alert(response.message); 
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+                alert('Ocurrió un error. Por favor, intenta nuevamente.');
+            }
+        });
+    });
+});
+
  $(document).ready(function() {
     $('#filtroForm').on('submit', function(e) {
         e.preventDefault(); 

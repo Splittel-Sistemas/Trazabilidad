@@ -179,7 +179,54 @@ class PlaneacionController extends Controller
             ]);
         }
     }
-
-}
-
-   
+    public function filtro(Request $request)
+    {
+        $query = $request->input('query', ''); // Capturar el valor del filtro por orden de venta
+    
+        $schema = 'HN_OPTRONICS';
+    
+        $sql = 'SELECT T0."DocNum" AS "OV", T0."CardName" AS "Cliente", T0."DocDate" AS "Fecha", 
+                T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" 
+                FROM ' . $schema . '.ORDR T0';
+    
+        if (!empty($query)) {
+            $sql .= ' WHERE T0."DocNum" LIKE \'%' . $query . '%\'';
+        }
+    
+        try {
+            $ordenesVenta = $this->funcionesGenerales->ejecutarConsulta($sql);
+    
+            if (empty($ordenesVenta)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No se encontraron órdenes con ese número.'
+                ]);
+            }
+    
+            // Construir la tabla en HTML
+            $tablaOrdenes = '';
+            foreach ($ordenesVenta as $index => $orden) {
+                $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '">
+                                    <td onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] . ')">
+                                        ' . $orden['OV'] . " - " . $orden['Cliente'] . '
+                                    </td>
+                                  </tr>
+                                  <tr id="details' . $index . '" class="collapse">
+                                    <td class="table-border" id="details' . $index . 'llenar">
+                                        <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
+                                    </td>
+                                  </tr>';
+            }
+    
+            return response()->json([
+                'status' => 'success',
+                'data' => $tablaOrdenes
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener órdenes. Detalles: ' . $e->getMessage()
+            ]);
+        }
+    }
+}    
