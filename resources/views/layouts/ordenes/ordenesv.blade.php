@@ -39,23 +39,28 @@
                     <strong>Filtrar Ordenes de Venta</strong>
                     <button id="filtro_ov" type="button" class="btn btn-link float-end collapsed" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#filtro" aria-expanded="true" aria-controls="filtro"><i class="fa fa-chevron-up"></i></button>
                 </div>
-                <div class="card-body card-block collapsed show" id="filtro">
-                    <form action="#" method="post" class="form-horizontal">
-                        <div class="row form-group">
-                            <div class="col col-md-7">
-                                <label  for="" class=" form-control-label me-2 col-12"><strong>Filtro por fecha</strong></label>
-                                <div class="input-group">
-                                    <label for="startDate" class="form-control-label me-2 col-3">Fecha inicio:</label>
-                                    <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary col-9" value="{{ request('startDate', $fechaHoy) }}">
-                                </div>
-                                <div class="input-group pt-4">
-                                    <label for="endDate" class="form-control-label me-2 col-3">Fecha fin:</label>
-                                    <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary col-9" value="{{ request('endDate', $fechaHoy) }}">
-                                </div>
-                                <br>
-                                <button class="btn btn-primary btn-sm float-end">
-                                    <i class="fa fa-search"></i> Filtrar
-                                </button>
+                            <div class="card-body card-block collapsed show" id="filtro">
+                                <form id="filtroForm" method="post" action="{{ route('filtros') }}">
+                                    @csrf
+                                    <div class="col col-md-7">
+                                        <label for="" class="form-control-label me-2 col-12">
+                                            <strong>Filtro por fecha</strong>
+                                        </label>
+                                        <div class="input-group">
+                                            <label for="startDate" class="form-control-label me-2 col-3">Fecha inicio:</label>
+                                            <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary col-9" value="{{ old('startDate', $fechaAyer) }}">
+                                        </div>
+                                        <div class="input-group pt-4">
+                                            <label for="endDate" class="form-control-label me-2 col-3">Fecha fin:</label>
+                                            <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary col-9" value="{{ old('endDate', $fechaHoy) }}">
+                                        </div>
+                                        <div class="row form-group pt-3">
+                                            <button type="submit" class="btn btn-primary btn-sm float-end">
+                                                <i class="fa fa-search"></i> Filtrar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                             <div class="col col-md-5">
                                 <div class="input-group ">
@@ -167,30 +172,39 @@
 <script>
  //
  $(document).ready(function() {
-    
     $('#filtroForm').on('submit', function(e) {
         e.preventDefault(); 
+
         var startDate = $('#startDate').val();
         var endDate = $('#endDate').val();
-        var query = $('#query').val();
+        var query = $('#query').val() || ''; 
+
         if (new Date(startDate) > new Date(endDate)) {
             alert("La fecha de inicio no puede ser posterior a la fecha de fin.");
             return;
         }
+
         $.ajax({
-            url: "{{ route('datospartida') }}",  
-            method: "GET",
+            url: "{{ route('filtros') }}", 
+            method: "POST",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
             data: {
                 startDate: startDate,
                 endDate: endDate,
                 query: query
             },
-            success: function(response) {  
-                $('#resultados').html(response);
+            success: function(response) {
+                if (response.status === 'success') {
+                    $('#container_table_OV').html(response.data); 
+                } else {
+                    alert(response.message);
+                }
             },
             error: function(xhr, status, error) {
-                console.error("Error en la solicitud AJAX: ", error);
-                alert('Ocurrió un error al filtrar las órdenes.');
+                console.error('Error:', error);
+                alert('Ocurrió un error. Por favor, intenta nuevamente.');
             }
         });
     });

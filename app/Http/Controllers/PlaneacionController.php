@@ -34,7 +34,9 @@ class PlaneacionController extends Controller
         try {
             $ordenesVenta = $this->funcionesGenerales->ejecutarConsulta($sql);
             //return($ordenesVenta);
+
             if (empty($ordenesVenta)) {
+                return view('layouts.ordenes.ordenesv', compact('ordenesVenta', 'fechaHoy', 'fechaAyer'));
                 Log::info('No se encontraron órdenes para las fechas: ' . $fechaAyer . ' a ' . $fechaHoy);
                 return back()->with('warning', 'No se encontraron órdenes para estas fechas.');
             }
@@ -118,38 +120,66 @@ class PlaneacionController extends Controller
     }
     public function filtros(Request $request)
     {
-        $query = $request->input('query'); 
-        $startDate = $request->input('startDate'); 
-        $endDate = $request->input('endDate'); 
-        $startDate = $startDate ? $startDate : date('Y-m-d'); 
-        $endDate = $endDate ? $endDate : date('Y-m-d'); 
-        if (strtotime($startDate) > strtotime($endDate)) {
-            return response()->json(['error' => 'La fecha de inicio no puede ser posterior a la fecha de fin.']);
-        }
+        $fechaHoy = date('Y-m-d');
+        $fechaAyer = date('Y-m-d', strtotime('-1 day'));
+        $startDate = $request->input('startDate', $fechaAyer);
+        $endDate = $request->input('endDate', $fechaHoy);
+        $query = $request->input('query', '');
 
+        if (strtotime($startDate) > strtotime($endDate)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'La fecha de inicio no puede ser posterior a la fecha de fin.'
+            ]);
+        }
         $schema = 'HN_OPTRONICS';
+        $startDateFormatted = date('Y-m-d', strtotime($startDate));
+        $endDateFormatted = date('Y-m-d', strtotime($endDate));
+
         $sql = 'SELECT T0."DocNum" AS "OV", T0."CardName" AS "Cliente", T0."DocDate" AS "Fecha", 
                 T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" 
                 FROM ' . $schema . '.ORDR T0 
-                WHERE T0."DocDate" BETWEEN :startDate AND :endDate';
-        if ($query) {
-            $sql .= ' AND T0."DocNum" LIKE :query';
+                WHERE T0."DocDate" BETWEEN \'' . $startDateFormatted . '\' AND \'' . $endDateFormatted . '\'';
+
+        if (!empty($query)) {
+            $sql .= ' AND T0."DocNum" LIKE \'%' . $query . '%\'';
         }
-        $params = [
-            'query' => '%' . $query . '%',  
-            'startDate' => $startDate,     
-            'endDate' => $endDate,   
-        ];
+
         try {
-            $ordenesVenta = $this->funcionesGenerales->ejecutarConsulta($sql, $params);
+            $ordenesVenta = $this->funcionesGenerales->ejecutarConsulta($sql);
             if (empty($ordenesVenta)) {
-                return response()->json(['message' => 'No se encontraron órdenes para estas fechas.']);
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No se encontraron órdenes para estas fechas.'
+                ]);
             }
-            return view('layouts.ordenes._resultados', compact('ordenesVenta'));
+            $tablaOrdenes = '';
+            foreach ($ordenesVenta as $index => $orden) {
+                $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '">
+                                    <td onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] . ')">
+                                        ' . $orden['OV'] . " - " . $orden['Cliente'] . '
+                                    </td>
+                                </tr>
+                                <tr id="details' . $index . '" class="collapse">
+                                    <td class="table-border" id="details' . $index . 'llenar">
+                                        <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
+                                    </td>
+                                </tr>';
+            }
+            return response()->json([
+                'status' => 'success',
+                'data' => $tablaOrdenes,
+                'fechaHoy' => $fechaHoy,
+                'fechaAyer' => $fechaAyer
+            ]);
         } catch (\Exception $e) {
-        return response()->json(['error' => 'Error al obtener órdenes. Intenta nuevamente.']);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener órdenes. Detalles: ' . $e->getMessage()
+            ]);
         }
     }
 
-
 }
+
+   

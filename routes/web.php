@@ -48,7 +48,7 @@ Route::get('/leer-codigo-barra', [BarcodeController::class, 'index'])->name('lee
 Route::get('/ordenes-fabricacion', [OrdenFabricacionController::class,'index'])->name('ordenes.indexx');
 Route::get('/orders', [PlaneacionController::class, 'OrdenesVActual'])->name('orders');
 Route::post('/partidas', [PlaneacionController::class, 'DatosDePartida'])->name('datospartida');
-Route::post('/upload-file', [PlaneacionController::class, 'uploadFile'])->name('uploadFile');
+Route::post('/filtros', [PlaneacionController::class, 'filtros'])->name('filtros');
 
 use App\Http\Controllers\DetallesController;
 Route::get('/orden/{id}', [DetallesController::class, 'show'])->name('orden.show');
