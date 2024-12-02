@@ -201,9 +201,9 @@
             },
             success: function (response) {
                 if (response.status === 'success') {
-                    $('#container_table_OV').html(response.data); 
+                    $('#table_OV_body').html(response.data); 
                 } else {
-                    alert(response.message); 
+                    $('#table_OV_body').html(response.message); 
                 }
             },
             error: function (xhr, status, error) {
@@ -240,9 +240,9 @@
             },
             success: function(response) {
                 if (response.status === 'success') {
-                    $('#container_table_OV').html(response.data); 
+                    $('#table_OV_body').html(response.data); 
                 } else {
-                    alert(response.message);
+                    $('#table_OV_body').html('<p class="text-center m-4">'+ response.message+'</p>');
                 }
             },
             error: function(xhr, status, error) {
@@ -358,6 +358,8 @@ function filtro_ov_tabla(ov){
         }
     }
   });
+  ////
+  
 }
 </script>
 @endsection
