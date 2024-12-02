@@ -32,48 +32,61 @@
 <div class="container mt-4">
     <!--<h1 class="text-primary mb-4 text-center">Gestión de Órdenes de Venta</h1>-->
     <!-- Buscador -->
+   <!-- Buscador -->
     <div class="row mb-2">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <strong>Filtrar Ordenes de Venta</strong>
-                    <button id="filtro_ov" type="button" class="btn btn-link float-end collapsed" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#filtro" aria-expanded="true" aria-controls="filtro"><i class="fa fa-chevron-up"></i></button>
+                    <strong>Filtrar Órdenes de Venta</strong>
+                    <button id="filtro_ov" type="button" class="btn btn-link float-end collapsed" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#filtro" aria-expanded="true" aria-controls="filtro">
+                        <i class="fa fa-chevron-up"></i>
+                    </button>
                 </div>
                 <div class="card-body card-block collapsed show" id="filtro">
-                    <form action="#" method="post" class="form-horizontal">
-                        <div class="row form-group">
-                            <div class="col col-md-7">
-                                <label  for="" class=" form-control-label me-2 col-12"><strong>Filtro por fecha</strong></label>
+                    <form id="filtroForm" method="post" class="form-horizontal" action="{{ route('filtros') }}">
+                        @csrf
+                        <div class="row">
+                            <!-- Filtro por fecha -->
+                            <div class="col-md-6">
+                                <label for="" class="form-control-label me-2 col-12">
+                                    <strong>Filtro por Fecha</strong>
+                                </label>
                                 <div class="input-group">
-                                    <label for="" class="form-control-label me-2 col-3">fecha inicio:</label>
-                                    <input type="date" name="date" id="datePicker" class="form-control form-control-sm   w-autoborder-primary col-9" value="{{ request('date', $fechaHoy) }}">
+                                    <label for="startDate" class="form-control-label me-2 col-4">Fecha inicio:</label>
+                                    <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary col-8" value="{{ old('startDate', $fechaAyer) }}">
                                 </div>
-                                <div class="input-group pt-4">
-                                    <label  for="" class=" form-control-label me-2 col-3">fecha fin:</label>
-                                    <input type="date" name="date" id="datePicker" class="form-control form-control-sm   w-autoborder-primary col-9" value="{{ request('date', $fechaHoy) }}">
+                                <div class="input-group pt-3">
+                                    <label for="endDate" class="form-control-label me-2 col-4">Fecha fin:</label>
+                                    <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary col-8" value="{{ old('endDate', $fechaHoy) }}">
                                 </div>
-                                <br>
-                                <button class="btn btn-primary btn-sm float-end">
-                                    <i class="fa fa-search"></i> Filtrar
-                                </button>
+                                <div class="row form-group pt-3">
+                                    <button type="submit" class="btn btn-primary btn-sm float-end">
+                                        <i class="fa fa-search"></i> Filtrar
+                                    </button>
+                                </div>
                             </div>
-                            <div class="col col-md-5">
-                                <div class="input-group ">
-                                    <label  for="" class=" form-control-label me-2 col-12"><strong>Filtro por Orden Venta</strong></label>
-                                    <input type="text" placeholder="Ingresa una Orden de Venta" name="date" id="datePicker" class="form-control form-control-sm   w-autoborder-primary col-12">
+                            <!-- Filtro por Orden de Venta -->
+                            <div class="col-md-6">
+                                <label for="" class="form-control-label me-2 col-12">
+                                    <strong>Filtro por Orden de Venta</strong>
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" placeholder="Ingresa una Orden de Venta" name="query" id="query" class="form-control form-control-sm w-autoborder-primary col-9">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-primary btn-sm">
-                                            <i class="fa fa-search"></i> buscar
+                                        <button id="buscarOV" class="btn btn-primary btn-sm">
+                                            <i class="fa fa-search"></i> Buscar
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                            </div> 
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
     <!-- Contenedor de las tablas -->
     <div class="card p-3">
         <div class="row mb-5">
@@ -167,6 +180,80 @@
 <script>
  //
  $(document).ready(function () {
+    $('#buscarOV').on('click', function (e) {
+        e.preventDefault();
+
+        var query = $('#query').val().trim(); 
+
+        if (!query) {
+            alert("Por favor, ingresa una Orden de Venta.");
+            return;
+        }
+
+        $.ajax({
+            url: "{{ route('filtro') }}", 
+            method: "POST",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') 
+            },
+            data: {
+                query: query, 
+            },
+            success: function (response) {
+                if (response.status === 'success') {
+                    $('#table_OV_body').html(response.data); 
+                } else {
+                    $('#table_OV_body').html(response.message); 
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+                alert('Ocurrió un error. Por favor, intenta nuevamente.');
+            }
+        });
+    });
+});
+
+ $(document).ready(function() {
+    $('#filtroForm').on('submit', function(e) {
+        e.preventDefault(); 
+
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        var query = $('#query').val() || ''; 
+
+        if (new Date(startDate) > new Date(endDate)) {
+            alert("La fecha de inicio no puede ser posterior a la fecha de fin.");
+            return;
+        }
+
+        $.ajax({
+            url: "{{ route('filtros') }}", 
+            method: "POST",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                startDate: startDate,
+                endDate: endDate,
+                query: query
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    $('#table_OV_body').html(response.data); 
+                } else {
+                    $('#table_OV_body').html('<p class="text-center m-4">'+ response.message+'</p>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                alert('Ocurrió un error. Por favor, intenta nuevamente.');
+            }
+        });
+    });
+});
+
+ $(document).ready(function () {
 $.ajaxSetup({
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -259,20 +346,20 @@ function filtro_ov_tabla(ov){
     campo=0;
     let filas = document.querySelectorAll("#table_OV tbody tr");
     filas.forEach(fila => {
-    // Obtiene el valor de la celda correspondiente al campo (por ejemplo, "Edad")
     let valorCelda = fila.cells[campo].innerText.trim();
     
-    // Si el valor de la celda no coincide con el valor del filtro, oculta la fila
     if(fila.classList.contains('table-light')){
         if (valorCelda.includes(ov)) {
             //alert("entre");
-        fila.style.display = ""; // Ocultar fila
+        fila.style.display = ""; 
         } else {
             //alert("no");
-        fila.style.display = "none"; // Mostrar fila
+        fila.style.display = "none"; 
         }
     }
   });
+  ////
+  
 }
 </script>
 @endsection
