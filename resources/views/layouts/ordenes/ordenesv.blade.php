@@ -135,6 +135,9 @@
             </div>
             <!-- Columna 2: Dropzone y Tabla de Migrados -->
             <div class="col-md-6 mb-2">
+                <div id="message-container" style="display:none; background-color: yellow; padding: 10px; margin-bottom: 10px;">
+                    Esta consulta ya fue seleccionada.
+                </div>
                 <!-- Área de Dropzone -->
                 <div id="dropzone" 
                     class="dropzone-area border-dashed border-primary p-4 text-center mb-4"
@@ -179,6 +182,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
  //
+ 
  $(document).ready(function () {
     $('#buscarOV').on('click', function (e) {
         e.preventDefault();
@@ -330,9 +334,10 @@ function loadContent(idcontenedor, docNum) {
     } else {
         $('#' + idcontenedor + "llenar").html('');
     }
-    function drag(event) {
-        event.dataTransfer.setData("text", event.target.id);
-    }
+    //
+    //function drag(event) {
+    //    event.dataTransfer.setData("text", event.target.id);
+    //}
 }
 document.getElementById('filtro_ov').addEventListener('click', function(event) {
     btn=document.getElementById('filtro_ov');
