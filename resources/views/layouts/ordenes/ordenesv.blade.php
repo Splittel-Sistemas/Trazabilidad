@@ -45,12 +45,12 @@
                             <div class="col col-md-7">
                                 <label  for="" class=" form-control-label me-2 col-12"><strong>Filtro por fecha</strong></label>
                                 <div class="input-group">
-                                    <label for="" class="form-control-label me-2 col-3">fecha inicio:</label>
-                                    <input type="date" name="date" id="datePicker" class="form-control form-control-sm   w-autoborder-primary col-9" value="{{ request('date', $fechaHoy) }}">
+                                    <label for="startDate" class="form-control-label me-2 col-3">Fecha inicio:</label>
+                                    <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary col-9" value="{{ request('startDate', $fechaHoy) }}">
                                 </div>
                                 <div class="input-group pt-4">
-                                    <label  for="" class=" form-control-label me-2 col-3">fecha fin:</label>
-                                    <input type="date" name="date" id="datePicker" class="form-control form-control-sm   w-autoborder-primary col-9" value="{{ request('date', $fechaHoy) }}">
+                                    <label for="endDate" class="form-control-label me-2 col-3">Fecha fin:</label>
+                                    <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary col-9" value="{{ request('endDate', $fechaHoy) }}">
                                 </div>
                                 <br>
                                 <button class="btn btn-primary btn-sm float-end">
@@ -166,6 +166,36 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
  //
+ $(document).ready(function() {
+    
+    $('#filtroForm').on('submit', function(e) {
+        e.preventDefault(); 
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        var query = $('#query').val();
+        if (new Date(startDate) > new Date(endDate)) {
+            alert("La fecha de inicio no puede ser posterior a la fecha de fin.");
+            return;
+        }
+        $.ajax({
+            url: "{{ route('datospartida') }}",  
+            method: "GET",
+            data: {
+                startDate: startDate,
+                endDate: endDate,
+                query: query
+            },
+            success: function(response) {  
+                $('#resultados').html(response);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error en la solicitud AJAX: ", error);
+                alert('Ocurrió un error al filtrar las órdenes.');
+            }
+        });
+    });
+});
+
  $(document).ready(function () {
 $.ajaxSetup({
     headers: {
@@ -259,17 +289,15 @@ function filtro_ov_tabla(ov){
     campo=0;
     let filas = document.querySelectorAll("#table_OV tbody tr");
     filas.forEach(fila => {
-    // Obtiene el valor de la celda correspondiente al campo (por ejemplo, "Edad")
     let valorCelda = fila.cells[campo].innerText.trim();
     
-    // Si el valor de la celda no coincide con el valor del filtro, oculta la fila
     if(fila.classList.contains('table-light')){
         if (valorCelda.includes(ov)) {
             //alert("entre");
-        fila.style.display = ""; // Ocultar fila
+        fila.style.display = ""; 
         } else {
             //alert("no");
-        fila.style.display = "none"; // Mostrar fila
+        fila.style.display = "none"; 
         }
     }
   });

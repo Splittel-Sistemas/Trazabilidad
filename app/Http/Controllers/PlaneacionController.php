@@ -116,4 +116,40 @@ class PlaneacionController extends Controller
             ]);
         }
     }
+    public function filtros(Request $request)
+    {
+        $query = $request->input('query'); 
+        $startDate = $request->input('startDate'); 
+        $endDate = $request->input('endDate'); 
+        $startDate = $startDate ? $startDate : date('Y-m-d'); 
+        $endDate = $endDate ? $endDate : date('Y-m-d'); 
+        if (strtotime($startDate) > strtotime($endDate)) {
+            return response()->json(['error' => 'La fecha de inicio no puede ser posterior a la fecha de fin.']);
+        }
+
+        $schema = 'HN_OPTRONICS';
+        $sql = 'SELECT T0."DocNum" AS "OV", T0."CardName" AS "Cliente", T0."DocDate" AS "Fecha", 
+                T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" 
+                FROM ' . $schema . '.ORDR T0 
+                WHERE T0."DocDate" BETWEEN :startDate AND :endDate';
+        if ($query) {
+            $sql .= ' AND T0."DocNum" LIKE :query';
+        }
+        $params = [
+            'query' => '%' . $query . '%',  
+            'startDate' => $startDate,     
+            'endDate' => $endDate,   
+        ];
+        try {
+            $ordenesVenta = $this->funcionesGenerales->ejecutarConsulta($sql, $params);
+            if (empty($ordenesVenta)) {
+                return response()->json(['message' => 'No se encontraron órdenes para estas fechas.']);
+            }
+            return view('layouts.ordenes._resultados', compact('ordenesVenta'));
+        } catch (\Exception $e) {
+        return response()->json(['error' => 'Error al obtener órdenes. Intenta nuevamente.']);
+        }
+    }
+
+
 }
