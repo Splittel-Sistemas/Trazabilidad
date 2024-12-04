@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\FuncionesGeneralesController;
 use Illuminate\Support\Facades\Log;
+use App\Models\OrdenVenta;
+use App\Models\OrdenFabricacion;
 
 class PlaneacionController extends Controller
 {
@@ -14,7 +16,6 @@ class PlaneacionController extends Controller
     {
         $this->funcionesGenerales = $funcionesGenerales;
     }
-
     public function OrdenesVActual(Request $request)
     {
         $query = $request->input('query'); 
@@ -34,7 +35,6 @@ class PlaneacionController extends Controller
         try {
             $ordenesVenta = $this->funcionesGenerales->ejecutarConsulta($sql);
             //return($ordenesVenta);
-
             if (empty($ordenesVenta)) {
                 return view('layouts.ordenes.ordenesv', compact('ordenesVenta', 'fechaHoy', 'fechaAyer'));
                 Log::info('No se encontraron órdenes para las fechas: ' . $fechaAyer . ' a ' . $fechaHoy);
@@ -49,19 +49,25 @@ class PlaneacionController extends Controller
         $fechaAyer = date('d-m-Y', strtotime('-1 day'));
         return view('layouts.ordenes.ordenesv', compact('ordenesVenta', 'fechaHoy', 'fechaAyer'));
     }
-
     public function DatosDePartida(Request $request)
     {
         $schema = 'HN_OPTRONICS';
-        $ordenventa = $request->input('docNum');  
+        $ordenventa = $request->input('docNum');
+    
+        // Validar si el número de orden es válido
         if (empty($ordenventa)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'El número de orden no fue proporcionado.'
             ]);
         }
-
-        $ordenventa = addslashes($ordenventa); 
+    
+        // Convertir ordenventa a un formato seguro
+        $ordenventa = intval($ordenventa); // Asegurar que es un número
+    
+        Log::info("Iniciando consulta para orden: $ordenventa");
+    
+        // Preparar la consulta SQL
         $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
                     T1.\"Dscription\" AS \"Descripcion\", 
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
@@ -72,52 +78,160 @@ class PlaneacionController extends Controller
                 LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
                 WHERE T0.\"DocNum\" = '{$ordenventa}'  
                 ORDER BY T1.\"VisOrder\"";
-
-        try {
-            $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
-            if (empty($partidas)) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'No se encontraron partidas para esta orden.'
-                ]);
-            }
-            $html = '<div class="table-responsive table-partidas">';
-            $html .= '<table class=" table-sm" id="table-source">';
-            $html .= '<thead>
-                        <tr>
-                            <th>Orden Fab.</th>
-                            <th>Artículo</th>
-                            <th>Descripción</th>
-                            <th>Cantidad</th>
-                            <th>Fecha entrega</th>
-                        </tr>
-                    </thead>
-                    <tbody>';
-            foreach ($partidas as $index => $partida) {
-                $cantidadOF = is_numeric($partida['Cantidad OF']) ? 
-                            number_format($partida['Cantidad OF'], 0, '.', '') : 
-                            'No disponible';
-                $html .= '<tr id="row-' . $index . '" draggable="true" ondragstart="drag(event)">
-                            <td>' . ($partida['Orden de F.'] ?? 'No disponible') . '</td>
-                            <td>' . ($partida['Articulo'] ?? 'No disponible') . '</td>
-                            <td>' . ($partida['Descripcion'] ?? 'No disponible') . '</td>
-                            <td>' . $cantidadOF . '</td>
-                            <td>' . (!empty($partida['Fecha entrega OF']) ? \Carbon\Carbon::parse($partida['Fecha entrega OF'])->format('d-m-Y') : 'No disponible') . '</td>
-                        </tr>';
-            }
-            $html .= '</tbody></table></div>';
-            return response()->json([
-                'status' => 'success',
-                'message' => $html
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error al obtener las partidas: ' . $e->getMessage());
+    
+        Log::info("Ejecutando SQL: $sql");
+    
+        // Ejecutar consulta
+        $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
+    
+        if ($partidas === false) {
+            Log::error("Consulta fallida para orden: $ordenventa, SQL: $sql");
             return response()->json([
                 'status' => 'error',
-                'message' => 'Error al obtener las partidas. Por favor, intente más tarde.'
+                'message' => 'Error al ejecutar la consulta. Verifique los parámetros.'
+            ]);
+        }
+    
+        if (empty($partidas)) {
+            Log::warning("No se encontraron partidas para la orden: $ordenventa");
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No se encontraron partidas para esta orden.'
+            ]);
+        }
+    
+        // Generar HTML para la respuesta que se mostrará en la tabla 2
+        $html = '<div class="table-responsive table-partidas">';
+        $html .= '<table class="table-sm" id="table-source">';
+        $html .= '<thead>
+                    <tr>
+                        <th>Orden Fab.</th>
+                        <th>Artículo</th>
+                        <th>Descripción</th>
+                        <th>Cantidad</th>
+                        <th>Fecha entrega</th>
+                    </tr>
+                  </thead>
+                  <tbody>';
+    
+        // Procesar los resultados y generar filas para la tabla 2 (sin guardar en la base de datos aún)
+        foreach ($partidas as $index => $partida) {
+            // Asignar valores predeterminados para 'Cantidad OF' y 'Fecha entrega OF'
+            $cantidadOF = is_numeric($partida['Cantidad OF']) 
+                ? number_format($partida['Cantidad OF'], 0, '.', '') 
+                : 'No disponible'; // Mostrar "No disponible" si no hay cantidad
+    
+            $fechaEntrega = !empty($partida['Fecha entrega OF']) 
+                ? \Carbon\Carbon::parse($partida['Fecha entrega OF'])->format('d-m-Y') 
+                : 'No disponible'; // Mostrar "No disponible" si no hay fecha
+    
+            // Generar el HTML para la tabla
+            $html .= '<tr id="row-' . $index . '" draggable="true" ondragstart="drag(event)" data-orden-fab="' . trim($partida['Orden de F.']) . '" data-articulo="' . $partida['Articulo'] . '" data-descripcion="' . $partida['Descripcion'] . '" data-cantidad="' . $cantidadOF . '" data-fecha-entrega="' . $fechaEntrega . '">
+                        <td>' . ($partida['Orden de F.'] ?? 'No disponible') . '</td>
+                        <td>' . ($partida['Articulo'] ?? 'No disponible') . '</td>
+                        <td>' . ($partida['Descripcion'] ?? 'No disponible') . '</td>
+                        <td>' . ($cantidadOF ?: 'No disponible') . '</td>
+                        <td>' . ($fechaEntrega ?: 'No disponible') . '</td>
+                      </tr>';
+        }
+    
+        $html .= '</tbody></table></div>';
+    
+        return response()->json([
+            'status' => 'success',
+            'message' => $html
+        ]);
+    }
+    // Controller: Procesar los datos y mostrar en la tabla
+    public function guardarDatos(Request $request)
+    {
+        // Mostrar los datos recibidos para depuración
+        Log::info('Datos recibidos para guardar fila:', $request->all());
+        
+        // Validación de la cantidad
+        $cantidadOf = $request->cantidad_of;
+        if ($cantidadOf && !is_numeric($cantidadOf)) {
+            Log::error('La cantidad no es un número válido:', ['cantidad' => $cantidadOf]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'La cantidad debe ser un número válido.',
+            ]);
+        }
+    
+        // Verificar la fecha de entrega, si es proporcionada
+        $fechaEntrega = $request->fecha_entrega;
+    
+        // Si la fecha de entrega no es válida o está vacía, asignar la fecha actual
+        if (!$fechaEntrega || !\Carbon\Carbon::parse($fechaEntrega)->isValid()) {
+            Log::info('Fecha de entrega no proporcionada o inválida, se asigna la fecha actual');
+            $fechaEntrega = \Carbon\Carbon::today()->format('Y-m-d'); // Fecha actual por defecto
+        } else {
+            // Formatear la fecha si es válida
+            $fechaEntrega = \Carbon\Carbon::parse($fechaEntrega)->format('Y-m-d');
+        }
+    
+        try {
+            // Verificar si los datos ya existen en la base de datos en OrdenVenta
+            $exists = OrdenVenta::where('orden_fab', $request->orden_fab)
+                ->where('articulo', $request->articulo)
+                ->where('descripcion', $request->descripcion)
+                ->where('cantidad_of', $request->cantidad_of)
+                ->where('fecha_entrega', $fechaEntrega)
+                ->exists();
+    
+            // Si no existe, proceder a guardarlo en OrdenVenta
+            if (!$exists) {
+                $ordenVenta = OrdenVenta::create([
+                    'orden_fab' => $request->orden_fab,
+                    'articulo' => $request->articulo,
+                    'descripcion' => $request->descripcion,
+                    'cantidad_of' => $cantidadOf,
+                    'fecha_entrega' => $fechaEntrega,
+                ]);
+    
+                Log::info('Fila guardada correctamente en orden_venta:', ['orden_venta' => $ordenVenta]);
+    
+                // Verificar si la fila existe en la tabla OrdenFabricacion
+                $ordenFabricacionExists = OrdenFabricacion::where('orden_venta_id', $ordenVenta->id)
+                    ->where('numero_fabricacion', $request->orden_fab) // Usando 'orden_fab' como 'numero_fabricacion'
+                    ->exists();
+    
+                // Si no existe, crear el registro en OrdenFabricacion
+                if (!$ordenFabricacionExists) {
+                    $ordenFabricacion = OrdenFabricacion::create([
+                        'orden_venta_id' => $ordenVenta->id,  // Relacionando con la orden de venta
+                        'numero_fabricacion' => $request->orden_fab,  // Usando 'orden_fab' como 'numero_fabricacion'
+                        'fecha_fabricacion' => $fechaEntrega,  // Usando la fecha de entrega como 'fecha_fabricacion'
+                        'estado' => 'Pendiente',  // Asignando un estado por defecto (puedes modificar esto según sea necesario)
+                    ]);
+    
+                    Log::info('Fila guardada correctamente en orden_fabricacion:', ['orden_fabricacion' => $ordenFabricacion]);
+                } else {
+                    Log::info('La fila de orden_fabricacion ya existe en la base de datos');
+                }
+    
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Fila guardada correctamente',
+                    'data' => $ordenVenta,
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Los datos ya existen en la base de datos.',
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error al guardar la fila:', ['error' => $e->getMessage()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Hubo un problema al guardar los datos. Verifique los parámetros.',
             ]);
         }
     }
+    
+    
+    
     public function filtros(Request $request)
     {
         $fechaHoy = date('Y-m-d');
@@ -164,6 +278,8 @@ class PlaneacionController extends Controller
                                     <td class="table-border" id="details' . $index . 'llenar">
                                         <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
                                     </td>
+                                    <td style="display:none"> ' . $request->cliente. '</td>
+                                    <td style="display:none"> ' . $request->docNum. '</td>
                                 </tr>';
             }
             return response()->json([
@@ -181,40 +297,35 @@ class PlaneacionController extends Controller
     }
     public function filtro(Request $request)
     {
-        $query = $request->input('query', ''); // Capturar el valor del filtro por orden de venta
-    
+        $query = $request->input('query', ''); 
         $schema = 'HN_OPTRONICS';
-    
         $sql = 'SELECT T0."DocNum" AS "OV", T0."CardName" AS "Cliente", T0."DocDate" AS "Fecha", 
                 T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" 
                 FROM ' . $schema . '.ORDR T0';
-    
         if (!empty($query)) {
             $sql .= ' WHERE T0."DocNum" LIKE \'%' . $query . '%\'';
         }
-    
         try {
             $ordenesVenta = $this->funcionesGenerales->ejecutarConsulta($sql);
-    
             if (empty($ordenesVenta)) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'No se encontraron órdenes con ese número.'
                 ]);
             }
-    
-            // Construir la tabla en HTML
             $tablaOrdenes = '';
             foreach ($ordenesVenta as $index => $orden) {
                 $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '">
                                     <td onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] . ')">
-                                        ' . $orden['OV'] . " - " . $orden['Cliente'] . '
+                                    ' . $orden['OV'] . " - " . $orden['Cliente'] . '
                                     </td>
-                                  </tr>
-                                  <tr id="details' . $index . '" class="collapse">
+                                    </tr>
+                                    <tr id="details' . $index . '" class="collapse">
                                     <td class="table-border" id="details' . $index . 'llenar">
-                                        <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
+                                    <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
                                     </td>
+                                    <td style="display:none"> ' . $request->cliente. '</td>
+                                    <td style="display:none"> ' . $request->docNum. '</td>
                                   </tr>';
             }
     
@@ -226,6 +337,36 @@ class PlaneacionController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Error al obtener órdenes. Detalles: ' . $e->getMessage()
+            ]);
+        }
+    }
+    public function guardarConsulta(Request $request)
+    {   
+        $validatedData = $request->validate([
+            'orden_fab' => 'required|string',
+            'articulo' => 'required|string',
+            'descripcion' => 'required|string',
+            'cantidad_of' => 'required|integer',
+            'fecha_entrega' => 'required|date',
+        ]);
+        try {
+            $ordenVenta = OrdenVenta::create([
+                'orden_fab' => $validatedData['orden_fab'],
+                'articulo' => $validatedData['articulo'],
+                'descripcion' => $validatedData['descripcion'],
+                'cantidad_of' => $validatedData['cantidad_of'],
+                'fecha_entrega' => $validatedData['fecha_entrega'],
+            ]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Consulta guardada exitosamente.',
+                'data' => $ordenVenta,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al guardar la consulta. Intente más tarde.',
+                'error' => $e->getMessage(),
             ]);
         }
     }

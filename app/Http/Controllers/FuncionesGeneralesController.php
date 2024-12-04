@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use app\models\OrdenVenta;
 
 class FuncionesGeneralesController extends Controller
 {
@@ -76,4 +77,8 @@ class FuncionesGeneralesController extends Controller
             odbc_close($this->connection);  
         }
     }
+
+    
+    
+    
 }

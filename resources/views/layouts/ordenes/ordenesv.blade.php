@@ -112,7 +112,7 @@
                         <tbody id="table_OV_body">
                             @foreach ($ordenesVenta as $orden)
                             <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
-                                <td onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }})">
+                                <td onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, '{{ $orden['Cliente'] }}')">
                                     {{ $orden['OV']." - ".$orden['Cliente']}}
                                 </td>
                             </tr>
@@ -147,6 +147,7 @@
                     <h4>Arrastra aquí los datos</h4>
                     <p class="text-muted">Suelta los artículos que deseas migrar aquí</p>
                 </div>
+
                 <!-- Tabla de Migrados -->
                 <div class="table-responsive">
                     <h4 class="text-center">Tabla Migrados</h4>
@@ -182,7 +183,138 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
  //
- 
+ let consultasMigradas = new Set(); // IDs de filas ya migradas
+
+function drag(event) {
+    const targetRow = event.target.closest('tr'); // Fila que se está arrastrando
+    const uniqueId = targetRow.id; // ID único de la fila
+    event.dataTransfer.setData("text", uniqueId); // Permitir el arrastre
+}
+
+function drop(event) {
+    event.preventDefault();
+
+    const draggedId = event.dataTransfer.getData("text"); // ID de la fila arrastrada
+    const draggedRow = document.getElementById(draggedId); // Fila arrastrada
+
+    if (draggedRow) {
+        if (!consultasMigradas.has(draggedId)) {
+            // Intentar guardar los datos automáticamente
+            guardarRow(draggedRow, draggedId);
+        } else {
+            console.warn("La fila ya fue migrada previamente:", draggedId);
+            alert("Esta fila ya fue migrada previamente.");
+        }
+    } else {
+        console.error("Fila arrastrada no encontrada:", draggedId);
+    }
+}
+
+function regresarRow(rowId) {
+    const migratedRow = document.getElementById(`migrated-${rowId}`);
+
+    if (migratedRow) {
+        const originalRow = document.getElementById(rowId);
+        if (originalRow) {
+            originalRow.style.display = ""; // Mostrar la fila original
+            consultasMigradas.delete(rowId);
+        }
+
+        migratedRow.remove(); // Eliminar la fila migrada de la tabla 2
+    }
+}
+
+function allowDrop(event) {
+    event.preventDefault(); // Permitir el drop
+}
+
+function guardarRow(row, draggedId) {
+    console.log("Intentando guardar fila:", draggedId); // Log para depurar
+
+    // Extraer datos de la fila
+    const ordenFab = row.cells[0].innerText.trim();
+    const articulo = row.cells[1].innerText.trim();
+    const descripcion = row.cells[2].innerText.trim();
+    const cantidadOf = parseFloat(row.cells[3].innerText.trim()) || null;
+    const fechaEntrega = row.cells[4].innerText.trim() || null;
+
+    // Enviar datos al servidor mediante AJAX
+    $.ajax({
+        url: "{{ route('guardarDatos') }}", // Ruta del endpoint
+        method: "POST",
+        data: {
+            orden_fab: ordenFab,
+            articulo: articulo,
+            descripcion: descripcion,
+            cantidad_of: cantidadOf,
+            fecha_entrega: fechaEntrega,
+            _token: "{{ csrf_token() }}" // CSRF Token para Laravel
+        },
+        success: function (response) {
+            if (response.status === "success") {
+                console.log("Datos guardados correctamente:", response.data);
+                alert("Fila guardada correctamente.");
+                consultasMigradas.add(draggedId); // Marcar la fila como migrada
+
+                // Agregar la fila a la tabla migrada
+                const newRow = document.createElement("tr");
+                newRow.innerHTML = row.innerHTML;
+
+                // Agregar botón "Regresar"
+                const regresarButton = `
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="regresarRow('${draggedId}')">Regresar</button>
+                    </td>`;
+                newRow.innerHTML += regresarButton;
+
+                // Asignar un ID único a la nueva fila
+                newRow.id = `migrated-${draggedId}`;
+                document.getElementById("table-2-content").appendChild(newRow);
+
+                // Ocultar la fila original en la tabla 1
+                row.style.display = "none";
+            } else {
+                alert("Error al guardar los datos: " + response.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            if (xhr.responseJSON && xhr.responseJSON.status === "exists") {
+                alert("Esta fila ya existe en la base de datos.");
+            } else {
+                console.error("Error al guardar los datos:", xhr.responseText);
+                alert("Hubo un error al guardar los datos.");
+            }
+        }
+    });
+}
+
+
+//
+ $(document).ready(function() {
+    $('#botonBuscar').click(function() {
+        var docNum = $('#docNum').val();  
+        $.ajax({
+            url: "{{ route('datospartida') }}", 
+            type: 'POST',
+            data: {
+                docNum: docNum,  
+                _token: '{{ csrf_token() }}'  
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    $('#resultado').html(response.message);  
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error en la solicitud AJAX:', status, error);
+                alert('Hubo un error al obtener las partidas. Intenta nuevamente.');
+            }
+        });
+    });
+});
+
  $(document).ready(function () {
     $('#buscarOV').on('click', function (e) {
         e.preventDefault();
@@ -307,14 +439,15 @@ $('#searchForm').on('submit', function (e) {
     loadContent(docNum);
 });
 });
-function loadContent(idcontenedor, docNum) {
+function loadContent(idcontenedor, docNum, cliente) {
     let elemento = document.getElementById(idcontenedor + "cerrar");
     if (!elemento.classList.contains('collapsed')) {
         $.ajax({
             url: "{{ route('datospartida') }}",
             method: "POST",
             data: {
-                docNum: docNum,
+                docNum: docNum, 
+                cliente:cliente,
                 _token: '{{ csrf_token() }}'
             },
             beforeSend: function () {
@@ -328,7 +461,7 @@ function loadContent(idcontenedor, docNum) {
                 }
             },
             error: function (xhr, status, error) {
-                $('#' + idcontenedor + "llenar").html('<p>Error al cargar el contenido.</p>');
+                $('#' + idcontenedor + "llenar").html('<p>1Error al cargar el contenido.</p>');
             }
         });
     } else {
