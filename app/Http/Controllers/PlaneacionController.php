@@ -53,21 +53,14 @@ class PlaneacionController extends Controller
     {
         $schema = 'HN_OPTRONICS';
         $ordenventa = $request->input('docNum');
-    
-        // Validar si el número de orden es válido
         if (empty($ordenventa)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'El número de orden no fue proporcionado.'
             ]);
         }
-    
-        // Convertir ordenventa a un formato seguro
-        $ordenventa = intval($ordenventa); // Asegurar que es un número
-    
+        $ordenventa = intval($ordenventa); 
         Log::info("Iniciando consulta para orden: $ordenventa");
-    
-        // Preparar la consulta SQL
         $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
                     T1.\"Dscription\" AS \"Descripcion\", 
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
@@ -78,12 +71,8 @@ class PlaneacionController extends Controller
                 LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
                 WHERE T0.\"DocNum\" = '{$ordenventa}'  
                 ORDER BY T1.\"VisOrder\"";
-    
         Log::info("Ejecutando SQL: $sql");
-    
-        // Ejecutar consulta
         $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
-    
         if ($partidas === false) {
             Log::error("Consulta fallida para orden: $ordenventa, SQL: $sql");
             return response()->json([
@@ -91,7 +80,6 @@ class PlaneacionController extends Controller
                 'message' => 'Error al ejecutar la consulta. Verifique los parámetros.'
             ]);
         }
-    
         if (empty($partidas)) {
             Log::warning("No se encontraron partidas para la orden: $ordenventa");
             return response()->json([
@@ -99,8 +87,6 @@ class PlaneacionController extends Controller
                 'message' => 'No se encontraron partidas para esta orden.'
             ]);
         }
-    
-        // Generar HTML para la respuesta que se mostrará en la tabla 2
         $html = '<div class="table-responsive table-partidas">';
         $html .= '<table class="table-sm" id="table-source">';
         $html .= '<thead>
@@ -113,19 +99,14 @@ class PlaneacionController extends Controller
                     </tr>
                   </thead>
                   <tbody>';
-    
-        // Procesar los resultados y generar filas para la tabla 2 (sin guardar en la base de datos aún)
         foreach ($partidas as $index => $partida) {
-            // Asignar valores predeterminados para 'Cantidad OF' y 'Fecha entrega OF'
             $cantidadOF = is_numeric($partida['Cantidad OF']) 
                 ? number_format($partida['Cantidad OF'], 0, '.', '') 
-                : 'No disponible'; // Mostrar "No disponible" si no hay cantidad
+                : 'No disponible'; 
     
             $fechaEntrega = !empty($partida['Fecha entrega OF']) 
                 ? \Carbon\Carbon::parse($partida['Fecha entrega OF'])->format('d-m-Y') 
-                : 'No disponible'; // Mostrar "No disponible" si no hay fecha
-    
-            // Generar el HTML para la tabla
+                : 'No disponible'; 
             $html .= '<tr id="row-' . $index . '" draggable="true" ondragstart="drag(event)" data-orden-fab="' . trim($partida['Orden de F.']) . '" data-articulo="' . $partida['Articulo'] . '" data-descripcion="' . $partida['Descripcion'] . '" data-cantidad="' . $cantidadOF . '" data-fecha-entrega="' . $fechaEntrega . '">
                         <td>' . ($partida['Orden de F.'] ?? 'No disponible') . '</td>
                         <td>' . ($partida['Articulo'] ?? 'No disponible') . '</td>
@@ -134,21 +115,16 @@ class PlaneacionController extends Controller
                         <td>' . ($fechaEntrega ?: 'No disponible') . '</td>
                       </tr>';
         }
-    
         $html .= '</tbody></table></div>';
-    
         return response()->json([
             'status' => 'success',
             'message' => $html
         ]);
     }
-    // Controller: Procesar los datos y mostrar en la tabla
+    
     public function guardarDatos(Request $request)
     {
-        // Mostrar los datos recibidos para depuración
         Log::info('Datos recibidos para guardar fila:', $request->all());
-        
-        // Validación de la cantidad
         $cantidadOf = $request->cantidad_of;
         if ($cantidadOf && !is_numeric($cantidadOf)) {
             Log::error('La cantidad no es un número válido:', ['cantidad' => $cantidadOf]);
@@ -158,28 +134,20 @@ class PlaneacionController extends Controller
             ]);
         }
     
-        // Verificar la fecha de entrega, si es proporcionada
         $fechaEntrega = $request->fecha_entrega;
-    
-        // Si la fecha de entrega no es válida o está vacía, asignar la fecha actual
         if (!$fechaEntrega || !\Carbon\Carbon::parse($fechaEntrega)->isValid()) {
             Log::info('Fecha de entrega no proporcionada o inválida, se asigna la fecha actual');
-            $fechaEntrega = \Carbon\Carbon::today()->format('Y-m-d'); // Fecha actual por defecto
+            $fechaEntrega = \Carbon\Carbon::today()->format('Y-m-d'); 
         } else {
-            // Formatear la fecha si es válida
             $fechaEntrega = \Carbon\Carbon::parse($fechaEntrega)->format('Y-m-d');
         }
-    
         try {
-            // Verificar si los datos ya existen en la base de datos en OrdenVenta
             $exists = OrdenVenta::where('orden_fab', $request->orden_fab)
                 ->where('articulo', $request->articulo)
                 ->where('descripcion', $request->descripcion)
                 ->where('cantidad_of', $request->cantidad_of)
                 ->where('fecha_entrega', $fechaEntrega)
                 ->exists();
-    
-            // Si no existe, proceder a guardarlo en OrdenVenta
             if (!$exists) {
                 $ordenVenta = OrdenVenta::create([
                     'orden_fab' => $request->orden_fab,
@@ -188,28 +156,21 @@ class PlaneacionController extends Controller
                     'cantidad_of' => $cantidadOf,
                     'fecha_entrega' => $fechaEntrega,
                 ]);
-    
                 Log::info('Fila guardada correctamente en orden_venta:', ['orden_venta' => $ordenVenta]);
-    
-                // Verificar si la fila existe en la tabla OrdenFabricacion
                 $ordenFabricacionExists = OrdenFabricacion::where('orden_venta_id', $ordenVenta->id)
-                    ->where('numero_fabricacion', $request->orden_fab) // Usando 'orden_fab' como 'numero_fabricacion'
+                    ->where('numero_fabricacion', $request->orden_fab) 
                     ->exists();
-    
-                // Si no existe, crear el registro en OrdenFabricacion
                 if (!$ordenFabricacionExists) {
                     $ordenFabricacion = OrdenFabricacion::create([
-                        'orden_venta_id' => $ordenVenta->id,  // Relacionando con la orden de venta
-                        'numero_fabricacion' => $request->orden_fab,  // Usando 'orden_fab' como 'numero_fabricacion'
-                        'fecha_fabricacion' => $fechaEntrega,  // Usando la fecha de entrega como 'fecha_fabricacion'
-                        'estado' => 'Pendiente',  // Asignando un estado por defecto (puedes modificar esto según sea necesario)
+                        'orden_venta_id' => $ordenVenta->id,  
+                        'numero_fabricacion' => $request->orden_fab,  
+                        'fecha_fabricacion' => $fechaEntrega,  
+                        'estado' => 'Pendiente',  
                     ]);
-    
                     Log::info('Fila guardada correctamente en orden_fabricacion:', ['orden_fabricacion' => $ordenFabricacion]);
                 } else {
                     Log::info('La fila de orden_fabricacion ya existe en la base de datos');
                 }
-    
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Fila guardada correctamente',
@@ -229,9 +190,11 @@ class PlaneacionController extends Controller
             ]);
         }
     }
-    
-    
-    
+    public function cargarDatos()
+    {
+        /*$datosNoGuardados =OrdenVenta::whereNotln('orden_fab', OrdenVenta::pluck('orden_fab'));
+        return response()->json($datosNoGuardados);*/
+    }
     public function filtros(Request $request)
     {
         $fechaHoy = date('Y-m-d');

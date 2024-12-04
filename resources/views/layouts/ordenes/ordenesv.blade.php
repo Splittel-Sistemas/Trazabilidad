@@ -182,8 +182,7 @@
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
- //
- let consultasMigradas = new Set(); // IDs de filas ya migradas
+ //let consultasMigradas = new Set(); // IDs de filas ya migradas
 
 function drag(event) {
     const targetRow = event.target.closest('tr'); // Fila que se está arrastrando
@@ -353,16 +352,13 @@ function guardarRow(row, draggedId) {
  $(document).ready(function() {
     $('#filtroForm').on('submit', function(e) {
         e.preventDefault(); 
-
         var startDate = $('#startDate').val();
         var endDate = $('#endDate').val();
         var query = $('#query').val() || ''; 
-
         if (new Date(startDate) > new Date(endDate)) {
             alert("La fecha de inicio no puede ser posterior a la fecha de fin.");
             return;
         }
-
         $.ajax({
             url: "{{ route('filtros') }}", 
             method: "POST",
@@ -388,7 +384,6 @@ function guardarRow(row, draggedId) {
         });
     });
 });
-
  $(document).ready(function () {
 $.ajaxSetup({
     headers: {
