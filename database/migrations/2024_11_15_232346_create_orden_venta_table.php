@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,10 +9,11 @@ class CreateOrdenVentaTable extends Migration
     {
         Schema::create('orden_venta', function (Blueprint $table) {
             $table->id();
-            $table->string('numero_orden');
-            $table->date('fecha_venta');
-            $table->string('cliente');
-            $table->decimal('total_venta', 10, 2);
+            $table->string('orden_fab');
+            $table->string('articulo');
+            $table->string('descripcion');
+            $table->decimal('cantidad_of', 10, 2);
+            $table->date('fecha_entrega');
             $table->timestamps();
         });
     }
@@ -23,3 +23,4 @@ class CreateOrdenVentaTable extends Migration
         Schema::dropIfExists('orden_venta');
     }
 }
+

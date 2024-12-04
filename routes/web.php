@@ -11,6 +11,7 @@ use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\PlaneacionController;
 use App\Http\Controllers\OrdenFabricacionController;
 use App\Http\Controllers\BarcodeController;
+use App\Http\Controllers\FuncionesGeneralesControlleControllerController;
 
 use App\Http\Controllers\OrdenVentaController;
 
@@ -50,9 +51,13 @@ Route::get('/orders', [PlaneacionController::class, 'OrdenesVActual'])->name('or
 Route::post('/partidas', [PlaneacionController::class, 'DatosDePartida'])->name('datospartida');
 Route::post('/filtros', [PlaneacionController::class, 'filtros'])->name('filtros');
 Route::post('/filtro', [PlaneacionController::class, 'filtro'])->name('filtro');
+Route::post('/guardarDatos', [PlaneacionController::class, 'guardarDatos'])->name('guardarDatos');
+
 
 use App\Http\Controllers\DetallesController;
-Route::get('/orden/{id}', [DetallesController::class, 'show'])->name('orden.show');
+
+//Route::get('/orden/{id}', [DetallesController::class, 'show'])->name('orden.show');
+
 
 
  

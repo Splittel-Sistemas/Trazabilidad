@@ -1,59 +1,5 @@
-function drop(event) {
-    event.preventDefault(); 
-    const draggedId = event.dataTransfer.getData("text");
-    const draggedRow = document.getElementById(draggedId);
-    if (draggedRow) {
-        
-        if (!document.getElementById(`migrated-${draggedId}`)) {
-            
-            const newRow = document.createElement("tr");
-            newRow.innerHTML = draggedRow.innerHTML;
 
-            
-            const regresarButton = `
-                <td>
-                    <button class="btn btn-warning btn-sm" onclick="regresarRow('${draggedId}')">Regresar</button>
-                </td>`;
-            newRow.innerHTML += regresarButton;
 
-            
-            newRow.id = `migrated-${draggedId}`;
-
-            
-            document.getElementById("table-2-content").appendChild(newRow);
-
-            
-            draggedRow.style.display = "none";
-        } else {
-            console.log("Fila ya migrada.");
-        }
-    } else {
-        console.error("Fila arrastrada no encontrada:", draggedId);
-    }
-}
-function drag(event) {
-    
-    event.dataTransfer.setData("text", event.target.id);
-}
-function allowDrop(event) {
-    event.preventDefault(); 
-}
-function regresarRow(rowId) {
-    const migratedRow = document.getElementById(`migrated-${rowId}`);
-
-    if (migratedRow) {
-        
-        const originalRow = document.getElementById(rowId);
-        if (originalRow) {
-            originalRow.style.display = ""; 
-        }
-
-        
-        migratedRow.remove();
-    }
-}
-document.getElementById("dropzone").addEventListener("dragover", allowDrop);
-document.getElementById("dropzone").addEventListener("drop", drop);
     //
     $(document).ready(function () {
 

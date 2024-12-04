@@ -10,7 +10,7 @@ class OrdenVenta extends Model
     use HasFactory;
 
     protected $table = 'orden_venta'; 
-    protected $fillable = ['numero_orden', 'fecha_venta', 'cliente', 'total_venta']; 
+    protected $fillable = [ 'orden_fab','articulo','descripcion','cantidad_of','fecha_entrega',];
 
     
     public function ordenesFabricacion()
