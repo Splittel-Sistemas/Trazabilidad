@@ -183,6 +183,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
  //let consultasMigradas = new Set(); // IDs de filas ya migradas
+ let consultasMigradas = new Set(); // IDs de filas ya migradas
 
 function drag(event) {
     const targetRow = event.target.closest('tr'); // Fila que se está arrastrando
@@ -286,6 +287,7 @@ function guardarRow(row, draggedId) {
         }
     });
 }
+
 
 
 //

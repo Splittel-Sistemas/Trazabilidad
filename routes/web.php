@@ -52,6 +52,8 @@ Route::post('/partidas', [PlaneacionController::class, 'DatosDePartida'])->name(
 Route::post('/filtros', [PlaneacionController::class, 'filtros'])->name('filtros');
 Route::post('/filtro', [PlaneacionController::class, 'filtro'])->name('filtro');
 Route::post('/guardarDatos', [PlaneacionController::class, 'guardarDatos'])->name('guardarDatos');
+Route::post('/eliminar-registro', [PlaneacionController::class, 'eliminarRegistro'])->name('eliminarRegistro');
+
 
 
 use App\Http\Controllers\DetallesController;

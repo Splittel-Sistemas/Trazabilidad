@@ -87,6 +87,7 @@ class PlaneacionController extends Controller
                 'message' => 'No se encontraron partidas para esta orden.'
             ]);
         }
+       //$ordenesFabricacionExistentes = OrdenFabricacion::pluck('numero_fabricacion')->toArray();
         $html = '<div class="table-responsive table-partidas">';
         $html .= '<table class="table-sm" id="table-source">';
         $html .= '<thead>
@@ -100,6 +101,14 @@ class PlaneacionController extends Controller
                   </thead>
                   <tbody>';
         foreach ($partidas as $index => $partida) {
+            $ordenFab = trim($partida['Orden de F.']);
+              
+
+       /* if (in_array($ordenFab, $ordenesFabricacionExistentes)) {
+            Log::info("Excluyendo partida ya existente en la base de datos: $ordenFab");
+            continue;
+        }*/
+           
             $cantidadOF = is_numeric($partida['Cantidad OF']) 
                 ? number_format($partida['Cantidad OF'], 0, '.', '') 
                 : 'No disponible'; 
@@ -121,6 +130,7 @@ class PlaneacionController extends Controller
             'message' => $html
         ]);
     }
+    
     
     public function guardarDatos(Request $request)
     {
@@ -189,11 +199,6 @@ class PlaneacionController extends Controller
                 'message' => 'Hubo un problema al guardar los datos. Verifique los parámetros.',
             ]);
         }
-    }
-    public function cargarDatos()
-    {
-        /*$datosNoGuardados =OrdenVenta::whereNotln('orden_fab', OrdenVenta::pluck('orden_fab'));
-        return response()->json($datosNoGuardados);*/
     }
     public function filtros(Request $request)
     {
@@ -333,4 +338,35 @@ class PlaneacionController extends Controller
             ]);
         }
     }
+    public function eliminarRegistro(Request $request)
+{
+    try {
+        $ordenFab = $request->input('orden_fab');
+        
+        // Verificar si existe el registro
+        $registro = OrdenVenta::where('orden_fab', $ordenFab)->first();
+
+        if ($registro) {
+            $registro->delete(); // Eliminar el registro
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Registro eliminado correctamente.'
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No se encontró el registro a eliminar.'
+            ]);
+        }
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Hubo un error al intentar eliminar el registro.',
+            'error' => $e->getMessage()
+        ]);
+    }
+}
+
+
+
 }    
