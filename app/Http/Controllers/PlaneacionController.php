@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\Http\Controllers\FuncionesGeneralesController;
 use Illuminate\Support\Facades\Log;
@@ -37,12 +36,12 @@ class PlaneacionController extends Controller
             //return($ordenesVenta);
             if (empty($ordenesVenta)) {
                 return view('layouts.ordenes.ordenesv', compact('ordenesVenta', 'fechaHoy', 'fechaAyer'));
-                Log::info('No se encontraron órdenes para las fechas: ' . $fechaAyer . ' a ' . $fechaHoy);
+                //Log::info('No se encontraron órdenes para las fechas: ' . $fechaAyer . ' a ' . $fechaHoy);
                 return back()->with('warning', 'No se encontraron órdenes para estas fechas.');
             }
-            Log::info('Ordenes Venta:', ['ordenes' => $ordenesVenta]);
+            //Log::info('Ordenes Venta:', ['ordenes' => $ordenesVenta]);
         } catch (\Exception $e) {
-            Log::error('Error al obtener órdenes: ' . $e->getMessage());
+            //Log::error('Error al obtener órdenes: ' . $e->getMessage());
             return back()->with('error', 'Error al obtener órdenes. Intenta nuevamente.');
         }
         $fechaHoy = date('d-m-Y');
@@ -51,6 +50,7 @@ class PlaneacionController extends Controller
     }
     public function DatosDePartida(Request $request)
     {
+        //datos para la consulta
         $schema = 'HN_OPTRONICS';
         $ordenventa = $request->input('docNum');
         if (empty($ordenventa)) {
@@ -59,8 +59,7 @@ class PlaneacionController extends Controller
                 'message' => 'El número de orden no fue proporcionado.'
             ]);
         }
-        $ordenventa = intval($ordenventa); 
-        Log::info("Iniciando consulta para orden: $ordenventa");
+        //Consulta a SAP para traer las partidas de una OV
         $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
                     T1.\"Dscription\" AS \"Descripcion\", 
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
@@ -71,25 +70,23 @@ class PlaneacionController extends Controller
                 LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
                 WHERE T0.\"DocNum\" = '{$ordenventa}'  
                 ORDER BY T1.\"VisOrder\"";
-        Log::info("Ejecutando SQL: $sql");
+        //Ejecucion de la consulta
         $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
         if ($partidas === false) {
-            Log::error("Consulta fallida para orden: $ordenventa, SQL: $sql");
             return response()->json([
                 'status' => 'error',
                 'message' => 'Error al ejecutar la consulta. Verifique los parámetros.'
             ]);
         }
         if (empty($partidas)) {
-            Log::warning("No se encontraron partidas para la orden: $ordenventa");
+            //Log::warning("No se encontraron partidas para la orden: $ordenventa");
             return response()->json([
                 'status' => 'error',
                 'message' => 'No se encontraron partidas para esta orden.'
             ]);
         }
-       //$ordenesFabricacionExistentes = OrdenFabricacion::pluck('numero_fabricacion')->toArray();
         $html = '<div class="table-responsive table-partidas">';
-        $html .= '<table class="table-sm" id="table-source">';
+        $html .= '<table class="table-sm" id="table_OF">';
         $html .= '<thead>
                     <tr>
                         <th>Orden Fab.</th>
@@ -101,43 +98,46 @@ class PlaneacionController extends Controller
                   </thead>
                   <tbody>';
         foreach ($partidas as $index => $partida) {
-            $ordenFab = trim($partida['Orden de F.']);
-              
-
-       /* if (in_array($ordenFab, $ordenesFabricacionExistentes)) {
-            Log::info("Excluyendo partida ya existente en la base de datos: $ordenFab");
-            continue;
-        }*/
-           
-            $cantidadOF = is_numeric($partida['Cantidad OF']) 
-                ? number_format($partida['Cantidad OF'], 0, '.', '') 
-                : 'No disponible'; 
-    
-            $fechaEntrega = !empty($partida['Fecha entrega OF']) 
-                ? \Carbon\Carbon::parse($partida['Fecha entrega OF'])->format('d-m-Y') 
-                : 'No disponible'; 
-            $html .= '<tr id="row-' . $index . '" draggable="true" ondragstart="drag(event)" data-orden-fab="' . trim($partida['Orden de F.']) . '" data-articulo="' . $partida['Articulo'] . '" data-descripcion="' . $partida['Descripcion'] . '" data-cantidad="' . $cantidadOF . '" data-fecha-entrega="' . $fechaEntrega . '">
-                        <td>' . ($partida['Orden de F.'] ?? 'No disponible') . '</td>
-                        <td>' . ($partida['Articulo'] ?? 'No disponible') . '</td>
-                        <td>' . ($partida['Descripcion'] ?? 'No disponible') . '</td>
-                        <td>' . ($cantidadOF ?: 'No disponible') . '</td>
-                        <td>' . ($fechaEntrega ?: 'No disponible') . '</td>
-                      </tr>';
+            //Valida que la Orden de Fabricacion no se encuentre registrada
+            $respuesta=$this->comprobar_existe_partida($ordenventa,$partida['Orden de F.']);
+            $bandera_tabla_mostrar=0;
+            if($respuesta==0){
+                $bandera_tabla_mostrar=1;
+                $ordenFab = trim($partida['Orden de F.']); 
+                $cantidadOF = is_numeric($partida['Cantidad OF']) 
+                    ? number_format($partida['Cantidad OF'], 0, '.', '') 
+                    : 'No disponible'; 
+        
+                $fechaEntrega = !empty($partida['Fecha entrega OF']) 
+                    ? \Carbon\Carbon::parse($partida['Fecha entrega OF'])->format('d-m-Y') 
+                    : 'No disponible'; 
+                $html .= '<tr id="row-' . $index . '" draggable="true" ondragstart="drag(event)" data-orden-fab="' . trim($partida['Orden de F.']) . '" data-articulo="' . $partida['Articulo'] . '" data-descripcion="' . $partida['Descripcion'] . '" data-cantidad="' . $cantidadOF . '" data-fecha-entrega="' . $fechaEntrega . '">
+                            <td>' . ($partida['Orden de F.'] ?? 'No disponible') . '</td>
+                            <td>' . ($partida['Articulo'] ?? 'No disponible') . '</td>
+                            <td>' . ($partida['Descripcion'] ?? 'No disponible') . '</td>
+                            <td>' . ($cantidadOF ?: 'No disponible') . '</td>
+                            <td>' . ($fechaEntrega ?: 'No disponible') . '</td>
+                        </tr>';
+            }
         }
-        $html .= '</tbody></table></div>';
-        return response()->json([
-            'status' => 'success',
-            'message' => $html
-        ]);
+        if($bandera_tabla_mostrar==0){
+            return response()->json([
+                'status' => 'success',
+                'message' => '<p class="text-center" style="font-size:12px;">Todas las &Oacute;rdenes de fabricaci&oacute;n ya se encuentran asignadas</p>'
+            ]);    
+        }
+            $html .= '</tbody></table></div>';
+            return response()->json([
+                'status' => 'success',
+                'message' => $html
+            ]);
     }
-    
-    
     public function guardarDatos(Request $request)
     {
-        Log::info('Datos recibidos para guardar fila:', $request->all());
+        //Log::info('Datos recibidos para guardar fila:', $request->all());
         $cantidadOf = $request->cantidad_of;
         if ($cantidadOf && !is_numeric($cantidadOf)) {
-            Log::error('La cantidad no es un número válido:', ['cantidad' => $cantidadOf]);
+            //Log::error('La cantidad no es un número válido:', ['cantidad' => $cantidadOf]);
             return response()->json([
                 'status' => 'error',
                 'message' => 'La cantidad debe ser un número válido.',
@@ -146,7 +146,7 @@ class PlaneacionController extends Controller
     
         $fechaEntrega = $request->fecha_entrega;
         if (!$fechaEntrega || !\Carbon\Carbon::parse($fechaEntrega)->isValid()) {
-            Log::info('Fecha de entrega no proporcionada o inválida, se asigna la fecha actual');
+            //Log::info('Fecha de entrega no proporcionada o inválida, se asigna la fecha actual');
             $fechaEntrega = \Carbon\Carbon::today()->format('Y-m-d'); 
         } else {
             $fechaEntrega = \Carbon\Carbon::parse($fechaEntrega)->format('Y-m-d');
@@ -166,7 +166,7 @@ class PlaneacionController extends Controller
                     'cantidad_of' => $cantidadOf,
                     'fecha_entrega' => $fechaEntrega,
                 ]);
-                Log::info('Fila guardada correctamente en orden_venta:', ['orden_venta' => $ordenVenta]);
+                //Log::info('Fila guardada correctamente en orden_venta:', ['orden_venta' => $ordenVenta]);
                 $ordenFabricacionExists = OrdenFabricacion::where('orden_venta_id', $ordenVenta->id)
                     ->where('numero_fabricacion', $request->orden_fab) 
                     ->exists();
@@ -177,9 +177,9 @@ class PlaneacionController extends Controller
                         'fecha_fabricacion' => $fechaEntrega,  
                         'estado' => 'Pendiente',  
                     ]);
-                    Log::info('Fila guardada correctamente en orden_fabricacion:', ['orden_fabricacion' => $ordenFabricacion]);
+                    //Log::info('Fila guardada correctamente en orden_fabricacion:', ['orden_fabricacion' => $ordenFabricacion]);
                 } else {
-                    Log::info('La fila de orden_fabricacion ya existe en la base de datos');
+                    //Log::info('La fila de orden_fabricacion ya existe en la base de datos');
                 }
                 return response()->json([
                     'status' => 'success',
@@ -193,7 +193,7 @@ class PlaneacionController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
-            Log::error('Error al guardar la fila:', ['error' => $e->getMessage()]);
+            //Log::error('Error al guardar la fila:', ['error' => $e->getMessage()]);
             return response()->json([
                 'status' => 'error',
                 'message' => 'Hubo un problema al guardar los datos. Verifique los parámetros.',
@@ -339,34 +339,44 @@ class PlaneacionController extends Controller
         }
     }
     public function eliminarRegistro(Request $request)
-{
-    try {
-        $ordenFab = $request->input('orden_fab');
-        
-        // Verificar si existe el registro
-        $registro = OrdenVenta::where('orden_fab', $ordenFab)->first();
+    {
+        try {
+            $ordenFab = $request->input('orden_fab');
+            
+            // Verificar si existe el registro
+            $registro = OrdenVenta::where('orden_fab', $ordenFab)->first();
 
-        if ($registro) {
-            $registro->delete(); // Eliminar el registro
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Registro eliminado correctamente.'
-            ]);
-        } else {
+            if ($registro) {
+                $registro->delete(); // Eliminar el registro
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Registro eliminado correctamente.'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No se encontró el registro a eliminar.'
+                ]);
+            }
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'No se encontró el registro a eliminar.'
+                'message' => 'Hubo un error al intentar eliminar el registro.',
+                'error' => $e->getMessage()
             ]);
         }
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Hubo un error al intentar eliminar el registro.',
-            'error' => $e->getMessage()
-        ]);
     }
-}
-
+    public function comprobar_existe_partida($OrdenVenta, $Ordenfabricacion){
+            $datos=OrdenVenta:: where('OrdenVenta','=',$OrdenVenta)->first();
+            if($datos){
+                $datos=OrdenFabricacion::where('OrdenVenta_id','=',$datos->id)
+                ->where('OrdenFabricacion','=',$Ordenfabricacion)                        
+                ->count();
+            }else{
+                $datos=0;
+            }
+        return $datos;
+    }
 
 
 }    
