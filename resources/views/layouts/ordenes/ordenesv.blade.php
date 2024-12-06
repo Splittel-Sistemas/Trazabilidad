@@ -93,7 +93,7 @@
             <!-- Columna 1: Tabla de Órdenes de Venta -->
             <div class="col-md-6 mb-2">
                 <div id="container_table_OV" class="table-responsive">
-                    <table id="table_OV" class="table table-striped table-bordered" id="table-source">
+                    <table id="table_OV" class="table table-striped table-bordered" >
                         <thead class="table-primary text-center">
                             <tr>
                                 <th class="fw-bold">
@@ -480,21 +480,17 @@ document.getElementById('filtro_ov').addEventListener('click', function(event) {
 function filtro_ov_tabla(ov){
     campo=0;
     let filas = document.querySelectorAll("#table_OV tbody tr");
-    filas.forEach(fila => {
+    $('#table_OV .collapse').collapse('hide');
+    filas.forEach(fila => {  
     let valorCelda = fila.cells[campo].innerText.trim();
-    
-    if(fila.classList.contains('table-light')){
+    if(fila.id.includes("cerrar")){
         if (valorCelda.includes(ov)) {
-            //alert("entre");
         fila.style.display = ""; 
         } else {
-            //alert("no");
         fila.style.display = "none"; 
         }
     }
   });
-  ////
-  
 }
 </script>
 @endsection
