@@ -33,7 +33,7 @@ Route::resource('registro', RegistroController::class);
 Route::get('/conexion-sap', [SapController::class, 'conexionSap']);
 Route::get('/datos-sap', [SapController::class, 'obtenerDatosSap']);
 
-Route::get('/generate-pdf', [PDFController::class, 'generatePdf']);
+Route::get('/generatePdf', [PDFController::class, 'generatePdf']);
 
 Route::get('/suministros', [SuministrosController::class, 'index'])->name('suministros.index');
 Route::post('/suministros/enviar', [SuministrosController::class, 'enviar'])->name('suministros.enviar');
@@ -53,6 +53,12 @@ Route::post('/filtros', [PlaneacionController::class, 'filtros'])->name('filtros
 Route::post('/filtro', [PlaneacionController::class, 'filtro'])->name('filtro');
 Route::post('/guardarDatos', [PlaneacionController::class, 'guardarDatos'])->name('guardarDatos');
 Route::post('/eliminar-registro', [PlaneacionController::class, 'eliminarRegistro'])->name('eliminarRegistro');
+
+
+
+Route::get('/barcode', [PDFController::class, 'index'])->name('barcode');
+Route::get('/buscar-orden/{barcode}', [BarcodeController::class, 'searchOrder']);
+Route::get('/buscar-orden', [PDFController::class, 'searchOrder']);
 
 
 

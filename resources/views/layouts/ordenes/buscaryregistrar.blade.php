@@ -2,105 +2,125 @@
 
 @section('content')
 <div class="container mt-0">
-    
-    <h2 class="text-center mb-4 text-primary fw-bold">Gestión De Produccion</h2>
+    <h2 class="text-center mb-4 text-primary fw-bold">Generación y Escaneo de Códigos de Barras</h2>
 
+    <!-- Sección para Generar Código de Barras -->
     <div class="card shadow-lg rounded mb-2">
         <div class="card-body bg-light">
-            <h4 class="card-title text-success fw-bold mb-4"><i class="bi bi-barcode"></i> Escaneo y Registro</h4>
+            <h4 class="card-title text-success fw-bold mb-4"><i class="bi bi-barcode"></i> Generar Código de Barras</h4>
+            <div class="row g-3 align-items-center mb-4">
+                <div class="col-md-4">
+                    <label for="orderSale" class="form-label"><strong>Orden de Venta:</strong></label>
+                    <input type="text" class="form-control form-control-lg border-primary" id="orderSale" placeholder="Orden de Venta">
+                </div>
+                <div class="col-md-4">
+                    <label for="orderManufacture" class="form-label"><strong>Orden de Fabricación:</strong></label>
+                    <input type="text" class="form-control form-control-lg border-primary" id="orderManufacture" placeholder="Orden de Fabricación">
+                </div>
+
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-primary mt-4" onclick="generateBarcode()">Generar Código de Barras</button>
+                </div>
+            </div>
+
+            <div id="barcodeContainer" class="text-center mt-4"></div>
+        </div>
+    </div>
+
+    <!-- Sección para Escanear Código de Barras -->
+    <div class="card shadow-lg rounded mb-2">
+        <div class="card-body bg-light">
+            <h4 class="card-title text-success fw-bold mb-4"><i class="bi bi-barcode"></i> Escaneo o Ingreso de Código de Barras</h4>
 
             <div class="row g-3 align-items-center mb-4">
                 <div class="col-md-4">
-                    <label for="searchBarcode" class="form-label"><strong>Código de Barras:</strong></label>
-                    <input type="text" class="form-control form-control-lg border-primary" id="searchBarcode" placeholder="Escanea o ingresa el código de barras" oninput="searchBarcode()">
-                </div>
-
-                <div class="col-md-6 d-flex align-items-center">
-                    <div class="form-check form-switch ms-3">
-                        <input class="form-check-input" type="checkbox" id="barcodeSwitch" onclick="toggleBarcodeScanner()">
-                        <label class="form-check-label text-success fw-bold" for="barcodeSwitch"><i class="bi bi-play-circle-fill"></i> Activar Escáner</label>
-                    </div>
+                    <label for="scanBarcode" class="form-label"><strong>Código de Barras:</strong></label>
+                    <input type="text" class="form-control form-control-lg border-primary" id="scanBarcode" placeholder="Escanea o ingresa el código de barras" oninput="searchBarcode()">
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="row g-3 mb-1">
-                <div class="col-md-2">
-                    <label for="quantity" class="form-label"><strong>Cantidad:</strong></label>
-                    <input type="number" class="form-control form-control-lg border-info" id="quantity" value="1" min="1">
-                </div>
-
-                <div class="col-md-2">
-                    <label for="stock" class="form-label"><strong>Stock:</strong></label>
-                    <input type="number" class="form-control form-control-lg border-info" id="stock" value="0" disabled>
-                </div>
-            </div>
-
+    <!-- Tabla para mostrar los datos -->
+    <div class="row">
+        <div class="col-md-12">
             <div class="table-responsive">
                 <table class="table table-bordered table-hover table-striped shadow-sm">
                     <thead class="bg-primary text-white text-center">
                         <tr>
-                            <th>#</th>
+                            <th>Orden de Venta</th>
+                            <th>Orden de Fabricación</th>
                             <th>Artículo</th>
                             <th>Cantidad</th>
-                            <th>Precio Venta</th>
-                            <th>Sub Total</th>
-                            <th>Acción</th>
                         </tr>
                     </thead>
                     <tbody id="recordsTable" class="text-center">
-                        
+                        <!-- Aquí se mostrarán los registros escaneados -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
-    <div class="row">
-        
-        <div class="col-md-6">
-            <div class="card shadow-lg rounded mb-4">
-                <div class="card-body bg-light">
-                    <h4 class="card-title text-primary fw-bold"><i class="bi bi-receipt"></i> Datos de Venta</h4>
-                    <div class="form-group">
-                        <label for="client" class="form-label"><strong>Cliente:</strong></label>
-                        <div class="col">
-                        <input type="text" class="form-control form-control-lg border-primary" id="client" placeholder="Nombre del cliente">
-                        </div>
-                    </div>
-
-                    <div class="form-group mt-2">
-                        <label for="folio" class="form-label"><strong>Folio:</strong></label>
-                        <div class="col">
-                        <input type="text" class="form-control form-control-lg border-primary" id="folio" placeholder="Número de folio">
-                    </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card shadow-lg rounded mb-4">
-                <div class="card-body">
-                    <h4 class="card-title fw-bold"><i class="bi bi-box"></i> Estadísticas de Piezas</h4>
-                    <div class="row g-2">
-                        <div class="col-md-6">
-                            <div class="alert alert-info shadow-sm text-center" role="alert">
-                                <h4><i class="bi bi-box"></i> Total: <span id="totalPieces">0</span></h4>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="alert alert-danger shadow-sm text-center" role="alert">
-                                <h4><i class="bi bi-exclamation-circle"></i> Faltantes: <span id="missingPieces">0</span></h4>
-                            </div>
-                        </div>
-                    </div>
-                        <button type="button" class="btn btn-outline-success">Aceptar</button>
-                    
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- JavaScript para funciones -->
+<script>
+// Función para generar código de barras
+function generateBarcode() {
+    const orderSale = document.getElementById('orderSale').value;
+    const orderManufacture = document.getElementById('orderManufacture').value;
+
+    if (orderSale && orderManufacture) {
+        const barcodeValue = orderSale + orderManufacture;
+
+        // Generar el código de barras con una API gratuita
+        const barcodeImage = `https://barcode.tec-it.com/barcode.ashx?data=${barcodeValue}&code=Code128&dpi=96`;
+
+        document.getElementById('barcodeContainer').innerHTML = `
+            <p><strong>Código de Barras Generado:</strong></p>
+            <img src="${barcodeImage}" alt="Código de Barras" />
+            <p><strong>Valor: </strong>${barcodeValue}</p>
+        `;
+    } else {
+        alert('Por favor, ingrese tanto la Orden de Venta como la Orden de Fabricación.');
+    }
+}
+
+function searchBarcode() {
+    const barcode = document.getElementById("scanBarcode").value;
+    if (!barcode) {
+        document.getElementById("recordsTable").innerHTML = ""; 
+        return;
+    }
+    fetch(`/buscar-orden/${barcode}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                const tableRow = `
+                    <tr>
+                        <td>${data.order_sale}</td>
+                        <td>${data.order_manufacture}</td>
+                        <td>${data.article}</td>
+                        <td>${data.quantity}</td>
+                    </tr>
+                `;
+                document.getElementById("recordsTable").innerHTML = tableRow;
+            } else {
+                document.getElementById("recordsTable").innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-danger">No se encontraron resultados.</td>
+                    </tr>
+                `;
+            }
+        })
+       /* .catch(error => {
+            console.error("Error al buscar el código de barras:", error);
+            document.getElementById("recordsTable").innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-danger">Error al realizar la búsqueda.</td>
+                </tr>
+            `;
+        });*/
+}
+</script>
 @endsection

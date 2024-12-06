@@ -8,6 +8,7 @@ class CreateOrdenVentaTable extends Migration
     public function up()
     {
         Schema::create('orden_venta', function (Blueprint $table) {
+            $table->string('barcode')->unique()->nullable();
             $table->id();
             $table->string('orden_fab');
             $table->string('articulo');

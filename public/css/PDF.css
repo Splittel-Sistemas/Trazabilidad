@@ -1,0 +1,28 @@
+
+        #barcode {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #barcode canvas {
+            max-width: 100%;
+            margin: 0 auto;
+            display: block;
+        }
+        .form-container {
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+        }
+        .barcode-input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .barcode-input-group input {
+            max-width: 80%;
+            margin-right: 10px;
+        }
+        .barcode-input-group button {
+            max-width: 18%;
+        }
+  

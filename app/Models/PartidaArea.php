@@ -20,6 +20,6 @@ class PartidasArea extends Model
    
     public function area()
     {
-        return $this->belongsTo(Areas::class, 'area_id');
+        return $this->belongsTo(Area::class, 'area_id');
     }
 }
