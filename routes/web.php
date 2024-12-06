@@ -4,15 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\SapController;
-use App\Http\Controllers\PDFController;
 use App\Http\Controllers\SuministrosController;
 use App\Http\Controllers\OrdenesController;
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\PlaneacionController;
 use App\Http\Controllers\OrdenFabricacionController;
 use App\Http\Controllers\BarcodeController;
-use App\Http\Controllers\FuncionesGeneralesControlleControllerController;
 
+use App\Http\Controllers\CorteController;
 use App\Http\Controllers\OrdenVentaController;
 
 // Rutas de autenticación
@@ -33,7 +32,6 @@ Route::resource('registro', RegistroController::class);
 Route::get('/conexion-sap', [SapController::class, 'conexionSap']);
 Route::get('/datos-sap', [SapController::class, 'obtenerDatosSap']);
 
-Route::get('/generatePdf', [PDFController::class, 'generatePdf']);
 
 Route::get('/suministros', [SuministrosController::class, 'index'])->name('suministros.index');
 Route::post('/suministros/enviar', [SuministrosController::class, 'enviar'])->name('suministros.enviar');
@@ -56,9 +54,10 @@ Route::post('/eliminar-registro', [PlaneacionController::class, 'eliminarRegistr
 
 
 
-Route::get('/barcode', [PDFController::class, 'index'])->name('barcode');
-Route::get('/buscar-orden/{barcode}', [BarcodeController::class, 'searchOrder']);
-Route::get('/buscar-orden', [PDFController::class, 'searchOrder']);
+
+Route::get('/buscar-orden', [BarcodeController::class, 'searchOrder']);
+
+Route::get('/cortes',[CorteController::class,'index'])->name('cortes');
 
 
 
