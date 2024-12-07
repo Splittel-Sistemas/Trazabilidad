@@ -36,20 +36,29 @@
         <nav class="navbar navbar-expand-sm navbar-default">
             <div id="main-menu" class="main-menu collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active">
-                       
+                    <li class="active"> 
                     </li>
                     <li class="menu-title">UI elements</li><!-- /.menu-title -->
                     <li class="menu-item-has-children dropdown">
-
-                        <a href="{{ route('panel.principal')}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>ashboard</a>
-                        <a href="{{ route('registro.index')}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Registro</a>
-                        <a href="{{ route('suministros.index')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Suministros</a>
-                        <a href="{{ route('ordenes.index')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Ordenes</a>
-                        <a href="{{ route('ordenventa')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Orden De Venta</a>
-                        <a href="{{ route('leer.codigo.barra')}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Gestion De Productos</a>
-                        <a href="{{ route('ordenes.indexx')}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Gestion De Orden De Venta</a>
-                        <a href="{{ route('orders')}}" class="dropdown-toggle"> <i class="menu-icon fa fa-cogs"></i>Gestion De Orden De Venta</a>
+                        <a href="{{route('Home')}}" class="dropdown-toggle"><i class="menu-icon fa fa-tachometer"></i>dashboard</a>
+                        <a href="{{-- route('registro.index')--}}" class="dropdown-toggle"><i class="menu-icon fa fa-user"></i>Usuarios</a>
+                        <a href="{{route('Planeacion')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-calendar"></i>Planeacion</a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="menu-icon fa fa-cogs"></i>&Aacute;reas</a>
+                            <ul class="sub-menu children dropdown-menu">                            
+                                <!--<li><i class="fa fa-puzzle-piece"></i><a href="ui-buttons.html"></a>Planeaci&oacute;n</li>-->
+                                <li><i class="fa fa-cut"></i><a href="ui-badges.html">Planeaci&oacute;n</a></li>
+                                <li><i class="fa fa-cut"></i><a href="ui-badges.html">Corte</a></li>
+                                <li><i class="fa-box"></i><a href="ui-tabs.html">Suministro</a></li>
+                                <li><i class="fa fa-id-card-o"></i><a href="ui-cards.html">Preparado</a></li>
+                                <li><i class="fa fa-exclamation-triangle"></i><a href="ui-alerts.html">Ensamble</a></li>
+                                <li><i class="fa fa-spinner"></i><a href="ui-progressbar.html">Pulido</a></li>
+                                <li><i class="fa fa-fire"></i><a href="ui-modals.html">Medici&oacute;n</a></li>
+                                <li><i class="fa fa-book"></i><a href="ui-switches.html">Visualizaci&oacute;n</a></li>
+                            </ul>
+                        <a href="{{-- route('ordenventa')--}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Orden De Venta</a>
+                        <a href="{{-- route('leer.codigo.barra')--}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Gestion De Productos</a>
+                        <a href="{{--route('ordenes.indexx')--}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Gestion De Orden De Venta</a>
+                        <a href="{{--route('orders')--}}" class="dropdown-toggle"> <i class="menu-icon fa fa-cogs"></i>Gestion De Orden De Venta</a>
                         
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-cogs"></i>Components</a>
                         <ul class="sub-menu children dropdown-menu">                            <li><i class="fa fa-puzzle-piece"></i><a href="ui-buttons.html">Buttons</a></li>
@@ -128,8 +137,8 @@
         <header id="header" class="header">
             <div class="top-left">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="./"><img src="{{ asset('/favicon.png') }}" alt="Logo" width="50" height="45">
-                    <a class="navbar-brand hidden" href="./"><img src="{{ asset('/favicon.png') }}" alt="Logo" width="50" height="50">
+                    <a class="navbar-brand" href="./"><img src="{{-- asset('/favicon.png') --}}" alt="Logo" width="50" height="45">
+                    <a class="navbar-brand hidden" href="./"><img src="{{-- asset('/favicon.png') --}}" alt="Logo" width="50" height="50">
                     <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
                 </div>
             </div>
@@ -221,7 +230,7 @@
 
                             <a class="nav-link" href="#"><i class="fa fa -cog"></i>Settings</a>
 
-                            <a class="nav-link" href="{{ route('logout') }}">  <i class="fa fa-power-off"></i> Logout</a>
+                            <a class="nav-link" href="{{-- route('logout') --}}">  <i class="fa fa-power-off"></i> Logout</a>
                         </div>
                     </div>
 

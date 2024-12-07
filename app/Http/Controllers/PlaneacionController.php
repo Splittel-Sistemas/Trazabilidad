@@ -15,6 +15,136 @@ class PlaneacionController extends Controller
     {
         $this->funcionesGenerales = $funcionesGenerales;
     }
+    public function index(){
+        $FechaFin=date('Ymd', strtotime('-1 day'));
+        $FechaInicio=date('Ymd');
+        $NumOV="";
+        $message="";
+        $datos=$this->OrdenesVenta($FechaInicio,$FechaFin,$NumOV);
+        if($datos!=0){
+            if(empty($datos)){
+                $status="empty";
+            }else{
+                $status="success";
+            }
+        }else{
+            $status="error";
+        }
+        $status="empty";
+        $FechaFin=date('Y-m-d', strtotime('-1 day'));
+        $FechaInicio=date('Y-m-d');
+        return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin','status'));
+    }
+    public function PartidasOF(Request $request){
+        //datos para la consulta
+        $schema = 'HN_OPTRONICS';
+        $ordenventa = $request->input('docNum');
+        if (empty($ordenventa)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'El número de orden no fue proporcionado.'
+            ]);
+        }
+        //Consulta a SAP para traer las partidas de una OV
+        $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
+                    T1.\"Dscription\" AS \"Descripcion\", 
+                    ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
+                    T2.\"DueDate\" AS \"Fecha entrega OF\", 
+                    T1.\"PoTrgNum\" AS \"Orden de F.\" 
+                FROM {$schema}.\"ORDR\" T0
+                INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
+                LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
+                WHERE T0.\"DocNum\" = '{$ordenventa}'  
+                ORDER BY T1.\"VisOrder\"";
+        //Ejecucion de la consulta
+        $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
+        if ($partidas === false) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al ejecutar la consulta. Verifique los parámetros.'
+            ]);
+        }
+        if (empty($partidas)) {
+            //Log::warning("No se encontraron partidas para la orden: $ordenventa");
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No se encontraron partidas para esta orden.'
+            ]);
+        }
+        $html = '<div class="table-responsive table-partidas" style="width:100%;">';
+        $html .= '<table class="table-sm" id="table_OF" style="width:100%;">';
+        $html .= '<thead>
+                    <tr>
+                        <th>Orden Fab.</th>
+                        <th>Artículo</th>
+                        <th>Descripción</th>
+                        <th>Cantidad</th>
+                        <th>Fecha entrega</th>
+                    </tr>
+                </thead>
+                <tbody>';
+        foreach ($partidas as $index => $partida) {
+            //Valida que la Orden de Fabricacion no se encuentre registrada
+            $respuesta=$this->comprobar_existe_partida($ordenventa,$partida['Orden de F.']);
+            $bandera_tabla_mostrar=0;
+            if($respuesta==0){
+                $bandera_tabla_mostrar=1;
+                $ordenFab = trim($partida['Orden de F.']); 
+                $cantidadOF = is_numeric($partida['Cantidad OF']) 
+                    ? number_format($partida['Cantidad OF'], 0, '.', '') 
+                    : 'No disponible'; 
+        
+                $fechaEntrega = !empty($partida['Fecha entrega OF']) 
+                    ? \Carbon\Carbon::parse($partida['Fecha entrega OF'])->format('d-m-Y') 
+                    : 'No disponible'; 
+                $html .= '<tr id="row-' . $index . '" draggable="true" ondragstart="drag(event)" data-orden-fab="' . trim($partida['Orden de F.']) . '" data-articulo="' . $partida['Articulo'] . '" data-descripcion="' . $partida['Descripcion'] . '" data-cantidad="' . $cantidadOF . '" data-fecha-entrega="' . $fechaEntrega . '">
+                            <td>' . ($partida['Orden de F.'] ?? 'No disponible') . '</td>
+                            <td>' . ($partida['Articulo'] ?? 'No disponible') . '</td>
+                            <td>' . ($partida['Descripcion'] ?? 'No disponible') . '</td>
+                            <td>' . ($cantidadOF ?: 'No disponible') . '</td>
+                            <td>' . ($fechaEntrega ?: 'No disponible') . '</td>
+                        </tr>';
+            }
+        }
+        if($bandera_tabla_mostrar==0){
+            return response()->json([
+                'status' => 'success',
+                'message' => '<p class="text-center" style="font-size:12px;">Todas las &Oacute;rdenes de fabricaci&oacute;n ya se encuentran asignadas</p>'
+            ]);    
+        }
+            $html .= '</tbody></table></div>';
+            return response()->json([
+                'status' => 'success',
+                'message' => $html
+            ]);
+    }
+    //Funcion para ver las Ordenes de venta de  fecha inicio a fecha fin y por numero de OV
+    public function OrdenesVenta($FechaInicio,$FechaFin,$NumOV){
+        $schema = 'HN_OPTRONICS';
+        $where="";
+        $datos="";
+        if($NumOV==""){
+            $where='T0."DocDate" BETWEEN \'' . $FechaFin . '\' AND \'' . $FechaInicio . '\'';
+        }else{
+            $where='T0."DocNum" = \'' .$NumOV. '\'';
+        }
+        $sql = 'SELECT T0."DocNum" AS "OV", T0."CardName" AS "Cliente", T0."DocDate" AS "Fecha", 
+                T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" FROM ' . $schema . '.ORDR T0 
+                WHERE '.$where;
+        try {
+            $datos = $this->funcionesGenerales->ejecutarConsulta($sql);
+        } catch (\Exception $e) {
+            return $datos=0;
+        }
+        return $datos;
+    }
+
+
+
+
+
+
+
     public function OrdenesVActual(Request $request)
     {
         $query = $request->input('query'); 
@@ -85,8 +215,8 @@ class PlaneacionController extends Controller
                 'message' => 'No se encontraron partidas para esta orden.'
             ]);
         }
-        $html = '<div class="table-responsive table-partidas">';
-        $html .= '<table class="table-sm" id="table_OF">';
+        $html = '<div class="table-responsive table-partidas" style="width:100%;">';
+        $html .= '<table class="table-sm" id="table_OF" style="width:100%;">';
         $html .= '<thead>
                     <tr>
                         <th>Orden Fab.</th>

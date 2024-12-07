@@ -29,12 +29,12 @@
         </div>
     </div>
 </div>
-<div class="container mt-4">
+<div class="">
     <!--<h1 class="text-primary mb-4 text-center">Gestión de Órdenes de Venta</h1>-->
     <!-- Buscador -->
    <!-- Buscador -->
     <div class="row mb-2">
-        <div class="col-lg-12">
+        <div class="col-12 ">
             <div class="card">
                 <div class="card-header">
                     <strong>Filtrar Órdenes de Venta</strong>
@@ -491,6 +491,36 @@ function filtro_ov_tabla(ov){
         }
     }
   });
+}
+function filtro_fecha(startDate,endDate,query){
+    e.preventDefault(); 
+        if (new Date(startDate) > new Date(endDate)) {
+            alert("La fecha de inicio no puede ser posterior a la fecha de fin.");
+            return;
+        }
+        $.ajax({
+            url: "{{ route('filtros') }}", 
+            method: "POST",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                startDate: startDate,
+                endDate: endDate,
+                query: query
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    $('#table_OV_body').html(response.data); 
+                } else {
+                    $('#table_OV_body').html('<p class="text-center m-4">'+ response.message+'</p>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                alert('Ocurrió un error. Por favor, intenta nuevamente.');
+            }
+        });
 }
 </script>
 @endsection
