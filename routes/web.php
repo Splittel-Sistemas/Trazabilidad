@@ -17,9 +17,9 @@ use App\Http\Controllers\OrdenVentaController;
 // Rutas de autenticación
 Route::get('/login', [LoginController::class,'login_view'])->name('login');
 Route::post('/login/inicio', [LoginController::class,'login'])->name('login_post');
-Route::view('/registro', "usuarios.registro")->name('register');
+//Route::view('/registro', "usuarios.registro")->name('register');
 Route::view('/menu', "layouts.menu")->middleware('auth')->name('menu');
-Route::post('/registro', [LoginController::class,'register'])->name('validar-registro');
+//Route::post('/registro', [LoginController::class,'register'])->name('validar-registro');
 Route::post('/login', [LoginController::class,'login'])->name('inicia-sesion');
 Route::get('/logout', [LoginController::class,'logout'])->name('logout');
 
@@ -53,11 +53,18 @@ Route::post('/guardarDatos', [PlaneacionController::class, 'guardarDatos'])->nam
 Route::post('/eliminar-registro', [PlaneacionController::class, 'eliminarRegistro'])->name('eliminarRegistro');
 
 
+Route::get('/cortes',[CorteController::class,'index'])->name('cortes');
+Route::post('/orden-fabricacion/data',[CorteController::class,'getData'])->name('ordenFabricacion.data');
+Route::post('/FiltroFecha', [CorteController::class, 'FiltroFecha'])->name('FiltroFecha');
+Route::post('/FiltroOrden', [CorteController::class, 'FiltroOrden'])->name('FiltroOrden');
 
 
 Route::get('/buscar-orden', [BarcodeController::class, 'searchOrder']);
 
-Route::get('/cortes',[CorteController::class,'index'])->name('cortes');
+Route::get('/orden-fabricacion', [CorteController::class, 'create']);
+Route::post('/orden-fabricacion', [CorteController::class, 'store']);
+
+
 
 
 

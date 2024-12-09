@@ -16,13 +16,13 @@ class BarcodeController extends Controller
     }
     public function searchOrder($barcode)
 {
-    \Log::info('Código de barras recibido:', ['barcode' => $barcode]);
+    Log::info('Código de barras recibido:', ['barcode' => $barcode]);
 
     $barcodeParts = str_split($barcode, 3);
     $ordenVentaId = $barcodeParts[0] ?? null;
     $ordenFabricacionNumero = $barcodeParts[1] ?? null;
 
-    \Log::info('Partes del código de barras:', [
+    Log::info('Partes del código de barras:', [
         'ordenVentaId' => $ordenVentaId,
         'ordenFabricacionNumero' => $ordenFabricacionNumero,
     ]);
@@ -35,7 +35,7 @@ class BarcodeController extends Controller
     }
 
     $ordenVenta = OrdenVenta::find($ordenVentaId);
-    \Log::info('Resultado de OrdenVenta:', ['ordenVenta' => $ordenVenta]);
+    Log::info('Resultado de OrdenVenta:', ['ordenVenta' => $ordenVenta]);
 
     if (!$ordenVenta) {
         return response()->json([
@@ -47,7 +47,7 @@ class BarcodeController extends Controller
     $ordenFabricacion = OrdenFabricacion::where('numero_fabricacion', $ordenFabricacionNumero)
                                         ->where('orden_venta_id', $ordenVenta->id)
                                         ->first();
-    \Log::info('Resultado de OrdenFabricacion:', ['ordenFabricacion' => $ordenFabricacion]);
+    Log::info('Resultado de OrdenFabricacion:', ['ordenFabricacion' => $ordenFabricacion]);
 
     if (!$ordenFabricacion) {
         return response()->json([
