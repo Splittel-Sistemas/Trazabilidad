@@ -30,7 +30,6 @@ class PlaneacionController extends Controller
         }else{
             $status="error";
         }
-        $status="empty";
         $FechaFin=date('Y-m-d', strtotime('-1 day'));
         $FechaInicio=date('Y-m-d');
         return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin','status'));
@@ -118,6 +117,77 @@ class PlaneacionController extends Controller
                 'message' => $html
             ]);
     }
+    public function  PlaneacionFF(Request $request){
+        $FechaInicio=$request->input('startDate');
+        $FechaInicio_consulta=str_replace("-","",$FechaInicio);
+        $FechaFin=$request->input('endDate');
+        $FechaFin_consulta=str_replace("-","",$FechaFin);
+        $NumOV="";
+        $tablaOrdenes="";
+            $datos=$this->OrdenesVenta($FechaFin_consulta,$FechaInicio_consulta,$NumOV);
+            if($datos!=0){
+                if(empty($datos)){
+                    $status="empty";
+                }else{
+                    $status="success";
+                    foreach ($datos as $index => $orden) {
+                        $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '">
+                                            <td onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] . ')">
+                                                ' . $orden['OV'] . " - " . $orden['Cliente'] . '
+                                            </td>
+                                        </tr>
+                                        <tr id="details' . $index . '" class="collapse">
+                                            <td class="table-border" id="details' . $index . 'llenar">
+                                                <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
+                                            </td>
+                                            <td style="display:none"> ' . $orden['Cliente']. '</td>
+                                            <td style="display:none"> ' . $orden['OV']. '</td>
+                                        </tr>';
+                    }
+                }
+            }else{
+                $status="error";
+            }
+            return response()->json([
+                'status' => $status,
+                'data' => $tablaOrdenes,
+                'fechaHoy' => $FechaInicio,
+                'fechaAyer' => $FechaFin
+            ]);
+    }
+    public function  PlaneacionFOV(Request $request){
+        $NumOV=$request->input('OV');
+        $tablaOrdenes="";
+            $datos=$this->OrdenesVenta("","",$NumOV);
+            if($datos!=0){
+                if(empty($datos)){
+                    $status="empty";
+                }else{
+                    $status="success";
+                    foreach ($datos as $index => $orden) {
+                        $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '">
+                                            <td onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] . ')">
+                                                ' . $orden['OV'] . " - " . $orden['Cliente'] . '
+                                            </td>
+                                        </tr>
+                                        <tr id="details' . $index . '" class="collapse">
+                                            <td class="table-border" id="details' . $index . 'llenar">
+                                                <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
+                                            </td>
+                                            <td style="display:none"> ' . $orden['Cliente']. '</td>
+                                            <td style="display:none"> ' . $orden['OV']. '</td>
+                                        </tr>';
+                    }
+                }
+            }else{
+                $status="error";
+            }
+            return response()->json([
+                'status' => $status,
+                'data' => $tablaOrdenes,
+                'NumOV' => $NumOV
+            ]);
+    }
     //Funcion para ver las Ordenes de venta de  fecha inicio a fecha fin y por numero de OV
     public function OrdenesVenta($FechaInicio,$FechaFin,$NumOV){
         $schema = 'HN_OPTRONICS';
@@ -126,7 +196,7 @@ class PlaneacionController extends Controller
         if($NumOV==""){
             $where='T0."DocDate" BETWEEN \'' . $FechaFin . '\' AND \'' . $FechaInicio . '\'';
         }else{
-            $where='T0."DocNum" = \'' .$NumOV. '\'';
+            $where = 'T0."DocNum" LIKE \'%' . $NumOV . '%\'';
         }
         $sql = 'SELECT T0."DocNum" AS "OV", T0."CardName" AS "Cliente", T0."DocDate" AS "Fecha", 
                 T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" FROM ' . $schema . '.ORDR T0 
@@ -138,7 +208,18 @@ class PlaneacionController extends Controller
         }
         return $datos;
     }
-
+    public function comprobar_existe_partida($OrdenVenta, $Ordenfabricacion){
+        $datos=OrdenVenta:: where('OrdenVenta','=',$OrdenVenta)->first();
+        if($datos){
+            $datos=OrdenFabricacion::where('OrdenVenta_id','=',$datos->id)
+            ->where('OrdenFabricacion','=',$Ordenfabricacion)                        
+            ->count();
+        }else{
+            $datos=0;
+        }
+        return $datos;
+    }
+/*
 
 
 
@@ -496,17 +577,6 @@ class PlaneacionController extends Controller
             ]);
         }
     }
-    public function comprobar_existe_partida($OrdenVenta, $Ordenfabricacion){
-            $datos=OrdenVenta:: where('OrdenVenta','=',$OrdenVenta)->first();
-            if($datos){
-                $datos=OrdenFabricacion::where('OrdenVenta_id','=',$datos->id)
-                ->where('OrdenFabricacion','=',$Ordenfabricacion)                        
-                ->count();
-            }else{
-                $datos=0;
-            }
-        return $datos;
-    }
-
+    */
 
 }    

@@ -28,6 +28,7 @@
     <link href="https://cdn.jsdelivr.net/npm/weathericons@2.1.0/css/weather-icons.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@3.9.0/dist/fullcalendar.min.css" rel="stylesheet" />
     @yield('styles')
+    <script src="{{ asset('js/funciones/Funciones.js') }}"></script>
 </head>
 
 <body>
@@ -276,13 +277,11 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@3.9.0/dist/fullcalendar.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{asset('js/init/fullcalendar-init.js')}}"></script>
-    @yield('scripts')
-    @section('scripts')
     <script src="{{ asset('funciones/confirmacion.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('funciones/confirmacion.js') }}"></script>
-
-@endsection
+    <script src="{{ asset('js/funciones/Funciones.js') }}"></script>
+    @yield('scripts')
 </body>
 </html>

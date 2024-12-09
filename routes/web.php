@@ -7,7 +7,10 @@ use App\Http\Controllers\PlaneacionController;
 
 Route::get('/', [HomeControler::class,'Home'])->name('Home');
 Route::get('/Planeacion', [PlaneacionController::class,'index'])->name('Planeacion');
+Route::post('/Planeacion/Filtro/Fechas', [PlaneacionController::class,'PlaneacionFF'])->name('PlaneacionFF');
+Route::post('/Planeacion/Filtro/OrdenVenta',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOV');
 Route::post('/Planeacion/partidas', [PlaneacionController::class,'PartidasOF'])->name('PartidasOF');
+
 //Route::get('/', [HomeController::class,'Home'])->name('home');
 /*use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;

@@ -50,13 +50,17 @@
                             <div class="input-group">
                                 <label for="startDate" class="form-control-label me-2 col-4">Fecha inicio:</label>
                                 <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary col-8" value="{{$FechaFin }}">
+                                <input type="hidden" name="startDate_filtroantnext" id="startDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary col-8" value="{{$FechaFin }}">
                             </div>
                             <div class="input-group pt-3">
                                 <label for="endDate" class="form-control-label me-2 col-4">Fecha fin:</label>
                                 <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary col-8" value="{{$FechaInicio}}">
+                                <input type="hidden" name="endDate_filtroantnext" id="endDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary col-8" value="{{$FechaInicio}}">
+                                <p class="4"></p>
+                                <p id="error_endDate" class="text-danger text-center fs-sm col-8"></p>
                             </div>
                             <div class="row form-group pt-3">
-                                <button type="submit" class="btn btn-primary btn-sm float-end">
+                                <button type="button" class="btn btn-primary btn-sm float-end" id="Filtro_fecha-btn">
                                     <i class="fa fa-search"></i> Filtrar
                                 </button>
                             </div>
@@ -67,7 +71,7 @@
                                 <strong>Filtro por Orden de Venta</strong>
                             </label>
                             <div class="input-group">
-                                <input type="text" placeholder="Ingresa una Orden de Venta" name="query" id="query" class="form-control form-control-sm w-autoborder-primary col-9">
+                                <input type="text" placeholder="Ingresa una Orden de Venta" name="Filtro_buscarOV" id="Filtro_buscarOV" class="form-control form-control-sm w-autoborder-primary col-9">
                                 <div class="input-group-btn">
                                     <button id="buscarOV" class="btn btn-primary btn-sm">
                                         <i class="fa fa-search"></i> Buscar
@@ -100,7 +104,7 @@
                         <br>
                         <br>
                         <p class="text-center mt-4">No existen partidas <br> para el periodo</p>
-                        <p class="text-center">{{$FechaInicio}} - {{$FechaFin}}</p>
+                        <p class="text-center">{{$FechaFin}} - {{$FechaInicio}}</p>
                     @elseif($status=="success")
                         <table id="table_OV" class="table table-striped table-bordered" >
                             <thead class="table-primary text-center">
@@ -149,8 +153,8 @@
                 <div class="col-12">
                     <!-- Navegación de Fechas -->
                     <div class="d-flex justify-content-center align-items-center mb-4">
-                        <button id="prevDayBtn" class="btn btn-link"><i class="fa fa-arrow-left"></i> Anterior</button>
-                        <button id="todayBtn" class="btn btn-link">Siguiente <i class="fa fa-arrow-right"></i></button>
+                        <button type="button" id="back_filterBtn" class="btn btn-link"><i class="fa fa-arrow-left"></i> Anterior</button>
+                        <button type="button" id="next_filterBtn" class="btn btn-link">Siguiente <i class="fa fa-arrow-right"></i></button>
                     </div>
                 </div>
             </div>
@@ -203,6 +207,171 @@
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    $(document).ready(function() {
+    $('#Filtro_fecha-btn').click(function() {
+        var startDate = $('#startDate').val();  
+        var endDate = $('#endDate').val(); 
+        if(CompararFechas(startDate,endDate)){
+            $('#error_endDate').html('');
+        }else{
+            $('#error_endDate').html('*Fecha fin tiene que ser menor a fecha inicio');
+            return 0;
+        }
+        $.ajax({
+            url: "{{route('PlaneacionFF')}}", 
+            type: 'POST',
+            data: {
+                startDate: startDate, 
+                endDate:endDate,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                // You can display a loading spinner here
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    $('#table_OV_body').html(response.data);  
+                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+response.fechaHoy+' - '+response.fechaAyer+'</p>');
+                } else if($status==="empty") {
+                    $('#table_OV_body').html('<p>No existen registros para el periodo '+fechaHoy+' - '+fechaAyer+'</p>');
+                }else{
+                    error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                }
+            },
+            error: function(xhr, status, error) {
+                errorBD();
+            }
+        });
+    });
+    $('#Filtro_buscarOV').on('input',function() {
+        OV=$('#Filtro_buscarOV').val();
+        if(CadenaVacia(OV)){
+            return 0;
+        }
+        if(OV.length<4){
+            return 0;
+        }
+        $.ajax({
+            url: "{{route('PlaneacionFOV')}}", 
+            type: 'POST',
+            data: {
+                OV: OV,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                // You can display a loading spinner here
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>Filtro: '+OV+'</p>');
+                    $('#table_OV_body').html(response.data);
+                } else if($status==="empty") {
+                    $('#table_OV_body').html('<p>No existen registros para lo orden de venta '+OV+'</p>');
+                }else{
+                    error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                }
+            },
+            error: function(xhr, status, error) {
+                errorBD();
+            }
+        });
+    });
+    $('#back_filterBtn').click(function() {
+        var startDate = $('#startDate_filtroantnext').val();  
+        var endDate = $('#endDate_filtroantnext').val(); 
+        $.ajax({
+            url: "{{route('PlaneacionFF')}}", 
+            type: 'POST',
+            data: {
+                startDate: startDate, 
+                endDate:endDate,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                // You can display a loading spinner here
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    $('#table_OV_body').html(response.data);  
+                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+response.fechaHoy+' - '+response.fechaAyer+'</p>');
+                } else if($status==="empty") {
+                    $('#table_OV_body').html('<p>No existen registros para el periodo '+fechaHoy+' - '+fechaAyer+'</p>');
+                }else{
+                    error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                }
+            },
+            error: function(xhr, status, error) {
+                errorBD();
+            }
+        });
+    });
+    $('#next_filterBtn').click(function() {
+        var startDate = $('#startDate_filtroantnext').val();  
+        var endDate = $('#endDate_filtroantnext').val(); 
+        $.ajax({
+            url: "{{route('PlaneacionFF')}}", 
+            type: 'POST',
+            data: {
+                startDate: startDate, 
+                endDate:endDate,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                // You can display a loading spinner here
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    $('#table_OV_body').html(response.data);  
+                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+response.fechaHoy+' - '+response.fechaAyer+'</p>');
+                } else if($status==="empty") {
+                    $('#table_OV_body').html('<p>No existen registros para el periodo '+fechaHoy+' - '+fechaAyer+'</p>');
+                }else{
+                    error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                }
+            },
+            error: function(xhr, status, error) {
+                errorBD();
+            }
+        });
+    });
+    });
+    function loadContent(idcontenedor, docNum, cliente) {
+        let elemento = document.getElementById(idcontenedor + "cerrar");
+        if (!elemento.classList.contains('collapsed')) {
+            $.ajax({
+                url: "{{route('PartidasOF')}}",
+                method: "POST",
+                data: {
+                    docNum: docNum, 
+                    cliente:cliente,
+                    _token: '{{ csrf_token() }}'
+                },
+                beforeSend: function () {
+                    $('#' + idcontenedor + "llenar").html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>");
+                },
+                success: function (response) {
+                    if (response.status === 'success') {
+                        $('#' + idcontenedor + "llenar").html(response.message);
+                    } else {
+                        $('#' + idcontenedor + "llenar").html('<p>Error al cargar el contenido.</p>');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('#' + idcontenedor + "llenar").html('<p>Error al cargar el contenido.</p>');
+                }
+            });
+        } else {
+            $('#' + idcontenedor + "llenar").html('');
+        }
+    }
+</script>
+<!---------------------------------------------------------------------------------->
+<script>
+    /*
  //let consultasMigradas = new Set(); // IDs de filas ya migradas
  let consultasMigradas = new Set(); // IDs de filas ya migradas
 
@@ -542,6 +711,6 @@ function filtro_fecha(startDate,endDate,query){
                 alert('Ocurrió un error. Por favor, intenta nuevamente.');
             }
         });
-}
+}*/
 </script>
 @endsection
