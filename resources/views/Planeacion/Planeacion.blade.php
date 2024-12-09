@@ -48,15 +48,23 @@
                                 <strong>Filtro por Fecha</strong>
                             </label>
                             <div class="input-group">
-                                <label for="startDate" class="form-control-label me-2 col-4">Fecha inicio:</label>
-                                <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary col-8" value="{{$FechaFin }}">
-                                <input type="hidden" name="startDate_filtroantnext" id="startDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary col-8" value="{{$FechaFin }}">
+                                <div class="col-4">
+                                    <label for="startDate" class="form-control-label me-2 ">Fecha inicio:</label>
+                                </div>
+                                <div class="col-8">
+                                    <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaFin }}">
+                                    <input type="hidden" name="startDate_filtroantnext" id="startDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaFin }}">
+                                </div>
                             </div>
                             <div class="input-group pt-3">
-                                <label for="endDate" class="form-control-label me-2 col-4">Fecha fin:</label>
-                                <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary col-8" value="{{$FechaInicio}}">
-                                <input type="hidden" name="endDate_filtroantnext" id="endDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary col-8" value="{{$FechaInicio}}">
-                                <p id="error_endDate" class="text-danger text-center fs-sm col-8"></p>
+                                <div class="col-4">
+                                    <label for="endDate" class="form-control-label ">Fecha fin:</label>
+                                </div>
+                                <div class="col-8">
+                                    <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio}}">
+                                    <input type="hidden" name="endDate_filtroantnext" id="endDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio}}">
+                                    <p id="error_endDate" class="text-danger fs-sm"></p>
+                                </div>
                             </div>
                             <div class="row form-group pt-3">
                                 <button type="button" class="btn btn-primary btn-sm float-end" id="Filtro_fecha-btn">
@@ -232,7 +240,7 @@
                 if (response.status === 'success') {
                     $('#table_OV_body').html(response.data);  
                     $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+response.fechaHoy+' - '+response.fechaAyer+'</p>');
-                } else if($status==="empty") {
+                } else if(response.status==="empty") {
                     $('#table_OV_body').html('<p>No existen registros para el periodo '+fechaHoy+' - '+fechaAyer+'</p>');
                 }else{
                     error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
@@ -266,7 +274,7 @@
                 if (response.status === 'success') {
                     $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>Filtro: '+OV+'</p>');
                     $('#table_OV_body').html(response.data);
-                } else if($status==="empty") {
+                } else if(response.status==="empty") {
                     $('#table_OV_body').html('<p>No existen registros para lo orden de venta '+OV+'</p>');
                 }else{
                     error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
@@ -278,8 +286,10 @@
         });
     });
     $('#back_filterBtn').click(function() {
-        var startDate = $('#startDate_filtroantnext').val();  
+        var startDate =$('#startDate_filtroantnext').val();  
+        startDate=RestarDia(startDate)
         var endDate = $('#endDate_filtroantnext').val(); 
+        endDate=RestarDia(endDate);
         $.ajax({
             url: "{{route('PlaneacionFF')}}", 
             type: 'POST',
@@ -296,11 +306,13 @@
                 if (response.status === 'success') {
                     $('#table_OV_body').html(response.data);  
                     $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+response.fechaHoy+' - '+response.fechaAyer+'</p>');
-                } else if($status==="empty") {
-                    $('#table_OV_body').html('<p>No existen registros para el periodo '+fechaHoy+' - '+fechaAyer+'</p>');
+                } else if(response.status==="empty") {
+                    $('#table_OV_body').html('<p>No existen registros para el periodo '+startDate+' - '+endDate+'</p>');
                 }else{
                     error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
                 }
+                $('#startDate_filtroantnext').val(startDate);  
+                $('#endDate_filtroantnext').val(endDate); 
             },
             error: function(xhr, status, error) {
                 errorBD();
@@ -308,8 +320,10 @@
         });
     });
     $('#next_filterBtn').click(function() {
-        var startDate = $('#startDate_filtroantnext').val();  
+        var startDate =$('#startDate_filtroantnext').val();  
+        startDate=SumarDia(startDate);
         var endDate = $('#endDate_filtroantnext').val(); 
+        endDate=SumarDia(endDate);
         $.ajax({
             url: "{{route('PlaneacionFF')}}", 
             type: 'POST',
@@ -326,11 +340,13 @@
                 if (response.status === 'success') {
                     $('#table_OV_body').html(response.data);  
                     $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+response.fechaHoy+' - '+response.fechaAyer+'</p>');
-                } else if($status==="empty") {
-                    $('#table_OV_body').html('<p>No existen registros para el periodo '+fechaHoy+' - '+fechaAyer+'</p>');
+                } else if(response.status==="empty") {
+                    $('#table_OV_body').html('<p>No existen registros para el periodo '+startDate+' - '+endDate+'</p>');
                 }else{
                     error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
                 }
+                $('#startDate_filtroantnext').val(startDate);  
+                $('#endDate_filtroantnext').val(endDate); 
             },
             error: function(xhr, status, error) {
                 errorBD();

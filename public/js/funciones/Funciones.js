@@ -2,7 +2,7 @@ function success(titulo,mensaje){
     Swal.fire({
         position: "top-center",
         icon: "error",
-        title: Titulo,
+        title: titulo,
         messeage:mensaje,
         showConfirmButton: false,
         timer: 2500
@@ -28,7 +28,7 @@ function error(titulo,mensaje){
     Swal.fire({
         position: "top-center",
         icon: "error",
-        title: Titulo,
+        title: titulo,
         messeage:mensaje,
         showConfirmButton: false,
         timer: 2500
@@ -51,4 +51,16 @@ function CompararFechas(FechaInicio,FechaFin){
     if(FechaInicio<=FechaFin){
         return true;
     }else{return false;}
+}
+function RestarDia(fecha){
+  fecha = new Date(fecha);
+  fecha.setDate(fecha.getDate() - 1);
+  nuevaFecha = fecha.toISOString().split('T')[0];  // Formato 'YYYY-MM-DD'
+  return nuevaFecha;  // Salida: 2024-12-08
+}
+function SumarDia(fecha){
+  fecha = new Date(fecha);
+  fecha.setDate(fecha.getDate() + 1);
+  nuevaFecha = fecha.toISOString().split('T')[0];  // Formato 'YYYY-MM-DD'
+  return nuevaFecha;  // Salida: 2024-12-08
 }
