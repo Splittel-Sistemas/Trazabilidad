@@ -56,7 +56,6 @@
                                 <label for="endDate" class="form-control-label me-2 col-4">Fecha fin:</label>
                                 <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary col-8" value="{{$FechaInicio}}">
                                 <input type="hidden" name="endDate_filtroantnext" id="endDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary col-8" value="{{$FechaInicio}}">
-                                <p class="4"></p>
                                 <p id="error_endDate" class="text-danger text-center fs-sm col-8"></p>
                             </div>
                             <div class="row form-group pt-3">
