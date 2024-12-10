@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateAreasTable extends Migration
 {
-    public function up()
+     public function up()
     {
         Schema::create('areas', function (Blueprint $table) {
             $table->id();

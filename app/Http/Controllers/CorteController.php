@@ -13,11 +13,14 @@ class CorteController extends Controller
     }
 
     public function getData()
-    {
-        // Recuperamos los datos y los relacionamos correctamente
-        $data = OrdenFabricacion::with('OrdenVenta')->get(); 
+{
+    $data = OrdenFabricacion::with('OrdenVenta')->get();
+    dd($data); // Para ver la estructura de los datos
+    return response()->json([
+        'data' => $data
+    ]);
+}
 
-        // Regresamos los datos en formato JSON
-        return response()->json($data);
-    }
+    
+
 }

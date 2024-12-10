@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateOrdenVentaTable extends Migration
 {
-    public function up()
+     public function up()
     {
         Schema::create('orden_venta', function (Blueprint $table) {
             $table->string('barcode')->unique()->nullable();

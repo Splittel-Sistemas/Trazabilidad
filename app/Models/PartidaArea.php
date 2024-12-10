@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class PartidasArea extends Model
 {
-    use HasFactory;
+     /*use HasFactory;
 
+    
     protected $table = 'partidas_area';
     protected $fillable = ['partida_of_id', 'area_id', 'actividad'];
 
@@ -21,5 +22,5 @@ class PartidasArea extends Model
     public function area()
     {
         return $this->belongsTo(Area::class, 'area_id');
-    }
+    }*/
 }

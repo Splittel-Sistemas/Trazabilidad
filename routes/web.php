@@ -54,7 +54,8 @@ Route::post('/eliminar-registro', [PlaneacionController::class, 'eliminarRegistr
 
 
 Route::get('/cortes',[CorteController::class,'index'])->name('cortes');
-Route::post('/orden-fabricacion/data',[CorteController::class,'getData'])->name('ordenFabricacion.data');
+Route::get('/cortes/data', [CorteController::class, 'getData'])->name('corte.getData');
+
 Route::post('/FiltroFecha', [CorteController::class, 'FiltroFecha'])->name('FiltroFecha');
 Route::post('/FiltroOrden', [CorteController::class, 'FiltroOrden'])->name('FiltroOrden');
 

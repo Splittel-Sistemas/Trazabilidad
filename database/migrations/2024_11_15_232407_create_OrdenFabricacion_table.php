@@ -6,12 +6,11 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateOrdenFabricacionTable extends Migration
 {
-    public function up()
-    {
+     public function up()
+     {
         Schema::create('OrdenFabricacion', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('OrdenVenta_id')
-                    ->nullable();
+            $table->unsignedBigInteger('OrdenVenta_id')->nullable();
             $table->string('OrdenFabricacion');
             $table->string('Articulo');
             $table->string('Descripcion');
@@ -22,6 +21,13 @@ class CreateOrdenFabricacionTable extends Migration
                     ->onDelete('cascade')
                     ->onUpdate('cascade');
             $table->timestamps();
+
+            
+         /*$table->foreign('OrdenVenta_id')
+        ->references('id') 
+        ->on('OrdenVenta')  
+        ->onDelete('cascade') 
+        ->onUpdate('cascade'); */
         });
     }
 

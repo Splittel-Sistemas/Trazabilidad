@@ -13,11 +13,12 @@ class CreatePartidasOfTable extends Migration
             $table->unsignedBigInteger('OrdenFabricacion_id');
             $table->integer('CantidadPartida');
             $table->date('FechaFabricacion');
-            $table->foreign('OrdenFabricacion_id')->references('id')
+            $table->foreign('OrdenFabricacion_id')->references('id');
+         /*$table->foreign('OrdenVenta_id')
                     ->on('OrdenFabricacion')
                     ->onDelete('cascade')
                     ->onUpdate('cascade');
-            $table->timestamps();
+            $table->timestamps();*/
         });
     }
 

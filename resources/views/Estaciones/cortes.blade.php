@@ -82,8 +82,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Tabla de DataTable -->
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -94,13 +92,11 @@
                     <table id="ordenFabricacionTable" class="table table-striped table-bordered">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Orden de Fabricación</th>
-                                <th>Artículo</th>
-                                <th>Descripción</th>
-                                <th>Cantidad Total</th>
-                                <th>Fecha de Entrega</th>
-                                <th>Orden de Venta</th>
+                                <th>id</th>
+                                <th>orden_venta_id</th>
+                                <th>numero_fabricacion</th>
+                                <th>fecha_fabricacion</th>
+                                <th>estado</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -116,31 +112,32 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
- $('#ordenFabricacionTable').DataTable({
+$('#ordenFabricacionTable').DataTable({
     processing: true,
     serverSide: true,
     ajax: {
-        url: '{{ route("ordenFabricacion.data") }}',
+        url: '{{ route("corte.getData") }}',
         dataSrc: function (json) {
-            console.log(json);  // Muestra la respuesta completa en la consola para verificar la estructura
-            return json;  // Asegúrate de que la respuesta sea un array de objetos
+            console.log(json);  // Para depurar y verificar la estructura de los datos
+            return json.data;  // Asegúrate de que 'data' esté correctamente configurado
         }
     },
     columns: [
-        { data: 'id' },
-        { data: 'OrdenFabricacion' },
+        { data: 'id' }, 
+        { data: 'OrdenVenta_id' }, 
+        { data: 'OrdenFabricacion' }, 
+        { data: 'FechaEntrega' }, 
         { data: 'Articulo' },
-        { data: 'Descripcion' },
-        { data: 'CantidadTotal' },
-        { data: 'FechaEntrega' },
         {
-            data: 'OrdenVenta', 
+            data: 'OrdenVenta',  // Accede a la relación 'OrdenVenta'
             render: function(data) {
-                return data ? data.id : 'N/A';
+                // Asegúrate de que 'data' tenga el campo que deseas mostrar
+                return data ? data.id : 'N/A';  // Aquí puedes acceder a otros campos de la relación
             }
         }
     ]
 });
 
 </script>
+    
 @endsection

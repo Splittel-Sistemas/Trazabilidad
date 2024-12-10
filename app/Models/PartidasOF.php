@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PartidasOF extends Model
 {
-    use HasFactory;
+     /*use HasFactory;
 
     protected $table = 'PartidasOF';
     //protected $fillable = ['orden_fabricacion_id', 'codigo_partida', 'cantidad', 'costo_unitario'];
@@ -16,12 +16,12 @@ class PartidasOF extends Model
     {
         return $this->belongsTo(OrdenFabricacion::class, 'orden_fabricacion_id');
     }*/
-    public function OrdenFabricacion()
+     /*public function OrdenFabricacion()
     {
         return $this->belongsTo('App\Models\OrdenFabricacion','id');
-    }
-    public function partidasArea()
+    }*/
+     /*public function partidasArea()
     {
         return $this->hasMany(PartidasArea::class, 'partida_of_id');
-    }
+    }*/
 }
