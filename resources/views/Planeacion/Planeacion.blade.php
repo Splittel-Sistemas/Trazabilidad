@@ -1,7 +1,6 @@
 @extends('layouts.menu')
 @section('title', 'Planeacion')
 @section('styles')
-<meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="stylesheet" href="{{asset('css/Planecion.css')}}">
 @endsection
 @section('content')
@@ -34,7 +33,7 @@
         <div class="card">
             <div class="card-header">
                 <strong>Filtrar Órdenes de Venta</strong>
-                <button id="filtro_ov" type="button" class="btn btn-link float-end collapsed" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#filtro" aria-expanded="true" aria-controls="filtro">
+                <button id="filtro_ov" type="button" class="btn btn-link float-end collapsed" draggable="true" data-bs-toggle="collapse" data-bs-target="#filtro" aria-expanded="true" aria-controls="filtro">
                     <i class="fa fa-chevron-up"></i>
                 </button>
             </div>
@@ -131,7 +130,7 @@
                             </thead>
                             <tbody id="table_OV_body">
                                 @foreach ($datos as $orden)
-                                <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
+                                <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
                                     <td onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, '{{ $orden['Cliente'] }}')">
                                         {{ $orden['OV']." - ".$orden['Cliente']}}
                                     </td>
@@ -167,30 +166,52 @@
             </div>
             <!-- Columna 2: Dropzone y Tabla de Migrados -->
             <div class="col-md-6 mb-2">
-                <div id="message-container" style="display:none; background-color: yellow; padding: 10px; margin-bottom: 10px;">
-                    Esta consulta ya fue seleccionada.
-                </div>
                 <!-- Área de Dropzone -->
+                <div class="col 12 mb-2 pt-1">
+                    <div class="form-row">
+                        <div class="col-12 mb-3">
+                            <label for="Filtrofecha_table2">Selecciona una fecha:</label>
+                            <div class="input-group ">
+                                <input type="date" name="FiltroOV_table2"  id="FiltroOV_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación">
+                                <div class="input-group-btn">
+                                    <button id="buscarOV" class="btn btn-primary btn-sm">
+                                        Guardar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div id="dropzone" 
                     class="dropzone-area border-dashed border-primary p-4 text-center mb-4"
-                    ondragover="allowDrop(event)" 
-                    ondrop="drop(event)" 
-                    style="border: 2px dashed #007bff; padding: 20px; text-align: center; min-height: 150px;">
+                    style="border: 2px dashed #007bff; padding: 20px; text-align: center; min-height: 120px;">
                     <h4>Arrastra aquí los datos</h4>
                     <p class="text-muted">Suelta los artículos que deseas migrar aquí</p>
                 </div>
 
                 <!-- Tabla de Migrados -->
-                <div class="table-responsive">
-                    <h4 class="text-center">Tabla Migrados</h4>
-                    <table class="table table-striped table-bordered" id="table-destination">
-                        <thead>
+                <div id="container_table_OF_migrados" class="table-responsive">
+                    <table class="table table-striped table-bordered" id="table_OF_migrados">
+                        <thead class="table-primary text-center">
                             <tr>
+                                <th colspan="6" class="fw-bold">
+                                    <p style="color: black" id="filtro-fecha-Ov">Órden de Fabricación <br> 2234</p>
+                                    <div class="input-group ">
+                                        <input type="text" name="FiltroOF_table2"  id="FiltroOF_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Buscar Orden de fabricación">
+                                        <div class="input-group-btn">
+                                            <button id="buscarOV" class="btn btn-primary btn-sm">
+                                                <i class="fa fa-search"></i> buscar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>Orden Fab.</th>
                                 <th>Artículo</th>
                                 <th>Descripción</th>
-                                <th>Cantidad OF</th>
-                                <th>Fecha Entrega OF</th>
-                                <th>Orden De F</th>
+                                <th>Cantidad</th>
+                                <th>Fecha Entrega</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -221,7 +242,7 @@
         if(CompararFechas(startDate,endDate)){
             $('#error_endDate').html('');
         }else{
-            $('#error_endDate').html('*Fecha fin tiene que ser menor a fecha inicio');
+            $('#error_endDate').html('*Fecha fin tiene que ser menor  a Fecha inicio');
             return 0;
         }
         $.ajax({
@@ -307,7 +328,7 @@
                     $('#table_OV_body').html(response.data);  
                     $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+response.fechaHoy+' - '+response.fechaAyer+'</p>');
                 } else if(response.status==="empty") {
-                    $('#table_OV_body').html('<p>No existen registros para el periodo '+startDate+' - '+endDate+'</p>');
+                    $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br>'+startDate+' - '+endDate+'</p>');
                 }else{
                     error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
                 }
@@ -341,7 +362,7 @@
                     $('#table_OV_body').html(response.data);  
                     $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+response.fechaHoy+' - '+response.fechaAyer+'</p>');
                 } else if(response.status==="empty") {
-                    $('#table_OV_body').html('<p>No existen registros para el periodo '+startDate+' - '+endDate+'</p>');
+                    $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br> '+startDate+' - '+endDate+'</p>');
                 }else{
                     error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
                 }
@@ -383,6 +404,69 @@
             $('#' + idcontenedor + "llenar").html('');
         }
     }
+    function SeleccionaFilas() {
+        const selectAllCheckbox = document.getElementById("selectAll");
+        const checkboxes = document.querySelectorAll(".rowCheckbox");
+        if(selectAllCheckbox.checked){
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+                SeleccionarFila(null, checkbox);  // Actualiza la clase "selected"
+            });
+        }else{
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+                SeleccionarFila(null, checkbox);  // Actualiza la clase "selected"
+            });
+        }
+    }
+    function SeleccionarFila(event, checkbox) {
+        const row = checkbox.closest('tr');
+        if (checkbox.checked) {
+            row.classList.add("selected");
+        } else {
+            row.classList.remove("selected");
+        }
+    }
+    // Permitir que el elemento sea soltado
+    /*function allowDrop(event) {
+        event.preventDefault();
+    }
+    // Al arrastrar uno o más elementos de la tabla
+    function drag(event) {
+        let selectedRows = document.querySelectorAll(".selected");
+        let rowIds = [];
+        
+        selectedRows.forEach(row => {
+            rowIds.push(row.id);  // Almacenamos los IDs de las filas seleccionadas
+        });
+
+        event.dataTransfer.setData("text", rowIds.join(","));
+    }
+    // Al soltar los elementos en el dropzone
+    function drop(event) {
+        event.preventDefault();
+        const data = event.dataTransfer.getData("text");
+        const rowIds = data.split(",");
+
+        rowIds.forEach(id => {
+            const droppedRow = document.getElementById(id);
+            const cells = droppedRow.getElementsByTagName("td");
+            const rowData = document.createElement("tr");
+
+            // Crear una nueva fila en la tabla de datos arrastrados
+            for (let i = 1; i < cells.length; i++) {  // i = 1 porque la primera celda es el checkbox
+                const newCell = document.createElement("td");
+                newCell.textContent = cells[i].textContent;
+                rowData.appendChild(newCell);
+            }
+
+            // Añadir la fila a la tabla de datos arrastrados
+            document.getElementById("droppedTable").querySelector("tbody").appendChild(rowData);
+
+            // Opcional: Eliminar la fila de la tabla original si lo deseas
+            droppedRow.remove();
+        });
+    }*/
 </script>
 <!---------------------------------------------------------------------------------->
 <script>

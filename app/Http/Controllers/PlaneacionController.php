@@ -74,6 +74,7 @@ class PlaneacionController extends Controller
         $html .= '<table class="table-sm" id="table_OF" style="width:100%;">';
         $html .= '<thead>
                     <tr>
+                        <th class="text-center">Todo <input type="checkbox" id="selectAll" onclick="SeleccionaFilas()"></th>
                         <th>Orden Fab.</th>
                         <th>Artículo</th>
                         <th>Descripción</th>
@@ -97,6 +98,11 @@ class PlaneacionController extends Controller
                     ? \Carbon\Carbon::parse($partida['Fecha entrega OF'])->format('d-m-Y') 
                     : 'No disponible'; 
                 $html .= '<tr id="row-' . $index . '" draggable="true" ondragstart="drag(event)" data-orden-fab="' . trim($partida['Orden de F.']) . '" data-articulo="' . $partida['Articulo'] . '" data-descripcion="' . $partida['Descripcion'] . '" data-cantidad="' . $cantidadOF . '" data-fecha-entrega="' . $fechaEntrega . '">
+                            <td class="text-center">';
+                if($partida['Orden de F.'] != ""){
+                    $html .='<input type="checkbox" class="rowCheckbox" onclick="SeleccionarFila(event, this)">';
+                }
+                $html .='</td>
                             <td>' . ($partida['Orden de F.'] ?? 'No disponible') . '</td>
                             <td>' . ($partida['Articulo'] ?? 'No disponible') . '</td>
                             <td>' . ($partida['Descripcion'] ?? 'No disponible') . '</td>

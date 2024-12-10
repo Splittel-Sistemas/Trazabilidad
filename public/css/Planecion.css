@@ -1,18 +1,22 @@
 #container_table_OV{
-    height: 30rem;
+    height: 35rem;
     overflow-y: scroll;
 }
-#container_table_OV::-webkit-scrollbar {
+#container_table_OF_migrados{
+    height: 20rem;
+    overflow-y: scroll;
+}
+#container_table_OV::-webkit-scrollbar,#container_table_OF_migrados::-webkit-scrollbar {
     width: 6px; /* Ajusta el ancho de la barra de desplazamiento */
 }
-#container_table_OV::-webkit-scrollbar-track {
+#container_table_OV::-webkit-scrollbar-track,#container_table_OF_migrados::-webkit-scrollbar-track {
     background: #f1f1f1; /* Color del fondo del track */
 }
-#container_table_OV::-webkit-scrollbar-thumb {
+#container_table_OV::-webkit-scrollbar-thumb, #container_table_OF_migrados::-webkit-scrollbar-thumb {
     background: #acacac; /* Color del thumb */
     border-radius: 10px; /* Esquinas redondeadas */
 }
-#container_table_OV::-webkit-scrollbar-thumb:hover {
+#container_table_OV::-webkit-scrollbar-thumb:hover, #container_table_OF_migrados::-webkit-scrollbar-thumb:hover {
     background: #8f8f8f; /* Color al pasar el ratón por encima */
 }
 .table-partidas th , .table-partidas td {
@@ -25,4 +29,7 @@
     padding-right: 0; /* Elimina padding derecho */
     padding-bottom: 5px;
     padding-top: 2px;
+}
+#table_OF_migrados th{
+    font-size: 10px;
 }
