@@ -10,8 +10,17 @@ class CreatePartidasAreaTable extends Migration
     {
         Schema::create('partidas_area', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('partida_of_id')->constrained('partidas_of')->onDelete('cascade'); 
-            $table->foreignId('area_id')->constrained('areas')->onDelete('cascade'); 
+            
+            
+            $table->foreignId('partida_of_id')
+                ->constrained('partidas_of') 
+                ->onDelete('cascade');
+
+            
+            $table->foreignId('area_id')
+                ->constrained('areas') 
+                ->onDelete('cascade');
+                
             $table->string('actividad');
             $table->timestamps();
         });

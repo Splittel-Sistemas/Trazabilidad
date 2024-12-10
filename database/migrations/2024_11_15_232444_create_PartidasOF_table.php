@@ -4,26 +4,27 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePartidasOfTable extends Migration
+class CreatePartidasOFTable extends Migration
 {
     public function up()
     {
-        Schema::create('PartidasOF', function (Blueprint $table) {
+        Schema::create('partidas_of', function (Blueprint $table) { 
             $table->id();
-            $table->unsignedBigInteger('OrdenFabricacion_id');
-            $table->integer('CantidadPartida');
-            $table->date('FechaFabricacion');
-            $table->foreign('OrdenFabricacion_id')->references('id');
-         /*$table->foreign('OrdenVenta_id')
-                    ->on('OrdenFabricacion')
-                    ->onDelete('cascade')
-                    ->onUpdate('cascade');
-            $table->timestamps();*/
+
+            
+            $table->foreignId('orden_fabricacion_id') 
+                ->constrained('orden_fabricacion') 
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+
+            $table->integer('cantidad_partida');
+            $table->date('fecha_fabricacion');
+            $table->timestamps();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('PartidasOF');
+        Schema::dropIfExists('partidas_of');
     }
 }
