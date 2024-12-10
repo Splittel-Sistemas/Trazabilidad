@@ -8,25 +8,28 @@ class CreateOrdenFabricacionTable extends Migration
 {
     public function up()
     {
-        Schema::create('OrdenFabricacion', function (Blueprint $table) {
+        Schema::create('orden_fabricacion', function (Blueprint $table) { 
             $table->id();
-            $table->unsignedBigInteger('OrdenVenta_id')
-                    ->nullable();
-            $table->string('OrdenFabricacion');
-            $table->string('Articulo');
-            $table->string('Descripcion');
-            $table->integer('CantidadTotal');
-            $table->date('FechaEntrega');
-            $table->foreign('OrdenVenta_id')->references('id')
-                    ->on('OrdenVenta')
-                    ->onDelete('cascade')
-                    ->onUpdate('cascade');
+            $table->unsignedBigInteger('orden_venta_id')->nullable(); 
+            $table->string('orden_fabricacion');
+            $table->string('articulo');
+            $table->string('descripcion');
+            $table->integer('cantidad_total');
+            $table->date('fecha_entrega');
+
+            
+            $table->foreign('orden_venta_id')
+                ->references('id')
+                ->on('orden_venta') 
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+
             $table->timestamps();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('OrdenFabricacion');
+        Schema::dropIfExists('orden_fabricacion');
     }
 }

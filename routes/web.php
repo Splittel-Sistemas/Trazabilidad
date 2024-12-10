@@ -52,9 +52,9 @@ Route::post('/filtro', [PlaneacionController::class, 'filtro'])->name('filtro');
 Route::post('/guardarDatos', [PlaneacionController::class, 'guardarDatos'])->name('guardarDatos');
 Route::post('/eliminar-registro', [PlaneacionController::class, 'eliminarRegistro'])->name('eliminarRegistro');
 
+Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
+Route::get('/cortes/data', [CorteController::class, 'getData'])->name('corte.getData');
 
-Route::get('/cortes',[CorteController::class,'index'])->name('cortes');
-Route::post('/orden-fabricacion/data',[CorteController::class,'getData'])->name('ordenFabricacion.data');
 Route::post('/FiltroFecha', [CorteController::class, 'FiltroFecha'])->name('FiltroFecha');
 Route::post('/FiltroOrden', [CorteController::class, 'FiltroOrden'])->name('FiltroOrden');
 
