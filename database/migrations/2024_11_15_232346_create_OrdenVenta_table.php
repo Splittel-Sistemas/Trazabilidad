@@ -10,7 +10,7 @@ class CreateOrdenVentaTable extends Migration
         Schema::create('OrdenVenta', function (Blueprint $table) {
             $table->id();
             $table->string('OrdenVenta');
-            $table->string('NobreCliente');
+            $table->string('NombreCliente');
             $table->timestamps();
         });
     }

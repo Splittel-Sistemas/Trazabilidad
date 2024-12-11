@@ -33,3 +33,6 @@
 #table_OF_migrados th{
     font-size: 10px;
 }
+.selected{
+    background: blue;
+}

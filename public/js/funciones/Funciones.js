@@ -1,9 +1,9 @@
 function success(titulo,mensaje){
     Swal.fire({
         position: "top-center",
-        icon: "error",
+        icon: "success",
         title: titulo,
-        messeage:mensaje,
+        text:mensaje,
         showConfirmButton: false,
         timer: 2500
       });
@@ -29,7 +29,7 @@ function error(titulo,mensaje){
         position: "top-center",
         icon: "error",
         title: titulo,
-        messeage:mensaje,
+        text:mensaje,
         showConfirmButton: false,
         timer: 2500
       });

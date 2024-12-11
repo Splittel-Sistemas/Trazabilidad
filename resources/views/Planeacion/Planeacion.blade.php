@@ -51,8 +51,8 @@
                                     <label for="startDate" class="form-control-label me-2 ">Fecha inicio:</label>
                                 </div>
                                 <div class="col-8">
-                                    <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaFin }}">
-                                    <input type="hidden" name="startDate_filtroantnext" id="startDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaFin }}">
+                                    <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio }}">
+                                    <input type="hidden" name="startDate_filtroantnext" id="startDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio }}">
                                 </div>
                             </div>
                             <div class="input-group pt-3">
@@ -60,8 +60,8 @@
                                     <label for="endDate" class="form-control-label ">Fecha fin:</label>
                                 </div>
                                 <div class="col-8">
-                                    <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio}}">
-                                    <input type="hidden" name="endDate_filtroantnext" id="endDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio}}">
+                                    <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaFin}}">
+                                    <input type="hidden" name="endDate_filtroantnext" id="endDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaFin}}">
                                     <p id="error_endDate" class="text-danger fs-sm"></p>
                                 </div>
                             </div>
@@ -116,7 +116,7 @@
                             <thead class="table-primary text-center">
                                 <tr>
                                     <th class="fw-bold">
-                                        <span id="filtro-fecha-Ov">Órdenes de Venta <br> <p>{{$FechaInicio}} - {{$FechaFin}}</p></span>
+                                        <span id="filtro-fecha-Ov">Órdenes de Venta <br> <p>{{$FechaInicio}} - {{$FechaFin}} </p></span>
                                         <div class="input-group ">
                                             <input type="text" placeholder="Ingresa una Orden de Venta" name="filtro_ov_tabla" oninput="filtro_ov_tabla(this.value);" id="filtro_ov_tabla" class="form-control form-control-sm   w-autoborder-primary col-12">
                                             <div class="input-group-btn">
@@ -172,7 +172,7 @@
                         <div class="col-12 mb-3">
                             <label for="Filtrofecha_table2">Selecciona una fecha:</label>
                             <div class="input-group ">
-                                <input type="date" name="FiltroOV_table2"  id="FiltroOV_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación">
+                                <input type="date" name="FiltroOF_Fecha_table2"  id="FiltroOF_Fecha_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
                                 <div class="input-group-btn">
                                     <button id="buscarOV" class="btn btn-primary btn-sm">
                                         Guardar
@@ -182,8 +182,8 @@
                         </div>
                     </div>
                 </div>
-                <div id="dropzone" 
-                    class="dropzone-area border-dashed border-primary p-4 text-center mb-4"
+                <div ondrop="drop(event)" ondragover="allowDrop(event)" 
+                    class="dropzone dropzone-area border-dashed border-primary p-4 text-center mb-4"
                     style="border: 2px dashed #007bff; padding: 20px; text-align: center; min-height: 120px;">
                     <h4>Arrastra aquí los datos</h4>
                     <p class="text-muted">Suelta los artículos que deseas migrar aquí</p>
@@ -197,7 +197,7 @@
                                 <th colspan="6" class="fw-bold">
                                     <p style="color: black" id="filtro-fecha-Ov">Órden de Fabricación <br> 2234</p>
                                     <div class="input-group ">
-                                        <input type="text" name="FiltroOF_table2"  id="FiltroOF_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Buscar Orden de fabricación">
+                                        <input type="text" name="FiltroOF_table2"  id="FiltroOF_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Buscar Orden de fabricación" >
                                         <div class="input-group-btn">
                                             <button id="buscarOV" class="btn btn-primary btn-sm">
                                                 <i class="fa fa-search"></i> buscar
@@ -380,7 +380,7 @@
         if (!elemento.classList.contains('collapsed')) {
             $.ajax({
                 url: "{{route('PartidasOF')}}",
-                method: "POST",
+                method: "GET",
                 data: {
                     docNum: docNum, 
                     cliente:cliente,
@@ -404,20 +404,13 @@
             $('#' + idcontenedor + "llenar").html('');
         }
     }
-    function SeleccionaFilas() {
-        const selectAllCheckbox = document.getElementById("selectAll");
-        const checkboxes = document.querySelectorAll(".rowCheckbox");
-        if(selectAllCheckbox.checked){
+    function SeleccionaFilas(campo) {
+        const selectAllCheckbox = document.getElementById(campo.id);
+        const checkboxes = document.querySelectorAll("."+campo.id+"rowCheckbox");
             checkboxes.forEach(checkbox => {
                 checkbox.checked = selectAllCheckbox.checked;
                 SeleccionarFila(null, checkbox);  // Actualiza la clase "selected"
             });
-        }else{
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = selectAllCheckbox.checked;
-                SeleccionarFila(null, checkbox);  // Actualiza la clase "selected"
-            });
-        }
     }
     function SeleccionarFila(event, checkbox) {
         const row = checkbox.closest('tr');
@@ -427,8 +420,8 @@
             row.classList.remove("selected");
         }
     }
-    // Permitir que el elemento sea soltado
-    /*function allowDrop(event) {
+     //Permitir que el elemento sea soltado
+    function allowDrop(event) {
         event.preventDefault();
     }
     // Al arrastrar uno o más elementos de la tabla
@@ -444,29 +437,61 @@
     }
     // Al soltar los elementos en el dropzone
     function drop(event) {
+        let Datosenviar = [];
         event.preventDefault();
         const data = event.dataTransfer.getData("text");
+        const inputFecha = document.getElementById('FiltroOF_Fecha_table2');
         const rowIds = data.split(",");
-
+        if (data.length === 0) {
+            return 0;
+        }
+        if (!inputFecha.value) {
+            error("Ocurrio un error!","Debes seleccionar una fecha valida");
+            return 0;
+        }
         rowIds.forEach(id => {
-            const droppedRow = document.getElementById(id);
-            const cells = droppedRow.getElementsByTagName("td");
-            const rowData = document.createElement("tr");
-
-            // Crear una nueva fila en la tabla de datos arrastrados
-            for (let i = 1; i < cells.length; i++) {  // i = 1 porque la primera celda es el checkbox
-                const newCell = document.createElement("td");
-                newCell.textContent = cells[i].textContent;
-                rowData.appendChild(newCell);
-            }
-
-            // Añadir la fila a la tabla de datos arrastrados
-            document.getElementById("droppedTable").querySelector("tbody").appendChild(rowData);
-
-            // Opcional: Eliminar la fila de la tabla original si lo deseas
-            droppedRow.remove();
+            IdRow = document.getElementById(id);
+            cells = IdRow.getElementsByTagName("td");
+            Datosenviar.push({
+                OF:cells[1].innerHTML,
+                Articulo:cells[2].innerHTML,
+                Descripcion:cells[3].innerHTML,
+                Cantidad:cells[4].innerHTML,
+                Fecha_entrega:cells[5].innerHTML,
+                OV:cells[6].innerHTML,
+                Cliente:cells[7].innerHTML,
+                Fecha_planeada:inputFecha.value,
+            });
+            IdRow.remove();
         });
-    }*/
+        $.ajax({
+            url: "{{route('PartidasOFGuardar')}}", 
+            type: 'POST',
+            data: {
+                DatosPlaneacion: JSON.stringify(Datosenviar),
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                //$('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                // You can display a loading spinner here
+            },
+            success: function(response) {
+                /*if (response.status === 'success') {
+                    $('#table_OV_body').html(response.data);  
+                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+response.fechaHoy+' - '+response.fechaAyer+'</p>');
+                } else if(response.status==="empty") {
+                    $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br>'+startDate+' - '+endDate+'</p>');
+                }else{
+                    error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                }
+                $('#startDate_filtroantnext').val(startDate);  
+                $('#endDate_filtroantnext').val(endDate); */
+            },
+            error: function(xhr, status, error) {
+                error("Ocurrio un error!","Los datos no pudieron ser guardados");
+            }
+        });
+    }
 </script>
 <!---------------------------------------------------------------------------------->
 <script>

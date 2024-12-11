@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\FuncionesGeneralesController;
 use Illuminate\Support\Facades\Log;
@@ -16,11 +17,11 @@ class PlaneacionController extends Controller
         $this->funcionesGenerales = $funcionesGenerales;
     }
     public function index(){
-        $FechaFin=date('Ymd', strtotime('-1 day'));
-        $FechaInicio=date('Ymd');
+        $FechaInicio=date('Ymd', strtotime('-1 day'));
+        $FechaFin=date('Ymd');
         $NumOV="";
         $message="";
-        $datos=$this->OrdenesVenta($FechaInicio,$FechaFin,$NumOV);
+        $datos=$this->OrdenesVenta($FechaFin,$FechaInicio,$NumOV);
         if($datos!=0){
             if(empty($datos)){
                 $status="empty";
@@ -30,14 +31,15 @@ class PlaneacionController extends Controller
         }else{
             $status="error";
         }
-        $FechaFin=date('Y-m-d', strtotime('-1 day'));
-        $FechaInicio=date('Y-m-d');
+        $FechaInicio=date('Y-m-d', strtotime('-1 day'));
+        $FechaFin=date('Y-m-d');
         return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin','status'));
     }
     public function PartidasOF(Request $request){
         //datos para la consulta
         $schema = 'HN_OPTRONICS';
         $ordenventa = $request->input('docNum');
+        $cliente = $request->input('cliente');
         if (empty($ordenventa)) {
             return response()->json([
                 'status' => 'error',
@@ -71,15 +73,17 @@ class PlaneacionController extends Controller
             ]);
         }
         $html = '<div class="table-responsive table-partidas" style="width:100%;">';
-        $html .= '<table class="table-sm" id="table_OF" style="width:100%;">';
+        $html .= '<table class="table-sm" id="table_OF'.$ordenventa.'" style="width:100%;">';
         $html .= '<thead>
                     <tr>
-                        <th class="text-center">Todo <input type="checkbox" id="selectAll" onclick="SeleccionaFilas()"></th>
+                        <th class="text-center">Todo <input type="checkbox" id="selectAll'.$ordenventa.'" onclick="SeleccionaFilas(this)"></th>
                         <th>Orden Fab.</th>
                         <th>Artículo</th>
                         <th>Descripción</th>
                         <th>Cantidad</th>
                         <th>Fecha entrega</th>
+                        <th style="display:none;"></th>
+                        <th style="display:none;"></th>
                     </tr>
                 </thead>
                 <tbody>';
@@ -97,10 +101,11 @@ class PlaneacionController extends Controller
                 $fechaEntrega = !empty($partida['Fecha entrega OF']) 
                     ? \Carbon\Carbon::parse($partida['Fecha entrega OF'])->format('d-m-Y') 
                     : 'No disponible'; 
-                $html .= '<tr id="row-' . $index . '" draggable="true" ondragstart="drag(event)" data-orden-fab="' . trim($partida['Orden de F.']) . '" data-articulo="' . $partida['Articulo'] . '" data-descripcion="' . $partida['Descripcion'] . '" data-cantidad="' . $cantidadOF . '" data-fecha-entrega="' . $fechaEntrega . '">
-                            <td class="text-center">';
+                //$html .= '<tr id="row-' . $index . '" draggable="true" ondragstart="drag(event)" data-orden-fab="' . trim($partida['Orden de F.']) . '" data-articulo="' . $partida['Articulo'] . '" data-descripcion="' . $partida['Descripcion'] . '" data-cantidad="' . $cantidadOF . '" data-fecha-entrega="' . $fechaEntrega . '">
+                $html .='<tr id="row' .$ordenventa.$index . '" draggable="true" ondragstart="drag(event)" class="draggable" >
+                        <td class="text-center">';
                 if($partida['Orden de F.'] != ""){
-                    $html .='<input type="checkbox" class="rowCheckbox" onclick="SeleccionarFila(event, this)">';
+                    $html .='<input type="checkbox" class="selectAll'.$ordenventa.'rowCheckbox" onclick="SeleccionarFila(event, this)">';
                 }
                 $html .='</td>
                             <td>' . ($partida['Orden de F.'] ?? 'No disponible') . '</td>
@@ -108,6 +113,8 @@ class PlaneacionController extends Controller
                             <td>' . ($partida['Descripcion'] ?? 'No disponible') . '</td>
                             <td>' . ($cantidadOF ?: 'No disponible') . '</td>
                             <td>' . ($fechaEntrega ?: 'No disponible') . '</td>
+                            <td style="display:none;">' . $ordenventa. '</td>
+                            <td style="display:none;">' . $cliente. '</td>
                         </tr>';
             }
         }
@@ -194,6 +201,76 @@ class PlaneacionController extends Controller
                 'NumOV' => $NumOV
             ]);
     }
+    public function PartidasOFGuardar(Request $request){
+        $DatosPlaneacion=json_decode($request->input('DatosPlaneacion'));
+        $bandera="";
+        $NumOV="";
+        $NumOF="";
+        for($i=0;$i<count($DatosPlaneacion);$i++){
+            $respuesta=0;
+            $bandera_existe="";
+            $respuesta=$this->comprobar_OV($DatosPlaneacion[$i]->OV);
+            $NumOV=$DatosPlaneacion[$i]->OV;
+            $respuestaOF= new Ordenfabricacion();
+
+            if($respuesta==0){
+                $respuestaOV= new OrdenVenta();
+                $respuestaOV->OrdenVenta=$DatosPlaneacion[$i]->OV;
+                $respuestaOV->NombreCliente=$DatosPlaneacion[$i]->Cliente;
+                $bandera=$respuestaOV->save();
+                if($bandera==1){
+                    $Fecha_entrega=isset($DatosPlaneacion[$i]->Fecha_entrega)?Carbon::createFromFormat('d-m-Y', $DatosPlaneacion[$i]->Fecha_entrega)->format('Y-m-d'):null;
+                    $respuestaOF->OrdenVenta_id=$respuestaOV->id;
+                    $respuestaOF->OrdenFabricacion=$DatosPlaneacion[$i]->OF;
+                    $respuestaOF->Articulo=$DatosPlaneacion[$i]->Articulo;
+                    $respuestaOF->Descripcion=$DatosPlaneacion[$i]->Descripcion;
+                    $respuestaOF->CantidadTotal=$DatosPlaneacion[$i]->Cantidad;
+                    $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
+                    $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
+                    $respuestaOF->save();
+                }
+                else{
+                    return response()->json([
+                        'status' => "error",
+                        'NumOV' => $NumOF,
+                        'NumOV' => $NumOV
+                    ]);
+                }
+            }else{
+                $datos=OrdenVenta:: where('id','=',$respuesta)->first();
+                $comprobar_existe_partida=$this->comprobar_existe_partida($datos->id, $DatosPlaneacion[$i]->OF);
+                $NumOF=$DatosPlaneacion[$i]->OF;
+                if($comprobar_existe_partida>0){
+                    $Fecha_entrega=isset($DatosPlaneacion[$i]->Fecha_entrega)?Carbon::createFromFormat('d-m-Y', $DatosPlaneacion[$i]->Fecha_entrega)->format('Y-m-d'):null;
+                    $respuestaOF->OrdenVenta_id=$datos->id;
+                    $respuestaOF->OrdenFabricacion=$DatosPlaneacion[$i]->OF;
+                    $respuestaOF->Articulo=$DatosPlaneacion[$i]->Articulo;
+                    $respuestaOF->Descripcion=$DatosPlaneacion[$i]->Descripcion;
+                    $respuestaOF->CantidadTotal=$DatosPlaneacion[$i]->Cantidad;
+                    $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
+                    $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
+                    $respuestaOF->save();
+                }
+            }
+        }
+        /*return response()->json([
+            'status' => "success",
+            'data' => $tablaOrdenes,
+            'NumOV' => $NumOV
+        ]);if (!empty($NumOF)) {
+            return response()->json([
+                'status' => "success",
+                'NumOF' => $NumOF,
+                'NumOV' => $NumOV
+            ]);
+        }else{
+            return response()->json([
+                'status' => "paso",
+                'NumOF' => $NumOF,
+                'NumOV' => $NumOV
+            ]);
+        }*/
+    }
     //Funcion para ver las Ordenes de venta de  fecha inicio a fecha fin y por numero de OV
     public function OrdenesVenta($FechaInicio,$FechaFin,$NumOV){
         $schema = 'HN_OPTRONICS';
@@ -222,6 +299,15 @@ class PlaneacionController extends Controller
             ->count();
         }else{
             $datos=0;
+        }
+        return $datos;
+    }
+    public function comprobar_OV($DocNumOv){
+        $datos=OrdenVenta:: where('OrdenVenta','=',$DocNumOv)->first();
+        if(!$datos){
+            $datos=0;
+        }else{
+            $datos=$datos->id;
         }
         return $datos;
     }
