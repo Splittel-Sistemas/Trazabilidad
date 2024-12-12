@@ -21,7 +21,7 @@ class SuministrosController extends Controller
     public function enviar(Request $request)
 {
     // Verifica los datos recibidos
-    Log::info('Datos del formulario:', $request->all());
+   //Log::info('Datos del formulario:', $request->all());
 
     $request->validate([
         'ordenFabricacion' => 'required|string',
@@ -31,11 +31,11 @@ class SuministrosController extends Controller
 
     $data = $request->all();
 
-    Log::info('Datos validados:', $data);
+   // Log::info('Datos validados:', $data);
 
     // Verificar la conexión con SAP antes de realizar la consulta
     if ($this->funcionesGenerales->checkSapConnection()) {
-        Log::info("Conexión a SAP exitosa.");
+       // Log::info("Conexión a SAP exitosa.");
 
         try {
             // Preparamos la consulta para ejecutar en SAP
@@ -43,23 +43,23 @@ class SuministrosController extends Controller
             $sapData = $this->funcionesGenerales->ejecutarConsulta($sql, [$data['ordenFabricacion'], $data['ordenParte']]);
 
             // Aquí puedes manejar los datos obtenidos de SAP si es necesario
-            Log::info("Datos obtenidos de SAP: " . json_encode($sapData));
+            //Log::info("Datos obtenidos de SAP: " . json_encode($sapData));
 
             // Asegurémonos de que estamos redirigiendo correctamente
-            Log::info('Redirigiendo al formulario...');
+           // Log::info('Redirigiendo al formulario...');
 
             // Si la consulta es exitosa, redirigir con mensaje de éxito
             return redirect()->route('suministros.index')->with('success', 'Datos enviados y consultados correctamente en SAP');
 
         } catch (\Exception $e) {
-            Log::error('Error al consultar SAP: ' . $e->getMessage());
+           // Log::error('Error al consultar SAP: ' . $e->getMessage());
             return redirect()->route('suministros.index')->with('error', 'Error al consultar SAP: ' . $e->getMessage());
         } finally {
             // Cerrar la conexión SAP
             $this->funcionesGenerales->cerrarConexion();
         }
     } else {
-        Log::error("No se pudo conectar a SAP.");
+       // Log::error("No se pudo conectar a SAP.");
         return redirect()->route('suministros.index')->with('error', 'No se pudo establecer conexión con SAP');
     }
 

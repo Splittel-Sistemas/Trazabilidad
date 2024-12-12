@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 
 class BarcodeController extends Controller
 {
-    public function index()
+    /*public function index()
     {
         return view('layouts.ordenes.buscaryregistrar'); // Asegúrate de que el nombre de la vista coincida con la ruta de la vista que creaste
     }
@@ -63,6 +63,6 @@ class BarcodeController extends Controller
         'article' => $ordenVenta->articulo,
         'quantity' => $ordenVenta->cantidad_of,
     ]);
-}
+}*/
 
 }
