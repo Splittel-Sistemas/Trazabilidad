@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>@yield('title', 'splittel')</title>
-    <meta name="description" content="Ela Admin - HTML5 Admin Template">
+    <!--<meta name="description" content="Ela Admin - HTML5 Admin Template">-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="/logo_splitnet.png" type="image/png">
 
     <link rel="shortcut icon" href="/logo_splitnet.png">
@@ -28,6 +28,7 @@
     <link href="https://cdn.jsdelivr.net/npm/weathericons@2.1.0/css/weather-icons.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@3.9.0/dist/fullcalendar.min.css" rel="stylesheet" />
     @yield('styles')
+    <script src="{{ asset('js/funciones/Funciones.js') }}"></script>
 </head>
 
 <body>
@@ -36,20 +37,29 @@
         <nav class="navbar navbar-expand-sm navbar-default">
             <div id="main-menu" class="main-menu collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active">
-                       
+                    <li class="active"> 
                     </li>
                     <li class="menu-title">UI elements</li><!-- /.menu-title -->
                     <li class="menu-item-has-children dropdown">
-
-                        <a href="{{ route('panel.principal')}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>ashboard</a>
-                        <a href="{{ route('registro.index')}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Registro</a>
-                        <a href="{{ route('suministros.index')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Suministros</a>
-                        <a href="{{ route('ordenes.index')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Ordenes</a>
-                        <a href="{{ route('ordenventa')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Orden De Venta</a>
-                        <a href="{{ route('cortes')}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>cortes</a>
-                        <a href="{{ route('ordenes.indexx')}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Gestion De Orden De Venta</a>
-                        <a href="{{ route('orders')}}" class="dropdown-toggle"> <i class="menu-icon fa fa-cogs"></i>Gestion De Orden De Venta</a>
+                        <a href="{{route('Home')}}" class="dropdown-toggle"><i class="menu-icon fa fa-tachometer"></i>dashboard</a>
+                        <a href="{{-- route('registro.index')--}}" class="dropdown-toggle"><i class="menu-icon fa fa-user"></i>Usuarios</a>
+                        <a href="{{route('Planeacion')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-calendar"></i>Planeacion</a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="menu-icon fa fa-cogs"></i>&Aacute;reas</a>
+                            <ul class="sub-menu children dropdown-menu">                            
+                                <!--<li><i class="fa fa-puzzle-piece"></i><a href="ui-buttons.html"></a>Planeaci&oacute;n</li>-->
+                                <li><i class="fa fa-cut"></i><a href="ui-badges.html">Planeaci&oacute;n</a></li>
+                                <li><i class="fa fa-cut"></i><a href="ui-badges.html">Corte</a></li>
+                                <li><i class="fa-box"></i><a href="ui-tabs.html">Suministro</a></li>
+                                <li><i class="fa fa-id-card-o"></i><a href="ui-cards.html">Preparado</a></li>
+                                <li><i class="fa fa-exclamation-triangle"></i><a href="ui-alerts.html">Ensamble</a></li>
+                                <li><i class="fa fa-spinner"></i><a href="ui-progressbar.html">Pulido</a></li>
+                                <li><i class="fa fa-fire"></i><a href="ui-modals.html">Medici&oacute;n</a></li>
+                                <li><i class="fa fa-book"></i><a href="ui-switches.html">Visualizaci&oacute;n</a></li>
+                            </ul>
+                        <a href="{{-- route('ordenventa')--}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Orden De Venta</a>
+                        <a href="{{-- route('leer.codigo.barra')--}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Gestion De Productos</a>
+                        <a href="{{--route('ordenes.indexx')--}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Gestion De Orden De Venta</a>
+                        <a href="{{--route('orders')--}}" class="dropdown-toggle"> <i class="menu-icon fa fa-cogs"></i>Gestion De Orden De Venta</a>
                         
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-cogs"></i>Components</a>
                         <ul class="sub-menu children dropdown-menu">                            <li><i class="fa fa-puzzle-piece"></i><a href="ui-buttons.html">Buttons</a></li>
@@ -128,8 +138,8 @@
         <header id="header" class="header">
             <div class="top-left">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="./"><img src="{{ asset('/favicon.png') }}" alt="Logo" width="50" height="45">
-                    <a class="navbar-brand hidden" href="./"><img src="{{ asset('/favicon.png') }}" alt="Logo" width="50" height="50">
+                    <a class="navbar-brand" href="./"><img src="{{-- asset('/favicon.png') --}}" alt="Logo" width="50" height="45">
+                    <a class="navbar-brand hidden" href="./"><img src="{{-- asset('/favicon.png') --}}" alt="Logo" width="50" height="50">
                     <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
                 </div>
             </div>
@@ -221,7 +231,7 @@
 
                             <a class="nav-link" href="#"><i class="fa fa -cog"></i>Settings</a>
 
-                            <a class="nav-link" href="{{ route('logout') }}">  <i class="fa fa-power-off"></i> Logout</a>
+                            <a class="nav-link" href="{{-- route('logout') --}}">  <i class="fa fa-power-off"></i> Logout</a>
                         </div>
                     </div>
 
@@ -267,13 +277,11 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@3.9.0/dist/fullcalendar.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{asset('js/init/fullcalendar-init.js')}}"></script>
-    @yield('scripts')
-    @section('scripts')
     <script src="{{ asset('funciones/confirmacion.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('funciones/confirmacion.js') }}"></script>
-
-@endsection
+    <script src="{{ asset('js/funciones/Funciones.js') }}"></script>
+    @yield('scripts')
 </body>
 </html>

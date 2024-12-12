@@ -1,6 +1,24 @@
 <?php
 
+use App\Http\Controllers\HomeControler;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PlaneacionController;
+
+Route::get('/', [HomeControler::class,'Home'])->name('Home');
+Route::get('/Planeacion', [PlaneacionController::class,'index'])->name('Planeacion');
+Route::post('/Planeacion/Filtro/Fechas', [PlaneacionController::class,'PlaneacionFF'])->name('PlaneacionFF');
+Route::post('/Planeacion/Filtro/OrdenVenta',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOV');
+/*Route::post('/Planeacion/Filtro/Back',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOVBack');
+Route::post('/Planeacion/Filtro/Next',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOVNext');*/
+Route::get('/Planeacion/partidas', [PlaneacionController::class,'PartidasOF'])->name('PartidasOF');
+Route::post('/Planeacion/partidas/FiltroFechas', [PlaneacionController::class,'PartidasOFFiltroFechas_Tabla'])->name('PartidasOFFiltroFechas_Tabla');
+Route::post('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Detalles'])->name('PartidasOF_Detalles');
+Route::post('/Planeacion/partidas', [PlaneacionController::class,'PartidasOFGuardar'])->name('PartidasOFGuardar');
+//Route::post('/Planeacion/Filtro/OrdenVenta',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOV');
+
+//Route::get('/', [HomeController::class,'Home'])->name('home');
+/*use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\SapController;
@@ -69,7 +87,7 @@ Route::post('/orden-fabricacion', [CorteController::class, 'store']);
 
 
 use App\Http\Controllers\DetallesController;
-
+*/
 //Route::get('/orden/{id}', [DetallesController::class, 'show'])->name('orden.show');
 
 
