@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrdenVenta extends Model
 {
-     /*use HasFactory;
+    use HasFactory;
 
     protected $table = 'ordenventa'; 
     //protected $fillable = [ 'orden_fab','articulo','descripcion','cantidad_of','fecha_entrega','barcode',];
@@ -16,5 +16,5 @@ class OrdenVenta extends Model
     public function ordenesFabricacion()
     {
         return $this->hasMany(OrdenFabricacion::class, 'orden_venta_id');
-    }*/
+    }
 }

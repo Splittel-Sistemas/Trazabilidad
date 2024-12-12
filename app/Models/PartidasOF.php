@@ -24,7 +24,7 @@ class PartidasOF extends Model
         return $this->hasMany(PartidasArea::class, 'partida_of_id');
     }
 
-    /*cantidad_cortes: cantidadCortes,
+    /*cantidad_cortes: cantidadCortes,xa
     cantidad_del_dia: cantidadPorCorte
     orden_fabricacion_id: $('#modalBodyContent').find('td[data-orden-fabricacion-id]').text(),*/
 }
