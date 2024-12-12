@@ -278,8 +278,8 @@ class PlaneacionController extends Controller
                 $tabla.='<tr>
                             <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
                             <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
-                            <td class="text-center">'.'<button type="button" class="btn btn-link"><i class="fa fa-arrow-left"></i> Regresar</button>'.'</td>
-                            <td class="text-center">'.'<button type="button" onclick="DetallesOrdenFabricacion('.$datos[$i]['ordenfabricacion_id'].')" class="btn-sm btn-primary"><i class="fa fa-eye"></i> Ver</button>'.'</td>
+                            <td class="text-center">'.'<button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-link"><i class="fa fa-arrow-left"></i> Regresar</button>'.'</td>
+                            <td class="text-center">'.'<button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn-sm btn-primary"><i class="fa fa-eye"></i> Ver</button>'.'</td>
                         </tr>';
             }
             return response()->json([
@@ -293,6 +293,11 @@ class PlaneacionController extends Controller
             ]);
         }
 
+    }
+    public function PartidasOFRegresar(Request $request){
+        $NumOF_id=$this->funcionesGenerales->decrypt($request->input('NumOF'));
+        $OF = OrdenFabricacion::where('id','=',$NumOF_id)->first();
+        return $OF();
     }
     //Funcion para ver las Ordenes de venta de  fecha inicio a fecha fin y por numero de OV
     public function OrdenesVenta($FechaInicio,$FechaFin,$NumOV){
@@ -343,7 +348,7 @@ class PlaneacionController extends Controller
         return $datos->toArray();
     }
     public function PartidasOF_Detalles(Request $request){
-        $NumOF_id=$request->input('NumOF');
+        $NumOF_id=$this->funcionesGenerales->decrypt($request->input('NumOF'));
         $datos=OrdenFabricacion:: join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
                                 ->where('ordenfabricacion.id','=',$NumOF_id)->first();
         if($datos){
