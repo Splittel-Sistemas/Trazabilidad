@@ -551,7 +551,7 @@
         $('#ModalOrdenesFabricacion').modal('show'); // Muestra el modal
         $.ajax({
             url: "{{route('PartidasOF_Detalles')}}", 
-            type: 'POST',
+            type: 'GET',
             data: {
                 NumOF: NumOF,
                 _token: '{{ csrf_token() }}'  
@@ -567,6 +567,34 @@
                 }else{
                     Cuerpo.html(response.tabla);
                 }
+                //$('#table-2-content').html(response.tabla);
+                //$('#ModalOrdenesFabricacionLabel').html('Titulo');
+            },
+            error: function(xhr, status, error) {
+                errorBD();
+            }
+        }); 
+    }
+    function RegresarOrdenFabricacion(NumOF){
+        $.ajax({
+            url: "{{route('PartidasOFRegresar')}}", 
+            type: 'DELETE',
+            data: {
+                NumOF: NumOF,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                //Cuerpo.html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                // You can display a loading spinner here
+            },
+            success: function(response) {
+                alert();
+                /*if(response.status=="success"){
+                    Cuerpo.html(response.tabla);
+                    Titulo.html('Detalles Orden de Fabricación '+response.OF);
+                }else{
+                    Cuerpo.html(response.tabla);
+                }*/
                 //$('#table-2-content').html(response.tabla);
                 //$('#ModalOrdenesFabricacionLabel').html('Titulo');
             },
