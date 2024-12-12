@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use app\models\OrdenVenta;
+use Illuminate\Support\Facades\Crypt;
 
 class FuncionesGeneralesController extends Controller
 {
@@ -39,7 +40,6 @@ class FuncionesGeneralesController extends Controller
         $this->connection = $conn;
     }
 
-
     public function ejecutarConsulta($sql)
     {
         
@@ -63,7 +63,6 @@ class FuncionesGeneralesController extends Controller
         return $datos;
     }
 
-   
     public function obtenerDatosDeSap()
     {
        
@@ -77,8 +76,13 @@ class FuncionesGeneralesController extends Controller
             odbc_close($this->connection);  
         }
     }
-
-    
-    
+    public function encrypt($dato){
+        $encrypted = Crypt::encrypt($dato);
+        return $encrypted;
+    }
+    public function decrypt($dato){
+        $encrypted = Crypt::decrypt($dato);
+        return $encrypted;
+    }
     
 }
