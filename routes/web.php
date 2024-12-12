@@ -10,6 +10,7 @@ use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\PlaneacionController;
 use App\Http\Controllers\OrdenFabricacionController;
 use App\Http\Controllers\BarcodeController;
+use App\Http\Controllers\PartidaController;
 
 use App\Http\Controllers\CorteController;
 use App\Http\Controllers\OrdenVentaController;
@@ -44,7 +45,7 @@ Route::post('/orden-venta/{id}/update-state', [OrdenVentaController::class, 'upd
 
 Route::get('/leer-codigo-barra', [BarcodeController::class, 'index'])->name('leer.codigo.barra');
 
-Route::get('/ordenes-fabricacion', [OrdenFabricacionController::class,'index'])->name('ordenes.indexx');
+Route::get('/ordenes-fabricacion', [OrdenFabricacionController::class,'index'])->name('ordenes.index');
 Route::get('/orders', [PlaneacionController::class, 'OrdenesVActual'])->name('orders');
 Route::post('/partidas', [PlaneacionController::class, 'DatosDePartida'])->name('datospartida');
 Route::post('/filtros', [PlaneacionController::class, 'filtros'])->name('filtros');
@@ -52,13 +53,22 @@ Route::post('/filtro', [PlaneacionController::class, 'filtro'])->name('filtro');
 Route::post('/guardarDatos', [PlaneacionController::class, 'guardarDatos'])->name('guardarDatos');
 Route::post('/eliminar-registro', [PlaneacionController::class, 'eliminarRegistro'])->name('eliminarRegistro');
 
-Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
-Route::get('/cortes/data', [CorteController::class, 'getData'])->name('corte.getData');
 
-Route::get('/cortes',[CorteController::class,'index'])->name('cortes');
-Route::post('/orden-fabricacion/data',[CorteController::class,'getData'])->name('ordenFabricacion.data');
-Route::post('/FiltroFecha', [CorteController::class, 'FiltroFecha'])->name('FiltroFecha');
-Route::post('/FiltroOrden', [CorteController::class, 'FiltroOrden'])->name('FiltroOrden');
+
+
+Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
+Route::get('/cortes/getData', [CorteController::class, 'getData'])->name('corte.getData');
+Route::get('/cortes/filtroOrdenVenta', [CorteController::class, 'filtroOrdenVentaData'])->name('corte.filtroData');
+Route::get('/cortes/filtroFecha', [CorteController::class, 'filtroFechaData'])->name('corte.filtroFechaData');
+Route::get('corte/getOrdenDetails', [CorteController::class, 'getOrdenDetails'])->name('corte.getOrdenDetails');
+Route::post('/guardar-partida', [CorteController::class, 'guardar'])->name('partida.guardar');
+Route::get('/detalles/{id}', [CorteController::class, 'verDetalles'])->name('detalles');
+Route::post('/guardar-cortes', [CorteController::class, 'guardarCortes'])->name('guardar.cortes');
+
+
+
+
+
 
 
 Route::get('/buscar-orden', [BarcodeController::class, 'searchOrder']);

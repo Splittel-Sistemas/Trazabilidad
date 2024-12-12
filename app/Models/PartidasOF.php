@@ -7,20 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 class PartidasOF extends Model
 {
     use HasFactory;
-
-    protected $table = 'partidas_of'; // Ajuste: Nombre en minúsculas
-    protected $fillable = ['orden_fabricacion_id', 'cantidad_partida', 'fecha_fabricacion'];
-
-    // Relación con OrdenFabricacion
+    protected $table = 'partidas_of'; 
+    protected $fillable = [
+        'orden_fabricacion_id', 
+        'cantidad_cortes',       
+        'cantidad',     
+                    
+    ];
     public function ordenFabricacion()
     {
         return $this->belongsTo(OrdenFabricacion::class, 'orden_fabricacion_id');
     }
 
-    // Relación con PartidasArea
     public function partidasArea()
     {
         return $this->hasMany(PartidasArea::class, 'partida_of_id');
     }
-}
 
+    /*cantidad_cortes: cantidadCortes,
+    cantidad_del_dia: cantidadPorCorte
+    orden_fabricacion_id: $('#modalBodyContent').find('td[data-orden-fabricacion-id]').text(),*/
+}
