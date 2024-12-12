@@ -7,21 +7,17 @@ class CreateOrdenVentaTable extends Migration
 {
      public function up()
     {
-        Schema::create('orden_venta', function (Blueprint $table) {
-            $table->string('barcode')->unique()->nullable();
+        Schema::create('OrdenVenta', function (Blueprint $table) {
             $table->id();
-            $table->string('orden_fab');
-            $table->string('articulo');
-            $table->string('descripcion');
-            $table->decimal('cantidad_of', 10, 2);
-            $table->date('fecha_entrega');
+            $table->string('OrdenVenta');
+            $table->string('NombreCliente');
             $table->timestamps();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('orden_venta');
+        Schema::dropIfExists('OrdenVenta');
     }
 }
 
