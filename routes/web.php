@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeControler;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PlaneacionController;
+use App\Http\Controllers\CorteController;
 
 Route::get('/', [HomeControler::class,'Home'])->name('Home');
 Route::get('/Planeacion', [PlaneacionController::class,'index'])->name('Planeacion');
@@ -16,6 +17,12 @@ Route::post('/Planeacion/partidas/FiltroFechas', [PlaneacionController::class,'P
 Route::post('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Detalles'])->name('PartidasOF_Detalles');
 Route::post('/Planeacion/partidas', [PlaneacionController::class,'PartidasOFGuardar'])->name('PartidasOFGuardar');
 //Route::post('/Planeacion/Filtro/OrdenVenta',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOV');
+
+
+
+Route::get('cortes', [CorteController::class, 'index'])->name('cortes.index');
+Route::get('cortes/data', [CorteController::class, 'getData'])->name('cortes.getData');
+Route::get('cortes/{id}/detalles', [CorteController::class, 'getDetalles'])->name('cortes.getDetalles');
 
 //Route::get('/', [HomeController::class,'Home'])->name('home');
 /*use Illuminate\Support\Facades\Route;
