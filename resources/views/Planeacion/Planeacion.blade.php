@@ -116,7 +116,7 @@
                             <thead class="table-primary text-center">
                                 <tr>
                                     <th class="fw-bold">
-                                        <span id="filtro-fecha-Ov">Órdenes de Venta <br> <p>{{$FechaInicio}} - {{$FechaFin}} </p></span>
+                                        <span id="filtro-fecha-Ov">Órdenes de Venta <br> <p>{{\Carbon\Carbon::parse($FechaInicio)->format('d/m/Y')}} - {{\Carbon\Carbon::parse($FechaFin)->format('d/m/Y')}} </p></span>
                                         <div class="input-group ">
                                             <input type="text" placeholder="Ingresa una Orden de Venta" name="filtro_ov_tabla" oninput="filtro_ov_tabla(this.value);" id="filtro_ov_tabla" class="form-control form-control-sm   w-autoborder-primary col-12">
                                             <div class="input-group-btn">
@@ -175,7 +175,7 @@
                                 <input type="date" name="FiltroOF_Fecha_table2"  id="FiltroOF_Fecha_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
                                 <div class="input-group-btn">
                                     <button id="buscarOV" class="btn btn-primary btn-sm">
-                                        Guardar
+                                        Mostrar
                                     </button>
                                 </div>
                             </div>
@@ -195,7 +195,7 @@
                         <thead class="table-primary text-center">
                             <tr>
                                 <th colspan="6" class="fw-bold">
-                                    <p style="color: black" id="filtro-fecha-Ov">Órden de Fabricación <br> 2234</p>
+                                    <p style="color: black" id="filtro-fecha-Ov">Órden de Fabricación <br> <span id="FiltroOF_text">Fecha: {{\Carbon\Carbon::parse($FechaFin)->format('d/m/Y')}}</span></p>
                                     <div class="input-group ">
                                         <input type="text" name="FiltroOF_table2"  id="FiltroOF_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Buscar Orden de fabricación" >
                                         <div class="input-group-btn">
@@ -207,12 +207,10 @@
                                 </th>
                             </tr>
                             <tr>
-                                <th>Orden Fab.</th>
-                                <th>Artículo</th>
-                                <th>Descripción</th>
-                                <th>Cantidad</th>
-                                <th>Fecha Entrega</th>
+                                <th>Orden Vent.</th>
+                                <th>Orden Fabri.</th>
                                 <th>Acciones</th>
+                                <th>Detalles</th>
                             </tr>
                         </thead>
                         <tbody id="table-2-content">
@@ -224,6 +222,25 @@
         </div>
     </div>
 </div>
+<!-- Modal Detalles Ordenes de Fabricacion-->
+<div class="modal fade" id="ModalOrdenesFabricacion" tabindex="-1" role="dialog" aria-labelledby="ModalOrdenesFabricacionLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header modal-header-primary">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+          <h5 class="modal-title" id="ModalOrdenesFabricacionLabel"></h5>
+        </div>
+        <div class="modal-body" id="ModalOrdenesFabricacionBody">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <!--<button type="button" class="btn btn-primary">Aceptar</button>-->
+        </div>
+      </div>
+    </div>
+  </div>
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
@@ -236,6 +253,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
+        TablaOrdenFabricacion("{{$FechaFin}}");
     $('#Filtro_fecha-btn').click(function() {
         var startDate = $('#startDate').val();  
         var endDate = $('#endDate').val(); 
@@ -260,9 +278,9 @@
             success: function(response) {
                 if (response.status === 'success') {
                     $('#table_OV_body').html(response.data);  
-                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+response.fechaHoy+' - '+response.fechaAyer+'</p>');
+                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
                 } else if(response.status==="empty") {
-                    $('#table_OV_body').html('<p>No existen registros para el periodo '+fechaHoy+' - '+fechaAyer+'</p>');
+                    $('#table_OV_body').html('<p>No existen registros para el periodo '+FormatoFecha(fechaHoy)+' - '+FormatoFecha(fechaAyer)+'</p>');
                 }else{
                     error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
                 }
@@ -326,9 +344,9 @@
             success: function(response) {
                 if (response.status === 'success') {
                     $('#table_OV_body').html(response.data);  
-                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+response.fechaHoy+' - '+response.fechaAyer+'</p>');
+                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
                 } else if(response.status==="empty") {
-                    $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br>'+startDate+' - '+endDate+'</p>');
+                    $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br>'+FormatoFecha(startDate)+' - '+FormatoFecha(endDate)+'</p>');
                 }else{
                     error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
                 }
@@ -360,9 +378,9 @@
             success: function(response) {
                 if (response.status === 'success') {
                     $('#table_OV_body').html(response.data);  
-                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+response.fechaHoy+' - '+response.fechaAyer+'</p>');
+                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
                 } else if(response.status==="empty") {
-                    $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br> '+startDate+' - '+endDate+'</p>');
+                    $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br> '+FormatoFecha(startDate)+' - '+FormatoFecha(endDate)+'</p>');
                 }else{
                     error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
                 }
@@ -476,22 +494,88 @@
                 // You can display a loading spinner here
             },
             success: function(response) {
-                /*if (response.status === 'success') {
-                    $('#table_OV_body').html(response.data);  
-                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+response.fechaHoy+' - '+response.fechaAyer+'</p>');
+                if (response.status === 'success') {
+                    var OrdenFabricacion="";
+                    for(var i=0;i<(response.NumOF).length;i++){
+                        if(i==0){
+                            OrdenFabricacion+=response.NumOF[i];
+                        }else{
+                            OrdenFabricacion+=","+response.NumOF[i];
+                        }
+                    }
+                    TablaOrdenFabricacion(inputFecha.value);
+                    success("Guardado!","Las ordenes de fabricación "+OrdenFabricacion+" se guardaron correctamente!");
                 } else if(response.status==="empty") {
-                    $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br>'+startDate+' - '+endDate+'</p>');
                 }else{
                     error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
                 }
-                $('#startDate_filtroantnext').val(startDate);  
-                $('#endDate_filtroantnext').val(endDate); */
             },
             error: function(xhr, status, error) {
                 error("Ocurrio un error!","Los datos no pudieron ser guardados");
             }
         });
     }
+    $('#FiltroOF_Fecha_table2').on('change',function() {
+        const fechaObjeto = new Date(document.getElementById('FiltroOF_Fecha_table2').value);
+        const dia = String(fechaObjeto.getDate()+1).padStart(2, '0');
+        const mes = String(fechaObjeto.getMonth() + 1).padStart(2, '0'); // Los meses comienzan en 0
+        const año = fechaObjeto.getFullYear();
+        document.getElementById('FiltroOF_text').innerHTML= "Fecha: "+dia+"/"+mes+"/"+año;
+        TablaOrdenFabricacion(document.getElementById('FiltroOF_Fecha_table2').value);
+    });
+    function TablaOrdenFabricacion(fecha){
+        $.ajax({
+            url: "{{route('PartidasOFFiltroFechas_Tabla')}}", 
+            type: 'POST',
+            data: {
+                fecha: fecha,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                $('#table-2-content').html("<tr><td colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></td></tr>")
+                // You can display a loading spinner here
+            },
+            success: function(response) {
+                $('#table-2-content').html(response.tabla);
+            },
+            error: function(xhr, status, error) {
+                errorBD();
+            }
+        }); 
+    }
+    function DetallesOrdenFabricacion(NumOF){
+        Titulo=$('#ModalOrdenesFabricacionLabel');
+        Cuerpo=$('#ModalOrdenesFabricacionBody');
+        Titulo.html('Detalles Orden de Fabricación ');
+        Cuerpo.html('');
+        $('#ModalOrdenesFabricacion').modal('show'); // Muestra el modal
+        $.ajax({
+            url: "{{route('PartidasOF_Detalles')}}", 
+            type: 'POST',
+            data: {
+                NumOF: NumOF,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                Cuerpo.html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                // You can display a loading spinner here
+            },
+            success: function(response) {
+                if(response.status=="success"){
+                    Cuerpo.html(response.tabla);
+                    Titulo.html('Detalles Orden de Fabricación '+response.OF);
+                }else{
+                    Cuerpo.html(response.tabla);
+                }
+                //$('#table-2-content').html(response.tabla);
+                //$('#ModalOrdenesFabricacionLabel').html('Titulo');
+            },
+            error: function(xhr, status, error) {
+                errorBD();
+            }
+        }); 
+    }
+
 </script>
 <!---------------------------------------------------------------------------------->
 <script>

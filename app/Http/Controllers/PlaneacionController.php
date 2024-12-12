@@ -205,7 +205,7 @@ class PlaneacionController extends Controller
         $DatosPlaneacion=json_decode($request->input('DatosPlaneacion'));
         $bandera="";
         $NumOV="";
-        $NumOF="";
+        $NumOF=[];
         for($i=0;$i<count($DatosPlaneacion);$i++){
             $respuesta=0;
             $bandera_existe="";
@@ -219,6 +219,7 @@ class PlaneacionController extends Controller
                 $respuestaOV->NombreCliente=$DatosPlaneacion[$i]->Cliente;
                 $bandera=$respuestaOV->save();
                 if($bandera==1){
+                    $NumOF[]=$DatosPlaneacion[$i]->OF;
                     $Fecha_entrega=isset($DatosPlaneacion[$i]->Fecha_entrega)?Carbon::createFromFormat('d-m-Y', $DatosPlaneacion[$i]->Fecha_entrega)->format('Y-m-d'):null;
                     $respuestaOF->OrdenVenta_id=$respuestaOV->id;
                     $respuestaOF->OrdenFabricacion=$DatosPlaneacion[$i]->OF;
@@ -239,8 +240,8 @@ class PlaneacionController extends Controller
             }else{
                 $datos=OrdenVenta:: where('id','=',$respuesta)->first();
                 $comprobar_existe_partida=$this->comprobar_existe_partida($datos->id, $DatosPlaneacion[$i]->OF);
-                $NumOF=$DatosPlaneacion[$i]->OF;
-                if($comprobar_existe_partida>0){
+                if($comprobar_existe_partida==0){
+                    $NumOF[]=$DatosPlaneacion[$i]->OF;
                     $Fecha_entrega=isset($DatosPlaneacion[$i]->Fecha_entrega)?Carbon::createFromFormat('d-m-Y', $DatosPlaneacion[$i]->Fecha_entrega)->format('Y-m-d'):null;
                     $respuestaOF->OrdenVenta_id=$datos->id;
                     $respuestaOF->OrdenFabricacion=$DatosPlaneacion[$i]->OF;
@@ -253,11 +254,7 @@ class PlaneacionController extends Controller
                 }
             }
         }
-        /*return response()->json([
-            'status' => "success",
-            'data' => $tablaOrdenes,
-            'NumOV' => $NumOV
-        ]);if (!empty($NumOF)) {
+        if (!empty($NumOF)) {
             return response()->json([
                 'status' => "success",
                 'NumOF' => $NumOF,
@@ -265,11 +262,37 @@ class PlaneacionController extends Controller
             ]);
         }else{
             return response()->json([
-                'status' => "paso",
+                'status' => "empty",
                 'NumOF' => $NumOF,
                 'NumOV' => $NumOV
             ]);
-        }*/
+        }
+    }
+    public function PartidasOFFiltroFechas_Tabla(Request $request){
+        $Fecha=$request->input('fecha');
+        $datos=$this->PartidasOFFiltroFechas($Fecha);
+        //return $datos;
+        $tabla="";
+        if(count($datos)>0){
+            for ($i=0; $i < count($datos); $i++) { 
+                $tabla.='<tr>
+                            <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
+                            <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
+                            <td class="text-center">'.'<button type="button" class="btn btn-link"><i class="fa fa-arrow-left"></i> Regresar</button>'.'</td>
+                            <td class="text-center">'.'<button type="button" onclick="DetallesOrdenFabricacion('.$datos[$i]['ordenfabricacion_id'].')" class="btn-sm btn-primary"><i class="fa fa-eye"></i> Ver</button>'.'</td>
+                        </tr>';
+            }
+            return response()->json([
+                'status' => "success",
+                'tabla' => $tabla
+            ]);
+        }else{
+            return response()->json([
+                'status' => "empty",
+                'tabla' => '<tr><td colspan="100%"" align="center">No existen registros</td></tr>'
+            ]);
+        }
+
     }
     //Funcion para ver las Ordenes de venta de  fecha inicio a fecha fin y por numero de OV
     public function OrdenesVenta($FechaInicio,$FechaFin,$NumOV){
@@ -310,6 +333,68 @@ class PlaneacionController extends Controller
             $datos=$datos->id;
         }
         return $datos;
+    }
+    public function PartidasOFFiltroFechas($Fecha){
+        $datos=OrdenFabricacion::join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
+                                ->where('FechaEntrega','=',$Fecha)
+                                ->select('ordenfabricacion.id as ordenfabricacion_id', 'ordenventa.id as ordenventa_id','OrdenVenta','OrdenFabricacion') 
+                                ->orderBy('ordenfabricacion_id', 'desc') // Orden descendente
+                                ->get();
+        return $datos->toArray();
+    }
+    public function PartidasOF_Detalles(Request $request){
+        $NumOF_id=$request->input('NumOF');
+        $datos=OrdenFabricacion:: join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
+                                ->where('ordenfabricacion.id','=',$NumOF_id)->first();
+        if($datos){
+            $cadena='<table class="table-sm table-bordered table-striped table-text-responsive" style="width:100%">
+                        <thead>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>Orden de Venta</th>
+                                <td class="text-center">'.$datos->OrdenVenta.'</td>
+                            </tr>
+                            <tr>
+                                <th>Cliente</th>
+                                <td class="text-center">'.$datos->NombreCliente.'</td>
+                            </tr>
+                            <tr>
+                                <th>Orden de Fabricación</th>
+                                <td class="text-center">'.$datos->OrdenFabricacion.'</td>
+                            </tr>
+                            <tr>
+                                <th>Articulo</th>
+                                <td class="text-center">'.$datos->Articulo.'</td>
+                            </tr>
+                            <tr>
+                                <th>Descripción</th>
+                                <td>'.$datos->Descripcion.'</td>
+                            </tr>
+                            <tr>
+                                <th>Cantidad Total</th>
+                                <td class="text-center">'.$datos->CantidadTotal.'</td>
+                            </tr>
+                            <tr>
+                                <th>Fecha Planeación</th>
+                                <td class="text-center">'.Carbon::parse($datos->FechaEntrega)->format('d/m/Y').'</td>
+                            </tr>
+                            <tr>
+                                <th>Fecha Entrega</th>
+                                <td class="text-center">'.Carbon::parse($datos->FechaEntregaSAP)->format('d/m/Y').'</td>
+                            </tr>
+                        </tbody></table>';
+                    return response()->json([
+                        'status' => "success",
+                        'tabla' => $cadena,
+                        'OF'=>$datos->OrdenFabricacion
+                    ]);
+        }else{
+            return response()->json([
+                'status' => "empty",
+                'tabla' => '<p class="text-center">No existen información para esta Orden de Fabricación</p>'
+            ]);
+        }
     }
 /*
 

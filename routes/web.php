@@ -12,6 +12,8 @@ Route::post('/Planeacion/Filtro/OrdenVenta',[PlaneacionController::class,'Planea
 /*Route::post('/Planeacion/Filtro/Back',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOVBack');
 Route::post('/Planeacion/Filtro/Next',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOVNext');*/
 Route::get('/Planeacion/partidas', [PlaneacionController::class,'PartidasOF'])->name('PartidasOF');
+Route::post('/Planeacion/partidas/FiltroFechas', [PlaneacionController::class,'PartidasOFFiltroFechas_Tabla'])->name('PartidasOFFiltroFechas_Tabla');
+Route::post('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Detalles'])->name('PartidasOF_Detalles');
 Route::post('/Planeacion/partidas', [PlaneacionController::class,'PartidasOFGuardar'])->name('PartidasOFGuardar');
 //Route::post('/Planeacion/Filtro/OrdenVenta',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOV');
 

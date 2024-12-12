@@ -24,6 +24,10 @@
     border-collapse: collapse; /* Opcional: Asegura que las celdas se colapsen */
     background: white;
 }
+#table_OF_migrados td{
+    font-size: 12px;
+    
+}
 #table_OV td{
     padding-left: 0;  /* Elimina padding izquierdo */
     padding-right: 0; /* Elimina padding derecho */
@@ -31,8 +35,25 @@
     padding-top: 2px;
 }
 #table_OF_migrados th{
-    font-size: 10px;
+    font-size: 12px;
 }
-.selected{
+.btn-link {
+    text-decoration: none; /* Elimina el subrayado */
+    transform: scale(0.9);
+    margin-top:0px;
+}
+.btn-link:hover {
+    text-decoration: none; /* Elimina el subrayado */
+    transform: scale(1);
+}
+.table-text-responsive th, .table-text-responsive td {
+     font-size:small;
+}
+.modal-header-primary{
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #337ab7; 
+}
+/*.selected{
     background: blue;
-}
+}*/
