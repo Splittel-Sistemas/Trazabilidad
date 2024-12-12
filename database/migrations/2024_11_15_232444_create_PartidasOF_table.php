@@ -10,10 +10,8 @@ class CreatePartidasOFTable extends Migration
     {
         Schema::create('partidas_of', function (Blueprint $table) { 
             $table->id();
-
-            
             $table->foreignId('orden_fabricacion_id') 
-                ->constrained('orden_fabricacion') 
+                ->constrained('OrdenFabricacion') 
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 

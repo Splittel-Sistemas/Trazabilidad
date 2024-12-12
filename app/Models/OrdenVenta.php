@@ -9,8 +9,8 @@ class OrdenVenta extends Model
 {
     use HasFactory;
 
-    protected $table = 'orden_venta'; 
-    protected $fillable = [ 'orden_fab','articulo','descripcion','cantidad_of','fecha_entrega','barcode',];
+    protected $table = 'ordenventa'; 
+    //protected $fillable = [ 'orden_fab','articulo','descripcion','cantidad_of','fecha_entrega','barcode',];
 
     
     public function ordenesFabricacion()
