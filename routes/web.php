@@ -20,10 +20,14 @@ Route::post('/Planeacion/partidas', [PlaneacionController::class,'PartidasOFGuar
 
 
 
-Route::get('cortes', [CorteController::class, 'index'])->name('cortes.index');
-Route::get('cortes/data', [CorteController::class, 'getData'])->name('cortes.getData');
-Route::get('cortes/{id}/detalles', [CorteController::class, 'getDetalles'])->name('cortes.getDetalles');
-
+Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
+Route::get('/cortes/getData', [CorteController::class, 'getData'])->name('corte.getData');
+Route::get('/cortes/filtroOrdenVenta', [CorteController::class, 'filtroOrdenVentaData'])->name('corte.filtroData');
+Route::get('/cortes/filtroFecha', [CorteController::class, 'filtroFechaData'])->name('corte.filtroFechaData');
+Route::get('corte/getOrdenDetails', [CorteController::class, 'getOrdenDetails'])->name('corte.getOrdenDetails');
+Route::post('/guardar-partida', [CorteController::class, 'guardar'])->name('partida.guardar');
+Route::get('/detalles/{id}', [CorteController::class, 'verDetalles'])->name('detalles');
+Route::post('/guardar-cortes', [CorteController::class, 'guardarCortes'])->name('guardar.cortes');
 //Route::get('/', [HomeController::class,'Home'])->name('home');
 /*use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
