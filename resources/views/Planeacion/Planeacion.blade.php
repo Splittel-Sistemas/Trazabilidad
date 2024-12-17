@@ -29,7 +29,7 @@
             </div>
         </div>
     </div>
-    <div class="col-12 ">
+    <div class="col-8 ">
         <div class="card">
             <div class="card-header">
                 <strong>Filtrar Órdenes de Venta</strong>
@@ -42,7 +42,7 @@
                     @csrf
                     <div class="row">
                         <!-- Filtro por fecha -->
-                        <div class="col-md-6 ">
+                        <div class="col-md-12 ">
                             <label for="" class="form-control-label me-2 col-12">
                                 <strong>Filtro por Fecha</strong>
                             </label>
@@ -72,19 +72,19 @@
                             </div>
                         </div>
                         <!-- Filtro por Orden de Venta -->
-                        <div class="col-md-6">
+                        <!--<div class="col-md-6">
                             <label for="" class="form-control-label me-2 col-12">
                                 <strong>Filtro por Orden de Venta</strong>
                             </label>
                             <div class="input-group">
                                 <input type="text" placeholder="Ingresa una Orden de Venta" name="Filtro_buscarOV" id="Filtro_buscarOV" class="form-control form-control-sm w-autoborder-primary col-9">
                                 <div class="input-group-btn">
-                                    <button id="buscarOV" class="btn btn-primary btn-sm">
+                                    <a href="#" id="buscarOV" class="btn btn-primary btn-sm">
                                         <i class="fa fa-search"></i> Buscar
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
-                        </div> 
+                        </div> -->
                     </div>
                 </form>
             </div>
@@ -118,7 +118,8 @@
                                     <th class="fw-bold">
                                         <span id="filtro-fecha-Ov">Órdenes de Venta <br> <p>{{\Carbon\Carbon::parse($FechaInicio)->format('d/m/Y')}} - {{\Carbon\Carbon::parse($FechaFin)->format('d/m/Y')}} </p></span>
                                         <div class="input-group ">
-                                            <input type="text" placeholder="Ingresa una Orden de Venta" name="filtro_ov_tabla" oninput="filtro_ov_tabla(this.value);" id="filtro_ov_tabla" class="form-control form-control-sm   w-autoborder-primary col-12">
+                                            <!--<input type="text" placeholder="Ingresa una Orden de Venta" name="filtro_ov_tabla" oninput="filtro_ov_tabla(this.value);" id="filtro_ov_tabla" class="form-control form-control-sm   w-autoborder-primary col-12">-->
+                                            <input type="text" placeholder="Ingresa una Orden de Venta" name="Filtro_buscarOV" id="Filtro_buscarOV"  class="form-control form-control-sm   w-autoborder-primary col-12">
                                             <div class="input-group-btn">
                                                 <button class="btn btn-primary btn-sm">
                                                     <i class="fa fa-search"></i> buscar
@@ -131,7 +132,7 @@
                             <tbody id="table_OV_body">
                                 @foreach ($datos as $orden)
                                 <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
-                                    <td onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, '{{ $orden['Cliente'] }}')">
+                                    <td onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, `{{ $orden['Cliente'] }}`)">
                                         {{ $orden['OV']." - ".$orden['Cliente']}}
                                     </td>
                                 </tr>
@@ -197,9 +198,9 @@
                                 <th colspan="6" class="fw-bold">
                                     <p style="color: black" id="filtro-fecha-Ov">Órden de Fabricación <br> <span id="FiltroOF_text">Fecha: {{\Carbon\Carbon::parse($FechaFin)->format('d/m/Y')}}</span></p>
                                     <div class="input-group ">
-                                        <input type="text" name="FiltroOF_table2"  id="FiltroOF_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Buscar Orden de fabricación" >
+                                        <input type="text" name="FiltroOF_table2"  id="FiltroOF_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Buscar Orden de fabricación o Orden de Venta" >
                                         <div class="input-group-btn">
-                                            <button id="buscarOV" class="btn btn-primary btn-sm">
+                                            <button id="buscarOV" class="btn-sm btn-primary btn-sm">
                                                 <i class="fa fa-search"></i> buscar
                                             </button>
                                         </div>
@@ -223,10 +224,10 @@
     </div>
 </div>
 <!-- Modal Detalles Ordenes de Fabricacion-->
-<div class="modal fade" id="ModalOrdenesFabricacion" tabindex="-1" role="dialog" aria-labelledby="ModalOrdenesFabricacionLabel" aria-hidden="true" >
+<div class="modal fade m-4" id="ModalOrdenesFabricacion" tabindex="-1" role="dialog" aria-labelledby="ModalOrdenesFabricacionLabel" aria-hidden="true" >
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
-        <div class="modal-header modal-header-primary">
+        <div class="modal-header modal-header-danger">
             <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -235,12 +236,47 @@
         <div class="modal-body" id="ModalOrdenesFabricacionBody">
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn-sm btn-secondary" data-bs-dismiss="modal">Guardar</button>
           <!--<button type="button" class="btn btn-primary">Aceptar</button>-->
         </div>
       </div>
     </div>
   </div>
+<!-- Toast ver las Ordenes de Fabricacion Pendientes por asignar-->
+<div id="element" class="toast m-4" role="alert" aria-live="assertive" aria-atomic="true" style="position: fixed; bottom: 0.5rem; right: 1rem; z-index: 1050;" data-bs-delay="40000">
+    <div class="toast-header bg-danger text-white">
+      <strong class="me-auto">Alerta</strong>
+      <small>Hace un momento</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      Hay partidas que aún no se han Planeado.
+      <button type="button" class="btn btn-outline-danger float-end m-1" data-toggle="modal" data-target="#ModalPlaneacionVencidos">Mostrar</button>
+    </div>
+</div>
+<!-- Modal Planeacion de Ordenes de Fabricacion vencido o por vencer-->
+<div id="ModalPlaneacionVencidos" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ModalPlaneacionVencidosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="max-width: 90%; width: 90%;">
+      <div class="modal-content">
+        <!-- Aquí va el contenido del modal -->
+        jhsdkjaslkjdslkjdn
+      </div>
+    </div>
+</div>
+
+<!--<div class="toast" id="element" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <img src="..." class="rounded mr-2" alt="...">
+      <strong class="mr-auto">Bootstrap</strong>
+      <small>11 mins ago</small>
+      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="toast-body">
+      Hello, world! This is a toast message¿¿'
+    </div>
+</div>-->
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
@@ -253,6 +289,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
+        $('#element').toast('show');
         TablaOrdenFabricacion("{{$FechaFin}}");
     $('#Filtro_fecha-btn').click(function() {
         var startDate = $('#startDate').val();  
@@ -291,13 +328,15 @@
         });
     });
     $('#Filtro_buscarOV').on('input',function() {
+        RegexNumeros(document.getElementById('Filtro_buscarOV'));
         OV=$('#Filtro_buscarOV').val();
         if(CadenaVacia(OV)){
             return 0;
         }
-        if(OV.length<4){
+        if(OV.length<2){
+            $('#Filtro_fecha-btn').trigger('click');
             return 0;
-        }
+        }else{$('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>Filtro: '+OV+'</p>');}
         $.ajax({
             url: "{{route('PlaneacionFOV')}}", 
             type: 'POST',
@@ -320,7 +359,43 @@
                 }
             },
             error: function(xhr, status, error) {
-                errorBD();
+                //errorBD();
+            }
+        });
+    });
+    $('#FiltroOF_table2').on('input',function() {
+        RegexNumeros(document.getElementById('FiltroOF_table2'));
+        FiltroOF_table2=$('#FiltroOF_table2').val();
+        $('#FiltroOF_text').html('<p>Filtro: '+FiltroOF_table2+'</p>');
+        if(CadenaVacia(FiltroOF_table2)){
+            return 0;
+        }
+        if(FiltroOF_table2.length<2){
+            $('#FiltroOF_Fecha_table2').trigger('change');
+            return 0;
+        }else{$('#FiltroOF_Fecha_table2').html('<br><p>Filtro: '+FiltroOF_table2+'</p>');}
+        $.ajax({
+            url: "{{route('PlaneacionFOFOV')}}", 
+            type: 'GET',
+            data: {
+                FiltroOF_table2: FiltroOF_table2,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                $('#table-2-content').html("<tr><td colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></td></tr>")
+            },
+            success: function(response) {
+               if (response.status === 'success') {
+                    $('#FiltroOF_text').html('<p>Filtro: '+FiltroOF_table2+'</p>');
+                    $('#table-2-content').html(response.tabla);
+                } else if(response.status==="empty") {
+                    $('#table-2-content').html("<tr><td colspan='100%' align='center'>No existen registros para lo orden de venta "+FiltroOF_table2+"</td></tr>");
+                }else{
+                    //error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                }
+            },
+            error: function(xhr, status, error) {
+                //errorBD();
             }
         });
     });
@@ -470,6 +545,9 @@
         rowIds.forEach(id => {
             IdRow = document.getElementById(id);
             cells = IdRow.getElementsByTagName("td");
+            var checkbox = cells[8].querySelector('input[type="checkbox"]');
+            let isChecked = checkbox.checked;
+            console.log(isChecked);
             Datosenviar.push({
                 OF:cells[1].innerHTML,
                 Articulo:cells[2].innerHTML,
@@ -479,6 +557,7 @@
                 OV:cells[6].innerHTML,
                 Cliente:cells[7].innerHTML,
                 Fecha_planeada:inputFecha.value,
+                Escanner:isChecked,
             });
             IdRow.remove();
         });
@@ -539,7 +618,7 @@
                 $('#table-2-content').html(response.tabla);
             },
             error: function(xhr, status, error) {
-                errorBD();
+                //errorBD();
             }
         }); 
     }
@@ -571,6 +650,8 @@
                 //$('#ModalOrdenesFabricacionLabel').html('Titulo');
             },
             error: function(xhr, status, error) {
+                Cuerpo.html('<p class="text-center">No existen información para esta Orden de Fabricación</p>');
+                $('#ModalOrdenesFabricacion').modal('hide'); // Muestra el modal
                 errorBD();
             }
         }); 
@@ -585,10 +666,39 @@
             },
             beforeSend: function() {
                 //Cuerpo.html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+            },
+            success: function(response) {
+                if(response.status=="success"){
+                    $fecha=document.getElementById('FiltroOF_Fecha_table2').value;
+                    success("Guardado","Orden de Fabricación  "+response.OF+" regresada correctamente");
+                    TablaOrdenFabricacion($fecha);
+                }else if(response.status=="error"){
+                    error("Error!","Registro no encontrado");
+                }else{
+                    error("Ocurrio un error!","Ingresa un registro valido");
+                }
+            },
+            error: function(xhr, status, error) {
+                errorBD();
+            }
+        }); 
+    }
+    function CambiarEscaner(escaner,id){
+        escanear=escaner.checked;
+        $.ajax({
+            url: "{{route('CambiarEstatusEscaner')}}", 
+            type: 'POST',
+            data: {
+                Escanear: escanear,
+                Id: id,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                //Cuerpo.html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
                 // You can display a loading spinner here
             },
             success: function(response) {
-                alert();
+                //DetallesOrdenFabricacion(id);
                 /*if(response.status=="success"){
                     Cuerpo.html(response.tabla);
                     Titulo.html('Detalles Orden de Fabricación '+response.OF);
@@ -599,10 +709,18 @@
                 //$('#ModalOrdenesFabricacionLabel').html('Titulo');
             },
             error: function(xhr, status, error) {
-                errorBD();
+                //errorBD();
             }
         }); 
     }
+    document.getElementById('filtro_ov').addEventListener('click', function(event) {
+        btn=document.getElementById('filtro_ov');
+        if (!btn.classList.contains('collapsed')) {
+            btn.innerHTML='<i class="fa fa-chevron-up"></i>';
+        }else{
+            btn.innerHTML='<i class="fa fa-chevron-down"></i>';
+        }
+    });
 
 </script>
 <!---------------------------------------------------------------------------------->

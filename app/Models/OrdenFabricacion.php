@@ -7,19 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class OrdenFabricacion extends Model
 {
     use HasFactory;
-    protected $table = 'ordenfabricacion'; // Ajuste: Nombre de la tabla en minúsculas
-    //protected $fillable = ['orden_venta_id', 'numero_fabricacion', 'fecha_fabricacion', 'estado'];
+    protected $table = 'OrdenFabricacion'; // Ajuste: Nombre de la tabla en minúsculas
 
 
     // Relación con OrdenVenta
     public function ordenVenta()
     {
-        return $this->belongsTo(OrdenVenta::class, 'orden_venta_id');
+        return $this->belongsTo(OrdenVenta::class, 'OrdenVenta_id');
     }
 
     // Relación con PartidasOF
     public function partidasOF()
     {
-        return $this->hasMany(PartidasOF::class, 'orden_fabricacion_id');
+        return $this->hasMany(PartidasOF::class, 'OrdenFabricacion_id');
     }
 }

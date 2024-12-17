@@ -10,6 +10,7 @@ class CreateOrdenFabricacionTable extends Migration
     {
         Schema::create('OrdenFabricacion', function (Blueprint $table) {
             $table->id();
+            $table->boolean('Escaner')->default(false);
             $table->unsignedBigInteger('OrdenVenta_id')
                     ->nullable();
             $table->string('OrdenFabricacion');

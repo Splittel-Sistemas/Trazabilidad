@@ -9,12 +9,10 @@ class OrdenVenta extends Model
 {
     use HasFactory;
 
-    protected $table = 'ordenventa'; 
-    //protected $fillable = [ 'orden_fab','articulo','descripcion','cantidad_of','fecha_entrega','barcode',];
-
+    protected $table = 'OrdenVenta'; 
     
-    public function ordenesFabricacion()
+    public function ordenesFabricacions()
     {
-        return $this->hasMany(OrdenFabricacion::class, 'orden_venta_id');
+        return $this->hasMany(OrdenFabricacion::class, 'OrdenVenta_id');
     }
 }

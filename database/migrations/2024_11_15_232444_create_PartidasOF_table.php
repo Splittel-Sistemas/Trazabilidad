@@ -8,9 +8,9 @@ class CreatePartidasOFTable extends Migration
 {
     public function up()
     {
-        Schema::create('partidas_of', function (Blueprint $table) { 
+        Schema::create('PartidasOF', function (Blueprint $table) { 
             $table->id();
-            $table->foreignId('orden_fabricacion_id') 
+            $table->foreignId('OrdenFabricacion_id') 
                 ->constrained('OrdenFabricacion') 
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
@@ -23,6 +23,6 @@ class CreatePartidasOFTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('partidas_of');
+        Schema::dropIfExists('PartidasOF');
     }
 }

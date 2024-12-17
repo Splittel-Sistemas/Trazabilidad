@@ -26,7 +26,8 @@
 }
 #table_OF_migrados td{
     font-size: 12px;
-    
+    padding:0;
+    margin: 0;
 }
 #table_OV td{
     padding-left: 0;  /* Elimina padding izquierdo */
@@ -36,6 +37,12 @@
 }
 #table_OF_migrados th{
     font-size: 12px;
+}
+#table_OF_migrados tbody button{
+    transform: scale(0.8);
+}
+#table_OF_migrados tbody button:hover{
+    transform: scale(0.9);
 }
 .btn-link {
     text-decoration: none; /* Elimina el subrayado */
