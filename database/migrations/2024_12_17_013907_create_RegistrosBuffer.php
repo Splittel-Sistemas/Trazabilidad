@@ -11,13 +11,13 @@ return new class extends Migration
      */
      public function up()
     {
-        Schema::create('RegistroBuffer', function (Blueprint $table) {
+        Schema::create('RegistrosBuffer', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('RegistroBuffer_id')
+            $table->unsignedBigInteger('FechasBuffer_id')
                     ->nullable();
             $table->string('OrdenVentaB');
             $table->string('OrdenFabricacionB');
-            $table->foreign('RegistroBuffer_id')->references('id')
+            $table->foreign('FechasBuffer_id')->references('id')
                 ->on('FechasBuffer')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');

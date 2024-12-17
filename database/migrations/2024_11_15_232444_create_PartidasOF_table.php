@@ -16,7 +16,7 @@ class CreatePartidasOFTable extends Migration
                 ->onUpdate('cascade');
 
             $table->integer('cantidad_partida');
-            $table->date('fecha_fabricacion');
+            $table->dateTime('fecha_fabricacion');
             $table->timestamps();
         });
     }

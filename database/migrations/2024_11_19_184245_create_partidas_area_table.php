@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreatePartidasAreaTable extends Migration
 {
-     public function up()
+     /*public function up()
     {
         Schema::create('partidas_area', function (Blueprint $table) {
             $table->id();
@@ -29,5 +29,5 @@ class CreatePartidasAreaTable extends Migration
     public function down()
     {
         Schema::dropIfExists('partidas_area');
-    } 
+    } */
 }

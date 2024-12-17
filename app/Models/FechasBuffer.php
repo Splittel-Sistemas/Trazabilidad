@@ -12,8 +12,8 @@ class FechasBuffer extends Model
 
     protected $table = 'FechasBuffer'; 
     
-    public function Registrobuffer()
+    public function RegistroBuffers()
     {
-        return $this->hasMany(RegistrosBuffer::class, 'Fechas_Buffer_id');
+        return $this->hasMany(RegistrosBuffer::class, 'FechasBuffer_id');
     }
 }

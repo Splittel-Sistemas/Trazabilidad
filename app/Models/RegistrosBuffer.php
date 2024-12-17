@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class RegistrosBuffer extends Model
 {
-
+    protected $table = 'RegistrosBuffer'; // Ajuste: Nombre de la tabla en minúsculas
     use HasFactory;
     public function FechasBuffer()
     {
-        return $this->belongsTo(RegistrosBuffer::class, 'Fechas_Buffer_id');
+        return $this->belongsTo(FechasBuffer::class, 'FechasBuffer_id');
     }
 }
