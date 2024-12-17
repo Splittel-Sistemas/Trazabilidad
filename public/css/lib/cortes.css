@@ -1,0 +1,24 @@
+/* Ajustar el tamaño de la fuente en todo el modal */
+#modalDetalleOrden .modal-body {
+    font-size: 0.85rem; /* Reducir el tamaño de la fuente */
+}
+
+/* Ajustar el tamaño de la fuente dentro de la tabla en el modal */
+#modalDetalleOrden table td {
+    font-size: 0.85rem; /* Reducir el tamaño de la fuente en las celdas de la tabla */
+}
+
+/* Opcional: Si quieres también ajustar el tamaño de los encabezados del modal */
+#modalDetalleOrden .modal-header .modal-title {
+    font-size: 1rem; /* Reducir el tamaño del título */
+}
+
+/* Ajustar el tamaño de los botones del modal */
+#modalDetalleOrden .modal-footer button {
+    font-size: 0.85rem; /* Reducir el tamaño de la fuente de los botones */
+}
+
+/* Ajustar los encabezados de las secciones en el modal */
+#modalDetalleOrden .modal-body h5 {
+    font-size: 0.95rem; /* Reducir ligeramente el tamaño de los encabezados */
+}

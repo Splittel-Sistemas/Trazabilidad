@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class OrdenFabricacion extends Model
 {
     use HasFactory;
-    protected $table = 'ordenfabricacion'; // Ajuste: Nombre de la tabla en minúsculas
+    protected $table = 'OrdenFabricacion'; // Ajuste: Nombre de la tabla en minúsculas
     //protected $fillable = ['orden_venta_id', 'numero_fabricacion', 'fecha_fabricacion', 'estado'];
 
 

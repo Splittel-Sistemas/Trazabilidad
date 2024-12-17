@@ -24,16 +24,19 @@ Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Deta
 Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
 Route::get('/cortes/getData', [CorteController::class, 'getData'])->name('corte.getData');
 Route::get('corte/getOrdenDetails', [CorteController::class, 'getOrdenDetails'])->name('corte.getOrdenDetails');
-Route::post('/guardar-partida', [CorteController::class, 'guardar'])->name('partida.guardar');
 Route::get('/detalles', [CorteController::class, 'verDetalles'])->name('detalles');
-Route::post('/guardar-cortes', [CorteController::class, 'guardarCortes'])->name('guardar.cortes');
-
-
-Route::get('/cortes/filtrarFecha', [CorteController::class, 'filtrarPorFecha'])->name('corte.filtrarFecha');
 
 
 
-Route::post('/guardar-corte', [CorteController::class, 'guardarCorte'])->name('corte.guardarCorte');
+
+Route::get('/buscar-ordenes', [CorteController::class, 'buscarOrdenVenta'])->name('buscar.ordenes');
+Route::post('/cortes/filtrarFecha', [CorteController::class, 'filtrarPorFecha'])->name('corte.filtrarFecha');
+
+
+Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
+
+
+
 Route::post('/confirmar-orden', [CorteController::class, 'confirmarOrden'])->name('corte.confirmarOrden');
 
 //Route::get('/', [HomeController::class,'Home'])->name('home');

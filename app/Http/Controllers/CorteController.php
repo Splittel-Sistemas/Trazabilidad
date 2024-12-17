@@ -2,9 +2,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\OrdenFabricacion;
 use Illuminate\Support\Facades\DB;
 use App\Models\PartidasOF;
+use App\Models\OrdenFabricacion;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+
 
 class CorteController extends Controller
 {
@@ -13,7 +16,7 @@ class CorteController extends Controller
     {
         return view('Estaciones.cortes');
     }
-
+    //carga de la tabla
     public function getData()
     {
         $data = DB::table('OrdenFabricacion')  
@@ -32,7 +35,7 @@ class CorteController extends Controller
                 )
                 ->get();
         
-        //dd($data); 
+       // var_dump($data);
     
         return response()->json(['data' => $data]);
     }
@@ -54,33 +57,58 @@ class CorteController extends Controller
             return response()->json(['message' => 'Orden no encontrada'], 404);
         }
     }
-    public function PlaneacionFF(Request $request)
-{
-    $fechaSeleccionada = $request->input('fecha'); // Recibimos solo una fecha
+    //buscar orden de fabricacion
+    public function buscarOrdenVenta(Request $request)
+    {
+        $query = $request->input('query'); 
+        if ($query) {
+            // Asegúrate de que no haya duplicados por 'OrdenFabricacion'
+            $resultados = DB::table('OrdenFabricacion')
+                ->select('OrdenFabricacion.id', 
+                        'OrdenFabricacion.OrdenVenta_id', 
+                        'OrdenFabricacion.OrdenFabricacion', 
+                        'OrdenFabricacion.Articulo', 
+                        'OrdenFabricacion.Descripcion', 
+                        'OrdenFabricacion.CantidadTotal', 
+                        'OrdenFabricacion.FechaEntregaSAP', 
+                        'OrdenFabricacion.FechaEntrega', 
+                        'OrdenFabricacion.created_at', 
+                        'OrdenFabricacion.updated_at'
+                        )
+                ->where('OrdenFabricacion', 'like', "%$query%")
+                //->distinct()  // Evita duplicados por la columna 'OrdenFabricacion'
+                ->get();
+        } else {
+            $resultados = []; 
+        }
 
-    $status = "error";
-    $tablaOrdenes = '';
-
-    // Si la fecha está presente, asignamos un estado de éxito
-    if ($fechaSeleccionada) {
-        $status = "success";
-    } else {
-        $status = "empty";
+        return response()->json($resultados);
     }
-
-    return response()->json([
-        'status' => $status,
-        'data' => $tablaOrdenes,
-        'fechaSeleccionada' => $fechaSeleccionada
-    ]);
-}
-
-
-}
+    public function guardarPartidasOF(Request $request)
+    {
+        // Validación para asegurarnos de que 'datos_partidas' es un array y contiene los campos correctos
+        $request->validate([
+            'datos_partidas' => 'required|array', // 'datos_partidas' debe ser un array
+            'datos_partidas.*.orden_fabricacion_id' => 'required|exists:OrdenFabricacion,id', // Validar que 'orden_fabricacion_id' exista en la tabla 'OrdenFabricacion'
+            'datos_partidas.*.cantidad_partida' => 'required|integer', // Asegurarse de que 'cantidad_partida' sea un número entero
+            'datos_partidas.*.fecha_fabricacion' => 'required|date', // Asegurarse de que 'fecha_fabricacion' sea una fecha válida
+        ]);
     
-
-
-
-
-
+        // Guardar las partidas
+        foreach ($request->datos_partidas as $partida) {
+            // Crear una nueva partida en la base de datos
+            PartidasOF::create([
+                'orden_fabricacion_id' => $partida['orden_fabricacion_id'],
+                'cantidad_partida' => $partida['cantidad_partida'],
+                'fecha_fabricacion' => $partida['fecha_fabricacion'],
+            ]);
+        }
     
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Las partidas se guardaron correctamente',
+        ]);
+    }
+}    
+
+

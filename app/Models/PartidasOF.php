@@ -8,6 +8,7 @@ class PartidasOF extends Model
 {
     use HasFactory;
 
+    protected $table = 'partidas_of';
     protected $fillable = [
         'orden_fabricacion_id',
         'cantidad_partida',
