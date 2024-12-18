@@ -1,359 +1,492 @@
 @extends('layouts.menu')
-@section('title', 'Planeacion')
+@section('title', 'Planeación')
 @section('styles')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<link rel="stylesheet" href="{{ asset('css/Planecion.css') }}">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 @endsection
 @section('content')
-<div class="container mt-4">
-    <!-- Buscador -->
-    <div class="row mb-2">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-header">
-                    <strong>Filtrar Órdenes de Venta</strong>
-                </div>
-                <div class="card-body card-block collapse show" id="filtro">
-                    <form id="filtroForm" method="post" class="form-horizontal">
-                        @csrf
-                        <div class="row">
-                            <!-- Filtro por fecha -->
-                            <div class="col-md-6 mb-3">
-                                <label for="" class="form-control-label me-2 col-12">
-                                    <strong>Filtro por Fecha</strong>
-                                </label>
-                                <div class="input-group">
-                                    <label for="fecha" class="form-control-label me-2 col-4">Fecha :</label>
-                                    <input type="date" name="fecha" id="fecha" class="form-control form-control-sm col-8">
-                                    <div class="input-group-btn">
-                                        <button id="buscarFecha" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-search"></i> Buscar
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Filtro por Orden de Venta -->
-                            <div class="col-md-6 mb-3">
-                                <label for="" class="form-control-label me-2 col-12">
-                                    <strong>Filtro por Orden de Venta</strong>
-                                </label>
-                                <div class="input-group">
-                                    <input type="text" placeholder="Ingresa una Orden de Venta" name="query" id="query" class="form-control form-control-sm col-9">
-                                    <div class="input-group-btn">
-                                        <button id="buscarOV" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-search"></i> Buscar
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Tabla de datos sin filtro -->
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-header">
-                    <strong>Órdenes de Fabricación</strong>
-                </div>
-                <div class="card-body table-responsive">
-                    <table id="ordenFabricacionTable" class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>OrdenVenta_id</th>
-                                <th>OrdenFabricacion</th>
-                                <th>OrdenVentaArticulo</th>
-                                <th>Articulo</th> 
-                                <th>Descripcion</th>
-                                <th>CantidadTotal</th>
-                                <th>FechaEntregaSAP</th>
-                                <th>FechaEntrega</th> 
-                                <th>created_at</th> 
-                                <th>updated_at</th> 
-                            </tr>
-                        </thead>
-                        <tbody></tbody> 
-                        <tr id="noDataMessageFecha" class="no-data-message" style="display: none;">
-                            <td colspan="7" class="text-center">No hay datos disponibles para la fecha seleccionada.</td>
-                        </tr>
-                        <tr id="noDataMessageOV" class="no-data-message" style="display: none;">
-                            <td colspan="7" class="text-center">No hay datos disponibles para la orden de venta seleccionada.</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-<!-- Modal de Detalle -->
-<div class="modal fade" id="modalDetalleOrden" tabindex="-1" aria-labelledby="modalDetalleOrdenLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-secondary text-white">
-                <h5 class="modal-title" id="modalDetalleOrdenLabel">Detalles de la Orden</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Sección de detalles -->
-                <div class="mb-4">
-                    <h5 class="text-secondary"><i class="bi bi-info-circle"></i> Información de la Orden</h5>
-                    <table class="table table-striped table-bordered">
-                        <tbody id="modalBodyContent">
-                            <!-- Aquí se insertarán los datos dinámicamente -->
-                        </tbody>
-                    </table>
-                </div>
-                <!-- Apartado de cortes del día -->
-                <div class="mt-4 p-3 bg-light rounded">
-                    <h5 class="text-secondary"><i class="bi bi-scissors"></i> Cortes del Día</h5>
-                    <form id="formCortesDia" class="needs-validation" novalidate>
-                        <div class="mb-3">
-                            <label for="numCortes" class="form-label">Número de Cortes Realizados:</label>
-                            <input 
-                                type="number" 
-                                class="form-control" 
-                                id="numCortes" 
-                                name="numCortes" 
-                                min="0" 
-                                placeholder="Ingrese el número de cortes"
-                                required>
-                            <div class="invalid-feedback">
-                                Por favor, ingrese un número válido de cortes.
-                            </div>
-                        </div>
-                        <button type="button" id="guardarCortes" class="btn btn-info w-100">
-                            Guardar Cortes
-                        </button>
-                    </form>
-                    <div id="cortesGuardados" class="mt-3 text-success fw-bold">
-                        <!-- Aquí se mostrará un resumen de los cortes registrados -->
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            <div class="col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>Planeación</h1>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer d-flex justify-content-between">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" id="confirmarOrden" class="btn btn-success">Confirmar Orden</button>
+            <div class="col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li><a href="#">Dashboard</a></li>
+                            <li><a href="#">Cortes</a></li>
+                            <li class="active">Planeación Cortes</li>
+                        </ol>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+<div class="">
+    <div class="container mt-4">
+        <!-- Buscador -->
+        <div class="row mb-4">
+            <div class="col-lg-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <strong>Filtrar Órdenes de Venta</strong>
+                    </div>
+                    <div class="card-body">
+                        <form id="filtroForm" method="post" class="form-horizontal">
+                            @csrf
+                            <div class="row">
+                                <!-- Filtro por fecha -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="fecha" class="form-label"><strong>Filtro por Fecha</strong></label>
+                                    <div class="input-group">
+                                        <input type="date" name="fecha" id="fecha" class="form-control form-control-sm">
+                                        <button id="buscarFecha" class="btn btn-primary btn-sm ms-2">
+                                            <i class="fa fa-search"></i> Buscar
+                                        </button>
+                                    </div>
+                                </div>
 
+                                <!-- Filtro por Orden de Venta -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="query" class="form-label"><strong>Filtro por Orden de Venta</strong></label>
+                                    <div class="input-group">
+                                        <input type="text" placeholder="Ingresa una Orden de Venta" name="query" id="query" class="form-control form-control-sm">
+                                        <button id="buscarOV" class="btn btn-primary btn-sm ms-2">
+                                            <i class="fa fa-search"></i> Buscar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de datos sin filtro -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <strong>Órdenes de Fabricación</strong>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table id="ordenFabricacionTable" class="table table-striped table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Orden de Fabricación</th>
+                                    <th>Artículo</th>
+                                    <th>Descripción</th>
+                                    <th>Cantidad Total</th>
+                                    <th>Fecha Entrega SAP</th>
+                                    <th>Fecha de Entrega</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordenFabricacionTabletbody">
+                                <!-- Los datos se llenarán dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Detalles de la Orden -->
+        <div class="modal fade bd-example-modal-x" id="modalDetalleOrden" tabindex="-1"  role="dialog" aria-labelledby="modalDetalleOrdenLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-secondary text-white">
+                        <h5 class="modal-title" id="modalDetalleOrdenLabel">Detalles de la Orden</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Sección de detalles -->
+                        <div class="mb-4">
+                            <h5 class="text-secondary"><i class="bi bi-info-circle"></i> Información de la Orden</h5>
+                            <table class="table table-striped table-bordered">
+                                <tbody id="modalBodyContent">
+                                    <!-- Aquí se insertarán los datos dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Apartado de cortes del día -->
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <h5 class="text-secondary"><i class="bi bi-scissors"></i> Cortes del Día</h5>
+                            <form id="formCortesDia" class="needs-validation" novalidate>
+                                <div class="mb-3">
+                                    <label for="numCortes" class="form-label">Número de Cortes Realizados:</label>
+                                    <input type="number" class="form-control" id="numCortes" name="numCortes" min="0" placeholder="Ingrese el número de cortes" required>
+                                    <div class="invalid-feedback">
+                                        Por favor, ingrese un número válido de cortes.
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div id="cortesGuardados" class="mt-3 text-success fw-bold">
+                                <div class="table-responsive">
+                                    <table id="tablaCortes" class="table table-bordered table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Cortes</th>
+                                                <th>Fecha De Registro</th>
+                                            </tr>
+                                        </thead>
+                                        <div class="modal-footer d-flex justify-content-between">
+                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                                            <button type="button" id="confirmar" class="btn btn-success">Confirmar Orden</button>
+                                        </div>
+                                        <tbody>
+                                            <!-- Cortes de la tabla PartidasOF se reflejan aquí -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="ordenFabricacionId" value="">
+    </div>
+</div>
 @endsection
+
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-  $(document).ready(function() {
-    alert();
+$(document).ready(function() {
+    // Inicialización de la tabla
     var table = $('#ordenFabricacionTable').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
             url: '{{ route("corte.getData") }}',
             type: 'GET',
-            dataSrc: 'data',  // Asegúrate de que el nombre del campo es correcto
+            dataSrc: 'data',
         },
         columns: [
-            { data: 'id' },
-            { data: 'OrdenVenta_id' },  // Nombre del campo 'OrdenVenta_id'
-            { data: 'OrdenFabricacion' },  // Nombre del campo 'OrdenFabricacion'
-            { data: 'Articulo' },
-            { data: 'Descripcion' },
-            { data: 'CantidadTotal' },
-            { data: 'FechaEntregaSAP' },
-            { data: 'FechaEntrega' },
-            { data: 'created_at' },
-            { data: 'updated_at' },
+            { data: 'OrdenFabricacion' }, // Orden de Fabricación
+            { data: 'Articulo' }, // Artículo
+            { data: 'Descripcion' }, // Descripción
+            { data: 'CantidadTotal' }, // Cantidad Total
+            { data: 'FechaEntregaSAP' }, // Fecha Entrega SAP
+            { data: 'FechaEntrega' }, // Fecha de Entrega
             { 
                 data: 'id',
-                render: function(data) {
-
+                render: function(data, type, row) {
                     return '<button class="btn btn-info btn-sm ver-detalles" data-id="' + data + '">Ver Detalles</button>';
                 }
             }
         ]
     });
-    alert('hh');
-});
 
-    // Filtro por Orden de Venta
-    $('#buscarOV').on('click', function (e) {
-        e.preventDefault();
+    // Al hacer clic en "Ver Detalles"
+    $('#ordenFabricacionTable').on('click', '.ver-detalles', function() {
+        var ordenFabricacionId = $(this).data('id');
 
-        var query = $('#query').val().trim(); // Obtener el valor del filtro
-
-        if (!query) {
-            alert("Por favor, ingresa una Orden de Venta.");
-            return;
-        }
-
-        // Realizar la petición AJAX
         $.ajax({
-            url: "{{ route('corte.filtroData') }}", // Ruta para obtener los datos filtrados por orden de venta
-            method: "GET",
-            data: {
-                query: query, // Parámetro para enviar al backend
-            },
-            success: function (response) {
-                // Limpiar la tabla
-                table.clear();
+            url: '{{ route("corte.getDetalleOrden") }}', // Ruta para obtener los detalles
+            type: 'GET',
+            data: { id: ordenFabricacionId },
+            success: function(response) {
+                if (response.success) {
+                    $('#modalBodyContent').html(`
+                        <tr><td><strong>Orden de Fabricación:</strong></td><td>${response.data.OrdenFabricacion}</td></tr>
+                        <tr><td><strong>Artículo:</strong></td><td>${response.data.Articulo}</td></tr>
+                        <tr><td><strong>Descripción:</strong></td><td>${response.data.Descripcion}</td></tr>
+                        <tr><td><strong>Cantidad Total:</strong></td><td>${response.data.CantidadTotal}</td></tr>
+                        <tr><td><strong>Fecha Entrega SAP:</strong></td><td>${response.data.FechaEntregaSAP}</td></tr>
+                        <tr><td><strong>Fecha Entrega:</strong></td><td>${response.data.FechaEntrega}</td></tr>
+                    `);
+                    $('#ordenFabricacionId').val(response.data.id);
+                    
+                    // Obtener y mostrar los cortes registrados
+                    $.ajax({
+                        url: '{{ route("corte.getCortes") }}',
+                        type: 'GET',
+                        data: { id: ordenFabricacionId },
+                        success: function(cortesResponse) {
+                            if (cortesResponse.success) {
+                                var cortesHtml = '';
+                                cortesResponse.data.forEach(function(corte, index) {
+                                    cortesHtml += `
+                                        <tr>
+                                            <td>${index + 1}</td>
+                                            <td>${corte.cantidad_partida}</td>
+                                            <td>${corte.fecha_fabricacion}</td>
+                                             <td>
+                                                <button type="button" class="btn btn-warning btn-finalizar" data-id="${corte.id}">Finalizar</button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                });
+                                $('#tablaCortes tbody').html(cortesHtml);
+                            } else {
+                                $('#tablaCortes tbody').html('<tr><td colspan="3" class="text-center">No se encontraron cortes.</td></tr>');
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error(xhr.responseText);
+                            alert('Error al obtener los cortes.');
+                        }
+                    });
 
-                if (response.data && response.data.length > 0) {
-                    // Insertar los datos nuevos en la tabla
-                    renderTableData(response.data);
-                    $('#noDataMessageOV').hide(); // Ocultar mensaje de no resultados
+                    $('#modalDetalleOrden').modal('show');
                 } else {
-                    $('#noDataMessageOV').show(); // Mostrar mensaje "No se encontraron resultados"
+                    alert('Error: ' + response.message);
                 }
             },
-            error: function (xhr, status, error) {
-                console.error('Error:', error);
-                alert('Ocurrió un error. Por favor, intenta nuevamente.');
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert('Error al obtener los detalles de la orden.');
             }
         });
-    });
 
-    // Filtro por Fecha
-    $('#buscarFecha').on('click', function (e) {
-        e.preventDefault();
+        // Finalizar corte
+        $(document).on('click', '.btn-finalizar', function() {
+            var corteId = $(this).data('id'); 
+            var fechaHoraActual = new Date().toISOString().slice(0, 19).replace('T', ' '); 
 
-        var fecha = $('#fecha').val().trim(); // Obtener la fecha seleccionada
-
-        if (!fecha) {
-            alert("Por favor, selecciona una fecha.");
-            return;
-        }
-
-        // Realizar la petición AJAX
-        $.ajax({
-            url: "{{ route('corte.filtroFechaData') }}", // Ruta para obtener los datos filtrados por fecha
-            method: "GET",
-            data: {
-                fecha: fecha, // Parámetro para enviar al backend
-            },
-            success: function (response) {
-                // Limpiar la tabla
-                table.clear();
-
-                if (response.data && response.data.length > 0) {
-                    // Insertar los datos nuevos en la tabla
-                    renderTableData(response.data);
-                    $('#noDataMessageFecha').hide(); // Ocultar mensaje de no resultados
-                } else {
-                    $('#noDataMessageFecha').show(); // Mostrar mensaje "No se encontraron resultados"
+            $.ajax({
+                url: '{{ route("corte.finalizarCorte") }}', 
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}', 
+                    id: corteId, 
+                    fecha_finalizacion: fechaHoraActual 
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Corte finalizado correctamente.');
+                        cargarTablaCortes(); 
+                    } else {
+                        alert('Error al finalizar el corte: ' + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    alert('Error al finalizar el corte.');
                 }
-            },
-            error: function (xhr, status, error) {
-                console.error('Error:', error);
-                alert('Ocurrió un error. Por favor, intenta nuevamente.');
-            }
+            });
         });
+
     });
 
-    // Función para renderizar los datos en la tabla
-    function renderTableData(data) {
-        var rows = '';
-        data.forEach(function (item) {
-            rows += `<tr>
-                        <td>${item.orden_fabricacion}</td>
-                        <td>${item.fecha_entrega}</td>
-                        <td>${item.articulo}</td>
-                        <td>${item.OrdenVentaArticulo || 'N/A'}</td>
-                        <td><button class="btn btn-info btn-sm ver-detalles" data-id="${item.id}">Ver Detalles</button></td>
-                    </tr>`;
+    // Manejo del evento cuando el modal es mostrado
+    $('#modalDetalleOrden').on('shown.bs.modal', function() {
+        $(this).removeAttr('aria-hidden'); // Asegura que aria-hidden se actualice correctamente
+        $(this).find('button').first().focus(); // Enfoca el primer botón en el modal
+    });
 
-        });
-        // Agregar las nuevas filas en la tabla
-        table.rows.add($(rows)).draw();
-    }
+    // Manejo del evento cuando el modal es ocultado
+    $('#modalDetalleOrden').on('hidden.bs.modal', function() {
+        $('#triggerButton').focus(); // Devuelve el enfoque al botón que abrió el modal
+    });
 
-    // Evento para guardar cortes del día
-   /* $('#guardarCortes').on('click', function () {
-        const numCortes = $('#numCortes').val();
-        if (numCortes === "" || parseInt(numCortes) < 0) {
+    // Confirmar y guardar los cortes
+    $('#confirmar').click(function() {
+        var numCortes = $('#numCortes').val().trim();
+        var ordenFabricacionId = $('#ordenFabricacionId').val();
+
+        // Verificar si numCortes es un número válido
+        if (!numCortes || numCortes <= 0 || isNaN(numCortes)) {
             alert('Por favor, ingrese un número válido de cortes.');
             return;
         }
-        // Mostrar resumen de cortes guardados
-        $('#cortesGuardados').html(
-            <p><strong>Cortes registrados hoy:</strong> ${numCortes} cortes</p>
-        );
-        // Limpiar el campo de entrada
-        $('#numCortes').val('');
-    });*/
 
-    // Evento para ver detalles de una orden de fabricación
-    /*$(document).on('click', '.ver-detalles', function () {
-        var id = $(this).data('id');  // Obtener el ID de la orden
+        // Verificar si se ha seleccionado una orden de fabricación
+        if (!ordenFabricacionId) {
+            alert('No se ha seleccionado una orden de fabricación.');
+            return;
+        }
+
+        // Solicitar la cantidad total de la orden de fabricación
         $.ajax({
-            url: '/detalles/' + id,  // URL donde se cargan los detalles
-            method: 'GET',
+            url: '{{ route("ordenFabricacion.getCantidadTotal", ":id") }}'.replace(':id', ordenFabricacionId),
+            type: 'GET',
             success: function(response) {
-                // Si la respuesta es exitosa, insertar los datos en el modal
-                $('#modalBodyContent').html(
-                    <tr> <td><strong>Orden de Fabricación:</strong> ${response.orden_fabricacion.orden_fabricacion}</td></tr>
-                    <tr><td><strong>Fecha de Entrega:</strong> ${response.orden_fabricacion.fecha_entrega}</td></tr>
-                    <tr><td><strong>Articulo:</strong> ${response.orden_fabricacion.articulo}</td></tr>
-                    <tr><td><strong>Articulo Orden Venta:</strong> ${response.orden_fabricacion.orden_venta_articulo}</td></tr>
-                    <tr><td><strong>Estado:</strong> ${response.orden_fabricacion.estado}</td></tr>
-                );
+                if (response.success) {
+                    var cantidadTotal = response.cantidad_total;
 
-                // Mostrar el modal después de cargar los datos
-                $('#modalDetalleOrden').modal('show');
-            },
-            error: function() {
-                alert('No se pudieron cargar los detalles.');
-            }
-        });
-    });
-    $(document).on('click', '#confirmarOrden', function () {
-    // Obtener los valores necesarios
-    var ordenFabricacionId = $("#orden_fabricacion_id").val();
-    var cantidadCortes = $("#cantidad_cortes").val();
-    var cantidad = $("#cantidad").val();
+                    // Verificar si los cortes no exceden la cantidad total de la orden
+                    if (numCortes > cantidadTotal) {
+                        alert('El número de cortes no puede exceder la cantidad total de la orden (' + cantidadTotal + ').');
+                        return;
+                    }
 
-    // Validar los campos
-    /*if (!ordenFabricacionId || !cantidadCortes || !cantidad) {
-        alert("Por favor, completa todos los campos.");
-        return;
-    }*/
+                    // Si el número de cortes es válido, enviar los datos
+                    var datosPartidas = [{
+                        cantidad_partida: numCortes,  
+                        fecha_fabricacion: new Date().toISOString().split('T')[0], 
+                        orden_fabricacion_id: ordenFabricacionId
+                    }];
 
-    // Realizar la petición AJAx
-    /*$.ajax({
-            url: "{{ route('partida.guardar') }}",  // Ruta para guardar los datos
-            method: "POST",
-            data: {
-                _token: '{{ csrf_token() }}',  // Token CSRF para seguridad
-                orden_fabricacion_id: ordenFabricacionId,
-                cantidad_cortes: cantidadCortes,
-                cantidad: cantidad
-            },
-            success: function (response) {
-                // Limpiar y actualizar la tabla con los nuevos datos
-                table.clear();
+                    console.log('Datos a enviar:', datosPartidas);
 
-                if (response.data && response.data.length > 0) {
-                    renderTableData(response.data);  // Reutilizar la función para renderizar datos
-                    alert("Orden confirmada con éxito.");
+                    // Enviar los datos al servidor
+                    $.ajax({
+                        url: '{{ route("guardar.partida") }}',
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            datos_partidas: datosPartidas
+                        },
+                        success: function(response) {
+                            console.log('Respuesta del servidor:', response);  // Agregar esta línea para depuración
+                            if (response.status === 'success') {
+                                alert('Partidas guardadas correctamente.');
+                                // Aquí puedes añadir lógica adicional si quieres actualizar algo en la página
+                            } else {
+                                alert('Errores: ' + response.errores.join(', '));
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error al guardar partidas:', xhr.responseText);
+                            alert('Error al guardar las partidas: ' + xhr.responseText);
+                        }
+                    });
                 } else {
-                    alert("No se encontraron datos para actualizar.");
+                    alert('Error al obtener la cantidad total de la orden.');
                 }
             },
-            error: function (xhr, status, error) {
-                console.error('Error:', error);
-                alert('Ocurrió un error al guardar la orden. Por favor, intenta nuevamente.');
+            error: function(xhr, status, error) {
+                console.error('Error al obtener la cantidad total:', xhr.responseText);
+                alert('Error al obtener la cantidad total de la orden.');
             }
         });
     });
 
-}); 
-*/
+    // Guardar los cortes cuando se haga clic en "Guardar Cortes"
+    $('#guardarCortes').on('click', function() {
+        var numCortes = $('#numCortes').val();
+        
+        if (numCortes && numCortes >= 0) {
+            $('#cortesGuardados').text('Cortes guardados: ' + numCortes);
+            $('#numCortes').val('');
+        } else {
+            alert('Por favor, ingrese un número válido de cortes.');
+        }
+    });
+     // Filtrado por fecha
+     $('#buscarFecha').click(function(e) {
+        e.preventDefault(); 
+        var fechaSeleccionada = $('#fecha').val();
+        
+        if (!fechaSeleccionada) {
+            table.rows().show();
+            $('#noDataMessageFecha').hide();
+            return;
+        }
 
+        var fechaSeleccionadaObj = new Date(fechaSeleccionada);
+        var fechaSeleccionadaString = fechaSeleccionadaObj.toISOString().split('T')[0];
+
+        table.rows().every(function() {
+            var row = this.node();
+            var fechaEntrega = $(row).find('td:eq(5)').text().trim();
+            var fechaEntregaObj = new Date(fechaEntrega);
+            var fechaEntregaString = fechaEntregaObj.toISOString().split('T')[0];
+
+            if (fechaEntregaString === fechaSeleccionadaString) {
+                $(row).show();
+            } else {
+                $(row).hide();
+            }
+        });
+
+        if ($('#ordenFabricacionTable tbody tr:visible').length === 0) {
+            $('#noDataMessageFecha').show();
+        } else {
+            $('#noDataMessageFecha').hide();
+        }
+    });
+
+    // Buscar orden de venta
+    $('#buscarOV').on('click', function(event) {
+        event.preventDefault();
+        var query = $('#query').val();
+
+        if (query) {
+            $.ajax({
+                url: '/buscar-ordenes',
+                type: 'GET',
+                data: { query: query },
+                beforeSend: function() {
+                    $('#ordenFabricacionTabletbody').html("<tr><td colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></td></tr>");
+                },
+                success: function(response) {
+                    $('#ordenFabricacionTabletbody').empty();
+                    if (response.length > 0) {
+                        let seen = new Set();
+                        let uniqueResults = response.filter(item => {
+                            const isDuplicate = seen.has(item.OrdenFabricacion);
+                            seen.add(item.OrdenFabricacion);
+                            return !isDuplicate;
+                        });
+
+                        uniqueResults.forEach(function(item) {
+                            $('#ordenFabricacionTabletbody').append(`
+                                <tr>
+                                    <td>${item.OrdenFabricacion}</td>
+                                    <td>${item.Articulo}</td>
+                                    <td>${item.Descripcion}</td>
+                                    <td>${item.CantidadTotal}</td>
+                                    <td>${item.FechaEntregaSAP}</td>
+                                    <td>${item.FechaEntrega}</td>
+                                    <td>
+                                        <button class="btn btn-info btn-sm ver-detalles"
+                                                data-id="${item.id}"
+                                                data-orden-fabricacion="${item.OrdenFabricacion}"
+                                                data-articulo="${item.Articulo}"
+                                                data-descripcion="${item.Descripcion}"
+                                                data-cantidad-total="${item.CantidadTotal}"
+                                                data-fecha-entrega-sap="${item.FechaEntregaSAP}"
+                                                data-fecha-entrega="${item.FechaEntrega}">
+                                            Ver Detalles
+                                        </button>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                        $('.ver-detalles').off('click').on('click', function() {
+                        var ordenFabricacionId = $(this).data('id');
+                        $('#ordenFabricacionId').val(ordenFabricacionId);
+                    });
+
+                    } else {
+                        $('#ordenFabricacionTable').append(`
+                            <tr>
+                                <td colspan="8" class="text-center">No se encontraron resultados para la orden ingresada.</td>
+                            </tr>
+                        `);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Error al buscar la orden: ' + error);
+                }
+            });
+        } else {
+            alert('Por favor, ingresa un valor para buscar.');
+        }
+    });
+    
+
+});
 
 
 </script>
