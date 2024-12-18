@@ -109,6 +109,101 @@ class CorteController extends Controller
             'message' => 'Las partidas se guardaron correctamente',
         ]);
     }
-}    
+    public function getDetalleOrden(Request $request)
+    {
+        $ordenId = $request->id;
+
+        if (!$ordenId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ID no proporcionado.',
+            ]);
+        }
+
+        try {
+            // Busca los datos exactos con el modelo configurado
+            $detalle = DB::table('OrdenFabricacion')->where('id', $ordenId)->first();
+
+            if (!$detalle) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se encontró la orden de fabricación.',
+                ]);
+            }
+
+            // Devuelve los datos correctamente formateados
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'id' => $detalle->id,
+                    'OrdenFabricacion' => $detalle->OrdenFabricacion,
+                    'Articulo' => $detalle->Articulo,
+                    'Descripcion' => $detalle->Descripcion,
+                    'CantidadTotal' => $detalle->CantidadTotal,
+                    'FechaEntregaSAP' => $detalle->FechaEntregaSAP,
+                    'FechaEntrega' => $detalle->FechaEntrega,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener los detalles: ' . $e->getMessage(),
+            ]);
+        }
+    }
+    public function getCortes(Request $request)
+    {
+        $ordenFabricacionId = $request->id;
+
+        // Obtiene las partidas relacionadas con la orden de fabricación
+        $partidas = PartidasOF::where('orden_fabricacion_id', $ordenFabricacionId)
+                            ->orderBy('created_at', 'desc') // Puedes ordenar si lo deseas
+                            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $partidas
+        ]);
+    }
+    public function finalizarCorte(Request $request)
+    {
+        // Validar que el ID exista y que la fecha sea válida
+        $request->validate([
+            'id' => 'required|exists:partidas_of,id', // Validar que el ID exista en la tabla
+            'fecha_finalizacion' => 'required|date', // Validar que sea una fecha válida
+        ]);
+
+        // Buscar el registro basado en el ID
+        $corte = PartidasOF::find($request->id);
+
+        // Actualizar el campo FechaFinalizacion
+        $corte->FechaFinalizacion = $request->fecha_finalizacion;
+        $corte->save();
+
+        // Retornar una respuesta de éxito
+        return response()->json([
+            'success' => true,
+            'message' => 'Corte finalizado correctamente.'
+        ]);
+    }
+    // OrdenFabricacionController.php
+    public function getCantidadTotal($id)
+    {
+        $ordenFabricacion = OrdenFabricacion::find($id);
+
+        if ($ordenFabricacion) {
+            return response()->json(['success' => true, 'cantidad_total' => $ordenFabricacion->CantidadTotal]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Orden de fabricación no encontrada.']);
+    }
+
+
+
+
+    
+}
+
+
 
 

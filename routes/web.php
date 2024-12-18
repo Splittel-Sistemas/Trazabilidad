@@ -31,6 +31,20 @@ Route::get('/detalles', [CorteController::class, 'verDetalles'])->name('detalles
 
 Route::get('/buscar-ordenes', [CorteController::class, 'buscarOrdenVenta'])->name('buscar.ordenes');
 Route::post('/cortes/filtrarFecha', [CorteController::class, 'filtrarPorFecha'])->name('corte.filtrarFecha');
+Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden');
+
+Route::get('corte/getCortes', [CorteController::class, 'getCortes'])->name('corte.getCortes');
+
+Route::post('corte/finalizar/corte', [CorteController::class, 'finalizarCorte'])->name('corte.finalizarCorte');
+
+Route::get('/orden-fabricacion/cantidad-total/{id}', [CorteController::class, 'getCantidadTotal'])->name('ordenFabricacion.getCantidadTotal');
+
+
+
+
+
+
+
 
 
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
