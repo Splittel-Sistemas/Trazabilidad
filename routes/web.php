@@ -23,14 +23,12 @@ Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Deta
 
 Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
 Route::get('/cortes/getData', [CorteController::class, 'getData'])->name('corte.getData');
-Route::get('corte/getOrdenDetails', [CorteController::class, 'getOrdenDetails'])->name('corte.getOrdenDetails');
+
 Route::get('/detalles', [CorteController::class, 'verDetalles'])->name('detalles');
 
 
-
-
 Route::get('/buscar-ordenes', [CorteController::class, 'buscarOrdenVenta'])->name('buscar.ordenes');
-Route::post('/cortes/filtrarFecha', [CorteController::class, 'filtrarPorFecha'])->name('corte.filtrarFecha');
+
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden');
 
 Route::get('corte/getCortes', [CorteController::class, 'getCortes'])->name('corte.getCortes');
@@ -40,18 +38,10 @@ Route::post('corte/finalizar/corte', [CorteController::class, 'finalizarCorte'])
 Route::get('/orden-fabricacion/cantidad-total/{id}', [CorteController::class, 'getCantidadTotal'])->name('ordenFabricacion.getCantidadTotal');
 
 
-
-
-
-
-
-
-
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
 
 
 
-Route::post('/confirmar-orden', [CorteController::class, 'confirmarOrden'])->name('corte.confirmarOrden');
 
 //Route::get('/', [HomeController::class,'Home'])->name('home');
 /*use Illuminate\Support\Facades\Route;
