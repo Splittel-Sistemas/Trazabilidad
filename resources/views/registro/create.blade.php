@@ -25,7 +25,7 @@
 
             <div class="form-group mb-3">
                 <label for="nombre">Nombre</label>
-                <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Ingrese su nombre" required>
+                <input type="text" name="name" id="name" class="form-control" placeholder="Ingrese su nombre" required>
             </div>
 
             <div class="form-group mb-3">
