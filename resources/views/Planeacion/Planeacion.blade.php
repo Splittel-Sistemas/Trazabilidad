@@ -255,9 +255,9 @@
     </div>
 </div>
 <!--Boton para abrir las Partidas fatantes para planeacion-->
-<div id="MostrarBtnFaltantes" style="position: fixed; bottom: 2rem; right: 3.5rem; z-index: 1049;display: none;">
+<!--<div id="MostrarBtnFaltantes" style="position: fixed; bottom: 2rem; right: 3.5rem; z-index: 1049;display: none;">
       <button type="button" class="btn btn-danger float-end m-1" data-toggle="modal" onclick="LlenarTablaVencidas()" data-target="#ModalPlaneacionVencidos">Mostrar Partidas faltantes</button>
-</div>
+</div>-->
 <!-- Modal Planeacion de Ordenes de Fabricacion vencido o por vencer-->
 <div id="ModalPlaneacionVencidos" class="modal fade" tabindex="-2" role="dialog" aria-labelledby="ModalPlaneacionVencidosLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" style="max-width: 90%; width: 90%;">
@@ -279,7 +279,7 @@
                                             <span id="filtro-fecha-Ov_Vencidas">Órdenes de Venta <br> <p>faltantes de Planeación </p></span>
                                             <div class="input-group ">
                                                 <!--<input type="text" placeholder="Ingresa una Orden de Venta" name="filtro_ov_tabla" oninput="filtro_ov_tabla(this.value);" id="filtro_ov_tabla" class="form-control form-control-sm   w-autoborder-primary col-12">-->
-                                                <input type="text" placeholder="Ingresa una Orden de Venta" name="Filtro_buscarOV_Vencidas" id="Filtro_buscarOV_Vencidas"  class="form-control form-control-sm   w-autoborder-primary col-12">
+                                                <input type="text" placeholder="Ingresa una Orden de Venta" oninput="filtro_ov_tabla(this.value)" name="Filtro_buscarOV_Vencidas" id="Filtro_buscarOV_Vencidas"  class="form-control form-control-sm   w-autoborder-primary col-12">
                                                 <div class="input-group-btn">
                                                     <button class="btn btn-primary btn-sm">
                                                         <i class="fa fa-search"></i> buscar
@@ -313,9 +313,9 @@
                             <div class="col-12 mb-3">
                                 <label for="Filtrofecha_table2">Selecciona una fecha:</label>
                                 <div class="input-group ">
-                                    <input type="date" name="FiltroOF_Fecha_table2_vencidas"  id="FiltroOF_Fecha_table2_vencidas" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
+                                    <input type="date" name="FiltroOF_Fecha_table2_vencidas" onchange="PartidasOF_modal(this)"  id="FiltroOF_Fecha_table2_vencidas" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
                                     <div class="input-group-btn">
-                                        <button id="buscarOV_vencidas" class="btn btn-primary btn-sm">
+                                        <button id="buscarOV_vencidas" onclick="RecargarTablaOF();" class="btn btn-primary btn-sm">
                                             Mostrar
                                         </button>
                                     </div>
@@ -373,9 +373,9 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
-        setTimeout(function() {
+        /*setTimeout(function() {
             MostrarBtnFaltantes('MostrarBtnFaltantes');
-        }, 35000);
+        }, 35000);*/
         $('#element').toast('show');
         TablaOrdenFabricacion("{{$FechaFin}}");
     $('#Filtro_fecha-btn').click(function() {
@@ -918,350 +918,47 @@
     function MostrarBtnFaltantes(boton){
         $('#'+boton).fadeIn(1000);
     }
-
-</script>
-<!---------------------------------------------------------------------------------->
-<script>
-    /*
- //let consultasMigradas = new Set(); // IDs de filas ya migradas
- let consultasMigradas = new Set(); // IDs de filas ya migradas
-
-function drag(event) {
-    const targetRow = event.target.closest('tr'); // Fila que se está arrastrando
-    const uniqueId = targetRow.id; // ID único de la fila
-    event.dataTransfer.setData("text", uniqueId); // Permitir el arrastre
-}
-
-function drop(event) {
-    event.preventDefault();
-
-    const draggedId = event.dataTransfer.getData("text"); // ID de la fila arrastrada
-    const draggedRow = document.getElementById(draggedId); // Fila arrastrada
-
-    if (draggedRow) {
-        if (!consultasMigradas.has(draggedId)) {
-            // Intentar guardar los datos automáticamente
-            guardarRow(draggedRow, draggedId);
-        } else {
-            console.warn("La fila ya fue migrada previamente:", draggedId);
-            alert("Esta fila ya fue migrada previamente.");
-        }
-    } else {
-        console.error("Fila arrastrada no encontrada:", draggedId);
+    function PartidasOF_modal(fecha){
+        TablaOrdenFabricacion(fecha.value);
     }
-}
-
-function regresarRow(rowId) {
-    const migratedRow = document.getElementById(`migrated-${rowId}`);
-
-    if (migratedRow) {
-        const originalRow = document.getElementById(rowId);
-        if (originalRow) {
-            originalRow.style.display = ""; // Mostrar la fila original
-            consultasMigradas.delete(rowId);
-        }
-
-        migratedRow.remove(); // Eliminar la fila migrada de la tabla 2
-    }
-}
-
-function allowDrop(event) {
-    event.preventDefault(); // Permitir el drop
-}
-
-function guardarRow(row, draggedId) {
-    console.log("Intentando guardar fila:", draggedId); // Log para depurar
-
-    // Extraer datos de la fila
-    const ordenFab = row.cells[0].innerText.trim();
-    const articulo = row.cells[1].innerText.trim();
-    const descripcion = row.cells[2].innerText.trim();
-    const cantidadOf = parseFloat(row.cells[3].innerText.trim()) || null;
-    const fechaEntrega = row.cells[4].innerText.trim() || null;
-
-    // Enviar datos al servidor mediante AJAX
-    $.ajax({
-        url: "{{--route('guardarDatos')--}}", // Ruta del endpoint
-        method: "POST",
-        data: {
-            orden_fab: ordenFab,
-            articulo: articulo,
-            descripcion: descripcion,
-            cantidad_of: cantidadOf,
-            fecha_entrega: fechaEntrega,
-            _token: "{{ csrf_token() }}" // CSRF Token para Laravel
-        },
-        success: function (response) {
-            if (response.status === "success") {
-                console.log("Datos guardados correctamente:", response.data);
-                alert("Fila guardada correctamente.");
-                consultasMigradas.add(draggedId); // Marcar la fila como migrada
-
-                // Agregar la fila a la tabla migrada
-                const newRow = document.createElement("tr");
-                newRow.innerHTML = row.innerHTML;
-
-                // Agregar botón "Regresar"
-                const regresarButton = `
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick="regresarRow('${draggedId}')">Regresar</button>
-                    </td>`;
-                newRow.innerHTML += regresarButton;
-
-                // Asignar un ID único a la nueva fila
-                newRow.id = `migrated-${draggedId}`;
-                document.getElementById("table-2-content").appendChild(newRow);
-
-                // Ocultar la fila original en la tabla 1
-                row.style.display = "none";
+    // Función para buscar una palabra en una tabla con clase 'table-light'
+    function buscarPalabraEnTabla(palabra) {
+        // Obtener todas las filas de la tabla con la clase 'table-light'
+        const filas = document.querySelectorAll('.table-light tbody tr');
+        
+        // Iterar sobre cada fila
+        filas.forEach(fila => {
+            // Obtener todas las celdas (td) de la fila
+            const celdas = fila.querySelectorAll('td');
+            
+            // Convertir las celdas a un array para usar includes
+            const celdasTexto = Array.from(celdas).map(celda => celda.textContent.trim());
+            
+            // Verificar si la palabra está presente en alguna celda
+            if (celdasTexto.some(texto => texto.toLowerCase().includes(palabra.toLowerCase()))) {
+                // Si la palabra está presente, resaltar la fila
+                fila.style.backgroundColor = 'yellow';  // Puedes cambiar el color de fondo si lo deseas
             } else {
-                alert("Error al guardar los datos: " + response.message);
-            }
-        },
-        error: function (xhr, status, error) {
-            if (xhr.responseJSON && xhr.responseJSON.status === "exists") {
-                alert("Esta fila ya existe en la base de datos.");
-            } else {
-                console.error("Error al guardar los datos:", xhr.responseText);
-                alert("Hubo un error al guardar los datos.");
-            }
-        }
-    });
-}
-
-
-
-//
- $(document).ready(function() {
-    $('#botonBuscar').click(function() {
-        var docNum = $('#docNum').val();  
-        $.ajax({
-            url: "{{--route('datospartida')--}}", 
-            type: 'POST',
-            data: {
-                docNum: docNum,  
-                _token: '{{ csrf_token() }}'  
-            },
-            success: function(response) {
-                if (response.status === 'success') {
-                    $('#resultado').html(response.message);  
-                } else {
-                    alert(response.message);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error en la solicitud AJAX:', status, error);
-                alert('Hubo un error al obtener las partidas. Intenta nuevamente.');
+                // Si no está presente, dejar la fila sin cambios
+                fila.style.backgroundColor = ''; 
             }
         });
-    });
-});
-
- $(document).ready(function () {
-    $('#buscarOV').on('click', function (e) {
-        e.preventDefault();
-
-        var query = $('#query').val().trim(); 
-
-        if (!query) {
-            alert("Por favor, ingresa una Orden de Venta.");
-            return;
-        }
-
-        $.ajax({
-            url: "{{--route('filtro')--}}", 
-            method: "POST",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') 
-            },
-            data: {
-                query: query, 
-            },
-            success: function (response) {
-                if (response.status === 'success') {
-                    $('#table_OV_body').html(response.data); 
-                } else {
-                    $('#table_OV_body').html(response.message); 
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Error:', error);
-                alert('Ocurrió un error. Por favor, intenta nuevamente.');
-            }
-        });
-    });
-});
-
- $(document).ready(function() {
-    $('#filtroForm').on('submit', function(e) {
-        e.preventDefault(); 
-        var startDate = $('#startDate').val();
-        var endDate = $('#endDate').val();
-        var query = $('#query').val() || ''; 
-        if (new Date(startDate) > new Date(endDate)) {
-            alert("La fecha de inicio no puede ser posterior a la fecha de fin.");
-            return;
-        }
-        $.ajax({
-            url: "{{--route('filtros')--}}", 
-            method: "POST",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: {
-                startDate: startDate,
-                endDate: endDate,
-                query: query
-            },
-            success: function(response) {
-                if (response.status === 'success') {
-                    $('#table_OV_body').html(response.data); 
-                } else {
-                    $('#table_OV_body').html('<p class="text-center m-4">'+ response.message+'</p>');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-                alert('Ocurrió un error. Por favor, intenta nuevamente.');
-            }
-        });
-    });
-});
- $(document).ready(function () {
-$.ajaxSetup({
-    headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
-});
-let currentDate = moment();
-const datePicker = $('#datePicker');
-datePicker.val(currentDate.format('YYYY-MM-DD'));
-
-function filterOrdersByDate(date) {
-    let foundAnyOrder = false;
-
-    $('.order-row').each(function () {
-        const rowDate = $(this).data('date');
-        if (rowDate === date) {
-            $(this).show();
-            foundAnyOrder = true;
-        } else {
-            $(this).hide();
-        }
-    });
-
-    $('#noOrdersRow').toggleClass('d-none', foundAnyOrder);
-}
-
-datePicker.on('change', function () {
-    filterOrdersByDate($(this).val());
-});
-
-$('#prevDayBtn').on('click', function (e) {
-    e.preventDefault();
-    currentDate.subtract(1, 'days');
-    datePicker.val(currentDate.format('YYYY-MM-DD'));
-    filterOrdersByDate(currentDate.format('YYYY-MM-DD'));
-});
-
-$('#todayBtn').on('click', function (e) {
-    e.preventDefault();
-    currentDate = moment();
-    datePicker.val(currentDate.format('YYYY-MM-DD'));
-    filterOrdersByDate(currentDate.format('YYYY-MM-DD'));
-});
-
-$('#searchForm').on('submit', function (e) {
-    e.preventDefault();
-    const docNum = $('#ordenSearch').val();
-    loadContent(docNum);
-});
-});
-function loadContent(idcontenedor, docNum, cliente) {
-    let elemento = document.getElementById(idcontenedor + "cerrar");
-    if (!elemento.classList.contains('collapsed')) {
-        $.ajax({
-            url: "{{route('PartidasOF')}}",
-            method: "POST",
-            data: {
-                docNum: docNum, 
-                cliente:cliente,
-                _token: '{{ csrf_token() }}'
-            },
-            beforeSend: function () {
-                $('#' + idcontenedor + "llenar").html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>");
-            },
-            success: function (response) {
-                if (response.status === 'success') {
-                    $('#' + idcontenedor + "llenar").html(response.message);
+    function filtro_ov_tabla(ov){
+        campo=0;
+        let filas = document.querySelectorAll("#table_OV_Vencidas tbody tr");
+        $('#table_OV_Vencidas .collapse').collapse('hide');
+        filas.forEach(fila => {  
+            let valorCelda = fila.cells[campo].innerText.trim();
+            if(fila.id.includes("cerrar")){
+                if (valorCelda.includes(ov)) {
+                fila.style.display = ""; 
                 } else {
-                    $('#' + idcontenedor + "llenar").html('<p>Error al cargar el contenido.</p>');
+                fila.style.display = "none"; 
                 }
-            },
-            error: function (xhr, status, error) {
-                $('#' + idcontenedor + "llenar").html('<p>Error al cargar el contenido.</p>');
             }
         });
-    } else {
-        $('#' + idcontenedor + "llenar").html('');
     }
-    //
-    //function drag(event) {
-    //    event.dataTransfer.setData("text", event.target.id);
-    //}
-}
-document.getElementById('filtro_ov').addEventListener('click', function(event) {
-    btn=document.getElementById('filtro_ov');
-    if (!btn.classList.contains('collapsed')) {
-        btn.innerHTML='<i class="fa fa-chevron-up"></i>';
-    }else{
-        btn.innerHTML='<i class="fa fa-chevron-down"></i>';
-    }
-});
-function filtro_ov_tabla(ov){
-    campo=0;
-    let filas = document.querySelectorAll("#table_OV tbody tr");
-    $('#table_OV .collapse').collapse('hide');
-    filas.forEach(fila => {  
-    let valorCelda = fila.cells[campo].innerText.trim();
-    if(fila.id.includes("cerrar")){
-        if (valorCelda.includes(ov)) {
-        fila.style.display = ""; 
-        } else {
-        fila.style.display = "none"; 
-        }
-    }
-  });
-}
-function filtro_fecha(startDate,endDate,query){
-    e.preventDefault(); 
-        if (new Date(startDate) > new Date(endDate)) {
-            alert("La fecha de inicio no puede ser posterior a la fecha de fin.");
-            return;
-        }
-        $.ajax({
-            url: "{{--route('filtros')--}}", 
-            method: "POST",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: {
-                startDate: startDate,
-                endDate: endDate,
-                query: query
-            },
-            success: function(response) {
-                if (response.status === 'success') {
-                    $('#table_OV_body').html(response.data); 
-                } else {
-                    $('#table_OV_body').html('<p class="text-center m-4">'+ response.message+'</p>');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-                alert('Ocurrió un error. Por favor, intenta nuevamente.');
-            }
-        });
-}*/
+
 </script>
 @endsection

@@ -353,12 +353,13 @@ class PlaneacionController extends Controller
             if (!empty($OF)) {
                 $OV=$OF->ordenVenta()->get();
                 $OV=$OV[0]->OrdenVenta;
-                //return $OV;
+                $datos_partida=$this->FiltroWhereOrdenFabicacion($OV,$OF->OrdenFabricacion);
+                $datos_partida=isset($datos_partida[0]['LineNum'])?$datos_partida[0]['LineNum']:1999;
                 $RegistrosBuffer = new RegistrosBuffer();
                 $RegistrosBuffer->FechasBuffer_id=1;
                 $RegistrosBuffer->OrdenVentaB=$OV;
                 $RegistrosBuffer->OrdenFabricacionB=$OF->OrdenFabricacion;
-                $RegistrosBuffer->NumeroLineaB=1999;
+                $RegistrosBuffer->NumeroLineaB=$datos_partida;
                 $OF_OrdenFabricacion=$OF->OrdenFabricacion;
                 $RegistrosBuffer->save();
             $bandera_borrar=$OF->delete();
@@ -561,6 +562,7 @@ class PlaneacionController extends Controller
             ]);
         }
     }
+    // Funcion filtro por Orden de venta o Orden fabricacion
     public function PlaneacionFOFOV(Request $request){
         $FiltroOF_table2=$request->input('FiltroOF_table2');
         $datos=OrdenFabricacion::join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
@@ -590,6 +592,7 @@ class PlaneacionController extends Controller
             ]);
         }
     }
+    //Funcion para guardar las partidas que estan pendientes
     public function LlenarTablaBuffer(){
         try{
             $FiltroFecha = date('Y-m-d', strtotime('-2 day'));
@@ -603,7 +606,7 @@ class PlaneacionController extends Controller
                     $comprobar_existe=$this->comprobar_existe_partida($orden['OV'], $ordenf['Orden de F.']);
                     if($comprobar_existe==0){
                         $RegistrosBuffer = new RegistrosBuffer();
-                        $RegistrosBuffer->FechasBuffer_id=$id_FechasBuffer;
+                        $RegistrosBuffer->FechasBuffer_id=$FechasBuffer->id;
                         $RegistrosBuffer->OrdenVentaB=$orden['OV'];
                         $RegistrosBuffer->OrdenFabricacionB=isset($ordenf['Orden de F.'])?$ordenf['Orden de F.']:"";
                         $RegistrosBuffer->NumeroLineaB=$ordenf['LineNum'];
@@ -616,5 +619,31 @@ class PlaneacionController extends Controller
         }
         return "Datos guardados correctamente::".$FiltroFecha;
     }
-
+    //Funcion Where para traer una Orden de fabricacion mandandole OV y OF
+    public function FiltroWhereOrdenFabicacion($ordenventa,$ordenfabricacion){
+        //datos para la consulta
+        $schema = 'HN_OPTRONICS';
+        if (empty($ordenventa)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'El número de orden no fue proporcionado.'
+            ]);
+        }
+        //Consulta a SAP para traer las partidas de una OV
+        $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
+                    T1.\"Dscription\" AS \"Descripcion\", 
+                    ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
+                    T2.\"DueDate\" AS \"Fecha entrega OF\", 
+                    T1.\"PoTrgNum\" AS \"Orden de F.\" ,
+                    T1.\"LineNum\" AS \"LineNum\"
+                FROM {$schema}.\"ORDR\" T0
+                INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
+                LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
+                WHERE T0.\"DocNum\" = '{$ordenventa}'  
+                AND T1.\"PoTrgNum\" ='{$ordenfabricacion}'
+                ORDER BY T1.\"VisOrder\"";
+        //Ejecucion de la consulta
+        $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
+        return $partidas;
+    }
 }    
