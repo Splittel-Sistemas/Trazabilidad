@@ -39,7 +39,7 @@
                 <ul class="nav navbar-nav">
                     <li class="active"> 
                     </li>
-                    <li class="menu-title">UI elements</li><!-- /.menu-title -->
+                    <li class="menu-title">Trazabilidad</li><!-- /.menu-title -->
                     <li class="menu-item-has-children dropdown">
                         <a href="{{route('Home')}}" class="dropdown-toggle"><i class="menu-icon fa fa-tachometer"></i>dashboard</a>
                         <a href="{{-- route('registro.index')--}}" class="dropdown-toggle"><i class="menu-icon fa fa-user"></i>Usuarios</a>
@@ -54,7 +54,8 @@
                                 <li><i class="fa fa-tachometer"></i><a href="ui-modals.html">Medici&oacute;n</a></li>
                                 <li><i class="fa fa-eye"></i><a href="ui-switches.html">Visualizaci&oacute;n</a></li>
                             </ul>
-                        <a href="{{-- route('ordenventa')--}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Orden De Venta</a>
+                    </li>
+                        <!--<a href="{{-- route('ordenventa')--}}" class="dropdown-toggle" ><i class="menu-icon fa fa-tasks"></i>Orden De Venta</a>
                         <a href="{{-- route('leer.codigo.barra')--}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Gestion De Productos</a>
                         <a href="{{--route('ordenes.indexx')--}}" class="dropdown-toggle"><i class="menu-icon fa fa-cogs"></i>Gestion De Orden De Venta</a>
                         <a href="{{--route('orders')--}}" class="dropdown-toggle"> <i class="menu-icon fa fa-cogs"></i>Gestion De Orden De Venta</a>
@@ -90,9 +91,9 @@
                         </ul>
                     </li>
 
-                    <li class="menu-title">Icons</li><!-- /.menu-title -->
+                    <li class="menu-title">Icons</li>--><!-- /.menu-title -->
 
-                    <li class="menu-item-has-children dropdown">
+                    <!--<li class="menu-item-has-children dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Icons</a>
                         <ul class="sub-menu children dropdown-menu">
                             <li><i class="menu-icon fa fa-fort-awesome"></i><a href="font-fontawesome.html">Font Awesome</a></li>
@@ -118,13 +119,13 @@
                             <li><i class="menu-icon fa fa-street-view"></i><a href="maps-vector.html">Vector Maps</a></li>
                         </ul>
                     </li>
-                    <li class="menu-title">Extras</li><!-- /.menu-title -->
-                    <li class="menu-item-has-children dropdown">
+                    <li class="menu-title">Extras</li>--><!-- /.menu-title -->
+                    <!--<li class="menu-item-has-children dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Otros</a>
                         <ul class="sub-menu children dropdown-menu">
                         </ul>
                         </ul>
-                    </li>
+                    </li>-->
                 </ul>
             </div><!-- /.navbar-collapse -->
         </nav>
@@ -136,8 +137,8 @@
         <header id="header" class="header">
             <div class="top-left">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="./"><img src="{{-- asset('/favicon.png') --}}" alt="Logo" width="50" height="45">
-                    <a class="navbar-brand hidden" href="./"><img src="{{-- asset('/favicon.png') --}}" alt="Logo" width="50" height="50">
+                    <a class="navbar-brand" href="./"><img src="{{ asset('imagenes/splittel.png') }}" alt="Logo" width="60" height="60">
+                    <a class="navbar-brand hidden" href="./"><img src="{{ asset('imagenes/splittel.png') }}" alt="Logo" width="60" height="60">
                     <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
                 </div>
             </div>
