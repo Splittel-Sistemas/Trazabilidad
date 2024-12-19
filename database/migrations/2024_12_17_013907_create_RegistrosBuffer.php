@@ -17,6 +17,7 @@ return new class extends Migration
                     ->nullable();
             $table->string('OrdenVentaB');
             $table->string('OrdenFabricacionB');
+            $table->string('NumeroLineaB');
             $table->foreign('FechasBuffer_id')->references('id')
                 ->on('FechasBuffer')
                 ->onDelete('cascade')
@@ -27,6 +28,6 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('RegistroBuffer');
+        Schema::dropIfExists('RegistrosBuffer');
     }
 };

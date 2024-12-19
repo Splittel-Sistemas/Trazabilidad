@@ -14,13 +14,13 @@ Route::get('/Planeacion/Filtro/OrdenFabricacion_OrdenVenta',[PlaneacionControlle
 /*Route::post('/Planeacion/Filtro/Back',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOVBack');
 Route::post('/Planeacion/Filtro/Next',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOVNext');*/
 Route::get('/Planeacion/partidas', [PlaneacionController::class,'PartidasOF'])->name('PartidasOF');
+Route::get('/Planeacion/partidas/vencidas', [PlaneacionController::class,'LlenarTablaVencidasOV'])->name('LlenarTablaVencidasOV');
 Route::post('/Planeacion/partidas', [PlaneacionController::class,'PartidasOFGuardar'])->name('PartidasOFGuardar');
 Route::delete('/Planeacion/partidas', [PlaneacionController::class,'PartidasOFRegresar'])->name('PartidasOFRegresar');
 Route::post('/Planeacion/partidas/FiltroFechas', [PlaneacionController::class,'PartidasOFFiltroFechas_Tabla'])->name('PartidasOFFiltroFechas_Tabla');
 Route::post('/Planeacion/partidas/EscanerEstatus', [PlaneacionController::class,'CambiarEstatusEscaner'])->name('CambiarEstatusEscaner');
 Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Detalles'])->name('PartidasOF_Detalles');
 //Route::post('/Planeacion/Filtro/OrdenVenta',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOV');
-
 
 
 Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');

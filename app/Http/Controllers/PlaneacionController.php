@@ -8,6 +8,8 @@ use App\Http\Controllers\FuncionesGeneralesController;
 use Illuminate\Support\Facades\Log;
 use App\Models\OrdenVenta;
 use App\Models\OrdenFabricacion;
+use App\Models\FechasBuffer;
+use App\Models\RegistrosBuffer;
 
 class PlaneacionController extends Controller
 {
@@ -52,7 +54,8 @@ class PlaneacionController extends Controller
                     T1.\"Dscription\" AS \"Descripcion\", 
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
                     T2.\"DueDate\" AS \"Fecha entrega OF\", 
-                    T1.\"PoTrgNum\" AS \"Orden de F.\" 
+                    T1.\"PoTrgNum\" AS \"Orden de F.\" ,
+                    T1.\"LineNum\" AS \"LineNum\"
                 FROM {$schema}.\"ORDR\" T0
                 INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
                 LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
@@ -87,6 +90,7 @@ class PlaneacionController extends Controller
                         <th style="display:none;"></th>
                         <th style="display:none;"></th>
                         <th>Escáner</th>
+                        <th style="display:none;"></th>
                     </tr>
                 </thead>
                 <tbody>';
@@ -120,6 +124,7 @@ class PlaneacionController extends Controller
                             <td style="display:none;">' . $ordenventa. '</td>
                             <td style="display:none;">' . $cliente. '</td>
                             <td class="text-center"><input type="checkbox" class="Escaner'.$ordenventa.'" onclick="SeleccionarFila(event, this)"></td>
+                            <td style="display:none;">' . $partida['LineNum']. '</td>
                         </tr>';
             }
         }
@@ -217,7 +222,15 @@ class PlaneacionController extends Controller
             $respuesta=$this->comprobar_OV($DatosPlaneacion[$i]->OV);
             $NumOV=$DatosPlaneacion[$i]->OV;
             $respuestaOF= new Ordenfabricacion();
-
+            $datosRegistrosBuffer=RegistrosBuffer:: where('OrdenVentaB','=',$DatosPlaneacion[$i]->OV)
+                                    ->where(function($query) use ($DatosPlaneacion, $i) {
+                                        $query->where('OrdenFabricacionB', '=', $DatosPlaneacion[$i]->OF)
+                                        ->orWhere('NumeroLineaB', '=', $DatosPlaneacion[$i]->Linea);
+                                    })
+                                    ->first();
+            if($datosRegistrosBuffer){
+                $datosRegistrosBuffer->delete();
+            }
             if($respuesta==0){
                 $respuestaOV= new OrdenVenta();
                 $respuestaOV->OrdenVenta=$DatosPlaneacion[$i]->OV;
@@ -300,14 +313,54 @@ class PlaneacionController extends Controller
         }
 
     }
+    public function LlenarTablaVencidasOV(){
+        $datos=RegistrosBuffer::select('OrdenVentaB')
+                                    ->groupBy('OrdenVentaB')  // Agrupa por 'OrdenVentaB'
+                                    ->get();
+        $tablaOrdenes="";
+        if($datos->count()==0){
+            $status="empty";
+            $tablaOrdenes='<tr><td colspan="100%"" align="center">No existen Partidas por planear</td></tr>';
+        }else{
+            $status="success";
+            foreach ($datos as $index => $orden) {
+                $datosSAP=$this->OrdenesVenta("","", $orden['OrdenVentaB']);
+                $tablaOrdenes .= '<tr class="table-light" id="detailsVencidos' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#detailsVencidos' . $index . '" aria-expanded="false" aria-controls="detailsVencidos' . $index . '">
+                                    <td onclick="loadContentVencidas(\'detailsVencidos' . $index . '\', ' . $datosSAP[0]['OV'] .', `' . $datosSAP[0]['Cliente'] . '`)">
+                                        ' . $datosSAP[0]['OV'] . " - " . $datosSAP[0]['Cliente'] . '
+                                    </td>
+                                </tr>
+                                <tr id="detailsVencidos' . $index . '" class="collapse">
+                                    <td class="table-border" id="detailsVencidos' . $index . 'llenar">
+                                        <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
+                                    </td>
+                                    <td style="display:none"> ' . $datosSAP[0]['Cliente']. '</td>
+                                    <td style="display:none"> ' . $datosSAP[0]['OV']. '</td>
+                                </tr>';
+            }
+        }
+        return response()->json([
+            'status' => $status,
+            'data' => $tablaOrdenes
+        ]);;
+    }
     //Funcion para eliminar Orden de Fabricacion planeadas
     public function PartidasOFRegresar(Request $request){
-        try{
+        //try{
             $NumOF_id=$this->funcionesGenerales->decrypt($request->input('NumOF'));
             $OF = OrdenFabricacion::where('id','=',$NumOF_id)->first();
-            $OF_OrdenFabricacion=$OF->OrdenFabricacion;
             //Comprobar si ya esta iniciada
             if (!empty($OF)) {
+                $OV=$OF->ordenVenta()->get();
+                $OV=$OV[0]->OrdenVenta;
+                //return $OV;
+                $RegistrosBuffer = new RegistrosBuffer();
+                $RegistrosBuffer->FechasBuffer_id=1;
+                $RegistrosBuffer->OrdenVentaB=$OV;
+                $RegistrosBuffer->OrdenFabricacionB=$OF->OrdenFabricacion;
+                $RegistrosBuffer->NumeroLineaB=1999;
+                $OF_OrdenFabricacion=$OF->OrdenFabricacion;
+                $RegistrosBuffer->save();
             $bandera_borrar=$OF->delete();
                 if ($bandera_borrar) {
                     return response()->json([
@@ -320,16 +373,21 @@ class PlaneacionController extends Controller
                         'OF' => ""
                     ]);
                 }
-            }else{ return "empty";}
-        }catch(Exception $e){
+            }else{ 
+                return response()->json([
+                    'status' => "empty",
+                    'OF' => ""
+                ]);
+            }
+        //}catch(Exception $e){
             return response()->json([
                 'status' => "error",
                 'OF' => ""
             ]);
-        }
+        //}
     }
      //Funcion para cambiar estutus de si se escanea o no
-     public function CambiarEstatusEscaner(Request $request){
+    public function CambiarEstatusEscaner(Request $request){
         try{
             $NumOF_id=$this->funcionesGenerales->decrypt($request['Id']);
             $OF = OrdenFabricacion::where('id','=',$NumOF_id)->first();
@@ -396,6 +454,27 @@ class PlaneacionController extends Controller
             $datos=$datos->id;
         }
         return $datos;
+    }
+    //Funcion para retornar las partidas con la OF
+    public function PartidasOF_array($OV){
+        //datos para la consulta
+        $schema = 'HN_OPTRONICS';
+        $ordenventa = $OV;
+        //Consulta a SAP para traer las partidas de una OV
+        $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
+                    T1.\"Dscription\" AS \"Descripcion\", 
+                    ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
+                    T2.\"DueDate\" AS \"Fecha entrega OF\", 
+                    T1.\"PoTrgNum\" AS \"Orden de F.\" ,
+                    T1.\"LineNum\" AS \"LineNum\"
+                FROM {$schema}.\"ORDR\" T0
+                INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
+                LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
+                WHERE T0.\"DocNum\" = '{$ordenventa}'  
+                ORDER BY T1.\"VisOrder\"";
+        //Ejecucion de la consulta
+        $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
+        return $partidas;
     }
     //Funcion para filtrar partidas de Orden de fabricacion por fecha
     public function PartidasOFFiltroFechas($Fecha){
@@ -510,6 +589,32 @@ class PlaneacionController extends Controller
                 'tabla' => '<tr><td colspan="100%"" align="center">No existen registros para '.$FiltroOF_table2.'</td></tr>'
             ]);
         }
+    }
+    public function LlenarTablaBuffer(){
+        try{
+            $FiltroFecha = date('Y-m-d', strtotime('-2 day'));
+            $FechasBuffer = new FechasBuffer();
+            $FechasBuffer->FechaRegistrosPendientes=$FiltroFecha;
+            $id_FechasBuffer=$FechasBuffer->save();
+            $Ordenesventa_DiaAnterior=$this->OrdenesVenta($FiltroFecha,$FiltroFecha,"");
+            foreach ($Ordenesventa_DiaAnterior as $index => $orden) {
+                $datos_OV=$this->PartidasOF_array($orden['OV']);
+                foreach ($datos_OV as $index => $ordenf) {
+                    $comprobar_existe=$this->comprobar_existe_partida($orden['OV'], $ordenf['Orden de F.']);
+                    if($comprobar_existe==0){
+                        $RegistrosBuffer = new RegistrosBuffer();
+                        $RegistrosBuffer->FechasBuffer_id=$id_FechasBuffer;
+                        $RegistrosBuffer->OrdenVentaB=$orden['OV'];
+                        $RegistrosBuffer->OrdenFabricacionB=isset($ordenf['Orden de F.'])?$ordenf['Orden de F.']:"";
+                        $RegistrosBuffer->NumeroLineaB=$ordenf['LineNum'];
+                        $RegistrosBuffer->save();
+                    }
+                }
+            }
+        }catch(\Exception $e){
+            return "Ocurrio un error ".$e." , No se pudieron guardar los datos::".$FiltroFecha;
+        }
+        return "Datos guardados correctamente::".$FiltroFecha;
     }
 
 }    
