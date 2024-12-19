@@ -80,3 +80,12 @@ function RegexNumeros(datos){
     // Asigna el valor filtrado de nuevo al campo de texto
     datos.value = valor;
 }
+function RegexNumeros_valor(datos){
+
+  let valor = datos;
+  // Reemplaza cualquier cosa que no sea un número (elimina letras, espacios y caracteres especiales)
+  valor = valor.replace(/[^0-9]/g, '');
+
+  // Asigna el valor filtrado de nuevo al campo de texto
+  return valor;
+}

@@ -1,22 +1,22 @@
-#container_table_OV{
+#container_table_OV,#container_table_OV_Vencidas{
     height: 35rem;
     overflow-y: scroll;
 }
-#container_table_OF_migrados{
+#container_table_OF_migrados,#container_table_OF_migrados_vencidos{
     height: 20rem;
     overflow-y: scroll;
 }
-#container_table_OV::-webkit-scrollbar,#container_table_OF_migrados::-webkit-scrollbar {
+#container_table_OV::-webkit-scrollbar,#container_table_OF_migrados::-webkit-scrollbar,#container_table_OF_migrados_vencidos::-webkit-scrollbar,#container_table_OV_Vencidas::-webkit-scrollbar {
     width: 6px; /* Ajusta el ancho de la barra de desplazamiento */
 }
-#container_table_OV::-webkit-scrollbar-track,#container_table_OF_migrados::-webkit-scrollbar-track {
+#container_table_OV::-webkit-scrollbar-track,#container_table_OF_migrados::-webkit-scrollbar-track,#container_table_OF_migrados_vencidos::-webkit-scrollbar-track,#container_table_OV_Vencidas::-webkit-scrollbar-track {
     background: #f1f1f1; /* Color del fondo del track */
 }
-#container_table_OV::-webkit-scrollbar-thumb, #container_table_OF_migrados::-webkit-scrollbar-thumb {
+#container_table_OV::-webkit-scrollbar-thumb, #container_table_OF_migrados::-webkit-scrollbar-thumb,#container_table_OF_migrados_vencidos::-webkit-scrollbar-thumb,#container_table_OV_Vencidas::-webkit-scrollbar-thumb {
     background: #acacac; /* Color del thumb */
     border-radius: 10px; /* Esquinas redondeadas */
 }
-#container_table_OV::-webkit-scrollbar-thumb:hover, #container_table_OF_migrados::-webkit-scrollbar-thumb:hover {
+#container_table_OV::-webkit-scrollbar-thumb:hover, #container_table_OF_migrados::-webkit-scrollbar-thumb:hover,#container_table_OF_migrados_vencidos::-webkit-scrollbar-thumb:hover,#container_table_OV_Vencidas::-webkit-scrollbar-thumb:hover {
     background: #8f8f8f; /* Color al pasar el ratón por encima */
 }
 .table-partidas th , .table-partidas td {
@@ -24,12 +24,12 @@
     border-collapse: collapse; /* Opcional: Asegura que las celdas se colapsen */
     background: white;
 }
-#table_OF_migrados td{
+#table_OF_migrados td, #table_OF_migrados_vencidos td {
     font-size: 12px;
     padding:0;
     margin: 0;
 }
-#table_OV td{
+#table_OV td, #table_OV_Vencidas td{
     padding-left: 0;  /* Elimina padding izquierdo */
     padding-right: 0; /* Elimina padding derecho */
     padding-bottom: 5px;
@@ -38,10 +38,10 @@
 #table_OF_migrados th{
     font-size: 12px;
 }
-#table_OF_migrados tbody button{
+#table_OF_migrados tbody button,#table_OF_migrados_vencidos tbody button{
     transform: scale(0.8);
 }
-#table_OF_migrados tbody button:hover{
+#table_OF_migrados tbody button:hover,#table_OF_migrados_vencidos tbody button:hover{
     transform: scale(0.9);
 }
 .btn-link {
@@ -61,6 +61,3 @@
     background-color: #0d6efd;
     border-color: #0d6efd; 
 }
-/*.selected{
-    background: blue;
-}*/
