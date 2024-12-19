@@ -46,7 +46,7 @@
                                     <label for="fecha" class="form-label"><strong>Filtro por Fecha</strong></label>
                                     <div class="input-group">
                                         <input type="date" name="fecha" id="fecha" class="form-control form-control-sm">
-                                        <button id="buscarFecha" class="btn btn-primary btn-sm ms-2">
+                                        <button id="buscarFecha" class="btn btn-outline-primary btn-sm ms-2">
                                             <i class="fa fa-search"></i> Buscar
                                         </button>
                                     </div>
@@ -57,7 +57,7 @@
                                     <label for="query" class="form-label"><strong>Filtro por Orden de Venta</strong></label>
                                     <div class="input-group">
                                         <input type="text" placeholder="Ingresa una Orden de Venta" name="query" id="query" class="form-control form-control-sm">
-                                        <button id="buscarOV" class="btn btn-primary btn-sm ms-2">
+                                        <button id="buscarOV" class="btn btn-outline-primary btn-sm ms-2">
                                             <i class="fa fa-search"></i> Buscar
                                         </button>
                                     </div>
@@ -189,7 +189,7 @@ $(document).ready(function() {
             { 
                 data: 'id',
                 render: function(data, type, row) {
-                    return '<button class="btn btn-info btn-sm ver-detalles" data-id="' + data + '">Ver Detalles</button>';
+                    return '<button class="btn btn-outline-info btn-sm ver-detalles" data-id="' + data + '">Ver Detalles</button>';
                 }
             }
         ]
@@ -449,7 +449,7 @@ $(document).ready(function() {
                                     <td>${item.FechaEntregaSAP}</td>
                                     <td>${item.FechaEntrega}</td>
                                     <td>
-                                        <button class="btn btn-info btn-sm ver-detalles"
+                                        <button class="btn btn-outline-info btn-sm ver-detalles"
                                                 data-id="${item.id}"
                                                 data-orden-fabricacion="${item.OrdenFabricacion}"
                                                 data-articulo="${item.Articulo}"

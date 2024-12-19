@@ -5,50 +5,83 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PlaneacionController;
 use App\Http\Controllers\CorteController;
-use App\Http\Controllers\AreasController;
-//Rutas Planeación
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\RegistroController;
+
 Route::get('/', [HomeControler::class,'Home'])->name('Home');
 Route::get('/Planeacion', [PlaneacionController::class,'index'])->name('Planeacion');
 Route::post('/Planeacion/Filtro/Fechas', [PlaneacionController::class,'PlaneacionFF'])->name('PlaneacionFF');
 Route::post('/Planeacion/Filtro/OrdenVenta',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOV');
-Route::get('/Planeacion/Filtro/OrdenFabricacion_OrdenVenta',[PlaneacionController::class,'PlaneacionFOFOV'])->name('PlaneacionFOFOV');
+/*Route::post('/Planeacion/Filtro/Back',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOVBack');
+Route::post('/Planeacion/Filtro/Next',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOVNext');*/
 Route::get('/Planeacion/partidas', [PlaneacionController::class,'PartidasOF'])->name('PartidasOF');
-Route::get('/Planeacion/partidas/vencidas', [PlaneacionController::class,'LlenarTablaVencidasOV'])->name('LlenarTablaVencidasOV');
 Route::post('/Planeacion/partidas', [PlaneacionController::class,'PartidasOFGuardar'])->name('PartidasOFGuardar');
 Route::delete('/Planeacion/partidas', [PlaneacionController::class,'PartidasOFRegresar'])->name('PartidasOFRegresar');
 Route::post('/Planeacion/partidas/FiltroFechas', [PlaneacionController::class,'PartidasOFFiltroFechas_Tabla'])->name('PartidasOFFiltroFechas_Tabla');
-Route::post('/Planeacion/partidas/EscanerEstatus', [PlaneacionController::class,'CambiarEstatusEscaner'])->name('CambiarEstatusEscaner');
 Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Detalles'])->name('PartidasOF_Detalles');
+//Route::post('/Planeacion/Filtro/OrdenVenta',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOV');
 
-//Rutas Ares
-Route::get('/Area/Corte', [AreasController::class,'Corte'])->name('Corte');
-Route::get('/Area/Suministro', [AreasController::class,'Suministro'])->name('Suministro');
-Route::get('/Area/Preparado', [AreasController::class,'Preparado'])->name('Preparado');
-Route::get('/Area/Ensamble', [AreasController::class,'Ensamble'])->name('Ensamble');
-Route::get('/Area/Pulido', [AreasController::class,'Pulido'])->name('Pulido');
-Route::get('/Area/Medicion', [AreasController::class,'Medicion'])->name('Medicion');
-Route::get('/Area/Visualizacion', [AreasController::class,'Visualizacion'])->name('Visualizacion');
-Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas');
 
+//cortes
 Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
 Route::get('/cortes/getData', [CorteController::class, 'getData'])->name('corte.getData');
-
 Route::get('/detalles', [CorteController::class, 'verDetalles'])->name('detalles');
-
-
 Route::get('/buscar-ordenes', [CorteController::class, 'buscarOrdenVenta'])->name('buscar.ordenes');
-
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden');
-
 Route::get('corte/getCortes', [CorteController::class, 'getCortes'])->name('corte.getCortes');
-
 Route::post('corte/finalizar/corte', [CorteController::class, 'finalizarCorte'])->name('corte.finalizarCorte');
-
 Route::get('/orden-fabricacion/cantidad-total/{id}', [CorteController::class, 'getCantidadTotal'])->name('ordenFabricacion.getCantidadTotal');
-
-
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
 
+//login
+
+// vista 
+Route::get('/login', [LoginController::class, 'login_view'])->name('login');
+//  inicio de sesión
+Route::post('/login', [LoginController::class, 'login'])->name('login_post');
+//  cierre de sesión
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+// registro de usuarios
+Route::post('/register', [LoginController::class, 'register'])->name('register');
+
+
+
+Route::resource('registro', RegistroController::class);
+
+
+
+//registro 
+//Route::view('/registro', "usuarios.registro")->name('register');
+
+
+
+// Grupo de rutas para la gestión de usuarios
+/*Route::prefix('registro')->name('registro.')->group(function () {
+    // Listar todos los usuarios
+    Route::get('/index', [RegistroController::class, 'index'])->name('index');
+
+    // Crear un nuevo usuario
+    Route::get('/create', [RegistroController::class, 'create'])->name('create');
+    Route::post('/store', [RegistroController::class, 'store'])->name('store');
+
+    // Mostrar detalles de un usuario específico
+    Route::get('/{registro}', [RegistroController::class, 'show'])->name('show');
+
+    // Editar un usuario existente
+    Route::get('/{registro}/edit', [RegistroController::class, 'edit'])->name('edit');
+    Route::put('/{registro}', [RegistroController::class, 'update'])->name('update');
+
+    // Eliminar un usuario
+    Route::delete('/{registro}', [RegistroController::class, 'destroy'])->name('destroy');
+});*/
+
+/*Route::get('/registro', [RegistroController::class, 'index'])->name('registro.index');
+Route::get('/registro/create', [RegistroController::class, 'create'])->name('registro.create');
+Route::post('/registro', [RegistroController::class, 'store'])->name('create');
+Route::get('/registro/{registro}', [RegistroController::class, 'show'])->name('registro.show');
+Route::get('/registro/{registro}/edit', [RegistroController::class, 'edit'])->name('registro.edit');
+Route::put('/registro/{registro}', [RegistroController::class, 'update'])->name('registro.update');
+Route::delete('/registro/{registro}', [RegistroController::class, 'destroy'])->name('registro.destroy');*/
 
 
 

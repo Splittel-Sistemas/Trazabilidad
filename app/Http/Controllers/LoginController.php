@@ -21,7 +21,7 @@ class LoginController extends Controller
         $user->save();
 
         Auth::login($user);
-        return redirect(route('menu'));
+        return redirect(route('Home'));
     }
     public function login(Request $request, ){ 
         // Validación
@@ -44,7 +44,7 @@ class LoginController extends Controller
         // Regenera la sesión
         $request->session()->regenerate(); 
         
-        return redirect()->intended(route('menu'));
+        return redirect()->intended(route('Home'));
     } else {
         // Redirige de nuevo al login con un mensaje de error
       

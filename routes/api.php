@@ -11,4 +11,4 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/users', [ApiController::class, 'users']); 
 Route::post('/login', [ApiController::class, 'login']);
-Route::resource('registro', ApiRegistroController::class);
+//Route::resource('registro', ApiRegistroController::class);
