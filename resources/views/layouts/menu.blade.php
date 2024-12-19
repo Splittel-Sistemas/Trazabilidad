@@ -42,9 +42,8 @@
                     <li class="menu-title">Trazabilidad</li><!-- /.menu-title -->
                     <li class="menu-item-has-children dropdown">
                         <a href="{{route('Home')}}" class="dropdown-toggle"><i class="menu-icon fa fa-tachometer"></i>dashboard</a>
-                        <a href="{{ route('registro.index')}}" class="dropdown-toggle"><i class="menu-icon fa fa-user"></i>Usuarios</a>
+                        <a href="{{-- route('registro.index')--}}" class="dropdown-toggle"><i class="menu-icon fa fa-user"></i>Usuarios</a>
                         <a href="{{route('Planeacion')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-calendar"></i>Planeacion</a>
-                        <a href="{{route('corte.index')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-calendar"></i>Cortes</a>
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="menu-icon fa fa-cogs"></i>&Aacute;reas</a>
                             <ul class="sub-menu children dropdown-menu">
                                 <li><i class="fa fa-cut"></i><a href="ui-badges.html">Corte</a></li>
@@ -75,9 +74,9 @@
                             <li><i class="fa fa-file-word-o"></i><a href="ui-typgraphy.html">Typography</a></li>
                             
                             
-                        </ul>-->
-                    <!--</li>-->
-                    <!--<li class="menu-item-has-children dropdown">
+                        </ul>
+                    </li>
+                    <li class="menu-item-has-children dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-table"></i>Tables</a>
                         <ul class="sub-menu children dropdown-menu">
                             <li><i class="fa fa-table"></i><a href="tables-basic.html">Basic Table</a></li>
@@ -120,7 +119,7 @@
                             <li><i class="menu-icon fa fa-street-view"></i><a href="maps-vector.html">Vector Maps</a></li>
                         </ul>
                     </li>
-                    <li class="menu-title">Extras</li>---><!-- /.menu-title -->
+                    <li class="menu-title">Extras</li>--><!-- /.menu-title -->
                     <!--<li class="menu-item-has-children dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Otros</a>
                         <ul class="sub-menu children dropdown-menu">
@@ -138,8 +137,8 @@
         <header id="header" class="header">
             <div class="top-left">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="./"><img src="{{-- asset('/favicon.png') --}}" alt="Logo" width="50" height="45">
-                    <a class="navbar-brand hidden" href="./"><img src="{{-- asset('/favicon.png') --}}" alt="Logo" width="50" height="50">
+                    <a class="navbar-brand" href="./"><img src="{{ asset('imagenes/splittel.png') }}" alt="Logo" width="60" height="60">
+                    <a class="navbar-brand hidden" href="./"><img src="{{ asset('imagenes/splittel.png') }}" alt="Logo" width="60" height="60">
                     <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
                 </div>
             </div>
