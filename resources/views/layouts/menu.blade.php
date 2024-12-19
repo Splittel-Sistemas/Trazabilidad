@@ -42,11 +42,11 @@
                     <li class="menu-title">Trazabilidad</li><!-- /.menu-title -->
                     <li class="menu-item-has-children dropdown">
                         <a href="{{route('Home')}}" class="dropdown-toggle"><i class="menu-icon fa fa-tachometer"></i>dashboard</a>
-                        <a href="{{-- route('registro.index')--}}" class="dropdown-toggle"><i class="menu-icon fa fa-user"></i>Usuarios</a>
+                        <a href="{{route('registro.index')}}" class="dropdown-toggle"><i class="menu-icon fa fa-user"></i>Usuarios</a>
                         <a href="{{route('Planeacion')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-calendar"></i>Planeacion</a>
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="menu-icon fa fa-cogs"></i>&Aacute;reas</a>
                             <ul class="sub-menu children dropdown-menu">
-                                <li><i class="fa fa-cut"></i><a href="ui-badges.html">Corte</a></li>
+                                <li><i class="fa fa-cut"></i><a href="{{route('corte.index')}}">Corte</a></li>
                                 <li><i class="fa fa-archive"></i><a href="{{route('Suministro')}}">Suministro</a></li>
                                 <li><i class="fa fa-pie-chart"></i><a href="ui-cards.html">Preparado</a></li>
                                 <li><i class="fa fa-puzzle-piece"></i><a href="ui-alerts.html">Ensamble</a></li>
