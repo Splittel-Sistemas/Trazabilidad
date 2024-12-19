@@ -15,5 +15,5 @@ class FechasBuffer extends Model
     public function RegistroBuffers()
     {
         return $this->hasMany(RegistrosBuffer::class, 'FechasBuffer_id');
-    }
+    } 
 }

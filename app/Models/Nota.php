@@ -9,4 +9,4 @@ class Nota extends Model
 {
 
     use HasFactory;
-}
+} 
