@@ -18,5 +18,5 @@ class Area extends Model
     public function partidasArea()
     {
         return $this->hasMany(PartidasArea::class, 'area_id');
-    }
+    } 
 }

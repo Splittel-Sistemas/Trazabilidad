@@ -14,5 +14,5 @@ class OrdenVenta extends Model
     public function ordenesFabricacions()
     {
         return $this->hasMany(OrdenFabricacion::class, 'OrdenVenta_id');
-    }
+    } 
 }

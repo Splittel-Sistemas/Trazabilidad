@@ -19,6 +19,6 @@ class PartidasOF extends Model
     public function partidasArea()
     {
         return $this->hasMany(PartidasArea::class, 'PartidasOF_id');
-    }
+    } 
 
 }

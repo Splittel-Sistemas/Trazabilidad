@@ -20,5 +20,5 @@ class OrdenFabricacion extends Model
     public function partidasOF()
     {
         return $this->hasMany(PartidasOF::class, 'OrdenFabricacion_id');
-    }
+    } 
 }

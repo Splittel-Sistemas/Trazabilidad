@@ -21,4 +21,4 @@ class PartidasArea extends Model
     {
         return $this->belongsTo(Area::class, 'area_id');
     }*/
-}
+} 

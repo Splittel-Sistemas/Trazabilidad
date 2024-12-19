@@ -12,5 +12,5 @@ class RegistrosBuffer extends Model
     public function FechasBuffer()
     {
         return $this->belongsTo(FechasBuffer::class, 'FechasBuffer_id');
-    }
+    } 
 }
