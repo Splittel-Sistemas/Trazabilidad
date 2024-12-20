@@ -197,9 +197,26 @@ class CorteController extends Controller
 
         return response()->json(['success' => false, 'message' => 'Orden de fabricación no encontrada.']);
     }
+        public function getCortesInfo($id)
+    {
+        $ordenFabricacion = OrdenFabricacion::find($id);
+
+        if ($ordenFabricacion) {
+            $cortesRegistrados = $ordenFabricacion->partidasOF()->sum('cantidad_partida'); 
+            return response()->json([
+                'success' => true,
+                'cantidad_total' => $ordenFabricacion->CantidadTotal,
+                'cortes_registrados' => $cortesRegistrados
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Orden de fabricación no encontrada.']);
+    }
 
 
 
+    
+    
 
     
 }

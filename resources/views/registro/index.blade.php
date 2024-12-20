@@ -28,19 +28,26 @@
             </thead>
             <tbody>
                 @foreach ($personal as $registro)
-                    <tr id="registro-{{ $registro->id }}">
-                        <td>{{ $registro->apellido }}</td>
-                        <td>{{ $registro->name }}</td>
-                        <td>{{ $registro->email }}</td>
-                        <td>
-                            <a href="#" class="btn btn-warning edit-button" data-id="{{ $registro->id }}" data-toggle="modal" data-target="#miModal">Editar</a>
-
-                            <button class="btn btn-outline-danger" data-id="{{ $registro->id }}" data-url="{{ route('registro.destroy', $registro->id) }}"> Eliminar</button>
-                            <a href="#" class="btn btn-outline-success" data-id="{{ $registro->id }}" data-toggle="modal" data-target="#miModal">Activar</a>
-                            <button class="btn btn-outline-danger" data-id="{{ $registro->id }}" data-url="{{ route('registro.destroy', $registro->id) }}"> Desactivar</button>
-                        </td>
-                    </tr>
-                @endforeach
+                <tr id="registro-{{ $registro->id }}">
+                    <td>{{ $registro->apellido }}</td>
+                    <td>{{ $registro->name }}</td>
+                    <td>{{ $registro->email }}</td>
+                    <td>
+                        <a href="#" class="btn btn-outline-warning" data-id="{{ $registro->id }}" data-toggle="modal" data-target="#miModal">Editar</a>
+                        
+                        <!-- Cambiar $person->id a $registro->id -->
+                        <button class="btn btn-outline-success btn-sm activar" data-id="{{ $registro->id }}">
+                            Activar
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm desactivar" data-id="{{ $registro->id }}">
+                            Desactivar
+                        </button>
+            
+                        <button class="btn btn-outline-danger  btn-sm" data-id="{{ $registro->id }}" data-url="{{ route('registro.destroy', $registro->id) }}"> Eliminar</button>
+                    </td>
+                </tr>
+            @endforeach
+            
             </tbody>
         </table>
     </div>
@@ -68,8 +75,8 @@
                         </div>
                     
                         <div class="form-group mb-3">
-                            <label for="nombre">Nombre</label>
-                            <input type="text" name="name" id="name" class="form-control" value="{{ old('nombre', $registro->name) }}" placeholder="Ingrese su nombre">
+                            <label for="name">Nombre</label>
+                            <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $registro->name) }}" placeholder="Ingrese su nombre">
                         </div>
                     
                         <div class="form-group mb-3">
@@ -112,7 +119,7 @@
                                 </div>
                             @endforeach
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block">Actualizar Usuario</button>
+                        <button type="submit" class="btn btn-primary btn-block" id="actualizar">Actualizar Usuario</button>
                     </form>
                 </div>
             </div>
@@ -126,4 +133,76 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="{{ asset('js/usuario.js') }}"></script>
+    <script>
+   // Seleccionar todos los botones de "Activar"
+document.querySelectorAll('.activar').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        let userId = this.getAttribute('data-id');  // Obtener el ID del usuario
+
+        // Hacer la solicitud Ajax (POST) al backend para activar al usuario
+        fetch('/users/activar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')  // CSRF Token
+            },
+            body: JSON.stringify({ id: userId })  // Enviar el ID del usuario
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Mostrar el mensaje según la respuesta
+            if (data.message) {
+                alert(data.message);  // Si el mensaje es exitoso
+                // Opcional: Actualizar el UI para reflejar que el usuario fue activado
+            } else {
+                alert(data.error);  // Si ocurre un error
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Hubo un error en la solicitud');
+        });
+    });
+});
+
+// Seleccionamos todos los botones de "Desactivar"
+document.querySelectorAll('.desactivar').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        let userId = this.getAttribute('data-id');  // Obtener el ID del usuario
+
+        // Hacer la solicitud Ajax (POST) al backend
+        fetch('/users/desactivar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')  // CSRF Token
+            },
+            body: JSON.stringify({ id: userId })  // Enviar el ID del usuario
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Mostrar el mensaje según la respuesta
+            if (data.message) {
+                alert(data.message);  // Si el mensaje es exitoso
+                // Opcional: Actualizar el UI para reflejar que el usuario fue desactivado
+            } else {
+                alert(data.error);  // Si ocurre un error
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Hubo un error en la solicitud');
+        });
+    });
+});
+
+
+
+
+    </script>
+    
 @endsection

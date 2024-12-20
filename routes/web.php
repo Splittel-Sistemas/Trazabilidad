@@ -42,21 +42,48 @@ Route::get('corte/getCortes', [CorteController::class, 'getCortes'])->name('cort
 Route::post('corte/finalizar/corte', [CorteController::class, 'finalizarCorte'])->name('corte.finalizarCorte');
 Route::get('/orden-fabricacion/cantidad-total/{id}', [CorteController::class, 'getCantidadTotal'])->name('ordenFabricacion.getCantidadTotal');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
+Route::get('/orden-fabricacion/{id}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('ordenFabricacion.getCortesInfo');
+
+
+
+
+Route::post('/generar-etiquetas', [CorteController::class, 'generar'])->name('etiquetas.generar');
+
+
+Route::post('/ruta-generar-etiquetas', [CorteController::class, 'generar'])->name('generar.etiquetas');
+
+
+
 
 //login
 
 // vista 
-Route::get('/login', [LoginController::class, 'login_view'])->name('login');
-//  inicio de sesión
-Route::post('/login', [LoginController::class, 'login'])->name('login_post');
-//  cierre de sesión
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-// registro de usuarios
-Route::post('/register', [LoginController::class, 'register'])->name('register');
+// Ruta para mostrar el formulario de login
+Route::get('/login', [loginController::class, 'login_view'])->name('login_view');
+
+// Ruta para procesar el login (POST)
+Route::post('/login', [loginController::class, 'login'])->name('login_post');
+
+// Ruta para el logout
+Route::post('/logout', [loginController::class, 'logout'])->name('logout');
+
+// Ruta para el registro (si lo necesitas)
+Route::post('/register', [loginController::class, 'register'])->name('register');
+
+
 
 
 
 Route::resource('registro', RegistroController::class);
+Route::post('/users/activar', [RegistroController::class, 'activar'])->name('users.activar');
+// Ruta para activar usuario
+Route::post('/users/activar', [ RegistroController::class, 'activar'])->name('users.activar');
+// Ruta para desactivar un usuario
+Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar');
+
+
+
+
 
 
 

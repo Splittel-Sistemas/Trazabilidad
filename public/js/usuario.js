@@ -1,8 +1,8 @@
 
     // Acción de actualizar usuario
-    $(document).on('click', '#update-button', function(e) {
+    $(document).on('click', '#actualizar', function(e) {
         e.preventDefault();  
-
+        
         const formData = $('#edit-form').serialize();  // Serializa los datos del formulario
         const url = $('#edit-form').attr('action');  // Obtener la URL de acción del formulario
         const userId = $('#user-id').val();  // Obtener el ID del usuario desde el campo correspondiente
