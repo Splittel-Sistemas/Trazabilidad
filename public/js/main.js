@@ -64,7 +64,7 @@ jQuery(document).ready(function($) {
 			$('#left-panel').removeClass('open-menu');  
 		} 
 			 
-	}); 
+	});
 
 	 
 	$(".menu-item-has-children.dropdown").each(function() {

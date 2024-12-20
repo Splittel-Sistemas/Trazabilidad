@@ -378,182 +378,182 @@
         }, 35000);*/
         $('#element').toast('show');
         TablaOrdenFabricacion("{{$FechaFin}}");
-    $('#Filtro_fecha-btn').click(function() {
-        var startDate = $('#startDate').val();  
-        var endDate = $('#endDate').val(); 
-        if(CompararFechas(startDate,endDate)){
-            $('#error_endDate').html('');
-        }else{
-            $('#error_endDate').html('*Fecha fin tiene que ser menor  a Fecha inicio');
-            return 0;
-        }
-        $.ajax({
-            url: "{{route('PlaneacionFF')}}", 
-            type: 'POST',
-            data: {
-                startDate: startDate, 
-                endDate:endDate,
-                _token: '{{ csrf_token() }}'  
-            },
-            beforeSend: function() {
-                $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
-                // You can display a loading spinner here
-            },
-            success: function(response) {
+        $('#Filtro_fecha-btn').click(function() {
+            var startDate = $('#startDate').val();  
+            var endDate = $('#endDate').val(); 
+            if(CompararFechas(startDate,endDate)){
+                $('#error_endDate').html('');
+            }else{
+                $('#error_endDate').html('*Fecha fin tiene que ser menor  a Fecha inicio');
+                return 0;
+            }
+            $.ajax({
+                url: "{{route('PlaneacionFF')}}", 
+                type: 'POST',
+                data: {
+                    startDate: startDate, 
+                    endDate:endDate,
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+                    $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                    // You can display a loading spinner here
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $('#table_OV_body').html(response.data);  
+                        $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
+                    } else if(response.status==="empty") {
+                        $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo '+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
+                    }else{
+                        error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    errorBD();
+                }
+            });
+        });
+        $('#Filtro_buscarOV').on('input',function() {
+            RegexNumeros(document.getElementById('Filtro_buscarOV'));
+            OV=$('#Filtro_buscarOV').val();
+            if(CadenaVacia(OV)){
+                return 0;
+            }
+            if(OV.length<2){
+                $('#Filtro_fecha-btn').trigger('click');
+                return 0;
+            }else{$('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>Filtro: '+OV+'</p>');}
+            $.ajax({
+                url: "{{route('PlaneacionFOV')}}", 
+                type: 'POST',
+                data: {
+                    OV: OV,
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+                    $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                    // You can display a loading spinner here
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>Filtro: '+OV+'</p>');
+                        $('#table_OV_body').html(response.data);
+                    } else if(response.status==="empty") {
+                        $('#table_OV_body').html('<p>No existen registros para lo orden de venta '+OV+'</p>');
+                    }else{
+                        error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    //errorBD();
+                }
+            });
+        });
+        $('#FiltroOF_table2').on('input',function() {
+            RegexNumeros(document.getElementById('FiltroOF_table2'));
+            FiltroOF_table2=$('#FiltroOF_table2').val();
+            $('#FiltroOF_text').html('<p>Filtro: '+FiltroOF_table2+'</p>');
+            /*if(CadenaVacia(FiltroOF_table2)){
+                return 0;
+            }*/
+            if(FiltroOF_table2.length<2){
+                $('#FiltroOF_Fecha_table2').trigger('change');
+                return 0;
+            }else{$('#FiltroOF_Fecha_table2').html('<br><p>Filtro: '+FiltroOF_table2+'</p>');}
+            $.ajax({
+                url: "{{route('PlaneacionFOFOV')}}", 
+                type: 'GET',
+                data: {
+                    FiltroOF_table2: FiltroOF_table2,
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+                    $('#table-2-content').html("<tr><td colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></td></tr>")
+                },
+                success: function(response) {
                 if (response.status === 'success') {
-                    $('#table_OV_body').html(response.data);  
-                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
-                } else if(response.status==="empty") {
-                    $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo '+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
-                }else{
-                    error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                        //$('#FiltroOF_text').html('<p>Filtro: '+FiltroOF_table2+'</p>');
+                        $('#table-2-content').html(response.tabla);
+                    } else if(response.status==="empty") {
+                        $('#table-2-content').html("<tr><td colspan='100%' align='center'>No existen registros para lo orden de venta "+FiltroOF_table2+"</td></tr>");
+                    }else{
+                        //error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    //errorBD();
                 }
-            },
-            error: function(xhr, status, error) {
-                errorBD();
-            }
+            });
         });
-    });
-    $('#Filtro_buscarOV').on('input',function() {
-        RegexNumeros(document.getElementById('Filtro_buscarOV'));
-        OV=$('#Filtro_buscarOV').val();
-        if(CadenaVacia(OV)){
-            return 0;
-        }
-        if(OV.length<2){
-            $('#Filtro_fecha-btn').trigger('click');
-            return 0;
-        }else{$('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>Filtro: '+OV+'</p>');}
-        $.ajax({
-            url: "{{route('PlaneacionFOV')}}", 
-            type: 'POST',
-            data: {
-                OV: OV,
-                _token: '{{ csrf_token() }}'  
-            },
-            beforeSend: function() {
-                $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
-                // You can display a loading spinner here
-            },
-            success: function(response) {
-                if (response.status === 'success') {
-                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>Filtro: '+OV+'</p>');
-                    $('#table_OV_body').html(response.data);
-                } else if(response.status==="empty") {
-                    $('#table_OV_body').html('<p>No existen registros para lo orden de venta '+OV+'</p>');
-                }else{
-                    error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+        $('#back_filterBtn').click(function() {
+            var startDate =$('#startDate_filtroantnext').val();  
+            startDate=RestarDia(startDate)
+            var endDate = $('#endDate_filtroantnext').val(); 
+            endDate=RestarDia(endDate);
+            $.ajax({
+                url: "{{route('PlaneacionFF')}}", 
+                type: 'POST',
+                data: {
+                    startDate: startDate, 
+                    endDate:endDate,
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+                    $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                    // You can display a loading spinner here
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $('#table_OV_body').html(response.data);  
+                        $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
+                    } else if(response.status==="empty") {
+                        $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br>'+FormatoFecha(startDate)+' - '+FormatoFecha(endDate)+'</p>');
+                    }else{
+                        error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                    }
+                    $('#startDate_filtroantnext').val(startDate);  
+                    $('#endDate_filtroantnext').val(endDate); 
+                },
+                error: function(xhr, status, error) {
+                    errorBD();
                 }
-            },
-            error: function(xhr, status, error) {
-                //errorBD();
-            }
+            });
         });
-    });
-    $('#FiltroOF_table2').on('input',function() {
-        RegexNumeros(document.getElementById('FiltroOF_table2'));
-        FiltroOF_table2=$('#FiltroOF_table2').val();
-        $('#FiltroOF_text').html('<p>Filtro: '+FiltroOF_table2+'</p>');
-        /*if(CadenaVacia(FiltroOF_table2)){
-            return 0;
-        }*/
-        if(FiltroOF_table2.length<2){
-            $('#FiltroOF_Fecha_table2').trigger('change');
-            return 0;
-        }else{$('#FiltroOF_Fecha_table2').html('<br><p>Filtro: '+FiltroOF_table2+'</p>');}
-        $.ajax({
-            url: "{{route('PlaneacionFOFOV')}}", 
-            type: 'GET',
-            data: {
-                FiltroOF_table2: FiltroOF_table2,
-                _token: '{{ csrf_token() }}'  
-            },
-            beforeSend: function() {
-                $('#table-2-content').html("<tr><td colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></td></tr>")
-            },
-            success: function(response) {
-               if (response.status === 'success') {
-                    //$('#FiltroOF_text').html('<p>Filtro: '+FiltroOF_table2+'</p>');
-                    $('#table-2-content').html(response.tabla);
-                } else if(response.status==="empty") {
-                    $('#table-2-content').html("<tr><td colspan='100%' align='center'>No existen registros para lo orden de venta "+FiltroOF_table2+"</td></tr>");
-                }else{
-                    //error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+        $('#next_filterBtn').click(function() {
+            var startDate =$('#startDate_filtroantnext').val();  
+            startDate=SumarDia(startDate);
+            var endDate = $('#endDate_filtroantnext').val(); 
+            endDate=SumarDia(endDate);
+            $.ajax({
+                url: "{{route('PlaneacionFF')}}", 
+                type: 'POST',
+                data: {
+                    startDate: startDate, 
+                    endDate:endDate,
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+                    $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                    // You can display a loading spinner here
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $('#table_OV_body').html(response.data);  
+                        $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
+                    } else if(response.status==="empty") {
+                        $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br> '+FormatoFecha(startDate)+' - '+FormatoFecha(endDate)+'</p>');
+                    }else{
+                        error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                    }
+                    $('#startDate_filtroantnext').val(startDate);  
+                    $('#endDate_filtroantnext').val(endDate); 
+                },
+                error: function(xhr, status, error) {
+                    errorBD();
                 }
-            },
-            error: function(xhr, status, error) {
-                //errorBD();
-            }
+            });
         });
-    });
-    $('#back_filterBtn').click(function() {
-        var startDate =$('#startDate_filtroantnext').val();  
-        startDate=RestarDia(startDate)
-        var endDate = $('#endDate_filtroantnext').val(); 
-        endDate=RestarDia(endDate);
-        $.ajax({
-            url: "{{route('PlaneacionFF')}}", 
-            type: 'POST',
-            data: {
-                startDate: startDate, 
-                endDate:endDate,
-                _token: '{{ csrf_token() }}'  
-            },
-            beforeSend: function() {
-                $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
-                // You can display a loading spinner here
-            },
-            success: function(response) {
-                if (response.status === 'success') {
-                    $('#table_OV_body').html(response.data);  
-                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
-                } else if(response.status==="empty") {
-                    $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br>'+FormatoFecha(startDate)+' - '+FormatoFecha(endDate)+'</p>');
-                }else{
-                    error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
-                }
-                $('#startDate_filtroantnext').val(startDate);  
-                $('#endDate_filtroantnext').val(endDate); 
-            },
-            error: function(xhr, status, error) {
-                errorBD();
-            }
-        });
-    });
-    $('#next_filterBtn').click(function() {
-        var startDate =$('#startDate_filtroantnext').val();  
-        startDate=SumarDia(startDate);
-        var endDate = $('#endDate_filtroantnext').val(); 
-        endDate=SumarDia(endDate);
-        $.ajax({
-            url: "{{route('PlaneacionFF')}}", 
-            type: 'POST',
-            data: {
-                startDate: startDate, 
-                endDate:endDate,
-                _token: '{{ csrf_token() }}'  
-            },
-            beforeSend: function() {
-                $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
-                // You can display a loading spinner here
-            },
-            success: function(response) {
-                if (response.status === 'success') {
-                    $('#table_OV_body').html(response.data);  
-                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
-                } else if(response.status==="empty") {
-                    $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br> '+FormatoFecha(startDate)+' - '+FormatoFecha(endDate)+'</p>');
-                }else{
-                    error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
-                }
-                $('#startDate_filtroantnext').val(startDate);  
-                $('#endDate_filtroantnext').val(endDate); 
-            },
-            error: function(xhr, status, error) {
-                errorBD();
-            }
-        });
-    });
     });
     function loadContent(idcontenedor, docNum, cliente) {
         let elemento = document.getElementById(idcontenedor + "cerrar");

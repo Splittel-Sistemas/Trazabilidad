@@ -38,12 +38,19 @@
             <div id="main-menu" class="main-menu collapse navbar-collapse">
                 <ul class="nav navbar-nav">
                     <li class="active"> 
+                        <li id="menuToggle" class="menutoggle menu-icon"><i class="fa fa-bars"></i></li>
                     </li>
                     <li class="menu-title">Trazabilidad</li><!-- /.menu-title -->
                     <li class="menu-item-has-children dropdown">
                         <a href="{{route('Home')}}" class="dropdown-toggle"><i class="menu-icon fa fa-tachometer"></i>dashboard</a>
+                    </li>
+                    <li class="menu-item-has-children dropdown">
                         <a href="{{route('registro.index')}}" class="dropdown-toggle"><i class="menu-icon fa fa-user"></i>Usuarios</a>
+                    </li>
+                    <li class="menu-item-has-children dropdown">
                         <a href="{{route('Planeacion')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-calendar"></i>Planeacion</a>
+                    </li>
+                    <li class="menu-item-has-children dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="menu-icon fa fa-cogs"></i>&Aacute;reas</a>
                             <ul class="sub-menu children dropdown-menu">
                                 <li><i class="fa fa-cut"></i><a href="{{route('corte.index')}}">Corte</a></li>
@@ -137,9 +144,8 @@
         <header id="header" class="header">
             <div class="top-left">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="./"><img src="{{ asset('imagenes/splittel.png') }}" alt="Logo" width="60" height="60">
-                    <a class="navbar-brand hidden" href="./"><img src="{{ asset('imagenes/splittel.png') }}" alt="Logo" width="60" height="60">
-                    <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
+                    <a class="navbar-brand" href="./"><img src="{{ asset('imagenes/splittel.png') }}" alt="Logo" width="100" height="40">
+                    <a class="navbar-brand hidden" href="./"><img src="{{ asset('imagenes/splittel.png') }}" alt="Logo" width="100" height="40">
                 </div>
             </div>
             <div class="top-right">

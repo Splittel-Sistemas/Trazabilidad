@@ -22,6 +22,7 @@ class PlaneacionController extends Controller
     public function index(){
         $FechaInicio=date('Ymd', strtotime('-1 day'));
         $FechaFin=date('Ymd');
+        //$FechaInicio=date('Ymd');
         $NumOV="";
         $message="";
         $datos=$this->OrdenesVenta($FechaFin,$FechaInicio,$NumOV);
@@ -36,6 +37,7 @@ class PlaneacionController extends Controller
         }
         $FechaInicio=date('Y-m-d', strtotime('-1 day'));
         $FechaFin=date('Y-m-d');
+        //$FechaInicio=date('Y-m-d');
         return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin','status'));
     }
     public function PartidasOF(Request $request){
