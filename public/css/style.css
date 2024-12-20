@@ -816,9 +816,10 @@ aside.left-panel {
     opacity: 0;
     padding: 0; }
   .open aside.left-panel .menutoggle {
-    background-color: #dc3545;
-    color: #fff !important;
-    right: -20px;
+    /*background-color: #dc3545;*/
+    /*color: #fff !important;*/
+    right: 0px;
+    transform: scale(1.2);
     text-align: center; }
 
 /* Right panel */
@@ -910,6 +911,7 @@ header.fixed-top {
   line-height: 40px;
   width: 40px;
   display: block;
+  transform: scale(1.2);
   text-align: right; }
 
 .search-trigger {
@@ -2293,7 +2295,7 @@ footer.site-footer {
       opacity: 0;
       padding: 0; }
     aside.left-panel .menutoggle {
-      display: none; }
+      display: none;}
     aside.left-panel.open-menu {
       max-width: 280px;
       width: 280px; }
