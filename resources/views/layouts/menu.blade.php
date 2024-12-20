@@ -50,17 +50,16 @@
                     <li class="menu-item-has-children dropdown {{ Route::is('Planeacion') ? 'active' : '' }}">
                         <a href="{{route('Planeacion')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-calendar"></i>Planeacion</a>
                     </li>
-                    <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="menu-icon fa fa-cogs"></i>&Aacute;reas</a>
-                            <ul class="sub-menu children dropdown-menu">
-                                <li class="{{ Route::is('corte.index') ? 'active' : '' }}"><i class="fa fa-cut"></i><a href="{{route('corte.index')}}">Corte</a></li>
-                                <li class="{{ Route::is('corte.index') ? 'active' : '' }}"><i class="fa fa-cut"></i><a href="{{route('Suministro')}}">Corte</a></li>
-                                <!--<li class="{{ Route::is('Suministro') ? 'active' : '' }}"><i class="fa fa-archive"></i><a href="{{route('Suministro')}}">Suministro</a></li>
-                                <li><i class="fa fa-pie-chart"></i><a href="ui-cards.html">Preparado</a></li>
-                                <li><i class="fa fa-puzzle-piece"></i><a href="ui-alerts.html">Ensamble</a></li>
-                                <li><i class="fa fa-spinner"></i><a href="ui-progressbar.html">Pulido</a></li>
-                                <li><i class="fa fa-tachometer"></i><a href="ui-modals.html">Medici&oacute;n</a></li>
-                                <li><i class="fa fa-eye"></i><a href="ui-switches.html">Visualizaci&oacute;n</a></li>-->
+                    <li class="menu-item-has-children dropdown {{ Route::is('Suministro') ? 'show active' : '' }} {{ Route::is('corte.index') ? 'show' : '' }}">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="menu-icon fa fa-cogs"></i>&Aacute;reas</a>
+                            <ul class="sub-menu children dropdown-menu {{ Route::is('Suministro') ? 'show ' : '' }} {{ Route::is('corte.index') ? 'show' : '' }}">
+                                <li class="{{ Route::is('corte.index') ? 'nav-tabs active' : '' }}"><i class="fa fa-cut"></i><a href="{{route('corte.index')}}">Corte</a></li>
+                                <li class="{{ Route::is('Suministro') ? 'nav-tabs active' : '' }}"><i class="fa fa-archive"></i><a href="{{route('Suministro')}}">Suministro</a></li>
+                                <li ><i class="fa fa-pie-chart"></i><a href="ui-cards.html">Preparado</a></li>
+                                <li ><i class="fa fa-puzzle-piece"></i><a href="ui-alerts.html">Ensamble</a></li>
+                                <li ><i class="fa fa-spinner"></i><a href="ui-progressbar.html">Pulido</a></li>
+                                <li ><i class="fa fa-tachometer"></i><a href="ui-modals.html">Medici&oacute;n</a></li>
+                                <li ><i class="fa fa-eye"></i><a href="ui-switches.html">Visualizaci&oacute;n</a></li>
                             </ul>
                     </li>
                 </ul>

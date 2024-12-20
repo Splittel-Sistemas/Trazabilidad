@@ -62,18 +62,6 @@
 
 @endsection
 @section('scripts')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Estilos de Select2 -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-
-<!-- jQuery (necesario para Select2) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-<!-- Script de Select2 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-
-<!-- Script de Bootstrap (opcional si lo necesitas para otros elementos de la interfaz) -->
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script>
 </script>
 @endsection

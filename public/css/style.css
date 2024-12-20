@@ -911,8 +911,9 @@ header.fixed-top {
   line-height: 40px;
   width: 40px;
   display: block;
-  transform: scale(1.1);
+  transform: scale(1.2);
   text-align: right; }
+
 .search-trigger {
   background: transparent;
   border: none;
@@ -2497,8 +2498,7 @@ footer.site-footer {
     width: 220px;
     padding-bottom: 5px; }
   .right-panel .menutoggle {
-    width: 20px; }
-}
+    width: 20px; } }
 #cellPaiChart {
   height: 160px; }
   #cellPaiChart .pieLabel {
