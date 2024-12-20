@@ -13,14 +13,14 @@ class RegistroController extends Controller
 {
     // Método para listar todos los usuarios
     public function index()
-    {
-        $personal = User::all(); 
-        $roles = Role::all(); 
-        $permissions = Permission::all();
+{
+    $personal = User::all(); // Obtiene todos los usuarios
+    $roles = Role::all(); 
+    $permissions = Permission::all();
     
-        return view('registro.index', compact('personal', 'roles', 'permissions'));
+    return view('registro.index', compact('personal', 'roles', 'permissions'));
+}
 
-    }
 
     // Método para mostrar un usuario específico
     public function show(User $registro) 
@@ -43,7 +43,7 @@ class RegistroController extends Controller
         $permissions = Permission::all(); // Obtiene todos los permisos
         return view('registro.create', compact('roles', 'permissions')); // Pasa los datos a la vista
     }
-
+    //validaciones y crear usuario
     public function store(Request $request)
     {
         // Validación de los datos del formulario
@@ -132,5 +132,50 @@ class RegistroController extends Controller
 
         return response()->json(['mensaje' => 'Usuario eliminado exitosamente.']);
     }
+    public function desactivar(Request $request)
+{
+    try {
+        // Buscar al usuario por ID
+        $user = User::find($request->id);
+
+        // Si el usuario no existe
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+
+        // Desactivar al usuario
+        $user->active = false;
+        $user->save();
+
+        return response()->json(['message' => 'Usuario desactivado correctamente'], 200);
+    } catch (\Exception $e) {
+        // Si ocurre un error, devolver un mensaje genérico
+        return response()->json(['error' => 'Error en el servidor'], 500);
+    }
+}
+public function activar(Request $request)
+{
+    try {
+        // Buscar al usuario por ID
+        $user = User::find($request->id);
+
+        // Si el usuario no existe
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+
+        // Activar al usuario
+        $user->active = true; // Suponiendo que 'active' es el campo que usas para activar/desactivar
+        $user->save();
+
+        return response()->json(['message' => 'Usuario activado correctamente'], 200);
+    } catch (\Exception $e) {
+        // Si ocurre un error, devolver un mensaje genérico
+        return response()->json(['error' => 'Error en el servidor'], 500);
+    }
+}
+
+
+    
 }
 

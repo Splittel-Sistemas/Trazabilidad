@@ -85,7 +85,7 @@
                                     <th>Descripción</th>
                                     <th>Cantidad Total</th>
                                     <th>Fecha Entrega SAP</th>
-                                    <th>Fecha de Entrega</th>
+                                    <th>Fecha Produccion</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -97,6 +97,7 @@
                 </div>
             </div>
         </div>
+        
 
         <!-- Modal de Detalles de la Orden -->
         <div class="modal fade bd-example-modal-x" id="modalDetalleOrden" tabindex="-1"  role="dialog" aria-labelledby="modalDetalleOrdenLabel" aria-hidden="true">
@@ -119,11 +120,11 @@
                         
                         <!-- Apartado de cortes del día -->
                         <div class="mt-4 p-3 bg-light rounded">
-                            <h5 class="text-secondary"><i class="bi bi-scissors"></i> Cortes del Día</h5>
+                            <h5 class="text-secondary"><i class="bi bi-scissors"></i> Piezas del Día</h5>
                             <form id="formCortesDia" class="needs-validation" novalidate>
                                 <div class="mb-3">
-                                    <label for="numCortes" class="form-label">Número de Cortes Realizados:</label>
-                                    <input type="number" class="form-control" id="numCortes" name="numCortes" min="0" placeholder="Ingrese el número de cortes" required>
+                                    <label for="numCortes" class="form-label">Número de Piezas Realizados:</label>
+                                    <input type="number" class="form-control" id="numCortes" name="numCortes" min="0" placeholder="Ingrese el número de piezas" required>
                                     <div class="invalid-feedback">
                                         Por favor, ingrese un número válido de cortes.
                                     </div>
@@ -136,7 +137,7 @@
                                         <thead class="table-light">
                                             <tr>
                                                 <th>#</th>
-                                                <th>Cortes</th>
+                                                <th>Piezas</th>
                                                 <th>Fecha De Registro</th>
                                             </tr>
                                         </thead>
@@ -155,10 +156,11 @@
                     </div>
                 </div>
             </div>
+            <input type="hidden" id="ordenFabricacionId" value="">
+            <input type="hidden" id="descripcionOrdenFabricacion" value="">
         </div>
-        <input type="hidden" id="ordenFabricacionId" value="">
-    </div>
-</div>
+      <!-- Modal para Generar Etiquetas -->
+       
 @endsection
 
 @section('scripts')
@@ -169,7 +171,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
     // Inicialización de la tabla
     var table = $('#ordenFabricacionTable').DataTable({
         processing: true,
@@ -211,10 +213,10 @@ $(document).ready(function() {
                         <tr><td><strong>Descripción:</strong></td><td>${response.data.Descripcion}</td></tr>
                         <tr><td><strong>Cantidad Total:</strong></td><td>${response.data.CantidadTotal}</td></tr>
                         <tr><td><strong>Fecha Entrega SAP:</strong></td><td>${response.data.FechaEntregaSAP}</td></tr>
-                        <tr><td><strong>Fecha Entrega:</strong></td><td>${response.data.FechaEntrega}</td></tr>
+                        <tr><td><strong>Fecha Producción:</strong></td><td>${response.data.FechaEntrega}</td></tr>
                     `);
                     $('#ordenFabricacionId').val(response.data.id);
-                    
+
                     // Obtener y mostrar los cortes registrados
                     $.ajax({
                         url: '{{ route("corte.getCortes") }}',
@@ -229,10 +231,9 @@ $(document).ready(function() {
                                             <td>${index + 1}</td>
                                             <td>${corte.cantidad_partida}</td>
                                             <td>${corte.fecha_fabricacion}</td>
-                                             <td>
-                                                <button type="button" class="btn btn-warning btn-finalizar" data-id="${corte.id}">Finalizar</button>
-                                            </td>
+                                            <td><button type="button" class="btn btn-outline-warning btn-finalizar" data-id="${corte.id}">Finalizar</button></td>
                                         </tr>
+                                            
                                     `;
                                 });
                                 $('#tablaCortes tbody').html(cortesHtml);
@@ -256,48 +257,35 @@ $(document).ready(function() {
                 alert('Error al obtener los detalles de la orden.');
             }
         });
+    });
 
-        // Finalizar corte
-        $(document).on('click', '.btn-finalizar', function() {
-            var corteId = $(this).data('id'); 
-            var fechaHoraActual = new Date().toISOString().slice(0, 19).replace('T', ' '); 
+    // Finalizar corte
+    $(document).on('click', '.btn-finalizar', function() {
+        var corteId = $(this).data('id'); 
+        var fechaHoraActual = new Date().toISOString().slice(0, 19).replace('T', ' '); 
 
-            $.ajax({
-                url: '{{ route("corte.finalizarCorte") }}', 
-                type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}', 
-                    id: corteId, 
-                    fecha_finalizacion: fechaHoraActual 
-                },
-                success: function(response) {
-                    if (response.success) {
-                        alert('Corte finalizado correctamente.');
-                        cargarTablaCortes(); 
-                    } else {
-                        alert('Error al finalizar el corte: ' + response.message);
-                    }
-                },
-                error: function(xhr) {
-                    console.error(xhr.responseText);
-                    alert('Error al finalizar el corte.');
+        $.ajax({
+            url: '{{ route("etiquetas.generar") }}', 
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}', 
+                id: corteId, 
+                fecha_finalizacion: fechaHoraActual 
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert('Corte finalizado correctamente.');
+                    table.ajax.reload(); // Recargar la tabla con los datos actualizados
+                } else {
+                    alert('Error al finalizar el corte: ' + response.message);
                 }
-            });
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert('Error al finalizar el corte.');
+            }
         });
-
     });
-
-    // Manejo del evento cuando el modal es mostrado
-    $('#modalDetalleOrden').on('shown.bs.modal', function() {
-        $(this).removeAttr('aria-hidden'); // Asegura que aria-hidden se actualice correctamente
-        $(this).find('button').first().focus(); // Enfoca el primer botón en el modal
-    });
-
-    // Manejo del evento cuando el modal es ocultado
-    $('#modalDetalleOrden').on('hidden.bs.modal', function() {
-        $('#triggerButton').focus(); // Devuelve el enfoque al botón que abrió el modal
-    });
-
     // Confirmar y guardar los cortes
     $('#confirmar').click(function() {
         var numCortes = $('#numCortes').val().trim();
@@ -315,24 +303,30 @@ $(document).ready(function() {
             return;
         }
 
-        // Solicitar la cantidad total de la orden de fabricación
+        // Solicitar información sobre la cantidad total y cortes registrados
         $.ajax({
-            url: '{{ route("ordenFabricacion.getCantidadTotal", ":id") }}'.replace(':id', ordenFabricacionId),
+            url: '{{ route("ordenFabricacion.getCortesInfo", ":id") }}'.replace(':id', ordenFabricacionId),
             type: 'GET',
             success: function(response) {
                 if (response.success) {
                     var cantidadTotal = response.cantidad_total;
+                    var cortesRegistrados = response.cortes_registrados;
 
-                    // Verificar si los cortes no exceden la cantidad total de la orden
-                    if (numCortes > cantidadTotal) {
-                        alert('El número de cortes no puede exceder la cantidad total de la orden (' + cantidadTotal + ').');
+                    // Calcular el total de cortes incluyendo los nuevos
+                    var totalCortes = parseInt(cortesRegistrados) + parseInt(numCortes);
+
+                    // Verificar si el total de cortes excede la cantidad total permitida
+                    if (totalCortes > cantidadTotal) {
+                        alert(
+                            'El número total de cortes (' + totalCortes + ') excede la cantidad total de la orden (' + cantidadTotal + '). Cortes ya registrados: ' + cortesRegistrados
+                        );
                         return;
                     }
 
                     // Si el número de cortes es válido, enviar los datos
                     var datosPartidas = [{
-                        cantidad_partida: numCortes,  
-                        fecha_fabricacion: new Date().toISOString().split('T')[0], 
+                        cantidad_partida: numCortes,
+                        fecha_fabricacion: new Date().toISOString().split('T')[0],
                         orden_fabricacion_id: ordenFabricacionId
                     }];
 
@@ -347,10 +341,9 @@ $(document).ready(function() {
                             datos_partidas: datosPartidas
                         },
                         success: function(response) {
-                            console.log('Respuesta del servidor:', response);  // Agregar esta línea para depuración
+                            console.log('Respuesta del servidor:', response); // Agregar esta línea para depuración
                             if (response.status === 'success') {
                                 alert('Partidas guardadas correctamente.');
-                                // Aquí puedes añadir lógica adicional si quieres actualizar algo en la página
                             } else {
                                 alert('Errores: ' + response.errores.join(', '));
                             }
@@ -361,12 +354,12 @@ $(document).ready(function() {
                         }
                     });
                 } else {
-                    alert('Error al obtener la cantidad total de la orden.');
+                    alert('Error al obtener la información de la orden de fabricación.');
                 }
             },
             error: function(xhr, status, error) {
-                console.error('Error al obtener la cantidad total:', xhr.responseText);
-                alert('Error al obtener la cantidad total de la orden.');
+                console.error('Error al obtener información de cortes:', xhr.responseText);
+                alert('Error al obtener información de cortes: ' + xhr.responseText);
             }
         });
     });
@@ -382,8 +375,9 @@ $(document).ready(function() {
             alert('Por favor, ingrese un número válido de cortes.');
         }
     });
-     // Filtrado por fecha
-     $('#buscarFecha').click(function(e) {
+
+    // Filtrado por fecha
+    $('#buscarFecha').click(function(e) {
         e.preventDefault(); 
         var fechaSeleccionada = $('#fecha').val();
         
@@ -409,7 +403,9 @@ $(document).ready(function() {
             }
         });
 
-        if ($('#ordenFabricacionTable tbody tr:visible').length === 0) {
+        var visibleRows = table.rows({ filter: 'applied' }).nodes().length;
+
+        if (visibleRows === 0) {
             $('#noDataMessageFecha').show();
         } else {
             $('#noDataMessageFecha').hide();
@@ -485,7 +481,6 @@ $(document).ready(function() {
         }
     });
     
-
 });
 
 
