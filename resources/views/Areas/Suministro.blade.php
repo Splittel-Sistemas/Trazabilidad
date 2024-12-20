@@ -75,48 +75,5 @@
 <!-- Script de Bootstrap (opcional si lo necesitas para otros elementos de la interfaz) -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script>
-    function ListaCodigo(codigo,tabla){
-        $.ajax({
-            url: "{{route('AreaPartidas')}}", 
-            type: 'GET',
-            data: {
-                codigo: codigo,
-                _token: '{{ csrf_token() }}'  
-            },
-            beforeSend: function() {
-                /*if (modal.is(':visible')) {
-                        $('#table-2-content_vencidos').html("<tr><td colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></td></tr>");
-                    }else{
-                        $('#table-2-content').html("<tr><td colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></td></tr>");
-                    }*/
-                // You can display a loading spinner here
-            },
-            success: function(response) {
-                /*if (modal.is(':visible')) {
-                    tabla=(response.tabla);
-                    //tabla=tabla.replace(/onclick="DetallesOrdenFabricacion/g, " disabled ");
-                    $('#table-2-content_vencidos').html(tabla);
-
-                }else{
-                    $('#table-2-content').html(response.tabla);
-                }*/
-            },
-            error: function(xhr, status, error) {
-                //errorBD();
-            }
-        }); 
-        alert(codigo);
-    }
-   /* $('#mySelect2').select2({
-  ajax: {
-    url: '/example/api',
-    processResults: function (data) {
-      // Transforms the top-level key of the response object from 'items' to 'results'
-      return {
-        results: data.items
-      };
-    }
-  }
-});*/
 </script>
 @endsection
