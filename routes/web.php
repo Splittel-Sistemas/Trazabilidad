@@ -75,6 +75,11 @@ Route::post('/register', [loginController::class, 'register'])->name('register')
 
 
 Route::resource('registro', RegistroController::class);
+
+
+Route::get('/registro/{id}', [RegistroController::class, 'show'])->name('registro.show');
+
+
 Route::post('/users/activar', [RegistroController::class, 'activar'])->name('users.activar');
 // Ruta para activar usuario
 Route::post('/users/activar', [ RegistroController::class, 'activar'])->name('users.activar');

@@ -1,50 +1,119 @@
 @extends('layouts.menu')
 
-@section('title', 'Registro Usuario')
-<head>
+@section('title', 'Usuarios')
+
+@section('styles')
+    <!-- Meta CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
-</head>
+
+    <!-- Estilos específicos para los botones de cambio de estado -->
+    <style>
+        /* Estilo para el botón */
+        .btn.toggle-status {
+            border: none; /* Sin borde */
+            background-color: transparent; /* Fondo transparente */
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        /* Estilo para el ícono */
+        .btn.toggle-status i {
+            font-size: 1.5rem; /* Tamaño del ícono */
+            transition: color 0.3s ease;
+        }
+
+        /* Estilos para cuando el estado está activo o inactivo */
+        .btn.toggle-status.active i {
+            color: #28a745; /* Verde */
+        }
+
+        .btn.toggle-status.inactive i {
+            color: #dc3545; /* Rojo */
+        }
+
+        /* Estilo de hover para hacer crecer el ícono */
+        .btn.toggle-status:hover i {
+            transform: scale(1.2);
+        }
+    </style>
+@endsection
 
 @section('content')
-    <div class="container">
-        <h1>Lista de Usuarios</h1>
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-inner">
+            <div class="row m-0">
+                <div class="col-sm-4">
+                    <div class="page-header float-left">
+                        <div class="page-title">
+                            <h1>Usuarios</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="page-header float-right">
+                        <div class="page-title">
+                            <ol class="breadcrumb text-right">
+                                <li><a href="#">Dashboard</a></li>
+                                <li><a href="#">Usuarios</a></li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="container my-4">
+        <h1 class="mb-4">Lista de Usuarios</h1>
         <a href="{{ route('registro.create') }}" class="btn btn-primary mb-3">Agregar Usuario</a>
 
         @if (session('status'))
-            <div class="alert alert-success">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('status') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
         @endif
 
-        <table id="usuarios-table" class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Apellido</th>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($personal as $registro)
-                <tr id="registro-{{ $registro->id }}">
-                    <td>{{ $registro->apellido }}</td>
-                    <td>{{ $registro->name }}</td>
-                    <td>{{ $registro->email }}</td>
-                    <td>
-                        <a href="#" class="btn btn-outline-warning" data-id="{{ $registro->id }}" data-toggle="modal" data-target="#miModal">Editar</a>
-                        <button class="btn toggle-status {{ $registro->active ? 'btn-success' : 'btn-danger' }}" data-id="{{ $registro->id }}" data-active="{{ $registro->active ? '1' : '0' }}">
-                            <i class="fa {{ $registro->active ? 'fa-toggle-on' : 'fa-toggle-off' }}" aria-hidden="true"></i>
-                        </button>
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
 
-                        <button class="btn btn-outline-danger  btn-sm" data-id="{{ $registro->id }}" data-url="{{ route('registro.destroy', $registro->id) }}"> Eliminar</button>
-                    </td>
-                </tr>
-            @endforeach
-            
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table id="usuarios-table" class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Apellido</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($personal as $registro)
+                    <tr id="registro-{{ $registro->id }}">
+                        <td>{{ $registro->apellido }}</td>
+                        <td>{{ $registro->name }}</td>
+                        <td>{{ $registro->email }}</td>
+                        <td>
+                            <a href="#" class="btn btn-warning" data-id="{{ $registro->id }}" data-toggle="modal" data-target="#miModal">Editar</a>
+                            <button class="btn toggle-status {{ $registro->active ? 'active' : 'inactive' }}" data-id="{{ $registro->id }}" data-active="{{ $registro->active ? '1' : '0' }}">
+                                <i class="fa {{ $registro->active ? 'fa-toggle-on' : 'fa-toggle-off' }}" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Modal -->
@@ -58,63 +127,37 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="edit-form" action="{{ route('registro.update', $registro->id) }}" method="POST" class="shadow p-4 rounded bg-white">
+                    <form id="edit-form" method="POST" action="{{ route('registro.update', $registro->id) }}" class="shadow p-4 rounded bg-white">
                         @csrf
-                        @method('PUT')
-                    
-                        <input type="hidden" name="id" value="{{ $registro->id }}">
-                    
+                        @method('PUT') <!-- Esto es necesario para que el formulario use el método PUT -->
+                        <input type="hidden" name="id" id="user-id" value="{{ $registro->id }}"> <!-- ID del usuario -->
+
                         <div class="form-group mb-10">
                             <label for="apellido">Apellido</label>
-                            <input type="text" name="apellido" id="apellido" class="form-control" value="{{ old('apellido', $registro->apellido) }}" placeholder="Ingrese su apellido">
+                            <input type="text" name="apellido" id="apellido" class="form-control" value="{{ $registro->apellido }}" placeholder="Ingrese su apellido">
                         </div>
-                    
+
                         <div class="form-group mb-3">
                             <label for="name">Nombre</label>
-                            <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $registro->name) }}" placeholder="Ingrese su nombre">
+                            <input type="text" name="name" id="name" class="form-control" value="{{ $registro->name }}" placeholder="Ingrese su nombre">
                         </div>
-                    
+
                         <div class="form-group mb-3">
                             <label for="email">Correo Electrónico</label>
-                            <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $registro->email) }}" placeholder="Ingrese su correo electrónico">
+                            <input type="email" name="email" id="email" class="form-control" value="{{ $registro->email }}" placeholder="Ingrese su correo electrónico">
                         </div>
-                    
+
                         <div class="form-group mb-4">
                             <label for="password">Contraseña</label>
                             <input type="password" name="password" id="password" class="form-control" placeholder="Ingrese su nueva contraseña (dejar en blanco para no cambiar)">
                         </div>
-                    
+
                         <div class="form-group mb-4">
                             <label for="password_confirmation">Confirmar Contraseña</label>
                             <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Confirme su nueva contraseña">
                         </div>
-                    
-                        <div class="form-group mb-4">
-                            <label class="font-weight-bold">Roles</label>
-                            <small class="form-text text-muted">Seleccione uno o más roles.</small>
-                    
-                            @foreach ($roles as $value)
-                                <div class="form-check">
-                                    <input type="checkbox" name="roles[]" id="role_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
-                                        {{ (isset($registro) && $registro->roles->contains($value->id)) ? 'checked' : '' }}>
-                                    <label for="role_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
-                                </div>
-                            @endforeach
-                        </div>
-                    
-                        <div class="form-group mb-4">
-                            <label class="font-weight-bold">Permisos</label>
-                            <small class="form-text text-muted">Seleccione uno o más permisos.</small>
-                    
-                            @foreach ($permissions as $value)
-                                <div class="form-check">
-                                    <input type="checkbox" name="permissions[]" id="permission_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
-                                        {{ (isset($registro) && $registro->permissions->contains($value->id)) ? 'checked' : '' }}>
-                                    <label for="permission_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
-                                </div>
-                            @endforeach
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block" id="actualizar">Actualizar Usuario</button>
+
+                        <button type="submit" class="btn btn-primary btn-block">Actualizar Usuario</button>
                     </form>
                 </div>
             </div>
@@ -128,48 +171,42 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="{{ asset('js/usuario.js') }}"></script>
+
     <script>
+        $(document).ready(function () {
+            $('.toggle-status').on('click', function () {
+                var button = $(this); // Botón clickeado
+                var userId = button.data('id'); // ID del usuario
+                var isActive = button.data('active') == '1'; // Estado actual (1 = activo, 0 = desactivado)
 
-$(document).ready(function () {
-    $('.toggle-status').on('click', function () {
-        var button = $(this); // Botón clickeado
-        var userId = button.data('id'); // ID del usuario
-        var isActive = button.data('active') == '1'; // Estado actual (1 = activo, 0 = desactivado)
+                // Determina la URL y el nuevo estado
+                var url = isActive ? '/users/desactivar' : '/users/activar';
+                var newState = isActive ? 0 : 1;
 
-        // Determina la URL y el nuevo estado
-        var url = isActive ? '/users/desactivar' : '/users/activar';
-        var newState = isActive ? 0 : 1;
-
-        // Realiza la solicitud AJAX
-        $.ajax({
-            url: url,
-            method: 'POST',
-            data: {
-                user_id: userId,
-                _token: $('meta[name="csrf-token"]').attr('content'),
-            },
-            success: function (response) {
-                // Cambia el estado visual del botón
-                button.data('active', newState);
-                if (newState) {
-                    button.removeClass('btn-danger').addClass('btn-success');
-                    button.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
-                } else {
-                    button.removeClass('btn-success').addClass('btn-danger');
-                    button.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
-                }
-            },
-            error: function () {
-                alert('Hubo un error al cambiar el estado.');
-            }
+                // Realiza la solicitud AJAX
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: {
+                        user_id: userId,
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                    },
+                    success: function (response) {
+                        // Cambia el estado visual del ícono
+                        button.data('active', newState);
+                        if (newState) {
+                            button.removeClass('inactive').addClass('active');
+                            button.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+                        } else {
+                            button.removeClass('active').addClass('inactive');
+                            button.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+                        }
+                    },
+                    error: function () {
+                        alert('Hubo un error al cambiar el estado.');
+                    }
+                });
+            });
         });
-    });
-});
-
-
-
-
-
     </script>
-    
 @endsection

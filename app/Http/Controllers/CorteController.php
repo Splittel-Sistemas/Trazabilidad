@@ -91,7 +91,7 @@ class CorteController extends Controller
             'datos_partidas' => 'required|array', // 'datos_partidas' debe ser un array
             'datos_partidas.*.orden_fabricacion_id' => 'required|exists:OrdenFabricacion,id', // Validar que 'orden_fabricacion_id' exista en la tabla 'OrdenFabricacion'
             'datos_partidas.*.cantidad_partida' => 'required|integer', // Asegurarse de que 'cantidad_partida' sea un número entero
-            'datos_partidas.*.fecha_fabricacion' => 'required|date', // Asegurarse de que 'fecha_fabricacion' sea una fecha válida
+            'datos_partidas.*.fecha_fabricacion' => 'now()', // Asegurarse de que 'fecha_fabricacion' sea una fecha válida
         ]);
     
         // Guardar las partidas
@@ -197,30 +197,4 @@ class CorteController extends Controller
 
         return response()->json(['success' => false, 'message' => 'Orden de fabricación no encontrada.']);
     }
-        public function getCortesInfo($id)
-    {
-        $ordenFabricacion = OrdenFabricacion::find($id);
-
-        if ($ordenFabricacion) {
-            $cortesRegistrados = $ordenFabricacion->partidasOF()->sum('cantidad_partida'); 
-            return response()->json([
-                'success' => true,
-                'cantidad_total' => $ordenFabricacion->CantidadTotal,
-                'cortes_registrados' => $cortesRegistrados
-            ]);
-        }
-
-        return response()->json(['success' => false, 'message' => 'Orden de fabricación no encontrada.']);
-    }
-
-
-
-    
-    
-
-    
 }
-
-
-
-
