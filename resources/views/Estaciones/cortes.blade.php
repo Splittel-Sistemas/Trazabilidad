@@ -10,7 +10,7 @@
             <div class="col-sm-4">
                 <div class="page-header float-left">
                     <div class="page-title">
-                        <h1>Planeación</h1>
+                        <h1>Cortes</h1>
                     </div>
                 </div>
             </div>
@@ -20,7 +20,7 @@
                         <ol class="breadcrumb text-right">
                             <li><a href="#">Dashboard</a></li>
                             <li><a href="#">Cortes</a></li>
-                            <li class="active">Planeación Cortes</li>
+                            <li class="active">Cortes</li>
                         </ol>
                     </div>
                 </div>
@@ -240,7 +240,10 @@ $(document).ready(function() {
                                 $('#tablaCortes tbody').html('<tr><td colspan="3" class="text-center">No se encontraron cortes.</td></tr>');
                             }
                         },
-                        
+                        error: function(xhr) {
+                            console.error(xhr.responseText);
+                            alert('Error al obtener los cortes.');
+                        }
                     });
 
                     $('#modalDetalleOrden').modal('show');
@@ -297,76 +300,106 @@ $(document).ready(function() {
 
     // Confirmar y guardar los cortes
     $('#confirmar').click(function() {
-        var numCortes = $('#numCortes').val().trim();
+    var numCortes = $('#numCortes').val().trim();
+    var ordenFabricacionId = $('#ordenFabricacionId').val();
+
+    if (!numCortes || numCortes <= 0 || isNaN(numCortes)) {
+        alert('Por favor, ingrese un número válido de cortes.');
+        return;
+    }
+
+    if (!ordenFabricacionId) {
+        alert('No se ha seleccionado una orden de fabricación.');
+        return;
+    }
+
+    // Obtener información de los cortes registrados
+    $.ajax({
+        url: `/orden-fabricacion/${ordenFabricacionId}/cortes-info`, // Ruta dinámica
+        type: 'GET',
+        success: function(response) {
+            if (response.success) {
+                var cantidadTotal = parseInt(response.  CantidadTotal);
+                var cortesRegistrados = parseInt(response.cortes_registrados);
+                var nuevoCorte = parseInt(numCortes);
+
+                if (cortesRegistrados + nuevoCorte > cantidadTotal) {
+                    alert('El número total de cortes excede la cantidad total de la orden.');
+                    return;
+                }
+
+                // Guardar los nuevos cortes
+                var datosPartidas = [{
+                    cantidad_partida: nuevoCorte,
+                    fecha_fabricacion: new Date().toISOString().split('T')[0],
+                    orden_fabricacion_id: ordenFabricacionId
+                }];
+
+                $.ajax({
+                    url: '{{ route("guardar.partida") }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        datos_partidas: datosPartidas
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            alert('Partidas guardadas correctamente.');
+                        } else {
+                            alert('Errores: ' + response.errores.join(', '));
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al guardar partidas:', xhr.responseText);
+                        alert('Error al guardar las partidas: ' + xhr.responseText);
+                    }
+                });
+            } else {
+                alert('Error al obtener la información de la orden de fabricación: ' + response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error al obtener información de cortes:', xhr.responseText);
+            alert('Error al obtener información de cortes: ' + xhr.responseText);
+        }
+    });
+});
+
+
+    // Función para recargar la tabla de cortes
+    function cargarTablaCortes() {
         var ordenFabricacionId = $('#ordenFabricacionId').val();
 
-        // Verificar si numCortes es un número válido
-        if (!numCortes || numCortes <= 0 || isNaN(numCortes)) {
-            alert('Por favor, ingrese un número válido de cortes.');
-            return;
-        }
-
-        // Verificar si se ha seleccionado una orden de fabricación
-        if (!ordenFabricacionId) {
-            alert('No se ha seleccionado una orden de fabricación.');
-            return;
-        }
-
-        // Solicitar la cantidad total de la orden de fabricación
-        $.ajax({
-            url: '{{ route("ordenFabricacion.getCantidadTotal", ":id") }}'.replace(':id', ordenFabricacionId),
-            type: 'GET',
-            success: function(response) {
-                if (response.success) {
-                    var cantidadTotal = response.cantidad_total;
-
-                    // Verificar si los cortes no exceden la cantidad total de la orden
-                    if (numCortes > cantidadTotal) {
-                        alert('El número de cortes no puede exceder la cantidad total de la orden (' + cantidadTotal + ').');
-                        return;
+        if (ordenFabricacionId) {
+            $.ajax({
+                url: '{{ route("corte.getCortes") }}',
+                type: 'GET',
+                data: { id: ordenFabricacionId },
+                success: function(cortesResponse) {
+                    if (cortesResponse.success) {
+                        var cortesHtml = '';
+                        cortesResponse.data.forEach(function(corte, index) {
+                            cortesHtml += `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${corte.cantidad_partida}</td>
+                                    <td>${corte.fecha_fabricacion}</td>
+                                    <td><button type="button" class="btn btn-warning btn-finalizar" data-id="${corte.id}">Finalizar</button></td>
+                                </tr>
+                            `;
+                        });
+                        $('#tablaCortes tbody').html(cortesHtml);
+                    } else {
+                        $('#tablaCortes tbody').html('<tr><td colspan="3" class="text-center">No se encontraron cortes.</td></tr>');
                     }
-
-                    // Si el número de cortes es válido, enviar los datos
-                    var datosPartidas = [{
-                        cantidad_partida: numCortes,  
-                        fecha_fabricacion: new Date().toISOString().split('T')[0], 
-                        orden_fabricacion_id: ordenFabricacionId
-                    }];
-
-                    console.log('Datos a enviar:', datosPartidas);
-
-                    // Enviar los datos al servidor
-                    $.ajax({
-                        url: '{{ route("guardar.partida") }}',
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            datos_partidas: datosPartidas
-                        },
-                        success: function(response) {
-                            console.log('Respuesta del servidor:', response);  // Agregar esta línea para depuración
-                            if (response.status === 'success') {
-                                alert('Partidas guardadas correctamente.');
-                                // Aquí puedes añadir lógica adicional si quieres actualizar algo en la página
-                            } else {
-                                alert('Errores: ' + response.errores.join(', '));
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error al guardar partidas:', xhr.responseText);
-                            alert('Error al guardar las partidas: ' + xhr.responseText);
-                        }
-                    });
-                } else {
-                    alert('Error al obtener la cantidad total de la orden.');
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    alert('Error al obtener los cortes.');
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error al obtener la cantidad total:', xhr.responseText);
-                alert('Error al obtener la cantidad total de la orden.');
-            }
-        });
-    });
+            });
+        }
+    }
 
     // Guardar los cortes cuando se haga clic en "Guardar Cortes"
     $('#guardarCortes').on('click', function() {

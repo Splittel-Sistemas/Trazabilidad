@@ -12,6 +12,9 @@ class PartidasOF extends Model
     protected $table = 'partidas_of'; 
     protected $fillable = [
         'orden_fabricacion_id',
+        'cantidad_partida',
+        'fecha_fabricacion',
+            
     ];
 
     public function ordenFabricacion()

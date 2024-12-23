@@ -44,51 +44,46 @@ Route::get('/orden-fabricacion/cantidad-total/{id}', [CorteController::class, 'g
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
 Route::get('/orden-fabricacion/{id}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('ordenFabricacion.getCortesInfo');
 
+// Ruta para mostrar el formulario de login
+Route::get('/login', [loginController::class, 'login_view'])->name('login_view');
+Route::post('/login', [loginController::class, 'login'])->name('login_post');
+Route::post('/logout', [loginController::class, 'logout'])->name('logout');
+Route::post('/register', [loginController::class, 'register'])->name('register');
 
+//ruta para el formulario de registro
+Route::resource('registro', RegistroController::class);
+Route::get('/registro/{id}', [RegistroController::class, 'show'])->name('registro.show');
 
+// Rutas para activar y desactivar usuarios
+Route::post('/users/activar', [RegistroController::class, 'activar'])->name('users.activar');
+Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar');
 
+//rutas para generar etiquetas
 Route::post('/generar-etiquetas', [CorteController::class, 'generar'])->name('etiquetas.generar');
-
-
 Route::post('/ruta-generar-etiquetas', [CorteController::class, 'generar'])->name('generar.etiquetas');
 
 
 
 
-//login
-
-// vista 
-// Ruta para mostrar el formulario de login
-Route::get('/login', [loginController::class, 'login_view'])->name('login_view');
-
-// Ruta para procesar el login (POST)
-Route::post('/login', [loginController::class, 'login'])->name('login_post');
-
-// Ruta para el logout
-Route::post('/logout', [loginController::class, 'logout'])->name('logout');
-
-// Ruta para el registro (si lo necesitas)
-Route::post('/register', [loginController::class, 'register'])->name('register');
 
 
 
 
 
-Route::resource('registro', RegistroController::class);
 
 
-Route::get('/registro/{id}', [RegistroController::class, 'show'])->name('registro.show');
 
 
-Route::post('/users/activar', [RegistroController::class, 'activar'])->name('users.activar');
-// Ruta para activar usuario
-Route::post('/users/activar', [ RegistroController::class, 'activar'])->name('users.activar');
-// Ruta para desactivar un usuario
-Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar');
 
-// Rutas para activar y desactivar usuarios
-Route::post('/users/activar', [RegistroController::class, 'activar'])->name('users.activar');
-Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar');
+
+
+
+
+
+
+
+
+
 
 
 

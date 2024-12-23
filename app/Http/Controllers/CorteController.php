@@ -91,7 +91,7 @@ class CorteController extends Controller
             'datos_partidas' => 'required|array', // 'datos_partidas' debe ser un array
             'datos_partidas.*.orden_fabricacion_id' => 'required|exists:OrdenFabricacion,id', // Validar que 'orden_fabricacion_id' exista en la tabla 'OrdenFabricacion'
             'datos_partidas.*.cantidad_partida' => 'required|integer', // Asegurarse de que 'cantidad_partida' sea un número entero
-            'datos_partidas.*.fecha_fabricacion' => 'now()', // Asegurarse de que 'fecha_fabricacion' sea una fecha válida
+            'datos_partidas.*.fecha_fabricacion' => 'required|date', // Asegurarse de que 'fecha_fabricacion' sea una fecha válida
         ]);
     
         // Guardar las partidas
@@ -192,9 +192,43 @@ class CorteController extends Controller
         $ordenFabricacion = OrdenFabricacion::find($id);
 
         if ($ordenFabricacion) {
-            return response()->json(['success' => true, 'cantidad_total' => $ordenFabricacion->CantidadTotal]);
+            return response()->json(['success' => true, 'CantidadTotal' => $ordenFabricacion->CantidadTotal]);
         }
 
         return response()->json(['success' => false, 'message' => 'Orden de fabricación no encontrada.']);
     }
+    public function getCortesInfo($id)
+    {
+        try {
+            // Sumar los cortes registrados de la tabla `partidas_of`
+            $sumaCortes = DB::table('partidas_of')
+                ->where('orden_fabricacion_id', $id) // Usa el nombre correcto
+                ->sum('cantidad_partida');
+
+            // Obtener información de la orden de fabricación
+            $ordenFabricacion = DB::table('ordenfabricacion')
+                ->where('id', $id)
+                ->first();
+
+            if (!$ordenFabricacion) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Orden de fabricación no encontrada.',
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'CantidadTotal' => $ordenFabricacion->CantidadTotal, // Columna esperada en la tabla `orden_fabricacion`
+                'cortes_registrados' => $sumaCortes,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener la información de los cortes.',
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
 }
+
