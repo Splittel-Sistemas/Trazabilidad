@@ -34,15 +34,10 @@
                     <td>{{ $registro->email }}</td>
                     <td>
                         <a href="#" class="btn btn-outline-warning" data-id="{{ $registro->id }}" data-toggle="modal" data-target="#miModal">Editar</a>
-                        
-                        <!-- Cambiar $person->id a $registro->id -->
-                        <button class="btn btn-outline-success btn-sm activar" data-id="{{ $registro->id }}">
-                            Activar
+                        <button class="btn toggle-status {{ $registro->active ? 'btn-success' : 'btn-danger' }}" data-id="{{ $registro->id }}" data-active="{{ $registro->active ? '1' : '0' }}">
+                            <i class="fa {{ $registro->active ? 'fa-toggle-on' : 'fa-toggle-off' }}" aria-hidden="true"></i>
                         </button>
-                        <button class="btn btn-outline-danger btn-sm desactivar" data-id="{{ $registro->id }}">
-                            Desactivar
-                        </button>
-            
+
                         <button class="btn btn-outline-danger  btn-sm" data-id="{{ $registro->id }}" data-url="{{ route('registro.destroy', $registro->id) }}"> Eliminar</button>
                     </td>
                 </tr>
@@ -134,71 +129,43 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="{{ asset('js/usuario.js') }}"></script>
     <script>
-   // Seleccionar todos los botones de "Activar"
-document.querySelectorAll('.activar').forEach(button => {
-    button.addEventListener('click', function(e) {
-        e.preventDefault();
 
-        let userId = this.getAttribute('data-id');  // Obtener el ID del usuario
+$(document).ready(function () {
+    $('.toggle-status').on('click', function () {
+        var button = $(this); // Botón clickeado
+        var userId = button.data('id'); // ID del usuario
+        var isActive = button.data('active') == '1'; // Estado actual (1 = activo, 0 = desactivado)
 
-        // Hacer la solicitud Ajax (POST) al backend para activar al usuario
-        fetch('/users/activar', {
+        // Determina la URL y el nuevo estado
+        var url = isActive ? '/users/desactivar' : '/users/activar';
+        var newState = isActive ? 0 : 1;
+
+        // Realiza la solicitud AJAX
+        $.ajax({
+            url: url,
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')  // CSRF Token
+            data: {
+                user_id: userId,
+                _token: $('meta[name="csrf-token"]').attr('content'),
             },
-            body: JSON.stringify({ id: userId })  // Enviar el ID del usuario
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Mostrar el mensaje según la respuesta
-            if (data.message) {
-                alert(data.message);  // Si el mensaje es exitoso
-                // Opcional: Actualizar el UI para reflejar que el usuario fue activado
-            } else {
-                alert(data.error);  // Si ocurre un error
+            success: function (response) {
+                // Cambia el estado visual del botón
+                button.data('active', newState);
+                if (newState) {
+                    button.removeClass('btn-danger').addClass('btn-success');
+                    button.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+                } else {
+                    button.removeClass('btn-success').addClass('btn-danger');
+                    button.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+                }
+            },
+            error: function () {
+                alert('Hubo un error al cambiar el estado.');
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Hubo un error en la solicitud');
         });
     });
 });
 
-// Seleccionamos todos los botones de "Desactivar"
-document.querySelectorAll('.desactivar').forEach(button => {
-    button.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        let userId = this.getAttribute('data-id');  // Obtener el ID del usuario
-
-        // Hacer la solicitud Ajax (POST) al backend
-        fetch('/users/desactivar', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')  // CSRF Token
-            },
-            body: JSON.stringify({ id: userId })  // Enviar el ID del usuario
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Mostrar el mensaje según la respuesta
-            if (data.message) {
-                alert(data.message);  // Si el mensaje es exitoso
-                // Opcional: Actualizar el UI para reflejar que el usuario fue desactivado
-            } else {
-                alert(data.error);  // Si ocurre un error
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Hubo un error en la solicitud');
-        });
-    });
-});
 
 
 

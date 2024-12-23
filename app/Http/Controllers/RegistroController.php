@@ -132,49 +132,28 @@ class RegistroController extends Controller
 
         return response()->json(['mensaje' => 'Usuario eliminado exitosamente.']);
     }
+    public function activar(Request $request)
+    {
+        $user = User::find($request->user_id);
+        if ($user) {
+            $user->active = true;
+            $user->save();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false, 'message' => 'Usuario no encontrado.'], 404);
+    }
+    
     public function desactivar(Request $request)
-{
-    try {
-        // Buscar al usuario por ID
-        $user = User::find($request->id);
-
-        // Si el usuario no existe
-        if (!$user) {
-            return response()->json(['error' => 'Usuario no encontrado'], 404);
+    {
+        $user = User::find($request->user_id);
+        if ($user) {
+            $user->active = false;
+            $user->save();
+            return response()->json(['success' => true]);
         }
-
-        // Desactivar al usuario
-        $user->active = false;
-        $user->save();
-
-        return response()->json(['message' => 'Usuario desactivado correctamente'], 200);
-    } catch (\Exception $e) {
-        // Si ocurre un error, devolver un mensaje genérico
-        return response()->json(['error' => 'Error en el servidor'], 500);
+        return response()->json(['success' => false, 'message' => 'Usuario no encontrado.'], 404);
     }
-}
-public function activar(Request $request)
-{
-    try {
-        // Buscar al usuario por ID
-        $user = User::find($request->id);
-
-        // Si el usuario no existe
-        if (!$user) {
-            return response()->json(['error' => 'Usuario no encontrado'], 404);
-        }
-
-        // Activar al usuario
-        $user->active = true; // Suponiendo que 'active' es el campo que usas para activar/desactivar
-        $user->save();
-
-        return response()->json(['message' => 'Usuario activado correctamente'], 200);
-    } catch (\Exception $e) {
-        // Si ocurre un error, devolver un mensaje genérico
-        return response()->json(['error' => 'Error en el servidor'], 500);
-    }
-}
-
+    
 
     
 }

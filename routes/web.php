@@ -81,6 +81,11 @@ Route::post('/users/activar', [ RegistroController::class, 'activar'])->name('us
 // Ruta para desactivar un usuario
 Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar');
 
+// Rutas para activar y desactivar usuarios
+Route::post('/users/activar', [RegistroController::class, 'activar'])->name('users.activar');
+Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar');
+
+
 
 
 
