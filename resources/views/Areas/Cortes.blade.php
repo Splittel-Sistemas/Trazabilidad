@@ -474,7 +474,7 @@ $(document).ready(function() {
                                     </td>
                                 </tr>
                             `);
-                        });
+                        }); 
                         $('.ver-detalles').off('click').on('click', function() {
                         var ordenFabricacionId = $(this).data('id');
                         $('#ordenFabricacionId').val(ordenFabricacionId);
