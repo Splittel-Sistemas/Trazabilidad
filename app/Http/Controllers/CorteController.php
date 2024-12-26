@@ -12,32 +12,63 @@ use Carbon\Carbon;
 class CorteController extends Controller
 {
     //vista
-    public function index()
-    {
-        return view('Estaciones.cortes');
+    public function index(){
+        $fechaHoy=date('Y-m-d');
+        return view('Areas.Cortes',compact('fechaHoy'));
     }
     //carga de la tabla
-    public function getData()
-    {
-        $data = DB::table('OrdenFabricacion')  
-                ->join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')  
-                ->select(
-                    'OrdenFabricacion.id', 
-                    'OrdenFabricacion.OrdenVenta_id', 
-                    'OrdenFabricacion.OrdenFabricacion', 
-                    'OrdenFabricacion.Articulo', 
-                    'OrdenFabricacion.Descripcion', 
-                    'OrdenFabricacion.CantidadTotal', 
-                    'OrdenFabricacion.FechaEntregaSAP', 
-                    'OrdenFabricacion.FechaEntrega', 
-                    'OrdenFabricacion.created_at', 
-                    'OrdenFabricacion.updated_at'
-                )
-                ->get();
-        
-       // var_dump($data);
-    
-        return response()->json(['data' => $data]);
+    /*public function getData(Request $request){
+        $fechaHoy=$request->fechaHoy;
+        $datos = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
+        ->select(
+            'OrdenFabricacion.id',
+            'OrdenFabricacion.OrdenVenta_id',
+            'OrdenFabricacion.OrdenFabricacion',
+            'OrdenFabricacion.Articulo',
+            'OrdenFabricacion.Descripcion',
+            'OrdenFabricacion.CantidadTotal',
+            'OrdenFabricacion.FechaEntregaSAP',
+            'OrdenFabricacion.FechaEntrega',
+            'OrdenFabricacion.created_at',
+            'OrdenFabricacion.updated_at'
+        )
+        ->where('OrdenFabricacion.FechaEntrega', '=', $fechaHoy);
+        return $datos;
+    }*/
+    public function getData(Request $request){
+        $fechaHoy = date('Y-m-d');
+        $limit = $request->input('length'); // Número de registros por página (10, 25, 50, etc.)
+        $start = $request->input('start');  // Índice del primer registro (comienza en 0)
+
+        $datos = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
+            ->select(
+                'OrdenFabricacion.id',
+                'OrdenFabricacion.OrdenVenta_id',
+                'OrdenFabricacion.OrdenFabricacion',
+                'OrdenFabricacion.Articulo',
+                'OrdenFabricacion.Descripcion',
+                'OrdenFabricacion.CantidadTotal',
+                'OrdenFabricacion.FechaEntregaSAP',
+                'OrdenFabricacion.FechaEntrega',
+                'OrdenFabricacion.created_at',
+                'OrdenFabricacion.updated_at'
+            )
+            ->where('OrdenFabricacion.FechaEntrega', '=', $fechaHoy);
+
+        // Contar el número total de registros sin aplicar paginación
+        $totalRecords = $datos->count();
+
+        // Aplicar filtros de búsqueda, si los hay
+        if ($request->has('search') && $request->input('search.value') != '') {
+            $datos->where('OrdenFabricacion.Articulo', 'like', '%' . $request->input('search.value') . '%');
+        }
+        $data = $datos->skip($start)->take($limit)->get();
+        return response()->json([
+            'draw' => intval($request->input('draw')), 
+            'recordsTotal' => $totalRecords,           
+            'recordsFiltered' => $totalRecords,        
+            'data' => $data,                          
+        ]);
     }
     //modal
     public function verDetalles($id)

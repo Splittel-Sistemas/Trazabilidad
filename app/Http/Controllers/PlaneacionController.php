@@ -20,7 +20,8 @@ class PlaneacionController extends Controller
         $this->funcionesGenerales = $funcionesGenerales;
     }
     public function index(){
-        $FechaInicio=date('Ymd', strtotime('-1 day'));
+        //$FechaInicio=date('Ymd', strtotime('-1 day'));
+        $FechaInicio=date('Ymd');
         $FechaFin=date('Ymd');
         //$FechaInicio=date('Ymd');
         $NumOV="";
@@ -35,7 +36,8 @@ class PlaneacionController extends Controller
         }else{
             $status="error";
         }
-        $FechaInicio=date('Y-m-d', strtotime('-1 day'));
+        //$FechaInicio=date('Y-m-d', strtotime('-1 day'));
+        $FechaInicio=date('Y-m-d');
         $FechaFin=date('Y-m-d');
         //$FechaInicio=date('Y-m-d');
         return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin','status'));
@@ -348,9 +350,11 @@ class PlaneacionController extends Controller
     }
     //Funcion para eliminar Orden de Fabricacion planeadas
     public function PartidasOFRegresar(Request $request){
-        //try{
+        try{
             $NumOF_id=$this->funcionesGenerales->decrypt($request->input('NumOF'));
             $OF = OrdenFabricacion::where('id','=',$NumOF_id)->first();
+            $numero_partidas=$OF->PartidasOF;
+            return $numero_partidas;
             //Comprobar si ya esta iniciada
             if (!empty($OF)) {
                 $OV=$OF->ordenVenta()->get();
@@ -382,12 +386,12 @@ class PlaneacionController extends Controller
                     'OF' => ""
                 ]);
             }
-        //}catch(Exception $e){
+        }catch(Exception $e){
             return response()->json([
                 'status' => "error",
                 'OF' => ""
             ]);
-        //}
+        }
     }
      //Funcion para cambiar estutus de si se escanea o no
     public function CambiarEstatusEscaner(Request $request){

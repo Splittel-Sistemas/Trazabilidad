@@ -32,7 +32,7 @@ Route::get('/Area/Medicion', [AreasController::class,'Medicion'])->name('Medicio
 Route::get('/Area/Visualizacion', [AreasController::class,'Visualizacion'])->name('Visualizacion');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas');
 
-//cortes
+//Rutas cortes
 Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
 Route::get('/cortes/getData', [CorteController::class, 'getData'])->name('corte.getData');
 Route::get('/detalles', [CorteController::class, 'verDetalles'])->name('detalles');
