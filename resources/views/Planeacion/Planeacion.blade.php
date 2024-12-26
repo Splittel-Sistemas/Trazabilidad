@@ -4,122 +4,122 @@
 <link rel="stylesheet" href="{{asset('css/Planecion.css')}}">
 @endsection
 @section('content')
-<div class="row mb-2">
-    <div class="breadcrumbs col-12">
-        <div class="breadcrumbs-inner">
-            <div class="row m-0">
-                <div class="col-sm-4">
-                    <div class="page-header float-left">
-                        <div class="page-title">
-                            <h1>Planeaci&oacute;n</h1>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-8">
-                    <div class="page-header float-right">
-                        <div class="page-title">
-                            <ol class="breadcrumb text-right">
-                                <li><a href="#">Dashboard</a></li>
-                                <li><a href="#">Planeaci&oacute;n</a></li>
-                                <li class="active">Planeaci&oacute;n Fabricaci&oacute;n</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-8 ">
-        <div class="card">
-            <div class="card-header">
-                <strong>Filtrar Órdenes de Venta</strong>
-                <button id="filtro_ov" type="button" class="btn btn-link float-end collapsed" draggable="true" data-bs-toggle="collapse" data-bs-target="#filtro" aria-expanded="true" aria-controls="filtro">
-                    <i class="fa fa-chevron-up"></i>
-                </button>
-            </div>
-            <div class="card-body card-block collapsed show" id="filtro">
-                <form id="filtroForm" method="post" class="form-horizontal" action="{{--route('filtros')--}}">
-                    @csrf
-                    <div class="row">
-                        <!-- Filtro por fecha -->
-                        <div class="col-md-12 ">
-                            <label for="" class="form-control-label me-2 col-12">
-                                <strong>Filtro por Fecha</strong>
-                            </label>
-                            <div class="input-group">
-                                <div class="col-4">
-                                    <label for="startDate" class="form-control-label me-2 ">Fecha inicio:</label>
-                                </div>
-                                <div class="col-8">
-                                    <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio }}">
-                                    <input type="hidden" name="startDate_filtroantnext" id="startDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio }}">
-                                </div>
-                            </div>
-                            <div class="input-group pt-3">
-                                <div class="col-4">
-                                    <label for="endDate" class="form-control-label ">Fecha fin:</label>
-                                </div>
-                                <div class="col-8">
-                                    <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaFin}}">
-                                    <input type="hidden" name="endDate_filtroantnext" id="endDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaFin}}">
-                                    <p id="error_endDate" class="text-danger fs-sm"></p>
-                                </div>
-                            </div>
-                            <div class="row form-group pt-3">
-                                <button type="button" class="btn btn-primary btn-sm float-end" id="Filtro_fecha-btn">
-                                    <i class="fa fa-search"></i> Filtrar
-                                </button>
-                            </div>
-                        </div>
-                        <!-- Filtro por Orden de Venta -->
-                        <!--<div class="col-md-6">
-                            <label for="" class="form-control-label me-2 col-12">
-                                <strong>Filtro por Orden de Venta</strong>
-                            </label>
-                            <div class="input-group">
-                                <input type="text" placeholder="Ingresa una Orden de Venta" name="Filtro_buscarOV" id="Filtro_buscarOV" class="form-control form-control-sm w-autoborder-primary col-9">
-                                <div class="input-group-btn">
-                                    <a href="#" id="buscarOV" class="btn btn-primary btn-sm">
-                                        <i class="fa fa-search"></i> Buscar
-                                    </a>
-                                </div>
-                            </div>
-                        </div> -->
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="">
-    <!--<h1 class="text-primary mb-4 text-center">Gestión de Órdenes de Venta</h1>-->
-    <!-- Buscador -->
-   <!-- Buscador -->
     <div class="row mb-2">
+        <div class="breadcrumbs col-12">
+            <div class="breadcrumbs-inner">
+                <div class="row m-0">
+                    <div class="col-sm-4">
+                        <div class="page-header float-left">
+                            <div class="page-title">
+                                <h1>Planeaci&oacute;n</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="page-header float-right">
+                            <div class="page-title">
+                                <ol class="breadcrumb text-right">
+                                    <li><a href="{{ route("Home") }}">Dashboard</a></li>
+                                    <li><a href="#">Planeaci&oacute;n</a></li>
+                                    <li class="active">Planeaci&oacute;n Fabricaci&oacute;n</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 ">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <strong>Filtrar Órdenes de Venta</strong>
+                    <button id="filtro_ov" type="button" class="btn btn-link float-end collapsed" draggable="true" data-bs-toggle="collapse" data-bs-target="#filtro" aria-expanded="true" aria-controls="filtro">
+                        <i class="fa fa-chevron-up"></i>
+                    </button>
+                </div>
+                <div class="card-body card-block collapsed show" id="filtro">
+                    <form id="filtroForm" method="post" class="form-horizontal" action="{{--route('filtros')--}}">
+                        @csrf
+                        <div class="row">
+                            <!-- Filtro por fecha -->
+                            <div class="col-md-12 ">
+                                <label for="" class="form-control-label me-2 col-12">
+                                    <strong>Filtro por Fecha</strong>
+                                </label>
+                                <div class="input-group">
+                                    <div class="col-4">
+                                        <label for="startDate" class="form-control-label me-2 ">Fecha inicio:</label>
+                                    </div>
+                                    <div class="col-8">
+                                        <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio }}">
+                                        <input type="hidden" name="startDate_filtroantnext" id="startDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio }}">
+                                    </div>
+                                </div>
+                                <div class="input-group pt-2">
+                                    <div class="col-4">
+                                        <label for="endDate" class="form-control-label ">Fecha fin:</label>
+                                    </div>
+                                    <div class="col-8">
+                                        <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaFin}}">
+                                        <input type="hidden" name="endDate_filtroantnext" id="endDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaFin}}">
+                                        <p id="error_endDate" class="text-danger fs-sm"></p>
+                                    </div>
+                                </div>
+                                <div class=" pt-1">
+                                    <button type="button" class="btn btn-primary btn-sm float-end" id="Filtro_fecha-btn">
+                                        <i class="fa fa-search"></i> Filtrar
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Filtro por Orden de Venta -->
+                            <!--<div class="col-md-6">
+                                <label for="" class="form-control-label me-2 col-12">
+                                    <strong>Filtro por Orden de Venta</strong>
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" placeholder="Ingresa una Orden de Venta" name="Filtro_buscarOV" id="Filtro_buscarOV" class="form-control form-control-sm w-autoborder-primary col-9">
+                                    <div class="input-group-btn">
+                                        <a href="#" id="buscarOV" class="btn btn-primary btn-sm">
+                                            <i class="fa fa-search"></i> Buscar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-
+    <div class="">
+        <!--<h1 class="text-primary mb-4 text-center">Gestión de Órdenes de Venta</h1>-->
+        <!-- Buscador -->
+    <!-- Buscador -->
+        <div class="row mb-2">
+        </div>
+    </div>
     <!-- Contenedor de las tablas -->
     <div class="card p-3">
         <div class="row mb-5">
             <!-- Columna 1: Tabla de Órdenes de Venta -->
             <div class="col-md-6 mb-2">
+                <div class="col-12">
+                    <!-- Navegación de Fechas -->
+                    <div class="d-flex justify-content-center align-items-center mb-4">
+                        <button type="button" id="back_filterBtn" class="btn btn-link"><i class="fa fa-arrow-left"></i> Anterior</button>
+                        <span class="text-primary fw-bold">Fechas</span>
+                        <button type="button" id="next_filterBtn" class="btn btn-link">Siguiente <i class="fa fa-arrow-right"></i></button>
+                    </div>
+                </div>
                 <div id="container_table_OV" class="table-responsive">
-                    @if ($status=="empty")
-                        <br>
-                        <br>
-                        <br>
-                        <p class="text-center mt-4">No existen partidas <br> para el periodo</p>
-                        <p class="text-center">{{$FechaFin}} - {{$FechaInicio}}</p>
-                    @elseif($status=="success")
                         <table id="table_OV" class="table table-striped table-bordered" >
                             <thead class="table-primary text-center">
                                 <tr>
                                     <th class="fw-bold">
                                         <span id="filtro-fecha-Ov">Órdenes de Venta <br> <p>{{\Carbon\Carbon::parse($FechaInicio)->format('d/m/Y')}} - {{\Carbon\Carbon::parse($FechaFin)->format('d/m/Y')}} </p></span>
                                         <div class="input-group ">
-                                            <!--<input type="text" placeholder="Ingresa una Orden de Venta" name="filtro_ov_tabla" oninput="filtro_ov_tabla(this.value);" id="filtro_ov_tabla" class="form-control form-control-sm   w-autoborder-primary col-12">-->
-                                            <input type="text" placeholder="Ingresa una Orden de Venta" name="Filtro_buscarOV" id="Filtro_buscarOV"  class="form-control form-control-sm   w-autoborder-primary col-12">
+                                            <input type="text" placeholder="Ingresa una Orden de Venta" name="filtro_ov_tabla" oninput="filtro_ov_tabla(this.value,'table_OV');" id="filtro_ov_tabla" class="form-control form-control-sm   w-autoborder-primary col-12">
+                                            <!-- busca por OV<input type="text" placeholder="Ingresa una Orden de Venta" name="Filtro_buscarOV" id="Filtro_buscarOV"  class="form-control form-control-sm   w-autoborder-primary col-12">-->
                                             <div class="input-group-btn">
                                                 <button class="btn btn-primary btn-sm">
                                                     <i class="fa fa-search"></i> buscar
@@ -130,39 +130,26 @@
                                 </tr>
                             </thead>
                             <tbody id="table_OV_body">
-                                @foreach ($datos as $orden)
-                                <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
-                                    <td onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, `{{ $orden['Cliente'] }}`)">
-                                        {{ $orden['OV']." - ".$orden['Cliente']}}
-                                    </td>
-                                </tr>
-                                <tr id="details{{ $loop->index }}" class="collapse">
-                                    <td class="table-border" id="details{{ $loop->index . 'llenar' }}">
-                                        <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
-                                    </td>
-                                </tr>
-                                @endforeach
+                                @if ($status=="empty")
+                                    <tr class="text-center mt-4"><td>No existen Ordenes de Venta <br> para el periodo <br>{{$FechaFin}} - {{$FechaInicio}}</td></tr>
+                                @elseif($status=="success")
+                                    @foreach ($datos as $orden)
+                                    <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
+                                        <td onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, `{{ $orden['Cliente'] }}`)">
+                                            {{ $orden['OV']." - ".$orden['Cliente']}}
+                                        </td>
+                                    </tr>
+                                    <tr id="details{{ $loop->index }}" class="collapse">
+                                        <td class="table-border" id="details{{ $loop->index . 'llenar' }}">
+                                            <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                @else
+                                <tr class="text-center mt-4"><td>Ocurrio un error!, no fue posible cargar los datos</td></tr>
+                                @endif
                             </tbody>
                         </table>
-                    @else
-                        <p class="text-center mt-4">
-                            <br>
-                            <br>
-                            <br>
-                            Ocurrio un error!, no fue posible cargar los datos
-                            <br>
-                            <br>
-                            <br>
-                            <i class="fa fa-gears" style="transform: scale(4)"></i>
-                        </p>
-                    @endif
-                </div>
-                <div class="col-12">
-                    <!-- Navegación de Fechas -->
-                    <div class="d-flex justify-content-center align-items-center mb-4">
-                        <button type="button" id="back_filterBtn" class="btn btn-link"><i class="fa fa-arrow-left"></i> Anterior</button>
-                        <button type="button" id="next_filterBtn" class="btn btn-link">Siguiente <i class="fa fa-arrow-right"></i></button>
-                    </div>
                 </div>
             </div>
             <!-- Columna 2: Dropzone y Tabla de Migrados -->
@@ -222,7 +209,7 @@
             </div>
         </div>
     </div>
-</div>
+
 <!-- Modal Detalles Ordenes de Fabricacion-->
 <div class="modal fade m-4" id="ModalOrdenesFabricacion" tabindex="-1" role="dialog" aria-labelledby="ModalOrdenesFabricacionLabel" aria-hidden="true" >
     <div class="modal-dialog modal-lg" role="document">
@@ -279,7 +266,7 @@
                                             <span id="filtro-fecha-Ov_Vencidas">Órdenes de Venta <br> <p>faltantes de Planeación </p></span>
                                             <div class="input-group ">
                                                 <!--<input type="text" placeholder="Ingresa una Orden de Venta" name="filtro_ov_tabla" oninput="filtro_ov_tabla(this.value);" id="filtro_ov_tabla" class="form-control form-control-sm   w-autoborder-primary col-12">-->
-                                                <input type="text" placeholder="Ingresa una Orden de Venta" oninput="filtro_ov_tabla(this.value)" name="Filtro_buscarOV_Vencidas" id="Filtro_buscarOV_Vencidas"  class="form-control form-control-sm   w-autoborder-primary col-12">
+                                                <input type="text" placeholder="Ingresa una Orden de Venta" oninput="filtro_ov_tabla(this.value,'table_OV_body_Vencidas')" name="Filtro_buscarOV_Vencidas" id="Filtro_buscarOV_Vencidas"  class="form-control form-control-sm   w-autoborder-primary col-12">
                                                 <div class="input-group-btn">
                                                     <button class="btn btn-primary btn-sm">
                                                         <i class="fa fa-search"></i> buscar
@@ -343,7 +330,6 @@
                                     <th>Orden Vent.</th>
                                     <th>Orden Fabri.</th>
                                     <th>Acciones</th>
-                                    <th>Detalles</th>
                                 </tr>
                             </thead>
                             <tbody id="table-2-content_vencidos">
@@ -360,7 +346,8 @@
       </div>
     </div>
 </div>
-
+@endsection
+@section('scripts')
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
@@ -368,14 +355,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{{ asset('js/ordenesv.js') }}"></script>
 
-@endsection
-@section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
-        /*setTimeout(function() {
-            MostrarBtnFaltantes('MostrarBtnFaltantes');
-        }, 35000);*/
         $('#element').toast('show');
         TablaOrdenFabricacion("{{$FechaFin}}");
         $('#Filtro_fecha-btn').click(function() {
@@ -400,11 +382,12 @@
                     // You can display a loading spinner here
                 },
                 success: function(response) {
-                    if (response.status === 'success') {
+                    if (response.status == 'success') {
                         $('#table_OV_body').html(response.data);  
                         $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
-                    } else if(response.status==="empty") {
+                    } else if(response.status=="empty") {
                         $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo '+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
+                        $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
                     }else{
                         error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
                     }
@@ -508,6 +491,7 @@
                         $('#table_OV_body').html(response.data);  
                         $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
                     } else if(response.status==="empty") {
+                        $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
                         $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br>'+FormatoFecha(startDate)+' - '+FormatoFecha(endDate)+'</p>');
                     }else{
                         error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
@@ -542,6 +526,7 @@
                         $('#table_OV_body').html(response.data);  
                         $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
                     } else if(response.status==="empty") {
+                        $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
                         $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br> '+FormatoFecha(startDate)+' - '+FormatoFecha(endDate)+'</p>');
                     }else{
                         error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
@@ -752,6 +737,10 @@
             },
             beforeSend: function() {
                 if (modal.is(':visible')) {
+                    fecha2=$('#FiltroOF_Fecha_table2').val();
+                    if(fecha==fecha2){
+                        $('#table-2-content').html("<tr><td colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></td></tr>");
+                    }
                         $('#table-2-content_vencidos').html("<tr><td colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></td></tr>");
                     }else{
                         $('#table-2-content').html("<tr><td colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></td></tr>");
@@ -761,7 +750,11 @@
             success: function(response) {
                 if (modal.is(':visible')) {
                     tabla=(response.tabla);
-                    //tabla=tabla.replace(/onclick="DetallesOrdenFabricacion/g, " disabled ");
+                    if(fecha==fecha2){
+                        $('#table-2-content').html(tabla);
+                    }
+                    const regex = /<td class="text-center"><button type="button" onclick="DetallesOrdenFabricacion\('[^']*'\)" class="btn-sm btn-primary"><i class="fa fa-eye"><\/i>\s*Ver<\/button><\/td>/g;
+                    tabla = tabla.replace(regex, 'style="display:none;"');
                     $('#table-2-content_vencidos').html(tabla);
 
                 }else{
@@ -944,12 +937,14 @@
             }
         });
     }
-    function filtro_ov_tabla(ov){
+    function filtro_ov_tabla(ov,tabla){
         campo=0;
-        let filas = document.querySelectorAll("#table_OV_Vencidas tbody tr");
-        $('#table_OV_Vencidas .collapse').collapse('hide');
+        let filas = document.querySelectorAll("#"+tabla+" tbody tr");
+        $('#'+tabla+' .collapse').collapse('hide');
         filas.forEach(fila => {  
             let valorCelda = fila.cells[campo].innerText.trim();
+            valorCelda = valorCelda.toLowerCase();
+            ov = ov.toLowerCase();
             if(fila.id.includes("cerrar")){
                 if (valorCelda.includes(ov)) {
                 fila.style.display = ""; 
@@ -959,6 +954,5 @@
             }
         });
     }
-
 </script>
 @endsection
