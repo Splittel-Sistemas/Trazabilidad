@@ -14,8 +14,13 @@ class CorteController extends Controller
     //vista
     public function index()
     {
-        return view('Estaciones.cortes');
+    // Obtén los datos de cortes o la tabla que contiene la información
+    $cortes = DB::table('OrdenFabricacion')->get(); // o cualquier otro query que obtenga la lista de cortes
+
+    // Pasa esos datos a la vista
+    return view('Estaciones.cortes', ['cortes' => $cortes]);
     }
+
     //carga de la tabla
     public function getData()
     {
@@ -230,5 +235,34 @@ class CorteController extends Controller
             ]);
         }
     }
+
+    // Método para mostrar la información de la orden
+    public function MostarInformacion(Request $request)
+    {
+    $corteId = $request->input('corte_id');
+
+    // Obtener los datos de PartidasOF y OrdenFabricacion según el corteId
+    $partida = PartidasOF::where('corte_id', $corteId)->first();
+    $ordenFabricacion = OrdenFabricacion::where('corte_id', $corteId)->first();
+
+    // Si no encuentras los registros, puedes manejar el error aquí
+    if (!$partida || !$ordenFabricacion) {
+        return response()->json(['error' => 'Datos no encontrados'], 404);
+    }
+
+    // Devuelve los datos en formato JSON
+    return response()->json([
+        'cantidad_partida' => $partida->cantidad_partida,
+        'orden_fabricacion' => $ordenFabricacion->OrdenFabricacion,
+        'descripcion' => $ordenFabricacion->Descripcion
+    ]);
 }
+}
+
+
+
+    
+
+    
+
 

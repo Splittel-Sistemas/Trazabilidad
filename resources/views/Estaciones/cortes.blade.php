@@ -119,11 +119,11 @@
                         
                         <!-- Apartado de cortes del día -->
                         <div class="mt-4 p-3 bg-light rounded">
-                            <h5 class="text-secondary"><i class="bi bi-scissors"></i> Cortes del Día</h5>
+                            <h5 class="text-secondary"><i class="bi bi-scissors"></i> Piezas Del Dia</h5>
                             <form id="formCortesDia" class="needs-validation" novalidate>
                                 <div class="mb-3">
-                                    <label for="numCortes" class="form-label">Número de Cortes Realizados:</label>
-                                    <input type="number" class="form-control" id="numCortes" name="numCortes" min="0" placeholder="Ingrese el número de cortes" required>
+                                    <label for="numCortes" class="form-label">Número de Piezas Realizadas:</label>
+                                    <input type="number" class="form-control" id="numCortes" name="numCortes" min="0" placeholder="Ingrese el número de Piezas" required>
                                     <div class="invalid-feedback">
                                         Por favor, ingrese un número válido de cortes.
                                     </div>
@@ -136,7 +136,7 @@
                                         <thead class="table-light">
                                             <tr>
                                                 <th>#</th>
-                                                <th>Cortes</th>
+                                                <th>Cortes De Piezas</th>
                                                 <th>Fecha De Registro</th>
                                             </tr>
                                         </thead>
@@ -157,6 +157,27 @@
             </div>
         </div>
         <input type="hidden" id="ordenFabricacionId" value="">
+<!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myModalLabel">Información de la Orden de Fabricación</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Cantidad Partida:</strong> <span id="cantidad-partida"></span></p>
+                        <p><strong>Orden de Fabricación:</strong> <span id="orden-fabricacion"></span></p>
+                        <p><strong>Descripción:</strong> <span id="descripcion"></span></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -230,7 +251,11 @@ $(document).ready(function() {
                                             <td>${corte.cantidad_partida}</td>
                                             <td>${corte.fecha_fabricacion}</td>
                                              <td>
-                                                <button type="button" class="btn btn-warning btn-finalizar" data-id="${corte.id}">Finalizar</button>
+                                                <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
+                                            </td>
+                                           
+                                            <td>
+                                                <button type="button" class="btn btn-outline-info btn-generar-etiquetas" data-id="${corte.id}" data-toggle="modal" data-target="#myModal">Mostrar Información</button>
                                             </td>
                                         </tr>
                                     `;
@@ -515,8 +540,83 @@ $(document).ready(function() {
         }
     });
     
-
 });
+
+
+$(document).on('click', '.btn-generar-etiquetas', function() {
+    var corteId = $(this).data('id');
+
+    // Realizar la llamada AJAX para obtener la información
+    $.ajax({
+        url: '/ruta/a/tu/controlador',  // Cambia esta ruta según tu configuración
+        type: 'GET',
+        data: { corte_id: corteId },
+        success: function(response) {
+            // Asumiendo que la respuesta contiene los datos necesarios
+            $('#cantidad-partida').text(response.cantidad_partida);
+            $('#orden-fabricacion').text(response.orden_fabricacion);
+            $('#descripcion').text(response.descripcion);
+        },
+        error: function() {
+            alert('Error al cargar los datos.');
+        }
+    });
+
+   
+    /*// Al hacer clic en el botón para mostrar la información
+    $('.btn-generar-etiquetas').on('click', function () {
+        const corteId = $(this).data('id');
+        
+        // Realizamos la solicitud AJAX
+        fetch(`/mostrar-info/${corteId}`)
+            .then(response => response.json())
+            .then(data => {
+                // Si hay un error, mostramos un mensaje
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                // Mostrar el modal
+                $('#myModal').modal('show');
+                
+                // Limpiar el contenido del modal
+                const modalContent = document.getElementById('modalContent');
+                modalContent.innerHTML = '';
+
+                // Construir la tabla con los datos recibidos
+                modalContent.innerHTML = `
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Orden de Fabricación</th>
+                                <th>Descripción</th>
+                                <th>Cantidad Partida</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${data.orden_fabricacion}</td>
+                                <td>${data.descripcion}</td>
+                                <td>${data.cantidad_partida}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+            })
+            .catch(error => {
+                console.error('Error al obtener los datos:', error);
+                alert('Hubo un error al cargar los datos');
+            });
+    });*/
+});
+
+
+
+    
+
+
+
 
 
 </script>

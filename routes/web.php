@@ -8,6 +8,8 @@ use App\Http\Controllers\CorteController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\AreasController;
+use App\Http\Controllers\PreparadoController;
+
 //Rutas Planeación
 Route::get('/', [HomeControler::class,'Home'])->name('Home');
 Route::get('/Planeacion', [PlaneacionController::class,'index'])->name('Planeacion');
@@ -59,12 +61,19 @@ Route::post('/users/activar', [RegistroController::class, 'activar'])->name('use
 Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar');
 
 //rutas para generar etiquetas
-Route::post('/generar-etiquetas', [CorteController::class, 'generar'])->name('etiquetas.generar');
-Route::post('/ruta-generar-etiquetas', [CorteController::class, 'generar'])->name('generar.etiquetas');
+
+Route::get('/preparado',[CorteController::class,'index'])->name('preparado.index');
+Route::get('/generar-etiquetas/{corteId}', [CorteController::class, 'getDatosGenerarEtiquetas']);
+Route::post('/generar-etiquetas', [CorteController::class, 'generarEtiquetas'])->name('generar.etiquetas');
+// Ruta para obtener los datos de la orden y la partida
+Route::get('/mostrar-info/{corteId}', [CorteController::class, 'getDatosParaModal']);
 
 
 
+//Route::get('/detalle-orden', [CorteController::class, 'MostarInformacion'])->name('corte.getInformacion');
 
+
+Route::get('/ruta/a/tu/controlador', [CorteController::class, 'MostarInformacion']);
 
 
 

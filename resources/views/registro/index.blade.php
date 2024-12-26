@@ -67,7 +67,7 @@
     <!-- Contenido principal -->
     <div class="container my-4">
         <h1 class="mb-4">Lista de Usuarios</h1>
-        <a href="{{ route('registro.create') }}" class="btn btn-primary mb-3">Agregar Usuario</a>
+        <a href="{{ route('registro.create') }}" class="btn btn-outline-info mb-3">Agregar Usuario</a>
 
         @if (session('status'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -121,7 +121,8 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header" style="color: black;">
-                    <h5 class="modal-title" id="miModalLabel" style="font-size: 1.25rem; font-weight: bold;">Editar Usuario</h5>
+                    <h5 class="modal-title" id="miModalLabel" style="font-size: 1.25rem; font-weight: bold; color: #04ad45;">Editar Usuario</h5>
+
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -132,32 +133,47 @@
                         @method('PUT') <!-- Esto es necesario para que el formulario use el método PUT -->
                         <input type="hidden" name="id" id="user-id" value="{{ $registro->id }}"> <!-- ID del usuario -->
 
-                        <div class="form-group mb-10">
-                            <label for="apellido">Apellido</label>
-                            <input type="text" name="apellido" id="apellido" class="form-control" value="{{ $registro->apellido }}" placeholder="Ingrese su apellido">
+                        <div class="form-row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="apellido">Apellido</label>
+                                    <input type="text" name="apellido" id="apellido" class="form-control" value="{{ $registro->apellido }}" placeholder="Ingrese su apellido">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name">Nombre</label>
+                                    <input type="text" name="name" id="name" class="form-control" value="{{ $registro->name }}" placeholder="Ingrese su nombre">
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="form-group mb-3">
-                            <label for="name">Nombre</label>
-                            <input type="text" name="name" id="name" class="form-control" value="{{ $registro->name }}" placeholder="Ingrese su nombre">
+                        
+                        <div class="form-row mb-3">
+                            <div class="col-md-10">
+                                <div class="form-group">
+                                    <label for="email">Correo Electrónico</label>
+                                    <input type="email" name="email" id="email" class="form-control" value="{{ $registro->email }}" placeholder="Ingrese su correo electrónico">
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="form-group mb-3">
-                            <label for="email">Correo Electrónico</label>
-                            <input type="email" name="email" id="email" class="form-control" value="{{ $registro->email }}" placeholder="Ingrese su correo electrónico">
+                        
+                        <div class="form-row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="password">Contraseña</label>
+                                    <input type="password" name="password" id="password" class="form-control" placeholder="Ingrese su nueva contraseña (dejar en blanco para no cambiar)">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="password_confirmation">Confirmar Contraseña</label>
+                                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Confirme su nueva contraseña">
+                                </div>
+                            </div>
                         </div>
+                        
 
-                        <div class="form-group mb-4">
-                            <label for="password">Contraseña</label>
-                            <input type="password" name="password" id="password" class="form-control" placeholder="Ingrese su nueva contraseña (dejar en blanco para no cambiar)">
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label for="password_confirmation">Confirmar Contraseña</label>
-                            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Confirme su nueva contraseña">
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-block">Actualizar Usuario</button>
+                        <button type="submit" class="btn btn-outline-success btn-block">Actualizar Usuario</button>
                     </form>
                 </div>
             </div>
