@@ -36,16 +36,16 @@
                 <div class="card-header">
                     <strong>   </strong>
                 </div>
-                <div class="card-body card-block collapsed show" id="filtro">
+                <div class="card-body" id="filtro">
                     <div class="form-group">
+                        <!--<label for="CodigoEscaner">C&oacute;digo</label>
+                        <select class="form-control" id="CodigoEscaner">
+                            <option value="" disabled selected>Ingresa el C&oacute;digo...</option>
+                        </select>-->
                         <label for="CodigoEscaner">C&oacute;digo</label>
                         <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro')" id="CodigoEscaner" aria-describedby="CodigoEscanerHelp" placeholder="Ingresa el codigo">
-                        <div class="border p-2 mt-2 list-group-sm" id="CodigoEscanerSuministro">
-                            <a class="list-group-item list-group-item-action active" data-toggle="list" href="#home" role="tab">Home</a>
-                            <a class="list-group-item list-group-item-action" data-toggle="list" href="#home" role="tab">Home</a>
-                            <a class="list-group-item list-group-item-action" data-toggle="list" href="#home" role="tab">Home</a>
-                            <a class="list-group-item list-group-item-action" data-toggle="list" href="#home" role="tab">Home</a>
-                            <a class="list-group-item list-group-item-action" data-toggle="list" href="#home" role="tab">Home</a>
+                        <div class="border p-2 mt-2 list-group-sm" id="CodigoEscanerSuministro" style="display: none">
+                            
                         </div>
                         <small id="CodigoEscanerHelp" class="form-text text-muted">Esc&aacute;nea o ingresa manualmente.</small>
                     </div>
@@ -53,15 +53,36 @@
             </div>
         </div>
     </div>
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{ asset('js/Suministro.js') }}"></script>
-
 @endsection
 @section('scripts')
+<script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
+    //$(document).ready(function() {});
+    function ListaCodigo(Codigo,Contenedor){
+        let CodigoPartes = Codigo.split('-');
+        let CodigoPrimero = CodigoPartes[0];
+        var CodigoSegundo = CodigoPartes[1] || "";
+        document.getElementById('CodigoEscanerSuministro').style.display = "none";
+        $.ajax({
+            url: "{{route('SuministroBuscar')}}", 
+            type: 'GET',
+            data: {
+                CodigoPrimero: CodigoPrimero,
+                CodigoSegundo: CodigoSegundo,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                $('#CodigoEscanerSuministro').html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /><br>Cargando</p>");
+            },
+            success: function(response) {
+                document.getElementById('CodigoEscanerSuministro').style.display = "";
+                $('#CodigoEscanerSuministro').html(response);
+            },
+            error: function(xhr, status, error) {
+                /*Cuerpo.html('<p class="text-center">No existen información para esta Orden de Fabricación</p>');
+                $('#ModalOrdenesFabricacion').modal('hide'); // Muestra el modal*/
+            }
+        }); 
+    }
 </script>
 @endsection

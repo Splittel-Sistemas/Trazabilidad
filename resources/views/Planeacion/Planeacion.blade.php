@@ -210,25 +210,6 @@
         </div>
     </div>
 
-<!-- Modal Detalles Ordenes de Fabricacion-->
-<div class="modal fade m-4" id="ModalOrdenesFabricacion" tabindex="-1" role="dialog" aria-labelledby="ModalOrdenesFabricacionLabel" aria-hidden="true" >
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header modal-header-danger">
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-          <h5 class="modal-title" id="ModalOrdenesFabricacionLabel"></h5>
-        </div>
-        <div class="modal-body" id="ModalOrdenesFabricacionBody">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn-sm btn-secondary" data-bs-dismiss="modal">Guardar</button>
-          <!--<button type="button" class="btn btn-primary">Aceptar</button>-->
-        </div>
-      </div>
-    </div>
-  </div>
 <!-- Toast ver las Ordenes de Fabricacion Pendientes por asignar-->
 <div id="element" class="toast m-4" role="alert" aria-live="assertive" aria-atomic="true" style="position: fixed; bottom: 0.5rem; right: 1rem; z-index: 1050;" data-bs-delay="30000">
     <div class="toast-header bg-danger text-white">
@@ -241,12 +222,8 @@
       <button type="button" class="btn btn-outline-danger float-end m-1" data-toggle="modal" onclick="LlenarTablaVencidas()" data-target="#ModalPlaneacionVencidos">Mostrar</button>
     </div>
 </div>
-<!--Boton para abrir las Partidas fatantes para planeacion-->
-<!--<div id="MostrarBtnFaltantes" style="position: fixed; bottom: 2rem; right: 3.5rem; z-index: 1049;display: none;">
-      <button type="button" class="btn btn-danger float-end m-1" data-toggle="modal" onclick="LlenarTablaVencidas()" data-target="#ModalPlaneacionVencidos">Mostrar Partidas faltantes</button>
-</div>-->
 <!-- Modal Planeacion de Ordenes de Fabricacion vencido o por vencer-->
-<div id="ModalPlaneacionVencidos" class="modal fade" tabindex="-2" role="dialog" aria-labelledby="ModalPlaneacionVencidosLabel" aria-hidden="true">
+<div id="ModalPlaneacionVencidos" class="modal fade"  role="dialog" aria-labelledby="ModalPlaneacionVencidosLabel" aria-hidden="true" style="overflow-y: auto;">
     <div class="modal-dialog modal-lg" style="max-width: 90%; width: 90%;">
       <div class="modal-content">
         <div class="modal-header bg-danger text-white">
@@ -330,6 +307,7 @@
                                     <th>Orden Vent.</th>
                                     <th>Orden Fabri.</th>
                                     <th>Acciones</th>
+                                    <th>Detalles</th>
                                 </tr>
                             </thead>
                             <tbody id="table-2-content_vencidos">
@@ -341,8 +319,27 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
           </div>
+      </div>
+    </div>
+</div>
+<!-- Modal Detalles Ordenes de Fabricacion-->
+<div class="modal fade m-4" id="ModalOrdenesFabricacion"  role="dialog" aria-labelledby="ModalOrdenesFabricacionLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header modal-header-danger">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+          <h5 class="modal-title" id="ModalOrdenesFabricacionLabel"></h5>
+        </div>
+        <div class="modal-body" id="ModalOrdenesFabricacionBody">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-sm btn-secondary" data-bs-dismiss="modal">Guardar</button>
+          <!--<button type="button" class="btn btn-primary">Aceptar</button>-->
+        </div>
       </div>
     </div>
 </div>
@@ -753,8 +750,8 @@
                     if(fecha==fecha2){
                         $('#table-2-content').html(tabla);
                     }
-                    const regex = /<td class="text-center"><button type="button" onclick="DetallesOrdenFabricacion\('[^']*'\)" class="btn-sm btn-primary"><i class="fa fa-eye"><\/i>\s*Ver<\/button><\/td>/g;
-                    tabla = tabla.replace(regex, 'style="display:none;"');
+                    /*const regex = /<td class="text-center"><button type="button" onclick="DetallesOrdenFabricacion\('[^']*'\)" class="btn-sm btn-primary"><i class="fa fa-eye"><\/i>\s*Ver<\/button><\/td>/g;
+                    tabla = tabla.replace(regex, 'style="display:none;"');*/
                     $('#table-2-content_vencidos').html(tabla);
 
                 }else{
@@ -771,7 +768,8 @@
         Cuerpo=$('#ModalOrdenesFabricacionBody');
         Titulo.html('Detalles Orden de Fabricación ');
         Cuerpo.html('');
-        $('#ModalPlaneacionVencidos').modal('hide');
+        //$('#ModalPlaneacionVencidos').modal('hide');
+        //$('#ModalPlaneacionVencidos').modal('hide');
         $('#ModalOrdenesFabricacion').modal('show'); // Muestra el modal
         $.ajax({
             url: "{{route('PartidasOF_Detalles')}}", 
