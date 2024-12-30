@@ -38,16 +38,10 @@
                 </div>
                 <div class="card-body" id="filtro">
                     <div class="form-group">
-                        <!--<label for="CodigoEscaner">C&oacute;digo</label>
-                        <select class="form-control" id="CodigoEscaner">
-                            <option value="" disabled selected>Ingresa el C&oacute;digo...</option>
-                        </select>-->
                         <label for="CodigoEscaner">C&oacute;digo</label>
-                        <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro')" id="CodigoEscaner" aria-describedby="CodigoEscanerHelp" placeholder="Ingresa el codigo">
-                        <div class="border p-2 mt-2 list-group-sm" id="CodigoEscanerSuministro" style="display: none">
-                            
+                        <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro')" id="CodigoEscaner" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
+                        <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
                         </div>
-                        <small id="CodigoEscanerHelp" class="form-text text-muted">Esc&aacute;nea o ingresa manualmente.</small>
                     </div>
                 </div>
             </div>
@@ -57,12 +51,14 @@
 @section('scripts')
 <script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
-    //$(document).ready(function() {});
     function ListaCodigo(Codigo,Contenedor){
         let CodigoPartes = Codigo.split('-');
         let CodigoPrimero = CodigoPartes[0];
         var CodigoSegundo = CodigoPartes[1] || "";
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
+        if (CadenaVacia(CodigoPrimero+CodigoSegundo)) {
+            return 0;
+        }
         $.ajax({
             url: "{{route('SuministroBuscar')}}", 
             type: 'GET',
@@ -83,6 +79,10 @@
                 $('#ModalOrdenesFabricacion').modal('hide'); // Muestra el modal*/
             }
         }); 
+    }
+    function TraerDatos(id,OF){
+        $('#CodigoEscaner').val(OF+"-"+id);
+        $('#CodigoEscanerSuministro').html('');
     }
 </script>
 @endsection

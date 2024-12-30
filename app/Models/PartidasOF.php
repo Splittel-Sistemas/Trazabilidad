@@ -21,4 +21,9 @@ class PartidasOF extends Model
         return $this->hasMany(PartidasArea::class, 'PartidasOF_id');
     } 
 
+    public function Partidas()
+    {
+        return $this->hasMany(Partidas::class, 'PartidasOF_id');
+    } 
+
 }
