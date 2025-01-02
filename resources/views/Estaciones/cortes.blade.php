@@ -97,7 +97,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Modal de Detalles de la Orden -->
         <div class="modal fade bd-example-modal-x" id="modalDetalleOrden" tabindex="-1"  role="dialog" aria-labelledby="modalDetalleOrdenLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
@@ -116,7 +115,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        
                         <!-- Apartado de cortes del día -->
                         <div class="mt-4 p-3 bg-light rounded">
                             <h5 class="text-secondary"><i class="bi bi-scissors"></i> Piezas Del Dia</h5>
@@ -129,7 +127,6 @@
                                     </div>
                                 </div>
                             </form>
-
                             <div id="cortesGuardados" class="mt-3 text-success fw-bold">
                                 <div class="table-responsive">
                                     <table id="tablaCortes" class="table table-bordered table-striped">
@@ -143,7 +140,9 @@
                                         <div class="modal-footer d-flex justify-content-between">
                                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
                                             <button type="button" id="confirmar" class="btn btn-success">Confirmar Orden</button>
+                                            <button class="btn btn-info" id="pdfRangos" data-id="">Generar PDF de Rangos</button>
                                         </div>
+
                                         <tbody>
                                             <!-- Cortes de la tabla PartidasOF se reflejan aquí -->
                                         </tbody>
@@ -151,33 +150,63 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
-        <input type="hidden" id="ordenFabricacionId" value="">
-<!-- Modal -->
+        <!-- Modal para mostrar la información de la orden -->
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="myModalLabel">Información de la Orden de Fabricación</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                        <!-- Aquí se llenarán las partidas dinámicamente -->
+                        <div id="partidas-lista"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" id="btn-descargar-pdf" class="btn btn-primary" data-id="">Descargar PDF</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="myModalRangos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Selecciona los Rangos para el PDF</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p><strong>Cantidad Partida:</strong> <span id="cantidad-partida"></span></p>
-                        <p><strong>Orden de Fabricación:</strong> <span id="orden-fabricacion"></span></p>
-                        <p><strong>Descripción:</strong> <span id="descripcion"></span></p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <form id="formRangoPDF" method="POST" action="{{ route('pdfcondicion') }}">
+                            @csrf
+                            <input type="hidden" id="orden_fabricacion_id" name="id">
+                            <div class="mb-3">
+                                <label for="desde_no" class="form-label">Desde No:</label>
+                                <input type="number" name="desde_no" id="desde_no">
+                            </div>
+                            <div class="mb-3">
+                                <label for="hasta_no" class="form-label">Hasta No:</label>
+                                <input type="number" name="hasta_no" id="hasta_no">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="submit" id="btn-pdf-descarga" class="btn btn-primary" data-id="">Generar PDF</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
+        <input type="hidden" id="ordenFabricacionId" value="">
     </div>
 </div>
 @endsection
@@ -218,7 +247,12 @@ $(document).ready(function() {
 
     // Al hacer clic en "Ver Detalles"
     $('#ordenFabricacionTable').on('click', '.ver-detalles', function() {
+        
         var ordenFabricacionId = $(this).data('id');
+      
+        $('#pdfRangos').attr('data-id', ordenFabricacionId);
+        $('#btn-pdf-descarga').attr('data-id', ordenFabricacionId)
+
 
         $.ajax({
             url: '{{ route("corte.getDetalleOrden") }}', // Ruta para obtener los detalles
@@ -238,38 +272,41 @@ $(document).ready(function() {
                     
                     // Obtener y mostrar los cortes registrados
                     $.ajax({
-                        url: '{{ route("corte.getCortes") }}',
-                        type: 'GET',
-                        data: { id: ordenFabricacionId },
-                        success: function(cortesResponse) {
-                            if (cortesResponse.success) {
-                                var cortesHtml = '';
-                                cortesResponse.data.forEach(function(corte, index) {
-                                    cortesHtml += `
-                                        <tr>
-                                            <td>${index + 1}</td>
-                                            <td>${corte.cantidad_partida}</td>
-                                            <td>${corte.fecha_fabricacion}</td>
-                                             <td>
-                                                <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
-                                            </td>
-                                           
-                                            <td>
-                                                <button type="button" class="btn btn-outline-info btn-generar-etiquetas" data-id="${corte.id}" data-toggle="modal" data-target="#myModal">Mostrar Información</button>
-                                            </td>
-                                        </tr>
-                                    `;
-                                });
-                                $('#tablaCortes tbody').html(cortesHtml);
-                            } else {
-                                $('#tablaCortes tbody').html('<tr><td colspan="3" class="text-center">No se encontraron cortes.</td></tr>');
-                            }
-                        },
-                        error: function(xhr) {
-                            console.error(xhr.responseText);
-                            alert('Error al obtener los cortes.');
-                        }
-                    });
+    url: '{{ route("corte.getCortes") }}',
+    type: 'GET',
+    data: { id: ordenFabricacionId },
+    success: function(cortesResponse) {
+        if (cortesResponse.success) {
+            var cortesHtml = '';
+            
+            // Invertir el orden de los cortes antes de iterar sobre ellos
+            cortesResponse.data.reverse().forEach(function(corte, index) {
+                cortesHtml += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${corte.cantidad_partida}</td>
+                        <td>${corte.fecha_fabricacion}</td>
+                         <td>
+                            <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
+                        </td>
+                       
+                        <td>
+                            <button type="button" class="btn btn-outline-info btn-generar-etiquetas" data-id="${corte.id}">Generar Etiquetas</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            $('#tablaCortes tbody').html(cortesHtml);
+        } else {
+            $('#tablaCortes tbody').html('<tr><td colspan="3" class="text-center">No se encontraron cortes.</td></tr>');
+        }
+    },
+    error: function(xhr) {
+        console.error(xhr.responseText);
+        alert('Error al obtener los cortes.');
+    }
+});
+
 
                     $('#modalDetalleOrden').modal('show');
                 } else {
@@ -409,7 +446,12 @@ $(document).ready(function() {
                                     <td>${index + 1}</td>
                                     <td>${corte.cantidad_partida}</td>
                                     <td>${corte.fecha_fabricacion}</td>
-                                    <td><button type="button" class="btn btn-warning btn-finalizar" data-id="${corte.id}">Finalizar</button></td>
+                                    <td>
+                                    <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-outline-info btn-generar-etiquetas" data-id="${corte.id}" data-toggle="modal" data-target="#myModal">Generar Etiquetas</button>
+                                    </td>
                                 </tr>
                             `;
                         });
@@ -540,83 +582,67 @@ $(document).ready(function() {
         }
     });
     
-});
+})
+$(document).ready(function () {
+    // Evento para mostrar la información de la orden cuando se hace clic en el botón
+    $(document).on('click', '.btn-generar-etiquetas', function () {
+        var corteId = $(this).data('id'); 
+
+        $.ajax({
+            url: '{{ route("mostrar.etiqueta") }}',
+            data: { id: corteId },
+            type: 'GET',
+            success: function (response) {
+                if (response.error) {
+                    alert(response.error);
+                } else {
+                    
+                    $('#partidas-lista').html(''); 
+
+                    
+                    var partidasHtml = '';
+                    response.partidas.forEach(function (partida) {
+                        partidasHtml += `
+                            <div>
+                                <p><strong>No:</strong> ${partida.cantidad}</p>
+                                <p><strong>Orden de Fabricación:</strong> ${partida.orden_fabricacion}</p>
+                                <p><strong>Descripción:</strong> ${partida.descripcion}</p>
+                            </div>
+                            <hr>`;
+                    });
+
+                    $('#partidas-lista').html(partidasHtml);
+                    $('#myModal').modal('show');
 
 
-$(document).on('click', '.btn-generar-etiquetas', function() {
-    var corteId = $(this).data('id');
-
-    // Realizar la llamada AJAX para obtener la información
-    $.ajax({
-        url: '/ruta/a/tu/controlador',  // Cambia esta ruta según tu configuración
-        type: 'GET',
-        data: { corte_id: corteId },
-        success: function(response) {
-            // Asumiendo que la respuesta contiene los datos necesarios
-            $('#cantidad-partida').text(response.cantidad_partida);
-            $('#orden-fabricacion').text(response.orden_fabricacion);
-            $('#descripcion').text(response.descripcion);
-        },
-        error: function() {
-            alert('Error al cargar los datos.');
-        }
-    });
-
-   
-    /*// Al hacer clic en el botón para mostrar la información
-    $('.btn-generar-etiquetas').on('click', function () {
-        const corteId = $(this).data('id');
-        
-        // Realizamos la solicitud AJAX
-        fetch(`/mostrar-info/${corteId}`)
-            .then(response => response.json())
-            .then(data => {
-                // Si hay un error, mostramos un mensaje
-                if (data.error) {
-                    alert(data.error);
-                    return;
+                    $('#btn-descargar-pdf').data('id', corteId);
                 }
-
-                // Mostrar el modal
-                $('#myModal').modal('show');
-                
-                // Limpiar el contenido del modal
-                const modalContent = document.getElementById('modalContent');
-                modalContent.innerHTML = '';
-
-                // Construir la tabla con los datos recibidos
-                modalContent.innerHTML = `
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Orden de Fabricación</th>
-                                <th>Descripción</th>
-                                <th>Cantidad Partida</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>${data.orden_fabricacion}</td>
-                                <td>${data.descripcion}</td>
-                                <td>${data.cantidad_partida}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                `;
-            })
-            .catch(error => {
-                console.error('Error al obtener los datos:', error);
-                alert('Hubo un error al cargar los datos');
-            });
-    });*/
+            },
+            error: function (xhr, status, error) {
+                console.log('Error:', error);
+                console.log('Detalles:', xhr.responseText);
+                alert('Error al cargar los datos.');
+            }
+        });
+    });
+    // Evento para descargar el PDF cuando se hace clic en el botón de descargar
+    $(document).on('click', '#btn-descargar-pdf', function () {
+        var corteId = $(this).data('id');
+        if (!corteId) {
+            alert('No se encontró el ID');
+            return;
+        }
+        // Abre la URL para descargar el PDF
+        window.open('/generar-pdf?id=' + corteId, '_blank');
+    });
 });
-
-
-
-    
-
-
-
+$(document).ready(function() {
+    $('#pdfRangos').on('click', function() {
+        var ordenFabricacionId = $(this).attr('data-id');  
+        $('#orden_fabricacion_id').val(ordenFabricacionId);  
+        $('#myModalRangos').modal('show');  
+    });
+});
 
 
 </script>

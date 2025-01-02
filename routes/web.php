@@ -9,6 +9,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\AreasController;
 use App\Http\Controllers\PreparadoController;
+use GuzzleHttp\Promise\Coroutine;
 
 //Rutas Planeación
 Route::get('/', [HomeControler::class,'Home'])->name('Home');
@@ -66,14 +67,21 @@ Route::get('/preparado',[CorteController::class,'index'])->name('preparado.index
 Route::get('/generar-etiquetas/{corteId}', [CorteController::class, 'getDatosGenerarEtiquetas']);
 Route::post('/generar-etiquetas', [CorteController::class, 'generarEtiquetas'])->name('generar.etiquetas');
 // Ruta para obtener los datos de la orden y la partida
-Route::get('/mostrar-info/{corteId}', [CorteController::class, 'getDatosParaModal']);
+//Route::get('/mostrar-info/{corteId}', [CorteController::class, 'getDatosParaModal']);
 
 
 
 //Route::get('/detalle-orden', [CorteController::class, 'MostarInformacion'])->name('corte.getInformacion');
 
 
-Route::get('/ruta/a/tu/controlador', [CorteController::class, 'MostarInformacion']);
+Route::get('/mostrar/etiqueta', [CorteController::class, 'MostarInformacion'])->name('mostrar.etiqueta');
+Route::get('/generar-pdf', [CorteController::class, 'generarPDF'])->name('generar.pdf');
+//Route::get('/generarpdf', [CorteController::class, 'PDFCondicion'])->name('pdfcondicion');
+Route::post('/generar-pdf-rangos', [CorteController::class, 'PDFCondicion'])->name('pdfcondicion');
+
+
+
+
 
 
 

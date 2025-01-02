@@ -19,7 +19,7 @@ class PartidasOF extends Model
 
     public function ordenFabricacion()
     {
-        return $this->belongsTo(OrdenFabricacion::class, 'OrdenFabricacion_id');
+        return $this->belongsTo(OrdenFabricacion::class, 'orden_fabricacion_id');
     }
 
     public function partidasArea()
