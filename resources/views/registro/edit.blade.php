@@ -15,7 +15,7 @@
             </div>
         @endif
 
-        <form id="edit-form" action=""  method="POST" class="shadow p-4 rounded bg-white">
+        <form id="edit-form" action="{{ route('registro.store') }}"   method="POST" class="shadow p-4 rounded bg-white">
             @csrf
             @method('PUT')
 

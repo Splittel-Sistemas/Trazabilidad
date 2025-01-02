@@ -9,11 +9,17 @@ class PartidasOF extends Model
 {
 
     use HasFactory;
-    protected $table = 'PartidasOF'; 
+    protected $table = 'partidas_of'; 
+    protected $fillable = [
+        'orden_fabricacion_id',
+        'cantidad_partida',
+        'fecha_fabricacion',
+            
+    ];
 
     public function ordenFabricacion()
     {
-        return $this->belongsTo(OrdenFabricacion::class, 'OrdenFabricacion_id');
+        return $this->belongsTo(OrdenFabricacion::class, 'orden_fabricacion_id');
     }
 
     public function partidasArea()

@@ -19,6 +19,6 @@ class OrdenFabricacion extends Model
     // Relación con PartidasOF
     public function partidasOF()
     {
-        return $this->hasMany(PartidasOF::class, 'OrdenFabricacion_id');
+        return $this->hasMany(PartidasOF::class, 'orden_fabricacion_id');
     } 
 }

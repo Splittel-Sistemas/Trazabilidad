@@ -8,6 +8,9 @@ use App\Http\Controllers\CorteController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\AreasController;
+use App\Http\Controllers\PreparadoController;
+use GuzzleHttp\Promise\Coroutine;
+
 //Rutas Planeación
 Route::get('/', [HomeControler::class,'Home'])->name('Home');
 Route::get('/Planeacion', [PlaneacionController::class,'index'])->name('Planeacion');
@@ -44,42 +47,61 @@ Route::get('/orden-fabricacion/cantidad-total/{id}', [CorteController::class, 'g
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
 Route::get('/orden-fabricacion/{id}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('ordenFabricacion.getCortesInfo');
 
-
-
-
-Route::post('/generar-etiquetas', [CorteController::class, 'generar'])->name('etiquetas.generar');
-
-
-Route::post('/ruta-generar-etiquetas', [CorteController::class, 'generar'])->name('generar.etiquetas');
-
-
-
-
-//login
-
-// vista 
 // Ruta para mostrar el formulario de login
 Route::get('/login', [loginController::class, 'login_view'])->name('login_view');
-
-// Ruta para procesar el login (POST)
 Route::post('/login', [loginController::class, 'login'])->name('login_post');
-
-// Ruta para el logout
 Route::post('/logout', [loginController::class, 'logout'])->name('logout');
-
-// Ruta para el registro (si lo necesitas)
 Route::post('/register', [loginController::class, 'register'])->name('register');
 
-
-
-
-
+//ruta para el formulario de registro
 Route::resource('registro', RegistroController::class);
+Route::get('/registro/{id}', [RegistroController::class, 'show'])->name('registro.show');
+
+// Rutas para activar y desactivar usuarios
 Route::post('/users/activar', [RegistroController::class, 'activar'])->name('users.activar');
-// Ruta para activar usuario
-Route::post('/users/activar', [ RegistroController::class, 'activar'])->name('users.activar');
-// Ruta para desactivar un usuario
 Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar');
+
+//rutas para generar etiquetas
+
+Route::get('/preparado',[CorteController::class,'index'])->name('preparado.index');
+Route::get('/generar-etiquetas/{corteId}', [CorteController::class, 'getDatosGenerarEtiquetas']);
+Route::post('/generar-etiquetas', [CorteController::class, 'generarEtiquetas'])->name('generar.etiquetas');
+// Ruta para obtener los datos de la orden y la partida
+//Route::get('/mostrar-info/{corteId}', [CorteController::class, 'getDatosParaModal']);
+
+
+
+//Route::get('/detalle-orden', [CorteController::class, 'MostarInformacion'])->name('corte.getInformacion');
+
+
+Route::get('/mostrar/etiqueta', [CorteController::class, 'MostarInformacion'])->name('mostrar.etiqueta');
+Route::get('/generar-pdf', [CorteController::class, 'generarPDF'])->name('generar.pdf');
+//Route::get('/generarpdf', [CorteController::class, 'PDFCondicion'])->name('pdfcondicion');
+Route::post('/generar-pdf-rangos', [CorteController::class, 'PDFCondicion'])->name('pdfcondicion');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

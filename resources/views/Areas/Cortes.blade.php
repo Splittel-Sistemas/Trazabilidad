@@ -18,8 +18,8 @@
                 <div class="page-header float-right">
                     <div class="page-title">
                         <ol class="breadcrumb text-right">
-                            <li><a href="{{ route("Home") }}">Dashboard</a></li>
-                            <li><a href="#">&Aacute;rea</a></li>
+                            <li><a href="#">Dashboard</a></li>
+                            <li><a href="#">Cortes</a></li>
                             <li class="active">Cortes</li>
                         </ol>
                     </div>
@@ -31,47 +31,29 @@
 <div class="">
     <div class="container mt-4">
         <!-- Buscador -->
-        <div class="row mb-2">
-            <div class="col-lg-8">
+        <div class="row mb-4">
+            <div class="col-lg-12">
                 <div class="card shadow-sm">
                     <div class="card-header bg-primary text-white">
-                        <strong>Filtrar Orden de Fabricaci&oacute;n</strong>
-                        <button id="filtro_ov" type="button" class="btn btn-link float-end collapsed" draggable="true" data-bs-toggle="collapse" data-bs-target="#filtro" aria-expanded="true" aria-controls="filtro">
-                            <i class="fa fa-chevron-up"></i>
-                        </button>
+                        <strong>Filtrar Órdenes de Venta</strong>
                     </div>
-                    <div class="card-body card-block collapsed show" id="filtro">
+                    <div class="card-body">
                         <form id="filtroForm" method="post" class="form-horizontal">
                             @csrf
                             <div class="row">
                                 <!-- Filtro por fecha -->
                                 <div class="col-md-6 mb-3">
                                     <label for="fecha" class="form-label"><strong>Filtro por Fecha</strong></label>
-                                    <div class="input-group ">
-                                        <input type="date" name="fecha" id="fecha" value="{{$fechaHoy}}" class="form-control form-control-sm   w-autoborder-primary col-12">
-                                        <!-- busca por OV<input type="text" placeholder="Ingresa una Orden de Venta" name="Filtro_buscarOV" id="Filtro_buscarOV"  class="form-control form-control-sm   w-autoborder-primary col-12">-->
-                                        <div class="input-group-btn">
-                                            <button id="buscarFecha" class="btn btn-primary btn-sm">
-                                                <i class="fa fa-search"></i> buscar
-                                            </button>
-                                        </div>
+                                    <div class="input-group">
+                                        <input type="date" name="fecha" id="fecha" class="form-control form-control-sm">
+                                        <button id="buscarFecha" class="btn btn-outline-primary btn-sm ms-2">
+                                            <i class="fa fa-search"></i> Buscar
+                                        </button>
                                     </div>
                                 </div>
 
                                 <!-- Filtro por Orden de Venta -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="fecha" class="form-label"><strong>Filtro Orden (Venta, fabricaci&oacute;n)</strong></label>
-                                    <div class="input-group ">
-                                        <input type="text" placeholder=" Ingresa Orden Venta o fabricaci&oacute;n" name="query" id="query" class="form-control form-control-sm   w-autoborder-primary col-12">
-                                        <!-- busca por OV<input type="text" placeholder="Ingresa una Orden de Venta" name="Filtro_buscarOV" id="Filtro_buscarOV"  class="form-control form-control-sm   w-autoborder-primary col-12">-->
-                                        <div class="input-group-btn">
-                                            <button id="buscarOV" class="btn btn-primary btn-sm">
-                                                <i class="fa fa-search"></i> buscar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!--<div class="col-md-6 mb-3">
                                     <label for="query" class="form-label"><strong>Filtro por Orden de Venta</strong></label>
                                     <div class="input-group">
                                         <input type="text" placeholder="Ingresa una Orden de Venta" name="query" id="query" class="form-control form-control-sm">
@@ -79,7 +61,7 @@
                                             <i class="fa fa-search"></i> Buscar
                                         </button>
                                     </div>
-                                </div>-->
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -89,17 +71,21 @@
 
         <!-- Tabla de datos sin filtro -->
         <div class="row">
-            <div class="col-lg-12 shadow-sm p-4">
-                    <div class=" table-responsive">
-                        <table id="ordenFabricacionTable" class="table table-striped table-hover" style="width: 100%">
+            <div class="col-lg-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <strong>Órdenes de Fabricación</strong>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table id="ordenFabricacionTable" class="table table-striped table-hover">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Orden Fabri.</th>
+                                    <th>Orden de Fabricación</th>
                                     <th>Artículo</th>
                                     <th>Descripción</th>
                                     <th>Cantidad Total</th>
-                                    <th>Fecha Entrega</th>
-                                    <th>Fecha Producci&oacute;n</th>
+                                    <th>Fecha Entrega SAP</th>
+                                    <th>Fecha de Entrega</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -108,7 +94,7 @@
                             </tbody>
                         </table>
                     </div>
-                
+                </div>
             </div>
         </div>
         <!-- Modal de Detalles de la Orden -->
@@ -129,34 +115,34 @@
                                 </tbody>
                             </table>
                         </div>
-                        
                         <!-- Apartado de cortes del día -->
                         <div class="mt-4 p-3 bg-light rounded">
-                            <h5 class="text-secondary"><i class="bi bi-scissors"></i> Cortes del Día</h5>
+                            <h5 class="text-secondary"><i class="bi bi-scissors"></i> Piezas Del Dia</h5>
                             <form id="formCortesDia" class="needs-validation" novalidate>
                                 <div class="mb-3">
-                                    <label for="numCortes" class="form-label">Número de Cortes Realizados:</label>
-                                    <input type="number" class="form-control" id="numCortes" name="numCortes" min="0" placeholder="Ingrese el número de cortes" required>
+                                    <label for="numCortes" class="form-label">Número de Piezas Realizadas:</label>
+                                    <input type="number" class="form-control" id="numCortes" name="numCortes" min="0" placeholder="Ingrese el número de Piezas" required>
                                     <div class="invalid-feedback">
                                         Por favor, ingrese un número válido de cortes.
                                     </div>
                                 </div>
                             </form>
-
                             <div id="cortesGuardados" class="mt-3 text-success fw-bold">
                                 <div class="table-responsive">
                                     <table id="tablaCortes" class="table table-bordered table-striped">
                                         <thead class="table-light">
                                             <tr>
                                                 <th>#</th>
-                                                <th>Cortes</th>
+                                                <th>Cortes De Piezas</th>
                                                 <th>Fecha De Registro</th>
                                             </tr>
                                         </thead>
                                         <div class="modal-footer d-flex justify-content-between">
                                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
                                             <button type="button" id="confirmar" class="btn btn-success">Confirmar Orden</button>
+                                            <button class="btn btn-info" id="pdfRangos" data-id="">Generar PDF de Rangos</button>
                                         </div>
+
                                         <tbody>
                                             <!-- Cortes de la tabla PartidasOF se reflejan aquí -->
                                         </tbody>
@@ -164,7 +150,58 @@
                                 </div>
                             </div>
                         </div>
-
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal para mostrar la información de la orden -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myModalLabel">Información de la Orden de Fabricación</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                        <!-- Aquí se llenarán las partidas dinámicamente -->
+                        <div id="partidas-lista"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" id="btn-descargar-pdf" class="btn btn-primary" data-id="">Descargar PDF</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="myModalRangos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Selecciona los Rangos para el PDF</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formRangoPDF" method="POST" action="{{ route('pdfcondicion') }}">
+                            @csrf
+                            <input type="hidden" id="orden_fabricacion_id" name="id">
+                            <div class="mb-3">
+                                <label for="desde_no" class="form-label">Desde No:</label>
+                                <input type="number" name="desde_no" id="desde_no">
+                            </div>
+                            <div class="mb-3">
+                                <label for="hasta_no" class="form-label">Hasta No:</label>
+                                <input type="number" name="hasta_no" id="hasta_no">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="submit" id="btn-pdf-descarga" class="btn btn-primary" data-id="">Generar PDF</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -177,6 +214,8 @@
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
@@ -188,24 +227,15 @@ $(document).ready(function() {
         ajax: {
             url: '{{ route("corte.getData") }}',
             type: 'GET',
-            data: function(d) {
-                // Agregar un parámetro adicional a la solicitud
-                d.fecha= {{$fechaHoy}};  // Aquí puedes agregar el valor que necesites
-            },
             dataSrc: 'data',
         },
-        pageLength: 10, // Número de registros por página
-        lengthMenu: [
-                        [10, 25, 50, 100,-1], // Opciones de registros por página
-                        ['10', '25', '50', '100', 'Todos']
-                    ],
         columns: [
-            { data: 'OrdenFabricacion' }, 
-            { data: 'Articulo' }, 
-            { data: 'Descripcion' }, 
-            { data: 'CantidadTotal' }, 
-            { data: 'FechaEntregaSAP' }, 
-            { data: 'FechaEntrega' },
+            { data: 'OrdenFabricacion' }, // Orden de Fabricación
+            { data: 'Articulo' }, // Artículo
+            { data: 'Descripcion' }, // Descripción
+            { data: 'CantidadTotal' }, // Cantidad Total
+            { data: 'FechaEntregaSAP' }, // Fecha Entrega SAP
+            { data: 'FechaEntrega' }, // Fecha de Entrega
             { 
                 data: 'id',
                 render: function(data, type, row) {
@@ -214,9 +244,16 @@ $(document).ready(function() {
             }
         ]
     });
+
     // Al hacer clic en "Ver Detalles"
     $('#ordenFabricacionTable').on('click', '.ver-detalles', function() {
+        
         var ordenFabricacionId = $(this).data('id');
+      
+        $('#pdfRangos').attr('data-id', ordenFabricacionId);
+        $('#btn-pdf-descarga').attr('data-id', ordenFabricacionId)
+
+
         $.ajax({
             url: '{{ route("corte.getDetalleOrden") }}', // Ruta para obtener los detalles
             type: 'GET',
@@ -235,34 +272,41 @@ $(document).ready(function() {
                     
                     // Obtener y mostrar los cortes registrados
                     $.ajax({
-                        url: '{{ route("corte.getCortes") }}',
-                        type: 'GET',
-                        data: { id: ordenFabricacionId },
-                        success: function(cortesResponse) {
-                            if (cortesResponse.success) {
-                                var cortesHtml = '';
-                                cortesResponse.data.forEach(function(corte, index) {
-                                    cortesHtml += `
-                                        <tr>
-                                            <td>${index + 1}</td>
-                                            <td>${corte.cantidad_partida}</td>
-                                            <td>${corte.fecha_fabricacion}</td>
-                                             <td>
-                                                <button type="button" class="btn btn-warning btn-finalizar" data-id="${corte.id}">Finalizar</button>
-                                            </td>
-                                        </tr>
-                                    `;
-                                });
-                                $('#tablaCortes tbody').html(cortesHtml);
-                            } else {
-                                $('#tablaCortes tbody').html('<tr><td colspan="3" class="text-center">No se encontraron cortes.</td></tr>');
-                            }
-                        },
-                        error: function(xhr) {
-                            console.error(xhr.responseText);
-                            alert('Error al obtener los cortes.');
-                        }
-                    });
+    url: '{{ route("corte.getCortes") }}',
+    type: 'GET',
+    data: { id: ordenFabricacionId },
+    success: function(cortesResponse) {
+        if (cortesResponse.success) {
+            var cortesHtml = '';
+            
+            // Invertir el orden de los cortes antes de iterar sobre ellos
+            cortesResponse.data.reverse().forEach(function(corte, index) {
+                cortesHtml += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${corte.cantidad_partida}</td>
+                        <td>${corte.fecha_fabricacion}</td>
+                         <td>
+                            <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
+                        </td>
+                       
+                        <td>
+                            <button type="button" class="btn btn-outline-info btn-generar-etiquetas" data-id="${corte.id}">Generar Etiquetas</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            $('#tablaCortes tbody').html(cortesHtml);
+        } else {
+            $('#tablaCortes tbody').html('<tr><td colspan="3" class="text-center">No se encontraron cortes.</td></tr>');
+        }
+    },
+    error: function(xhr) {
+        console.error(xhr.responseText);
+        alert('Error al obtener los cortes.');
+    }
+});
+
 
                     $('#modalDetalleOrden').modal('show');
                 } else {
@@ -304,86 +348,126 @@ $(document).ready(function() {
         });
 
     });
+
     // Manejo del evento cuando el modal es mostrado
     $('#modalDetalleOrden').on('shown.bs.modal', function() {
         $(this).removeAttr('aria-hidden'); // Asegura que aria-hidden se actualice correctamente
         $(this).find('button').first().focus(); // Enfoca el primer botón en el modal
     });
+
     // Manejo del evento cuando el modal es ocultado
     $('#modalDetalleOrden').on('hidden.bs.modal', function() {
         $('#triggerButton').focus(); // Devuelve el enfoque al botón que abrió el modal
     });
+
     // Confirmar y guardar los cortes
     $('#confirmar').click(function() {
-        var numCortes = $('#numCortes').val().trim();
-        var ordenFabricacionId = $('#ordenFabricacionId').val();
-        // Verificar si numCortes es un número válido
-        if (!numCortes || numCortes <= 0 || isNaN(numCortes)) {
-            alert('Por favor, ingrese un número válido de cortes.');
-            return;
-        }
+    var numCortes = $('#numCortes').val().trim();
+    var ordenFabricacionId = $('#ordenFabricacionId').val();
 
-        // Verificar si se ha seleccionado una orden de fabricación
-        if (!ordenFabricacionId) {
-            alert('No se ha seleccionado una orden de fabricación.');
-            return;
-        }
+    if (!numCortes || numCortes <= 0 || isNaN(numCortes)) {
+        alert('Por favor, ingrese un número válido de cortes.');
+        return;
+    }
 
-        // Solicitar la cantidad total de la orden de fabricación
-        $.ajax({
-            url: '{{ route("ordenFabricacion.getCantidadTotal", ":id") }}'.replace(':id', ordenFabricacionId),
-            type: 'GET',
-            success: function(response) {
-                if (response.success) {
-                    var cantidadTotal = response.cantidad_total;
+    if (!ordenFabricacionId) {
+        alert('No se ha seleccionado una orden de fabricación.');
+        return;
+    }
 
-                    // Verificar si los cortes no exceden la cantidad total de la orden
-                    if (numCortes > cantidadTotal) {
-                        alert('El número de cortes no puede exceder la cantidad total de la orden (' + cantidadTotal + ').');
-                        return;
-                    }
+    // Obtener información de los cortes registrados
+    $.ajax({
+        url: `/orden-fabricacion/${ordenFabricacionId}/cortes-info`, // Ruta dinámica
+        type: 'GET',
+        success: function(response) {
+            if (response.success) {
+                var cantidadTotal = parseInt(response.  CantidadTotal);
+                var cortesRegistrados = parseInt(response.cortes_registrados);
+                var nuevoCorte = parseInt(numCortes);
 
-                    // Si el número de cortes es válido, enviar los datos
-                    var datosPartidas = [{
-                        cantidad_partida: numCortes,  
-                        fecha_fabricacion: new Date().toISOString().split('T')[0], 
-                        orden_fabricacion_id: ordenFabricacionId
-                    }];
-
-                    console.log('Datos a enviar:', datosPartidas);
-
-                    // Enviar los datos al servidor
-                    $.ajax({
-                        url: '{{ route("guardar.partida") }}',
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            datos_partidas: datosPartidas
-                        },
-                        success: function(response) {
-                            console.log('Respuesta del servidor:', response);  // Agregar esta línea para depuración
-                            if (response.status === 'success') {
-                                alert('Partidas guardadas correctamente.');
-                                // Aquí puedes añadir lógica adicional si quieres actualizar algo en la página
-                            } else {
-                                alert('Errores: ' + response.errores.join(', '));
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error al guardar partidas:', xhr.responseText);
-                            alert('Error al guardar las partidas: ' + xhr.responseText);
-                        }
-                    });
-                } else {
-                    alert('Error al obtener la cantidad total de la orden.');
+                if (cortesRegistrados + nuevoCorte > cantidadTotal) {
+                    alert('El número total de cortes excede la cantidad total de la orden.');
+                    return;
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error al obtener la cantidad total:', xhr.responseText);
-                alert('Error al obtener la cantidad total de la orden.');
+
+                // Guardar los nuevos cortes
+                var datosPartidas = [{
+                    cantidad_partida: nuevoCorte,
+                    fecha_fabricacion: new Date().toISOString().split('T')[0],
+                    orden_fabricacion_id: ordenFabricacionId
+                }];
+
+                $.ajax({
+                    url: '{{ route("guardar.partida") }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        datos_partidas: datosPartidas
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            alert('Partidas guardadas correctamente.');
+                        } else {
+                            alert('Errores: ' + response.errores.join(', '));
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al guardar partidas:', xhr.responseText);
+                        alert('Error al guardar las partidas: ' + xhr.responseText);
+                    }
+                });
+            } else {
+                alert('Error al obtener la información de la orden de fabricación: ' + response.message);
             }
-        });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error al obtener información de cortes:', xhr.responseText);
+            alert('Error al obtener información de cortes: ' + xhr.responseText);
+        }
     });
+});
+
+
+    // Función para recargar la tabla de cortes
+    function cargarTablaCortes() {
+        var ordenFabricacionId = $('#ordenFabricacionId').val();
+
+        if (ordenFabricacionId) {
+            $.ajax({
+                url: '{{ route("corte.getCortes") }}',
+                type: 'GET',
+                data: { id: ordenFabricacionId },
+                success: function(cortesResponse) {
+                    if (cortesResponse.success) {
+                        var cortesHtml = '';
+                        cortesResponse.data.forEach(function(corte, index) {
+                            cortesHtml += `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${corte.cantidad_partida}</td>
+                                    <td>${corte.fecha_fabricacion}</td>
+                                    <td>
+                                    <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-outline-info btn-generar-etiquetas" data-id="${corte.id}" data-toggle="modal" data-target="#myModal">Generar Etiquetas</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        $('#tablaCortes tbody').html(cortesHtml);
+                    } else {
+                        $('#tablaCortes tbody').html('<tr><td colspan="3" class="text-center">No se encontraron cortes.</td></tr>');
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    alert('Error al obtener los cortes.');
+                }
+            });
+        }
+    }
+
     // Guardar los cortes cuando se haga clic en "Guardar Cortes"
     $('#guardarCortes').on('click', function() {
         var numCortes = $('#numCortes').val();
@@ -428,6 +512,7 @@ $(document).ready(function() {
             $('#noDataMessageFecha').hide();
         }
     });
+
     // Buscar orden de venta
     $('#buscarOV').on('click', function(event) {
         event.preventDefault();
@@ -496,19 +581,70 @@ $(document).ready(function() {
             alert('Por favor, ingresa un valor para buscar.');
         }
     });
-    document.getElementById('filtro_ov').addEventListener('click', function(event) {
-        btn=document.getElementById('filtro_ov');
-        if (!btn.classList.contains('collapsed')) {
-            btn.innerHTML='<i class="fa fa-chevron-up"></i>';
-        }else{
-            btn.innerHTML='<i class="fa fa-chevron-down"></i>';
-        }
-    });
-
-});
-function LlenarTablaCortes(){
     
-}
+})
+$(document).ready(function () {
+    // Evento para mostrar la información de la orden cuando se hace clic en el botón
+    $(document).on('click', '.btn-generar-etiquetas', function () {
+        var corteId = $(this).data('id'); 
+
+        $.ajax({
+            url: '{{ route("mostrar.etiqueta") }}',
+            data: { id: corteId },
+            type: 'GET',
+            success: function (response) {
+                if (response.error) {
+                    alert(response.error);
+                } else {
+                    
+                    $('#partidas-lista').html(''); 
+
+                    
+                    var partidasHtml = '';
+                    response.partidas.forEach(function (partida) {
+                        partidasHtml += `
+                            <div>
+                                <p><strong>No:</strong> ${partida.cantidad}</p>
+                                <p><strong>Orden de Fabricación:</strong> ${partida.orden_fabricacion}</p>
+                                <p><strong>Descripción:</strong> ${partida.descripcion}</p>
+                            </div>
+                            <hr>`;
+                    });
+
+                    $('#partidas-lista').html(partidasHtml);
+                    $('#myModal').modal('show');
+
+
+                    $('#btn-descargar-pdf').data('id', corteId);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log('Error:', error);
+                console.log('Detalles:', xhr.responseText);
+                alert('Error al cargar los datos.');
+            }
+        });
+    });
+    // Evento para descargar el PDF cuando se hace clic en el botón de descargar
+    $(document).on('click', '#btn-descargar-pdf', function () {
+        var corteId = $(this).data('id');
+        if (!corteId) {
+            alert('No se encontró el ID');
+            return;
+        }
+        // Abre la URL para descargar el PDF
+        window.open('/generar-pdf?id=' + corteId, '_blank');
+    });
+});
+$(document).ready(function() {
+    $('#pdfRangos').on('click', function() {
+        var ordenFabricacionId = $(this).attr('data-id');  
+        $('#orden_fabricacion_id').val(ordenFabricacionId);  
+        $('#myModalRangos').modal('show');  
+    });
+});
+
+
 </script>
 
 @endsection
