@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('Partidas', function (Blueprint $table) {
             $table->id();
-            $table->integer('Num_serie');
             $table->foreignId('PartidasOF_id') 
                 ->constrained('PartidasOF') 
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->datetime('FechaCominezo')->nullable();
+            $table->integer('CantidadaPartidas')->nullable();
+            $table->datetime('FechaComienzo')->nullable();
             $table->datetime('FechaTermina')->nullable();
             $table->timestamps();
         });

@@ -36,7 +36,7 @@ class CorteController extends Controller
         return $datos;
     }*/
     public function getData(Request $request){
-        $fechaHoy = date('Y-m-d');
+        $fechaHoy = '2024-12-30';//date('Y-m-d');
         $limit = $request->input('length'); // Número de registros por página (10, 25, 50, etc.)
         $start = $request->input('start');  // Índice del primer registro (comienza en 0)
 

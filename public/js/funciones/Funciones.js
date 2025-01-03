@@ -16,11 +16,11 @@ function confirmacion(titulo,mensaje,confirmButtonText,funcion){
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
+        cancelButtonText:"Cancelar",
         confirmButtonText: confirmButtonText,
-        cancelbuttonText:"Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          funcion+"()";
+          eval(funcion);
         }
       });
 }
