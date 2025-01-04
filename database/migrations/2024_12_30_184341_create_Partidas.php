@@ -17,6 +17,7 @@ return new class extends Migration
                 ->constrained('PartidasOF') 
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+            $table->integer('NumParte')->nullable();
             $table->integer('CantidadaPartidas')->nullable();
             $table->datetime('FechaComienzo')->nullable();
             $table->datetime('FechaTermina')->nullable();

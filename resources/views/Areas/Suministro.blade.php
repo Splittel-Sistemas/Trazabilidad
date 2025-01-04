@@ -2,6 +2,15 @@
 @section('title', 'Suministro')
 @section('styles')
 <link rel="stylesheet" href="{{asset('css/Suministro.css')}}">
+<style>
+    /* Positioning the toast in the top-right corner */
+    #ToastGuardado {
+        position: fixed; /* Fixed position */
+        top: 10rem; /* Distance from the top */
+        right: 20px; /* Distance from the right */
+        z-index: 1050; /* Ensure it's above other content */
+    }
+</style>
 @endsection
 @section('content')
     <div class="row mb-2">
@@ -77,6 +86,13 @@
             </table>
         </div>
     </div>
+    <div id="ToastGuardado" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div id="ToastGuardadoBody" class="toast-body">
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
 @endsection
 @section('scripts')
 <script src="{{ asset('js/Suministro.js') }}"></script>
@@ -109,12 +125,17 @@
                     $('#CantidadPartidasOF').html('<span class="badge bg-light text-dark">'+response.CantidadCompletada+"/"+response.CantidadTotal+'</span>');
                     $('#TituloPartidasOF').html(response.OF);
                     if(response.Escaner==0){
-                        $('#CantidadDiv').show();
-                        $('#IniciarBtn').show();
+                        $('#CantidadDiv').fadeIn();
+                        $('#IniciarBtn').fadeIn();
                     }else{
-                        $('#CantidadDiv').hide();
-                        $('#IniciarBtn').hide();
+                        $('#ToastGuardadoBody').html('Codigo '+Codigo+' guardado correctamente!');
+                        $('#CantidadDiv').fadeOut();
+                        $('#IniciarBtn').fadeOut();
                     }
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 2000);
                 }else if(response.status=="empty"){
                 }
                 /*document.getElementById('CodigoEscanerSuministro').style.display = "";

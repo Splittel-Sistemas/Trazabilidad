@@ -18,7 +18,6 @@ class CreatePartidasOFTable extends Migration
             $table->dateTime('fecha_fabricacion');
             $table->datetime('FechaComienzo')->nullable();
             $table->datetime('FechaTermina')->nullable();
-            $table->integer('NumParte')->nullable();
             $table->timestamps();
         });
     }

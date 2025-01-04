@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\FuncionesGeneralesController;
 use App\Models\OrdenFabricacion;
 use App\Models\PartidasOF;
+use App\Models\Partidas;
 
 class AreasController extends Controller
 {
@@ -26,7 +27,7 @@ class AreasController extends Controller
         $menu="";
         $Escaner="";
         $CantidadCompletada=0;
-        if($CodigoTam==2){
+        if($CodigoTam==2 ||$CodigoTam==3){
             $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->get();
             if(!$datos){
                 return response()->json([
@@ -41,11 +42,14 @@ class AreasController extends Controller
             }else{
                 $CantidadTotal=$datos[0]->CantidadTotal;
                 $Escaner=$datos[0]->Escaner;
+                if($Escaner==1){
+                    return$TipoEscanerrespuesta=$this->TipoEscaner($CodigoPartes,$CodigoTam,3);
+                }
                 foreach( $datos as $ordenFabricacion){
                     foreach( $ordenFabricacion->partidasOF()->get() as $PartidasordenFabricacion){
                         foreach( $PartidasordenFabricacion->Partidas()->get() as $Partidas){
                                 $menu.='<tr>
-                                    <td>'.$PartidasordenFabricacion->NumParte.'</td>
+                                    <td>'.$Partidas->NumParte.'</td>
                                     <td>'.$Partidas->CantidadaPartidas.'</td>
                                     <td>'.$Partidas->FechaComienzo.'</td>
                                     <td>'.$Partidas->FechaTermina.'</td>';
@@ -78,59 +82,37 @@ class AreasController extends Controller
             'OF' => $CodigoPartes[0]
 
         ]);
-        /*$cadena1=0;
-        $cadena2=0;
-        $Escaner="";
-        $Existe="No";
-        if($cadena1==""){
-            return '<div class="list-group"></div>';
-        }
-         $menu='<div class="list-group">';
-        if ($request->has('CodigoPrimero')) {
-            $cadena1=$request->CodigoPrimero;
-            $datos=OrdenFabricacion::where('OrdenFabricacion', 'like', '%'.$cadena1. '%')->get();
-            $menu="";
-            $BanderaPartidas=0;
-            $cont=0;
-            foreach( $datos as $ordenFabricacion){
-                if($request->has('CodigoSegundo') && $request->CodigoSegundo!=""){
-                    foreach( $ordenFabricacion->partidasOF()->get() as $PartidasordenFabricacion){
-                        if ($request->CodigoSegundo==$PartidasordenFabricacion->id) {
-                            $BanderaPartidas=1;
-                            $menu.='<a href="#" class="list-group-item list-group-item-action border small p-1 active" onclick="TraerDatos('.$PartidasordenFabricacion->id.',\''.$ordenFabricacion->OrdenFabricacion.'\')">'.$ordenFabricacion->OrdenFabricacion."-".$PartidasordenFabricacion->id.'</a>';
-                            $Escaner=$ordenFabricacion->Escaner;
-                            $Existe="Si";
-                        }             
-                    }
-                }else{
-                    foreach( $ordenFabricacion->partidasOF()->get() as $key =>$PartidasordenFabricacion){
-                            $BanderaPartidas=1;
-                            $menu.='<a href="#" class="list-group-item list-group-item-action border small p-1 ';
-                            if($cont==0){
-                                $menu.='active';
-                            }
-                            $menu.='" onclick="TraerDatos('.$PartidasordenFabricacion->id.',\''.$ordenFabricacion->OrdenFabricacion.'\')">'.$ordenFabricacion->OrdenFabricacion."-".$PartidasordenFabricacion->id.'</a>';
-                            $cont++;    
-                    }
-                }
+    }
+    public function TipoEscaner($CodigoPartes,$CodigoTam,$Area){
+        $FechaHoy=date('Y-m-d H:i:s');
+        if($CodigoTam!=3){
+            return 0;
+        }else{
+            $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
+            if($datos->count()==0){
+                return 0;
             }
-            if($BanderaPartidas==0){
-                $menu.='<i class="list-group-item list-group-item-action border small p-1 disabled">No existen partidas con el codigo ingresado</i>';
+            $datos= $datos->PartidasOF()->where('id',"=",$CodigoPartes[1])->first();
+            if($datos->count()==0){
+                return 0;
             }
-            $menu.='</div>';
-            return response()->json([
-                'menu' => $menu,
-                'Escaner' => $Escaner,
-                'Existe' => $Existe
+            $datosPartidas=$datos->Partidas();
+            return $datosPartidas;
+            $Partidas = new Partidas();
+            $Partidas->PartidasOF_id=$datos->id;
+            $Partidas->CantidadaPartidas=1;
+            $Partidas->NumParte=$CodigoPartes[2];
+            $Partidas->FechaComienzo=$FechaHoy;
 
-            ]);
+            if ($Partidas->save()) {
+                return 1;
+            } else {
+                return 0;
+            }
         }
-        return response()->json([
-            'menu' => "",
-            'Escaner' => "",
-            'Existe' => ""
+    }
+    public function TipoManual(){
 
-        ]);*/
     }
     public function AreaPartidas(Request $request){
         $codigo=$request->codigo;
