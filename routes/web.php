@@ -30,6 +30,7 @@ Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Deta
 //Rutas Ares
 Route::get('/Area/Corte', [AreasController::class,'Corte'])->name('Corte');
 Route::get('/Area/Suministro', [AreasController::class,'Suministro'])->name('Suministro');
+Route::get('/Area/Suministro/buscar', [AreasController::class,'SuministroBuscar'])->name('SuministroBuscar');
 Route::get('/Area/Preparado', [AreasController::class,'Preparado'])->name('Preparado');
 Route::get('/Area/Ensamble', [AreasController::class,'Ensamble'])->name('Ensamble');
 Route::get('/Area/Pulido', [AreasController::class,'Pulido'])->name('Pulido');

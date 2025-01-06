@@ -14,9 +14,10 @@ class CreatePartidasOFTable extends Migration
                 ->constrained('OrdenFabricacion') 
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-
             $table->integer('cantidad_partida');
             $table->dateTime('fecha_fabricacion');
+            $table->datetime('FechaComienzo')->nullable();
+            $table->datetime('FechaTermina')->nullable();
             $table->timestamps();
         });
     }
