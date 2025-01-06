@@ -27,7 +27,7 @@ class FuncionesGeneralesController extends Controller
     {
         $datasource = 'DRIVER=HDBODBC;SERVERNODE=192.168.2.19:30015;CHAR_AS_UTF8=1;';
         $username   = "USR_LECTURA";
-        $password   = "SPL.Lectura202xx4.";
+        $password   = "SPL.Lectura202xx5.";
 
         
         $conn = odbc_connect($datasource, $username, $password);
