@@ -329,8 +329,8 @@ class ComposerStaticInite5fbbe6137dc77bcd5b6646b5dd75b52
         ),
         'Spatie\\Ignition\\' => 
         array (
-            0 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
-            1 => __DIR__ . '/..' . '/spatie/ignition/src',
+            0 => __DIR__ . '/..' . '/spatie/ignition/src',
+            1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
         ),
         'Spatie\\FlareClient\\' => 
         array (
@@ -407,8 +407,8 @@ class ComposerStaticInite5fbbe6137dc77bcd5b6646b5dd75b52
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri',
-            1 => __DIR__ . '/..' . '/league/uri-interfaces',
+            0 => __DIR__ . '/..' . '/league/uri-interfaces',
+            1 => __DIR__ . '/..' . '/league/uri',
         ),
         'League\\MimeTypeDetection\\' => 
         array (
@@ -574,14 +574,16 @@ class ComposerStaticInite5fbbe6137dc77bcd5b6646b5dd75b52
         'App\\Http\\Controllers\\PreparadoController' => __DIR__ . '/../..' . '/app/Http/Controllers/PreparadoController.php',
         'App\\Http\\Controllers\\PrincipalController' => __DIR__ . '/../..' . '/app/Http/Controllers/PrincipalController.php',
         'App\\Http\\Controllers\\RegistroController' => __DIR__ . '/../..' . '/app/Http/Controllers/RegistroController.php',
+        'App\\Http\\Controllers\\RolesPermisoController' => __DIR__ . '/../..' . '/app/Http/Controllers/RolesPermisoController.php',
         'App\\Http\\Controllers\\SapController' => __DIR__ . '/../..' . '/app/Http/Controllers/SapController.php',
         'App\\Http\\Controllers\\SuministrosController' => __DIR__ . '/../..' . '/app/Http/Controllers/SuministrosController.php',
         'App\\Kernel' => __DIR__ . '/..' . '/laravel/pint/app/Kernel.php',
-        'App\\Models\\Area' => __DIR__ . '/../..' . '/app/Models/Area.php',
+        'App\\Models\\Areas' => __DIR__ . '/../..' . '/app/Models/Areas.php',
         'App\\Models\\FechasBuffer' => __DIR__ . '/../..' . '/app/Models/FechasBuffer.php',
         'App\\Models\\Nota' => __DIR__ . '/../..' . '/app/Models/Nota.php',
         'App\\Models\\OrdenFabricacion' => __DIR__ . '/../..' . '/app/Models/OrdenFabricacion.php',
         'App\\Models\\OrdenVenta' => __DIR__ . '/../..' . '/app/Models/OrdenVenta.php',
+        'App\\Models\\Partidas' => __DIR__ . '/../..' . '/app/Models/Partidas.php',
         'App\\Models\\PartidasArea' => __DIR__ . '/../..' . '/app/Models/PartidasArea.php',
         'App\\Models\\PartidasOF' => __DIR__ . '/../..' . '/app/Models/PartidasOF.php',
         'App\\Models\\Permission' => __DIR__ . '/../..' . '/app/Models/Permission.php',
