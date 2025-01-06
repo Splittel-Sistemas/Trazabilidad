@@ -434,7 +434,7 @@ class PlaneacionController extends Controller
                 T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" FROM ' . $schema . '.ORDR T0 
                 WHERE '.$where;
         try {
-            $datos = $this->funcionesGenerales->ejecutarConsulta($sql);
+            return$datos = $this->funcionesGenerales->ejecutarConsulta($sql);
         } catch (\Exception $e) {
             return $datos=0;
         }
