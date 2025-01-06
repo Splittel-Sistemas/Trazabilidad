@@ -76,40 +76,7 @@
                         @enderror
                     </div>
                 </div>
-            
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="font-weight-bold">Permisos</label>
-                        <small class="form-text text-muted">Seleccione uno o más permisos.</small>
-            
-                        @foreach ($permissions as $value)
-                            <div class="form-check">
-                                <input type="checkbox" name="permissions[]" id="permission_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
-                                    {{ (isset($registro) && $registro->permissions->contains($value->id)) ? 'checked' : '' }}>
-                                <label for="permission_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-            
-            
-
-                @foreach ($permissions as $permission)
-                    <div class="form-check">
-                        <input  type="checkbox" name="permissions[]"  id="permission_{{ $permission->id }}"  value="{{ $permission->id }}" class="form-check-input" 
-                            {{ (isset($registro) && $registro->permissions->contains($permission->id)) ? 'checked' : '' }}>
-                        <label for="permission_{{ $value }}" class="form-check-label">{{ $permission->name }}</label>
-                    </div>
-                @endforeach
-
-                @error('permissions') 
-                    <div class="text-danger">{{ $message }}</div> 
-                @enderror
-            </div>
-
             <button type="submit" class="btn btn-success btn-lg btn-block rounded-pill shadow-lg transition-all hover:bg-success hover:text-white">Registrar</button>
-
         </form>
     </div>
 @endsection

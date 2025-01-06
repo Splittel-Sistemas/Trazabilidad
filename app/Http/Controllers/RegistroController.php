@@ -61,7 +61,7 @@ class RegistroController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            //'roles' => 'required|array', // Los roles son obligatorios
+            'roles' => 'required|array', // Los roles son obligatorios
            //'permissions' => 'required|array', // Los permisos son obligatorios
         ]);
 
@@ -74,7 +74,7 @@ class RegistroController extends Controller
         ]);
 
         // Asignar roles y permisos al usuario
-        //$user->roles()->sync($validatedData['roles']);
+        $user->roles()->sync($validatedData['roles']);
        // $user->permissions()->sync($validatedData['permissions']);
 
         // Redirigir al usuario con un mensaje de éxito

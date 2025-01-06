@@ -6,10 +6,9 @@ use Illuminate\Support\Facades\DB;
 use App\Models\PartidasOF;
 use App\Models\OrdenFabricacion;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
-use PhpParser\Builder\Function_;
 use TCPDF;
-use Illuminate\Support\Facades\Storage;
+use App\Models\User;
+
 
 
 class CorteController extends Controller
@@ -17,6 +16,9 @@ class CorteController extends Controller
     //vista
     public function index()
     {
+        //if (!auth()->User()->can('ver cortes')) {
+          //  abort(403);
+        //}
       
         $corte = DB::table('OrdenFabricacion', )
         
@@ -305,77 +307,75 @@ class CorteController extends Controller
     
         return response()->json($response);
     }
-    
-
     public function generarPDF(Request $request)
-{
-    try {
-        $partidaId = $request->input('id');
-        if (!$partidaId) {
-            throw new \Exception('ID no recibido');
-        }
+    {
+        try {
+            $partidaId = $request->input('id');
+            if (!$partidaId) {
+                throw new \Exception('ID no recibido');
+            }
 
-        // Buscar la partida por ID
-        $partida = PartidasOF::with('ordenFabricacion')->find($partidaId);
+            // Buscar la partida por ID
+            $partida = PartidasOF::with('ordenFabricacion')->find($partidaId);
 
-        if (is_null($partida) || is_null($partida->ordenFabricacion)) {
-            throw new \Exception('No se encontraron datos para este ID.');
-        }
+            if (is_null($partida) || is_null($partida->ordenFabricacion)) {
+                throw new \Exception('No se encontraron datos para este ID.');
+            }
 
-        // Obtener la orden de fabricación relacionada
-        $ordenFabricacion = $partida->ordenFabricacion;
+            // Obtener la orden de fabricación relacionada
+            $ordenFabricacion = $partida->ordenFabricacion;
 
-        // Preparar las partidas relacionadas solo para la partida seleccionada
-        $partidasData = [];
-        for ($i = 1; $i <= $partida->cantidad_partida; $i++) {
-            $partidasData[] = [
-                'cantidad' => $i,
-                'descripcion' => $ordenFabricacion->Descripcion ?? 'Sin Descripción',
-                'orden_fabricacion' => $ordenFabricacion->OrdenFabricacion ?? 'Sin Orden de Fabricación',
-            ];
-        }
+            // Preparar las partidas relacionadas solo para la partida seleccionada
+            $partidasData = [];
+            for ($i = 1; $i <= $partida->cantidad_partida; $i++) {
+                $partidasData[] = [
+                    'cantidad' => $i,
+                    'descripcion' => $ordenFabricacion->Descripcion ?? 'Sin Descripción',
+                    'orden_fabricacion' => $ordenFabricacion->OrdenFabricacion ?? 'Sin Orden de Fabricación',
+                ];
+            }
 
-        // Invertir el array de partidas
-        $partidasData = array_reverse($partidasData);
+            // Invertir el array de partidas
+            $partidasData = array_reverse($partidasData);
 
-        // Crear PDF
-        $pdf = new TCPDF();
-        $pdf->SetMargins(5, 5, 5); 
-        $pdf->AddPage();
+            // Crear PDF
+            $pdf = new TCPDF();
+            $pdf->SetMargins(5, 5, 5); 
+            $pdf->AddPage();
 
-        // Título del PDF
-        $pdf->SetFont('helvetica', 'B', 10);
-        $pdf->Cell(0, 10, 'Orden de Fabricación: ' . strip_tags($ordenFabricacion->OrdenFabricacion), 0, 1, 'C');
-        $pdf->SetFont('helvetica', '', 8);
-        $pdf->Cell(0, 5, 'Descripción: ' . strip_tags($ordenFabricacion->Descripcion), 0, 1, 'C');
-        $pdf->Ln(5);
-
-        // Generar contenido para cada partida
-        foreach ($partidasData as $partida) {
-            $content = 
-                'No: ' . strip_tags($partida['cantidad']) . "\n" .
-                'Orden de Fabricación: ' . strip_tags($partida['orden_fabricacion']) . "\n" .
-                'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
-
-            $startY = $pdf->GetY();
-            $rectWidth = 80;
-            $rectHeight = 15;
-            $pdf->Rect(10, $startY, $rectWidth, $rectHeight, 'D');
-            $pdf->SetXY(12, $startY + 1);
-            $pdf->SetFont('helvetica', '', 6);
-            $pdf->MultiCell($rectWidth - 4, 5, strip_tags($content), 0, 'L', 0, 1);
+            // Título del PDF
+            $pdf->SetFont('helvetica', 'B', 10);
+            $pdf->Cell(0, 10, 'Orden de Fabricación: ' . strip_tags($ordenFabricacion->OrdenFabricacion), 0, 1, 'C');
             $pdf->SetFont('helvetica', '', 8);
+            $pdf->Cell(0, 5, 'Descripción: ' . strip_tags($ordenFabricacion->Descripcion), 0, 1, 'C');
+            $pdf->Ln(5);
+
+            // Generar contenido para cada partida
+            foreach ($partidasData as $partida) {
+                $content = 
+                    'No: ' . strip_tags($partida['cantidad']) . "\n" .
+                    'Orden de Fabricación: ' . strip_tags($partida['orden_fabricacion']) . "\n" .
+                    'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
+
+                $startY = $pdf->GetY();
+                $rectWidth = 80;
+                $rectHeight = 15;
+                $pdf->Rect(10, $startY, $rectWidth, $rectHeight, 'D');
+                $pdf->SetXY(12, $startY + 1);
+                $pdf->SetFont('helvetica', '', 6);
+                $pdf->MultiCell($rectWidth - 4, 5, strip_tags($content), 0, 'L', 0, 1);
+                $pdf->SetFont('helvetica', '', 8);
+            }
+
+            ob_end_clean();
+
+            // Generar el archivo PDF y devolverlo al navegador
+            return $pdf->Output('orden_fabricacion_' . $partidaId . '.pdf', 'D');
+        } catch (\Exception $e) {
+            Log::error('Error al generar PDF: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        ob_end_clean();
-
-        // Generar el archivo PDF y devolverlo al navegador
-        return $pdf->Output('orden_fabricacion_' . $partidaId . '.pdf', 'D');
-    } catch (\Exception $e) {
-        Log::error('Error al generar PDF: ' . $e->getMessage());
-        return response()->json(['error' => $e->getMessage()], 500);
     }
-}
 
     public function PDFCondicion(Request $request)
     {

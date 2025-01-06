@@ -47,6 +47,10 @@
                     <li class="menu-item-has-children dropdown {{ Route::is('registro.index') ? 'active' : '' }}">
                         <a href="{{route('registro.index')}}" class="dropdown-toggle"><i class="menu-icon fa fa-user"></i>Usuarios</a>
                     </li>
+                    <li class="menu-item-has-children dropdown {{ Route::is('RolesPermisos.index') ? 'active' : '' }}">
+                        <a href="{{route('RolesPermisos.index')}}" class="dropdown-toggle"><i class="menu-icon fa fa-user"></i>Roles Y Permisos</a>
+                    </li>
+                    
                     <li class="menu-item-has-children dropdown {{ Route::is('Planeacion') ? 'active' : '' }}">
                         <a href="{{route('Planeacion')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-calendar"></i>Planeacion</a>
                     </li>
