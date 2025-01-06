@@ -136,10 +136,25 @@
                                 <input type="text" id="name" name="name" class="form-control" required>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="permissions">Permisos</label>
-                                <select id="permissions" name="permissions[]" class="form-control" multiple></select>
-                            </div>
+                            <div class="form-row mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Roles</label>
+                                        <small class="form-text text-muted">Seleccione uno o más roles.</small>
+                            
+                                        @foreach ($roles as $value)
+                                            <div class="form-check">
+                                                <input type="checkbox" name="roles[]" id="role_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
+                                                    {{ (isset($registro) && $registro->roles->contains($value->id)) ? 'checked' : '' }}>
+                                                <label for="role_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
+                                            </div>
+                                        @endforeach
+                            
+                                        @error('roles') 
+                                            <div class="text-danger">{{ $message }}</div> 
+                                        @enderror
+                                    </div>
+                                </div>
                         
                             <button type="submit" class="btn btn-primary">Actualizar</button>
                         </form>
