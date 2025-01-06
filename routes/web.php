@@ -8,8 +8,10 @@ use App\Http\Controllers\CorteController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\AreasController;
+use App\Http\Controllers\RolesPermisoController;
 use App\Http\Controllers\PreparadoController;
 use GuzzleHttp\Promise\Coroutine;
+use Illuminate\Routing\Route as RoutingRoute;
 
 //Rutas Planeación
 Route::get('/', [HomeControler::class,'Home'])->name('Home');
@@ -78,6 +80,9 @@ Route::get('/mostrar/etiqueta', [CorteController::class, 'MostarInformacion'])->
 Route::get('/generar-pdf', [CorteController::class, 'generarPDF'])->name('generar.pdf');
 //Route::get('/generarpdf', [CorteController::class, 'PDFCondicion'])->name('pdfcondicion');
 Route::post('/generar-pdf-rangos', [CorteController::class, 'PDFCondicion'])->name('pdfcondicion');
+
+// ruta permisos y roles
+Route::resource('/RolesPermisos', RolesPermisoController::class);
 
 
 

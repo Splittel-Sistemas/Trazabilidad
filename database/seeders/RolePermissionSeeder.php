@@ -10,15 +10,35 @@ class RolePermissionSeeder extends Seeder
 {
     public function run()
     {
+        // Crear permisos si no existen
+        $verDashboard = Permission::firstOrCreate(['name' => 'Ver dashboard']);
+        $gestionarUsuarios = Permission::firstOrCreate(['name' => 'Gestionar usuarios']);
+        $verInformes = Permission::firstOrCreate(['name' => 'Ver informes']);
+        $editarContenido = Permission::firstOrCreate(['name' => 'Editar contenido']);
 
-        // Crear rol y permiso
-        $adminRole = Role::create(['name' => 'admin']);
-        $editArticlesPermission = Permission::create(['name' => 'edit articles']);
+        // Crear roles
+        $admin = Role::create(['name' => 'Administrador']);
+        $supervisor = Role::create(['name' => 'Supervisor']);
+        $operador = Role::create(['name' => 'Operador']);
 
-        // Asociar permiso con rol
-        $adminRole->permissions()->attach($editArticlesPermission);
-          // Asignar rol a un usuario (cambia el ID según el usuario deseado)
-          $user = User::find(1); // Asegúrate de que exista
-          $user->roles()->attach($adminRole);
+        // Asignar permisos a roles
+        $admin->permissions()->attach([
+            $verDashboard->id, 
+            $gestionarUsuarios->id, 
+            $verInformes->id, 
+            $editarContenido->id
+        ]);
+        
+        $supervisor->permissions()->attach([
+            $verDashboard->id, 
+            $gestionarUsuarios->id, 
+            $verInformes->id
+        ]);
+        
+        $operador->permissions()->attach([
+            $verDashboard->id, 
+            $verInformes->id
+        ]);
     }
 }
+

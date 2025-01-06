@@ -9,9 +9,17 @@ class PermissionSeeder extends Seeder
 {
     public function run()
     {
-        Permission::create(['name' => 'edit_posts', 'description' => 'Permite editar publicaciones']);
-        Permission::create(['name' => 'delete_posts', 'description' => 'Permite eliminar publicaciones']);
-        // Agrega más permisos según sea necesario
+        $permissions = [
+            'Ver dashboard',
+            'Gestionar usuarios',
+            'Ver informes',
+            'Editar contenido',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
     }
 }
+
 
