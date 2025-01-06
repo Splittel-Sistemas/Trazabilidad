@@ -29,7 +29,7 @@ class CorteController extends Controller
 
 
          
-        return view('Areas.Cortes', ['corte' => $corte]);  
+        return view('Areas.cortes', ['corte' => $corte]);  
         
     }
     //carga de la tabla
