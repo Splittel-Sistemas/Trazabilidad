@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\Controllers\Exception;
+
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\FuncionesGeneralesController;
@@ -10,6 +10,9 @@ use App\Models\OrdenVenta;
 use App\Models\OrdenFabricacion;
 use App\Models\FechasBuffer;
 use App\Models\RegistrosBuffer;
+use Exception;
+
+
 
 class PlaneacionController extends Controller
 {
