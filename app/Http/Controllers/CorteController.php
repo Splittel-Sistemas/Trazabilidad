@@ -35,11 +35,11 @@ class CorteController extends Controller
     }
     //carga de la tabla
     public function getData(Request $request) {
-        $fechaHoy = '2024-12-12'; // Simulando la fecha actual
+        // Obtén los parámetros para paginación
         $limit = $request->input('length'); // Número de registros por página
         $start = $request->input('start');  // Índice del primer registro
     
-        // Consulta inicial
+        // Consulta para obtener los datos de OrdenFabricacion sin filtrar por fecha
         $datos = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
             ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->select(
@@ -55,7 +55,6 @@ class CorteController extends Controller
                 'OrdenFabricacion.updated_at',
                 DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida') // Suma de las partidas
             )
-            ->where('OrdenFabricacion.FechaEntrega', '=', $fechaHoy)
             ->groupBy(
                 'OrdenFabricacion.id',
                 'OrdenFabricacion.OrdenVenta_id',
@@ -78,33 +77,34 @@ class CorteController extends Controller
             $datos->where('OrdenFabricacion.Articulo', 'like', '%' . $searchValue . '%');
         }
     
-         // Obtener los registros paginados
+        // Obtener los registros paginados
         $data = $datos->skip($start)->take($limit)->get();
-
-    // Calcular estatus en el backend
-    $data->transform(function ($item) {
-        $cantidadTotal = $item->CantidadTotal;
-        $sumaCantidadPartida = $item->suma_cantidad_partida;
-        $pendientesFecha = $item->FechaFinalizar; // Partidas sin FechaFinalizar
-
-        if ($sumaCantidadPartida == 0) {
-            $estatus = 'Sin cortes';
-        } elseif ($pendientesFecha > 0 || $sumaCantidadPartida < $cantidadTotal) {
-            $estatus = 'En proceso';
-        } else {
-            $estatus = 'Completado';
-        }
-
-        $item->estatus = $estatus; // Añadir el estatus al resultado
-        return $item;
-    });
-    return response()->json([
-        'draw' => intval($request->input('draw')),
-        'recordsTotal' => $totalRecords,
-        'recordsFiltered' => $totalRecords, // Cambiar si agregas más filtros
-        'data' => $data,
-    ]);
-}
+    
+        // Calcular el estatus en el backend
+        $data->transform(function ($item) {
+            $cantidadTotal = $item->CantidadTotal;
+            $sumaCantidadPartida = $item->suma_cantidad_partida;
+            $pendientesFecha = isset($item->FechaFinalizar) ? $item->FechaFinalizar : 0; // Asegúrate de que exista
+    
+            if ($sumaCantidadPartida == 0) {
+                $estatus = 'Sin cortes';
+            } elseif ($pendientesFecha > 0 || $sumaCantidadPartida < $cantidadTotal) {
+                $estatus = 'En proceso';
+            } else {
+                $estatus = 'Completado';
+            }
+    
+            $item->estatus = $estatus; // Añadir el estatus al resultado
+            return $item;
+        });
+    
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords, // Cambiar si agregas más filtros
+            'data' => $data,
+        ]);
+    }
     
     //modal
     public function verDetalles($id)

@@ -77,7 +77,7 @@
                         <strong>Órdenes de Fabricación</strong>
                     </div>
                     <div class="card-body table-responsive">
-                        <table id="ordenFabricacionTable" class="table table-striped table-hover">
+                        <table id="ordenFabricacionTable" class="table table-striped">
                             <thead class="table-light">
                                 <tr>
                                     <th>Or.Fabricacion</th>
@@ -91,7 +91,7 @@
                                     
                                 </tr>
                             </thead>
-                            <tbody id="ordenFabricacionTabletbody">
+                            <tbody >
                                 <!-- Los datos se llenarán dinámicamente -->
                             </tbody>
                         </table>
@@ -127,8 +127,6 @@
                                     <button type="button" id="confirmar" class="btn btn-success btn-sm ms-2">Confirmar Corte</button>
                                 </div>
                             </form>
-                            
-                            
                             <div id="cortesGuardados" class="mt-3 text-success fw-bold">
                                 <div class="table-responsive">
                                     <table id="tablaCortes" class="table table-bordered table-striped">
@@ -157,6 +155,7 @@
                         </div>
                     </div>
                 </div>
+                <input type="hidden" id="ordenFabricacionId" value="">
             </div>
         </div>
         <!-- Modal para mostrar la información de la orden -->
@@ -229,11 +228,12 @@
 
 <script>
 $(document).ready(function() {
+    // Inicializa DataTables
     var table = $('#ordenFabricacionTable').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
-            url: '{{ route("corte.getData") }}',
+            url: '{{ route("corte.getData") }}', // URL de tu ruta de backend
             type: 'GET',
             dataSrc: 'data',
         },
@@ -270,94 +270,59 @@ $(document).ready(function() {
             }
         ]
     });
-    setInterval(function() {
-        table.ajax.reload(null, false); // false para mantener la paginación actual
-    }, 30000);
+
     // Al hacer clic en "Ver Detalles"
     $('#ordenFabricacionTable').on('click', '.ver-detalles', function() {
-        
         var ordenFabricacionId = $(this).data('id');
-      
+  
+        // Asignar el ID de la orden de fabricación a los botones correspondientes
         $('#pdfRangos').attr('data-id', ordenFabricacionId);
-        $('#btn-pdf-descarga').attr('data-id', ordenFabricacionId)
+        $('#btn-pdf-descarga').attr('data-id', ordenFabricacionId);
 
-
+        // Obtener los detalles de la orden de fabricación
         $.ajax({
             url: '{{ route("corte.getDetalleOrden") }}', // Ruta para obtener los detalles
             type: 'GET',
             data: { id: ordenFabricacionId },
             success: function(response) {
                 if (response.success) {
+                    // Mostrar los detalles de la orden en el modal
                     $('#modalBodyContent').html(`
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-sm">
-                   <tbody>
-                <tr>
-                    <td><strong>Orden de Fabricación:</strong></td>
-                    <td>${response.data.OrdenFabricacion}</td>
-                    <td><strong>Artículo:</strong></td>
-                    <td>${response.data.Articulo}</td>
-                    <td><strong>Cantidad Total:</strong></td>
-                    <td>${response.data.CantidadTotal}</td>
-                </tr>
-                <tr>
-                    <td><strong>Descripción:</strong></td>
-                    <td colspan="5">${response.data.Descripcion}</td> <!-- Abarca más celdas -->
-                </tr>
-                <tr>
-                    <td><strong>Fecha Entrega SAP:</strong></td>
-                    <td>${response.data.FechaEntregaSAP}</td>
-                    <td><strong>Fecha Entrega:</strong></td>
-                    <td>${response.data.FechaEntrega}</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </tbody>
-                    </table>
-                </div>
-            `);
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Orden de Fabricación:</strong></td>
+                                        <td>${response.data.OrdenFabricacion}</td>
+                                        <td><strong>Artículo:</strong></td>
+                                        <td>${response.data.Articulo}</td>
+                                        <td><strong>Cantidad Total:</strong></td>
+                                        <td>${response.data.CantidadTotal}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Descripción:</strong></td>
+                                        <td colspan="5">${response.data.Descripcion}</td> <!-- Abarca más celdas -->
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Fecha Entrega SAP:</strong></td>
+                                        <td>${response.data.FechaEntregaSAP}</td>
+                                        <td><strong>Fecha Entrega:</strong></td>
+                                        <td>${response.data.FechaEntrega}</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    `);
 
-            $('#ordenFabricacionId').val(response.data.id);
+                    // Asignar el ID de la orden a un campo oculto
+                    $('#ordenFabricacionId').val(response.data.id);
 
-                    
-                    // Obtener y mostrar los cortes registrados
-                    $.ajax({
-    url: '{{ route("corte.getCortes") }}',
-    type: 'GET',
-    data: { id: ordenFabricacionId },
-    success: function(cortesResponse) {
-        if (cortesResponse.success) {
-            var cortesHtml = '';
-            
-            // Invertir el orden de los cortes antes de iterar sobre ellos
-            cortesResponse.data.reverse().forEach(function(corte, index) {
-                cortesHtml += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${corte.cantidad_partida}</td>
-                        <td>${corte.fecha_fabricacion}</td>
-                         <td>${corte.FechaFinalizacion}</td>
-                        <td>
-                            <button type="button" class="btn btn-outline-info btn-generar-etiquetas" data-id="${corte.id}">Generar Etiquetas</button>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            $('#tablaCortes tbody').html(cortesHtml);
-        } else {
-            $('#tablaCortes tbody').html('<tr><td colspan="3" class="text-center">No se encontraron cortes.</td></tr>');
-        }
-    },
-    error: function(xhr) {
-        console.error(xhr.responseText);
-        alert('Error al obtener los cortes.');
-    }
-});
+                    // Obtener los cortes registrados para esta orden
+                    obtenerCortes(ordenFabricacionId);
 
-
+                    // Mostrar el modal con los detalles de la orden
                     $('#modalDetalleOrden').modal('show');
                 } else {
                     alert('Error: ' + response.message);
@@ -368,36 +333,258 @@ $(document).ready(function() {
                 alert('Error al obtener los detalles de la orden.');
             }
         });
+    });
 
-        // Finalizar corte
-        $(document).on('click', '.btn-finalizar', function() {
-            var corteId = $(this).data('id'); 
-            var fechaHoraActual = new Date().toISOString().slice(0, 19).replace('T', ' '); 
+    // Función para obtener y mostrar los cortes registrados
+    function obtenerCortes(ordenFabricacionId) {
+        $.ajax({
+            url: '{{ route("corte.getCortes") }}',
+            type: 'GET',
+            data: { id: ordenFabricacionId },
+            success: function(cortesResponse) {
+                if (cortesResponse.success) {
+                    var cortesHtml = '';
 
-            $.ajax({
-                url: '{{ route("corte.finalizarCorte") }}', 
-                type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}', 
-                    id: corteId, 
-                    fecha_finalizacion: fechaHoraActual 
-                },
-                success: function(response) {
-                    if (response.success) {
-                        
-                        cargarTablaCortes(); 
-                    } else {
-                        alert('Error al finalizar el corte: ' + response.message);
-                    }
-                },
-                error: function(xhr) {
-                    console.error(xhr.responseText);
-                    alert('Error al finalizar el corte.');
+                    // Invertir el orden de los cortes antes de iterar sobre ellos
+                    cortesResponse.data.reverse().forEach(function(corte, index) {
+                        cortesHtml += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${corte.cantidad_partida}</td>
+                                <td>${corte.fecha_fabricacion}</td>
+                                <td>${corte.FechaFinalizacion}</td>
+                                <td>
+                                    <button type="button" class="btn btn-outline-info btn-generar-etiquetas" data-id="${corte.id}">Generar Etiquetas</button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    // Insertar las filas en la tabla de cortes
+                    $('#tablaCortes tbody').html(cortesHtml);
+                } else {
+                    // Mensaje cuando no hay cortes
+                    $('#tablaCortes tbody').html('<tr><td colspan="3" class="text-center">No se encontraron cortes.</td></tr>');
                 }
-            });
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert('Error al obtener los cortes.');
+            }
+        });
+    }
+
+    // Al hacer clic en el botón "Finalizar"
+    $(document).on('click', '.btn-finalizar', function() {
+        var corteId = $(this).data('id'); 
+        var fechaHoraActual = new Date().toISOString().slice(0, 19).replace('T', ' '); 
+
+        $.ajax({
+            url: '{{ route("corte.finalizarCorte") }}', 
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}', 
+                id: corteId, 
+                fecha_finalizacion: fechaHoraActual 
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Recargar la tabla de cortes
+                    obtenerCortes($('#ordenFabricacionId').val());
+                } else {
+                    alert('Error al finalizar el corte: ' + response.message);
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert('Error al finalizar el corte.');
+            }
+        });
+    });
+    
+    $('#pdfRangos').on('click', function() {
+        var ordenFabricacionId = $(this).attr('data-id');  
+        $('#orden_fabricacion_id').val(ordenFabricacionId);  
+        $('#myModalRangos').modal('show');  
+    });
+     // Filtrado por fecha
+     $('#buscarFecha').click(function(e) {
+        e.preventDefault(); 
+        var fechaSeleccionada = $('#fecha').val();
+        
+        if (!fechaSeleccionada) {
+            table.rows().show();
+            $('#noDataMessageFecha').hide();
+            return;
+        }
+        var fechaSeleccionadaObj = new Date(fechaSeleccionada);
+        var fechaSeleccionadaString = fechaSeleccionadaObj.toISOString().split('T')[0];
+        table.rows().every(function() {
+            var row = this.node();
+            var fechaEntrega = $(row).find('td:eq(5)').text().trim();
+            var fechaEntregaObj = new Date(fechaEntrega);
+            var fechaEntregaString = fechaEntregaObj.toISOString().split('T')[0];
+
+            if (fechaEntregaString === fechaSeleccionadaString) {
+                $(row).show();
+            } else {
+                $(row).hide();
+            }
         });
 
+        if ($('#ordenFabricacionTable tbody tr:visible').length === 0) {
+            $('#noDataMessageFecha').show();
+        } else {
+            $('#noDataMessageFecha').hide();
+        }
     });
+    // Evento para mostrar la información de la orden cuando se hace clic en el botón
+    $(document).on('click', '.btn-generar-etiquetas', function () {
+        var corteId = $(this).data('id'); 
+
+        $.ajax({
+            url: '{{ route("mostrar.etiqueta") }}',
+            data: { id: corteId },
+            type: 'GET',
+            success: function (response) {
+                if (response.error) {
+                    alert(response.error);
+                } else {
+                    
+                    $('#partidas-lista').html(''); 
+
+                    
+                    var partidasHtml = '';
+                    response.partidas.forEach(function (partida) {
+                        partidasHtml += `
+                            <div>
+                                <p><strong>No:</strong> ${partida.cantidad}</p>
+                                <p><strong>Orden de Fabricación:</strong> ${partida.orden_fabricacion}</p>
+                                <p><strong>Descripción:</strong> ${partida.descripcion}</p>
+                            </div>
+                            <hr>`;
+                    });
+
+                    $('#partidas-lista').html(partidasHtml);
+                    $('#myModal').modal('show');
+
+
+                    $('#btn-descargar-pdf').data('id', corteId);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log('Error:', error);
+                console.log('Detalles:', xhr.responseText);
+                alert('Error al cargar los datos.');
+            }
+        });
+    });
+    // Evento para descargar el PDF cuando se hace clic en el botón de descargar
+    $(document).on('click', '#btn-descargar-pdf', function () {
+        var corteId = $(this).data('id');
+        if (!corteId) {
+            alert('No se encontró el ID');
+            return;
+        }
+        // Abre la URL para descargar el PDF
+        window.open('/generar-pdf?id=' + corteId, '_blank');
+    });
+    
+    $('#confirmar').click(function() {
+    var numCortes = $('#numCortes').val().trim();
+    var ordenFabricacionId = $('#ordenFabricacionId').val();  // Asegúrate de que este valor sea correcto
+    console.log('Orden de Fabricación ID:', ordenFabricacionId);  // Verifica en la consola si tiene el valor correcto
+
+
+    if (!numCortes || numCortes <= 0 || isNaN(numCortes)) {
+        alert('Por favor, ingrese un número válido de cortes.');
+        return;
+    }
+
+    if (!ordenFabricacionId) {
+        alert('No se ha seleccionado una orden de fabricación.');
+        return;
+    }
+
+    // Obtener información de los cortes registrados
+    $.ajax({
+        url: `/orden-fabricacion/${ordenFabricacionId}/cortes-info`,
+        type: 'GET',
+        success: function(response) {
+            if (response.success) {
+                var cantidadTotal = parseInt(response.cantidad_total);
+                var cortesRegistrados = parseInt(response.cortes_registrados);
+                var nuevoCorte = parseInt(numCortes);
+
+                if (cortesRegistrados + nuevoCorte > cantidadTotal) {
+                    alert('El número total de cortes excede la cantidad total de la orden.');
+                    return;
+                }
+
+                // Guardar los nuevos cortes
+                var datosPartidas = [{
+                    cantidad_partida: nuevoCorte,
+                    fecha_fabricacion: new Date().toISOString().split('T')[0],
+                    orden_fabricacion_id: ordenFabricacionId
+                }];
+
+                $.ajax({
+                    url: '{{ route("guardar.partida") }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        datos_partidas: datosPartidas
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            alert('Partidas guardadas correctamente.');
+
+                            // Actualizar la tabla sin refrescar la página
+                            var nuevaFila = `
+                                <tr>
+                                    <td>${response.partida.id}</td>
+                                    <td>${nuevoCorte}</td>
+                                    <td>${datosPartidas[0].fecha_fabricacion}</td>
+                                </tr>`;
+                            $('#tablaPartidas tbody').append(nuevaFila);
+                        } else {
+                            alert('Errores: ' + response.errores.join(', '));
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al guardar partidas:', xhr.responseText);
+                        alert('Error al guardar las partidas: ' + xhr.responseText);
+                    }
+                });
+            } else {
+                alert('Error al obtener la información de la orden de fabricación: ' + response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error al obtener información de cortes:', xhr.responseText);
+            alert('Error al obtener información de cortes: ' + xhr.responseText);
+        }
+    });
+    });
+    
+    
+    
+    
+    
+
+});
+
+
+
+/*
+
+    setInterval(function() {
+        table.ajax.reload(null, false); // false para mantener la paginación actual
+    }, 30000);
+    
 
     // Manejo del evento cuando el modal es mostrado
     $('#modalDetalleOrden').on('shown.bs.modal', function() {
@@ -704,7 +891,7 @@ $(document).ready(function() {
         $('#orden_fabricacion_id').val(ordenFabricacionId);  
         $('#myModalRangos').modal('show');  
     });
-});
+});*/
 
 
 </script>

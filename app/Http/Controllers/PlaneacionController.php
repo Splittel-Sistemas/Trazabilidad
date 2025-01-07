@@ -321,8 +321,8 @@ class PlaneacionController extends Controller
 
     }
     public function LlenarTablaVencidasOV(){
-        $datos=RegistrosBuffer::select('OrdenVentaB')
-                                    ->groupBy('OrdenVentaB')  // Agrupa por 'OrdenVentaB'
+        $datos=RegistrosBuffer::select('OrdenVenta')
+                                    ->groupBy('OrdenVenta')  // Agrupa por 'OrdenVentaB'
                                     ->get();
         $tablaOrdenes="";
         if($datos->count()==0){
