@@ -87,6 +87,7 @@
                                     <th>Fecha Entrega SAP</th>
                                     <th>Fecha de Entrega</th>
                                     <th>Acciones</th>
+                                    <th>Estatus</th>
                                 </tr>
                             </thead>
                             <tbody id="ordenFabricacionTabletbody">
@@ -108,7 +109,7 @@
                     <div class="modal-body">
                         <!-- Sección de detalles -->
                         <div class="mb-4">
-                            <h5 class="text-secondary"><i class="bi bi-info-circle"></i> Información de la Orden</h5>
+                            <h5 class="text-secondary"><i class="bi bi-info-circle"></i></h5>
                             <table class="table table-striped table-bordered">
                                 <tbody id="modalBodyContent">
                                     <!-- Aquí se insertarán los datos dinámicamente -->
@@ -117,16 +118,16 @@
                         </div>
                         <!-- Apartado de cortes del día -->
                         <div class="mt-4 p-3 bg-light rounded">
-                            <h5 class="text-secondary"><i class="bi bi-scissors"></i> Piezas Del Dia</h5>
-                            <form id="formCortesDia" class="needs-validation" novalidate>
-                                <div class="mb-3">
-                                    <label for="numCortes" class="form-label">Número de Piezas Realizadas:</label>
-                                    <input type="number" class="form-control" id="numCortes" name="numCortes" min="0" placeholder="Ingrese el número de Piezas" required>
-                                    <div class="invalid-feedback">
-                                        Por favor, ingrese un número válido de cortes.
-                                    </div>
+                            <h5 class="text-secondary"><i class="bi bi-scissors"></i> </h5>
+                            <form id="formCortesDia" class="needs-validation d-flex align-items-center" novalidate>
+                                <div class="mb-3 d-flex align-items-center">
+                                    <label for="numCortes" class="form-label ms-2 mb-0">Registrar Cantidad:</label> <!-- Eliminar margen inferior con mb-0 -->
+                                    <input type="number" class="form-control form-control-sm ms-2" id="numCortes" name="numCortes" min="0" placeholder="Ingresa el número" required>
+                                    <button type="button" id="confirmar" class="btn btn-success btn-sm ms-2">Confirmar Corte</button>
                                 </div>
                             </form>
+                            
+                            
                             <div id="cortesGuardados" class="mt-3 text-success fw-bold">
                                 <div class="table-responsive">
                                     <table id="tablaCortes" class="table table-bordered table-striped">
@@ -135,18 +136,21 @@
                                                 <th>#</th>
                                                 <th>Cortes De Piezas</th>
                                                 <th>Fecha De Registro</th>
+                                                <th>Fecha De Finalizacion</th>
+                                                <th> <button class="btn btn-info  btn-sm ms-2" id="pdfRangos" data-id="">Generar PDF de Rangos</button></th>
+                                                
                                             </tr>
                                         </thead>
                                         <div class="modal-footer d-flex justify-content-between">
-                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
-                                            <button type="button" id="confirmar" class="btn btn-success">Confirmar Orden</button>
-                                            <button class="btn btn-info" id="pdfRangos" data-id="">Generar PDF de Rangos</button>
                                         </div>
-
                                         <tbody>
                                             <!-- Cortes de la tabla PartidasOF se reflejan aquí -->
                                         </tbody>
                                     </table>
+                                    
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>
@@ -220,7 +224,6 @@
 
 <script>
 $(document).ready(function() {
-    // Inicialización de la tabla
     var table = $('#ordenFabricacionTable').DataTable({
         processing: true,
         serverSide: true,
@@ -230,12 +233,30 @@ $(document).ready(function() {
             dataSrc: 'data',
         },
         columns: [
-            { data: 'OrdenFabricacion' }, // Orden de Fabricación
-            { data: 'Articulo' }, // Artículo
-            { data: 'Descripcion' }, // Descripción
-            { data: 'CantidadTotal' }, // Cantidad Total
-            { data: 'FechaEntregaSAP' }, // Fecha Entrega SAP
-            { data: 'FechaEntrega' }, // Fecha de Entrega
+            { data: 'OrdenFabricacion' },
+            { data: 'Articulo' },
+            { data: 'Descripcion' },
+            { data: 'CantidadTotal' },
+            { data: 'FechaEntregaSAP' },
+            { data: 'FechaEntrega' },
+            { 
+                data: 'estatus',
+                render: function(data, type, row) {
+                    var badgeClass;
+                    switch (data) {
+                        case 'Completado':
+                            badgeClass = 'badge-success';
+                            break;
+                        case 'En proceso':
+                            badgeClass = 'badge-warning';
+                            break;
+                        default:
+                            badgeClass = 'badge-danger';
+                            break;
+                    }
+                    return '<span class="badge ' + badgeClass + '">' + data + '</span>';
+                }
+            },
             { 
                 data: 'id',
                 render: function(data, type, row) {
@@ -244,6 +265,10 @@ $(document).ready(function() {
             }
         ]
     });
+
+
+
+
 
     // Al hacer clic en "Ver Detalles"
     $('#ordenFabricacionTable').on('click', '.ver-detalles', function() {
@@ -261,14 +286,36 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     $('#modalBodyContent').html(`
-                        <tr><td><strong>Orden de Fabricación:</strong></td><td>${response.data.OrdenFabricacion}</td></tr>
-                        <tr><td><strong>Artículo:</strong></td><td>${response.data.Articulo}</td></tr>
-                        <tr><td><strong>Descripción:</strong></td><td>${response.data.Descripcion}</td></tr>
-                        <tr><td><strong>Cantidad Total:</strong></td><td>${response.data.CantidadTotal}</td></tr>
-                        <tr><td><strong>Fecha Entrega SAP:</strong></td><td>${response.data.FechaEntregaSAP}</td></tr>
-                        <tr><td><strong>Fecha Entrega:</strong></td><td>${response.data.FechaEntrega}</td></tr>
-                    `);
-                    $('#ordenFabricacionId').val(response.data.id);
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-sm">
+                   <tbody>
+                <tr>
+                    <td><strong>Orden de Fabricación:</strong></td>
+                    <td>${response.data.OrdenFabricacion}</td>
+                    <td><strong>Artículo:</strong></td>
+                    <td>${response.data.Articulo}</td>
+                    <td><strong>Cantidad Total:</strong></td>
+                    <td>${response.data.CantidadTotal}</td>
+                </tr>
+                <tr>
+                    <td><strong>Descripción:</strong></td>
+                    <td colspan="5">${response.data.Descripcion}</td> <!-- Abarca más celdas -->
+                </tr>
+                <tr>
+                    <td><strong>Fecha Entrega SAP:</strong></td>
+                    <td>${response.data.FechaEntregaSAP}</td>
+                    <td><strong>Fecha Entrega:</strong></td>
+                    <td>${response.data.FechaEntrega}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+                    </table>
+                </div>
+            `);
+
+            $('#ordenFabricacionId').val(response.data.id);
+
                     
                     // Obtener y mostrar los cortes registrados
                     $.ajax({
@@ -286,12 +333,12 @@ $(document).ready(function() {
                         <td>${index + 1}</td>
                         <td>${corte.cantidad_partida}</td>
                         <td>${corte.fecha_fabricacion}</td>
-                         <td>
-                            <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
-                        </td>
-                       
+                         <td>${corte.FechaFinalizacion}</td>
                         <td>
                             <button type="button" class="btn btn-outline-info btn-generar-etiquetas" data-id="${corte.id}">Generar Etiquetas</button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
                         </td>
                     </tr>
                 `;
@@ -334,7 +381,7 @@ $(document).ready(function() {
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert('Corte finalizado correctamente.');
+                        
                         cargarTablaCortes(); 
                     } else {
                         alert('Error al finalizar el corte: ' + response.message);
@@ -377,11 +424,11 @@ $(document).ready(function() {
 
     // Obtener información de los cortes registrados
     $.ajax({
-        url: `/orden-fabricacion/${ordenFabricacionId}/cortes-info`, // Ruta dinámica
+        url: `/orden-fabricacion/${ordenFabricacionId}/cortes-info`,
         type: 'GET',
         success: function(response) {
             if (response.success) {
-                var cantidadTotal = parseInt(response.  CantidadTotal);
+                var cantidadTotal = parseInt(response.cantidad_total);
                 var cortesRegistrados = parseInt(response.cortes_registrados);
                 var nuevoCorte = parseInt(numCortes);
 
@@ -407,6 +454,15 @@ $(document).ready(function() {
                     success: function(response) {
                         if (response.status === 'success') {
                             alert('Partidas guardadas correctamente.');
+
+                            // Actualizar la tabla sin refrescar la página
+                            var nuevaFila = `
+                                <tr>
+                                    <td>${response.partida.id}</td>
+                                    <td>${nuevoCorte}</td>
+                                    <td>${datosPartidas[0].fecha_fabricacion}</td>
+                                </tr>`;
+                            $('#tablaPartidas tbody').append(nuevaFila);
                         } else {
                             alert('Errores: ' + response.errores.join(', '));
                         }
@@ -428,6 +484,7 @@ $(document).ready(function() {
 });
 
 
+
     // Función para recargar la tabla de cortes
     function cargarTablaCortes() {
         var ordenFabricacionId = $('#ordenFabricacionId').val();
@@ -446,11 +503,13 @@ $(document).ready(function() {
                                     <td>${index + 1}</td>
                                     <td>${corte.cantidad_partida}</td>
                                     <td>${corte.fecha_fabricacion}</td>
+                                    <td>${corte.FechaFinalizacion}</td>
+                                    
                                     <td>
-                                    <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
+                                        <button type="button" class="btn btn-outline-info btn-generar-etiquetas" data-id="${corte.id}">Generar Etiquetas</button>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-outline-info btn-generar-etiquetas" data-id="${corte.id}" data-toggle="modal" data-target="#myModal">Generar Etiquetas</button>
+                                        <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
                                     </td>
                                 </tr>
                             `;

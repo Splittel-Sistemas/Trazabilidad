@@ -64,7 +64,7 @@
     </div>
     <!-- Contenido principal -->
     <div class="container my-4">
-        <h1 class="mb-4">Gestión de Roles y Permisos</h1>
+        
         <a href="{{ route('RolesPermisos.create') }}" class="btn btn-outline-info mb-3">Agregar Rol</a>
     
         @if (session('status'))
@@ -108,7 +108,9 @@
                                 <button 
                                     class="btn btn-outline-info btn-sm btn-edit"  data-id="{{ $role->id }}" data-toggle="modal" data-target="#roleModal">Editar
                                 </button>
-
+                                <div class="form-check">
+                                <input type="checkbox" name="roles[]" id="role" class="form-check-input"><label  class="form-check-label"></label>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -120,43 +122,46 @@
         <div class="modal fade" id="roleModal" tabindex="-1" role="dialog" aria-labelledby="roleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
+                    <!-- Encabezado del Modal -->
                     <div class="modal-header" style="color: black;">
                         <h5 class="modal-title" id="roleModalLabel" style="font-size: 1.25rem; font-weight: bold; color: #04ad45;">Editar Rol</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
+                    <!-- Cuerpo del Modal -->
                     <div class="modal-body">
-                        <form id="edit-role-form" class="shadow p-4 rounded bg-white" method="POST">
+                        <form id="edit-role-form" class="shadow p-4 rounded bg-light" method="POST">
                             @csrf
                             @method('PUT')
-                            
+                            <!-- Campo para Nombre del Rol -->
                             <div class="form-group">
-                                <label for="name">Nombre del Rol</label>
-                                <input type="text" id="name" name="name" class="form-control" required>
+                                <label for="name" class="font-weight-bold">Nombre del Rol</label>
+                                <input type="text" id="name" name="name" class="form-control" placeholder="Ingrese el nombre del rol" required>
                             </div>
-                            
+                            <!-- Selección de Roles -->
                             <div class="form-row mb-4">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="form-group">
-                                        <label class="font-weight-bold">Roles</label>
-                                        <small class="form-text text-muted">Seleccione uno o más roles.</small>
-                            
-                                        @foreach ($roles as $value)
-                                            <div class="form-check">
-                                                <input type="checkbox" name="roles[]" id="role_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
-                                                    {{ (isset($registro) && $registro->roles->contains($value->id)) ? 'checked' : '' }}>
-                                                <label for="role_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
-                                            </div>
-                                        @endforeach
-                            
+                                        <label class="font-weight-bold">Permisos</label>
+                                        <small class="form-text text-muted">Seleccione uno o más Permisos.</small>
+                                        @foreach ($permissions as $value)
+                                        <div class="form-check">
+                                            <input type="checkbox" name="permissions[]" id="permission_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
+                                                {{ (isset($registro) && $registro->permissions->contains($value->id)) ? 'checked' : '' }}>
+                                            <label for="permission_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
+                                        </div>
+                                    @endforeach
                                         @error('roles') 
                                             <div class="text-danger">{{ $message }}</div> 
                                         @enderror
                                     </div>
                                 </div>
-                        
-                            <button type="submit" class="btn btn-primary">Actualizar</button>
+                            </div>
+                            <!-- Botón de Enviar -->
+                            <div class="form-group text-right">
+                                <button type="submit" class="btn btn-primary">Actualizar</button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -172,25 +177,22 @@
     
 <script>
         document.addEventListener('DOMContentLoaded', function () {
-        // Escuchar clics en los botones de edición
+        
         document.querySelectorAll('.btn-edit').forEach(button => {
             button.addEventListener('click', function () {
-                const roleId = this.getAttribute('data-id'); // Obtener el ID del rol
-                
-                // Hacer una solicitud AJAX para obtener los datos del rol
+                const roleId = this.getAttribute('data-id'); 
+ 
                 fetch(`/RolesPermisos/${roleId}/edit`)
                     .then(response => response.json())
                     .then(data => {
-                        // Actualizar la acción del formulario
+
                         const form = document.querySelector('#edit-role-form');
                         form.action = `/RolesPermisos/${roleId}`;
-                        
-                        // Llenar el campo "name" con el nombre del rol
+
                         document.querySelector('#name').value = data.name;
 
-                        // Limpiar y rellenar el select de permisos
                         const permissionsSelect = document.querySelector('#permission');
-                        permissionsSelect.innerHTML = ''; // Limpiar las opciones actuales
+                        permissionsSelect.innerHTML = ''; 
                         data.permissions.forEach(permission => {
                             const option = document.createElement('option');
                             option.value = permission.id;

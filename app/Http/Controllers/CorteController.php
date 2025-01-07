@@ -33,11 +33,14 @@ class CorteController extends Controller
         
     }
     //carga de la tabla
-    public function getData(Request $request){
-        $fechaHoy = '2024-12-12';//date('Y-m-d');
-        $limit = $request->input('length'); // Número de registros por página (10, 25, 50, etc.)
-        $start = $request->input('start');  // Índice del primer registro (comienza en 0)
+    public function getData(Request $request) {
+        $fechaHoy = '2024-12-12'; // Simulando la fecha actual
+        $limit = $request->input('length'); // Número de registros por página
+        $start = $request->input('start');  // Índice del primer registro
+    
+        // Consulta inicial
         $datos = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
+            ->leftJoin('partidas_of', 'OrdenFabricacion.id', '=', 'partidas_of.orden_fabricacion_id')
             ->select(
                 'OrdenFabricacion.id',
                 'OrdenFabricacion.OrdenVenta_id',
@@ -48,23 +51,60 @@ class CorteController extends Controller
                 'OrdenFabricacion.FechaEntregaSAP',
                 'OrdenFabricacion.FechaEntrega',
                 'OrdenFabricacion.created_at',
-                'OrdenFabricacion.updated_at'
+                'OrdenFabricacion.updated_at',
+                DB::raw('IFNULL(SUM(partidas_of.cantidad_partida), 0) as suma_cantidad_partida') // Suma de las partidas
             )
-            ->where('OrdenFabricacion.FechaEntrega', '=', $fechaHoy);
-        // Contar el número total de registros sin aplicar paginación
+            ->where('OrdenFabricacion.FechaEntrega', '=', $fechaHoy)
+            ->groupBy(
+                'OrdenFabricacion.id',
+                'OrdenFabricacion.OrdenVenta_id',
+                'OrdenFabricacion.OrdenFabricacion',
+                'OrdenFabricacion.Articulo',
+                'OrdenFabricacion.Descripcion',
+                'OrdenFabricacion.CantidadTotal',
+                'OrdenFabricacion.FechaEntregaSAP',
+                'OrdenFabricacion.FechaEntrega',
+                'OrdenFabricacion.created_at',
+                'OrdenFabricacion.updated_at'
+            );
+    
+        // Total de registros sin filtrar
         $totalRecords = $datos->count();
+    
         // Aplicar filtros de búsqueda, si los hay
         if ($request->has('search') && $request->input('search.value') != '') {
-            $datos->where('OrdenFabricacion.Articulo', 'like', '%' . $request->input('search.value') . '%');
+            $searchValue = $request->input('search.value');
+            $datos->where('OrdenFabricacion.Articulo', 'like', '%' . $searchValue . '%');
         }
-        $data = $datos->skip($start)->take($limit)->get();
-        return response()->json([
-            'draw' => intval($request->input('draw')), 
-            'recordsTotal' => $totalRecords,           
-            'recordsFiltered' => $totalRecords,        
-            'data' => $data,                          
-        ]);
-    }
+    
+         // Obtener los registros paginados
+    $data = $datos->skip($start)->take($limit)->get();
+
+    // Calcular estatus en el backend
+    $data->transform(function ($item) {
+        $cantidadTotal = $item->CantidadTotal;
+        $sumaCantidadPartida = $item->suma_cantidad_partida;
+        $pendientesFecha = $item->FechaFinalizar; // Partidas sin FechaFinalizar
+
+        if ($sumaCantidadPartida == 0) {
+            $estatus = 'Sin datos';
+        } elseif ($pendientesFecha > 0 || $sumaCantidadPartida < $cantidadTotal) {
+            $estatus = 'En proceso';
+        } else {
+            $estatus = 'Completado';
+        }
+
+        $item->estatus = $estatus; // Añadir el estatus al resultado
+        return $item;
+    });
+    return response()->json([
+        'draw' => intval($request->input('draw')),
+        'recordsTotal' => $totalRecords,
+        'recordsFiltered' => $totalRecords, // Cambiar si agregas más filtros
+        'data' => $data,
+    ]);
+}
+    
     //modal
     public function verDetalles($id)
     {
@@ -209,7 +249,7 @@ class CorteController extends Controller
         // Retornar una respuesta de éxito
         return response()->json([
             'success' => true,
-            'message' => 'Corte finalizado correctamente.'
+            
         ]);
     }
     // OrdenFabricacionController.php
