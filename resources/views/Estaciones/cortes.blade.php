@@ -80,14 +80,15 @@
                         <table id="ordenFabricacionTable" class="table table-striped table-hover">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Orden de Fabricación</th>
+                                    <th>Or.Fabricacion</th>
                                     <th>Artículo</th>
                                     <th>Descripción</th>
                                     <th>Cantidad Total</th>
-                                    <th>Fecha Entrega SAP</th>
-                                    <th>Fecha de Entrega</th>
-                                    <th>Acciones</th>
+                                    <th>Fecha SAP</th>
+                                    <th>Fecha Estimada</th>
                                     <th>Estatus</th>
+                                    <th>Acciones</th>
+                                    
                                 </tr>
                             </thead>
                             <tbody id="ordenFabricacionTabletbody">
@@ -164,18 +165,22 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="myModalLabel">Información de la Orden de Fabricación</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                     <div class="modal-body">
                         <form>
-                        <!-- Aquí se llenarán las partidas dinámicamente -->
-                        <div id="partidas-lista"></div>
+                            <!-- Contenedor con desplazamiento dinámico -->
+                            <div id="partidas-lista" style="max-height: 400px; overflow-y: auto;">
+                                <!-- Aquí se llenarán las partidas dinámicamente -->
+                            </div>
+                        </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                         <button type="button" id="btn-descargar-pdf" class="btn btn-primary" data-id="">Descargar PDF</button>
                     </div>
-                </form>
                 </div>
             </div>
         </div>
@@ -265,6 +270,9 @@ $(document).ready(function() {
             }
         ]
     });
+    setInterval(function() {
+        table.ajax.reload(null, false); // false para mantener la paginación actual
+    }, 30000);
 
 
 

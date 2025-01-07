@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\PartidasOF;
 use App\Models\OrdenFabricacion;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
 use TCPDF;
 use App\Models\User;
 
@@ -78,7 +79,7 @@ class CorteController extends Controller
         }
     
          // Obtener los registros paginados
-    $data = $datos->skip($start)->take($limit)->get();
+        $data = $datos->skip($start)->take($limit)->get();
 
     // Calcular estatus en el backend
     $data->transform(function ($item) {
@@ -87,7 +88,7 @@ class CorteController extends Controller
         $pendientesFecha = $item->FechaFinalizar; // Partidas sin FechaFinalizar
 
         if ($sumaCantidadPartida == 0) {
-            $estatus = 'Sin datos';
+            $estatus = 'Sin cortes';
         } elseif ($pendientesFecha > 0 || $sumaCantidadPartida < $cantidadTotal) {
             $estatus = 'En proceso';
         } else {
@@ -223,12 +224,24 @@ class CorteController extends Controller
 
         // Obtiene las partidas relacionadas con la orden de fabricación
         $partidas = PartidasOF::where('orden_fabricacion_id', $ordenFabricacionId)
-                            ->orderBy('created_at', 'desc') // Puedes ordenar si lo deseas
-                            ->get();
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Formatea los datos antes de enviarlos
+        $data = $partidas->map(function ($partida) {
+            return [
+                'id' => $partida->id,
+                'cantidad_partida' => $partida->cantidad_partida,
+                'fecha_fabricacion' => Carbon::parse($partida->fecha_fabricacion)->format('d-m-Y'), // Cambia el formato
+                'FechaFinalizacion' => $partida->FechaFinalizacion 
+                    ? Carbon::parse($partida->FechaFinalizacion)->format('d-m-Y') 
+                    : null, // Evita errores si está vacío
+            ];
+        });
 
         return response()->json([
             'success' => true,
-            'data' => $partidas
+            'data' => $data,
         ]);
     }
     public function finalizarCorte(Request $request)
