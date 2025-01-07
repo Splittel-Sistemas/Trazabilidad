@@ -13,7 +13,7 @@
 </style>
 @endsection
 @section('content')
-    <div class="row mb-2">
+    <div class="row mb-0">
         <div class="breadcrumbs col-12">
             <div class="breadcrumbs-inner">
                 <div class="row m-0">
@@ -24,7 +24,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-8">
+                    <!--<div class="col-sm-8">
                         <div class="page-header float-right">
                             <div class="page-title">
                                 <ol class="breadcrumb text-right">
@@ -34,7 +34,7 @@
                                 </ol>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
             </div>
         </div>
@@ -46,9 +46,28 @@
                     <strong>   </strong>
                 </div>
                 <div class="card-body row" id="filtro">
+                    <div class="col-8">
+                        <label for="CodigoEscaner">Proceso <span class="text-muted"></span></label>
+                        <div class="row pl-4 pr-2 pb-0 mb-1" >
+                            <div class="form-check col-6">
+                                <input class="form-check-input" type="radio" name="Iniciar" id="Iniciar">
+                                <label class="form-check-label" for="Iniciar">
+                                  Iniciar
+                                </label>
+                            </div>
+                            <div class="form-check col-6">
+                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                                <label class="form-check-label" for="flexRadioDefault2">
+                                  Finalizar
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
                     <div class="col-8" id="CodigoDiv">
                         <div class="">
-                            <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea para iniciar&#41;</span></label>
+                            <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
+                            <!--<a href=""><i class="fa fa-toggle-on"></i></a>-->
                             <div class="input-group">
                                 <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro')" id="CodigoEscaner" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
                             </div>

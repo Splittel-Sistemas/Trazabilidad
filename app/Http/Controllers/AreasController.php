@@ -43,7 +43,7 @@ class AreasController extends Controller
                 $CantidadTotal=$datos[0]->CantidadTotal;
                 $Escaner=$datos[0]->Escaner;
                 if($Escaner==1){
-                    return$TipoEscanerrespuesta=$this->TipoEscaner($CodigoPartes,$CodigoTam,3);
+                        $TipoEscanerrespuesta=$this->TipoEscaner($CodigoPartes,$CodigoTam,3);
                 }
                 foreach( $datos as $ordenFabricacion){
                     foreach( $ordenFabricacion->partidasOF()->get() as $PartidasordenFabricacion){
@@ -88,14 +88,18 @@ class AreasController extends Controller
         if($CodigoTam!=3){
             return 0;
         }else{
+            //Comprueba si existe la Orden  de Fabricacion
             $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
             if($datos->count()==0){
                 return 0;
             }
+            //Comprueba si existe el id de la partida
             $datos= $datos->PartidasOF()->where('id',"=",$CodigoPartes[1])->first();
             if($datos->count()==0){
                 return 0;
             }
+            //Comprobamos si existe la Orden de fabricacion con la partida y el numero de parte ya creado
+            $datos->Partidas()->get();
             $datosPartidas=$datos->Partidas();
             return $datosPartidas;
             $Partidas = new Partidas();

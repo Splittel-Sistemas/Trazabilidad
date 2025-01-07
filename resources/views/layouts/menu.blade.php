@@ -54,12 +54,13 @@
                         <a href="{{route('RolesPermisos.index')}}" class="dropdown-toggle"><i class="menu-icon fa fa-user"></i>Roles Y Permisos</a>
                     </li>
                     
-                    <li class="menu-item-has-children dropdown {{ Route::is('Planeacion') ? 'active' : '' }}">
+                    <!--<li class="menu-item-has-children dropdown {{ Route::is('Planeacion') ? 'active' : '' }}">
                         <a href="{{route('Planeacion')}}" class="dropdown-toggle" ><i class="menu-icon fa fa-calendar"></i>Planeacion</a>
-                    </li>
+                    </li>-->
                     <li class="menu-item-has-children dropdown {{ Route::is('Suministro') ? 'show active' : '' }} {{ Route::is('corte.index') ? 'show' : '' }}">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="menu-icon fa fa-cogs"></i>&Aacute;reas</a>
                             <ul class="sub-menu children dropdown-menu {{ Route::is('Suministro') ? 'show ' : '' }} {{ Route::is('corte.index') ? 'show' : '' }}">
+                                <li class="{{ Route::is('Planeacion') ? 'nav-tabs active' : '' }}"><i class="fa fa-calendar"></i><a href="{{route('Planeacion')}}">Planeaci&oacute;n</a></li>
                                 <li class="{{ Route::is('corte.index') ? 'nav-tabs active' : '' }}"><i class="fa fa-cut"></i><a href="{{route('corte.index')}}">Corte</a></li>
                                 <li class="{{ Route::is('Suministro') ? 'nav-tabs active' : '' }}"><i class="fa fa-archive"></i><a href="{{route('Suministro')}}">Suministro</a></li>
                                 <li ><i class="fa fa-pie-chart"></i><a href="ui-cards.html">Preparado</a></li>

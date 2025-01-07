@@ -27,7 +27,7 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         <label class="font-weight-bold">Permisos</label>
-                        <small class="form-text text-muted">Seleccione uno o más roles.</small>
+                        <small class="form-text text-muted">Seleccione uno o más Permisos.</small>
                         @foreach ($permissions as $value)
                         <div class="form-check">
                             <input type="checkbox" name="permissions[]" id="permission_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
