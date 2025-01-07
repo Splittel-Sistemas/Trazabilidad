@@ -19,6 +19,7 @@ return new class extends Migration
                 ->onUpdate('cascade');
             $table->integer('NumParte')->nullable();
             $table->integer('Estatus')->nullable();
+            $table->integer('TipoAccion')->nullable();
             $table->integer('CantidadaPartidas')->nullable();
             $table->datetime('FechaComienzo')->nullable();
             $table->datetime('FechaTermina')->nullable();
