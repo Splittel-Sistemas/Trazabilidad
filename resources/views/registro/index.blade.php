@@ -66,9 +66,7 @@
 
     <!-- Contenido principal -->
     <div class="container my-4">
-        <h1 class="mb-4">Lista de Usuarios</h1>
         <a href="{{ route('registro.create') }}" class="btn btn-outline-info mb-3">Agregar Usuario</a>
-
         @if (session('status'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('status') }}
@@ -147,7 +145,6 @@
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="form-row mb-3">
                             <div class="col-md-10">
                                 <div class="form-group">
@@ -156,7 +153,6 @@
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="form-row mb-4">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -171,8 +167,25 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">Roles</label>
+                                    <small class="form-text text-muted">Seleccione uno o más roles.</small>
                         
-
+                                    @foreach ($roles as $value)
+                                        <div class="form-check">
+                                            <input type="checkbox" name="roles[]" id="role_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
+                                                {{ (isset($registro) && $registro->roles->contains($value->id)) ? 'checked' : '' }}>
+                                            <label for="role_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
+                                        </div>
+                                    @endforeach
+                        
+                                    @error('roles') 
+                                        <div class="text-danger">{{ $message }}</div> 
+                                    @enderror
+                                </div>
+                            </div>
                         <button type="submit" class="btn btn-outline-success btn-block">Actualizar Usuario</button>
                     </form>
                 </div>

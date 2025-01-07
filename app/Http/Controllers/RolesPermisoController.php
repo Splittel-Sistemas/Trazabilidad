@@ -73,45 +73,34 @@ public function update(Request $request, string $id)
     try {
         // Validar los datos
         $validatedData = $request->validate([
-            'name' => 'required|string|unique:roles,name,' . $id . '|unique:permissions,name,' . $id,
-            'permissions' => 'nullable|array|exists:permissions,id', 
+            'name' => 'required|string|unique:roles,name,' . $id,
+            'permissions' => 'nullable|array|exists:permissions,id',
         ]);
 
         // Intentar actualizar el rol
-        $role = Role::find($id);
-        if ($role) {
-            // Actualizar el nombre del rol
-            $role->update(['name' => $validatedData['name']]);
+        $role = Role::findOrFail($id); // Encuentra el rol o lanza una excepción
 
-            // Sincronizar los permisos si se proporcionan
-            if ($request->has('permissions')) {
-                $role->permission()->sync($validatedData['permissions']);
-            }
+        // Actualizar el nombre del rol
+        $role->update(['name' => $validatedData['name']]);
 
-            // Redirigir con un mensaje de éxito
-            return redirect()->route('RolesPermisos.index')->with('success', 'Rol actualizado con éxito.');
+        // Sincronizar los permisos si se proporcionan
+        if ($request->has('permission')) {
+            $role->permission()->sync($validatedData['permission']);
+        } else {
+            $role->permissions()->sync([]); // Limpia los permisos si no se envían
         }
 
-        // Intentar actualizar el permiso
-        $permission = Permission::find($id);
-        if ($permission) {
-            // Actualizar el nombre del permiso
-            $permission->update(['name' => $validatedData['name']]);
-
-            // Redirigir con un mensaje de éxito
-            return redirect()->route('RolesPermisos.index')->with('success', 'Permiso actualizado con éxito.');
-        }
-
-        // Si no se encuentra ni el rol ni el permiso, abortar con un 404
-        
+        // Redirigir con un mensaje de éxito
+        return redirect()->route('RolesPermisos.index')->with('success', 'Rol actualizado con éxito.');
     } catch (\Exception $e) {
-        // En caso de error, registrar el error
+        // Registrar el error
         Log::error('Error al actualizar rol o permiso: ' . $e->getMessage());
         
         // Redirigir con un mensaje de error
         return redirect()->route('RolesPermisos.index')->with('error', 'Hubo un error al actualizar el rol o permiso.');
     }
 }
+
 
 
 

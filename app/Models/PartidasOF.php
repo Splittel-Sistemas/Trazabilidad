@@ -14,6 +14,7 @@ class PartidasOF extends Model
         'orden_fabricacion_id',
         'cantidad_partida',
         'fecha_fabricacion',
+        'FechaFinalizar',
             
     ];*/
 
