@@ -24,13 +24,13 @@ class CorteController extends Controller
         $corte = DB::table('OrdenFabricacion', )
         
 
-            ->join('partidas_of', 'OrdenFabricacion.id', '=', 'partidas_of.orden_fabricacion_id')  
-            ->select('partidas_of.orden_fabricacion_id') 
+            ->join('partidasof', 'OrdenFabricacion_id', '=', 'partidasof.OrdenFabricacion_id')  
+            ->select('partidasof.OrdenFabricacion_id') 
             ->get(); 
 
 
          
-        return view('Estaciones.cortes', ['corte' => $corte]);  
+        return view('Areas.Cortes', ['corte' => $corte]);  
         
     }
     //carga de la tabla
@@ -41,7 +41,7 @@ class CorteController extends Controller
     
         // Consulta inicial
         $datos = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
-            ->leftJoin('partidas_of', 'OrdenFabricacion.id', '=', 'partidas_of.orden_fabricacion_id')
+            ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->select(
                 'OrdenFabricacion.id',
                 'OrdenFabricacion.OrdenVenta_id',
@@ -53,7 +53,7 @@ class CorteController extends Controller
                 'OrdenFabricacion.FechaEntrega',
                 'OrdenFabricacion.created_at',
                 'OrdenFabricacion.updated_at',
-                DB::raw('IFNULL(SUM(partidas_of.cantidad_partida), 0) as suma_cantidad_partida') // Suma de las partidas
+                DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida') // Suma de las partidas
             )
             ->where('OrdenFabricacion.FechaEntrega', '=', $fechaHoy)
             ->groupBy(
@@ -156,7 +156,7 @@ class CorteController extends Controller
         // Validación para asegurarnos de que 'datos_partidas' es un array y contiene los campos correctos
         $request->validate([
             'datos_partidas' => 'required|array', // 'datos_partidas' debe ser un array
-            'datos_partidas.*.orden_fabricacion_id' => 'required|exists:OrdenFabricacion,id', // Validar que 'orden_fabricacion_id' exista en la tabla 'OrdenFabricacion'
+            'datos_partidas.*.OrdenFabricacion_id' => 'required|exists:OrdenFabricacion,id', // Validar que 'orden_fabricacion_id' exista en la tabla 'OrdenFabricacion'
             'datos_partidas.*.cantidad_partida' => 'required|integer', // Asegurarse de que 'cantidad_partida' sea un número entero
             'datos_partidas.*.fecha_fabricacion' => 'required|date', // Asegurarse de que 'fecha_fabricacion' sea una fecha válida
         ]);
@@ -165,7 +165,7 @@ class CorteController extends Controller
         foreach ($request->datos_partidas as $partida) {
             // Crear una nueva partida en la base de datos
             PartidasOF::create([
-                'orden_fabricacion_id' => $partida['orden_fabricacion_id'],
+                'OrdenFabricacion_id' => $partida['OrdenFabricacion_id'],
                 'cantidad_partida' => $partida['cantidad_partida'],
                 'fecha_fabricacion' => $partida['fecha_fabricacion'],
             ]);
@@ -223,7 +223,7 @@ class CorteController extends Controller
         $ordenFabricacionId = $request->id;
 
         // Obtiene las partidas relacionadas con la orden de fabricación
-        $partidas = PartidasOF::where('orden_fabricacion_id', $ordenFabricacionId)
+        $partidas = PartidasOF::where('OrdenFabricacion_id', $ordenFabricacionId)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -248,7 +248,7 @@ class CorteController extends Controller
     {
         // Validar que el ID exista y que la fecha sea válida
         $request->validate([
-            'id' => 'required|exists:partidas_of,id', // Validar que el ID exista en la tabla
+            'id' => 'required|exists:partidasof,id', // Validar que el ID exista en la tabla
             'fecha_finalizacion' => 'required|date', // Validar que sea una fecha válida
         ]);
 
@@ -279,9 +279,9 @@ class CorteController extends Controller
     public function getCortesInfo($id)
     {
         try {
-            // Sumar los cortes registrados de la tabla `partidas_of`
-            $sumaCortes = DB::table('partidas_of')
-                ->where('orden_fabricacion_id', $id) // Usa el nombre correcto
+            // Sumar los cortes registrados de la tabla `partidasof`
+            $sumaCortes = DB::table('partidasof')
+                ->where('OrdenFabricacion_id', $id) // Usa el nombre correcto
                 ->sum('cantidad_partida');
 
             // Obtener información de la orden de fabricación
@@ -324,7 +324,7 @@ class CorteController extends Controller
         $ordenFabricacion = $partida->ordenFabricacion;
     
         // Buscar todas las partidas anteriores de la misma orden_fabricacion_id
-        $partidasPrevias = PartidasOF::where('orden_fabricacion_id', $partida->orden_fabricacion_id)
+        $partidasPrevias = PartidasOF::where('OrdenFabricacion_id', $partida->OrdenFabricacion_id)
             ->where('id', '<', $partidaId) // Asegurarse de obtener solo las partidas anteriores
             ->orderBy('cantidad_partida', 'asc') // Ordenar por cantidad_partida para mantener el orden correcto
             ->get();
