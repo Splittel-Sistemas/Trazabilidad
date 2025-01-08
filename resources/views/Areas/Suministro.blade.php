@@ -24,17 +24,6 @@
                             </div>
                         </div>
                     </div>
-                    <!--<div class="col-sm-8">
-                        <div class="page-header float-right">
-                            <div class="page-title">
-                                <ol class="breadcrumb text-right">
-                                    <li><a href="{{ route("Home") }}">Dashboard</a></li>
-                                    <li><a href="#">Áreas</a></li>
-                                    <li class="active">Suministro</li>
-                                </ol>
-                            </div>
-                        </div>
-                    </div>-->
                 </div>
             </div>
         </div>
@@ -50,14 +39,14 @@
                         <label for="CodigoEscaner">Proceso <span class="text-muted"></span></label>
                         <div class="row pl-4 pr-2 pb-0 mb-1" >
                             <div class="form-check col-6">
-                                <input class="form-check-input" type="radio" name="Iniciar" id="Iniciar">
+                                <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked>
                                 <label class="form-check-label" for="Iniciar">
                                   Iniciar
                                 </label>
                             </div>
                             <div class="form-check col-6">
-                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-                                <label class="form-check-label" for="flexRadioDefault2">
+                                <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar">
+                                <label class="form-check-label" for="Finalizar">
                                   Finalizar
                                 </label>
                             </div>
@@ -125,11 +114,23 @@
         if(Codigo.length<6){
             return 0;
         }
+        InicioInput=document.getElementById('Iniciar');
+        if(InicioInput.checked){
+            Inicio=1;
+            Finalizar=0;
+        }
+        FinalizarInput=document.getElementById('Finalizar');
+        if(FinalizarInput.checked){
+            Inicio=0;
+            Finalizar=1;
+        }
         $.ajax({
             url: "{{route('SuministroBuscar')}}", 
             type: 'GET',
             data: {
                 Codigo: Codigo,
+                Inicio:Inicio,
+                Finalizar:Finalizar,
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
@@ -147,6 +148,18 @@
                         $('#CantidadDiv').fadeIn();
                         $('#IniciarBtn').fadeIn();
                     }else{
+                        /*if(response.Inicio==1){
+                            Respuestas 0=Error, 1=Guardado, 2=Ya existe, 3=Retrabajo
+                            switch (response.TipoEscanerrespuesta) {
+                                case 1:
+                                    
+                                    break;
+                            
+                                default:
+                                    break;
+                            }
+
+                        }*/
                         $('#ToastGuardadoBody').html('Codigo '+Codigo+' guardado correctamente!');
                         $('#CantidadDiv').fadeOut();
                         $('#IniciarBtn').fadeOut();
