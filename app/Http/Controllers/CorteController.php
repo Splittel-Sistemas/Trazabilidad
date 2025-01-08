@@ -178,21 +178,37 @@ class CorteController extends Controller
 
         return response()->json($resultados);
     }
+    
     public function guardarPartidasOF(Request $request)
     {
-        // Validación para asegurarnos de que 'datos_partidas' es un array y contiene los campos correctos
+        // Validar que los datos recibidos sean correctos
         $request->validate([
             'datos_partidas' => 'required|array', // 'datos_partidas' debe ser un array
-            'datos_partidas.*.OrdenFabricacion_id' => 'required|exists:OrdenFabricacion,id', // Validar que 'orden_fabricacion_id' exista en la tabla 'OrdenFabricacion'
-            'datos_partidas.*.cantidad_partida' => 'required|integer', // Asegurarse de que 'cantidad_partida' sea un número entero
-            'datos_partidas.*.fecha_fabricacion' => 'required|date', // Asegurarse de que 'fecha_fabricacion' sea una fecha válida
+            'datos_partidas.*.orden_fabricacion_id' => 'required|exists:OrdenFabricacion,id', // Validar que 'orden_fabricacion_id' exista
+            'datos_partidas.*.cantidad_partida' => 'required|integer|min:1', // Asegurarse de que 'cantidad_partida' sea un número positivo
+            'datos_partidas.*.fecha_fabricacion' => 'required|date', // Validar que sea una fecha válida
         ]);
     
-        // Guardar las partidas
+        // Validar y guardar las partidas
         foreach ($request->datos_partidas as $partida) {
-            // Crear una nueva partida en la base de datos
+            // Buscar la orden de fabricación correspondiente
+            $ordenFabricacion = OrdenFabricacion::find($partida['orden_fabricacion_id']);
+    
+            // Obtener la suma actual de las partidas registradas para esta OrdenFabricacion_id
+            $sumaActual = PartidasOF::where('OrdenFabricacion_id', $partida['orden_fabricacion_id'])
+                ->sum('cantidad_partida');
+    
+            // Calcular la nueva suma incluyendo la cantidad que se desea ingresar
+            $nuevaSuma = $sumaActual + $partida['cantidad_partida'];
+    
+            // Verificar si la nueva suma excede la cantidad total permitida
+            if ($nuevaSuma > $ordenFabricacion->CantidadTotal) {
+                return response("La cantidad total acumulada ({$nuevaSuma}) excede la cantidad total permitida ({$ordenFabricacion->CantidadTotal}) para la Orden.", 422);
+            }
+    
+            // Crear la partida si pasa la validación
             PartidasOF::create([
-                'OrdenFabricacion_id' => $partida['OrdenFabricacion_id'],
+                'OrdenFabricacion_id' => $partida['orden_fabricacion_id'],
                 'cantidad_partida' => $partida['cantidad_partida'],
                 'fecha_fabricacion' => $partida['fecha_fabricacion'],
             ]);
@@ -203,6 +219,8 @@ class CorteController extends Controller
             'message' => 'Las partidas se guardaron correctamente',
         ]);
     }
+    
+    
     public function getDetalleOrden(Request $request)
     {
         $ordenId = $request->id;
@@ -245,32 +263,33 @@ class CorteController extends Controller
             ]);
         }
     }
-    public function getCortes(Request $request)
-    {
-        $ordenFabricacionId = $request->id;
+    
+ public function getCortes(Request $request)
+ {
+     $ordenFabricacionId = $request->id;
 
-        // Obtiene las partidas relacionadas con la orden de fabricación
-        $partidas = PartidasOF::where('OrdenFabricacion_id', $ordenFabricacionId)
-            ->orderBy('created_at', 'desc')
-            ->get();
+     // Obtiene las partidas relacionadas con la orden de fabricación
+     $partidas = PartidasOF::where('OrdenFabricacion_id', $ordenFabricacionId)
+         ->orderBy('created_at', 'desc')
+         ->get();
 
-        // Formatea los datos antes de enviarlos
-        $data = $partidas->map(function ($partida) {
-            return [
-                'id' => $partida->id,
-                'cantidad_partida' => $partida->cantidad_partida,
-                'fecha_fabricacion' => Carbon::parse($partida->fecha_fabricacion)->format('d-m-Y'), // Cambia el formato
-                'FechaFinalizacion' => $partida->FechaFinalizacion 
-                    ? Carbon::parse($partida->FechaFinalizacion)->format('d-m-Y') 
-                    : null, // Evita errores si está vacío
-            ];
-        });
+     // Formatea los datos antes de enviarlos
+     $data = $partidas->map(function ($partida) {
+         return [
+             'id' => $partida->id,
+             'cantidad_partida' => $partida->cantidad_partida,
+             'fecha_fabricacion' => Carbon::parse($partida->fecha_fabricacion)->format('d-m-Y'), // Cambia el formato
+             'FechaFinalizacion' => $partida->FechaFinalizacion 
+                 ? Carbon::parse($partida->FechaFinalizacion)->format('d-m-Y') 
+                 : null, // Evita errores si está vacío
+         ];
+     });
 
-        return response()->json([
-            'success' => true,
-            'data' => $data,
-        ]);
-    }
+     return response()->json([
+         'success' => true,
+         'data' => $data,
+     ]);
+ } 
     public function finalizarCorte(Request $request)
     {
         // Validar que el ID exista y que la fecha sea válida
@@ -306,7 +325,7 @@ class CorteController extends Controller
     public function getCortesInfo($id)
     {
         try {
-            // Sumar los cortes registrados de la tabla `partidasof`
+            // Sumar los cortes registrados de la tabla `partidas_of`
             $sumaCortes = DB::table('partidasof')
                 ->where('OrdenFabricacion_id', $id) // Usa el nombre correcto
                 ->sum('cantidad_partida');
