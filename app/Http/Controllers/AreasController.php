@@ -25,13 +25,12 @@ class AreasController extends Controller
         $Inicio = $request->Inicio;
         $Finalizar = $request->Finalizar;
         $CodigoPartes = explode("-", $Codigo);
-        return $this->ComprobarNumEtiqueta($CodigoPartes);
         $CodigoTam = count($CodigoPartes);
         $TipoEscanerrespuesta=0;
         $menu="";
         $Escaner="";
         $CantidadCompletada=0;
-        if($CodigoTam==2 ||$CodigoTam==3){
+        if($CodigoTam==3 && $CodigoPartes[2]!=""){
             $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->get();
             if($datos->count()==0){
                 return response()->json([
@@ -59,7 +58,7 @@ class AreasController extends Controller
                 foreach( $datos as $ordenFabricacion){
                     foreach( $ordenFabricacion->partidasOF()->orderBy('id', 'desc')->get() as $PartidasordenFabricacion){
                         foreach( $PartidasordenFabricacion->Partidas()->orderBy('id', 'desc')->get() as $Partidas){
-                            if(!($Partidas->Areas()->where('Areas_id','=',3)->first() =="" || $Partidas->Areas()->where('Areas_id','=',3)->first() == null)){
+                            if(!($Partidas->Areas()->where('Areas_id','=',3)->first() =="" || $Partidas->Areas()->where('Areas_id','=',3)->first() == null )){
                                 $menu.='<tr>
                                 <td>'.$Partidas->NumParte.'</td>
                                 <td>'.$Partidas->CantidadaPartidas.'</td>
@@ -67,8 +66,14 @@ class AreasController extends Controller
                                 <td>'.$Partidas->FechaTermina.'</td>';
                                 if($Partidas->FechaTermina==""){
                                     $menu.='<td><span class="badge bg-warning text-dark">En proceso</span></td>';
-                                    $CantidadCompletada+=$Partidas->CantidadaPartidas;
-                                }else{$menu.='<td><span class="badge bg-success">Completado</span></td>';$CantidadCompletada+=$Partidas->CantidadaPartidas;}
+                                    if(!($Partidas->FechaTermina=="" || $Partidas->FechaTermina==null) && $Partidas->TipoAccion==0){
+                                        $CantidadCompletada+=$Partidas->CantidadaPartidas;
+                                    }
+                                }else{$menu.='<td><span class="badge bg-success">Completado</span></td>';
+                                    if(!($Partidas->FechaTermina=="" || $Partidas->FechaTermina==null) && $Partidas->TipoAccion==0){
+                                        $CantidadCompletada+=$Partidas->CantidadaPartidas;
+                                    }
+                                }
                                 $menu.='<td><button class="btn btn-sm btn-danger">Detener</button></td>
                                     </tr>';
                             }
@@ -94,18 +99,26 @@ class AreasController extends Controller
                 'Escaner' => "",
                 'status' => "NoExiste",
                 'CantidadTotal' => "",
-                'CantidadCompletada' => $CantidadCompletada,
+                'CantidadCompletada' => 4,
                 'OF' => $CodigoPartes[0]
     
             ]);
         }
     }
     public function TipoEscaner($CodigoPartes,$CodigoTam,$Area){
-        // Respuestas 0=Error, 1=Guardado, 2=Ya existe, 3=Retrabajo
+        // Respuestas 0=Error, 1=Guardado, 2=Ya existe, 3=Retrabajo,4=No existe, 5=Aun no pasa el proceso Anterior
         $FechaHoy=date('Y-m-d H:i:s');
         if($CodigoTam!=3 || $CodigoPartes[0]=="" || $CodigoPartes[1]=="" || $CodigoPartes[2]=="" ){
             return 0;
         }else{
+            //Comprueba si el codigo pertenece a la partida
+            $ComprobarNumEtiqueta=$this->ComprobarNumEtiqueta($CodigoPartes,$Area);
+            if($ComprobarNumEtiqueta==0){
+                    return 4;
+            }
+            if($ComprobarNumEtiqueta==2){
+                    return 5;
+            }
             //Comprueba si existe la Orden  de Fabricacion
             $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
             if($datos->count()==0){
@@ -126,6 +139,7 @@ class AreasController extends Controller
                     $Partidas = new Partidas();
                     $Partidas->PartidasOF_id=$datos->id;
                     $Partidas->CantidadaPartidas=1;
+                    $Partidas->TipoAccion=0;
                     $Partidas->NumParte=$CodigoPartes[2];
                     $Partidas->FechaComienzo=$FechaHoy;
                     if ($Partidas->save()) {
@@ -142,6 +156,7 @@ class AreasController extends Controller
                             $Partidas = new Partidas();
                             $Partidas->PartidasOF_id=$datos->id;
                             $Partidas->CantidadaPartidas=1;
+                            $Partidas->TipoAccion=1;
                             $Partidas->NumParte=$CodigoPartes[2];
                             $Partidas->FechaComienzo=$FechaHoy;
                             if ($Partidas->save()) {
@@ -157,6 +172,7 @@ class AreasController extends Controller
                             $Partidas->CantidadaPartidas=1;
                             $Partidas->NumParte=$CodigoPartes[2];
                             $Partidas->FechaComienzo=$FechaHoy;
+                            $Partidas->TipoAccion=0;
                             if ($Partidas->save()) {
                                 $Partidas->Areas()->attach($Area);
                                 return 3;
@@ -173,6 +189,11 @@ class AreasController extends Controller
         if($CodigoTam!=3 || $CodigoPartes[0]=="" || $CodigoPartes[1]=="" || $CodigoPartes[2]=="" ){
             return 0;
         }else{
+            //Comprueba si el codigo pertenece a la partida
+            $ComprobarNumEtiqueta=$this->ComprobarNumEtiqueta($CodigoPartes,$Area);
+            if($ComprobarNumEtiqueta==0){
+                return 3;
+            }
             //Comprueba si existe la Orden  de Fabricacion
             $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
             if($datos->count()==0){
@@ -218,13 +239,35 @@ class AreasController extends Controller
         return $datos;
 
     }
-    public function ComprobarNumEtiqueta($CodigoPartes){
+    public function ComprobarNumEtiqueta($CodigoPartes,$Area){
+        //Return 0:No es el codigo; 1:Si es el codigo; 2:Aun no ha pasado por el area Anterior
+        //Comprueba si los datos que vienen en el codigo Existen
         $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
         $partidasOF=$datos->partidasOF()->where('id','=',$CodigoPartes[1])->first();
+        $NumEtiqueta=0;
         if($partidasOF=="" || $partidasOF==null){
             return 0;
         }else{
-            return 1;
+            //Comprobamos que el
+            if($Area==3){
+                if($partidasOF->FechaFinalizacion=="" || $partidasOF->FechaFinalizacion=null){
+                    return 2;
+                }
+            }
+            $datos=$datos->partidasOF()->get();
+            for($i=0;$i<$datos->count();$i++){
+                $NumEtiqueta+=$datos[$i]->cantidad_partida;
+                if($datos[$i]->id==$partidasOF->id){
+                    break;
+                }
+            }
+            $inicio=$NumEtiqueta-$partidasOF->cantidad_partida+1;
+            $fin=$NumEtiqueta;
+            if($CodigoPartes[2]>=$inicio && $CodigoPartes[2]<=$fin){
+                return 1;
+            }else{
+                return 0;
+            }
         }
     }
 }

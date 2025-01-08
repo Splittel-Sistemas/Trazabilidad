@@ -77,7 +77,7 @@
             </div>
         </div>
         <div id="ContentTabla" class="col-12 mt-2" style="display: none">
-            <h4 class="mb-2">Partidas de la Orden de Fabricacion <span id="TituloPartidasOF"></span> <br><span id="CantidadPartidasOF"></span></h4>
+            <h5 class="mb-2">Partidas de la Orden de Fabricacion <span id="TituloPartidasOF"></span> <br><span id="CantidadPartidasOF"></span></h5>
             <table class="table table-sm table-bordered table-striped table-hover m-1">
             <thead class="bg-primary text-white">
                 <tr>
@@ -136,7 +136,7 @@
                 if(response.status=="success"){
                     $('#ContentTabla').show();
                     $('#TablaBody').html(response.tabla);
-                    $('#CantidadPartidasOF').html('<span class="badge bg-light text-dark">'+response.CantidadCompletada+"/"+response.CantidadTotal+'</span>');
+                    $('#CantidadPartidasOF').html('<span class="badge bg-light text-dark">Piezas procesadas '+response.CantidadCompletada+"/"+response.CantidadTotal+'</span>');
                     $('#TituloPartidasOF').html(response.OF);
                     if(response.Escaner==0){
                         $('#CantidadDiv').fadeIn();
@@ -157,7 +157,16 @@
                                     Mensaje='Codigo '+Codigo+' Se agrego a Retrabajo!';
                                     Color='bg-warning';
                                     break;
-                            
+                                case 4:
+                                    Mensaje='Codigo '+Codigo+' No existe!';
+                                    Color='bg-danger';
+                                    break;
+                                case 5:
+                                    Mensaje='Codigo '+Codigo+' Aún no termina el proceso anterior!';
+                                    Color='bg-danger';
+                                    $('#ContentTabla').hide();
+                                    $('#CantidadPartidasOF').html('');
+                                    break;
                                 default:
                                     Mensaje='Codigo '+Codigo+' Ocurrio un error!';
                                     Color='bg-danger';
@@ -177,7 +186,8 @@
                                     Color='bg-danger';
                                     break;
                                 case 3:
-                                    Mensaje='Codigo '+Codigo+'No se encontro el Codigo!';
+                                    Mensaje='Codigo '+Codigo+' No se encontro el Codigo!';
+                                    Color='bg-danger';
                                     break;
                             
                                 default:
