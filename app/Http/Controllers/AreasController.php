@@ -25,6 +25,7 @@ class AreasController extends Controller
         $Inicio = $request->Inicio;
         $Finalizar = $request->Finalizar;
         $CodigoPartes = explode("-", $Codigo);
+        return $this->ComprobarNumEtiqueta($CodigoPartes);
         $CodigoTam = count($CodigoPartes);
         $TipoEscanerrespuesta=0;
         $menu="";
@@ -216,5 +217,15 @@ class AreasController extends Controller
         }
         return $datos;
 
+    }
+    public function ComprobarNumEtiqueta($CodigoPartes){
+        $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
+        $partidasOF=$datos->partidasOF()->where('id','=',$CodigoPartes[1])->first();
+        if($partidasOF=="" || $partidasOF==null){
+            return 0;
+        }else{
+            
+            return 1;
+        }
     }
 }
