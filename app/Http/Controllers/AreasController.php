@@ -218,8 +218,14 @@ class AreasController extends Controller
         return $datos;
 
     }
-    public function ComprobarNumEtiqueta($Codigo){
-        $CodigoPartes = explode("-", $Codigo);
-        return$datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->get();
+    public function ComprobarNumEtiqueta($CodigoPartes){
+        $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
+        $partidasOF=$datos->partidasOF()->where('id','=',$CodigoPartes[1])->first();
+        if($partidasOF=="" || $partidasOF==null){
+            return 0;
+        }else{
+            
+            return 1;
+        }
     }
 }
