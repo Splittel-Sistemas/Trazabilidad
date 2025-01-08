@@ -224,7 +224,6 @@ class AreasController extends Controller
         if($partidasOF=="" || $partidasOF==null){
             return 0;
         }else{
-            
             return 1;
         }
     }
