@@ -10,13 +10,13 @@ class PartidasOF extends Model
 
     use HasFactory;
     protected $table = 'partidasof'; 
-    /*protected $fillable = [
-        'orden_fabricacion_id',
+    protected $fillable = [
+        'OrdenFabricacion_id',
         'cantidad_partida',
         'fecha_fabricacion',
         'FechaFinalizar',
             
-    ];*/
+    ];
 
     public function ordenFabricacion()
     {

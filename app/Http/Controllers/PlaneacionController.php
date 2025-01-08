@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\Controllers\Exception;
+use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\FuncionesGeneralesController;
