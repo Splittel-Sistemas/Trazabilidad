@@ -94,13 +94,7 @@
             </table>
         </div>
     </div>
-    <div id="ToastGuardado" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div id="ToastGuardadoBody" class="toast-body">
-          </div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
+    <div id="ContainerToastGuardado"></div>
 @endsection
 @section('scripts')
 <script src="{{ asset('js/Suministro.js') }}"></script>
@@ -148,19 +142,54 @@
                         $('#CantidadDiv').fadeIn();
                         $('#IniciarBtn').fadeIn();
                     }else{
-                        /*if(response.Inicio==1){
-                            Respuestas 0=Error, 1=Guardado, 2=Ya existe, 3=Retrabajo
+                        Mensaje="";
+                        if(response.Inicio==1){
                             switch (response.TipoEscanerrespuesta) {
                                 case 1:
-                                    
+                                    Mensaje='Codigo '+Codigo+' guardado correctamente!';
+                                    Color='bg-success';
+                                    break;
+                                case 2:
+                                    Mensaje='Codigo '+Codigo+' Ya se encuentra iniciado!';
+                                    Color='bg-warning';
+                                    break;
+                                case 3:
+                                    Mensaje='Codigo '+Codigo+' Se agrego a Retrabajo!';
+                                    Color='bg-warning';
                                     break;
                             
                                 default:
+                                    Mensaje='Codigo '+Codigo+' Ocurrio un error!';
+                                    Color='bg-danger';
+                                    break;
                                     break;
                             }
 
-                        }*/
-                        $('#ToastGuardadoBody').html('Codigo '+Codigo+' guardado correctamente!');
+                        }
+                        if(response.Finalizar==1){
+                            switch (response.TipoEscanerrespuesta) {
+                                case 1:
+                                    Mensaje='Codigo '+Codigo+' Finalizado!';
+                                    Color='bg-success';
+                                    break;
+                                case 2:
+                                    Mensaje='Codigo '+Codigo+' Aún no ha sido inicializado!';
+                                    Color='bg-danger';
+                                    break;
+                                case 3:
+                                    Mensaje='Codigo '+Codigo+'No se encontro el Codigo!';
+                                    break;
+                            
+                                default:
+                                    Mensaje='Codigo '+Codigo+' Ocurrio un error!';
+                                    Color='bg-danger';
+                                    break;
+                                    break;
+                            }
+
+                        }
+                        $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                        $('#ToastGuardadoBody').html(Mensaje);
                         $('#CantidadDiv').fadeOut();
                         $('#IniciarBtn').fadeOut();
                     }
