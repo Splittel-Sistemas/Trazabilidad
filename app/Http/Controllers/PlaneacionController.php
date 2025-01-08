@@ -353,8 +353,13 @@ class PlaneacionController extends Controller
         try{
             $NumOF_id=$this->funcionesGenerales->decrypt($request->input('NumOF'));
             $OF = OrdenFabricacion::where('id','=',$NumOF_id)->first();
-            $numero_partidas=$OF->PartidasOF;
-            return $numero_partidas;
+            $numero_partidas=$OF->PartidasOF->count();
+            if($numero_partidas>0){
+                return response()->json([
+                    'status' => "iniciado",
+                    'OF' => ""
+                ]);
+            }
             //Comprobar si ya esta iniciada
             if (!empty($OF)) {
                 $OV=$OF->ordenVenta()->get();

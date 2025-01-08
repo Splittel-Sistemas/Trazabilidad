@@ -821,6 +821,8 @@
                         TablaOrdenFabricacion($fecha);
                     }
                     success("Guardado","Orden de Fabricación  "+response.OF+" regresada correctamente");
+                }else if(response.status=="iniciado"){
+                    error("Error!","La Orden de Fabricación ya se encuentra iniciada, no es posible detenerla");
                 }else if(response.status=="error"){
                     error("Error!","Registro no encontrado");
                 }else{

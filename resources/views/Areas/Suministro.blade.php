@@ -6,7 +6,7 @@
     /* Positioning the toast in the top-right corner */
     #ToastGuardado {
         position: fixed; /* Fixed position */
-        top: 10rem; /* Distance from the top */
+        top: 5rem; /* Distance from the top */
         right: 20px; /* Distance from the right */
         z-index: 1050; /* Ensure it's above other content */
     }
@@ -141,6 +141,8 @@
                     if(response.Escaner==0){
                         $('#CantidadDiv').fadeIn();
                         $('#IniciarBtn').fadeIn();
+                        return 0;
+                        return false;
                     }else{
                         Mensaje="";
                         if(response.Inicio==1){
@@ -160,6 +162,8 @@
                                 case 4:
                                     Mensaje='Codigo '+Codigo+' No existe!';
                                     Color='bg-danger';
+                                    $('#ContentTabla').hide();
+                                    $('#CantidadPartidasOF').html('');
                                     break;
                                 case 5:
                                     Mensaje='Codigo '+Codigo+' Aún no termina el proceso anterior!';
@@ -208,6 +212,14 @@
                         $('#ToastGuardado').fadeOut();
                     }, 2000);
                 }else if(response.status=="empty"){
+                    //if(response.Escaner!=0){
+                        $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                        $('#ToastGuardadoBody').html('El codigo No existe!  ');
+                        $('#ToastGuardado').fadeIn();
+                        setTimeout(function(){
+                            $('#ToastGuardado').fadeOut();
+                        }, 2000);
+                    //}
                 }
                 /*document.getElementById('CodigoEscanerSuministro').style.display = "";
                 if(response.Escaner==1){
