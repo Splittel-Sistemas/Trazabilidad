@@ -13,7 +13,7 @@ class RolesPermisoController extends Controller
      */
     public function index()
     {
-        $roles = Role::with('permission')->get();
+        $roles = Role::with('permissions')->get();
         $permissions = Permission::all();
 
         return view('RolesPermisos.index', compact('roles', 'permissions'));
@@ -43,7 +43,7 @@ class RolesPermisoController extends Controller
     
         if ($request->has('permissions') && is_array($request->permissions)) {
         
-            $role->permission()->sync($request->permissions); 
+            $role->permissions()->sync($request->permissions); 
         }
 
         return redirect()->route('RolesPermisos.index')->with('success', 'Rol creado con éxito.');
@@ -53,17 +53,16 @@ class RolesPermisoController extends Controller
  */
 public function edit($id)
 {
-    $role = Role::with('permission')->findOrFail($id); // Nota el plural en 'permissions'
-    $permissions = Permission::all();
+    $role = Role::with('permission')->findOrFail($id); // Nota el singular en 'permission'
+    $permissions = Permission::all(); // Obtienes todos los permisos disponibles
+    
 
     return response()->json([
         'name' => $role->name,
-        'permissio' => $permissions,
-        'assigned_permissions' => $role->permissions ? $role->permissions->pluck('id') : [], // Validar que no sea null
+        'permission' => $permissions, // Se pasa la lista completa de permisos disponibles
+        'assigned_permissions' => $role->permission ? $role->permission->pluck('name') : [], // Pluck para obtener solo los IDs de los permisos asignados
     ]);
 }
-
-
 
 /**
  * Actualizar un rol o permiso existente.
@@ -77,32 +76,25 @@ public function update(Request $request, string $id)
             'permissions' => 'nullable|array|exists:permissions,id',
         ]);
 
-        // Intentar actualizar el rol
-        $role = Role::findOrFail($id); // Encuentra el rol o lanza una excepción
+        $role = Role::findOrFail($id); 
 
-        // Actualizar el nombre del rol
         $role->update(['name' => $validatedData['name']]);
 
-        // Sincronizar los permisos si se proporcionan
         if ($request->has('permission')) {
             $role->permission()->sync($validatedData['permission']);
         } else {
-            $role->permissions()->sync([]); // Limpia los permisos si no se envían
+            $role->permissions()->sync([]); 
         }
 
-        // Redirigir con un mensaje de éxito
         return redirect()->route('RolesPermisos.index')->with('success', 'Rol actualizado con éxito.');
     } catch (\Exception $e) {
-        // Registrar el error
+       
         Log::error('Error al actualizar rol o permiso: ' . $e->getMessage());
         
-        // Redirigir con un mensaje de error
+  
         return redirect()->route('RolesPermisos.index')->with('error', 'Hubo un error al actualizar el rol o permiso.');
     }
 }
-
-
-
 
     /**
      * Eliminar un rol o permiso.

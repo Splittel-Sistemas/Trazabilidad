@@ -102,7 +102,8 @@
                         <td>{{ $registro->name }}</td>
                         <td>{{ $registro->email }}</td>
                         <td>
-                            <a href="#" class="btn btn-warning" data-id="{{ $registro->id }}" data-toggle="modal" data-target="#miModal">Editar</a>
+                            <a href="#" class="btn btn-warning" data-toggle="modal" data-target="#miModal" data-id="{{ $registro->id }}">Editar</a>
+                            
                             <button class="btn toggle-status {{ $registro->active ? 'active' : 'inactive' }}" data-id="{{ $registro->id }}" data-active="{{ $registro->active ? '1' : '0' }}">
                                 <i class="fa {{ $registro->active ? 'fa-toggle-on' : 'fa-toggle-off' }}" aria-hidden="true"></i>
                             </button>
@@ -113,35 +114,31 @@
             </table>
         </div>
     </div>
-
     <!-- Modal -->
     <div class="modal fade" id="miModal" tabindex="-1" role="dialog" aria-labelledby="miModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header" style="color: black;">
-                    <h5 class="modal-title" id="miModalLabel" style="font-size: 1.25rem; font-weight: bold; color: #04ad45;">Editar Usuario</h5>
-
+                <div class="modal-header">
+                    <h5 class="modal-title" id="miModalLabel">Editar Usuario</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <form id="edit-form" method="POST" action="{{ route('registro.update', $registro->id) }}" class="shadow p-4 rounded bg-white">
-                        @csrf
-                        @method('PUT') <!-- Esto es necesario para que el formulario use el método PUT -->
-                        <input type="hidden" name="id" id="user-id" value="{{ $registro->id }}"> <!-- ID del usuario -->
-
+                <form id="formEditUsuario" method="POST" action="{{ route('registro.update', 'user_id') }}">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
                         <div class="form-row mb-4">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="apellido">Apellido</label>
-                                    <input type="text" name="apellido" id="apellido" class="form-control" value="{{ $registro->apellido }}" placeholder="Ingrese su apellido">
+                                    <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Ingrese su apellido">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="name">Nombre</label>
-                                    <input type="text" name="name" id="name" class="form-control" value="{{ $registro->name }}" placeholder="Ingrese su nombre">
+                                    <input type="text" name="name" id="name" class="form-control" placeholder="Ingrese su nombre">
                                 </div>
                             </div>
                         </div>
@@ -149,7 +146,7 @@
                             <div class="col-md-10">
                                 <div class="form-group">
                                     <label for="email">Correo Electrónico</label>
-                                    <input type="email" name="email" id="email" class="form-control" value="{{ $registro->email }}" placeholder="Ingrese su correo electrónico">
+                                    <input type="email" name="email" id="email" class="form-control" placeholder="Ingrese su correo electrónico">
                                 </div>
                             </div>
                         </div>
@@ -157,7 +154,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="password">Contraseña</label>
-                                    <input type="password" name="password" id="password" class="form-control" placeholder="Ingrese su nueva contraseña (dejar en blanco para no cambiar)">
+                                    <input type="password" name="password" id="password" class="form-control" placeholder="Ingrese su nueva contraseña">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -167,31 +164,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row mb-4">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="font-weight-bold">Roles</label>
-                                    <small class="form-text text-muted">Seleccione uno o más roles.</small>
-                        
-                                    @foreach ($roles as $value)
-                                        <div class="form-check">
-                                            <input type="checkbox" name="roles[]" id="role_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
-                                                {{ (isset($registro) && $registro->roles->contains($value->id)) ? 'checked' : '' }}>
-                                            <label for="role_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
-                                        </div>
-                                    @endforeach
-                        
-                                    @error('roles') 
-                                        <div class="text-danger">{{ $message }}</div> 
-                                    @enderror
-                                </div>
-                            </div>
-                        <button type="submit" class="btn btn-outline-success btn-block">Actualizar Usuario</button>
-                    </form>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+ </div>
 @endsection
 
 @section('scripts')
@@ -199,9 +181,40 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="{{ asset('js/usuario.js') }}"></script>
+    
 
     <script>
+        $(document).ready(function() {
+        $('#usuarios-table').DataTable({
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
+            }
+        });
+    });
+        $(document).ready(function() {
+    // Cuando se haga clic en el enlace "Editar"
+    $('a[data-toggle="modal"]').on('click', function() {
+        var userId = $(this).data('id');  // Obtiene el ID del usuario desde el atributo data-id del enlace
+        var url = '/registro/' + userId;  // La URL para obtener los datos del usuario
+
+        // Realizar una solicitud AJAX para obtener los datos del usuario
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function(response) {
+                // Rellenar los campos del formulario en el modal con los datos del usuario
+                $('#apellido').val(response.apellido);
+                $('#name').val(response.name);
+                $('#email').val(response.email);
+                $('#password').val('');  // Dejar el campo de contraseña vacío
+                $('#password_confirmation').val('');  // Dejar el campo de confirmación de contraseña vacío
+
+                // Establecer la acción del formulario para el usuario correspondiente
+                $('#formEditUsuario').attr('action', '/registro/' + userId);
+            }
+        });
+    });
+});
         $(document).ready(function () {
             $('.toggle-status').on('click', function () {
                 var button = $(this); // Botón clickeado
@@ -237,5 +250,19 @@
                 });
             });
         });
+        document.querySelectorAll('.btn-warning').forEach(button => {
+    button.addEventListener('click', function() {
+        let userId = this.getAttribute('data-id');
+        let userName = this.closest('tr').querySelector('.name').textContent; 
+        let userEmail = this.closest('tr').querySelector('.email').textContent; 
+        
+        document.getElementById('user-id').value = userId;
+        document.getElementById('name').value = userName;
+        document.getElementById('email').value = userEmail;
+
+        let formAction = '/registro/' + userId;
+        document.getElementById('edit-form').action = formAction;
+    });
+});
     </script>
 @endsection

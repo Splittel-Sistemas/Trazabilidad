@@ -98,15 +98,15 @@
                             <td>{{ $role->name }}</td>
                             <td>
                                 <ul>
-                                    @foreach ($role->permission as $permission)
-                                        <li>{{ $permission->name }}</li>
+                                    @foreach ($role->permissions as $permissions)
+                                        <li>{{ $permissions->name }}</li>
                                     @endforeach
                                 </ul>
                             </td>
                             <td>
                                 <!-- Botón para editar los permisos del rol -->
-                                <button 
-                                    class="btn btn-outline-info btn-sm btn-edit"  data-id="{{ $role->id }}" data-toggle="modal" data-target="#roleModal">Editar
+                                <button class="btn btn-outline-info btn-sm btn-edit"data-toggle="modal"data-target="#roleModal"data-id="{{ $role->id }}"
+                                    data-name="{{ $role->name }}"data-permissions="{{ implode(',', $role->permissions->pluck('id')->toArray()) }}"> Editar
                                 </button>
                                 <div class="form-check">
                                 <input type="checkbox" name="roles[]" id="role" class="form-check-input"><label  class="form-check-label"></label>
@@ -117,57 +117,42 @@
                 </tbody>
             </table>
         </div>
-        <!-- Modal -->
-       <!-- Modal genérico -->
-        <div class="modal fade" id="roleModal" tabindex="-1" role="dialog" aria-labelledby="roleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <!-- Encabezado del Modal -->
-                    <div class="modal-header" style="color: black;">
-                        <h5 class="modal-title" id="roleModalLabel" style="font-size: 1.25rem; font-weight: bold; color: #04ad45;">Editar Rol</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <!-- Cuerpo del Modal -->
-                    <div class="modal-body">
-                        <form id="edit-role-form" class="shadow p-4 rounded bg-light" method="POST">
-                            @csrf
-                            @method('PUT')
-                            <!-- Campo para Nombre del Rol -->
-                            <div class="form-group">
-                                <label for="name" class="font-weight-bold">Nombre del Rol</label>
-                                <input type="text" id="name" name="name" class="form-control" placeholder="Ingrese el nombre del rol" required>
-                            </div>
-                            <!-- Selección de Roles -->
-                            <div class="form-row mb-4">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label class="font-weight-bold">Permisos</label>
-                                        <small class="form-text text-muted">Seleccione uno o más Permisos.</small>
-                                        @foreach ($permissions as $value)
-                                        <div class="form-check">
-                                            <input type="checkbox" name="permissions[]" id="permission_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
-                                                {{ (isset($registro) && $registro->permissions->contains($value->id)) ? 'checked' : '' }}>
-                                            <label for="permission_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
-                                        </div>
-                                    @endforeach
-                                        @error('roles') 
-                                            <div class="text-danger">{{ $message }}</div> 
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Botón de Enviar -->
-                            <div class="form-group text-right">
-                                <button type="submit" class="btn btn-primary">Actualizar</button>
-                            </div>
-                        </form>
-                    </div>
+    </div>
+        <!-- Modal para editar el rol -->
+    <div class="modal fade" id="roleModal" tabindex="-1" role="dialog" aria-labelledby="roleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="roleModalLabel">Editar Rol</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
+                <form id="roleEditForm" method="POST" action="{{ route('RolesPermisos.update', 0) }}">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="roleName">Nombre del Rol</label>
+                            <input type="text" class="form-control" id="roleName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rolePermissions">Permisos</label>
+                            <select class="form-control" id="rolePermissions" name="permissions[]" multiple required>
+                                <!-- Opciones de permisos irán aquí -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
+
 @endsection
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
@@ -207,6 +192,22 @@
             });
         });
     })
+    $('#roleModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget); // Botón que abrió el modal
+    var roleId = button.data('id'); // Extraer el ID del rol
+    var roleName = button.data('name'); // Extraer el nombre del rol
+    var rolePermissions = button.data('permissions').split(','); // Extraer los permisos seleccionados
+
+    var modal = $(this);
+    modal.find('#roleName').val(roleName); // Llenar el campo de nombre del rol
+    modal.find('[name="permissions[]"]').val(rolePermissions); // Llenar el campo de permisos
+
+    // Actualizar la acción del formulario con el ID del rol
+    var formAction = '{{ route("RolesPermisos.update", ":id") }}';
+    formAction = formAction.replace(':id', roleId);
+    modal.find('#roleEditForm').attr('action', formAction);
+});
+
 </script>
         
     

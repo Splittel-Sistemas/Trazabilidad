@@ -23,26 +23,20 @@ class RegistroController extends Controller
     }
 
     // Método para mostrar un usuario específico
-    public function show($id)
-    {
-        try {
-            $registro = User::findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return redirect()->route('registro.index')->with('error', 'Usuario no encontrado.');
-        }
+    public function show(User $registro)
+{
+    return response()->json($registro);
+}
 
-        // Devolvemos la vista correcta con los datos del registro encontrado
-        return view('registro.show', compact('registro')); // Asegúrate de que 'registro.show' es la vista correcta.
-    }
 
     // Método para mostrar el formulario de edición de un usuario
     public function edit(User $registro)
     {
-        $roles = Role::all();  // Obtener los roles
-        $permissions = Permission::all();  // Obtener los permisos
-    
+        $roles = Role::all();
+        $permissions = Permission::all();
         return view('registro.edit', compact('registro', 'roles', 'permissions'));
     }
+    
 
     // Método para mostrar el formulario de creación de un nuevo usuario
     public function create()
