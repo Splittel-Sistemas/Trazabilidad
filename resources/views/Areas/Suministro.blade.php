@@ -148,7 +148,7 @@
                         $('#CantidadDiv').fadeIn();
                         $('#IniciarBtn').fadeIn();
                     }else{
-                        if(response.Inicio==1){
+                        /*if(response.Inicio==1){
                             Respuestas 0=Error, 1=Guardado, 2=Ya existe, 3=Retrabajo
                             switch (response.TipoEscanerrespuesta) {
                                 case 1:
@@ -159,7 +159,7 @@
                                     break;
                             }
 
-                        }
+                        }*/
                         $('#ToastGuardadoBody').html('Codigo '+Codigo+' guardado correctamente!');
                         $('#CantidadDiv').fadeOut();
                         $('#IniciarBtn').fadeOut();
