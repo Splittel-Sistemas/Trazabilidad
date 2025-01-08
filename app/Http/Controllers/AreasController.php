@@ -203,7 +203,6 @@ class AreasController extends Controller
         }
     }
     public function TipoManual(){
-
     }
     public function AreaPartidas(Request $request){
         $codigo=$request->codigo;
