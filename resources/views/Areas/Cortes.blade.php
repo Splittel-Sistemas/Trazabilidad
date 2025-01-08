@@ -571,12 +571,11 @@ function getBadgeClass(estatus) {
     }
 }
 
-$('#confirmar').click(function() {
+    // Confirmar y guardar los cortes
+    $('#confirmar').click(function() {
     var numCortes = $('#numCortes').val().trim();
-    var ordenFabricacionId = $('#ordenFabricacionId').val();  // Asegúrate de que este valor sea correcto
-    console.log('Orden de Fabricación ID:', ordenFabricacionId);  // Verifica en la consola si tiene el valor correcto
+    var ordenFabricacionId = $('#ordenFabricacionId').val();
 
-    // Validaciones de los campos
     if (!numCortes || numCortes <= 0 || isNaN(numCortes)) {
         alert('Por favor, ingrese un número válido de cortes.');
         return;
@@ -587,6 +586,7 @@ $('#confirmar').click(function() {
         return;
     }
 
+    // Obtener información de los cortes registrados
     $.ajax({
         url: `/orden-fabricacion/${ordenFabricacionId}/cortes-info`,
         type: 'GET',
@@ -596,20 +596,18 @@ $('#confirmar').click(function() {
                 var cortesRegistrados = parseInt(response.cortes_registrados);
                 var nuevoCorte = parseInt(numCortes);
 
-                // Validar que el número de cortes no exceda la cantidad total
                 if (cortesRegistrados + nuevoCorte > cantidadTotal) {
                     alert('El número total de cortes excede la cantidad total de la orden.');
                     return;
                 }
 
-                // Preparar los datos para guardar
+                // Guardar los nuevos cortes
                 var datosPartidas = [{
                     cantidad_partida: nuevoCorte,
                     fecha_fabricacion: new Date().toISOString().split('T')[0],
-                    OrdenFabricacion_id: ordenFabricacionId
+                    orden_fabricacion_id: ordenFabricacionId
                 }];
 
-                // Guardar las nuevas partidas
                 $.ajax({
                     url: '{{ route("guardar.partida") }}',
                     type: 'POST',
@@ -648,6 +646,62 @@ $('#confirmar').click(function() {
         }
     });
 });
+
+
+
+    // Función para recargar la tabla de cortes
+    function cargarTablaCortes() {
+        var ordenFabricacionId = $('#ordenFabricacionId').val();
+
+        if (ordenFabricacionId) {
+            $.ajax({
+                url: '{{ route("corte.getCortes") }}',
+                type: 'GET',
+                data: { id: ordenFabricacionId },
+                success: function(cortesResponse) {
+                    if (cortesResponse.success) {
+                        var cortesHtml = '';
+                        cortesResponse.data.forEach(function(corte, index) {
+                            cortesHtml += `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${corte.cantidad_partida}</td>
+                                    <td>${corte.fecha_fabricacion}</td>
+                                    <td>${corte.FechaFinalizacion}</td>
+                                    
+                                    <td>
+                                        <button type="button" class="btn btn-outline-info btn-generar-etiquetas" data-id="${corte.id}">Generar Etiquetas</button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        $('#tablaCortes tbody').html(cortesHtml);
+                    } else {
+                        $('#tablaCortes tbody').html('<tr><td colspan="3" class="text-center">No se encontraron cortes.</td></tr>');
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    alert('Error al obtener los cortes.');
+                }
+            });
+        }
+    }
+
+    // Guardar los cortes cuando se haga clic en "Guardar Cortes"
+    $('#guardarCortes').on('click', function() {
+        var numCortes = $('#numCortes').val();
+        
+        if (numCortes && numCortes >= 0) {
+            $('#cortesGuardados').text('Cortes guardados: ' + numCortes);
+            $('#numCortes').val('');
+        } else {
+            alert('Por favor, ingrese un número válido de cortes.');
+        }
+    });
 
 
 });
