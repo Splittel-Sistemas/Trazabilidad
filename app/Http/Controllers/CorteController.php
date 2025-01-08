@@ -16,26 +16,53 @@ class CorteController extends Controller
 {
     //vista
     public function index()
-    {
-        //if (!auth()->User()->can('ver cortes')) {
-          //  abort(403);
-        //}
-      
-        $corte = DB::table('OrdenFabricacion', )
-        
+{
+    $ordenesFabricacion = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
+        ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->select(
+            'OrdenFabricacion.id',
+            'OrdenFabricacion.OrdenFabricacion',
+            'OrdenFabricacion.Articulo',
+            'OrdenFabricacion.Descripcion',
+            'OrdenFabricacion.CantidadTotal',
+            'OrdenFabricacion.FechaEntregaSAP',
+            'OrdenFabricacion.FechaEntrega',
+            DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida')
+        )
+        ->groupBy(
+            'OrdenFabricacion.id',
+            'OrdenFabricacion.OrdenFabricacion',
+            'OrdenFabricacion.Articulo',
+            'OrdenFabricacion.Descripcion',
+            'OrdenFabricacion.CantidadTotal',
+            'OrdenFabricacion.FechaEntregaSAP',
+            'OrdenFabricacion.FechaEntrega'
+        )
+        ->get();
 
-            ->join('partidasof', 'OrdenFabricacion_id', '=', 'partidasof.OrdenFabricacion_id')  
-            ->select('partidasof.OrdenFabricacion_id') 
-            ->get(); 
+    // Agregar estatus calculado
+    $ordenesFabricacion->transform(function ($item) {
+        $cantidadTotal = $item->CantidadTotal;
+        $sumaCantidadPartida = $item->suma_cantidad_partida;
 
+        if ($sumaCantidadPartida == 0) {
+            $item->estatus = 'Sin cortes';
+        } elseif ($sumaCantidadPartida < $cantidadTotal) {
+            $item->estatus = 'En proceso';
+        } else {
+            $item->estatus = 'Completado';
+        }
 
-         
-        return view('Areas.Cortes', ['corte' => $corte]);  
-        
-    }
+        return $item;
+    });
+
+    return view('Areas.Cortes', compact('ordenesFabricacion'));
+}
+
+    
     //carga de la tabla
     public function getData(Request $request) {
-        // Obtén los parámetros para paginación
+ 
         $limit = $request->input('length'); // Número de registros por página
         $start = $request->input('start');  // Índice del primer registro
     

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\FuncionesGeneralesController;
@@ -10,9 +10,6 @@ use App\Models\OrdenVenta;
 use App\Models\OrdenFabricacion;
 use App\Models\FechasBuffer;
 use App\Models\RegistrosBuffer;
-use Exception;
-
-
 
 class PlaneacionController extends Controller
 {
@@ -321,8 +318,8 @@ class PlaneacionController extends Controller
 
     }
     public function LlenarTablaVencidasOV(){
-        $datos=RegistrosBuffer::select('OrdenVenta')
-                                    ->groupBy('OrdenVenta')  // Agrupa por 'OrdenVentaB'
+        $datos=RegistrosBuffer::select('OrdenVentaB')
+                                    ->groupBy('OrdenVentaB')  // Agrupa por 'OrdenVentaB'
                                     ->get();
         $tablaOrdenes="";
         if($datos->count()==0){
