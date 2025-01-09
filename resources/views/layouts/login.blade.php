@@ -17,11 +17,23 @@
 <div class="wrapper">
     <div class="container">
         <h1>Bienvenido</h1>
-        <form method="POST" action="{{route('login_post')}}" class="form">
-            
+        
+        <!-- Mostrar errores si existen -->
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        
+        <form method="POST" action="{{ route('login_post') }}" class="form">
             @csrf
-            <input name="email" type="text" placeholder="Username" required>
-            <input name="password" type="password" placeholder="Password"required>
+            
+            <input name="email" type="text" placeholder="Correo Electrónico" value="{{ old('email') }}" required>
+            <input name="password" type="password" placeholder="Contraseña" required>
             <button type="submit" id="login-button">Ingresar</button>
         </form>
     </div>
@@ -41,12 +53,10 @@
 </div>
 
 <script>
-    $("#login-button").click(function(event) {
-        //event.preventDefault();
-        //$('form').fadeOut(500);
-        //$('.wrapper').addClass('form-success');
-    });
-    
+    // Tu código JavaScript aquí (si es necesario)
+</script>
+</body>
+</html>
 </script>
 </body>
 </html>

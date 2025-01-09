@@ -92,39 +92,46 @@
                         <th>Apellido</th>
                         <th>Nombre</th>
                         <th>Email</th>
+                        <th>Roles</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($personal as $registro)
-                    <tr id="registro-{{ $registro->id }}">
+                    <tr>
                         <td>{{ $registro->apellido }}</td>
                         <td>{{ $registro->name }}</td>
                         <td>{{ $registro->email }}</td>
                         <td>
-                            <a href="#" class="btn btn-warning" data-toggle="modal" data-target="#miModal" data-id="{{ $registro->id }}">Editar</a>
-                            
+                            @foreach ($registro->roles as $role)
+                                <span class="badge badge-info">{{ $role->name }}</span>
+                            @endforeach
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-warning" data-toggle="modal" data-target="#userModal" data-id="{{ $registro->id }}}">Editar Usuario</button>
                             <button class="btn toggle-status {{ $registro->active ? 'active' : 'inactive' }}" data-id="{{ $registro->id }}" data-active="{{ $registro->active ? '1' : '0' }}">
                                 <i class="fa {{ $registro->active ? 'fa-toggle-on' : 'fa-toggle-off' }}" aria-hidden="true"></i>
                             </button>
+                            <!-- Agregar más acciones aquí -->
                         </td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
+            
         </div>
     </div>
     <!-- Modal -->
-    <div class="modal fade" id="miModal" tabindex="-1" role="dialog" aria-labelledby="miModalLabel" aria-hidden="true">
+    <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="miModalLabel">Editar Usuario</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="userModalLabel">Editar Usuario</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="formEditUsuario" method="POST" action="{{ route('registro.update', 'user_id') }}">
+                <form id="userEditForm" method="POST" action="{{ route('registro.update', 0) }}">
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
@@ -132,13 +139,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="apellido">Apellido</label>
-                                    <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Ingrese su apellido">
+                                    <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Ingrese su apellido" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="name">Nombre</label>
-                                    <input type="text" name="name" id="name" class="form-control" placeholder="Ingrese su nombre">
+                                    <input type="text" name="name" id="name" class="form-control" placeholder="Ingrese su nombre" required>
                                 </div>
                             </div>
                         </div>
@@ -146,7 +153,7 @@
                             <div class="col-md-10">
                                 <div class="form-group">
                                     <label for="email">Correo Electrónico</label>
-                                    <input type="email" name="email" id="email" class="form-control" placeholder="Ingrese su correo electrónico">
+                                    <input type="email" name="email" id="email" class="form-control" placeholder="Ingrese su correo electrónico" required>
                                 </div>
                             </div>
                         </div>
@@ -164,15 +171,22 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="roles">Roles</label>
+                            <div id="roles" class="form-check">
+                                <!-- Los roles se generarán aquí dinámicamente -->
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+    
  </div>
 @endsection
 
@@ -182,20 +196,19 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     
-
-    <script>
-        $(document).ready(function() {
-        $('#usuarios-table').DataTable({
-            "language": {
-                "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
-            }
-        });
+<script>
+$(document).ready(function() {
+    $('#usuarios-table').DataTable({
+        "language": {
+            "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
+        }
     });
-        $(document).ready(function() {
-    // Cuando se haga clic en el enlace "Editar"
-    $('a[data-toggle="modal"]').on('click', function() {
-        var userId = $(this).data('id');  // Obtiene el ID del usuario desde el atributo data-id del enlace
-        var url = '/registro/' + userId;  // La URL para obtener los datos del usuario
+});
+$(document).ready(function() {
+    // Cuando se hace clic en un botón para editar un usuario
+    $('button[data-toggle="modal"]').on('click', function() {
+        var userId = $(this).data('id');  // Obtiene el ID del usuario
+        var url = '/registro/' + userId;  // URL para obtener los datos del usuario
 
         // Realizar una solicitud AJAX para obtener los datos del usuario
         $.ajax({
@@ -210,12 +223,28 @@
                 $('#password_confirmation').val('');  // Dejar el campo de confirmación de contraseña vacío
 
                 // Establecer la acción del formulario para el usuario correspondiente
-                $('#formEditUsuario').attr('action', '/registro/' + userId);
+                $('#userEditForm').attr('action', '/registro/' + userId);
+
+                // Cargar los roles dinámicamente
+                var roles = response.roles; // Roles del usuario
+                var rolesContainer = $('#roles');
+                rolesContainer.empty(); // Limpiar roles previos
+
+                // Iterar sobre todos los roles y marcarlos según la asignación
+                @foreach ($roles as $role)
+                    var isChecked = roles.includes({{ $role->id }}) ? 'checked' : '';
+                    rolesContainer.append(
+                        '<div class="form-check">' +
+                            '<input type="checkbox" class="form-check-input" id="role-{{ $role->id }}" name="roles[]" value="{{ $role->id }}" ' + isChecked + '>' +
+                            '<label class="form-check-label" for="role-{{ $role->id }}">{{ $role->name }}</label>' +
+                        '</div>'
+                    );
+                @endforeach
             }
         });
     });
 });
-        $(document).ready(function () {
+$(document).ready(function () {
             $('.toggle-status').on('click', function () {
                 var button = $(this); // Botón clickeado
                 var userId = button.data('id'); // ID del usuario
@@ -263,6 +292,8 @@
         let formAction = '/registro/' + userId;
         document.getElementById('edit-form').action = formAction;
     });
+   
 });
+
     </script>
 @endsection

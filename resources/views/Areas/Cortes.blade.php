@@ -2,6 +2,57 @@
 @section('title', 'Planeación')
 @section('styles')
 <meta name="csrf-token" content="{{ csrf_token() }}">
+<style>
+.table-bordered {
+    border: 1px solid #ddd;
+}
+
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid #ddd;
+}
+
+.table thead.thead-dark {
+    background-color: #4a90e2; /* Cambiar por un color que combine con tu proyecto */
+    color: white;
+    font-weight: bold;
+}
+
+.table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9; /* Fila alterna */
+}
+
+.table tbody tr:hover {
+    background-color: #e6f7ff; /* Color al pasar el ratón */
+    cursor: pointer;
+}
+
+.badge-success {
+    background-color: #28a745;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+}
+
+.btn-outline-info {
+    color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+.btn-outline-info:hover {
+    background-color: #17a2b8;
+    color: white;
+}
+
+
+</style>
+
 @endsection
 @section('content')
 <div class="breadcrumbs">
@@ -35,7 +86,7 @@
             <div class="col-lg-12">
                 <div class="card shadow-sm">
                     <div class="card-header bg-primary text-white">
-                        <strong>Filtrar Órdenes de Venta</strong>
+                        <strong>Filtros</strong>
                     </div>
                     <div class="card-body">
                         <form id="filtroForm" method="post" class="form-horizontal">
@@ -72,7 +123,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-secondary text-white">
+                    <div  class="card-header bg-primary text-white">
                         <strong>Órdenes de Fabricación</strong>
                     </div>
                     <div class="card-body table-responsive">
@@ -109,7 +160,7 @@
                                             <span class="badge {{ $badgeClass }}">{{ $orden->estatus }}</span>
                                         </td>
                                         <td>
-                                            <a href="#" class="btn btn-outline-info btn-sm ver-detalles" data-id="{{ $orden->id }}">
+                                            <a href="#" class="btn btn-outline-warning btn-sm ver-detalles" data-id="{{ $orden->id }}">
                                                 Ver Detalles
                                             </a>
                                         </td>
@@ -126,8 +177,8 @@
         <div class="modal fade bd-example-modal-x" id="modalDetalleOrden" tabindex="-1"  role="dialog" aria-labelledby="modalDetalleOrdenLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
-                    <div class="modal-header bg-secondary text-white">
-                        <h5 class="modal-title" id="modalDetalleOrdenLabel">Detalles de la Orden</h5>
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="modalDetalleOrdenLabel">Detalles de la Orden de Fabricacion</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -147,7 +198,7 @@
                                 <div class="mb-3 d-flex align-items-center">
                                     <label for="numCortes" class="form-label ms-2 mb-0">Registrar Cantidad:</label> <!-- Eliminar margen inferior con mb-0 -->
                                     <input type="number" class="form-control form-control-sm ms-2" id="numCortes" name="numCortes" min="0" placeholder="Ingresa el número" required>
-                                    <button type="button" id="confirmar" class="btn btn-success btn-sm ms-2">Confirmar Corte</button>
+                                    <button type="button" id="confirmar" class="btn btn-outline-success btn-sm ms-2">Confirmar Corte</button>
                                 </div>
                             </form>
                             <div id="cortesGuardados" class="mt-3 text-success fw-bold">
@@ -159,7 +210,7 @@
                                                 <th>Cortes De Piezas</th>
                                                 <th>Fecha De Registro</th>
                                                 <th>Fecha De Finalizacion</th>
-                                                <th> <button class="btn btn-info  btn-sm ms-2" id="pdfRangos" data-id="">Generar PDF de Rangos</button></th>
+                                                <th> <button class="btn btn-outline-primary  btn-sm ms-2" id="pdfRangos" data-id="">Generar PDF de Rangos</button></th>
                                                 
                                             </tr>
                                         </thead>
@@ -172,7 +223,7 @@
                                     
                                 </div>
                                 <div class="d-flex justify-content-end">
-                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                                    <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>
@@ -184,11 +235,10 @@
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header bg-secondary text-white">
                         <h5 class="modal-title" id="myModalLabel">Información de la Orden de Fabricación</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" style="color: red; font-size: 1.25rem; background: none; border: none; padding: 3; line-height: 2;">&times;</button>
+                        
                     </div>
                     <div class="modal-body">
                         <form>
@@ -209,11 +259,9 @@
         <div class="modal fade" id="myModalRangos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header bg-secondary text-white">
                         <h5 class="modal-title" id="exampleModalLabel">Selecciona los Rangos para el PDF</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" style="color: red; font-size: 1.25rem; background: none; border: none; padding: 3; line-height: 2;">&times;</button>
                     </div>
                     <div class="modal-body">
                         <form id="formRangoPDF" method="POST" action="{{ route('pdfcondicion') }}">
@@ -244,6 +292,8 @@
 @section('scripts')
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <!--
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -350,7 +400,7 @@ function obtenerCortes(ordenFabricacionId) {
                             <td>${corte.fecha_fabricacion}</td>
                             <td>${corte.FechaFinalizacion}</td>
                             <td>
-                                <button type="button" class="btn btn-outline-info btn-generar-etiquetas" data-id="${corte.id}">Generar Etiquetas</button>
+                                <button type="button" class="btn btn-outline-primary btn-generar-etiquetas" data-id="${corte.id}">Generar Etiquetas</button>
                             </td>
                             <td>
                                 <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>

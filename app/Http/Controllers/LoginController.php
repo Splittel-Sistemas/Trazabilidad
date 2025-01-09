@@ -14,9 +14,9 @@ class LoginController extends Controller
 {
     public function login_view()
 {
-    return view('layouts.login');  // Cambia 'layouts.login' por la ruta correcta de tu vista
+    return view('layouts.login');  
 }
-    public function login(Request $request)
+public function login(Request $request)
 {
     // Validación de las credenciales
     $request->validate([
@@ -41,9 +41,12 @@ class LoginController extends Controller
         return redirect()->intended(route('Home'));
     } else {
         // Si las credenciales son incorrectas
-        return redirect('login')->withErrors(['email' => 'Credenciales incorrectas.']);
+        return redirect('login')
+            ->withInput($request->only('email')) // Retornar el email ingresado
+            ->withErrors(['email' => 'Correo electrónico o contraseña incorrectos.']);
     }
 }
+
 public function register(Request $request)
 {
     // Validación de los datos de registro
@@ -68,12 +71,12 @@ public function register(Request $request)
 }
 public function logout(Request $request)
 {
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-
-    return redirect(route('login'));
+    Auth::logout(); // Cierra la sesión del usuario
+    $request->session()->invalidate(); // Invalida la sesión para evitar problemas de sesión
+    $request->session()->regenerateToken(); // Regenera el token CSRF
+    return redirect()->route('login_view'); // Redirige al login o página de inicio
 }
+
 
 
 

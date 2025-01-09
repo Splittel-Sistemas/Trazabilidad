@@ -22,20 +22,28 @@ class RegistroController extends Controller
         return view('registro.index', compact('personal', 'roles', 'permissions'));
     }
 
-    // Método para mostrar un usuario específico
-    public function show(User $registro)
+  // RegistroController.php
+
+public function edit(User $registro)
 {
-    return response()->json($registro);
+    $roles = Role::all(); // Obtener todos los roles disponibles
+    $userRoles = $registro->roles->pluck('id'); // Obtener los roles asignados al usuario
+    return view('registro.edit', compact('registro', 'roles', 'userRoles'));
 }
 
+public function show(User $registro)
+{
+    // Obtener los roles asignados al usuario
+    $roles = $registro->roles->pluck('id')->toArray(); // Obtener solo los IDs de los roles asignados
+    return response()->json([
+        'apellido' => $registro->apellido,
+        'name' => $registro->name,
+        'email' => $registro->email,
+        'roles' => $roles // Enviar los roles asignados en la respuesta
+    ]);
+}
 
-    // Método para mostrar el formulario de edición de un usuario
-    public function edit(User $registro)
-    {
-        $roles = Role::all();
-        $permissions = Permission::all();
-        return view('registro.edit', compact('registro', 'roles', 'permissions'));
-    }
+    
     
 
     // Método para mostrar el formulario de creación de un nuevo usuario
@@ -76,56 +84,17 @@ class RegistroController extends Controller
     }
 
     // Método para actualizar un usuario
-    public function update(Request $solicitud, User $registro)
-    {
-        try {
-            // Validar los datos
-            $validatedData = $solicitud->validate([
-                'name' => 'required|string|max:255',
-                'apellido'=> 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $registro->id,
-                'password' => 'nullable|string|min:8|confirmed', // Solo si se proporciona una nueva contraseña
-                'roles' => 'nullable|array', // Roles opcionales
-                'permisos' => 'nullable|array', // Permisos opcionales
-            ]);
-    
-            // Si se proporciona una nueva contraseña, la encriptamos
-            if ($solicitud->filled('password')) {
-                $validatedData['password'] = Hash::make($solicitud->contraseña);
-            }
-    
-            // Depuración: Ver los datos que se están actualizando
-            Log::info('Datos validados para actualización: ', $validatedData);
-    
-            // Actualizar el registro con los datos validados
-            $registro->update([
-                'name' => $validatedData['name'],
-                'apellido'=>$validatedData['apellido'],
-                'email' => $validatedData['email'],
-                'password' => $validatedData['password'] ?? $registro->password, // Solo actualiza si se ha proporcionado una nueva contraseña
-            ]);
-    
-            // Sincronizar roles si se proporcionan
-            if ($solicitud->has('roles')) {
-                $registro->roles()->sync($solicitud->input('roles'));
-            }
-    
-            // Sincronizar permisos si se proporcionan
-            if ($solicitud->has('permisos')) {
-                $registro->permissions()->sync($solicitud->input('permisos'));
-            }
-    
-            // Redirigir con un mensaje de éxito
-            return redirect()->route('registro.index')->with('status', 'Usuario actualizado exitosamente.');
-    
-        } catch (\Exception $e) {
-            // En caso de error, registramos el mensaje de error
-            Log::error('Error al actualizar el usuario: ' . $e->getMessage());
-            
-            // Retornamos un error general al usuario
-            return redirect()->route('registro.index')->with('error', 'Hubo un error al actualizar el usuario.');
-        }
-    }
+    public function update(Request $request, $id)
+{
+    $user = User::findOrFail($id);
+    $user->update($request->only(['apellido', 'name', 'email', 'password']));
+
+    // Actualizar roles
+    $user->roles()->sync($request->roles); // Sincronizar los roles seleccionados
+
+    return redirect()->route('registro.index')->with('status', 'Usuario actualizado exitosamente');
+}
+
     public function destroy($id)
     {
         $registro = User::findOrFail($id);

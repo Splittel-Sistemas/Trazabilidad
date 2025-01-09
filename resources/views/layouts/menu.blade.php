@@ -173,7 +173,9 @@
 
                             <a class="nav-link" href="#"><i class="fa fa -cog"></i>Settings</a>
 
-                            <a class="nav-link" href="{{-- route('logout') --}}">  <i class="fa fa-power-off"></i> Logout</a>
+                            <a href="#" class="nav-link" id="logoutLink">
+                                <i class="fa fa-power-off"></i> Logout
+                            </a>
                         </div>
                     </div>
 
@@ -194,7 +196,15 @@
     <!-- /#right-panel -->
 
     <!-- Scripts -->
+    <script>
+        document.getElementById('logoutLink').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevenir que el enlace realice un GET
+            document.getElementById('logoutForm').submit(); // Enviar el formulario de logout
+        });
+    </script>
     
+    <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
+        @csrf
     <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
