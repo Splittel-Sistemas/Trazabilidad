@@ -151,33 +151,66 @@ class CorteController extends Controller
             return response()->json(['message' => 'Orden no encontrada'], 404);
         }
     }
-    //buscar orden de fabricacion
     public function buscarOrdenVenta(Request $request)
-    {
-        $query = $request->input('query'); 
-        if ($query) {
-            // Asegúrate de que no haya duplicados por 'OrdenFabricacion'
-            $resultados = DB::table('OrdenFabricacion')
-                ->select('OrdenFabricacion.id', 
-                        'OrdenFabricacion.OrdenVenta_id', 
-                        'OrdenFabricacion.OrdenFabricacion', 
-                        'OrdenFabricacion.Articulo', 
-                        'OrdenFabricacion.Descripcion', 
-                        'OrdenFabricacion.CantidadTotal', 
-                        'OrdenFabricacion.FechaEntregaSAP', 
-                        'OrdenFabricacion.FechaEntrega', 
-                        'OrdenFabricacion.created_at', 
-                        'OrdenFabricacion.updated_at'
-                        )
-                ->where('OrdenFabricacion', 'like', "%$query%")
-                //->distinct()  // Evita duplicados por la columna 'OrdenFabricacion'
-                ->get();
+{
+    $query = $request->input('query'); 
+
+    // Iniciar la consulta base
+    $queryBuilder = DB::table('OrdenFabricacion')
+        ->select('OrdenFabricacion.id', 
+                 'OrdenFabricacion.OrdenVenta_id', 
+                 'OrdenFabricacion.OrdenFabricacion', 
+                 'OrdenFabricacion.Articulo', 
+                 'OrdenFabricacion.Descripcion', 
+                 'OrdenFabricacion.CantidadTotal', 
+                 'OrdenFabricacion.FechaEntregaSAP', 
+                 'OrdenFabricacion.FechaEntrega', 
+                 'OrdenFabricacion.created_at', 
+                 'OrdenFabricacion.updated_at',
+                 DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida'))
+        ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->groupBy('OrdenFabricacion.id', 
+                  'OrdenFabricacion.OrdenVenta_id', 
+                  'OrdenFabricacion.OrdenFabricacion', 
+                  'OrdenFabricacion.Articulo', 
+                  'OrdenFabricacion.Descripcion', 
+                  'OrdenFabricacion.CantidadTotal', 
+                  'OrdenFabricacion.FechaEntregaSAP', 
+                  'OrdenFabricacion.FechaEntrega', 
+                  'OrdenFabricacion.created_at', 
+                  'OrdenFabricacion.updated_at');
+
+    // Si hay una consulta de búsqueda, aplicar el filtro
+    if ($query) {
+        $queryBuilder->where('OrdenFabricacion.OrdenFabricacion', 'like', "%$query%");
+    }
+
+    // Obtener los resultados (ya sean todos o filtrados)
+    $resultados = $queryBuilder->get();
+
+    // Calcular el estatus para cada resultado
+    $resultados->transform(function ($item) {
+        $cantidadTotal = $item->CantidadTotal;
+        $sumaCantidadPartida = $item->suma_cantidad_partida;
+
+        // Lógica para determinar el estatus
+        if ($sumaCantidadPartida == 0) {
+            $item->estatus = 'Sin cortes';
+        } elseif ($sumaCantidadPartida < $cantidadTotal) {
+            $item->estatus = 'En proceso';
         } else {
-            $resultados = []; 
+            $item->estatus = 'Completado';
         }
 
-        return response()->json($resultados);
-    }
+        return $item;
+    });
+
+    // Devolver los resultados con estatus calculado
+    return response()->json($resultados);
+}
+
+    
+    
     
     public function guardarPartidasOF(Request $request)
     {

@@ -547,72 +547,65 @@ $(document).on('click', '#btn-descargar-pdf', function() {
     // Abre la URL para descargar el PDF
     window.open('/generar-pdf?id=' + corteId, '_blank');
 });
-
 // Filtro orden de fabricación
 $('#buscarOV').on('click', function(event) {
     event.preventDefault();
     var query = $('#query').val();
 
-    if (query) {
-        $.ajax({
-            url: '/buscar-ordenes',
-            type: 'GET',
-            data: { query: query },
-            beforeSend: function() {
-                var table = $('#ordenFabricacionTable').DataTable();
-                table.clear().draw(); // Limpia la tabla antes de la carga
+    $.ajax({
+        url: '/buscar-ordenes',
+        type: 'GET',
+        data: { query: query }, 
+        beforeSend: function() {
+            var table = $('#ordenFabricacionTable').DataTable();
+            table.clear().draw(); 
 
-                // Muestra el mensaje de carga
+            $('#ordenFabricacionTable tbody').html(`
+                <tr>
+                    <td colspan="8" align="center">
+                        <img src="{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}" />
+                    </td>
+                </tr>
+            `);
+        },
+        success: function(response) {
+            var table = $('#ordenFabricacionTable').DataTable();
+            table.clear(); 
+
+            if (response.length > 0) {
+                let seen = new Set();
+                let uniqueResults = response.filter(item => {
+                    const isDuplicate = seen.has(item.OrdenFabricacion);
+                    seen.add(item.OrdenFabricacion);
+                    return !isDuplicate;
+                });
+
+                uniqueResults.forEach(item => {
+                    var row = [
+                        item.OrdenFabricacion,
+                        item.Articulo,
+                        item.Descripcion,
+                        item.CantidadTotal,
+                        item.FechaEntregaSAP,
+                        item.FechaEntrega,
+                        `<span class="badge ${getBadgeClass(item.estatus)}">${item.estatus}</span>`,
+                        `<a href="#" class="btn btn-outline-info btn-sm ver-detalles" data-id="${item.id}">Ver Detalles</a>`
+                    ];
+                    table.row.add(row).draw();
+                });
+            } else {
+
                 $('#ordenFabricacionTable tbody').html(`
                     <tr>
-                        <td colspan="8" align="center">
-                            <img src="{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}" />
-                        </td>
+                        <td colspan="8" class="text-center">No se encontraron resultados para la orden ingresada.</td>
                     </tr>
                 `);
-            },
-            success: function(response) {
-                var table = $('#ordenFabricacionTable').DataTable();
-                table.clear(); // Limpia la tabla para agregar los nuevos datos
-
-                if (response.length > 0) {
-                    let seen = new Set();
-                    let uniqueResults = response.filter(item => {
-                        const isDuplicate = seen.has(item.OrdenFabricacion);
-                        seen.add(item.OrdenFabricacion);
-                        return !isDuplicate;
-                    });
-
-                    // Agrega los resultados únicos a la tabla
-                    uniqueResults.forEach(item => {
-                        var row = [
-                            item.OrdenFabricacion,
-                            item.Articulo,
-                            item.Descripcion,
-                            item.CantidadTotal,
-                            item.FechaEntregaSAP,
-                            item.FechaEntrega,
-                            `<span class="badge ${getBadgeClass(item.estatus)}">${item.estatus}</span>`,
-                            `<a href="#" class="btn btn-outline-info btn-sm ver-detalles" data-id="${item.id}">Ver Detalles</a>`
-                        ];
-                        table.row.add(row).draw();
-                    });
-                } else {
-                    // Si no hay resultados, mostrar mensaje
-                    $('#ordenFabricacionTable tbody').html(`
-                        <tr>
-                            <td colspan="8" class="text-center">No se encontraron resultados para la orden ingresada.</td>
-                        </tr>
-                    `);
-                }
-            },
-            error: function(xhr, status, error) {
-                alert('Error al buscar la orden: ' + error);
             }
-        });
-    } else {
-        alert('Por favor, ingresa un valor para buscar.');
-    }
+        },
+        error: function(xhr, status, error) {
+            alert('Error al buscar la orden: ' + error);
+        }
+    });
 });
 
 // Función para obtener la clase del badge según el estatus
