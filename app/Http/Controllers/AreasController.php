@@ -21,6 +21,11 @@ class AreasController extends Controller
         return view('Areas.Suministro');
     }
     public function SuministroBuscar(Request $request){
+        if ($request->has('Confirmacion')) {
+            $confirmacion=1;
+        }else{
+            $confirmacion=0;
+        }
         $Codigo = $request->Codigo;
         $Inicio = $request->Inicio;
         $Finalizar = $request->Finalizar;
@@ -30,6 +35,7 @@ class AreasController extends Controller
         $menu="";
         $Escaner="";
         $CantidadCompletada=0;
+        $EscanerExiste=0;
         if($CodigoTam==3 && $CodigoPartes[2]!=""){
             $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->get();
             if($datos->count()==0){
@@ -48,10 +54,17 @@ class AreasController extends Controller
                 if($CodigoTam==3){
                     if($Escaner==1){
                         if($Inicio==1){
-                            $TipoEscanerrespuesta=$this->TipoEscaner($CodigoPartes,$CodigoTam,3);
+                            $TipoEscanerrespuesta=$this->TipoEscaner($CodigoPartes,$CodigoTam,3,$confirmacion);
                         }
                         if($Finalizar==1){
-                            $TipoEscanerrespuesta=$this->TipoEscanerFinalizar($CodigoPartes,$CodigoTam,3);
+                            $TipoEscanerrespuesta=$this->TipoEscanerFinalizar($CodigoPartes,$CodigoTam,3,$confirmacion);
+                        }
+                    }else if($Escaner==0){
+                        $TipoManualrespuesta=$datos[0]->partidasOF()->where('id','=',$CodigoPartes[1])->first();
+                        if(!($TipoManualrespuesta=="" || $TipoManualrespuesta==null)){
+                            $EscanerExiste = 1;
+                        }else{
+                            $EscanerExiste = 0;
                         }
                     }
                 }
@@ -83,6 +96,7 @@ class AreasController extends Controller
                 return response()->json([
                     'tabla' => $menu,
                     'Escaner' => $Escaner,
+                    'EscanerExiste' => $EscanerExiste,
                     'status' => "success",
                     'CantidadTotal' => $CantidadTotal,
                     'Inicio' => $Inicio,
@@ -105,7 +119,7 @@ class AreasController extends Controller
             ]);
         }
     }
-    public function TipoEscaner($CodigoPartes,$CodigoTam,$Area){
+    public function TipoEscaner($CodigoPartes,$CodigoTam,$Area,$confirmacion){
         // Respuestas 0=Error, 1=Guardado, 2=Ya existe, 3=Retrabajo,4=No existe, 5=Aun no pasa el proceso Anterior
         $FechaHoy=date('Y-m-d H:i:s');
         if($CodigoTam!=3 || $CodigoPartes[0]=="" || $CodigoPartes[1]=="" || $CodigoPartes[2]=="" ){
@@ -153,17 +167,21 @@ class AreasController extends Controller
                         if($datosPartidas->FechaTermina==null || $datosPartidas->FechaTermina==""){
                             return 2;
                         }else{
-                            $Partidas = new Partidas();
-                            $Partidas->PartidasOF_id=$datos->id;
-                            $Partidas->CantidadaPartidas=1;
-                            $Partidas->TipoAccion=1;
-                            $Partidas->NumParte=$CodigoPartes[2];
-                            $Partidas->FechaComienzo=$FechaHoy;
-                            if ($Partidas->save()) {
-                                $Partidas->Areas()->attach($Area);
+                            if ($confirmacion==1) {
+                                $Partidas = new Partidas();
+                                $Partidas->PartidasOF_id=$datos->id;
+                                $Partidas->CantidadaPartidas=1;
+                                $Partidas->TipoAccion=1;
+                                $Partidas->NumParte=$CodigoPartes[2];
+                                $Partidas->FechaComienzo=$FechaHoy;
+                                if ($Partidas->save()) {
+                                    $Partidas->Areas()->attach($Area);
+                                    return 3;
+                                } else {
+                                    return 0;
+                                }
+                            }else{
                                 return 3;
-                            } else {
-                                return 0;
                             }
                         }
                     }else{

@@ -41,13 +41,13 @@
                             <div class="form-check col-6">
                                 <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked>
                                 <label class="form-check-label" for="Iniciar">
-                                  Iniciar
+                                  Entrada
                                 </label>
                             </div>
                             <div class="form-check col-6">
                                 <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar">
                                 <label class="form-check-label" for="Finalizar">
-                                  Finalizar
+                                  Salida
                                 </label>
                             </div>
                         </div>
@@ -100,6 +100,8 @@
 <script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
     function ListaCodigo(Codigo,Contenedor){
+        //VerNumParte=VerNumParte($Codigo);
+        $('#ToastGuardado').fadeOut();
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
         if (CadenaVacia(Codigo)) {
             return 0;
@@ -134,16 +136,29 @@
                 $('#CantidadDiv').hide();
                 $('#IniciarBtn').hide();
                 if(response.status=="success"){
-                    $('#ContentTabla').show();
                     $('#TablaBody').html(response.tabla);
                     $('#CantidadPartidasOF').html('<span class="badge bg-light text-dark">Piezas procesadas '+response.CantidadCompletada+"/"+response.CantidadTotal+'</span>');
                     $('#TituloPartidasOF').html(response.OF);
                     if(response.Escaner==0){
-                        $('#CantidadDiv').fadeIn();
-                        $('#IniciarBtn').fadeIn();
-                        return 0;
-                        return false;
+                        $('#CantidadDiv').fadeOut();
+                        $('#IniciarBtn').fadeOut();
+                        if(response.EscanerExiste==0){
+                            Mensaje='Codigo '+Codigo+' El codigo que intentas ingresar No existe!';
+                            Color='bg-danger';
+                            $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                            $('#ToastGuardadoBody').html(Mensaje);
+                            $('#ToastGuardado').fadeIn();
+                            setTimeout(function(){
+                                $('#ToastGuardado').fadeOut();
+                            }, 2000);
+                        }else{
+                            $('#ContentTabla').show();
+                            $('#CantidadDiv').fadeIn();
+                            $('#IniciarBtn').fadeIn();
+                            return 0;
+                        }
                     }else{
+                        $('#ContentTabla').show();
                         Mensaje="";
                         if(response.Inicio==1){
                             switch (response.TipoEscanerrespuesta) {
@@ -156,8 +171,8 @@
                                     Color='bg-warning';
                                     break;
                                 case 3:
-                                    Mensaje='Codigo '+Codigo+' Se agrego a Retrabajo!';
-                                    Color='bg-warning';
+                                    confirmacion('Retrabajo','¿Desea enviar codigo '+Codigo+' a Retrabajo? ','Confirmar','Retrabajo("'+Codigo+'")');
+                                    return 0;
                                     break;
                                 case 4:
                                     Mensaje='Codigo '+Codigo+' No existe!';
@@ -174,7 +189,6 @@
                                 default:
                                     Mensaje='Codigo '+Codigo+' Ocurrio un error!';
                                     Color='bg-danger';
-                                    break;
                                     break;
                             }
 
@@ -240,6 +254,32 @@
     function TraerDatos(id,OF){
         $('#CodigoEscaner').val(OF+"-"+id);
         $('#CodigoEscanerSuministro').html('');
+    }
+    function Retrabajo(Codigo){
+        $.ajax({
+            url: "{{route('SuministroBuscar')}}", 
+            type: 'GET',
+            data: {
+                Codigo: Codigo,
+                Inicio:1,
+                Finalizar:0,
+                Confirmacion:1,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                $('#CodigoEscanerSuministro').html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /><br>Cargando</p>");
+            },
+            success: function(response) {
+                Mensaje='Codigo '+Codigo+' Se agrego a Retrabajo!';
+                Color='bg-warning';
+                $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                $('#ToastGuardadoBody').html(Mensaje);
+                $('#ToastGuardado').fadeIn();
+                setTimeout(function(){
+                    $('#ToastGuardado').fadeOut();
+                }, 2000);
+            }
+        });
     }
 
 </script>
