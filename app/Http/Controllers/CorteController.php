@@ -107,30 +107,34 @@ class CorteController extends Controller
         // Obtener los registros paginados
         $data = $datos->skip($start)->take($limit)->get();
     
-        // Calcular el estatus en el backend
         $data->transform(function ($item) {
             $cantidadTotal = $item->CantidadTotal;
             $sumaCantidadPartida = $item->suma_cantidad_partida;
-            $pendientesFecha = isset($item->FechaFinalizar) ? $item->FechaFinalizar : 0; // Asegúrate de que exista
-    
-            if ($sumaCantidadPartida == 0) {
-                $estatus = 'Sin cortes';
-            } elseif ($pendientesFecha > 0 || $sumaCantidadPartida < $cantidadTotal) {
+        
+            // Obtener todas las partidas relacionadas
+            $partidas = $item->partidasof()->get();
+        
+            // Verificar si alguna partida tiene 'FechaFinalizar' en null
+            $pendientesFecha = $partidas->firstWhere('FechaFinalizar', null);
+        
+            // Si hay alguna partida con 'FechaFinalizar' null, se marca como 'En proceso'
+            if ($pendientesFecha) {
                 $estatus = 'En proceso';
-            } else {
+            } elseif ($sumaCantidadPartida >= $cantidadTotal) {
+                // Si la cantidad total está completa y todas las partidas tienen fecha de finalización, se marca como 'Completado'
                 $estatus = 'Completado';
+            } else {
+                // Si ninguna de las condiciones anteriores se cumple, se marca como 'En proceso'
+                $estatus = 'En proceso';
             }
-    
-            $item->estatus = $estatus; // Añadir el estatus al resultado
+        
+            $item->estatus = $estatus; // Asignar el estatus al elemento
             return $item;
         });
-    
-        return response()->json([
-            'draw' => intval($request->input('draw')),
-            'recordsTotal' => $totalRecords,
-            'recordsFiltered' => $totalRecords, // Cambiar si agregas más filtros
-            'data' => $data,
-        ]);
+        
+        
+        
+        
     }
     
     //modal
@@ -208,10 +212,6 @@ class CorteController extends Controller
     // Devolver los resultados con estatus calculado
     return response()->json($resultados);
 }
-
-    
-    
-    
     public function guardarPartidasOF(Request $request)
     {
         // Validar que los datos recibidos sean correctos
@@ -343,7 +343,23 @@ class CorteController extends Controller
             'success' => true,
             
         ]);
+        
     }
+    public function getEstatus(Request $request)
+{
+    $ordenFabricacion = OrdenFabricacion::findOrFail($request->id);
+
+    return response()->json([
+        'success' => true,
+        'estatus' => $ordenFabricacion->estatus,
+        'badgeClass' => match ($ordenFabricacion->estatus) {
+            'Completado' => 'badge-success',
+            'En proceso' => 'badge-warning',
+            default => 'badge-danger',
+        },
+    ]);
+}
+
     // OrdenFabricacionController.php
     public function getCantidadTotal($id)
     {
@@ -390,7 +406,7 @@ class CorteController extends Controller
     }
     public function MostarInformacion(Request $request)
     {
-        $partidaId = $request->input('id');  
+        $partidaId = $request->input('id');
     
         // Buscar la partida por ID
         $partida = PartidasOF::with('ordenFabricacion')->find($partidaId);
@@ -402,31 +418,22 @@ class CorteController extends Controller
         // Obtener la orden de fabricación relacionada
         $ordenFabricacion = $partida->ordenFabricacion;
     
-        // Buscar todas las partidas anteriores de la misma orden_fabricacion_id
-        $partidasPrevias = PartidasOF::where('OrdenFabricacion_id', $partida->OrdenFabricacion_id)
-            ->where('id', '<', $partidaId) // Asegurarse de obtener solo las partidas anteriores
-            ->orderBy('cantidad_partida', 'asc') // Ordenar por cantidad_partida para mantener el orden correcto
-            ->get();
-    
-        // Obtener el último "No" de las partidas previas
-        $ultimoNumero = 0;
-        if ($partidasPrevias->isNotEmpty()) {
-            // Si existen partidas anteriores, obtener el último "No" generado
-            $ultimoNumero = $partidasPrevias->last()->cantidad_partida;  // última cantidad_partida
-        }
+        // Calcular el inicio del contador para esta OrdenFabricacion_id
+        $numeroInicial = PartidasOF::where('OrdenFabricacion_id', $partida->OrdenFabricacion_id)
+            ->where('id', '<', $partidaId)
+            ->sum('cantidad_partida') + 1;
     
         // Preparar las partidas relacionadas solo para la partida seleccionada
         $partidasData = [];
-        $contador = $ultimoNumero + 1;  // Comenzar la numeración desde el último número + 1
+        $contador = $numeroInicial; // Iniciar el contador desde el valor calculado
     
-        // Generar las entradas basadas en la cantidad de la partida seleccionada
         for ($i = 1; $i <= $partida->cantidad_partida; $i++) {
             $partidasData[] = [
-                'cantidad' => $contador,  // Esto será No: 1, 2, 3, etc. para cada unidad de la partida
+                'cantidad' => $contador, // Numeración consecutiva global para la orden
                 'descripcion' => $ordenFabricacion->Descripcion ?? 'Sin Descripción',
                 'orden_fabricacion' => $ordenFabricacion->OrdenFabricacion ?? 'Sin Orden de Fabricación',
             ];
-            $contador++; // Incrementar el número de la partida
+            $contador++; // Incrementar el contador
         }
     
         // Preparar la respuesta con la información de la partida seleccionada
@@ -434,80 +441,89 @@ class CorteController extends Controller
             'orden_fabricacion' => $ordenFabricacion->OrdenFabricacion ?? 'Sin Orden de Fabricación',
             'descripcion' => $ordenFabricacion->Descripcion ?? 'Sin Descripción',
             'cantidad_partida' => $partida->cantidad_partida ?? 0,
-            'partidas' => $partidasData,  // Mostrar solo las partidas generadas para la selección
+            'partidas' => $partidasData, // Mostrar solo las partidas generadas para la selección
         ];
     
         return response()->json($response);
     }
+    
     public function generarPDF(Request $request)
-    {
-        try {
-            $partidaId = $request->input('id');
-            if (!$partidaId) {
-                throw new \Exception('ID no recibido');
-            }
-
-            // Buscar la partida por ID
-            $partida = PartidasOF::with('ordenFabricacion')->find($partidaId);
-
-            if (is_null($partida) || is_null($partida->ordenFabricacion)) {
-                throw new \Exception('No se encontraron datos para este ID.');
-            }
-
-            // Obtener la orden de fabricación relacionada
-            $ordenFabricacion = $partida->ordenFabricacion;
-
-            // Preparar las partidas relacionadas solo para la partida seleccionada
-            $partidasData = [];
-            for ($i = 1; $i <= $partida->cantidad_partida; $i++) {
-                $partidasData[] = [
-                    'cantidad' => $i,
-                    'descripcion' => $ordenFabricacion->Descripcion ?? 'Sin Descripción',
-                    'orden_fabricacion' => $ordenFabricacion->OrdenFabricacion ?? 'Sin Orden de Fabricación',
-                ];
-            }
-
-            // Invertir el array de partidas
-            $partidasData = array_reverse($partidasData);
-
-            // Crear PDF
-            $pdf = new TCPDF();
-            $pdf->SetMargins(5, 5, 5); 
-            $pdf->AddPage();
-
-            // Título del PDF
-            $pdf->SetFont('helvetica', 'B', 10);
-            $pdf->Cell(0, 10, 'Orden de Fabricación: ' . strip_tags($ordenFabricacion->OrdenFabricacion), 0, 1, 'C');
-            $pdf->SetFont('helvetica', '', 8);
-            $pdf->Cell(0, 5, 'Descripción: ' . strip_tags($ordenFabricacion->Descripcion), 0, 1, 'C');
-            $pdf->Ln(5);
-
-            // Generar contenido para cada partida
-            foreach ($partidasData as $partida) {
-                $content = 
-                    'No: ' . strip_tags($partida['cantidad']) . "\n" .
-                    'Orden de Fabricación: ' . strip_tags($partida['orden_fabricacion']) . "\n" .
-                    'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
-
-                $startY = $pdf->GetY();
-                $rectWidth = 80;
-                $rectHeight = 15;
-                $pdf->Rect(10, $startY, $rectWidth, $rectHeight, 'D');
-                $pdf->SetXY(12, $startY + 1);
-                $pdf->SetFont('helvetica', '', 6);
-                $pdf->MultiCell($rectWidth - 4, 5, strip_tags($content), 0, 'L', 0, 1);
-                $pdf->SetFont('helvetica', '', 8);
-            }
-
-            ob_end_clean();
-
-            // Generar el archivo PDF y devolverlo al navegador
-            return $pdf->Output('orden_fabricacion_' . $partidaId . '.pdf', 'D');
-        } catch (\Exception $e) {
-            Log::error('Error al generar PDF: ' . $e->getMessage());
-            return response()->json(['error' => $e->getMessage()], 500);
+{
+    try {
+        $partidaId = $request->input('id');
+        if (!$partidaId) {
+            throw new \Exception('ID no recibido');
         }
+
+        // Buscar la partida por ID
+        $partida = PartidasOF::with('ordenFabricacion')->find($partidaId);
+
+        if (is_null($partida) || is_null($partida->ordenFabricacion)) {
+            throw new \Exception('No se encontraron datos para este ID.');
+        }
+
+        // Obtener la orden de fabricación relacionada
+        $ordenFabricacion = $partida->ordenFabricacion;
+
+        // Calcular el inicio del contador para esta OrdenFabricacion_id
+        $numeroInicial = PartidasOF::where('OrdenFabricacion_id', $partida->OrdenFabricacion_id)
+            ->where('id', '<', $partidaId)
+            ->sum('cantidad_partida') + 1;
+
+        // Preparar las partidas relacionadas solo para la partida seleccionada
+        $partidasData = [];
+        $contador = $numeroInicial; // Iniciar el contador desde el valor calculado
+
+        for ($i = 1; $i <= $partida->cantidad_partida; $i++) {
+            $partidasData[] = [
+                'cantidad' => $contador, // Numeración consecutiva global para la orden
+                'descripcion' => $ordenFabricacion->Descripcion ?? 'Sin Descripción',
+                'orden_fabricacion' => $ordenFabricacion->OrdenFabricacion ?? 'Sin Orden de Fabricación',
+            ];
+            $contador++; // Incrementar el contador
+        }
+
+        // Invertir el array de partidas
+        $partidasData = array_reverse($partidasData);
+
+        // Crear PDF
+        $pdf = new TCPDF();
+        $pdf->SetMargins(5, 5, 5);
+        $pdf->AddPage();
+
+        // Título del PDF
+        $pdf->SetFont('helvetica', 'B', 10);
+        $pdf->Cell(0, 10, 'Orden de Fabricación: ' . strip_tags($ordenFabricacion->OrdenFabricacion), 0, 1, 'C');
+        $pdf->SetFont('helvetica', '', 8);
+        $pdf->Cell(0, 5, 'Descripción: ' . strip_tags($ordenFabricacion->Descripcion), 0, 1, 'C');
+        $pdf->Ln(5);
+
+        // Generar contenido para cada partida
+        foreach ($partidasData as $partida) {
+            $content = 
+                'No: ' . strip_tags($partida['cantidad']) . "\n" .
+                'Orden de Fabricación: ' . strip_tags($partida['orden_fabricacion']) . "\n" .
+                'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
+
+            $startY = $pdf->GetY();
+            $rectWidth = 80;
+            $rectHeight = 15;
+            $pdf->Rect(10, $startY, $rectWidth, $rectHeight, 'D');
+            $pdf->SetXY(12, $startY + 1);
+            $pdf->SetFont('helvetica', '', 6);
+            $pdf->MultiCell($rectWidth - 4, 5, strip_tags($content), 0, 'L', 0, 1);
+            $pdf->SetFont('helvetica', '', 8);
+        }
+
+        ob_end_clean();
+
+        // Generar el archivo PDF y devolverlo al navegador
+        return $pdf->Output('orden_fabricacion_' . $partidaId . '.pdf', 'D');
+    } catch (\Exception $e) {
+        Log::error('Error al generar PDF: ' . $e->getMessage());
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+}
 
     public function PDFCondicion(Request $request)
     {
@@ -588,7 +604,10 @@ class CorteController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+   
+
 }
+
 
 
 

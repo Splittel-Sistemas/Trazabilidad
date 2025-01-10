@@ -57,6 +57,8 @@ Route::post('corte/finalizar/corte', [CorteController::class, 'finalizarCorte'])
 Route::get('/orden-fabricacion/cantidad-total/{id}', [CorteController::class, 'getCantidadTotal'])->name('ordenFabricacion.getCantidadTotal');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
 Route::get('/orden-fabricacion/{id}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('ordenFabricacion.getCortesInfo');
+Route::get('/actualizar-estatus', [CorteController::class, 'actualizarEstatus'])->name('actualizar.estatus');
+
 
 
 //ruta para el formulario de registro

@@ -93,7 +93,9 @@
                         <th>Nombre</th>
                         <th>Email</th>
                         <th>Roles</th>
+                        <th>Estatus Usuario</th>
                         <th>Acciones</th>
+                      
                     </tr>
                 </thead>
                 <tbody>
@@ -108,11 +110,14 @@
                             @endforeach
                         </td>
                         <td>
-                            <button type="button" class="btn btn-outline-warning" data-toggle="modal" data-target="#userModal" data-id="{{ $registro->id }}}">Editar Usuario</button>
                             <button class="btn toggle-status {{ $registro->active ? 'active' : 'inactive' }}" data-id="{{ $registro->id }}" data-active="{{ $registro->active ? '1' : '0' }}">
                                 <i class="fa {{ $registro->active ? 'fa-toggle-on' : 'fa-toggle-off' }}" aria-hidden="true"></i>
                             </button>
                             <!-- Agregar más acciones aquí -->
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-warning" data-toggle="modal" data-target="#userModal" data-id="{{ $registro->id }}}">Editar Usuario</button>
+                            
                         </td>
                     </tr>
                     @endforeach
@@ -186,7 +191,6 @@
             </div>
         </div>
     </div>
-    
  </div>
 @endsection
 
