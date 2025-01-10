@@ -121,7 +121,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="roleEditForm" method="POST" action="{{ route('RolesPermisos.update', 0) }}">
+                <form id="roleEditForm" method="POST" >
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
@@ -152,80 +152,88 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script>
-    $(document).ready(function() {
+$(document).ready(function () {
+    // Inicialización de DataTables con idioma en español
     $('#roles-table').DataTable({
         "language": {
             "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
         }
     });
+
+    // Configuración global de CSRF para solicitudes AJAX
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
 });
+
+// Evento para cargar datos del rol al abrir el modal
 $(document).on('click', '.btn-edit', function () {
-    var roleId = $(this).data('id'); 
+    var roleId = $(this).data('id'); // Obtener el ID del rol
+
+    // Realizar solicitud AJAX para obtener datos del rol
     $.ajax({
-        url: `/RolesPermisos/${roleId}/edit`, 
+        url: `/RolesPermisos/${roleId}/edit`,
         method: 'GET',
         success: function (data) {
+            // Llenar los campos del modal con los datos recibidos
             $('#roleName').val(data.name);
-            $('#rolePermissions').empty();
+
+            // Limpiar y generar checkboxes dinámicamente
+            var permissionsContainer = $('#rolePermissions');
+            permissionsContainer.empty();
             data.available_permissions.forEach(permission => {
-                $('#rolePermissions').append(`
+                permissionsContainer.append(`
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="permission-${permission.id}" 
-                            name="permissions[]" value="${permission.id}" 
-                            ${data.permissions.includes(permission.id) ? 'checked' : ''}>
+                               name="permissions[]" value="${permission.id}" 
+                               ${data.permissions.includes(permission.id) ? 'checked' : ''}>
                         <label class="form-check-label" for="permission-${permission.id}">
                             ${permission.name}
                         </label>
                     </div>
                 `);
             });
-            $('#roleEditForm').attr('action', `/RolesPermisos/${data.id}`);
+
+            // Actualizar acción del formulario dinámicamente
+            var formAction = `/RolesPermisos/${data.id}`;
+            $('#roleEditForm').attr('action', formAction);
         },
         error: function () {
-            alert('Error al cargar los datos del rol.');
+            Swal.fire('Error', 'No se pudieron cargar los datos del rol.', 'error');
         }
     });
 });
-// Evento para enviar el formulario de edición y mostrar el mensaje de éxito
+
+// Evento para enviar el formulario de edición
 $(document).on('submit', '#roleEditForm', function (event) {
-    event.preventDefault();  // Evitar el envío tradicional del formulario
+    event.preventDefault(); // Prevenir el envío tradicional del formulario
 
-    var formData = $(this).serialize();
+    var form = $(this);
+    var formData = form.serialize();
 
+    // Realizar la solicitud AJAX para actualizar el rol
     $.ajax({
-        url: $(this).attr('action'), 
+        url: form.attr('action'),
         method: 'PUT',
         data: formData,
         success: function (response) {
             if (response.success) {
-                alert(response.message); // Mostrar mensaje de éxito
-                // Opcional: Redirigir o actualizar la interfaz según sea necesario
-                location.reload(); // Recargar la página si es necesario
+                Swal.fire('Éxito', response.message, 'success').then(() => {
+                    $('#roleModal').modal('hide'); // Cerrar el modal
+                    location.reload(); // Recargar la página para reflejar los cambios
+                });
             } else {
-                alert('Hubo un error al actualizar el rol.');
+                Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
             }
         },
         error: function () {
-            alert('Error al actualizar el rol.');
+            Swal.fire('Error', 'No se pudo actualizar el rol.', 'error');
         }
     });
 });
 
-    $('#roleModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget); 
-    var roleId = button.data('id');
-    var roleName = button.data('name'); 
-    var rolePermissions = button.data('permissions').split(','); 
-
-    var modal = $(this);
-    modal.find('#roleName').val(roleName); 
-    modal.find('[name="permissions[]"]').val(rolePermissions); 
-
-
-    var formAction = '{{ route("RolesPermisos.update", ":id") }}';
-    formAction = formAction.replace(':id', roleId);
-    modal.find('#roleEditForm').attr('action', formAction);
-});
 
 </script>
         

@@ -61,16 +61,27 @@ public function edit($id)
             'available_permissions' => $allPermissions, 
         ]);
     }
-public function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
-        $role = Role::findOrFail($id); // Encuentra el rol por su ID
-        $role->name = $request->input('name'); // Actualiza el nombre
-        $role->permissions()->sync($request->input('permissions', [])); // Sincroniza los permisos seleccionados
+        $request->validate([
+            'name' => 'required|string|unique:roles,name,' . $id,
+            'permissions' => 'array|exists:permissions,id',
+        ]);
+
+        $role = Role::findOrFail($id); // Encontrar el rol por su ID
+
+        // Actualizar el nombre del rol
+        $role->name = $request->input('name');
         $role->save();
 
-        return redirect()->route('RolesPermisos.index')->with('success', 'Rol actualizado con éxito.');
-    }
+        // Sincronizar los permisos seleccionados
+        $role->permissions()->sync($request->input('permissions', []));
 
+        return response()->json([
+            'success' => true,
+            'message' => 'Rol actualizado con éxito.',
+        ]);
+    }
 
     /**
      * Eliminar un rol o permiso.
