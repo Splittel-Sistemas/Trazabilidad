@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\HomeControler;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PlaneacionController;
 use App\Http\Controllers\CorteController;
 use App\Http\Controllers\LoginController;
@@ -19,7 +18,6 @@ Route::get('/login', [loginController::class, 'login_view'])->name('login_view')
 Route::post('/login', [loginController::class, 'login'])->name('login_post');
 Route::post('/logout', [loginController::class, 'logout'])->name('logout');
 Route::post('/register', [loginController::class, 'register'])->name('register');
-
 
 //Rutas Planeación
 Route::get('/', [HomeControler::class,'Home'])->name('Home');
@@ -57,7 +55,6 @@ Route::post('corte/finalizar/corte', [CorteController::class, 'finalizarCorte'])
 Route::get('/orden-fabricacion/cantidad-total/{id}', [CorteController::class, 'getCantidadTotal'])->name('ordenFabricacion.getCantidadTotal');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
 Route::get('/orden-fabricacion/{id}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('ordenFabricacion.getCortesInfo');
-
 
 //rutas para generar etiquetas
 Route::get('/generar-etiquetas/{corteId}', [CorteController::class, 'getDatosGenerarEtiquetas']);
