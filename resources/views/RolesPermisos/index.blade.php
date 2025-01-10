@@ -170,17 +170,17 @@ $(document).ready(function () {
 
 // Evento para cargar datos del rol al abrir el modal
 $(document).on('click', '.btn-edit', function () {
-    var roleId = $(this).data('id'); // Obtener el ID del rol
+    var roleId = $(this).data('id'); 
 
     // Realizar solicitud AJAX para obtener datos del rol
     $.ajax({
         url: `/RolesPermisos/${roleId}/edit`,
         method: 'GET',
         success: function (data) {
-            // Llenar los campos del modal con los datos recibidos
+            
             $('#roleName').val(data.name);
 
-            // Limpiar y generar checkboxes dinámicamente
+            
             var permissionsContainer = $('#rolePermissions');
             permissionsContainer.empty();
             data.available_permissions.forEach(permission => {
@@ -196,7 +196,7 @@ $(document).on('click', '.btn-edit', function () {
                 `);
             });
 
-            // Actualizar acción del formulario dinámicamente
+            
             var formAction = `/RolesPermisos/${data.id}`;
             $('#roleEditForm').attr('action', formAction);
         },
@@ -208,7 +208,7 @@ $(document).on('click', '.btn-edit', function () {
 
 // Evento para enviar el formulario de edición
 $(document).on('submit', '#roleEditForm', function (event) {
-    event.preventDefault(); // Prevenir el envío tradicional del formulario
+    event.preventDefault(); 
 
     var form = $(this);
     var formData = form.serialize();
@@ -221,8 +221,8 @@ $(document).on('submit', '#roleEditForm', function (event) {
         success: function (response) {
             if (response.success) {
                 Swal.fire('Éxito', response.message, 'success').then(() => {
-                    $('#roleModal').modal('hide'); // Cerrar el modal
-                    location.reload(); // Recargar la página para reflejar los cambios
+                    $('#roleModal').modal('hide'); 
+                    location.reload(); 
                 });
             } else {
                 Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
