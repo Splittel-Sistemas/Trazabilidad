@@ -4,8 +4,6 @@
 @section('content')
     <div class="container mt-5">
         <h1 class="mb-4 text-center" style="color: #2d7007; text-shadow: 2px 2px 5px rgba(0,0,0,0.1);">Registrar Nuevo Usuario</h1>
-
-
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0">
@@ -15,7 +13,6 @@
                 </ul>
             </div>
         @endif
-
         <form action="{{ route('registro.store') }}" method="POST" class="shadow p-4 rounded bg-white">
             @csrf
             <div class="form-row mb-3">
@@ -32,7 +29,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="form-row mb-3">
                 <div class="col-md-12">
                     <div class="form-group">
@@ -41,7 +37,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="form-row mb-4">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -56,7 +51,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="form-row mb-4">
                 <div class="col-md-6">
                     <div class="form-group">

@@ -13,6 +13,14 @@ use App\Http\Controllers\PreparadoController;
 use GuzzleHttp\Promise\Coroutine;
 use Illuminate\Routing\Route as RoutingRoute;
 
+
+// Ruta para mostrar el formulario de login
+Route::get('/login', [loginController::class, 'login_view'])->name('login_view');
+Route::post('/login', [loginController::class, 'login'])->name('login_post');
+Route::post('/logout', [loginController::class, 'logout'])->name('logout');
+Route::post('/register', [loginController::class, 'register'])->name('register');
+
+
 //Rutas Planeación
 Route::get('/', [HomeControler::class,'Home'])->name('Home');
 Route::get('/Planeacion', [PlaneacionController::class,'index'])->name('Planeacion');
@@ -49,12 +57,9 @@ Route::post('corte/finalizar/corte', [CorteController::class, 'finalizarCorte'])
 Route::get('/orden-fabricacion/cantidad-total/{id}', [CorteController::class, 'getCantidadTotal'])->name('ordenFabricacion.getCantidadTotal');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
 Route::get('/orden-fabricacion/{id}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('ordenFabricacion.getCortesInfo');
+Route::get('/actualizar-estatus', [CorteController::class, 'actualizarEstatus'])->name('actualizar.estatus');
 
-// Ruta para mostrar el formulario de login
-Route::get('/login', [loginController::class, 'login_view'])->name('login_view');
-Route::post('/login', [loginController::class, 'login'])->name('login_post');
-Route::post('/logout', [loginController::class, 'logout'])->name('logout');
-Route::post('/register', [loginController::class, 'register'])->name('register');
+
 
 //ruta para el formulario de registro
 Route::resource('registro', RegistroController::class);
