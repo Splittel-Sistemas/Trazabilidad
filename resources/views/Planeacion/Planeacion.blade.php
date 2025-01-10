@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{asset('css/Planecion.css')}}">
 @endsection
 @section('content')
-    <div class="row gy-3 mb-1 justify-content-between">
+    <div class="row gy-3 mb-2 justify-content-between">
         <div class="col-md-9 col-auto">
         <h4 class="mb-2 text-1100">Planeci&oacute;n</h4>
         </div>
@@ -114,8 +114,55 @@
                         <button type="button" id="back_filterBtn" class="btn btn-phoenix-primary me-1 mb-1"><i class="fa fa-arrow-left"></i> Anterior</button>
                         <button type="button" id="next_filterBtn" class="btn btn-phoenix-primary me-1 mb-1">Siguiente <i class="fa fa-arrow-right"></i></button>
                     </div>
+                        <div id="container_table_OV" class="table-responsive">
+                            <table id="table_OV" class="table table-sm fs--1 mb-0">
+                                <thead class="text-center">
+                                    <tr>
+                                        <th class="fw-bold" colspan="1">
+                                            <span id="filtro-fecha-Ov">Órdenes de Venta <br> <p>{{\Carbon\Carbon::parse($FechaInicio)->format('d/m/Y')}} - {{\Carbon\Carbon::parse($FechaFin)->format('d/m/Y')}} </p></span>
+                                            <div class="input-group ">
+                                                <input type="text" placeholder="Ingresa una Orden de Venta" name="filtro_ov_tabla" oninput="filtro_ov_tabla(this.value,'table_OV');" id="filtro_ov_tabla" class="form-control form-control-sm   w-autoborder-primary col-12">
+                                                <!-- busca por OV<input type="text" placeholder="Ingresa una Orden de Venta" name="Filtro_buscarOV" id="Filtro_buscarOV"  class="form-control form-control-sm   w-autoborder-primary col-12">-->
+                                                <div class="input-group-btn">
+                                                    <button class="btn btn-primary btn-sm">
+                                                        <i class="fa fa-search"></i> buscar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="list" id="table_OV_body">
+                                    @if ($status=="empty")
+                                        <tr class="text-center mt-4">
+                                            <td>No existen Ordenes de Venta <br> para el periodo <br>{{$FechaFin}} - {{$FechaInicio}}</td>
+                                        </tr>
+                                    @elseif($status=="success")
+                                        @foreach ($datos as $orden)
+                                        <tr>
+                                            <td onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, `{{ $orden['Cliente'] }}`)">
+                                                {{ $orden['OV']." - ".$orden['Cliente']}}
+                                            </td>
+                                        </tr>
+                                        {{--<tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
+                                            <td onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, `{{ $orden['Cliente'] }}`)">
+                                                {{ $orden['OV']." - ".$orden['Cliente']}}
+                                            </td>
+                                        </tr>
+                                        <tr id="details{{ $loop->index }}" class="collapse">
+                                            <td class="table-border" id="details{{ $loop->index . 'llenar' }}">
+                                                <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
+                                            </td>
+                                        </tr>--}}
+                                        @endforeach
+                                    @else
+                                    <tr class="text-center mt-4"><td>Ocurrio un error!, no fue posible cargar los datos</td></tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
                 </div>
-                <div id="container_table_OV" class="table-responsive">
+                {{--<div id="container_table_OV" class="table-responsive">
                         <table id="table_OV" class="table table-striped table-bordered" >
                             <thead class="table-primary text-center">
                                 <tr>
@@ -154,7 +201,7 @@
                                 @endif
                             </tbody>
                         </table>
-                </div>
+                </div>--}}
             </div>
             <!-- Columna 2: Dropzone y Tabla de Migrados -->
             <div class="col-md-6 mb-2">
