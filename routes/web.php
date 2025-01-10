@@ -57,9 +57,14 @@ Route::post('corte/finalizar/corte', [CorteController::class, 'finalizarCorte'])
 Route::get('/orden-fabricacion/cantidad-total/{id}', [CorteController::class, 'getCantidadTotal'])->name('ordenFabricacion.getCantidadTotal');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
 Route::get('/orden-fabricacion/{id}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('ordenFabricacion.getCortesInfo');
-Route::get('/actualizar-estatus', [CorteController::class, 'actualizarEstatus'])->name('actualizar.estatus');
 
 
+//rutas para generar etiquetas
+Route::get('/generar-etiquetas/{corteId}', [CorteController::class, 'getDatosGenerarEtiquetas']);
+Route::post('/generar-etiquetas', [CorteController::class, 'generarEtiquetas'])->name('generar.etiquetas');
+Route::get('/mostrar/etiqueta', [CorteController::class, 'MostarInformacion'])->name('mostrar.etiqueta');
+Route::get('/generar-pdf', [CorteController::class, 'generarPDF'])->name('generar.pdf');
+Route::post('/generar-pdf-rangos', [CorteController::class, 'PDFCondicion'])->name('pdfcondicion');
 
 //ruta para el formulario de registro
 Route::resource('registro', RegistroController::class);
@@ -68,24 +73,6 @@ Route::get('/registro/{id}', [RegistroController::class, 'show'])->name('registr
 // Rutas para activar y desactivar usuarios
 Route::post('/users/activar', [RegistroController::class, 'activar'])->name('users.activar');
 Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar');
-
-//rutas para generar etiquetas
-
-Route::get('/preparado',[CorteController::class,'index'])->name('preparado.index');
-Route::get('/generar-etiquetas/{corteId}', [CorteController::class, 'getDatosGenerarEtiquetas']);
-Route::post('/generar-etiquetas', [CorteController::class, 'generarEtiquetas'])->name('generar.etiquetas');
-// Ruta para obtener los datos de la orden y la partida
-//Route::get('/mostrar-info/{corteId}', [CorteController::class, 'getDatosParaModal']);
-
-
-
-//Route::get('/detalle-orden', [CorteController::class, 'MostarInformacion'])->name('corte.getInformacion');
-
-
-Route::get('/mostrar/etiqueta', [CorteController::class, 'MostarInformacion'])->name('mostrar.etiqueta');
-Route::get('/generar-pdf', [CorteController::class, 'generarPDF'])->name('generar.pdf');
-//Route::get('/generarpdf', [CorteController::class, 'PDFCondicion'])->name('pdfcondicion');
-Route::post('/generar-pdf-rangos', [CorteController::class, 'PDFCondicion'])->name('pdfcondicion');
 
 // ruta permisos y roles
 Route::resource('/RolesPermisos', RolesPermisoController::class);
