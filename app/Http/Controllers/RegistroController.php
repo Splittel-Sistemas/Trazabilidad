@@ -87,7 +87,7 @@ public function show(User $registro)
     public function update(Request $request, $id)
 {
     $user = User::findOrFail($id);
-    $user->update($request->only(['apellido', 'name', 'email', 'password']));
+    $user->update($request->only(['apellido', 'name', 'email']));
 
     // Actualizar roles
     $user->roles()->sync($request->roles); // Sincronizar los roles seleccionados
