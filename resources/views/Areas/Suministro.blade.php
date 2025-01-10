@@ -1,4 +1,4 @@
-@extends('layouts.menu')
+@extends('layouts.menu1')
 @section('title', 'Suministro')
 @section('styles')
 <link rel="stylesheet" href="{{asset('css/Suministro.css')}}">
@@ -6,7 +6,7 @@
     /* Positioning the toast in the top-right corner */
     #ToastGuardado {
         position: fixed; /* Fixed position */
-        top: 10rem; /* Distance from the top */
+        top: 5rem; /* Distance from the top */
         right: 20px; /* Distance from the right */
         z-index: 1050; /* Ensure it's above other content */
     }
@@ -24,17 +24,6 @@
                             </div>
                         </div>
                     </div>
-                    <!--<div class="col-sm-8">
-                        <div class="page-header float-right">
-                            <div class="page-title">
-                                <ol class="breadcrumb text-right">
-                                    <li><a href="{{ route("Home") }}">Dashboard</a></li>
-                                    <li><a href="#">Áreas</a></li>
-                                    <li class="active">Suministro</li>
-                                </ol>
-                            </div>
-                        </div>
-                    </div>-->
                 </div>
             </div>
         </div>
@@ -50,15 +39,15 @@
                         <label for="CodigoEscaner">Proceso <span class="text-muted"></span></label>
                         <div class="row pl-4 pr-2 pb-0 mb-1" >
                             <div class="form-check col-6">
-                                <input class="form-check-input" type="radio" name="Iniciar" id="Iniciar">
+                                <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked>
                                 <label class="form-check-label" for="Iniciar">
-                                  Iniciar
+                                  Entrada
                                 </label>
                             </div>
                             <div class="form-check col-6">
-                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-                                <label class="form-check-label" for="flexRadioDefault2">
-                                  Finalizar
+                                <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar">
+                                <label class="form-check-label" for="Finalizar">
+                                  Salida
                                 </label>
                             </div>
                         </div>
@@ -88,7 +77,7 @@
             </div>
         </div>
         <div id="ContentTabla" class="col-12 mt-2" style="display: none">
-            <h4 class="mb-2">Partidas de la Orden de Fabricacion <span id="TituloPartidasOF"></span> <br><span id="CantidadPartidasOF"></span></h4>
+            <h5 class="mb-2">Partidas de la Orden de Fabricacion <span id="TituloPartidasOF"></span> <br><span id="CantidadPartidasOF"></span></h5>
             <table class="table table-sm table-bordered table-striped table-hover m-1">
             <thead class="bg-primary text-white">
                 <tr>
@@ -105,18 +94,14 @@
             </table>
         </div>
     </div>
-    <div id="ToastGuardado" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div id="ToastGuardadoBody" class="toast-body">
-          </div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
+    <div id="ContainerToastGuardado"></div>
 @endsection
 @section('scripts')
 <script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
     function ListaCodigo(Codigo,Contenedor){
+        //VerNumParte=VerNumParte($Codigo);
+        $('#ToastGuardado').fadeOut();
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
         if (CadenaVacia(Codigo)) {
             return 0;
@@ -125,11 +110,23 @@
         if(Codigo.length<6){
             return 0;
         }
+        InicioInput=document.getElementById('Iniciar');
+        if(InicioInput.checked){
+            Inicio=1;
+            Finalizar=0;
+        }
+        FinalizarInput=document.getElementById('Finalizar');
+        if(FinalizarInput.checked){
+            Inicio=0;
+            Finalizar=1;
+        }
         $.ajax({
             url: "{{route('SuministroBuscar')}}", 
             type: 'GET',
             data: {
                 Codigo: Codigo,
+                Inicio:Inicio,
+                Finalizar:Finalizar,
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
@@ -139,23 +136,105 @@
                 $('#CantidadDiv').hide();
                 $('#IniciarBtn').hide();
                 if(response.status=="success"){
-                    $('#ContentTabla').show();
                     $('#TablaBody').html(response.tabla);
-                    $('#CantidadPartidasOF').html('<span class="badge bg-light text-dark">'+response.CantidadCompletada+"/"+response.CantidadTotal+'</span>');
+                    $('#CantidadPartidasOF').html('<span class="badge bg-light text-dark">Piezas procesadas '+response.CantidadCompletada+"/"+response.CantidadTotal+'</span>');
                     $('#TituloPartidasOF').html(response.OF);
                     if(response.Escaner==0){
-                        $('#CantidadDiv').fadeIn();
-                        $('#IniciarBtn').fadeIn();
+                        $('#CantidadDiv').fadeOut();
+                        $('#IniciarBtn').fadeOut();
+                        if(response.EscanerExiste==0){
+                            Mensaje='Codigo '+Codigo+' El codigo que intentas ingresar No existe!';
+                            Color='bg-danger';
+                            $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                            $('#ToastGuardadoBody').html(Mensaje);
+                            $('#ToastGuardado').fadeIn();
+                            setTimeout(function(){
+                                $('#ToastGuardado').fadeOut();
+                            }, 2000);
+                        }else{
+                            $('#ContentTabla').show();
+                            $('#CantidadDiv').fadeIn();
+                            $('#IniciarBtn').fadeIn();
+                            return 0;
+                        }
                     }else{
-                        $('#ToastGuardadoBody').html('Codigo '+Codigo+' guardado correctamente!');
+                        $('#ContentTabla').show();
+                        Mensaje="";
+                        if(response.Inicio==1){
+                            switch (response.TipoEscanerrespuesta) {
+                                case 1:
+                                //$('#CodigoEscaner').val('');
+                                    Mensaje='Codigo '+Codigo+' guardado correctamente!';
+                                    Color='bg-success';
+                                    break;
+                                case 2:
+                                    Mensaje='Codigo '+Codigo+' Ya se encuentra iniciado!';
+                                    Color='bg-warning';
+                                    break;
+                                case 3:
+                                    confirmacion('Retrabajo','¿Desea enviar codigo '+Codigo+' a Retrabajo? ','Confirmar','Retrabajo("'+Codigo+'")');
+                                    return 0;
+                                    break;
+                                case 4:
+                                    Mensaje='Codigo '+Codigo+' No existe!';
+                                    Color='bg-danger';
+                                    $('#ContentTabla').hide();
+                                    $('#CantidadPartidasOF').html('');
+                                    break;
+                                case 5:
+                                    Mensaje='Codigo '+Codigo+' Aún no termina el proceso anterior!';
+                                    Color='bg-danger';
+                                    $('#ContentTabla').hide();
+                                    $('#CantidadPartidasOF').html('');
+                                    break;
+                                default:
+                                    Mensaje='Codigo '+Codigo+' Ocurrio un error!';
+                                    Color='bg-danger';
+                                    break;
+                            }
+
+                        }
+                        if(response.Finalizar==1){
+                            switch (response.TipoEscanerrespuesta) {
+                                case 1:
+                                    Mensaje='Codigo '+Codigo+' Finalizado!';
+                                    Color='bg-success';
+                                    break;
+                                case 2:
+                                    Mensaje='Codigo '+Codigo+' Aún no ha sido inicializado!';
+                                    Color='bg-danger';
+                                    break;
+                                case 3:
+                                    Mensaje='Codigo '+Codigo+' No se encontro el Codigo!';
+                                    Color='bg-danger';
+                                    break;
+                            
+                                default:
+                                    Mensaje='Codigo '+Codigo+' Ocurrio un error!';
+                                    Color='bg-danger';
+                                    break;
+                                    break;
+                            }
+
+                        }
+                        $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                        $('#ToastGuardadoBody').html(Mensaje);
                         $('#CantidadDiv').fadeOut();
                         $('#IniciarBtn').fadeOut();
                     }
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 2500);
                 }else if(response.status=="empty"){
+                    //if(response.Escaner!=0){
+                        $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                        $('#ToastGuardadoBody').html('El codigo No existe!  ');
+                        $('#ToastGuardado').fadeIn();
+                        setTimeout(function(){
+                            $('#ToastGuardado').fadeOut();
+                        }, 2000);
+                    //}
                 }
                 /*document.getElementById('CodigoEscanerSuministro').style.display = "";
                 if(response.Escaner==1){
@@ -176,6 +255,38 @@
     function TraerDatos(id,OF){
         $('#CodigoEscaner').val(OF+"-"+id);
         $('#CodigoEscanerSuministro').html('');
+    }
+    function Retrabajo(Codigo){
+        $.ajax({
+            url: "{{route('SuministroBuscar')}}", 
+            type: 'GET',
+            data: {
+                Codigo: Codigo,
+                Inicio:1,
+                Finalizar:0,
+                Confirmacion:1,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                $('#CodigoEscanerSuministro').html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /><br>Cargando</p>");
+            },
+            success: function(response) {
+                if(response.status=="success"){
+                    //$('#CodigoEscaner').val('');
+                    Mensaje='Codigo '+Codigo+' Se agrego a Retrabajo!';
+                    Color='bg-warning';
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                    $('#ToastGuardadoBody').html(Mensaje);
+                    $('#TablaBody').html(response.tabla);
+                    $('#CantidadPartidasOF').html('<span class="badge bg-light text-dark">Piezas procesadas '+response.CantidadCompletada+"/"+response.CantidadTotal+'</span>');
+                    $('#TituloPartidasOF').html(response.OF);
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 2500);
+                }
+            }
+        });
     }
 
 </script>

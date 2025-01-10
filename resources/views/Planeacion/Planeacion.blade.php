@@ -1,51 +1,76 @@
-@extends('layouts.menu')
+@extends('layouts.menu2')
 @section('title', 'Planeacion')
 @section('styles')
 <link rel="stylesheet" href="{{asset('css/Planecion.css')}}">
 @endsection
 @section('content')
-    <div class="row mb-2">
-        <div class="breadcrumbs col-12">
-            <div class="breadcrumbs-inner">
-                <div class="row m-0">
-                    <div class="col-sm-4">
-                        <div class="page-header float-left">
-                            <div class="page-title">
-                                <h1>Planeaci&oacute;n</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-8">
-                        <div class="page-header float-right">
-                            <div class="page-title">
-                                <ol class="breadcrumb text-right">
-                                    <li><a href="{{ route("Home") }}">Dashboard</a></li>
-                                    <li><a href="#">Planeaci&oacute;n</a></li>
-                                    <li class="active">Planeaci&oacute;n Fabricaci&oacute;n</li>
-                                </ol>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="row gy-3 mb-2 justify-content-between">
+        <div class="col-md-9 col-auto">
+        <h4 class="mb-2 text-1100">Planeci&oacute;n</h4>
         </div>
-        <div class="col-8 ">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <strong>Filtrar Órdenes de Venta</strong>
-                    <button id="filtro_ov" type="button" class="btn btn-link float-end collapsed" draggable="true" data-bs-toggle="collapse" data-bs-target="#filtro" aria-expanded="true" aria-controls="filtro">
-                        <i class="fa fa-chevron-up"></i>
-                    </button>
+    </div>
+    <!-- Filtro por fecha -->
+    <div class="row mb-2">
+        <div class="col-6">
+            <div class="col-sm-12">
+                <div class="card border border-light shadow-sm">
+                  <div class="card-body p-4">
+                    <div class="accordion" id="accordionFiltroOV">
+                        <div class="accordion-item border-top border-300 p-0">
+                            <h4 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroOV" aria-expanded="true" aria-controls="collapseFiltroOV">
+                                Filtro Orden de Venta
+                                </button>
+                            </h4>
+                            <div class="accordion-collapse collapse show" id="collapseFiltroOV" aria-labelledby="headingOne" data-bs-parent="#accordionFiltroOV">
+                                <div class="accordion-body pt-0">
+                                    <form id="filtroForm" method="post" class="form-horizontal">
+                                        @csrf
+                                        <div class="row">
+                                            <div class="col-12 ">
+                                                <div class="row">
+                                                    <div class=" col-6">
+                                                        <label class="form-label" for="startDateInput">Fecha inicio1 </label>
+                                                        <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio }}">
+                                                        <input type="hidden" name="startDate_filtroantnext" id="startDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio }}">
+                                                    </div>
+                                                    <div class=" col-6">
+                                                        <label class="form-label" for="endDateInput">Fecha fin </label>
+                                                        <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaFin}}">
+                                                        <input type="hidden" name="endDate_filtroantnext" id="endDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaFin}}">
+                                                        <p id="error_endDate" class="text-danger fs-sm"></p>
+                                                    </div>
+                                                </div>
+                                                <div class=" pt-1">
+                                                    <button type="button" class="btn btn-primary btn-sm float-end" id="Filtro_fecha-btn">
+                                                        <i class="fa fa-search"></i> Filtrar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {{--<div class="card shadow-sm">
+                <div class="card-header bg-primary text-white m-0 p-0 ">
+                    <h6 class="mb-0">
+                        <strong>Filtrar Órdenes de Venta</strong>
+                        <button id="filtro_ov" type="button" class="btn  collapsed" draggable="true" data-bs-toggle="collapse" data-bs-target="#filtro" aria-expanded="true" aria-controls="filtro">
+                            <i class="fa fa-chevron-up p-2"></i>
+                        </button>
+                      </h6>
                 </div>
                 <div class="card-body card-block collapsed show" id="filtro">
-                    <form id="filtroForm" method="post" class="form-horizontal" action="{{--route('filtros')--}}">
+                    <form id="filtroForm" method="post" class="form-horizontal" action="">
                         @csrf
                         <div class="row">
                             <!-- Filtro por fecha -->
                             <div class="col-md-12 ">
-                                <label for="" class="form-control-label me-2 col-12">
-                                    <strong>Filtro por Fecha</strong>
-                                </label>
                                 <div class="input-group">
                                     <div class="col-4">
                                         <label for="startDate" class="form-control-label me-2 ">Fecha inicio:</label>
@@ -71,31 +96,10 @@
                                     </button>
                                 </div>
                             </div>
-                            <!-- Filtro por Orden de Venta -->
-                            <!--<div class="col-md-6">
-                                <label for="" class="form-control-label me-2 col-12">
-                                    <strong>Filtro por Orden de Venta</strong>
-                                </label>
-                                <div class="input-group">
-                                    <input type="text" placeholder="Ingresa una Orden de Venta" name="Filtro_buscarOV" id="Filtro_buscarOV" class="form-control form-control-sm w-autoborder-primary col-9">
-                                    <div class="input-group-btn">
-                                        <a href="#" id="buscarOV" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-search"></i> Buscar
-                                        </a>
-                                    </div>
-                                </div>
-                            </div> -->
                         </div>
                     </form>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="">
-        <!--<h1 class="text-primary mb-4 text-center">Gestión de Órdenes de Venta</h1>-->
-        <!-- Buscador -->
-    <!-- Buscador -->
-        <div class="row mb-2">
+            </div>--}}
         </div>
     </div>
     <!-- Contenedor de las tablas -->
@@ -105,13 +109,60 @@
             <div class="col-md-6 mb-2">
                 <div class="col-12">
                     <!-- Navegación de Fechas -->
-                    <div class="d-flex justify-content-center align-items-center mb-4">
-                        <button type="button" id="back_filterBtn" class="btn btn-link"><i class="fa fa-arrow-left"></i> Anterior</button>
-                        <span class="text-primary fw-bold">Fechas</span>
-                        <button type="button" id="next_filterBtn" class="btn btn-link">Siguiente <i class="fa fa-arrow-right"></i></button>
+                    <h4 class="text-primary fw-bold text-center">Fechas</h4>
+                    <div class="d-flex justify-content-center align-items-center mb-2">
+                        <button type="button" id="back_filterBtn" class="btn btn-phoenix-primary me-1 mb-1"><i class="fa fa-arrow-left"></i> Anterior</button>
+                        <button type="button" id="next_filterBtn" class="btn btn-phoenix-primary me-1 mb-1">Siguiente <i class="fa fa-arrow-right"></i></button>
                     </div>
+                        <div id="container_table_OV" class="table-responsive">
+                            <table id="table_OV" class="table table-sm fs--1 mb-0">
+                                <thead class="text-center">
+                                    <tr>
+                                        <th class="fw-bold" colspan="1">
+                                            <span id="filtro-fecha-Ov">Órdenes de Venta <br> <p>{{\Carbon\Carbon::parse($FechaInicio)->format('d/m/Y')}} - {{\Carbon\Carbon::parse($FechaFin)->format('d/m/Y')}} </p></span>
+                                            <div class="input-group ">
+                                                <input type="text" placeholder="Ingresa una Orden de Venta" name="filtro_ov_tabla" oninput="filtro_ov_tabla(this.value,'table_OV');" id="filtro_ov_tabla" class="form-control form-control-sm   w-autoborder-primary col-12">
+                                                <!-- busca por OV<input type="text" placeholder="Ingresa una Orden de Venta" name="Filtro_buscarOV" id="Filtro_buscarOV"  class="form-control form-control-sm   w-autoborder-primary col-12">-->
+                                                <div class="input-group-btn">
+                                                    <button class="btn btn-primary btn-sm">
+                                                        <i class="fa fa-search"></i> buscar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="list" id="table_OV_body">
+                                    @if ($status=="empty")
+                                        <tr class="text-center mt-4">
+                                            <td>No existen Ordenes de Venta <br> para el periodo <br>{{$FechaFin}} - {{$FechaInicio}}</td>
+                                        </tr>
+                                    @elseif($status=="success")
+                                        @foreach ($datos as $orden)
+                                        <tr>
+                                            <td onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, `{{ $orden['Cliente'] }}`)">
+                                                {{ $orden['OV']." - ".$orden['Cliente']}}
+                                            </td>
+                                        </tr>
+                                        {{--<tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}">
+                                            <td onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, `{{ $orden['Cliente'] }}`)">
+                                                {{ $orden['OV']." - ".$orden['Cliente']}}
+                                            </td>
+                                        </tr>
+                                        <tr id="details{{ $loop->index }}" class="collapse">
+                                            <td class="table-border" id="details{{ $loop->index . 'llenar' }}">
+                                                <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
+                                            </td>
+                                        </tr>--}}
+                                        @endforeach
+                                    @else
+                                    <tr class="text-center mt-4"><td>Ocurrio un error!, no fue posible cargar los datos</td></tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
                 </div>
-                <div id="container_table_OV" class="table-responsive">
+                {{--<div id="container_table_OV" class="table-responsive">
                         <table id="table_OV" class="table table-striped table-bordered" >
                             <thead class="table-primary text-center">
                                 <tr>
@@ -150,7 +201,7 @@
                                 @endif
                             </tbody>
                         </table>
-                </div>
+                </div>--}}
             </div>
             <!-- Columna 2: Dropzone y Tabla de Migrados -->
             <div class="col-md-6 mb-2">
@@ -209,7 +260,7 @@
             </div>
         </div>
     </div>
-
+    
 <!-- Toast ver las Ordenes de Fabricacion Pendientes por asignar-->
 <div id="element" class="toast m-4" role="alert" aria-live="assertive" aria-atomic="true" style="position: fixed; bottom: 0.5rem; right: 1rem; z-index: 1050;" data-bs-delay="30000">
     <div class="toast-header bg-danger text-white">
@@ -345,14 +396,7 @@
 </div>
 @endsection
 @section('scripts')
-<!-- Scripts -->
-<!--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>-->
-<script src="{{ asset('js/ordenesv.js') }}"></script>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{{ asset('js/OrdenesVenta.js') }}"></script>
 <script>
     $(document).ready(function() {
         $('#element').toast('show');
@@ -538,6 +582,7 @@
         });
     });
     function loadContent(idcontenedor, docNum, cliente) {
+        alert();
         let elemento = document.getElementById(idcontenedor + "cerrar");
         if (!elemento.classList.contains('collapsed')) {
             $.ajax({
@@ -821,6 +866,8 @@
                         TablaOrdenFabricacion($fecha);
                     }
                     success("Guardado","Orden de Fabricación  "+response.OF+" regresada correctamente");
+                }else if(response.status=="iniciado"){
+                    error("Error!","La Orden de Fabricación ya se encuentra iniciada, no es posible detenerla");
                 }else if(response.status=="error"){
                     error("Error!","Registro no encontrado");
                 }else{
@@ -894,14 +941,6 @@
             }
         }); 
     }
-    document.getElementById('filtro_ov').addEventListener('click', function(event) {
-        btn=document.getElementById('filtro_ov');
-        if (!btn.classList.contains('collapsed')) {
-            btn.innerHTML='<i class="fa fa-chevron-up"></i>';
-        }else{
-            btn.innerHTML='<i class="fa fa-chevron-down"></i>';
-        }
-    });
     function RecargarTablaOF(){
         fecha=$('#FiltroOF_Fecha_table2').val();
         TablaOrdenFabricacion(fecha);
