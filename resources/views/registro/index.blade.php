@@ -63,7 +63,6 @@
             </div>
         </div>
     </div>
-
     <!-- Contenido principal -->
     <div class="container my-4">
         <a href="{{ route('registro.create') }}" class="btn btn-outline-info mb-3">Agregar Usuario</a>
@@ -75,7 +74,6 @@
                 </button>
             </div>
         @endif
-
         @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ session('error') }}
@@ -84,7 +82,6 @@
                 </button>
             </div>
         @endif
-
         <div class="table-responsive">
             <table id="usuarios-table" class="table table-bordered table-striped">
                 <thead class="thead-dark">
@@ -211,28 +208,28 @@ $(document).ready(function() {
 $(document).ready(function() {
     // Cuando se hace clic en un botón para editar un usuario
     $('button[data-toggle="modal"]').on('click', function() {
-        var userId = $(this).data('id');  // Obtiene el ID del usuario
-        var url = '/registro/' + userId;  // URL para obtener los datos del usuario
+        var userId = $(this).data('id');  
+        var url = '/registro/' + userId;  
 
         // Realizar una solicitud AJAX para obtener los datos del usuario
         $.ajax({
             url: url,
             method: 'GET',
             success: function(response) {
-                // Rellenar los campos del formulario en el modal con los datos del usuario
+                
                 $('#apellido').val(response.apellido);
                 $('#name').val(response.name);
                 $('#email').val(response.email);
-                $('#password').val('');  // Dejar el campo de contraseña vacío
-                $('#password_confirmation').val('');  // Dejar el campo de confirmación de contraseña vacío
+                $('#password').val('');  
+                $('#password_confirmation').val('');  
 
                 // Establecer la acción del formulario para el usuario correspondiente
                 $('#userEditForm').attr('action', '/registro/' + userId);
 
                 // Cargar los roles dinámicamente
-                var roles = response.roles; // Roles del usuario
+                var roles = response.roles; 
                 var rolesContainer = $('#roles');
-                rolesContainer.empty(); // Limpiar roles previos
+                rolesContainer.empty(); 
 
                 // Iterar sobre todos los roles y marcarlos según la asignación
                 @foreach ($roles as $role)
@@ -250,9 +247,9 @@ $(document).ready(function() {
 });
 $(document).ready(function () {
             $('.toggle-status').on('click', function () {
-                var button = $(this); // Botón clickeado
-                var userId = button.data('id'); // ID del usuario
-                var isActive = button.data('active') == '1'; // Estado actual (1 = activo, 0 = desactivado)
+                var button = $(this); 
+                var userId = button.data('id'); 
+                var isActive = button.data('active') == '1'; 
 
                 // Determina la URL y el nuevo estado
                 var url = isActive ? '/users/desactivar' : '/users/activar';
