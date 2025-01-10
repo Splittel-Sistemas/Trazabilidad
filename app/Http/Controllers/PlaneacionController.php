@@ -170,6 +170,18 @@ class PlaneacionController extends Controller
                                             <td style="display:none"> ' . $orden['Cliente']. '</td>
                                             <td style="display:none"> ' . $orden['OV']. '</td>
                                         </tr>';
+                        /*$tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '">
+                                            <td onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] .', `' . $orden['Cliente'] . '`)">
+                                                ' . $orden['OV'] . " - " . $orden['Cliente'] . '
+                                            </td>
+                                        </tr>
+                                        <tr id="details' . $index . '" class="collapse">
+                                            <td class="table-border" id="details' . $index . 'llenar">
+                                                <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
+                                            </td>
+                                            <td style="display:none"> ' . $orden['Cliente']. '</td>
+                                            <td style="display:none"> ' . $orden['OV']. '</td>
+                                        </tr>';*/
                     }
                 }
             }else{
@@ -353,8 +365,13 @@ class PlaneacionController extends Controller
         try{
             $NumOF_id=$this->funcionesGenerales->decrypt($request->input('NumOF'));
             $OF = OrdenFabricacion::where('id','=',$NumOF_id)->first();
-            $numero_partidas=$OF->PartidasOF;
-            return $numero_partidas;
+            $numero_partidas=$OF->PartidasOF->count();
+            if($numero_partidas>0){
+                return response()->json([
+                    'status' => "iniciado",
+                    'OF' => ""
+                ]);
+            }
             //Comprobar si ya esta iniciada
             if (!empty($OF)) {
                 $OV=$OF->ordenVenta()->get();
