@@ -1,4 +1,4 @@
-@extends('layouts.menu') 
+@extends('layouts.menu1') 
 @section('title', 'Detalles del Usuario')
 @section('styles') 
     {{--<link rel="stylesheet" href="{{ asset('css/style.css') }}">--}}

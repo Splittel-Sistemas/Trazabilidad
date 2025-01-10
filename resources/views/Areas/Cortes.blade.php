@@ -1,4 +1,4 @@
-@extends('layouts.menu')
+@extends('layouts.menu1')
 @section('title', 'Planeación')
 @section('styles')
 <meta name="csrf-token" content="{{ csrf_token() }}">
