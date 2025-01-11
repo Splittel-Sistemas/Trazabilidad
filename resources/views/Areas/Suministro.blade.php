@@ -1,4 +1,4 @@
-@extends('layouts.menu1')
+@extends('layouts.menu2')
 @section('title', 'Suministro')
 @section('styles')
 <link rel="stylesheet" href="{{asset('css/Suministro.css')}}">
@@ -13,44 +13,32 @@
 </style>
 @endsection
 @section('content')
-    <div class="row mb-0">
-        <div class="breadcrumbs col-12">
-            <div class="breadcrumbs-inner">
-                <div class="row m-0">
-                    <div class="col-sm-4">
-                        <div class="page-header float-left">
-                            <div class="page-title">
-                                <h1>Suministro</h1>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="row gy-3 mb-2 justify-content-between">
+        <div class="col-md-9 col-auto">
+        <h4 class="mb-2 text-1100">Suministro</h4>
         </div>
     </div>
     <div class="row">
         <div class="col-6">
-              <div class="card">
-                <div class="card-header">
+              <div class="card shadow-sm">
+                {{--<div class="card-header bg-info">
                     <strong>   </strong>
-                </div>
+                </div>--}}
                 <div class="card-body row" id="filtro">
+                    <label for="CodigoEscaner" class="col-form-label col-sm-12 pt-0">Proceso <span class="text-muted"></span></label>
                     <div class="col-8">
-                        <label for="CodigoEscaner">Proceso <span class="text-muted"></span></label>
-                        <div class="row pl-4 pr-2 pb-0 mb-1" >
-                            <div class="form-check col-6">
+                            <div class="form-check form-check-inline ">
                                 <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked>
                                 <label class="form-check-label" for="Iniciar">
                                   Entrada
                                 </label>
                             </div>
-                            <div class="form-check col-6">
+                            <div class="form-check form-check-inline ">
                                 <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar">
                                 <label class="form-check-label" for="Finalizar">
                                   Salida
                                 </label>
                             </div>
-                        </div>
                     </div>
                     <hr>
                     <div class="col-8" id="CodigoDiv">
@@ -77,21 +65,62 @@
             </div>
         </div>
         <div id="ContentTabla" class="col-12 mt-2" style="display: none">
-            <h5 class="mb-2">Partidas de la Orden de Fabricacion <span id="TituloPartidasOF"></span> <br><span id="CantidadPartidasOF"></span></h5>
-            <table class="table table-sm table-bordered table-striped table-hover m-1">
-            <thead class="bg-primary text-white">
-                <tr>
-                    <th>Num. Parte</th>
-                    <th>Cantidad</th>
-                    <th>Inicio</th>
-                    <th>Fin</th>
-                    <th>Estatus</th>
-                    <th>Acci&oacute;nes</th>
-                </tr>
-            </thead>
-            <tbody id="TablaBody">
-            </tbody>
-            </table>
+            <div class="card">
+                <div class="card-body">
+                    <div id="tableExample2" class="table-list">
+                        <div class="row justify-content-end g-0">
+                            <div class="col-auto px-3"><select class="form-select form-select-sm mb-3" data-list-filter="data-list-filter">
+                                <option selected="" value="">Todos</option>
+                                <option value="Enproceso">En proceso</option>
+                                <option value="Completado">Completado</option>
+                            </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive scrollbar mb-3">
+                        <table class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
+                            <thead>
+                                <tr>
+                                    <th class="sort border-top ps-3" data-sort="Num_Parte">Num. Parte</th>
+                                    <th class="sort border-top" data-sort="Cantidad">Cantidad</th>
+                                    <th class="sort border-top" data-sort="Inicio">Inicio</th>
+                                    <th class="sort border-top" data-sort="Fin">Fin</th>
+                                    <th class="sort border-top" data-sort="Estatus">Estatus</th>
+                                    <th class="sort border-top" >Acci&oacute;nes</th>
+                                </tr>
+                            </thead>
+                            <tbody class="list" id="TablaBody">
+                                <td class="align-middle ps-3" colspan="6">No existen Proesos iniciados </td>
+                            </tbody>
+                        </table>
+                        </div>
+                        <div class="d-flex justify-content-center mt-3"><button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                            <ul class="mb-0 pagination"></ul><button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+            
+            
+            <!--<div class="card">
+                <h5 class="mb-2">Partidas de la Orden de Fabricacion <span id="TituloPartidasOF"></span> <br><span id="CantidadPartidasOF"></span></h5>
+                <table class="table table-sm table-bordered table-striped table-hover m-1">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th>Num. Parte</th>
+                        <th>Cantidad</th>
+                        <th>Inicio</th>
+                        <th>Fin</th>
+                        <th>Estatus</th>
+                        <th>Acci&oacute;nes</th>
+                    </tr>
+                </thead>
+                <tbody id="TablaBody">
+                </tbody>
+                </table>    
+            </div>-->
         </div>
     </div>
     <div id="ContainerToastGuardado"></div>

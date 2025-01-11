@@ -73,21 +73,21 @@ class AreasController extends Controller
                         foreach( $PartidasordenFabricacion->Partidas()->orderBy('id', 'desc')->get() as $Partidas){
                             if(!($Partidas->Areas()->where('Areas_id','=',3)->first() =="" || $Partidas->Areas()->where('Areas_id','=',3)->first() == null )){
                                 $menu.='<tr>
-                                <td>'.$Partidas->NumParte.'</td>
-                                <td>'.$Partidas->CantidadaPartidas.'</td>
-                                <td>'.$Partidas->FechaComienzo.'</td>
-                                <td>'.$Partidas->FechaTermina.'</td>';
+                                <td class="align-middle ps-3 NumParte">'.$Partidas->NumParte.'</td>
+                                <td class="align-middle Cantidad">'.$Partidas->CantidadaPartidas.'</td>
+                                <td class="align-middle Inicio">'.$Partidas->FechaComienzo.'</td>
+                                <td class="align-middle Fin">'.$Partidas->FechaTermina.'</td>';
                                 if($Partidas->FechaTermina==""){
-                                    $menu.='<td><span class="badge bg-warning text-dark">En proceso</span></td>';
+                                    $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">En proceso</span><span class="ms-1 fas fa-stream"></span></div></td>';
                                     if(!($Partidas->FechaTermina=="" || $Partidas->FechaTermina==null) && $Partidas->TipoAccion==0){
                                         $CantidadCompletada+=$Partidas->CantidadaPartidas;
                                     }
-                                }else{$menu.='<td><span class="badge bg-success">Completado</span></td>';
+                                }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Completado</span><span class="ms-1 fas fa-check"></span></div</td>';
                                     if(!($Partidas->FechaTermina=="" || $Partidas->FechaTermina==null) && $Partidas->TipoAccion==0){
                                         $CantidadCompletada+=$Partidas->CantidadaPartidas;
                                     }
                                 }
-                                $menu.='<td><button class="btn btn-sm btn-danger">Detener</button></td>
+                                $menu.='<td class="align-middle"><button class="btn btn-sm btn-danger">Detener</button></td>
                                     </tr>';
                             }
                         }

@@ -24,7 +24,7 @@
                             </h4>
                             <div class="accordion-collapse collapse show" id="collapseFiltroOV" aria-labelledby="headingOne" data-bs-parent="#accordionFiltroOV">
                                 <div class="accordion-body pt-0">
-                                    <form id="filtroForm" method="post" class="form-horizontal">
+                                    <form id="filtroForm" method="post" class="form-horizontal row g-3 needs-validation" novalidate="">
                                         @csrf
                                         <div class="row">
                                             <div class="col-12 ">
@@ -38,7 +38,7 @@
                                                         <label class="form-label" for="endDateInput">Fecha fin </label>
                                                         <input type="date" name="endDate" id="endDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaFin}}">
                                                         <input type="hidden" name="endDate_filtroantnext" id="endDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaFin}}">
-                                                        <p id="error_endDate" class="text-danger fs-sm"></p>
+                                                        <div class="invalid-feedback" id="error_endDate"></div>
                                                     </div>
                                                 </div>
                                                 <div class=" pt-1">
@@ -190,7 +190,7 @@
                                                 <th class="fw-bold">
                                                     <span id="filtro-fecha-Ov_Vencidas">Órdenes de Venta <br> <p>faltantes de Planeación </p></span>
                                                     <div class="input-group ">
-                                                        <input type="text" placeholder="Ingresa una Orden de Venta" oninput="filtro_ov_tabla(this.value,'table_OV_body_Vencidas')" name="Filtro_buscarOV_Vencidas" id="Filtro_buscarOV_Vencidas"  class="form-control form-control-sm   w-autoborder-primary col-12">
+                                                        <input type="text" placeholder="Ingresa una Orden de Venta" oninput="filtro_ov_tabla(this.value,'table_OV_Vencidas');" name="Filtro_buscarOV_Vencidas" id="Filtro_buscarOV_Vencidas"  class="form-control form-control-sm   w-autoborder-primary col-12">
                                                         <button class="btn btn-primary btn-sm">
                                                             <i class="fa fa-search"></i> buscar
                                                         </button>
@@ -291,9 +291,13 @@
             var startDate = $('#startDate').val();  
             var endDate = $('#endDate').val(); 
             if(CompararFechas(startDate,endDate)){
+                if ($('#endDate').hasClass('is-invalid')) {
+                    $('#endDate').removeClass('is-invalid');
+                }
                 $('#error_endDate').html('');
             }else{
-                $('#error_endDate').html('*Fecha fin tiene que ser menor  a Fecha inicio');
+                $('#endDate').addClass('is-invalid');
+                $('#error_endDate').html('Requerido Fecha fin menor a Fecha inicio');
                 return 0;
             }
             $.ajax({
@@ -862,6 +866,7 @@
     function filtro_ov_tabla(ov,tabla){
         campo=0;
         let filas = document.querySelectorAll("#"+tabla+" tbody tr");
+        console.log(filas);
         $('#'+tabla+' .collapse').collapse('hide');
         filas.forEach(fila => {  
             let valorCelda = fila.cells[campo].innerText.trim();
