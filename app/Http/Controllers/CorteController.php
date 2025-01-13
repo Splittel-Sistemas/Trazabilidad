@@ -55,79 +55,131 @@ class CorteController extends Controller
         return view('Areas.Cortes', compact('ordenesFabricacion'));
     }
     public function getData(Request $request)
-    {
- 
-        $limit = $request->input('length'); // Número de registros por página
-        $start = $request->input('start');  // Índice del primer registro
-    
-        // Consulta para obtener los datos de OrdenFabricacion sin filtrar por fecha
-        $datos = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
-            ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->select(
-                'OrdenFabricacion.id',
-                'OrdenFabricacion.OrdenVenta_id',
-                'OrdenFabricacion.OrdenFabricacion',
-                'OrdenFabricacion.Articulo',
-                'OrdenFabricacion.Descripcion',
-                'OrdenFabricacion.CantidadTotal',
-                'OrdenFabricacion.FechaEntregaSAP',
-                'OrdenFabricacion.FechaEntrega',
-                'OrdenFabricacion.created_at',
-                'OrdenFabricacion.updated_at',
-                DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida') // Suma de las partidas
-            )
-            ->groupBy(
-                'OrdenFabricacion.id',
-                'OrdenFabricacion.OrdenVenta_id',
-                'OrdenFabricacion.OrdenFabricacion',
-                'OrdenFabricacion.Articulo',
-                'OrdenFabricacion.Descripcion',
-                'OrdenFabricacion.CantidadTotal',
-                'OrdenFabricacion.FechaEntregaSAP',
-                'OrdenFabricacion.FechaEntrega',
-                'OrdenFabricacion.created_at',
-                'OrdenFabricacion.updated_at'
-            );
-    
-        // Total de registros sin filtrar
-        $totalRecords = $datos->count();
-    
-        // Aplicar filtros de búsqueda, si los hay
-        if ($request->has('search') && $request->input('search.value') != '') {
-            $searchValue = $request->input('search.value');
-            $datos->where('OrdenFabricacion.Articulo', 'like', '%' . $searchValue . '%');
-        }
-    
-        // Obtener los registros paginados
-        $data = $datos->skip($start)->take($limit)->get();
-    
-        $data->transform(function ($item) {
-            $cantidadTotal = $item->CantidadTotal;
-            $sumaCantidadPartida = $item->suma_cantidad_partida;
-        
-            // Obtener todas las partidas relacionadas
-            $partidas = $item->partidasof()->get();
-        
-            // Verificar si alguna partida tiene 'FechaFinalizar' en null
-            $pendientesFecha = $partidas->firstWhere('FechaFinalizar', null);
-            if ($pendientesFecha) {
-                $estatus = 'En proceso';
-            } elseif ($sumaCantidadPartida >= $cantidadTotal) {
-               
-                $estatus = 'Completado';
-            } else {
-                
-                $estatus = 'En proceso';
-            }
-        
-            $item->estatus = $estatus; // Asignar el estatus al elemento
-            return $item;
-        });
-        
-        
-        
-        
+{
+    $limit = $request->input('length', 10); // Número de registros por página
+    $start = $request->input('start', 0);  // Índice del primer registro
+    $searchValue = $request->input('search.value', ''); // Valor del filtro de búsqueda
+
+    // Consulta para obtener los datos de OrdenFabricacion
+    $query = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
+        ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->select(
+            'OrdenFabricacion.id',
+            'OrdenFabricacion.OrdenVenta_id',
+            'OrdenFabricacion.OrdenFabricacion',
+            'OrdenFabricacion.Articulo',
+            'OrdenFabricacion.Descripcion',
+            'OrdenFabricacion.CantidadTotal',
+            'OrdenFabricacion.FechaEntregaSAP',
+            'OrdenFabricacion.FechaEntrega',
+            'OrdenFabricacion.created_at',
+            'OrdenFabricacion.updated_at',
+            DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida') // Suma de las partidas
+        )
+        ->groupBy(
+            'OrdenFabricacion.id',
+            'OrdenFabricacion.OrdenVenta_id',
+            'OrdenFabricacion.OrdenFabricacion',
+            'OrdenFabricacion.Articulo',
+            'OrdenFabricacion.Descripcion',
+            'OrdenFabricacion.CantidadTotal',
+            'OrdenFabricacion.FechaEntregaSAP',
+            'OrdenFabricacion.FechaEntrega',
+            'OrdenFabricacion.created_at',
+            'OrdenFabricacion.updated_at'
+        );
+
+    // Total de registros sin filtrar
+    $totalRecords = $query->count();
+
+    // Aplicar filtro de búsqueda
+    if (!empty($searchValue)) {
+        $query->where('OrdenFabricacion.Articulo', 'like', '%' . $searchValue . '%');
     }
+
+    // Total de registros filtrados
+    $totalFiltered = $query->count();
+
+    // Obtener los registros paginados
+    $data = $query->skip($start)->take($limit)->get();
+
+    // Transformar los datos para agregar el estatus
+    $data->transform(function ($item) {
+        $cantidadTotal = $item->CantidadTotal;
+        $sumaCantidadPartida = $item->suma_cantidad_partida;
+
+        // Obtener las partidas relacionadas
+        $partidas = DB::table('partidasof')
+            ->where('OrdenFabricacion_id', $item->id)
+            ->get();
+
+        // Verificar si alguna partida tiene 'FechaFinalizar' en null
+        $pendientesFecha = $partidas->firstWhere('FechaFinalizar', null);
+        if ($pendientesFecha) {
+            $estatus = 'En proceso';
+        } elseif ($sumaCantidadPartida >= $cantidadTotal) {
+            $estatus = 'Completado';
+        } else {
+            $estatus = 'En proceso';
+        }
+
+        $item->estatus = $estatus; // Asignar el estatus al elemento
+        return $item;
+    });
+
+    // Formato de respuesta para DataTables
+    return response()->json([
+        'draw' => $request->input('draw'),
+        'recordsTotal' => $totalRecords,
+        'recordsFiltered' => $totalFiltered,
+        'data' => $data
+    ]);
+}
+public function cambiarEstatus(Request $request)
+{
+    $id = $request->input('id');
+    $nuevoEstatus = $request->input('estatus');
+    
+    // Depuración: log del estatus recibido
+    Log::debug('Estatus recibido:', ['estatus' => $nuevoEstatus]);
+
+    $estatusValidos = ['Completado', 'En proceso', 'Sin cortes'];
+    if (!in_array($nuevoEstatus, $estatusValidos)) {
+        return response()->json(['error' => 'Estatus inválido'], 400);
+    }
+
+    // Buscar la orden de fabricación
+    $orden = OrdenFabricacion::find($id);
+    if (!$orden) {
+        return response()->json(['error' => 'Orden no encontrada'], 404);
+    }
+
+    // Transformación del estatus según la lógica
+    $cantidadTotal = $orden->CantidadTotal;
+    $sumaCantidadPartida = $orden->suma_cantidad_partida;
+
+    if ($sumaCantidadPartida == 0) {
+        $orden->estatus = 'Sin cortes';
+    } elseif ($sumaCantidadPartida < $cantidadTotal) {
+        $orden->estatus = 'En proceso';
+    } else {
+        $orden->estatus = 'Completado';
+    }
+
+    // Regresar el nuevo estatus actualizado a la vista
+    return response()->json([
+        'message' => 'Estatus actualizado correctamente',
+        'estatus' => $orden->estatus, // Devuelve el estatus calculado
+    ]);
+}
+public function actualizarTabla()
+{
+    $ordenesFabricacion = $this->index()->ordenesFabricacion; // Reutilizar lógica de index
+    return response()->json($ordenesFabricacion);
+}
+
+
+
     public function verDetalles($id)
     {
         $ordenFabricacion = DB::table('OrdenFabricacion')
@@ -180,28 +232,29 @@ class CorteController extends Controller
         }
 
         // Obtener los resultados (ya sean todos o filtrados)
-        $resultados = $queryBuilder->get();
+        // Obtener los resultados (ya sean todos o filtrados)
+    $resultados = $queryBuilder->get();
 
-        // Calcular el estatus para cada resultado
-        $resultados->transform(function ($item) {
-            $cantidadTotal = $item->CantidadTotal;
-            $sumaCantidadPartida = $item->suma_cantidad_partida;
+    // Calcular el estatus para cada resultado
+    $resultados->transform(function ($item) {
+        $cantidadTotal = $item->CantidadTotal;
+        $sumaCantidadPartida = $item->suma_cantidad_partida;
 
-            // Lógica para determinar el estatus
-            if ($sumaCantidadPartida == 0) {
-                $item->estatus = 'Sin cortes';
-            } elseif ($sumaCantidadPartida < $cantidadTotal) {
-                $item->estatus = 'En proceso';
-            } else {
-                $item->estatus = 'Completado';
-            }
+        // Lógica para determinar el estatus
+        if ($sumaCantidadPartida == 0) {
+            $item->estatus = 'Sin cortes';
+        } elseif ($sumaCantidadPartida < $cantidadTotal) {
+            $item->estatus = 'En proceso';
+        } else {
+            $item->estatus = 'Completado';
+        }
 
-            return $item;
-        });
+        return $item;
+    });
 
-        // Devolver los resultados con estatus calculado
-        return response()->json($resultados);
-    }
+    // Devolver los resultados con estatus calculado
+    return response()->json($resultados);
+        }
     public function guardarPartidasOF(Request $request)
     {
         // Validar que los datos recibidos sean correctos
@@ -586,6 +639,8 @@ class CorteController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+   
+
 }
 
 

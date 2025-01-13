@@ -54,6 +54,7 @@
 }
 
 
+
 </style>
 
 @endsection
@@ -148,20 +149,48 @@
                                     <td class="cantidad">{{ $orden->CantidadTotal }}</td>
                                     <td class="fechaSAP">{{ $orden->FechaEntregaSAP }}</td>
                                     <td class="fechaEstimada">{{ $orden->FechaEntrega }}</td>
-                                    <td class="estatus">
+                                    <td class="estatus text-center align-middle" style="vertical-align: middle;">
+                                       
+                                
+                                        <!-- Insignia de estatus -->
                                         @php
                                             $badgeClass = match ($orden->estatus) {
-                                                'Completado' => 'badge-success',
-                                                'En proceso' => 'badge-warning',
-                                                default => 'badge-danger',
+                                                'Completado' => 'badge-phoenix-success',
+                                                'En proceso' => 'badge-phoenix-warning',
+                                                'Sin cortes' => 'badge-phoenix-secondary',
+                                                default => 'badge-phoenix-danger',
+                                            };
+
+                                            $badgeIcon = match ($orden->estatus) {
+                                                'Completado' => 'fas fa-check', // Icono de éxito
+                                                'En proceso' => 'fas fa-stream', // Icono de pendiente
+                                                'Sin cortes' => 'fas fa-ban', // Icono de bloqueado
+                                                default => 'fas fa-times', // Icono por defecto en caso de error
                                             };
                                         @endphp
-                                        <span class="badge {{ $badgeClass }}">{{ $orden->estatus }}</span>
+
+                                        <span class="badge {{ $badgeClass }} d-block mt-2" style="padding: 2px 6px; font-size: 12px; border-radius: 4px;">
+                                            <span class="fw-bold">{{ $orden->estatus }}</span>
+                                            <span class="ms-1 {{ $badgeIcon }}"></span>
+                                        </span>
                                     </td>
-                                    <td>
-                                        <a href="#" class="btn btn-outline-warning btn-sm ver-detalles" data-id="{{ $orden->id }}">
-                                            Detalles
+                                
+                                    <!-- Columna con botón de ver detalles -->
+                                    <td class="text-center align-middle" style="vertical-align: middle;">
+                                        <a href="#" 
+                                           class="btn btn-outline-warning btn-xs ver-detalles d-flex align-items-center justify-content-center mx-auto" 
+                                           data-id="{{ $orden->id }}" 
+                                           style="padding: 2px 6px; font-size: 12px; border-radius: 4px;">
+                                            <i class="bi bi-eye me-1"></i> Detalles
                                         </a>
+                                         <!-- Botón para actualizar el estatus -->
+                                         <!--<button 
+                                         type="button" 
+                                         class="btn btn-outline-success btn-xs btn-estatus d-flex align-items-center justify-content-center mx-auto" 
+                                         data-id="{{ $orden->id }}" 
+                                         style="padding: 2px 6px; font-size: 12px; border-radius: 4px;">
+                                         <i class="bi bi-pencil me-1"></i> Actualizar
+                                     </button>-->
                                     </td>
                                 </tr>
                                 @endforeach
@@ -175,7 +204,7 @@
         <div class="modal fade bd-example-modal-x" id="modalDetalleOrden" tabindex="-1"  role="dialog" aria-labelledby="modalDetalleOrdenLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
+                    <div class="modal-header p-2" style="background-color: #69d6f7; --bs-bg-opacity: .8;">
                         <h5 class="modal-title" id="modalDetalleOrdenLabel">Detalles de la Orden de Fabricacion</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -235,12 +264,11 @@
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                 
-                    <div class="modal-header bg-info text-white py-2">
+                    <div class="modal-header p-2" style="background-color: #84c3ec; --bs-bg-opacity: .8;">
                         <h5 class="modal-title" id="myModalLabel">Información de la Orden de Fabricación</h5>
                         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" style="color: red; font-size: 1.25rem; background: none; border: none; padding: 3; line-height: 2;">&times;</button>
-                        
                     </div>
+                    
                     <div class="modal-body">
                         <form>
                             <!-- Contenedor con desplazamiento dinámico -->
@@ -260,7 +288,7 @@
         <div class="modal fade" id="myModalRangos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header  bg-info text-white py-2">
+                    <div class="modal-header p-2" style="background-color: #84c3ec; --bs-bg-opacity: .8;">
                         <h5 class="modal-title" id="exampleModalLabel">Selecciona los Rangos para el PDF</h5>
                         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" style="color: red; font-size: 1.25rem; background: none; border: none; padding: 3; line-height: 2;">&times;</button>
                     </div>
@@ -302,10 +330,6 @@ $('#ordenFabricacionTable').DataTable({
     }
     
 });
-setInterval(function() {
-    table.ajax.reload(null, false); // false para mantener la paginación actual
-}, 3000);
-
 // Evento al hacer clic en "Ver Detalles"
 $('#ordenFabricacionTable').on('click', '.ver-detalles', function() {
     var ordenFabricacionId = $(this).data('id');
@@ -366,8 +390,6 @@ $('#ordenFabricacionTable').on('click', '.ver-detalles', function() {
         }
     });
 });
-
-// Confirmar y guardar los cortes
 $('#confirmar').click(function () {
     const numCortes = parseInt($('#numCortes').val().trim());
     const ordenFabricacionId = $('#ordenFabricacionId').val();
@@ -417,9 +439,11 @@ $('#confirmar').click(function () {
                 success: function (saveResponse) {
                     if (saveResponse.status === 'success') {
                         alert('Partidas guardadas correctamente.');
-                        
+
                         // Actualizar la tabla de cortes
                         obtenerCortes(ordenFabricacionId);
+                        actualizarTablaPrincipal(ordenFabricacionId) 
+                    
                     } else {
                         alert('Errores: ' + saveResponse.errores.join(', '));
                     }
@@ -436,7 +460,6 @@ $('#confirmar').click(function () {
         }
     });
 });
-
 // Función para obtener y mostrar los cortes registrados
 function obtenerCortes(ordenFabricacionId) {
     $.ajax({
@@ -457,6 +480,7 @@ function obtenerCortes(ordenFabricacionId) {
                         <td>
                             <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
                         </td>
+                        
                     </tr>
                 `).join('');
 
@@ -471,7 +495,57 @@ function obtenerCortes(ordenFabricacionId) {
         }
     });
 }
+//actualizamos la tabla
+function actualizarTablaPrincipal() {
+    $.ajax({
+        url: '/ruta-para-actualizar-tabla', // Reemplaza con la ruta de actualización
+        method: 'GET',
+        success: function (data) {
+            const tabla = $('#ordenFabricacionTable tbody');
+            tabla.empty(); // Limpiar la tabla actual
 
+            data.forEach((orden) => {
+                const estatusClass = {
+                    'Completado': 'badge-phoenix-success',
+                    'En proceso': 'badge-phoenix-warning',
+                    'Sin cortes': 'badge-phoenix-secondary'
+                }[orden.estatus] || 'badge-phoenix-danger';
+
+                const estatusIcon = {
+                    'Completado': 'fas fa-check',
+                    'En proceso': 'fas fa-stream',
+                    'Sin cortes': 'fas fa-ban'
+                }[orden.estatus] || 'fas fa-times';
+
+                const row = `
+                    <tr>
+                        <td>${orden.OrdenFabricacion}</td>
+                        <td>${orden.Articulo}</td>
+                        <td>${orden.Descripcion}</td>
+                        <td>${orden.CantidadTotal}</td>
+                        <td>${orden.FechaEntregaSAP}</td>
+                        <td>${orden.FechaEntrega}</td>
+                        <td class="text-center align-middle">
+                            <span class="badge ${estatusClass}">
+                                <span class="fw-bold">${orden.estatus}</span>
+                                <span class="${estatusIcon}"></span>
+                            </span>
+                        </td>
+                        <td class="text-center align-middle">
+                            <a href="#" class="btn btn-outline-warning btn-xs ver-detalles" data-id="${orden.id}">
+                                <i class="bi bi-eye me-1"></i> Detalles
+                            </a>
+                           
+                        </td>
+                    </tr>`;
+                tabla.append(row);
+            });
+        },
+        error: function () {
+            alert('Ocurrió un error al actualizar la tabla.');
+        }
+    });
+}
 // Al hacer clic en el botón "Finalizar"
 $(document).on('click', '.btn-finalizar', function() {
     var corteId = $(this).data('id');
@@ -485,13 +559,50 @@ $(document).on('click', '.btn-finalizar', function() {
             id: corteId,
             fecha_finalizacion: fechaHoraActual
         },
-        success: function(response) {
+        success: function(response)
+        
+        {
             if (response.success) {
                 // Recargar la tabla de cortes
                 obtenerCortes($('#ordenFabricacionId').val());
             } else {
                 alert('Error al finalizar el corte: ' + response.message);
             }
+            obtenerCortes(ordenFabricacionId);
+            $.ajax({
+                            url: "{{ route('orden-fabricacion.update-status') }}",
+                            method: "POST",
+                            data: {
+                                id: ordenFabricacionId,
+                                _token: "{{ csrf_token() }}"
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    // Actualizar el badge de estatus en la tabla
+                                    const row = $('tr[data-id="'+ ordenFabricacionId +'"]');
+                                    const badge = row.find('.estatus .badge');
+
+                                    let badgeClass;
+                                    switch (response.estatus) {
+                                        case 'Completado':
+                                            badgeClass = 'badge-success';
+                                            break;
+                                        case 'En proceso':
+                                            badgeClass = 'badge-warning';
+                                            break;
+                                        default:
+                                            badgeClass = 'badge-danger';
+                                    }
+
+                                    badge.attr('class', `badge ${badgeClass}`).text(response.estatus);
+                                } else {
+                                    alert(response.message);
+                                }
+                            },
+                            error: function (xhr) {
+                                alert('Error al actualizar el estatus');
+                            }
+                        });
         },
         error: function(xhr) {
             console.error(xhr.responseText);
@@ -509,26 +620,74 @@ $('#pdfRangos').on('click', function() {
 });
 
 // Filtrado por fecha
-$('#buscarFecha').click(function(e) {
+$('#buscarFecha').click(function (e) {
     e.preventDefault();
+
+    // Obtén la fecha seleccionada del input
     var fechaSeleccionada = $('#fecha').val();
 
     // Mostrar todas las filas si no se selecciona ninguna fecha
     if (!fechaSeleccionada) {
         $('#ordenFabricacionTable tbody tr').show();
         $('#noDataMessageFecha').hide();
-        return;
+        return; // Salimos si no se selecciona una fecha
     }
 
-    // Convertir la fecha seleccionada en un formato comparable
+    // Convertir la fecha seleccionada a un formato comparable (yyyy-mm-dd)
     var fechaSeleccionadaObj = new Date(fechaSeleccionada);
+    if (isNaN(fechaSeleccionadaObj)) {
+        console.error('La fecha seleccionada no es válida.');
+        return;
+    }
     var fechaSeleccionadaString = fechaSeleccionadaObj.toISOString().split('T')[0];
 
-    // Filtrar las filas de la tabla
+    // Inicializar la variable de la tabla
+    var table = $('#ordenFabricacionTable');
+
+    // Variable para controlar si hay datos
     var hayDatos = false;
-    $('#ordenFabricacionTable tbody tr').each(function() {
+
+    // Función para convertir fechas en español a formato ISO
+    function convertirFechaEspañol(fechaTexto) {
+        const meses = {
+            enero: 0,
+            febrero: 1,
+            marzo: 2,
+            abril: 3,
+            mayo: 4,
+            junio: 5,
+            julio: 6,
+            agosto: 7,
+            septiembre: 8,
+            octubre: 9,
+            noviembre: 10,
+            diciembre: 11,
+        };
+
+        const partes = fechaTexto.toLowerCase().match(/(\d+)\s+de\s+([a-záéíóú]+)\s+de\s+(\d{4})/);
+        if (!partes) return null; // Si no coincide con el formato esperado, retorna null
+
+        const dia = parseInt(partes[1], 10);
+        const mes = meses[partes[2]];
+        const anio = parseInt(partes[3], 10);
+
+        if (mes === undefined) return null; // Si el mes no es válido, retorna null
+
+        return new Date(anio, mes, dia);
+    }
+
+    // Iterar sobre las filas de la tabla
+    table.find('tbody tr').each(function () {
         var fechaEntrega = $(this).find('td:eq(5)').text().trim();
-        var fechaEntregaObj = new Date(fechaEntrega);
+
+        // Convertir la fecha de entrega al formato ISO
+        var fechaEntregaObj = convertirFechaEspañol(fechaEntrega);
+        if (!fechaEntregaObj) {
+            console.error('Fecha de entrega no válida en la tabla:', fechaEntrega);
+            $(this).hide();
+            return;
+        }
+
         var fechaEntregaString = fechaEntregaObj.toISOString().split('T')[0];
 
         // Comparar fechas y mostrar/ocultar filas
@@ -599,8 +758,9 @@ $(document).on('click', '#btn-descargar-pdf', function() {
 });
 // Filtro orden de fabricación
 $('#buscarOV').on('click', function(event) {
-    event.preventDefault();
-    var query = $('#query').val();
+    event.preventDefault(); // Previene el comportamiento por defecto
+
+    var query = $('#query').val(); // Obtiene el valor de búsqueda
 
     $.ajax({
         url: '/buscar-ordenes',
@@ -608,55 +768,85 @@ $('#buscarOV').on('click', function(event) {
         data: { query: query }, 
         beforeSend: function() {
             var table = $('#ordenFabricacionTable').DataTable();
-            table.clear().draw(); 
+            table.clear().draw(); // Limpia la tabla
 
+            // Muestra el loader en la tabla
             $('#ordenFabricacionTable tbody').html(`
                 <tr>
                     <td colspan="8" align="center">
-                        <img src="{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}" />
+                        <img src="{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}" alt="Cargando..." />
                     </td>
                 </tr>
             `);
         },
         success: function(response) {
-            var table = $('#ordenFabricacionTable').DataTable();
-            table.clear(); 
+    var table = $('#ordenFabricacionTable').DataTable();
+    table.clear(); // Limpia los datos previos
 
-            if (response.length > 0) {
-                let seen = new Set();
-                let uniqueResults = response.filter(item => {
-                    const isDuplicate = seen.has(item.OrdenFabricacion);
-                    seen.add(item.OrdenFabricacion);
-                    return !isDuplicate;
-                });
+    if (response.length > 0) {
+        let seen = new Set();
+        let uniqueResults = response.filter(item => {
+            const isDuplicate = seen.has(item.OrdenFabricacion);
+            seen.add(item.OrdenFabricacion);
+            return !isDuplicate;
+        });
 
-                uniqueResults.forEach(item => {
-                    var row = [
-                        item.OrdenFabricacion,
-                        item.Articulo,
-                        item.Descripcion,
-                        item.CantidadTotal,
-                        item.FechaEntregaSAP,
-                        item.FechaEntrega,
-                        `<span class="badge ${getBadgeClass(item.estatus)}">${item.estatus}</span>`,
-                        `<a href="#" class="btn btn-outline-info btn-sm ver-detalles" data-id="${item.id}">Ver Detalles</a>`
-                    ];
-                    table.row.add(row).draw();
-                });
-            } else {
-
-                $('#ordenFabricacionTable tbody').html(`
-                    <tr>
-                        <td colspan="8" class="text-center">No se encontraron resultados para la orden ingresada.</td>
-                    </tr>
-                `);
+        uniqueResults.forEach(item => {
+            // Determinar clases e íconos basados en el estatus
+            let badgeClass = '';
+            let badgeIcon = '';
+            switch (item.estatus) {
+                case 'Completado':
+                    badgeClass = 'badge-phoenix-success';
+                    badgeIcon = 'fas fa-check';
+                    break;
+                case 'En proceso':
+                    badgeClass = 'badge-phoenix-warning';
+                    badgeIcon = 'fas fa-stream';
+                    break;
+                case 'Sin cortes':
+                    badgeClass = 'badge-phoenix-secondary';
+                    badgeIcon = 'fas fa-ban';
+                    break;
+                default:
+                    badgeClass = 'badge-phoenix-danger';
+                    badgeIcon = 'fas fa-times';
             }
-        },
+
+            // Agregar la fila a la tabla
+            var row = [
+                item.OrdenFabricacion,
+                item.Articulo,
+                item.Descripcion,
+                item.CantidadTotal,
+                item.FechaEntregaSAP,
+                item.FechaEntrega,
+                `<span class="badge ${badgeClass} d-block mt-2" style="padding: 2px 6px; font-size: 12px; border-radius: 4px;">
+                    <span class="fw-bold">${item.estatus}</span>
+                    <span class="ms-1 ${badgeIcon}"></span>
+                </span>`,
+                `<a href="#" class="btn btn-outline-warning btn-xs ver-detalles d-flex align-items-center justify-content-center mx-auto" 
+                    style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="${item.id}">
+                    Ver Detalles
+                </a>`
+            ];
+            table.row.add(row).draw();
+        });
+    } else {
+        $('#ordenFabricacionTable tbody').html(`
+            <tr>
+                <td colspan="8" class="text-center">No se encontraron resultados para la orden ingresada.</td>
+            </tr>
+        `);
+    }
+},
+
         error: function(xhr, status, error) {
             alert('Error al buscar la orden: ' + error);
         }
     });
 });
+
 // Función para obtener la clase del badge según el estatus
 function getBadgeClass(estatus) {
     switch (estatus) {
@@ -666,6 +856,59 @@ function getBadgeClass(estatus) {
     }
 }
 });
+
+$(document).on('click', '.btn-estatus', function () {
+        const button = $(this);
+        const id = button.data('id');
+
+        $.ajax({
+        url: "{{ route('orden-fabricacion.update-status') }}",
+        method: "POST",
+        data: {
+            id: id,
+            _token: "{{ csrf_token() }}"
+        },
+        success: function (response) {
+            if (response.success) {
+                // Actualizar el badge en la tabla
+                const row = button.closest('tr');
+                const badge = row.find('.estatus .badge');
+
+                let badgeClass;
+                let badgeIcon;
+                switch (response.estatus) {
+                    case 'Completado':
+                        badgeClass = 'badge-phoenix-success';
+                        badgeIcon = 'fas fa-check'; // Icono de éxito
+                        break;
+                    case 'En proceso':
+                        badgeClass = 'badge-phoenix-warning';
+                        badgeIcon = 'fas fa-stream'; // Icono de pendiente
+                        break;
+                    case 'Sin cortes':
+                        badgeClass = 'badge-phoenix-secondary';
+                        badgeIcon = 'fas fa-ban'; // Icono de bloqueado
+                        break;
+                    default:
+                        badgeClass = 'badge-phoenix-danger';
+                        badgeIcon = 'fas fa-times'; // Icono de error por defecto
+                }
+
+                // Actualizar la clase, icono y el texto del badge
+                badge.attr('class', `badge ${badgeClass} d-block mt-2`)
+                    .html(`<span class="fw-bold">${response.estatus}</span><span class="ms-1 ${badgeIcon}"></span>`);
+            } else {
+                alert(response.message);
+            }
+        },
+        error: function (xhr) {
+            alert('Error al actualizar el estatus');
+        }
+    });
+
+});
 </script>
+
+
 
 @endsection
