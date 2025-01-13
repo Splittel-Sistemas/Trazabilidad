@@ -1,4 +1,4 @@
-@extends('layouts.menu1') 
+@extends('layouts.menu2') 
 @section('title', 'Crear Usuario')
 
 @section('content')
@@ -15,21 +15,24 @@
         @endif
         <form action="{{ route('registro.store') }}" method="POST" class="shadow p-4 rounded bg-white">
             @csrf
-            <div class="form-row mb-3">
+            <div class="row mb-4">
+                <!-- Apellido -->
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="apellido">Apellido</label>
                         <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Ingrese su apellido" required>
                     </div>
                 </div>
+                <!-- Nombre -->
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="nombre">Nombre</label>
+                        <label for="name">Nombre</label>
                         <input type="text" name="name" id="name" class="form-control" placeholder="Ingrese su nombre" required>
                     </div>
                 </div>
             </div>
-            <div class="form-row mb-3">
+            <!-- Correo Electrónico -->
+            <div class="row mb-3">
                 <div class="col-md-12">
                     <div class="form-group">
                         <label for="email">Correo Electrónico</label>
@@ -37,41 +40,47 @@
                     </div>
                 </div>
             </div>
-            <div class="form-row mb-4">
+            <!-- Contraseña y Confirmar Contraseña -->
+            <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="password">Contraseña</label>
-                        <input type="password" name="password" id="password" class="form-control" placeholder="Ingrese su contraseña" required>
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Ingrese su nueva contraseña">
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="password_confirmation">Confirmar Contraseña</label>
-                        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Confirme su contraseña" required>
+                        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Confirme su nueva contraseña">
                     </div>
                 </div>
             </div>
-            <div class="form-row mb-4">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="font-weight-bold">Roles</label>
-                        <small class="form-text text-muted">Seleccione uno o más roles.</small>
-            
-                        @foreach ($roles as $value)
-                            <div class="form-check">
-                                <input type="checkbox" name="roles[]" id="role_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
-                                    {{ (isset($registro) && $registro->roles->contains($value->id)) ? 'checked' : '' }}>
-                                <label for="role_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
-                            </div>
-                        @endforeach
-            
-                        @error('roles') 
-                            <div class="text-danger">{{ $message }}</div> 
-                        @enderror
+            <!-- Roles -->
+            <div class="form-group">
+                <label class="font-weight-bold">Roles</label>
+                <small class="form-text text-muted">Seleccione uno o más roles.</small>
+        
+                @foreach ($roles as $value)
+                    <div class="form-check">
+                        <input type="checkbox" name="roles[]" id="role_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
+                            {{ (isset($registro) && $registro->roles->contains($value->id)) ? 'checked' : '' }}>
+                        <label for="role_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
                     </div>
-                </div>
-            <button type="submit" class="btn btn-success btn-lg btn-block rounded-pill shadow-lg transition-all hover:bg-success hover:text-white">Registrar</button>
+                @endforeach
+        
+                @error('roles') 
+                    <div class="text-danger">{{ $message }}</div> 
+                @enderror
+            </div>
+            <!-- Botón de envío -->
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-success btn-lg rounded-pill shadow-lg transition-all hover:bg-success hover:text-white">Registrar</button>
+            </div>   
         </form>
+        
     </div>
+
+
+    
 @endsection
 

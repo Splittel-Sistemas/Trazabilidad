@@ -15,49 +15,53 @@ class RegistroController extends Controller
     // Método para listar todos los usuarios
     public function index()
     {
-        $personal = User::all(); 
+        $personal = User::all(); // Obtiene todos los usuarios
         $roles = Role::all(); 
         $permissions = Permission::all();
         
         return view('registro.index', compact('personal', 'roles', 'permissions'));
     }
-    // RegistroController.php
-    public function edit(User $registro)
-    {
-        $roles = Role::all(); 
-        $userRoles = $registro->roles->pluck('id'); 
-        return view('registro.edit', compact('registro', 'roles', 'userRoles'));
-    }
+
+  // RegistroController.php
+
+public function edit(User $registro)
+{
+    $roles = Role::all(); // Obtener todos los roles disponibles
+    $userRoles = $registro->roles->pluck('id'); // Obtener los roles asignados al usuario
+    return view('registro.edit', compact('registro', 'roles', 'userRoles'));
+}
+
+public function show(User $registro)
+{
     // Obtener los roles asignados al usuario
-    public function show(User $registro)
-    {
-        
-        $roles = $registro->roles->pluck('id')->toArray(); 
-        return response()->json([
-            'apellido' => $registro->apellido,
-            'name' => $registro->name,
-            'email' => $registro->email,
-            'roles' => $roles 
-        ]);
-    }
+    $roles = $registro->roles->pluck('id')->toArray(); 
+    return response()->json([
+        'apellido' => $registro->apellido,
+        'name' => $registro->name,
+        'email' => $registro->email,
+        'roles' => $roles // Enviar los roles asignados en la respuesta
+    ]);
+}
+
     // Método para mostrar el formulario de creación de un nuevo usuario
     public function create()
     {
-        $roles = Role::all(); 
-        $permissions = Permission::all(); 
-        return view('registro.create', compact('roles', 'permissions')); 
+        $roles = Role::all(); // Obtiene todos los roles
+        $permissions = Permission::all(); // Obtiene todos los permisos
+        return view('registro.create', compact('roles', 'permissions')); // Pasa los datos a la vista
     }
+
     // Validaciones y crear usuario
     public function store(Request $request)
     {
-       
+        // Validación de los datos del formulario
         $validatedData = $request->validate([
             'apellido' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'roles' => 'required|array', 
-          
+            'roles' => 'required|array', // Los roles son obligatorios
+           //'permissions' => 'required|array', // Los permisos son obligatorios
         ]);
 
         // Crear el nuevo usuario
@@ -68,24 +72,26 @@ class RegistroController extends Controller
             'password' => Hash::make($validatedData['password']),
         ]);
 
-        
+        // Asignar roles y permisos al usuario
         $user->roles()->sync($validatedData['roles']);
-      
+       // $user->permissions()->sync($validatedData['permissions']);
 
-        
+        // Redirigir al usuario con un mensaje de éxito
         return redirect()->route('registro.index')->with('status', 'Usuario creado exitosamente.');
     }
+
     // Método para actualizar un usuario
     public function update(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-        $user->update($request->only(['apellido', 'name', 'email']));
+{
+    $user = User::findOrFail($id);
+    $user->update($request->only(['apellido', 'name', 'email', 'password']));
 
-        
-        $user->roles()->sync($request->roles); 
+    // Actualizar roles
+    $user->roles()->sync($request->roles); // Sincronizar los roles seleccionados
 
-        return redirect()->route('registro.index')->with('status', 'Usuario actualizado exitosamente');
-    }
+    return redirect()->route('registro.index')->with('status', 'Usuario actualizado exitosamente');
+}
+
     public function destroy($id)
     {
         $registro = User::findOrFail($id);

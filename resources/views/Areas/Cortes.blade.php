@@ -1,8 +1,11 @@
-@extends('layouts.menu')
+@extends('layouts.menu2')
 @section('title', 'Planeación')
 @section('styles')
+
 <meta name="csrf-token" content="{{ csrf_token() }}">
+
 <style>
+    
 .table-bordered {
     border: 1px solid #ddd;
 }
@@ -55,39 +58,35 @@
 
 @endsection
 @section('content')
-<div class="breadcrumbs">
-    <div class="breadcrumbs-inner">
-        <div class="row m-0">
-            <div class="col-sm-4">
-                <div class="page-header float-left">
-                    <div class="page-title">
-                        <h1>Cortes</h1>
-                    </div>
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs mb-4">
+        <div class="row g-0">
+            <div class="col-sm-6">
+                <div class="page-header">
+                    <h1 class="fs-2">Cortes</h1>
                 </div>
             </div>
-            <div class="col-sm-8">
-                <div class="page-header float-right">
-                    <div class="page-title">
-                        <ol class="breadcrumb text-right">
-                            <li><a href="#">Dashboard</a></li>
-                            <li><a href="#">Cortes</a></li>
-                            <li class="active">Cortes</li>
-                        </ol>
-                    </div>
-                </div>
+            <div class="col-sm-6 d-flex justify-content-end">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="#">Cortes</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Cortes</li>
+                </ol>
             </div>
         </div>
     </div>
-</div>
+
+
 <div class="">
-    <div class="container mt-4">
+    <div class="container mt-2">
         <!-- Buscador -->
         <div class="row mb-4">
             <div class="col-lg-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header bg-primary text-white py-2">
                         <strong>Filtros</strong>
                     </div>
+        
                     <div class="card-body">
                         <form id="filtroForm" method="post" class="form-horizontal">
                             @csrf
@@ -123,48 +122,48 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card shadow-sm">
-                    <div  class="card-header bg-primary text-white">
+                    <div class="card-header bg-primary text-white py-2">
                         <strong>Órdenes de Fabricación</strong>
                     </div>
                     <div class="card-body table-responsive">
-                        <table id="ordenFabricacionTable" class="table table-bordered table-striped">
+                        <table id="ordenFabricacionTable" class="table table-bordered table-striped table-sm fs--1">
                             <thead class="thead-dark">
                                 <tr>
-                                    <th>Or.Fabricación</th>
-                                    <th>Artículo</th>
-                                    <th>Descripción</th>
-                                    <th>Cantidad Total</th>
-                                    <th>Fecha SAP</th>
-                                    <th>Fecha Estimada</th>
-                                    <th>Estatus</th>
-                                    <th>Acciones</th>
+                                    <th class="sort" data-sort="orden">Or. Fabricación</th>
+                                    <th class="sort" data-sort="articulo">Artículo</th>
+                                    <th class="sort" data-sort="descripcion">Descripción</th>
+                                    <th class="sort" data-sort="cantidad">Cantidad Total</th>
+                                    <th class="sort" data-sort="fechaSAP">Fecha SAP</th>
+                                    <th class="sort" data-sort="fechaEstimada">Fecha Estimada</th>
+                                    <th class="sort" data-sort="estatus">Estatus</th>
+                                    <th class="text-end align-middle">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="list">
                                 @foreach ($ordenesFabricacion as $orden)
-                                    <tr>
-                                        <td>{{ $orden->OrdenFabricacion }}</td>
-                                        <td>{{ $orden->Articulo }}</td>
-                                        <td>{{ $orden->Descripcion }}</td>
-                                        <td>{{ $orden->CantidadTotal }}</td>
-                                        <td>{{ $orden->FechaEntregaSAP }}</td>
-                                        <td>{{ $orden->FechaEntrega }}</td>
-                                        <td>
-                                            @php
-                                                $badgeClass = match ($orden->estatus) {
-                                                    'Completado' => 'badge-success',
-                                                    'En proceso' => 'badge-warning',
-                                                    default => 'badge-danger',
-                                                };
-                                            @endphp
-                                            <span class="badge {{ $badgeClass }}">{{ $orden->estatus }}</span>
-                                        </td>
-                                        <td>
-                                            <a href="#" class="btn btn-outline-warning btn-sm ver-detalles" data-id="{{ $orden->id }}">
-                                                Ver Detalles
-                                            </a>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td class="orden">{{ $orden->OrdenFabricacion }}</td>
+                                    <td class="articulo">{{ $orden->Articulo }}</td>
+                                    <td class="descripcion">{{ $orden->Descripcion }}</td>
+                                    <td class="cantidad">{{ $orden->CantidadTotal }}</td>
+                                    <td class="fechaSAP">{{ $orden->FechaEntregaSAP }}</td>
+                                    <td class="fechaEstimada">{{ $orden->FechaEntrega }}</td>
+                                    <td class="estatus">
+                                        @php
+                                            $badgeClass = match ($orden->estatus) {
+                                                'Completado' => 'badge-success',
+                                                'En proceso' => 'badge-warning',
+                                                default => 'badge-danger',
+                                            };
+                                        @endphp
+                                        <span class="badge {{ $badgeClass }}">{{ $orden->estatus }}</span>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="btn btn-outline-warning btn-sm ver-detalles" data-id="{{ $orden->id }}">
+                                            Detalles
+                                        </a>
+                                    </td>
+                                </tr>
                                 @endforeach
                             </tbody>
                         </table>
@@ -172,7 +171,6 @@
                 </div>
             </div>
         </div>
-        
         <!-- Modal de Detalles de la Orden -->
         <div class="modal fade bd-example-modal-x" id="modalDetalleOrden" tabindex="-1"  role="dialog" aria-labelledby="modalDetalleOrdenLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
@@ -195,11 +193,12 @@
                         <div class="mt-4 p-3 bg-light rounded">
                             <h5 class="text-secondary"><i class="bi bi-scissors"></i> </h5>
                             <form id="formCortesDia" class="needs-validation d-flex align-items-center" novalidate>
-                                <div class="mb-3 d-flex align-items-center">
+                                <div class="mb-2 d-flex align-items-center">
                                     <label for="numCortes" class="form-label ms-2 mb-0">Registrar Cantidad:</label> <!-- Eliminar margen inferior con mb-0 -->
                                     <input type="number" class="form-control form-control-sm ms-2" id="numCortes" name="numCortes" min="0" placeholder="Ingresa el número" required>
-                                    <button type="button" id="confirmar" class="btn btn-outline-success btn-sm ms-2" data-id="{{ $orden->id }}">Confirmar Corte</button>
+                                    <button type="button" id="confirmar" class="btn btn-outline-success btn-sm ms-2" data-id="{{ $orden->id }}">Confirmar</button>
                                 </div>
+                                
                             </form>
                            
                             <div id="cortesGuardados" class="mt-3 text-success fw-bold">
@@ -236,7 +235,8 @@
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="modal-header bg-secondary text-white">
+                 
+                    <div class="modal-header bg-info text-white py-2">
                         <h5 class="modal-title" id="myModalLabel">Información de la Orden de Fabricación</h5>
                         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" style="color: red; font-size: 1.25rem; background: none; border: none; padding: 3; line-height: 2;">&times;</button>
                         
@@ -260,7 +260,7 @@
         <div class="modal fade" id="myModalRangos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header bg-secondary text-white">
+                    <div class="modal-header  bg-info text-white py-2">
                         <h5 class="modal-title" id="exampleModalLabel">Selecciona los Rangos para el PDF</h5>
                         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" style="color: red; font-size: 1.25rem; background: none; border: none; padding: 3; line-height: 2;">&times;</button>
                     </div>
@@ -293,15 +293,6 @@
 @section('scripts')
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<!--
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
--->
 <script>
 $(document).ready(function() {
 // Inicialización de la tabla de DataTables

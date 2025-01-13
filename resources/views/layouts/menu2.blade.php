@@ -2003,7 +2003,7 @@
                             <li><a class="dropdown-item" href="apps/chat.html">
                                 <div class="dropdown-item-wrapper"><span class="me-2 uil" data-feather="message-square"></span>Chat</div>
                             </a></li>
-                            <li class="dropdown"><a class="dropdown-item dropdown-toggle" id="email" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                            <!--<li class="dropdown"><a class="dropdown-item dropdown-toggle" id="email" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
                                 <div class="dropdown-item-wrapper"><span class="uil fs-0 uil-angle-right lh-1 dropdown-indicator-icon"></span><span><span class="me-2 uil" data-feather="mail"></span>Email</span></div>
                             </a>
                             <ul class="dropdown-menu">
@@ -2016,7 +2016,7 @@
                                 <li><a class="dropdown-item" href="apps/email/compose.html">
                                     <div class="dropdown-item-wrapper"><span class="me-2 uil"></span>Compose</div>
                                 </a></li>
-                            </ul>
+                            </ul>-->
                             </li>
                             <li class="dropdown"><a class="dropdown-item dropdown-toggle" id="events" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
                                 <div class="dropdown-item-wrapper"><span class="uil fs-0 uil-angle-right lh-1 dropdown-indicator-icon"></span><span><span class="me-2 uil" data-feather="bookmark"></span>Events</span></div>
@@ -2722,6 +2722,7 @@
                         <li><a class="dropdown-item" href="apps/chat.html">
                             <div class="dropdown-item-wrapper"><span class="me-2 uil" data-feather="message-square"></span>Chat</div>
                         </a></li>
+                        <!--
                         <li class="dropdown"><a class="dropdown-item dropdown-toggle" id="email" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
                             <div class="dropdown-item-wrapper"><span class="uil fs-0 uil-angle-right lh-1 dropdown-indicator-icon"></span><span><span class="me-2 uil" data-feather="mail"></span>Email</span></div>
                         </a>
@@ -2735,7 +2736,7 @@
                             <li><a class="dropdown-item" href="apps/email/compose.html">
                                 <div class="dropdown-item-wrapper"><span class="me-2 uil"></span>Compose</div>
                             </a></li>
-                        </ul>
+                        </ul>-->
                         </li>
                         <li class="dropdown"><a class="dropdown-item dropdown-toggle" id="events" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
                             <div class="dropdown-item-wrapper"><span class="uil fs-0 uil-angle-right lh-1 dropdown-indicator-icon"></span><span><span class="me-2 uil" data-feather="bookmark"></span>Events</span></div>
@@ -3442,6 +3443,7 @@
                         <li><a class="dropdown-item" href="apps/chat.html">
                             <div class="dropdown-item-wrapper"><span class="me-2 uil" data-feather="message-square"></span>Chat</div>
                         </a></li>
+                        <!--
                         <li class="dropdown"><a class="dropdown-item dropdown-toggle" id="email" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
                             <div class="dropdown-item-wrapper"><span class="uil fs-0 uil-angle-right lh-1 dropdown-indicator-icon"></span><span><span class="me-2 uil" data-feather="mail"></span>Email</span></div>
                         </a>
@@ -3455,7 +3457,7 @@
                             <li><a class="dropdown-item" href="apps/email/compose.html">
                                 <div class="dropdown-item-wrapper"><span class="me-2 uil"></span>Compose</div>
                             </a></li>
-                        </ul>
+                        </ul>-->
                         </li>
                         <li class="dropdown"><a class="dropdown-item dropdown-toggle" id="events" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
                             <div class="dropdown-item-wrapper"><span class="uil fs-0 uil-angle-right lh-1 dropdown-indicator-icon"></span><span><span class="me-2 uil" data-feather="bookmark"></span>Events</span></div>
@@ -4158,6 +4160,7 @@
                             </a></li>
                         </ul>
                         </li>
+                        <!--
                         <li><a class="dropdown-item" href="apps/chat.html">
                             <div class="dropdown-item-wrapper"><span class="me-2 uil" data-feather="message-square"></span>Chat</div>
                         </a></li>
@@ -4174,7 +4177,7 @@
                             <li><a class="dropdown-item" href="apps/email/compose.html">
                                 <div class="dropdown-item-wrapper"><span class="me-2 uil"></span>Compose</div>
                             </a></li>
-                        </ul>
+                        </ul>-->
                         </li>
                         <li class="dropdown"><a class="dropdown-item dropdown-toggle" id="events" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
                             <div class="dropdown-item-wrapper"><span class="uil fs-0 uil-angle-right lh-1 dropdown-indicator-icon"></span><span><span class="me-2 uil" data-feather="bookmark"></span>Events</span></div>
@@ -5211,6 +5214,7 @@
                         <li><a class="dropdown-item" href="apps/chat.html">
                             <div class="dropdown-item-wrapper"><span class="me-2 uil" data-feather="message-square"></span>Chat</div>
                             </a></li>
+                            <!--
                         <li class="dropdown"><a class="dropdown-item dropdown-toggle" id="email" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
                             <div class="dropdown-item-wrapper"><span class="uil fs-0 uil-angle-right lh-1 dropdown-indicator-icon"></span><span><span class="me-2 uil" data-feather="mail"></span>Email</span></div>
                             </a>
@@ -5224,7 +5228,7 @@
                             <li><a class="dropdown-item" href="apps/email/compose.html">
                                 <div class="dropdown-item-wrapper"><span class="me-2 uil"></span>Compose</div>
                                 </a></li>
-                            </ul>
+                            </ul>-->
                         </li>
                         <li class="dropdown"><a class="dropdown-item dropdown-toggle" id="events" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside">
                             <div class="dropdown-item-wrapper"><span class="uil fs-0 uil-angle-right lh-1 dropdown-indicator-icon"></span><span><span class="me-2 uil" data-feather="bookmark"></span>Events</span></div>
@@ -5794,7 +5798,7 @@
                         <div class="text-center mt-auto">
                         <div class="avatar avatar-3xl status-online"><img class="rounded-circle border border-3 border-white" src="assets/img/team/30.webp" alt="" /></div>
                         <h5 class="mt-2 mb-3">Eric</h5>
-                        <p class="text-center text-black mb-0">Ask us anything – we’ll get back to you here or by email within 24 hours.</p>
+                        <!--<p class="text-center text-black mb-0">Ask us anything – we’ll get back to you here or by email within 24 hours.</p>-->
                         </div>
                     </div>
                     </div>

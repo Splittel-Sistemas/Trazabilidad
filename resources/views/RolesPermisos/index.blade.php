@@ -1,4 +1,4 @@
-@extends('layouts.menu')
+@extends('layouts.menu2')
 
 @section('title', 'Roles & Permisos')
 
@@ -37,91 +37,83 @@
         }
     </style>
 @endsection
+
 @section('content')
     <!-- Breadcrumbs -->
-    <div class="breadcrumbs">
-        <div class="breadcrumbs-inner">
-            <div class="row m-0">
-                <div class="col-sm-4">
-                    <div class="page-header float-left">
-                        <div class="page-title">
-                            <h1>Roles & Permisos</h1>
-                        </div>
-                    </div>
+
+    <div class="breadcrumbs mb-4">
+        <div class="row g-0">
+            <div class="col-sm-6">
+                <div class="page-header">
+                    <h1 class="fs-2">Roles & Permisos</h1>
                 </div>
-                <div class="col-sm-8">
-                    <div class="page-header float-right">
-                        <div class="page-title">
-                            <ol class="breadcrumb text-right">
-                                <li><a href="#">Dashboard</a></li>
-                                <li><a href="#">Roles & Permisos</a></li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
+            </div>
+            <div class="col-sm-6 d-flex justify-content-end">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="#">Areas</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Roles & Permisos</li>
+                </ol>
             </div>
         </div>
     </div>
+
     <!-- Contenido principal -->
     <div class="container my-4">
         <a href="{{ route('RolesPermisos.create') }}" class="btn btn-outline-info mb-3">Agregar Rol</a>
         @if (session('status'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('status') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
         @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ session('error') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-        <div class="table-responsive">
-            <table id="roles-table" class="table table-bordered table-striped">
+        <div class="card-body table-responsive">
+            <table id="roles-table" class="table table-bordered table-striped table-sm fs--1">
                 <thead class="thead-dark">
                     <tr>
-                        <th>Nombre del Rol</th>
-                        <th>Permisos</th>
-                        <th>Acciones</th>
+                        <th class="sort" data-sort="nombreRol">Nombre del Rol</th>
+                        <th class="sort" data-sort="permisos">Permisos</th>
+                        <th class="sort" data-sort="permisos">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="list">
                     @foreach ($roles as $role)
-                        <tr>
-                            <td>{{ $role->name }}</td>
-                            <td>
-                                <ul>
-                                    @foreach ($role->permissions as $permissions)
-                                        <li>{{ $permissions->name }}</li>
-                                    @endforeach
-                                </ul>
-                            </td>
-                            <td>
-                                <!-- Botón para editar los permisos del rol -->
-                                <button class="btn btn-outline-warning btn-sm btn-edit" data-id="{{ $role->id }}"  data-toggle="modal"  data-target="#roleModal">Editar</button>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td class="nombreRol">{{ $role->name }}</td>
+                        <td class="permisos">
+                            <ul>
+                                @foreach ($role->permissions as $permissions)
+                                    <li>{{ $permissions->name }}</li>
+                                @endforeach
+                            </ul>
+                        </td>
+                        <td class="acciones">
+                            <button class="btn btn-outline-warning btn-sm btn-edit" data-id="{{ $role->id }}" data-bs-toggle="modal" data-bs-target="#roleModal">
+                                Editar
+                            </button>
+                        </td>
+                    </tr>
                     @endforeach
                 </tbody>
             </table>
-        </div>
+        </div>        
     </div>
-        <!-- Modal para editar el rol -->
-    <div class="modal fade" id="roleModal" tabindex="-1" role="dialog" aria-labelledby="roleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+
+    <!-- Modal para editar el rol -->
+    <div class="modal fade" id="roleModal" tabindex="-1" aria-labelledby="roleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="roleModalLabel">Editar Rol</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                <form id="roleEditForm" method="POST" >
+                <form id="roleEditForm" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
@@ -137,105 +129,99 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Guardar cambios</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
 @endsection
+
 @section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script>
-$(document).ready(function () {
-    // Inicialización de DataTables con idioma en español
-    $('#roles-table').DataTable({
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
-        }
-    });
 
-    // Configuración global de CSRF para solicitudes AJAX
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-});
-
-// Evento para cargar datos del rol al abrir el modal
-$(document).on('click', '.btn-edit', function () {
-    var roleId = $(this).data('id'); 
-
-    // Realizar solicitud AJAX para obtener datos del rol
-    $.ajax({
-        url: `/RolesPermisos/${roleId}/edit`,
-        method: 'GET',
-        success: function (data) {
-            
-            $('#roleName').val(data.name);
-
-            
-            var permissionsContainer = $('#rolePermissions');
-            permissionsContainer.empty();
-            data.available_permissions.forEach(permission => {
-                permissionsContainer.append(`
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="permission-${permission.id}" 
-                               name="permissions[]" value="${permission.id}" 
-                               ${data.permissions.includes(permission.id) ? 'checked' : ''}>
-                        <label class="form-check-label" for="permission-${permission.id}">
-                            ${permission.name}
-                        </label>
-                    </div>
-                `);
+    <script>
+        $(document).ready(function () {
+            // Inicialización de DataTables con idioma en español
+            $('#roles-table').DataTable({
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
+                }
             });
 
+            // Configuración global de CSRF para solicitudes AJAX
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+        });
+
+        // Evento para cargar datos del rol al abrir el modal
+        $(document).on('click', '.btn-edit', function () {
+            var roleId = $(this).data('id'); 
+
+            // Realizar solicitud AJAX para obtener datos del rol
+            $.ajax({
+                url: `/RolesPermisos/${roleId}/edit`,
+                method: 'GET',
+                success: function (data) {
+                    $('#roleName').val(data.name);
+                    var formAction = `/RolesPermisos/${data.id}`;
+                    $('#roleEditForm').attr('action', formAction);
+
+                    var permissionsContainer = $('#rolePermissions');
+                    permissionsContainer.empty();
+                    data.available_permissions.forEach(permission => {
+                        permissionsContainer.append(`
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="permission-${permission.id}" 
+                                       name="permissions[]" value="${permission.id}" 
+                                       ${data.permissions.includes(permission.id) ? 'checked' : ''}>
+                                <label class="form-check-label" for="permission-${permission.id}">
+                                    ${permission.name}
+                                </label>
+                            </div>
+                        `);
+                    });
+
+                },
+                error: function () {
+                    Swal.fire('Error', 'No se pudieron cargar los datos del rol.', 'error');
+                }
+            });
+        });
+
+        // Evento para enviar el formulario de edición
+        $(document).on('submit', '#roleEditForm', function (event) {
+            event.preventDefault(); // Prevenir el envío tradicional del formulario
+
+            var form = $(this);
+            var formData = form.serialize();
+
             
-            var formAction = `/RolesPermisos/${data.id}`;
-            $('#roleEditForm').attr('action', formAction);
-        },
-        error: function () {
-            Swal.fire('Error', 'No se pudieron cargar los datos del rol.', 'error');
-        }
-    });
-});
-
-// Evento para enviar el formulario de edición
-$(document).on('submit', '#roleEditForm', function (event) {
-    event.preventDefault(); 
-
-    var form = $(this);
-    var formData = form.serialize();
-
-    // Realizar la solicitud AJAX para actualizar el rol
-    $.ajax({
-        url: form.attr('action'),
-        method: 'PUT',
-        data: formData,
-        success: function (response) {
-            if (response.success) {
-                Swal.fire('Éxito', response.message, 'success').then(() => {
-                    $('#roleModal').modal('hide'); 
-                    location.reload(); 
-                });
-            } else {
-                Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
-            }
-        },
-        error: function () {
-            Swal.fire('Error', 'No se pudo actualizar el rol.', 'error');
-        }
-    });
-});
-
-
-</script>
-        
-    
+            $.ajax({
+                url: form.attr('action'),
+                method: 'PUT',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire('Éxito', response.message, 'success').then(() => {
+                            $('#roleModal').modal('hide'); 
+                            location.reload(); 
+                        });
+                    } else {
+                        Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Error', 'No se pudo actualizar el rol.', 'error');
+                }
+            });
+        });
+    </script>
 @endsection
