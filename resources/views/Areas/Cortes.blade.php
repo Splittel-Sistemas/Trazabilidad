@@ -198,7 +198,7 @@
                         <!-- Sección de detalles -->
                         <div class="mb-4">
                             <h5 class="text-secondary"><i class="bi bi-info-circle"></i></h5>
-                            <table class="table table-striped table-bordered">
+                            <table class="table table-striped table-bordered table-sm">
                                 <tbody id="modalBodyContent">
                                     <!-- Aquí se insertarán los datos dinámicamente -->
                                 </tbody>

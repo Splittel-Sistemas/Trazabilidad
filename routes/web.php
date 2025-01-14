@@ -78,8 +78,10 @@ Route::resource('registro', RegistroController::class);
 Route::get('/registro/{id}', [RegistroController::class, 'show'])->name('registro.show');
 
 // Rutas para activar y desactivar usuarios
+
 Route::post('/users/activar', [RegistroController::class, 'activar'])->name('users.activar');
 Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar');
+
 
 // ruta permisos y roles
 Route::resource('/RolesPermisos', RolesPermisoController::class);
