@@ -23,6 +23,7 @@
         <script src="{{asset('menu2/vendors/simplebar/simplebar.min.js')}}"></script>
         <script src="{{asset('menu2/assets/js/config.js')}}"></script>
         <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <!-- ===============================================-->
         <!--    Stylesheets-->
         <!-- ===============================================-->
