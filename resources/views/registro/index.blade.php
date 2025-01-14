@@ -26,6 +26,7 @@
         background-color: transparent; /* Fondo transparente */
         padding: 10px;
         cursor: pointer;
+        transform: scale(2);
         transition: transform 0.3s ease; /* Para la animación de escala */
     }
 
@@ -41,7 +42,7 @@
 
     /* Hover sobre los botones */
     .btn.toggle-status:hover {
-        transform: scale(1.1); /* Aumenta el tamaño al pasar el cursor */
+        transform: scale(2.2); /* Aumenta el tamaño al pasar el cursor */
     }
     </style>
 @endsection
@@ -95,19 +96,19 @@
             <table class="table table-striped table-sm fs--1 mb-0">
                 <thead class="bg-primary text-white">
                     <tr>
-                        <th class="sort border-top ps-3" data-sort="apellido">Apellido</th>
                         <th class="sort border-top" data-sort="nombre">Nombre</th>
-                        <th class="sort border-top" data-sort="email">Email</th>
-                        <th class="sort border-top" data-sort="roles">Roles</th>
-                        <th class="sort border-top" data-sort="estatus">Estatus Usuario</th>
-                        <th class="sort text-end align-middle pe-0 border-top">Acciones</th>
+                        <th class="sort border-top ps-3" data-sort="apellido">Apellido</th>
+                        <th class="sort border-top" data-sort="email">Correo</th>
+                        <th class="sort border-top" data-sort="roles">Role</th>
+                        <th class="sort border-top" data-sort="estatus">Activo</th>
+                        <th class="sort border-top text-center  pe-0">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="list">
                     @foreach ($personal as $registro)
                     <tr>
-                        <td class="align-middle ps-3 apellido">{{ $registro->apellido }}</td>
                         <td class="align-middle nombre">{{ $registro->name }}</td>
+                        <td class="align-middle ps-3 apellido">{{ $registro->apellido }}</td>
                         <td class="align-middle email">{{ $registro->email }}</td>
                         <td class="align-middle roles">
                             @foreach ($registro->roles as $role)
@@ -119,8 +120,8 @@
                                 <i class="fa {{ $registro->active ? 'fa-toggle-on' : 'fa-toggle-off' }}" aria-hidden="true"></i>
                             </button>
                         </td>
-                        <td class="align-middle text-end pe-0">
-                            <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#userModal" data-id="{{ $registro->id }}">Editar Usuario</button>
+                        <td class=" text-center pe-0">
+                            <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#userModal" data-id="{{ $registro->id }}"><i class="fas fa-edit"></i> Editar</button>
                         </td>
                     </tr>
                     @endforeach
@@ -225,7 +226,8 @@
         // Cargar datos del modal
         $('button[data-bs-toggle="modal"]').on('click', function() {
             var userId = $(this).data('id');  
-            var url = '/registro/' + userId;  
+            var url = "{{ route('registro.show', ['id' => '__userId__']) }}".replace('__userId__', userId);
+            //var url = '/registro/' + userId;  
             $.ajax({
                 url: url,
                 method: 'GET',
