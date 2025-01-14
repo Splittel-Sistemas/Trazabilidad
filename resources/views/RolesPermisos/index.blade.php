@@ -102,10 +102,8 @@
                                     @endforeach
                                 </ul>
                             </td>
-                            <td class="acciones align-middle text-end pe-0">
-                                    <button class="btn btn-outline-warning btn-sm btn-edit" data-id="{{ $role->id }}" data-bs-toggle="modal" data-bs-target="#roleModal">
-                                        Editar
-                                    </button>
+                            <td class=" text-center pe-0">
+                                    <button type="button" class="btn btn-outline-warning btn-sm btn-edit" data-bs-toggle="modal" data-bs-target="#roleModal" data-id="{{ $role->id }}"><i class="fas fa-edit"></i>Editar</button>  
                             </td>
                         </tr>
                         @endforeach
@@ -184,38 +182,40 @@
 
         // Evento para cargar datos del rol al abrir el modal
         $(document).on('click', '.btn-edit', function () {
-            var roleId = $(this).data('id'); 
+    var roleId = $(this).data('id'); 
+    // Cambiar el parámetro 'id' por 'RolesPermiso' en la ruta
+    var url = "{{ route('RolesPermisos.edit', ['RolesPermiso' => '__roleId__']) }}".replace('__roleId__', roleId);
 
-            // Realizar solicitud AJAX para obtener datos del rol
-            $.ajax({
-                url: `/RolesPermisos/${roleId}/edit`,
-                method: 'GET',
-                success: function (data) {
-                    $('#roleName').val(data.name);
-                    var formAction = `/RolesPermisos/${data.id}`;
-                    $('#roleEditForm').attr('action', formAction);
+    // Realizar solicitud AJAX para obtener datos del rol
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function (data) {
+            $('#roleName').val(data.name);
+            var formAction = `/RolesPermisos/${data.id}`;
+            $('#roleEditForm').attr('action', formAction);
 
-                    var permissionsContainer = $('#rolePermissions');
-                    permissionsContainer.empty();
-                    data.available_permissions.forEach(permission => {
-                        permissionsContainer.append(`
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="permission-${permission.id}" 
-                                       name="permissions[]" value="${permission.id}" 
-                                       ${data.permissions.includes(permission.id) ? 'checked' : ''}>
-                                <label class="form-check-label" for="permission-${permission.id}">
-                                    ${permission.name}
-                                </label>
-                            </div>
-                        `);
-                    });
-
-                },
-                error: function () {
-                    Swal.fire('Error', 'No se pudieron cargar los datos del rol.', 'error');
-                }
+            var permissionsContainer = $('#rolePermissions');
+            permissionsContainer.empty();
+            data.available_permissions.forEach(permission => {
+                permissionsContainer.append(`
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="permission-${permission.id}" 
+                               name="permissions[]" value="${permission.id}" 
+                               ${data.permissions.includes(permission.id) ? 'checked' : ''}>
+                        <label class="form-check-label" for="permission-${permission.id}">
+                            ${permission.name}
+                        </label>
+                    </div>
+                `);
             });
-        });
+        },
+        error: function (xhr, status, error) {
+            console.error("Error en la solicitud AJAX:", error);
+        }
+    });
+});
+
 
         // Evento para enviar el formulario de edición
         $(document).on('submit', '#roleEditForm', function (event) {

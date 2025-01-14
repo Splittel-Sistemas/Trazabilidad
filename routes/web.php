@@ -56,9 +56,11 @@ Route::post('corte/finalizar/corte', [CorteController::class, 'finalizarCorte'])
 Route::get('/orden-fabricacion/cantidad-total/{id}', [CorteController::class, 'getCantidadTotal'])->name('ordenFabricacion.getCantidadTotal');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
 Route::get('/orden-fabricacion/{id}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('ordenFabricacion.getCortesInfo');
+Route::get('/orden-fabricacion/{ordenFabricacionId}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('orden-fabricacion.cortes-info');
+
 
 Route::post('/orden-fabricacion/update-status', [CorteController::class, 'updateStatus'])->name('orden-fabricacion.update-status');
-Route::get('/ruta-para-actualizar-tabla', [CorteController::class, 'actualizarTabla']);
+Route::get('/ruta-para-actualizar-tabla', [CorteController::class, 'actualizarTabla'])->name('actualizar.tabla');
 
 
 
@@ -68,6 +70,8 @@ Route::post('/generar-etiquetas', [CorteController::class, 'generarEtiquetas'])-
 Route::get('/mostrar/etiqueta', [CorteController::class, 'MostarInformacion'])->name('mostrar.etiqueta');
 Route::get('/generar-pdf', [CorteController::class, 'generarPDF'])->name('generar.pdf');
 Route::post('/generar-pdf-rangos', [CorteController::class, 'PDFCondicion'])->name('pdfcondicion');
+
+
 
 //ruta para el formulario de registro
 Route::resource('registro', RegistroController::class);
@@ -79,6 +83,9 @@ Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->nam
 
 // ruta permisos y roles
 Route::resource('/RolesPermisos', RolesPermisoController::class);
+// Verifica que la ruta tenga el nombre correcto
+Route::get('/RolesPermisos/{RolesPermiso}/edit', [RolesPermisoController::class, 'edit'])->name('RolesPermisos.edit');
+
 
 
 
