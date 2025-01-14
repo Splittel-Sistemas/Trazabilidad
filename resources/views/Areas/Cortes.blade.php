@@ -52,9 +52,6 @@
     background-color: #17a2b8;
     color: white;
 }
-
-
-
 </style>
 
 @endsection
@@ -77,8 +74,6 @@
         </div>
     </div>
 
-
-<div class="">
     <div class="container mt-2">
         <!-- Buscador -->
         <div class="row mb-4">
@@ -87,7 +82,6 @@
                     <div class="card-header bg-primary text-white py-2">
                         <strong>Filtros</strong>
                     </div>
-        
                     <div class="card-body">
                         <form id="filtroForm" method="post" class="form-horizontal">
                             @csrf
@@ -102,7 +96,6 @@
                                         </button>
                                     </div>
                                 </div>
-
                                 <!-- Filtro por Orden de Venta -->
                                 <div class="col-md-6 mb-3">
                                     <label for="query" class="form-label"><strong>Filtro por Orden de Fabricacion</strong></label>
@@ -120,91 +113,83 @@
             </div>
         </div>
         <!-- Tabla de datos sin filtro -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white py-2">
-                        <strong>Órdenes de Fabricación</strong>
-                    </div>
-                    <div class="card-body table-responsive">
-                        <table id="ordenFabricacionTable" class="table table-bordered table-striped table-sm fs--1">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th class="sort" data-sort="orden">Or. Fabricación</th>
-                                    <th class="sort" data-sort="articulo">Artículo</th>
-                                    <th class="sort" data-sort="descripcion">Descripción</th>
-                                    <th class="sort" data-sort="cantidad">Cantidad Total</th>
-                                    <th class="sort" data-sort="fechaSAP">Fecha SAP</th>
-                                    <th class="sort" data-sort="fechaEstimada">Fecha Estimada</th>
-                                    <th class="sort" data-sort="estatus">Estatus</th>
-                                    <th class="text-end align-middle">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody class="list">
-                                @foreach ($ordenesFabricacion as $orden)
-                                <tr>
-                                    <td class="orden">{{ $orden->OrdenFabricacion }}</td>
-                                    <td class="articulo">{{ $orden->Articulo }}</td>
-                                    <td class="descripcion">{{ $orden->Descripcion }}</td>
-                                    <td class="cantidad">{{ $orden->CantidadTotal }}</td>
-                                    <td class="fechaSAP">{{ $orden->FechaEntregaSAP }}</td>
-                                    <td class="fechaEstimada">{{ $orden->FechaEntrega }}</td>
-                                    <td class="estatus text-center align-middle" style="vertical-align: middle;">
-                                       
-                                
-                                        <!-- Insignia de estatus -->
-                                        @php
-                                            $badgeClass = match ($orden->estatus) {
-                                                'Completado' => 'badge-phoenix-success',
-                                                'En proceso' => 'badge-phoenix-warning',
-                                                'Sin cortes' => 'badge-phoenix-secondary',
-                                                default => 'badge-phoenix-danger',
-                                            };
-
-                                            $badgeIcon = match ($orden->estatus) {
-                                                'Completado' => 'fas fa-check', // Icono de éxito
-                                                'En proceso' => 'fas fa-stream', // Icono de pendiente
-                                                'Sin cortes' => 'fas fa-ban', // Icono de bloqueado
-                                                default => 'fas fa-times', // Icono por defecto en caso de error
-                                            };
-                                        @endphp
-
-                                        <span class="badge {{ $badgeClass }} d-block mt-2" style="padding: 2px 6px; font-size: 12px; border-radius: 4px;">
-                                            <span class="fw-bold">{{ $orden->estatus }}</span>
-                                            <span class="ms-1 {{ $badgeIcon }}"></span>
-                                        </span>
-                                    </td>
-                                
-                                    <!-- Columna con botón de ver detalles -->
-                                    <td class="text-center align-middle" style="vertical-align: middle;">
-                                        <a href="#" 
-                                           class="btn btn-outline-warning btn-xs ver-detalles d-flex align-items-center justify-content-center mx-auto" 
-                                           data-id="{{ $orden->id }}" 
-                                           style="padding: 2px 6px; font-size: 12px; border-radius: 4px;">
-                                            <i class="bi bi-eye me-1"></i> Detalles
-                                        </a>
-                                         <!-- Botón para actualizar el estatus -->
-                                         <!--<button 
-                                         type="button" 
-                                         class="btn btn-outline-success btn-xs btn-estatus d-flex align-items-center justify-content-center mx-auto" 
-                                         data-id="{{ $orden->id }}" 
-                                         style="padding: 2px 6px; font-size: 12px; border-radius: 4px;">
-                                         <i class="bi bi-pencil me-1"></i> Actualizar
-                                     </button>-->
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+        <div id="tableExample3" data-list='{"valueNames":["orden","articulo","descripcion","cantidad","fechaSAP","fechaEstimada","estatus"],"page":5,"pagination":true}'>
+            <div class="search-box mb-3 mx-auto">
+                <form class="position-relative" data-bs-toggle="search" data-bs-display="static">
+                    <input class="form-control search-input search form-control-sm" type="search" placeholder="Buscar" aria-label="Buscar">
+                    <svg class="svg-inline--fa fa-magnifying-glass search-box-icon" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="currentColor" d="M500.3 443.7..."></path>
+                    </svg>
+                </form>
+            </div>
+            <div class="table-responsive">
+                <table id="ordenFabricacionTable" class="table table-striped table-sm fs--1 mb-0">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th class="sort border-top ps-3" data-sort="orden">Or. Fabricación</th>
+                            <th class="sort border-top" data-sort="articulo">Artículo</th>
+                            <th class="sort border-top" data-sort="descripcion">Descripción</th>
+                            <th class="sort border-top" data-sort="cantidad">Cantidad Total</th>
+                            <th class="sort border-top" data-sort="fechaSAP">Fecha SAP</th>
+                            <th class="sort border-top" data-sort="fechaEstimada">Fecha Estimada</th>
+                            <th class="sort border-top" data-sort="estatus">Estatus</th>
+                            <th class="sort text-end align-middle pe-0 border-top">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="list">
+                        @foreach ($ordenesFabricacion as $orden)
+                            <tr>
+                                <td class="align-middle ps-3 orden">{{ $orden->OrdenFabricacion }}</td>
+                                <td class="align-middle articulo">{{ $orden->Articulo }}</td>
+                                <td class="align-middle descripcion">{{ $orden->Descripcion }}</td>
+                                <td class="align-middle cantidad">{{ $orden->CantidadTotal }}</td>
+                                <td class="align-middle fechaSAP">{{ $orden->FechaEntregaSAP }}</td>
+                                <td class="align-middle fechaEstimada">{{ $orden->FechaEntrega }}</td>
+                                <td class="align-middle estatus">
+                                    @php
+                                        $badgeClass = match ($orden->estatus) {
+                                            'Completado' => 'badge badge-phoenix fs--2 badge-phoenix-success',
+                                            'En proceso' => 'badge badge-phoenix fs--2 badge-phoenix-warning',
+                                            'Sin cortes' => 'badge badge-phoenix fs--2 badge-phoenix-secondary',
+                                            default => 'badge badge-phoenix fs--2 badge-phoenix-danger',
+                                        };
+                                        $iconClass = match ($orden->estatus) {
+                                            'Completado' => 'ms-1 fas fa-check',
+                                            'En proceso' => 'ms-1 fas fa-spinner',
+                                            'Sin cortes' => 'ms-1 fas fa-times',
+                                            default => 'ms-1 fas fa-exclamation-triangle',
+                                        };
+                                    @endphp
+                                    <span class="{{ $badgeClass }}">
+                                        {{ $orden->estatus }}
+                                        <i class="{{ $iconClass }}"></i>
+                                    </span>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <a href="#" class="btn btn-outline-warning btn-xs ver-detalles"  style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="{{ $orden->id }}">
+                                        <i class="bi bi-eye"></i> Detalles
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-between mt-3">
+                <span data-list-info="data-list-info"></span>
+                <div class="d-flex">
+                    <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                    <ul class="mb-0 pagination"></ul>
+                    <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
                 </div>
             </div>
         </div>
+    </div>
         <!-- Modal de Detalles de la Orden -->
         <div class="modal fade bd-example-modal-x" id="modalDetalleOrden" tabindex="-1"  role="dialog" aria-labelledby="modalDetalleOrdenLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
-                    <div class="modal-header p-2" style="background-color: #69d6f7; --bs-bg-opacity: .8;">
+                    <div class="modal-header p-2" style="background-color: #002fff; --bs-bg-opacity: .8;">
                         <h5 class="modal-title" id="modalDetalleOrdenLabel">Detalles de la Orden de Fabricacion</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -248,8 +233,7 @@
                                         <tbody>
                                             <!-- Cortes de la tabla PartidasOF se reflejan aquí -->
                                         </tbody>
-                                    </table>
-                                    
+                                    </table> 
                                 </div>
                                 <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cerrar</button>
@@ -268,7 +252,6 @@
                         <h5 class="modal-title" id="myModalLabel">Información de la Orden de Fabricación</h5>
                         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" style="color: red; font-size: 1.25rem; background: none; border: none; padding: 3; line-height: 2;">&times;</button>
                     </div>
-                    
                     <div class="modal-body">
                         <form>
                             <!-- Contenedor con desplazamiento dinámico -->
@@ -319,17 +302,16 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+
 <script>
 $(document).ready(function() {
 // Inicialización de la tabla de DataTables
-$('#ordenFabricacionTable').DataTable({
+/*$('#ordenFabricacionTable').DataTable({
     "language": {
         "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
     }
     
-});
+});*/
 // Evento al hacer clic en "Ver Detalles"
 $('#ordenFabricacionTable').on('click', '.ver-detalles', function() {
     var ordenFabricacionId = $(this).data('id');
@@ -620,6 +602,7 @@ $('#pdfRangos').on('click', function() {
 });
 
 // Filtrado por fecha
+// Filtrado por fecha
 $('#buscarFecha').click(function (e) {
     e.preventDefault();
 
@@ -633,55 +616,59 @@ $('#buscarFecha').click(function (e) {
         return; // Salimos si no se selecciona una fecha
     }
 
-    // Convertir la fecha seleccionada a un formato comparable (yyyy-mm-dd)
-    var fechaSeleccionadaObj = new Date(fechaSeleccionada);
-    if (isNaN(fechaSeleccionadaObj)) {
+    // Convertir la fecha seleccionada a un objeto Date
+    var fechaSeleccionadaObj = detectarYConvertirFecha(fechaSeleccionada);
+    if (!fechaSeleccionadaObj) {
         console.error('La fecha seleccionada no es válida.');
         return;
     }
     var fechaSeleccionadaString = fechaSeleccionadaObj.toISOString().split('T')[0];
 
-    // Inicializar la variable de la tabla
+    // Inicializar la tabla y control de datos
     var table = $('#ordenFabricacionTable');
-
-    // Variable para controlar si hay datos
     var hayDatos = false;
 
-    // Función para convertir fechas en español a formato ISO
-    function convertirFechaEspañol(fechaTexto) {
+    // Función para detectar y convertir diferentes formatos de fecha
+    function detectarYConvertirFecha(fechaTexto) {
+        const formatos = [
+            { regex: /^(\d{2})-(\d{2})-(\d{4})$/, orden: ['dia', 'mes', 'anio'] }, // dd-mm-yyyy
+            { regex: /^(\d{4})-(\d{2})-(\d{2})$/, orden: ['anio', 'mes', 'dia'] }, // yyyy-mm-dd
+            { regex: /^(\d{1,2})\s+de\s+([a-záéíóú]+)\s+de\s+(\d{4})$/i, orden: ['dia', 'mesTexto', 'anio'] }, // dd de mes de yyyy
+        ];
+
         const meses = {
-            enero: 0,
-            febrero: 1,
-            marzo: 2,
-            abril: 3,
-            mayo: 4,
-            junio: 5,
-            julio: 6,
-            agosto: 7,
-            septiembre: 8,
-            octubre: 9,
-            noviembre: 10,
-            diciembre: 11,
+            enero: 0, febrero: 1, marzo: 2, abril: 3, mayo: 4, junio: 5,
+            julio: 6, agosto: 7, septiembre: 8, octubre: 9, noviembre: 10, diciembre: 11
         };
 
-        const partes = fechaTexto.toLowerCase().match(/(\d+)\s+de\s+([a-záéíóú]+)\s+de\s+(\d{4})/);
-        if (!partes) return null; // Si no coincide con el formato esperado, retorna null
+        for (const formato of formatos) {
+            const match = fechaTexto.match(formato.regex);
+            if (match) {
+                const grupos = match.slice(1);
+                let dia, mes, anio;
 
-        const dia = parseInt(partes[1], 10);
-        const mes = meses[partes[2]];
-        const anio = parseInt(partes[3], 10);
+                formato.orden.forEach((campo, index) => {
+                    if (campo === 'dia') dia = parseInt(grupos[index], 10);
+                    if (campo === 'mes') mes = parseInt(grupos[index], 10) - 1;
+                    if (campo === 'mesTexto') mes = meses[grupos[index].toLowerCase()];
+                    if (campo === 'anio') anio = parseInt(grupos[index], 10);
+                });
 
-        if (mes === undefined) return null; // Si el mes no es válido, retorna null
+                if (dia !== undefined && mes !== undefined && anio !== undefined) {
+                    return new Date(anio, mes, dia);
+                }
+            }
+        }
 
-        return new Date(anio, mes, dia);
+        return null; // Si no coincide con ningún formato
     }
 
     // Iterar sobre las filas de la tabla
     table.find('tbody tr').each(function () {
         var fechaEntrega = $(this).find('td:eq(5)').text().trim();
 
-        // Convertir la fecha de entrega al formato ISO
-        var fechaEntregaObj = convertirFechaEspañol(fechaEntrega);
+        // Convertir la fecha de entrega a un objeto Date
+        var fechaEntregaObj = detectarYConvertirFecha(fechaEntrega);
         if (!fechaEntregaObj) {
             console.error('Fecha de entrega no válida en la tabla:', fechaEntrega);
             $(this).hide();
@@ -706,6 +693,8 @@ $('#buscarFecha').click(function (e) {
         $('#noDataMessageFecha').hide();
     }
 });
+
+
 
 // Evento para mostrar la información de la orden cuando se hace clic en el botón
 $(document).on('click', '.btn-generar-etiquetas', function() {
@@ -767,10 +756,7 @@ $('#buscarOV').on('click', function(event) {
         type: 'GET',
         data: { query: query }, 
         beforeSend: function() {
-            var table = $('#ordenFabricacionTable').DataTable();
-            table.clear().draw(); // Limpia la tabla
-
-            // Muestra el loader en la tabla
+            // Muestra el loader en la tabla mientras se cargan los datos
             $('#ordenFabricacionTable tbody').html(`
                 <tr>
                     <td colspan="8" align="center">
@@ -780,72 +766,79 @@ $('#buscarOV').on('click', function(event) {
             `);
         },
         success: function(response) {
-    var table = $('#ordenFabricacionTable').DataTable();
-    table.clear(); // Limpia los datos previos
+            // Limpia las filas previas
+            $('#ordenFabricacionTable tbody').empty();
 
-    if (response.length > 0) {
-        let seen = new Set();
-        let uniqueResults = response.filter(item => {
-            const isDuplicate = seen.has(item.OrdenFabricacion);
-            seen.add(item.OrdenFabricacion);
-            return !isDuplicate;
-        });
+            if (response.length > 0) {
+                // Filtra los resultados para que no haya duplicados
+                let seen = new Set();
+                let uniqueResults = response.filter(item => {
+                    const isDuplicate = seen.has(item.OrdenFabricacion);
+                    seen.add(item.OrdenFabricacion);
+                    return !isDuplicate;
+                });
 
-        uniqueResults.forEach(item => {
-            // Determinar clases e íconos basados en el estatus
-            let badgeClass = '';
-            let badgeIcon = '';
-            switch (item.estatus) {
-                case 'Completado':
-                    badgeClass = 'badge-phoenix-success';
-                    badgeIcon = 'fas fa-check';
-                    break;
-                case 'En proceso':
-                    badgeClass = 'badge-phoenix-warning';
-                    badgeIcon = 'fas fa-stream';
-                    break;
-                case 'Sin cortes':
-                    badgeClass = 'badge-phoenix-secondary';
-                    badgeIcon = 'fas fa-ban';
-                    break;
-                default:
-                    badgeClass = 'badge-phoenix-danger';
-                    badgeIcon = 'fas fa-times';
+                // Agrega las filas a la tabla
+                uniqueResults.forEach(item => {
+                    // Determina las clases e íconos del estatus
+                    let badgeClass = '';
+                    let badgeIcon = '';
+                    switch (item.estatus) {
+                        case 'Completado':
+                            badgeClass = 'badge badge-phoenix fs--2 badge-phoenix-success';
+                            badgeIcon = 'ms-1 fas fa-check';
+                            break;
+                        case 'En proceso':
+                            badgeClass = 'badge badge-phoenix fs--2 badge-phoenix-warning';
+                            badgeIcon = 'ms-1 fas fa-spinner';
+                            break;
+                        case 'Sin cortes':
+                            badgeClass = 'badge badge-phoenix fs--2 badge-phoenix-secondary';
+                            badgeIcon = 'ms-1 fas fa-times';
+                            break;
+                        default:
+                            badgeClass = 'badge-danger';
+                            badgeIcon = 'fas fa-times';
+                    }
+                            
+
+                    // Crea una fila de la tabla
+                    var row = `
+                        <tr>
+                            <td>${item.OrdenFabricacion}</td>
+                            <td>${item.Articulo}</td>
+                            <td>${item.Descripcion}</td>
+                            <td>${item.CantidadTotal}</td>
+                            <td>${item.FechaEntregaSAP}</td>
+                            <td>${item.FechaEntrega}</td>
+                            <td><span class="badge ${badgeClass} d-block mt-2" style="font-size: 12px;">
+                                <span class="fw-bold">${item.estatus}</span>
+                                <span class="ms-1 ${badgeIcon}"></span>
+                            </span></td>
+                            <td><a href="#" class="btn btn-outline-warning btn-xs ver-detalles d-flex align-items-center justify-content-center" 
+                                style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="${item.id}">
+                                 Detalles
+                            </a></td>
+                             
+                        </tr>
+                    `;
+                    $('#ordenFabricacionTable tbody').append(row);
+                });
+            } else {
+                // Si no hay resultados, muestra un mensaje
+                $('#ordenFabricacionTable tbody').html(`
+                    <tr>
+                        <td colspan="8" class="text-center">No se encontraron resultados para la orden ingresada.</td>
+                    </tr>
+                `);
             }
-
-            // Agregar la fila a la tabla
-            var row = [
-                item.OrdenFabricacion,
-                item.Articulo,
-                item.Descripcion,
-                item.CantidadTotal,
-                item.FechaEntregaSAP,
-                item.FechaEntrega,
-                `<span class="badge ${badgeClass} d-block mt-2" style="padding: 2px 6px; font-size: 12px; border-radius: 4px;">
-                    <span class="fw-bold">${item.estatus}</span>
-                    <span class="ms-1 ${badgeIcon}"></span>
-                </span>`,
-                `<a href="#" class="btn btn-outline-warning btn-xs ver-detalles d-flex align-items-center justify-content-center mx-auto" 
-                    style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="${item.id}">
-                    Ver Detalles
-                </a>`
-            ];
-            table.row.add(row).draw();
-        });
-    } else {
-        $('#ordenFabricacionTable tbody').html(`
-            <tr>
-                <td colspan="8" class="text-center">No se encontraron resultados para la orden ingresada.</td>
-            </tr>
-        `);
-    }
-},
-
+        },
         error: function(xhr, status, error) {
             alert('Error al buscar la orden: ' + error);
         }
     });
 });
+
 
 // Función para obtener la clase del badge según el estatus
 function getBadgeClass(estatus) {
