@@ -1,9 +1,20 @@
 @extends('layouts.menu2') 
 @section('title', 'Crear Rol') 
-@section('content')
-    <div class="container mt-5">
-        <h1 class="mb-4 text-center" style="color: #2d7007; text-shadow: 2px 2px 5px rgba(0,0,0,0.1);">Registrar Nuevo Rol</h1>
 
+@section('content')
+<div class="breadcrumbs mb-4">
+    <div class="row g-0">
+        <div class="col-sm-6">
+            <div class="page-header">
+                <h1 class="fs-2">Registrar Nuevo Rol</h1>
+            </div>
+        </div>
+        <div class="col-sm-6 d-flex justify-content-end">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Roles</li>
+            </ol>
+        </div>
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0">
