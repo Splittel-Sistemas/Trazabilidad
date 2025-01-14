@@ -328,7 +328,10 @@ class AreasController extends Controller
         //1 = iniciado, 0 = Finalizado, 2 = Retrabajo
         $Partidas=$partidasOF->Partidas()->where('Estatus','=','1')->get();
         foreach ($Partidas as $key => $item) {
-            $ContarPartidas+=$item->CantidadaPartidas;
+            return $item->Areas();
+            /*if($item){
+                $ContarPartidas+=$item->CantidadaPartidas;
+            }*/
         }
         $FechaHoy=date('Y-m-d H:i:s');
         $ContarPartidas+=$Cantidad;
@@ -384,7 +387,7 @@ class AreasController extends Controller
 
         ]);*/
     }
-    public function TipoManual(){
+    public function TablaTipoNoEscaner($OrdenFabricacion){  
     }
     public function AreaPartidas(Request $request){
         $codigo=$request->codigo;
