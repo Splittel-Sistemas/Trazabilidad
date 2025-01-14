@@ -38,8 +38,8 @@ class AreasController extends Controller
         $CantidadCompletada=0;
         $EscanerExiste=0;
         if($CodigoTam==3 && $CodigoPartes[2]!=""){
-            $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->get();
-            if($datos->count()==0){
+            $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
+            if($datos=="" OR $datos==null){
                 return response()->json([
                     'tabla' => $menu,
                     'Escaner' => $Escaner,
@@ -50,8 +50,8 @@ class AreasController extends Controller
         
                 ]);
             }else{
-                $CantidadTotal=$datos[0]->CantidadTotal;
-                $Escaner=$datos[0]->Escaner;
+                $CantidadTotal=$datos->CantidadTotal;
+                $Escaner=$datos->Escaner;
                 if($CodigoTam==3){
                     if($Escaner==1){
                         if($Inicio==1){
@@ -69,22 +69,22 @@ class AreasController extends Controller
                         }
                     }
                 }
-                foreach( $datos as $ordenFabricacion){
-                    foreach( $ordenFabricacion->partidasOF()->orderBy('id', 'desc')->get() as $PartidasordenFabricacion){
+                //foreach( $datos as $ordenFabricacion){
+                    foreach( $datos->partidasOF()->orderBy('id', 'desc')->get() as $PartidasordenFabricacion){
                         foreach( $PartidasordenFabricacion->Partidas()->orderBy('id', 'desc')->get() as $Partidas){
                             if(!($Partidas->Areas()->where('Areas_id','=',3)->first() =="" || $Partidas->Areas()->where('Areas_id','=',3)->first() == null )){
                                 $menu.='<tr>
                                 <td class="align-middle ps-3 NumParte">'.$Partidas->NumParte.'</td>
                                 <td class="align-middle Cantidad">'.$Partidas->CantidadaPartidas.'</td>
-                                <td class="align-middle Inicio">'.$Partidas->FechaComienzo.'</td>
-                                <td class="align-middle Fin">'.$Partidas->FechaTermina.'</td>';
-                                if($Partidas->FechaTermina==""){
+                                <td class="align-middle Inicio">'.$Partidas->Areas()->first()->pivot->FechaComienzo.'</td>
+                                <td class="align-middle Fin">'.$Partidas->Areas()->first()->pivot->FechaTermina.'</td>';
+                                if($Partidas->Areas()->first()->pivot->FechaTermina==""){
                                     $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">En proceso</span><span class="ms-1 fas fa-cogs"></span></div></td>';
-                                    if(!($Partidas->FechaTermina=="" || $Partidas->FechaTermina==null) && $Partidas->TipoAccion==0){
+                                    if(!($Partidas->Areas()->first()->pivot->FechaTermina=="" || $Partidas->Areas()->first()->pivot->FechaTermina==null) && $Partidas->TipoAccion==0){
                                         $CantidadCompletada+=$Partidas->CantidadaPartidas;
                                     }
                                 }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Completado</span><span class="ms-1 fas fa-check"></span></div></td>';
-                                    if(!($Partidas->FechaTermina=="" || $Partidas->FechaTermina==null) && $Partidas->TipoAccion==0){
+                                    if(!($Partidas->Areas()->first()->pivot->FechaTermina=="" || $Partidas->Areas()->first()->pivot->FechaTermina==null) && $Partidas->TipoAccion==0){
                                         $CantidadCompletada+=$Partidas->CantidadaPartidas;
                                     }
                                 }
@@ -93,7 +93,7 @@ class AreasController extends Controller
                             }
                         }
                     } 
-                }
+                //}
                 $menu='<div class="card-body">
                     <div id="ContainerTableSuministros" class="table-list">
                         <div class="row justify-content-start g-0">
@@ -194,16 +194,20 @@ class AreasController extends Controller
                     $Partidas->CantidadaPartidas=1;
                     $Partidas->TipoAccion=0;
                     $Partidas->NumParte=$CodigoPartes[2];
-                    $Partidas->FechaComienzo=$FechaHoy;
+                    $pivotData = [
+                        'FechaComienzo' => $FechaHoy,
+                        'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                        'Linea_id' => $this->funcionesGenerales->Linea(),
+                    ];
                     if ($Partidas->save()) {
-                        $Partidas->Areas()->attach($Area);
+                        $Partidas->Areas()->attach($Area,$pivotData);
                         return 1;
                     } else {
                         return 0;
                     }
                 }else{
                     if(!($datosPartidas->Areas()->where('Areas_id','=',3)->first() =="" || $datosPartidas->Areas()->where('Areas_id','=',3)->first() == null)){
-                        if($datosPartidas->FechaTermina==null || $datosPartidas->FechaTermina==""){
+                        if($datosPartidas->Areas()->first()->pivot->FechaTermina==null || $datosPartidas->Areas()->first()->pivot->FechaTermina==""){
                             return 2;
                         }else{
                             if ($confirmacion==1) {
@@ -212,9 +216,13 @@ class AreasController extends Controller
                                 $Partidas->CantidadaPartidas=1;
                                 $Partidas->TipoAccion=1;
                                 $Partidas->NumParte=$CodigoPartes[2];
-                                $Partidas->FechaComienzo=$FechaHoy;
+                                $pivotData = [
+                                    'FechaComienzo' => $FechaHoy,
+                                    'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                                    'Linea_id' => $this->funcionesGenerales->Linea(),
+                                ];
                                 if ($Partidas->save()) {
-                                    $Partidas->Areas()->attach($Area);
+                                    $Partidas->Areas()->attach($Area,$pivotData);
                                     return 3;
                                 } else {
                                     return 0;
@@ -228,10 +236,14 @@ class AreasController extends Controller
                             $Partidas->PartidasOF_id=$datos->id;
                             $Partidas->CantidadaPartidas=1;
                             $Partidas->NumParte=$CodigoPartes[2];
-                            $Partidas->FechaComienzo=$FechaHoy;
                             $Partidas->TipoAccion=0;
+                            $pivotData = [
+                                'FechaComienzo' => $FechaHoy,
+                                'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                                'Linea_id' => $this->funcionesGenerales->Linea(),
+                            ];
                             if ($Partidas->save()) {
-                                $Partidas->Areas()->attach($Area);
+                                $Partidas->Areas()->attach($Area,$pivotData);
                                 return 3;
                             } else {
                                 return 0;
@@ -268,12 +280,15 @@ class AreasController extends Controller
             //Comprobamos si existe la Orden de fabricacion con la partida y el numero de parte ya creado
             $datosPartidas=$datos->Partidas()->where('NumParte','=',$CodigoPartes[2])->orderBy('id', 'desc')->first();
             if(!$datosPartidas==null){
-                if(!($datosPartidas->FechaComienzo==null || $datosPartidas->FechaComienzo=="") && ($datosPartidas->FechaTermina==null || $datosPartidas->FechaTermina=="")){
-                    $datosPartidas->FechaTermina=$FechaHoy;
-                    if ($datosPartidas->save()) {
-                        return 1;
+                if(!($datosPartidas->Areas()->first()->pivot->FechaComienzo==null || $datosPartidas->Areas()->first()->pivot->FechaComienzo=="") && ($datosPartidas->Areas()->first()->pivot->FechaTermina==null || $datosPartidas->Areas()->first()->pivot->FechaTermina=="")){
+                    $area = $datosPartidas->Areas()->first();
+                    if ($area) {
+                        $datosPartidas->Areas()->updateExistingPivot($area->id, [
+                            'FechaTermina' => $FechaHoy
+                        ]);
+                        return 1; // Si la actualización se realizó correctamente
                     } else {
-                        return 0;
+                        return 0; // Si no se encontró el área
                     }
                 }else{return 2;}
             }else{
