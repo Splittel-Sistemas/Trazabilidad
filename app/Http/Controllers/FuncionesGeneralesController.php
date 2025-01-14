@@ -10,7 +10,6 @@ class FuncionesGeneralesController extends Controller
 {
     private $connection;
 
-    
     public function checkSapConnection()
     {
         try {
@@ -22,7 +21,6 @@ class FuncionesGeneralesController extends Controller
             return false;
         }
     }
-
     private function connectToSap()
     {
         $datasource = 'DRIVER=HDBODBC;SERVERNODE=192.168.2.19:30015;CHAR_AS_UTF8=1;';
@@ -39,7 +37,6 @@ class FuncionesGeneralesController extends Controller
 
         $this->connection = $conn;
     }
-
     public function ejecutarConsulta($sql)
     {
         
@@ -62,14 +59,12 @@ class FuncionesGeneralesController extends Controller
        
         return $datos;
     }
-
     public function obtenerDatosDeSap()
     {
        
         $sql = 'SELECT * FROM HN_OPTRONICS.OCRD';
         return $this->ejecutarConsulta($sql);
     }
-
     public function cerrarConexion()
     {
         if ($this->connection) {
@@ -83,6 +78,12 @@ class FuncionesGeneralesController extends Controller
     public function decrypt($dato){
         $encrypted = Crypt::decrypt($dato);
         return $encrypted;
+    }
+    public function InfoUsuario(){
+        return 1;
+    }
+    public function Linea(){
+        return 1;
     }
     
 }

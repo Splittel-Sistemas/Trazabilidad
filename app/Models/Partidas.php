@@ -15,7 +15,8 @@ class Partidas extends Model
     }
     public function Areas()
     {
-        return $this->belongsToMany(Areas::class,'Partidas_Areas','Partidas_id','Areas_id');
+        return $this->belongsToMany(Areas::class,'Partidas_Areas','Partidas_id','Areas_id')
+        ->withPivot('FechaComienzo', 'FechaTermina', 'Areas_id', 'Linea_id');
     }
 
 }
