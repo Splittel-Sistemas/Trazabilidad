@@ -76,6 +76,8 @@ Route::post('/generar-pdf-rangos', [CorteController::class, 'PDFCondicion'])->na
 //ruta para el formulario de registro
 Route::resource('registro', RegistroController::class);
 Route::get('/registro/{id}', [RegistroController::class, 'show'])->name('registro.show');
+Route::put('/registros/{id}', [RegistroController::class, 'update'])->name('registro.update');
+
 
 // Rutas para activar y desactivar usuarios
 
@@ -86,7 +88,10 @@ Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->nam
 // ruta permisos y roles
 Route::resource('/RolesPermisos', RolesPermisoController::class);
 // Verifica que la ruta tenga el nombre correcto
-Route::get('/RolesPermisos/{RolesPermiso}/edit', [RolesPermisoController::class, 'edit'])->name('RolesPermisos.edit');
+// Rutas correctas con el parámetro 'role'
+Route::get('/RolesPermisos/{role}/edit', [RolesPermisoController::class, 'edit'])->name('RolesPermisos.edit');
+Route::put('/RolesPermisos/{role}', [RolesPermisoController::class, 'update'])->name('RolesPermisos.update');
+
 
 
 

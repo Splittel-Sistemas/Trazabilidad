@@ -132,7 +132,7 @@
                     <h5 class="modal-title" id="roleModalLabel">Editar Rol</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                <form id="roleEditForm" method="POST">
+                <form id="roleEditForm" action="{{ route('RolesPermisos.update', $role->id) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
@@ -184,7 +184,7 @@
         $(document).on('click', '.btn-edit', function () {
     var roleId = $(this).data('id'); 
     // Cambiar el parámetro 'id' por 'RolesPermiso' en la ruta
-    var url = "{{ route('RolesPermisos.edit', ['RolesPermiso' => '__roleId__']) }}".replace('__roleId__', roleId);
+    var url = "{{ route('RolesPermisos.edit', ['role' => '__roleId__']) }}".replace('__roleId__', roleId);
 
     // Realizar solicitud AJAX para obtener datos del rol
     $.ajax({
@@ -193,7 +193,8 @@
         success: function (data) {
             $('#roleName').val(data.name);
             var formAction = `/RolesPermisos/${data.id}`;
-            $('#roleEditForm').attr('action', formAction);
+$('#roleEditForm').attr('action', formAction);
+
 
             var permissionsContainer = $('#rolePermissions');
             permissionsContainer.empty();
@@ -218,31 +219,33 @@
 
 
         // Evento para enviar el formulario de edición
-        $(document).on('submit', '#roleEditForm', function (event) {
-            event.preventDefault(); // Prevenir el envío tradicional del formulario
+$(document).on('submit', '#roleEditForm', function (event) {
+    event.preventDefault(); // Prevenir el envío tradicional del formulario
 
-            var form = $(this);
-            var formData = form.serialize();
+    var form = $(this);
+    var formData = form.serialize();
 
-            
-            $.ajax({
-                url: form.attr('action'),
-                method: 'PUT',
-                data: formData,
-                success: function (response) {
-                    if (response.success) {
-                        Swal.fire('Éxito', response.message, 'success').then(() => {
-                            $('#roleModal').modal('hide'); 
-                            location.reload(); 
-                        });
-                    } else {
-                        Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
-                    }
-                },
-                error: function () {
-                    Swal.fire('Error', 'No se pudo actualizar el rol.', 'error');
-                }
-            });
-        });
+    $.ajax({
+        url: "{{ route('RolesPermisos.update', ['role' => $role]) }}",
+
+
+        method: 'PUT', // Esto debe ser PUT
+        data: formData,
+        success: function (response) {
+            if (response.success) {
+                Swal.fire('Éxito', response.message, 'success').then(() => {
+                    $('#roleModal').modal('hide');
+                    location.reload();
+                });
+            } else {
+                Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
+            }
+        },
+        error: function () {
+            Swal.fire('Error', 'No se pudo actualizar el rol.', 'error');
+        }
+    });
+});
+
     </script>
 @endsection

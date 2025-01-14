@@ -81,16 +81,46 @@ public function show(User $registro)
     }
 
     // Método para actualizar un usuario
+  
+   
     public function update(Request $request, $id)
 {
+    // Validación sin la regla unique
+    $request->validate([
+        'email' => 'required|email',
+        'name' => 'required|string',
+        'apellido' => 'required|string',
+    ]);
+
+    // Encuentra el usuario por ID
     $user = User::findOrFail($id);
-    $user->update($request->only(['apellido', 'name', 'email', 'password']));
 
-    // Actualizar roles
-    $user->roles()->sync($request->roles); // Sincronizar los roles seleccionados
+    // Verifica si el nuevo correo pertenece a otro usuario
+    if ($user->email !== $request->email) {
+        // Aquí manejas si el email ya está en uso por otro usuario si lo deseas
+        $existingUser = User::where('email', $request->email)->first();
+        
+        if ($existingUser) {
+            return response()->json([
+                'message' => 'El correo electrónico ya está registrado en otro usuario.',
+            ], 400);
+        }
+    }
 
-    return redirect()->route('registro.index')->with('status', 'Usuario actualizado exitosamente');
+    // Actualización de los campos
+    $user->email = $request->email;
+    $user->name = $request->name;
+    $user->apellido = $request->apellido;
+    $user->save();
+
+    return response()->json([
+        'message' => 'Usuario actualizado con éxito.',
+        'user' => $user
+    ], 200);
 }
+
+    
+    
 
     public function destroy($id)
     {

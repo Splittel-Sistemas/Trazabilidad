@@ -59,23 +59,25 @@ class RolesPermisoController extends Controller
         ]);
     }
     public function update(Request $request, $id)
-    {
-        $request->validate([
-            'name' => 'required|string|unique:roles,name,' . $id,
-            'permissions' => 'array|exists:permissions,id',
-        ]);
+{
+    // Buscar el rol a actualizar
+    $role = Role::findOrFail($id);
 
-        $role = Role::findOrFail($id); 
+    // Actualizar el nombre del rol
+    $role->name = $request->input('name');
 
-        $role->name = $request->input('name');
-        $role->save();
-        $role->permissions()->sync($request->input('permissions', []));
+    // Sincronizar los permisos con los valores de la solicitud
+    $role->permissions()->sync($request->input('permissions', []));
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Rol actualizado con éxito.',
-        ]);
-    }
+    // Guardar el rol actualizado
+    $role->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Rol actualizado con éxito.',
+    ]);
+}
+
     /**
      * Eliminar un rol o permiso.
      */
