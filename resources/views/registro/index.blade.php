@@ -268,34 +268,37 @@
 
         // Cambio de estado
         $('.toggle-status').on('click', function () {
-            var button = $(this); 
-            var userId = button.data('id'); 
-            var isActive = button.data('active') == '1'; 
-            var url = isActive ? '/users/desactivar' : '/users/activar';
-            var newState = isActive ? 0 : 1;
+    var button = $(this); 
+    var userId = button.data('id'); 
+    var isActive = button.data('active') == '1'; 
 
-            $.ajax({
-                url: url,
-                method: 'POST',
-                data: {
-                    user_id: userId,
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                },
-                success: function (response) {
-                    button.data('active', newState);
-                    if (newState) {
-                        button.removeClass('inactive').addClass('active');
-                        button.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
-                    } else {
-                        button.removeClass('active').addClass('inactive');
-                        button.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
-                    }
-                },
-                error: function () {
-                    alert('Hubo un error al cambiar el estado.');
-                }
-            });
-        });
+    // Usar Laravel route() para obtener la URL
+    var url = isActive ? "{{ route('users.desactivar') }}" : "{{ route('users.activar') }}";
+    var newState = isActive ? 0 : 1;
+
+    $.ajax({
+        url: url,
+        method: 'POST',
+        data: {
+            user_id: userId,
+            _token: $('meta[name="csrf-token"]').attr('content'),
+        },
+        success: function (response) {
+            button.data('active', newState);
+            if (newState) {
+                button.removeClass('inactive').addClass('active');
+                button.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+            } else {
+                button.removeClass('active').addClass('inactive');
+                button.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+            }
+        },
+        error: function () {
+            alert('Hubo un error al cambiar el estado.');
+        }
+    });
+});
+
     });
     
     </script>
