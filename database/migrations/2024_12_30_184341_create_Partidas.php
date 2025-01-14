@@ -21,8 +21,6 @@ return new class extends Migration
             $table->integer('Estatus')->nullable();
             $table->integer('TipoAccion')->nullable();
             $table->integer('CantidadaPartidas')->nullable();
-            $table->datetime('FechaComienzo')->nullable();
-            $table->datetime('FechaTermina')->nullable();
             $table->timestamps();
         });
     }

@@ -82,7 +82,7 @@ class PlaneacionController extends Controller
             ]);
         }
         $html = '<div class="table-responsive table-partidas" style="width:100%;">';
-        $html .= '<table class="table-sm" id="table_OF'.$ordenventa.'" style="width:100%;">';
+        $html .= '<table class="table table-sm fs--1 mb-0" id="table_OF'.$ordenventa.'" style="width:100%;">';
         $html .= '<thead>
                     <tr>
                         <th class="text-center">Todo <input type="checkbox" id="selectAll'.$ordenventa.'" onclick="SeleccionaFilas(this)"></th>
@@ -97,7 +97,7 @@ class PlaneacionController extends Controller
                         <th style="display:none;"></th>
                     </tr>
                 </thead>
-                <tbody>';
+                <tbody class="list">';
         $bandera_tabla_mostrar=0;
         foreach ($partidas as $index => $partida) {
             //Valida que la Orden de Fabricacion no se encuentre registrada
@@ -158,30 +158,19 @@ class PlaneacionController extends Controller
                 }else{
                     $status="success";
                     foreach ($datos as $index => $orden) {
-                        $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '">
-                                            <td onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] .', `' . $orden['Cliente'] . '`)">
+                        $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)">
+                                            <td role="button" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '" onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] .', `' . $orden['Cliente'] . '`)">
                                                 ' . $orden['OV'] . " - " . $orden['Cliente'] . '
                                             </td>
                                         </tr>
                                         <tr id="details' . $index . '" class="collapse">
                                             <td class="table-border" id="details' . $index . 'llenar">
+                                            sassasassasa
                                                 <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
                                             </td>
                                             <td style="display:none"> ' . $orden['Cliente']. '</td>
                                             <td style="display:none"> ' . $orden['OV']. '</td>
                                         </tr>';
-                        /*$tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '">
-                                            <td onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] .', `' . $orden['Cliente'] . '`)">
-                                                ' . $orden['OV'] . " - " . $orden['Cliente'] . '
-                                            </td>
-                                        </tr>
-                                        <tr id="details' . $index . '" class="collapse">
-                                            <td class="table-border" id="details' . $index . 'llenar">
-                                                <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
-                                            </td>
-                                            <td style="display:none"> ' . $orden['Cliente']. '</td>
-                                            <td style="display:none"> ' . $orden['OV']. '</td>
-                                        </tr>';*/
                     }
                 }
             }else{
@@ -314,7 +303,7 @@ class PlaneacionController extends Controller
                             <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
                             <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
                             <td class="text-center">'.'<button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-link"><i class="fa fa-arrow-left"></i> Regresar</button>'.'</td>
-                            <td class="text-center">'.'<button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn-sm btn-primary"><i class="fa fa-eye"></i> Ver</button>'.'</td>
+                            <td class="text-center">'.'<button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary "><i class="fa fa-eye"></i> Ver</button>'.'</td>
                         </tr>';
             }
             return response()->json([
@@ -341,8 +330,8 @@ class PlaneacionController extends Controller
             $status="success";
             foreach ($datos as $index => $orden) {
                 $datosSAP=$this->OrdenesVenta("","", $orden['OrdenVentaB']);
-                $tablaOrdenes .= '<tr class="table-light" id="detailsVencidos' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#detailsVencidos' . $index . '" aria-expanded="false" aria-controls="detailsVencidos' . $index . '">
-                                    <td onclick="loadContentVencidas(\'detailsVencidos' . $index . '\', ' . $datosSAP[0]['OV'] .', `' . $datosSAP[0]['Cliente'] . '`)">
+                $tablaOrdenes .= '<tr class="table-light" id="detailsVencidos' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" >
+                                    <td  role="button" data-bs-toggle="collapse" data-bs-target="#detailsVencidos' . $index . '" onclick="loadContentVencidas(\'detailsVencidos' . $index . '\', ' . $datosSAP[0]['OV'] .', `' . $datosSAP[0]['Cliente'] . '`)">
                                         ' . $datosSAP[0]['OV'] . " - " . $datosSAP[0]['Cliente'] . '
                                     </td>
                                 </tr>
@@ -528,44 +517,44 @@ class PlaneacionController extends Controller
                                 )
                                 ->where('ordenfabricacion.id','=',$NumOF_id)->first();
         if($datos){
-            $cadena='<table class="table-sm table-bordered table-striped table-text-responsive" style="width:100%">
+            $cadena='<table class="table table-sm fs--1 mb-0" style="width:100%">
                         <thead>
                         </thead>
                         <tbody>
                             <tr>
-                                <th>Orden de Venta</th>
+                                <th class="table-active">Orden de Venta</th>
                                 <td class="text-center">'.$datos->OrdenVenta.'</td>
                             </tr>
                             <tr>
-                                <th>Cliente</th>
+                                <th class="table-active">Cliente</th>
                                 <td class="text-center">'.$datos->NombreCliente.'</td>
                             </tr>
                             <tr>
-                                <th>Orden de Fabricación</th>
+                                <th class="table-active">Orden de Fabricación</th>
                                 <td class="text-center">'.$datos->OrdenFabricacion.'</td>
                             </tr>
                             <tr>
-                                <th>Articulo</th>
+                                <th class="table-active">Articulo</th>
                                 <td class="text-center">'.$datos->Articulo.'</td>
                             </tr>
                             <tr>
-                                <th>Descripción</th>
+                                <th class="table-active">Descripción</th>
                                 <td>'.$datos->Descripcion.'</td>
                             </tr>
                             <tr>
-                                <th>Cantidad Total</th>
+                                <th class="table-active">Cantidad Total</th>
                                 <td class="text-center">'.$datos->CantidadTotal.'</td>
                             </tr>
                             <tr>
-                                <th>Fecha Planeación</th>
+                                <th class="table-active">Fecha Planeación</th>
                                 <td class="text-center">'.Carbon::parse($datos->FechaEntrega)->format('d/m/Y').'</td>
                             </tr>
                             <tr>
-                                <th>Fecha Entrega</th>
+                                <th class="table-active">Fecha Entrega</th>
                                 <td class="text-center">'.Carbon::parse($datos->FechaEntregaSAP)->format('d/m/Y').'</td>
                             </tr>
                             <tr>
-                                <th>Escánear</th>
+                                <th class="table-active">Escánear</th>
                                 <td class="text-center"><input type="checkbox" style="transform:scale(1.2)" class="Escaner'.$datos->Escaner.'" onclick="CambiarEscaner(this,\''.$this->funcionesGenerales->encrypt($datos->ordenfabricacionid).'\')" ';
             if($datos->Escaner){
                 $cadena.='checked';                
