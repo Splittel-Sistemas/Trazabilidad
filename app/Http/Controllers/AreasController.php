@@ -286,7 +286,7 @@ class AreasController extends Controller
             'Codigo' => 'required|string|max:255',
             'Cantidad' => 'required|Integer|max:1000',
         ]);
-        return$Area =$this->funcionesGenerales->decrypt($request->Area);
+        $Area =$this->funcionesGenerales->decrypt($request->Area);
         $Codigo = $request->Codigo;
         $Cantidad = $request->Cantidad;
         $Inicio = $request->Inicio;
@@ -330,17 +330,18 @@ class AreasController extends Controller
         foreach ($Partidas as $key => $item) {
             $ContarPartidas+=$item->CantidadaPartidas;
         }
-        $ContarPartidas=+$Cantidad;
         $FechaHoy=date('Y-m-d H:i:s');
+        $ContarPartidas+=$Cantidad;
         if($ContarPartidas<=$partidasOF->cantidad_partida){
-                $Partidas = new Partidas();
-                $Partidas->$partidasOF->id;
-                $Partidas->CantidadaPartidas=$Cantidad;
-                $Partidas->TipoAccion=0;
-                $Partidas->NumParte=0;
-                $Partidas->FechaComienzo=$FechaHoy;
-                if ($Partidas->save()) {
-                    $Partidas->Areas()->attach($Area);
+                $Partidasg = new Partidas();
+                $Partidasg->PartidasOF_id=$partidasOF->id;
+                $Partidasg->CantidadaPartidas=$Cantidad;
+                $Partidasg->TipoAccion=0;
+                $Partidasg->Estatus=1;
+                $Partidasg->NumParte=0;
+                $Partidasg->FechaComienzo=$FechaHoy;
+                if ($Partidasg->save()) {
+                    $Partidasg->Areas()->attach($Area);
                     return 1;
                 } else {
                     return 0;
