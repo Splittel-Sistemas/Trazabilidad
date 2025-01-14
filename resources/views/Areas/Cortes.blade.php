@@ -189,6 +189,7 @@
         <div class="modal fade bd-example-modal-x" id="modalDetalleOrden" tabindex="-1"  role="dialog" aria-labelledby="modalDetalleOrdenLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
+                    
                     <div class="modal-header p-2" style="background-color: #002fff; --bs-bg-opacity: .8;">
                         <h5 class="modal-title" id="modalDetalleOrdenLabel">Detalles de la Orden de Fabricacion</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -602,7 +603,6 @@ $('#pdfRangos').on('click', function() {
 });
 
 // Filtrado por fecha
-// Filtrado por fecha
 $('#buscarFecha').click(function (e) {
     e.preventDefault();
 
@@ -693,8 +693,6 @@ $('#buscarFecha').click(function (e) {
         $('#noDataMessageFecha').hide();
     }
 });
-
-
 
 // Evento para mostrar la información de la orden cuando se hace clic en el botón
 $(document).on('click', '.btn-generar-etiquetas', function() {
@@ -838,7 +836,6 @@ $('#buscarOV').on('click', function(event) {
         }
     });
 });
-
 
 // Función para obtener la clase del badge según el estatus
 function getBadgeClass(estatus) {

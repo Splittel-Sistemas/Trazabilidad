@@ -73,38 +73,59 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-        <div class="card-body table-responsive">
-            <table id="roles-table" class="table table-bordered table-striped table-sm fs--1">
-                <thead class="thead-dark">
-                    <tr>
-                        <th class="sort" data-sort="nombreRol">Nombre del Rol</th>
-                        <th class="sort" data-sort="permisos">Permisos</th>
-                        <th class="sort" data-sort="permisos">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody class="list">
-                    @foreach ($roles as $role)
-                    <tr>
-                        <td class="nombreRol">{{ $role->name }}</td>
-                        <td class="permisos">
-                            <ul>
-                                @foreach ($role->permissions as $permissions)
-                                    <li>{{ $permissions->name }}</li>
-                                @endforeach
-                            </ul>
-                        </td>
-                        <td class="acciones">
-                            <button class="btn btn-outline-warning btn-sm btn-edit" data-id="{{ $role->id }}" data-bs-toggle="modal" data-bs-target="#roleModal">
-                                Editar
-                            </button>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>        
+        <div id="roles-table" data-list='{"valueNames":["nombreRol","permisos"],"page":5,"pagination":true}'>
+            <div class="search-box mb-3 mx-auto">
+                <form class="position-relative" data-bs-toggle="search" data-bs-display="static">
+                    <input class="form-control search-input search form-control-sm" type="search" placeholder="Buscar" aria-label="Buscar">
+                    <svg class="svg-inline--fa fa-magnifying-glass search-box-icon" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="currentColor" d="M500.3 443.7..."></path>
+                    </svg>
+                </form>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-sm fs--1">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th class="sort border-top ps-3" data-sort="nombreRol">Nombre del Rol</th>
+                            <th class="sort border-top" data-sort="permisos">Permisos</th>
+                            <th class="sort text-end align-middle pe-0 border-top">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="list">
+                        @foreach ($roles as $role)
+                        <tr>
+                            <td class="nombreRol align-middle ps-3">{{ $role->name }}</td>
+                            <td class="permisos align-middle">
+                                <ul>
+                                    @foreach ($role->permissions as $permissions)
+                                        <li>{{ $permissions->name }}</li>
+                                    @endforeach
+                                </ul>
+                            </td>
+                            <td class="acciones align-middle text-end pe-0">
+                                    <button class="btn btn-outline-warning btn-sm btn-edit" data-id="{{ $role->id }}" data-bs-toggle="modal" data-bs-target="#roleModal">
+                                        Editar
+                                    </button>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-between mt-3">
+                <span class="d-none d-sm-inline-block" data-list-info="data-list-info">1 a 5 artículos de {{ count($roles) }}</span>
+                <div class="d-flex">
+                    <button class="page-link disabled" data-list-pagination="prev" disabled><svg class="svg-inline--fa fa-chevron-left" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M224 480c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25l192-192c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L77.25 256l169.4 169.4c12.5 12.5 12.5 32.75 0 45.25C240.4 476.9 232.2 480 224 480z"></path></svg></button>
+                    <ul class="mb-0 pagination">
+                        <li class="active"><button class="page" type="button" data-i="1" data-page="5">1</button></li>
+                        <li><button class="page" type="button" data-i="2" data-page="5">2</button></li>
+                        <li><button class="page" type="button" data-i="3" data-page="5">3</button></li>
+                    </ul>
+                    <button class="page-link" data-list-pagination="next"><svg class="svg-inline--fa fa-chevron-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M96 480c8.188 0 16.38-3.125 22.62-9.375l192-192c12.5-12.5 12.5-32.75 0-45.25l-192-192c-12.5-12.5-32.75-12.5-45.25 0s-12.5 32.75 0 45.25l169.4 169.4l-169.4 169.4c-12.5 12.5-12.5 32.75 0 45.25C79.62 476.9 87.81 480 96 480z"></path></svg></button>
+                </div>
+            </div>
+        </div>
     </div>
-
     <!-- Modal para editar el rol -->
     <div class="modal fade" id="roleModal" tabindex="-1" aria-labelledby="roleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -147,11 +168,11 @@
     <script>
         $(document).ready(function () {
             // Inicialización de DataTables con idioma en español
-            $('#roles-table').DataTable({
+           /* $('#roles-table').DataTable({
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
                 }
-            });
+            });*/
 
             // Configuración global de CSRF para solicitudes AJAX
             $.ajaxSetup({
