@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('apellido')->after('id'); // Agrega el campo apellido
-            $table->string('nombre')->after('apellido'); // Agrega el campo nombre
         });
     }
     
@@ -21,7 +20,6 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('apellido');
-            $table->dropColumn('nombre');
         });
     }
     
