@@ -320,6 +320,7 @@ $('#ordenFabricacionTable').on('click', '.ver-detalles', function() {
     // Asignar el ID de la orden de fabricación a los botones correspondientes
     $('#pdfRangos').attr('data-id', ordenFabricacionId);
     $('#btn-pdf-descarga').attr('data-id', ordenFabricacionId);
+   
 
     // Obtener los detalles de la orden de fabricación
     $.ajax({
@@ -386,10 +387,12 @@ $('#confirmar').click(function () {
         alert('No se ha seleccionado una orden de fabricación.');
         return;
     }
+    var url = "{{ route('orden-fabricacion.cortes-info', ['ordenFabricacionId' => '__ordenFabricacionId__']) }}".replace('__ordenFabricacionId__', ordenFabricacionId);
+
 
     // Validar y guardar cortes
     $.ajax({
-        url: `/orden-fabricacion/${ordenFabricacionId}/cortes-info`,
+        url: url,
         type: 'GET',
         success: function (infoResponse) {
             if (!infoResponse.success) {
@@ -481,7 +484,7 @@ function obtenerCortes(ordenFabricacionId) {
 //actualizamos la tabla
 function actualizarTablaPrincipal() {
     $.ajax({
-        url: '/ruta-para-actualizar-tabla', // Reemplaza con la ruta de actualización
+        url: '{{ route("actualizar.tabla") }}',
         method: 'GET',
         success: function (data) {
             const tabla = $('#ordenFabricacionTable tbody');
@@ -740,9 +743,14 @@ $(document).on('click', '#btn-descargar-pdf', function() {
         alert('No se encontró el ID');
         return;
     }
+
+    // Generar la URL usando Laravel route()
+    var url = "{{ route('generar.pdf', ['id' => '__corteId__']) }}".replace('__corteId__', corteId);
+
     // Abre la URL para descargar el PDF
-    window.open('/generar-pdf?id=' + corteId, '_blank');
+    window.open(url, '_blank');
 });
+
 // Filtro orden de fabricación
 $('#buscarOV').on('click', function(event) {
     event.preventDefault(); // Previene el comportamiento por defecto
