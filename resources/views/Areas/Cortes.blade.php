@@ -73,16 +73,17 @@
             </div>
         </div>
     </div>
-
     <div class="container mt-2">
-        <!-- Buscador -->
-        <div class="row mb-4">
-            <div class="col-lg-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white py-2">
+        <div class="accordion" id="accordionFiltroOV">
+            <div class="accordion-item border-top border-300 p-0">
+                <!-- Filtro por fecha -->
+                <h4 class="accordion-header" id="headingOne">
+                    <button class="accordion-button bg-primary text-white rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroOV" aria-expanded="true" aria-controls="collapseFiltroOV">
                         <strong>Filtros</strong>
-                    </div>
-                    <div class="card-body">
+                    </button>
+                </h4>
+                <div class="accordion-collapse collapse show" id="collapseFiltroOV" aria-labelledby="headingOne" data-bs-parent="#accordionFiltroOV">
+                    <div class="accordion-body pt-2">
                         <form id="filtroForm" method="post" class="form-horizontal">
                             @csrf
                             <div class="row">
@@ -90,18 +91,18 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="fecha" class="form-label"><strong>Filtro por Fecha</strong></label>
                                     <div class="input-group">
-                                        <input type="date" name="fecha" id="fecha" class="form-control form-control-sm">
-                                        <button id="buscarFecha" class="btn btn-outline-primary btn-sm ms-2">
+                                        <input type="date" name="fecha" id="fecha" class="form-control form-control-sm rounded-3">
+                                        <button id="buscarFecha" class="btn btn-outline-primary btn-sm ms-2 rounded-3">
                                             <i class="fa fa-search"></i> Buscar
                                         </button>
                                     </div>
                                 </div>
                                 <!-- Filtro por Orden de Venta -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="query" class="form-label"><strong>Filtro por Orden de Fabricacion</strong></label>
+                                    <label for="query" class="form-label"><strong>Filtro por Orden de Fabricación</strong></label>
                                     <div class="input-group">
-                                        <input type="text" placeholder="Ingresa una Orden de Fabricacion" name="query" id="query" class="form-control form-control-sm">
-                                        <button id="buscarOV" class="btn btn-outline-primary btn-sm ms-2">
+                                        <input type="text" placeholder="Ingresa una Orden de Fabricación" name="query" id="query" class="form-control form-control-sm rounded-3">
+                                        <button id="buscarOV" class="btn btn-outline-primary btn-sm ms-2 rounded-3">
                                             <i class="fa fa-search"></i> Buscar
                                         </button>
                                     </div>
@@ -112,6 +113,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    
         <!-- Tabla de datos sin filtro -->
         <div id="tableExample3" data-list='{"valueNames":["orden","articulo","descripcion","cantidad","fechaSAP","fechaEstimada","estatus"],"page":5,"pagination":true}'>
             <div class="search-box mb-3 mx-auto">
