@@ -61,7 +61,13 @@
                                 <div class="invalid-feedback" id="error_Cantidad"></div>
                             </div>
                         </div>
-                        <div class="col-12 mt-2" id="IniciarBtn" style="display: none">
+                        <div class="col-6 mt-2" id="RetrabajoDiv" style="display: none">
+                            <div class="form-check">
+                                <input class="form-check-input" id="Retrabajo" type="checkbox" />
+                                <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
+                            </div>
+                        </div>
+                        <div class="col-6 mt-2" id="IniciarBtn" style="display: none">
                             <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i> Iniciar</button>
                         </div>
                     </form>
@@ -115,6 +121,8 @@
             success: function(response) {
                 $('#CantidadDiv').hide();
                 $('#IniciarBtn').hide();
+                $('#RetrabajoDiv').hide();
+                document.getElementById('Retrabajo').checked = false;
                 if(response.status=="success"){
                     $('#DivCointainerTableSuministro').html(response.tabla);
                     if(response.Escaner==1){
@@ -123,8 +131,10 @@
                     $('#CantidadPartidasOF').html('<span class="badge bg-light text-dark">Piezas procesadas '+response.CantidadCompletada+"/"+response.CantidadTotal+'</span>');
                     $('#TituloPartidasOF').html(response.OF);
                     if(response.Escaner==0){
+                        TablaList(DivCointainerTableSuministro);
                         $('#CantidadDiv').fadeOut();
                         $('#IniciarBtn').fadeOut();
+                        $('#RetrabajoDiv').fadeOut();
                         if(response.EscanerExiste==0){
                             Mensaje='Codigo '+Codigo+' El codigo que intentas ingresar No existe!';
                             Color='bg-danger';
@@ -138,6 +148,8 @@
                             $('#ContentTabla').show();
                             $('#CantidadDiv').fadeIn();
                             $('#IniciarBtn').fadeIn();
+                            $('#RetrabajoDiv').fadeIn();
+                            
                             return 0;
                         }
                     }else{
@@ -314,6 +326,24 @@
         $('#btnEscanear').click(function() {
             CodigoEscaner=$('#CodigoEscaner').val();
             Cantidad=$('#Cantidad').val();
+            Retrabajo=document.getElementById('Retrabajo').checked;
+            if(Retrabajo){
+                Swal.fire({
+                title: 'Retrabajo',
+                text: `¿Desea enviar ${Cantidad} piezas con código ${CodigoEscaner} a Retrabajo?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                // Verificar si el usuario presionó "Confirmar"
+                if (result.isConfirmed) {
+                    
+                } else {
+                    
+                }
+            });
+            }
             InicioInput=document.getElementById('Iniciar');
             if(InicioInput.checked){
                 Inicio=1;
@@ -324,7 +354,15 @@
                 Inicio=0;
                 Fin=1;
             }
-            //Validacion Solo numeros Catidad
+            //Validacion Solo numeros Catidad y mayor a 0
+            if(Cantidad<=0){
+                $('#Cantidad').addClass('is-invalid');
+                $('#error_Cantidad').html('Campo cantidad no puede ser 0');
+                return 0;
+            }else{
+                if ($('#Cantidad').hasClass('is-invalid')) {$('#Cantidad').removeClass('is-invalid');}
+                $('#error_Cantidad').html('');
+            }
             if (!/^\d+$/.test(Cantidad)) {
                 $('#Cantidad').addClass('is-invalid');
                 $('#error_Cantidad').html('Solo se aceptan N&uacute;meros');
@@ -350,6 +388,7 @@
                         Cantidad:Cantidad,
                         Inicio:Inicio,
                         Fin:Fin,
+                        Retrabajo:Retrabajo,
                         Area:'{{$Area}}',
                         _token: '{{ csrf_token()}}'  
                     },
