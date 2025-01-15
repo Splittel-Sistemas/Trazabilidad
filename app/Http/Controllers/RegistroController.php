@@ -119,6 +119,7 @@ class RegistroController extends Controller
 
         return response()->json(['mensaje' => 'Usuario eliminado exitosamente.']);
     }
+    
     // Método para activar un usuario
     public function activar(Request $request)
     {

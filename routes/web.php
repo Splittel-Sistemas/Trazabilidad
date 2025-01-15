@@ -75,8 +75,10 @@ Route::post('/generar-pdf-rangos', [CorteController::class, 'PDFCondicion'])->na
 
 //ruta para el formulario de registro
 Route::get('/registro', [RegistroController::class, 'index'])->name('registro.index');
+
     Route::post('/users/activar', [RegistroController::class, 'activar'])->name('users.activar');
     Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar');
+    
     // Ruta para mostrar el formulario de creación
     Route::get('/registro/create', [RegistroController::class, 'create'])->name('registro.create');
     
