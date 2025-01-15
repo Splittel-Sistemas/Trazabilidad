@@ -56,178 +56,259 @@
 
 @endsection
 @section('content')
-<!-- Breadcrumbs -->
-<div class="breadcrumbs mb-4">
-    <div class="row g-0">
-        <div class="col-sm-6">
-            <div class="page-header">
-                <h1 class="fs-2">Cortes</h1>
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs mb-4">
+        <div class="row gy-3 mb-2 justify-content-between">
+            <div class="col-md-9 col-auto">
+            <h4 class="mb-2 text-1100">Cortes</h4>
             </div>
         </div>
-        <div class="col-sm-6 d-flex justify-content-end">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="#">Cortes</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Cortes</li>
-            </ol>
+    <div class="col-6 mt-2">
+        <div class="accordion" id="accordionFiltroOV">
+            <div class="card shadow-sm">
+                <div class="accordion-item border-top border-300">
+                    <!-- Filtro por fecha -->
+                    <h4 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroOV" aria-expanded="true" aria-controls="collapseFiltroOV">
+                            <strong>Filtros</strong>
+                        </button>
+                    </h4>
+                    <div class="accordion-collapse collapse show" id="collapseFiltroOV" aria-labelledby="headingOne" data-bs-parent="#accordionFiltroOV">
+                        <div class="accordion-body pt-2">
+                            <form id="filtroForm" method="post" class="form-horizontal">
+                                @csrf
+                                <div class="row">
+                                    <!-- Filtro por fecha -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fecha" class="form-label"><strong>Filtro por Fecha</strong></label>
+                                        <div class="input-group">
+                                            <input type="date" name="fecha" id="fecha" class="form-control form-control-sm rounded-3">
+                                            <button id="buscarFecha" class="btn btn-outline-primary btn-sm ms-2 rounded-3">
+                                                <i class="fa fa-search"></i> Buscar
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Filtro por Orden de Fabricación -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="query" class="form-label"><strong>Filtro por Orden de Fabricación</strong></label>
+                                        <div class="input-group">
+                                            <input type="text" placeholder="Ingresa una Orden de Fabricación" name="query" id="query" class="form-control form-control-sm rounded-3">
+                                            <button id="buscarOV" class="btn btn-outline-primary btn-sm ms-2 rounded-3">
+                                                <i class="fa fa-search"></i> Buscar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-<!-- Filtro de búsqueda -->
-<div class="container mt-2">
-    <div class="accordion" id="accordionFiltroOV">
-        <div class="accordion-item border-top border-300 p-0">
-            <h4 class="accordion-header" id="headingOne">
-                <button class="accordion-button bg-primary text-white rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroOV" aria-expanded="true" aria-controls="collapseFiltroOV">
-                    <strong>Filtros</strong>
-                </button>
-            </h4>
-            <div class="accordion-collapse collapse show" id="collapseFiltroOV" aria-labelledby="headingOne" data-bs-parent="#accordionFiltroOV">
-                <div class="accordion-body pt-2">
-                    <form id="filtroForm" method="post" class="form-horizontal">
-                        @csrf
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="fecha" class="form-label"><strong>Filtro por Fecha</strong></label>
+    
+        <!-- Tabla de datos sin filtro -->
+    <div class="col-12 mt-6">
+        <div class="card p-5 shadow-sm">
+                <div id="tableExample3" data-list='{"valueNames":["orden","articulo","descripcion","cantidad","fechaSAP","fechaEstimada","estatus"],"page":5,"pagination":true}'>
+                    <div class="search-box mb-3 mx-auto">
+                        <div class="card shadow-sm">
+                            <form class="position-relative border border-dark rounded-3" data-bs-toggle="search" data-bs-display="static">
                                 <div class="input-group">
-                                    <input type="date" name="fecha" id="fecha" class="form-control form-control-sm rounded-3">
-                                    <button id="buscarFecha" class="btn btn-outline-primary btn-sm ms-2 rounded-3">
-                                        <i class="fa fa-search"></i> Buscar
-                                    </button>
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-light border-0"><i class="uil uil-search text-muted"></i></span>
+                                    </div>
+                                    <input class="form-control search-input search form-control-sm rounded-end border-0" type="search" placeholder="Buscar" aria-label="Buscar">
                                 </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="query" class="form-label"><strong>Filtro por Orden de Fabricación</strong></label>
-                                <div class="input-group">
-                                    <input type="text" placeholder="Ingresa una Orden de Fabricación" name="query" id="query" class="form-control form-control-sm rounded-3">
-                                    <button id="buscarOV" class="btn btn-outline-primary btn-sm ms-2 rounded-3">
-                                        <i class="fa fa-search"></i> Buscar
-                                    </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="table-responsive ">
+                        <div class="card shadow-sm">
+                            <table id="ordenFabricacionTable" class="table table-striped table-sm fs--1 mb-1">
+                                <thead class="bg-primary text-white">
+                                    <tr>
+                                        <th class="sort border-top ps-3" data-sort="orden">Or. Fabricación</th>
+                                        <th class="sort border-top" data-sort="articulo">Artículo</th>
+                                        <th class="sort border-top" data-sort="descripcion">Descripción</th>
+                                        <th class="sort border-top" data-sort="cantidad">Cantidad Total</th>
+                                        <th class="sort border-top" data-sort="fechaSAP">Fecha SAP</th>
+                                        <th class="sort border-top" data-sort="fechaEstimada">Fecha Estimada</th>
+                                        <th class="sort border-top" data-sort="estatus">Estatus</th>
+                                        <th class="sort text-end align-middle pe-0 border-top">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="list">
+                                    @foreach ($ordenesFabricacion as $orden)
+                                        <tr>
+                                            <td class="align-middle ps-3 orden">{{ $orden->OrdenFabricacion }}</td>
+                                            <td class="align-middle articulo">{{ $orden->Articulo }}</td>
+                                            <td class="align-middle descripcion">{{ $orden->Descripcion }}</td>
+                                            <td class="align-middle cantidad">{{ $orden->CantidadTotal }}</td>
+                                            <td class="align-middle fechaSAP">{{ $orden->FechaEntregaSAP }}</td>
+                                            <td class="align-middle fechaEstimada">{{ $orden->FechaEntrega }}</td>
+                                            <td class="align-middle estatus">
+                                                @php
+                                                    $badgeClass = match ($orden->estatus) {
+                                                        'Completado' => 'badge badge-phoenix fs--2 badge-phoenix-success',
+                                                        'En proceso' => 'badge badge-phoenix fs--2 badge-phoenix-warning',
+                                                        'Sin cortes' => 'badge badge-phoenix fs--2 badge-phoenix-secondary',
+                                                        default => 'badge badge-phoenix fs--2 badge-phoenix-danger',
+                                                    };
+                                                    $iconClass = match ($orden->estatus) {
+                                                        'Completado' => 'ms-1 fas fa-check',
+                                                        'En proceso' => 'ms-1 fas fa-spinner',
+                                                        'Sin cortes' => 'ms-1 fas fa-times',
+                                                        default => 'ms-1 fas fa-exclamation-triangle',
+                                                    };
+                                                @endphp
+                                                <span class="{{ $badgeClass }}">
+                                                    {{ $orden->estatus }}
+                                                    <i class="{{ $iconClass }}"></i>
+                                                </span>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <a href="#" class="btn btn-outline-warning btn-xs ver-detalles"  style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="{{ $orden->id }}">
+                                                    <i class="bi bi-eye"></i> Detalles
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <span data-list-info="data-list-info"></span>
+                        <div class="d-flex">
+                            <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                            <ul class="mb-0 pagination"></ul>
+                            <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <!-- Modal de Detalles de la Orden -->
+        <div class="modal fade bd-example-modal-x" id="modalDetalleOrden" tabindex="-1"  role="dialog" aria-labelledby="modalDetalleOrdenLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    
+                    <div class="modal-header p-2" style="background-color: #1d6cfd; --bs-bg-opacity: .8;">
+                        <h5 class="modal-title" id="modalDetalleOrdenLabel">Detalles de la Orden de Fabricacion</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Sección de detalles -->
+                        <div class="mb-4">
+                            <h5 class="text-secondary"><i class="bi bi-info-circle"></i></h5>
+                            <table class="table table-striped table-bordered table-sm">
+                                <tbody id="modalBodyContent">
+                                    <!-- Aquí se insertarán los datos dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Apartado de cortes del día -->
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <h5 class="text-secondary"><i class="bi bi-scissors"></i> </h5>
+                            <form id="formCortesDia" class="needs-validation d-flex align-items-center" novalidate>
+                                <div class="mb-2 d-flex align-items-center">
+                                    <label for="numCortes" class="form-label ms-2 mb-0">Registrar Cantidad:</label> <!-- Eliminar margen inferior con mb-0 -->
+                                    <input type="number" class="form-control form-control-sm ms-2" id="numCortes" name="numCortes" min="0" placeholder="Ingresa el número" required>
+                                    <button type="button" id="confirmar" class="btn btn-outline-success btn-sm ms-2" data-id="{{ $orden->id }}">Confirmar</button>
+                                </div>
+                                
+                            </form>
+                           
+                            <div id="cortesGuardados" class="mt-3 text-success fw-bold">
+                                <div class="table-responsive">
+                                    <table id="tablaCortes" class="table table-bordered table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Cortes De Piezas</th>
+                                                <th>Fecha De Registro</th>
+                                                <th>Fecha De Finalizacion</th>
+                                                <th> <button class="btn btn-outline-primary  btn-sm ms-2" id="pdfRangos" data-id="">Generar PDF de Rangos</button></th>
+                                                
+                                            </tr>
+                                        </thead>
+                                        <div class="modal-footer d-flex justify-content-between">
+                                        </div>
+                                        <tbody>
+                                            <!-- Cortes de la tabla PartidasOF se reflejan aquí -->
+                                        </tbody>
+                                    </table> 
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cerrar</button>
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<!-- Tabla de datos -->
-<div id="tableExample3" data-list='{"valueNames":["orden","articulo","descripcion","cantidad","fechaSAP","fechaEstimada","estatus"],"page":5,"pagination":true}'>
-    <div class="search-box mb-3 mx-auto">
-        <div class="card shadow-sm">
-            <form class="position-relative" data-bs-toggle="search" data-bs-display="static">
-                <input class="form-control search-input form-control-sm" type="search" placeholder="Buscar" aria-label="Buscar">
-                <svg class="svg-inline--fa fa-magnifying-glass search-box-icon" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="currentColor" d="M500.3 443.7..."></path>
-                </svg>
-            </form>
-        </div>
-    </div>
-    <div class="table-responsive">
-        <div class="card shadow-sm">
-            <table id="ordenFabricacionTable" class="table table-striped table-sm fs--1 mb-0">
-                <thead class="bg-primary text-white">
-                    <tr>
-                        <th class="sort border-top ps-3" data-sort="orden">Or. Fabricación</th>
-                        <th class="sort border-top" data-sort="articulo">Artículo</th>
-                        <th class="sort border-top" data-sort="descripcion">Descripción</th>
-                        <th class="sort border-top" data-sort="cantidad">Cantidad Total</th>
-                        <th class="sort border-top" data-sort="fechaSAP">Fecha SAP</th>
-                        <th class="sort border-top" data-sort="fechaEstimada">Fecha Estimada</th>
-                        <th class="sort border-top" data-sort="estatus">Estatus</th>
-                        <th class="sort text-end align-middle pe-0 border-top">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody class="list">
-                    @foreach ($ordenesFabricacion as $orden)
-                        <tr>
-                            <td class="align-middle ps-3 orden">{{ $orden->OrdenFabricacion }}</td>
-                            <td class="align-middle articulo">{{ $orden->Articulo }}</td>
-                            <td class="align-middle descripcion">{{ $orden->Descripcion }}</td>
-                            <td class="align-middle cantidad">{{ $orden->CantidadTotal }}</td>
-                            <td class="align-middle fechaSAP">{{ $orden->FechaEntregaSAP }}</td>
-                            <td class="align-middle fechaEstimada">{{ $orden->FechaEntrega }}</td>
-                            <td class="align-middle estatus">
-                                @php
-                                    $badgeClass = match ($orden->estatus) {
-                                        'Completado' => 'badge badge-phoenix fs--2 badge-phoenix-success',
-                                        'En proceso' => 'badge badge-phoenix fs--2 badge-phoenix-warning',
-                                        'Sin cortes' => 'badge badge-phoenix fs--2 badge-phoenix-secondary',
-                                        default => 'badge badge-phoenix fs--2 badge-phoenix-danger',
-                                    };
-                                    $iconClass = match ($orden->estatus) {
-                                        'Completado' => 'ms-1 fas fa-check',
-                                        'En proceso' => 'ms-1 fas fa-spinner',
-                                        'Sin cortes' => 'ms-1 fas fa-times',
-                                        default => 'ms-1 fas fa-exclamation-triangle',
-                                    };
-                                @endphp
-                                <span class="{{ $badgeClass }}">
-                                    {{ $orden->estatus }}
-                                    <i class="{{ $iconClass }}"></i>
-                                </span>
-                            </td>
-                            <td class="text-center align-middle">
-                                <a href="#" class="btn btn-outline-warning btn-xs ver-detalles" style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="{{ $orden->id }}">
-                                    <i class="bi bi-eye"></i> Detalles
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <!-- Paginación -->
-    <div class="d-flex justify-content-between mt-3">
-        <span data-list-info="data-list-info"></span>
-        <div class="d-flex">
-            <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
-            <ul class="mb-0 pagination"></ul>
-            <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal de Detalles de la Orden -->
-<div class="modal fade bd-example-modal-x" id="modalDetalleOrden" tabindex="-1" role="dialog" aria-labelledby="modalDetalleOrdenLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header p-2" style="background-color: #002fff; --bs-bg-opacity: .8;">
-                <h5 class="modal-title" id="modalDetalleOrdenLabel">Detalles de la Orden de Fabricación</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Sección de detalles -->
-                <div class="mb-4">
-                    <h5 class="text-secondary"><i class="bi bi-info-circle"></i></h5>
-                    <table class="table table-striped table-bordered table-sm">
-                        <tbody id="modalBodyContent">
-                            <!-- Aquí se insertarán los datos dinámicamente -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Apartado de cortes del día -->
-                <div class="mt-4 p-3 bg-light rounded">
-                    <h5 class="text-secondary"><i class="bi bi-scissors"></i> </h5>
-                    <form id="formCortesDia" class="needs-validation d-flex align-items-center" novalidate>
-                        <div class="mb-2 d-flex align-items-center">
-                            <label for="numCortes" class="form-label ms-2 mb-0">Registrar Cantidad:</label>
-                            <input type="number" class="form-control form-control-sm ms-2" id="numCortes" name="numCortes" min="0" placeholder="Ingresa el número" required>
-                            <button class="btn btn-success btn-sm ms-2" id="registrarCorte" type="submit">Registrar Corte</button>
-                        </div>
-                    </form>
-
-                    <div id="cortesDia"></div>
+        <!-- Modal para mostrar la información de la orden -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header p-2" style="background-color: #84c3ec; --bs-bg-opacity: .8;">
+                        <h5 class="modal-title" id="myModalLabel">Información de la Orden de Fabricación</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" style="color: red; font-size: 1.25rem; background: none; border: none; padding: 3; line-height: 2;">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <!-- Contenedor con desplazamiento dinámico -->
+                            <div id="partidas-lista" style="max-height: 400px; overflow-y: auto;">
+                               
+                                    
+                                <!-- Aquí se llenarán las partidas dinámicamente -->
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" id="btn-descargar-pdf" class="btn btn-primary" data-id="">Descargar PDF</button>
+                    </div>
                 </div>
             </div>
         </div>
+        <!-- Modal -->
+        <div class="modal fade" id="myModalRangos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header p-2" style="background-color: #84c3ec; --bs-bg-opacity: .8;">
+                        <h5 class="modal-title" id="exampleModalLabel">Selecciona los Rangos para el PDF</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" style="color: red; font-size: 1.25rem; background: none; border: none; padding: 3; line-height: 2;">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formRangoPDF" method="POST" action="{{ route('pdfcondicion') }}">
+                            @csrf
+                            <input type="hidden" id="orden_fabricacion_id" name="id">
+                            <div class="mb-3">
+                                <label for="desde_no" class="form-label">Desde No:</label>
+                                <input type="number" name="desde_no" id="desde_no">
+                            </div>
+                            <div class="mb-3">
+                                <label for="hasta_no" class="form-label">Hasta No:</label>
+                                <input type="number" name="hasta_no" id="hasta_no">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="submit" id="btn-pdf-descarga" class="btn btn-primary" data-id="">Generar PDF</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="ordenFabricacionId" value="">
     </div>
 </div>
 @endsection
-
 
 @section('scripts')
 
@@ -530,6 +611,21 @@ $('#pdfRangos').on('click', function() {
     $('#myModalRangos').modal('show');
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 // Filtrado por fecha
 $('#buscarFecha').click(function (e) {
     e.preventDefault();
@@ -620,7 +716,7 @@ $('#buscarFecha').click(function (e) {
     } else {
         $('#noDataMessageFecha').hide();
     }
-});
+});*/
 
 // Evento para mostrar la información de la orden cuando se hace clic en el botón
 $(document).on('click', '.btn-generar-etiquetas', function() {
@@ -681,12 +777,20 @@ $('#buscarOV').on('click', function(event) {
     event.preventDefault(); // Previene el comportamiento por defecto
 
     var query = $('#query').val(); // Obtiene el valor de búsqueda
+    var fechaHaceUnaSemana = new Date();
+    fechaHaceUnaSemana.setDate(fechaHaceUnaSemana.getDate() - 7); // Resta 7 días para obtener la fecha de hace una semana
+    fechaHaceUnaSemana = fechaHaceUnaSemana.toISOString().slice(0, 10); // Convierte la fecha al formato YYYY-MM-DD
+
+    // Si el campo de búsqueda está vacío, se agrega el parámetro fechaHaceUnaSemana
+    var data = { query: query };
+    if (!query) {
+        data.fechaHaceUnaSemana = fechaHaceUnaSemana; // Agrega fechaHaceUnaSemana solo si no hay consulta
+    }
 
     $.ajax({
-        
-        url:  '{{ route("buscar.ordenes") }}',
+        url: '{{ route("buscar.ordenes") }}',
         type: 'GET',
-        data: { query: query }, 
+        data: data,  // Envía los datos, que ahora incluyen fechaHaceUnaSemana si es necesario
         beforeSend: function() {
             // Muestra el loader en la tabla mientras se cargan los datos
             $('#ordenFabricacionTable tbody').html(`
@@ -732,7 +836,6 @@ $('#buscarOV').on('click', function(event) {
                             badgeClass = 'badge-danger';
                             badgeIcon = 'fas fa-times';
                     }
-                            
 
                     // Crea una fila de la tabla
                     var row = `
@@ -751,7 +854,6 @@ $('#buscarOV').on('click', function(event) {
                                 style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="${item.id}">
                                  Detalles
                             </a></td>
-                             
                         </tr>
                     `;
                     $('#ordenFabricacionTable tbody').append(row);
@@ -832,7 +934,86 @@ $(document).on('click', '.btn-estatus', function () {
 
 });
 </script>
+<script>
+document.getElementById('buscarFecha').addEventListener('click', function (e) {
+    e.preventDefault();
+    
+    const fecha = document.getElementById('fecha').value;
+    
+    if (!fecha) {
+        alert('Por favor, selecciona una fecha.');
+        return;
+    }
 
+    // Realiza la solicitud AJAX
+    fetch('{{ route("Fitrar.Fecha") }}', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ fecha })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Error al filtrar los datos.');
+        return response.json();
+    })
+    .then(data => {
+        const tableBody = document.querySelector('#ordenFabricacionTable tbody');
+        tableBody.innerHTML = ''; // Limpiar la tabla
+
+        // Agrega las filas a la tabla
+        data.forEach(item => {
+            // Determina las clases e íconos del estatus
+            let badgeClass = '';
+            let badgeIcon = '';
+            switch (item.estatus) {
+                case 'Completado':
+                    badgeClass = 'badge badge-phoenix fs--2 badge-phoenix-success';
+                    badgeIcon = 'ms-1 fas fa-check';
+                    break;
+                case 'En proceso':
+                    badgeClass = 'badge badge-phoenix fs--2 badge-phoenix-warning';
+                    badgeIcon = 'ms-1 fas fa-spinner';
+                    break;
+                case 'Sin cortes':
+                    badgeClass = 'badge badge-phoenix fs--2 badge-phoenix-secondary';
+                    badgeIcon = 'ms-1 fas fa-times';
+                    break;
+                default:
+                    badgeClass = 'badge-danger';
+                    badgeIcon = 'fas fa-times';
+            }
+            
+            // Crea una fila de la tabla
+            var row = `
+                <tr>
+                    <td>${item.OrdenFabricacion}</td>
+                    <td>${item.Articulo}</td>
+                    <td>${item.Descripcion}</td>
+                    <td>${item.CantidadTotal}</td>
+                    <td>${item.FechaEntregaSAP}</td>
+                    <td>${item.FechaEntrega}</td>
+                    <td><span class="badge ${badgeClass} d-block mt-2" style="font-size: 12px;">
+                        <span class="fw-bold">${item.estatus}</span>
+                        <span class="ms-1 ${badgeIcon}"></span>
+                    </span></td>
+                    <td><a href="#" class="btn btn-outline-warning btn-xs ver-detalles d-flex align-items-center justify-content-center" 
+                        style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="${item.id}">
+                         Detalles
+                    </a></td>
+                </tr>
+            `;
+            $('#ordenFabricacionTable tbody').append(row);
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error.message);
+        alert('Error al procesar la solicitud: ' + error.message);
+    });
+});
+
+</script>
 
 
 @endsection

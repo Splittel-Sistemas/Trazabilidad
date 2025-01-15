@@ -49,22 +49,11 @@
 
 @section('content')
 <!-- Breadcrumbs -->
-<div class="breadcrumbs mb-4">
-    <div class="row g-0">
-        <div class="col-sm-6">
-            <div class="page-header">
-                <h1 class="fs-2">Usuarios</h1>
-            </div>
-        </div>
-        <div class="col-sm-6 d-flex justify-content-end">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Usuarios</li>
-            </ol>
-        </div>
+<div class="row gy-3 mb-2 justify-content-between">
+    <div class="col-md-9 col-auto">
+    <h4 class="mb-2 text-1100">Usuarios</h4>
     </div>
 </div>
-
 <!-- Contenido principal -->
 <div class="container my-4">
     <a href="{{ route('registro.create') }}" class="btn btn-outline-info mb-3">Agregar Usuario</a>

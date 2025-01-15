@@ -13,7 +13,7 @@
     <div class="row mb-2">
         <div class="col-6">
             <div class="col-sm-12">
-                <div class="card border border-light shadow-sm">
+                <div class="card border border-light ">
                   <div class="card-body p-2">
                     <div class="accordion" id="accordionFiltroOV">
                         <div class="accordion-item border-top border-300 p-0">

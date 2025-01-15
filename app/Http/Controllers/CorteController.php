@@ -13,6 +13,30 @@ class CorteController extends Controller
 {
     public function index()
     {
+        // Fecha actual
+        $today = date('Y-m-d');
+        $semna = date('Y-m-d', strtotime('-1 week'));
+        // Consulta de órdenes de fabricación filtradas por la fecha actual
+        $ordenesFabricacion=$this->filtroOvFecha($today, $semna);
+        // Agregar estatus calculado
+        $ordenesFabricacion->transform(function ($item) {
+            $cantidadTotal = $item->CantidadTotal;
+            $sumaCantidadPartida = $item->suma_cantidad_partida;
+    
+            if ($sumaCantidadPartida == 0) {
+                $item->estatus = 'Sin cortes';
+            } elseif ($sumaCantidadPartida < $cantidadTotal) {
+                $item->estatus = 'En proceso';
+            } else {
+                $item->estatus = 'Completado';
+            }
+    
+            return $item;
+        });
+    
+        return view('Areas.Cortes', compact('ordenesFabricacion'));
+    }
+    public function filtroOvFecha($today, $semna){
         $ordenesFabricacion = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
             ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->select(
@@ -25,6 +49,9 @@ class CorteController extends Controller
                 'OrdenFabricacion.FechaEntrega',
                 DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida')
             )
+
+            ->where('OrdenFabricacion.FechaEntrega','<=', $today) 
+            ->where('OrdenFabricacion.FechaEntrega','>=', $semna)
             ->groupBy(
                 'OrdenFabricacion.id',
                 'OrdenFabricacion.OrdenFabricacion',
@@ -35,25 +62,59 @@ class CorteController extends Controller
                 'OrdenFabricacion.FechaEntrega'
             )
             ->get();
-
-        // Agregar estatus calculado
-        $ordenesFabricacion->transform(function ($item) {
-            $cantidadTotal = $item->CantidadTotal;
-            $sumaCantidadPartida = $item->suma_cantidad_partida;
-
-            if ($sumaCantidadPartida == 0) {
-                $item->estatus = 'Sin cortes';
-            } elseif ($sumaCantidadPartida < $cantidadTotal) {
-                $item->estatus = 'En proceso';
-            } else {
-                $item->estatus = 'Completado';
-            }
-
-            return $item;
-        });
-
-        return view('Areas.Cortes', compact('ordenesFabricacion'));
+            return $ordenesFabricacion;
     }
+    public function filtrarPorFecha(Request $request)
+    {
+        
+        $fecha = $request->input('fecha');
+        
+        if (!$fecha) {
+            return response()->json(['error' => 'La fecha es requerida'], 400);
+        }
+
+        $ordenesFabricacion = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
+            ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->select(
+                'OrdenFabricacion.id',
+                'OrdenFabricacion.OrdenFabricacion',
+                'OrdenFabricacion.Articulo',
+                'OrdenFabricacion.Descripcion',
+                'OrdenFabricacion.CantidadTotal',
+                'OrdenFabricacion.FechaEntregaSAP',
+                'OrdenFabricacion.FechaEntrega',
+                DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida')
+            )
+            ->whereDate('OrdenFabricacion.FechaEntrega', $fecha)
+            ->groupBy(
+                'OrdenFabricacion.id',
+                'OrdenFabricacion.OrdenFabricacion',
+                'OrdenFabricacion.Articulo',
+                'OrdenFabricacion.Descripcion',
+                'OrdenFabricacion.CantidadTotal',
+                'OrdenFabricacion.FechaEntregaSAP',
+                'OrdenFabricacion.FechaEntrega'
+            )
+            ->get();
+            $ordenesFabricacion->transform(function ($item) {
+                $cantidadTotal = $item->CantidadTotal;
+                $sumaCantidadPartida = $item->suma_cantidad_partida;
+        
+                if ($sumaCantidadPartida == 0) {
+                    $item->estatus = 'Sin cortes';
+                } elseif ($sumaCantidadPartida < $cantidadTotal) {
+                    $item->estatus = 'En proceso';
+                } else {
+                    $item->estatus = 'Completado';
+                }
+        
+                return $item;
+            });
+
+        return response()->json($ordenesFabricacion);
+    }
+
+    
     public function getData(Request $request)
     {
         $limit = $request->input('length', 10); // Número de registros por página
@@ -134,6 +195,7 @@ class CorteController extends Controller
             'recordsFiltered' => $totalFiltered,
             'data' => $data
         ]);
+        
     }
     public function cambiarEstatus(Request $request)
     {
@@ -196,9 +258,9 @@ class CorteController extends Controller
     }
     public function buscarOrdenVenta(Request $request)
     {
-        $query = $request->input('query'); 
-
-        // Iniciar la consulta base
+        $query = $request->input('query');
+        $fechaHaceUnaSemana = $request->input('fechaHaceUnaSemana'); // Obtiene la fecha de hace una semana si está presente
+    
         $queryBuilder = DB::table('OrdenFabricacion')
             ->select('OrdenFabricacion.id', 
                     'OrdenFabricacion.OrdenVenta_id', 
@@ -222,34 +284,39 @@ class CorteController extends Controller
                     'OrdenFabricacion.FechaEntrega', 
                     'OrdenFabricacion.created_at', 
                     'OrdenFabricacion.updated_at');
-
-        // Si hay una consulta de búsqueda, aplicar el filtro
+    
+        // Si hay una consulta de búsqueda, aplica el filtro
         if ($query) {
             $queryBuilder->where('OrdenFabricacion.OrdenFabricacion', 'like', "%$query%");
         }
-
-        // Obtener los resultados (ya sean todos o filtrados)
-        // Obtener los resultados (ya sean todos o filtrados)
-    $resultados = $queryBuilder->get();
-    // Calcular el estatus para cada resultado
-    $resultados->transform(function ($item) {
-        $cantidadTotal = $item->CantidadTotal;
-        $sumaCantidadPartida = $item->suma_cantidad_partida;
-
-        // Lógica para determinar el estatus
-        if ($sumaCantidadPartida == 0) {
-            $item->estatus = 'Sin cortes';
-        } elseif ($sumaCantidadPartida < $cantidadTotal) {
-            $item->estatus = 'En proceso';
-        } else {
-            $item->estatus = 'Completado';
+    
+        // Si fechaHaceUnaSemana está presente, filtra las órdenes desde hace una semana
+        if ($fechaHaceUnaSemana) {
+            $queryBuilder->whereDate('OrdenFabricacion.created_at', '>=', $fechaHaceUnaSemana);
         }
-
-        return $item;
-    });
-    // Devolver los resultados con estatus calculado
-    return response()->json($resultados);
-        }
+    
+        $resultados = $queryBuilder->get();
+       
+        $resultados->transform(function ($item) {
+            $cantidadTotal = $item->CantidadTotal;
+            $sumaCantidadPartida = $item->suma_cantidad_partida;
+    
+            // Lógica para determinar el estatus
+            if ($sumaCantidadPartida == 0) {
+                $item->estatus = 'Sin cortes';
+            } elseif ($sumaCantidadPartida < $cantidadTotal) {
+                $item->estatus = 'En proceso';
+            } else {
+                $item->estatus = 'Completado';
+            }
+    
+            return $item;
+        });
+    
+        // Devolver los resultados con estatus calculado
+        return response()->json($resultados);
+    }
+    
     public function guardarPartidasOF(Request $request)
     {
         // Validar que los datos recibidos sean correctos

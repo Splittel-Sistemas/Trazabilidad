@@ -4,18 +4,11 @@
 
 @section('content')
     <div class="breadcrumbs mb-4">
-        <div class="row g-0">
-            <div class="col-sm-6">
-                <div class="page-header">
-                    <h1 class="fs-2">Registrar Nuevo Usuario</h1>
-                </div>
+        <div class="row gy-3 mb-2 justify-content-between">
+            <div class="col-md-9 col-auto">
+            <h4 class="mb-2 text-1100">Registrar Nuevo Usuario</h4>
             </div>
-            <div class="col-sm-6 d-flex justify-content-end">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Usuarios</li>
-                </ol>
-            </div>
+        </div>
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0">
