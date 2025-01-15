@@ -74,9 +74,27 @@ Route::post('/generar-pdf-rangos', [CorteController::class, 'PDFCondicion'])->na
 
 
 //ruta para el formulario de registro
-Route::resource('registro', RegistroController::class);
-Route::get('/registro/{id}', [RegistroController::class, 'show'])->name('registro.show');
-Route::put('/registros/{id}', [RegistroController::class, 'update'])->name('registro.update');
+Route::get('/registro', [RegistroController::class, 'index'])->name('registro.index');
+    
+    // Ruta para mostrar el formulario de creación
+    Route::get('/registro/create', [RegistroController::class, 'create'])->name('registro.create');
+    
+    // Ruta para almacenar un nuevo rol o permiso
+    Route::post('/registro/store', [RegistroController::class, 'store'])->name('registro.store');
+    
+    // Ruta para mostrar el formulario de edición
+    Route::get('/registro/edit/{id}', [RegistroController::class, 'edit'])->name('registro.edit');
+
+    Route::get('/registro/show/{id}',[RegistroController::class, 'show'])->name('registro.show');
+    
+    // Ruta para actualizar un rol o permiso
+    Route::put('/registro/update/{id}', [RegistroController::class, 'update'])->name('registro.update');
+    
+    // Ruta para eliminar un rol o permiso
+Route::delete('registro/{id}', [RegistroController::class, 'destroy'])->name('registro.destroy');
+
+
+
 
 
 // Rutas para activar y desactivar usuarios
@@ -84,14 +102,23 @@ Route::put('/registros/{id}', [RegistroController::class, 'update'])->name('regi
 Route::post('/users/activar', [RegistroController::class, 'activar'])->name('users.activar');
 Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar');
 
-
-// ruta permisos y roles
-Route::resource('/RolesPermisos', RolesPermisoController::class);
-// Verifica que la ruta tenga el nombre correcto
-// Rutas correctas con el parámetro 'role'
-Route::get('/RolesPermisos/{role}/edit', [RolesPermisoController::class, 'edit'])->name('RolesPermisos.edit');
-Route::put('/RolesPermisos/{role}', [RolesPermisoController::class, 'update'])->name('RolesPermisos.update');
-
+//rutas roles y permiso
+Route::get('/RolesPermisos', [RolesPermisoController::class, 'index'])->name('RolesPermisos.index');
+    
+    // Ruta para mostrar el formulario de creación
+    Route::get('/RolesPermisos/create', [RolesPermisoController::class, 'create'])->name('RolesPermisos.create');
+    
+    // Ruta para almacenar un nuevo rol o permiso
+    Route::post('/RolesPermisos/store', [RolesPermisoController::class, 'store'])->name('RolesPermisos.store');
+    
+    // Ruta para mostrar el formulario de edición
+    Route::get('/RolesPermisos/edit/{id}', [RolesPermisoController::class, 'edit'])->name('RolesPermisos.edit');
+    
+    // Ruta para actualizar un rol o permiso
+    Route::put('/RolesPermisos/update/{id}', [RolesPermisoController::class, 'update'])->name('RolesPermisos.update');
+    
+    // Ruta para eliminar un rol o permiso
+Route::delete('destroy/{id}', [RolesPermisoController::class, 'destroy'])->name('destroy');
 
 
 

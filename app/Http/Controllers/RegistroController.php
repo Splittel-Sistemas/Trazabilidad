@@ -21,107 +21,97 @@ class RegistroController extends Controller
         
         return view('registro.index', compact('personal', 'roles', 'permissions'));
     }
-
   // RegistroController.php
-
-public function edit(User $registro)
-{
-    $roles = Role::all(); // Obtener todos los roles disponibles
-    $userRoles = $registro->roles->pluck('id'); // Obtener los roles asignados al usuario
-    return view('registro.edit', compact('registro', 'roles', 'userRoles'));
-}
-
-public function show(User $registro)
-{
-    // Obtener los roles asignados al usuario
-    $roles = $registro->roles->pluck('id')->toArray(); 
-    return response()->json([
-        'apellido' => $registro->apellido,
-        'name' => $registro->name,
-        'email' => $registro->email,
-        'roles' => $roles // Enviar los roles asignados en la respuesta
-    ]);
-}
-
-    // Método para mostrar el formulario de creación de un nuevo usuario
-    public function create()
+    public function edit(User $registro)
     {
-        $roles = Role::all(); // Obtiene todos los roles
-        $permissions = Permission::all(); // Obtiene todos los permisos
-        return view('registro.create', compact('roles', 'permissions')); // Pasa los datos a la vista
+        //$role = Role::with('permissions')->findOrFail($id); 
+        $roles = Role::all(); // Obtener todos los roles disponibles
+        $userRoles = $registro->roles->pluck('id'); // Obtener los roles asignados al usuario
+        return view('registro.edit', compact('registro', 'roles', 'userRoles'));
     }
-
-    // Validaciones y crear usuario
-    public function store(Request $request)
+    public function show(User $request, $registro)
     {
-        // Validación de los datos del formulario
+        // Obtener el registro de usuario
+        $registro = User::findOrFail($registro);
+
+        // Cargar la relación 'roles'
+        $registro->load('roles');
+
+        // Obtener los roles asignados al usuario
+        $roles = $registro->roles->pluck('id')->toArray();
+
+        return response()->json([
+            'apellido' => $registro->apellido,
+            'name' => $registro->name,
+            'email' => $registro->email,
+            'roles' => $roles // Enviar los roles asignados en la respuesta
+        ]);
+    }
+    // Método para actualizar un usuario
+    public function update(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+    
+        // Validaciones
         $validatedData = $request->validate([
             'apellido' => 'required|string|max:255',
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'roles' => 'required|array', // Los roles son obligatorios
-           //'permissions' => 'required|array', // Los permisos son obligatorios
+            'email' => 'required|email|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:8|confirmed',
         ]);
-
-        // Crear el nuevo usuario
-        $user = User::create([
-            'name' => $validatedData['name'],
+    
+        // Actualizar datos del usuario
+        $user->update([
             'apellido' => $validatedData['apellido'],
+            'name' => $validatedData['name'],
             'email' => $validatedData['email'],
-            'password' => Hash::make($validatedData['password']),
+            'password' => $validatedData['password'] ? Hash::make($validatedData['password']) : $user->password,
         ]);
-
-        // Asignar roles y permisos al usuario
-        $user->roles()->sync($validatedData['roles']);
-       // $user->permissions()->sync($validatedData['permissions']);
-
-        // Redirigir al usuario con un mensaje de éxito
-        return redirect()->route('registro.index')->with('status', 'Usuario creado exitosamente.');
-    }
-
-    // Método para actualizar un usuario
-  
-   
-    public function update(Request $request, $id)
-{
-    // Validación sin la regla unique
-    $request->validate([
-        'email' => 'required|email',
-        'name' => 'required|string',
-        'apellido' => 'required|string',
-    ]);
-
-    // Encuentra el usuario por ID
-    $user = User::findOrFail($id);
-
-    // Verifica si el nuevo correo pertenece a otro usuario
-    if ($user->email !== $request->email) {
-        // Aquí manejas si el email ya está en uso por otro usuario si lo deseas
-        $existingUser = User::where('email', $request->email)->first();
-        
-        if ($existingUser) {
-            return response()->json([
-                'message' => 'El correo electrónico ya está registrado en otro usuario.',
-            ], 400);
-        }
-    }
-
-    // Actualización de los campos
-    $user->email = $request->email;
-    $user->name = $request->name;
-    $user->apellido = $request->apellido;
-    $user->save();
-
-    return response()->json([
-        'message' => 'Usuario actualizado con éxito.',
-        'user' => $user
-    ], 200);
-}
-
     
+        // Actualizar roles
+        $user->roles()->sync($request->roles);
     
-
+        // Retornar respuesta en formato JSON para AJAX
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario actualizado exitosamente.'
+        ]);
+    }
+     // Método para mostrar el formulario de creación de un nuevo usuario
+     public function create()
+     {
+         $roles = Role::all(); // Obtiene todos los roles
+         $permissions = Permission::all(); // Obtiene todos los permisos
+         return view('registro.create', compact('roles', 'permissions')); // Pasa los datos a la vista
+     }
+     // Validaciones y crear usuario
+     public function store(Request $request)
+     {
+         // Validación de los datos del formulario
+         $validatedData = $request->validate([
+             'apellido' => 'required|string|max:255',
+             'name' => 'required|string|max:255',
+             'email' => 'required|email|unique:users,email',
+             'password' => 'required|string|min:8|confirmed',
+             'roles' => 'required|array', // Los roles son obligatorios
+            //'permissions' => 'required|array', // Los permisos son obligatorios
+         ]);
+ 
+         // Crear el nuevo usuario
+         $user = User::create([
+             'name' => $validatedData['name'],
+             'apellido' => $validatedData['apellido'],
+             'email' => $validatedData['email'],
+             'password' => Hash::make($validatedData['password']),
+         ]);
+ 
+         // Asignar roles y permisos al usuario
+         $user->roles()->sync($validatedData['roles']);
+        // $user->permissions()->sync($validatedData['permissions']);
+ 
+         // Redirigir al usuario con un mensaje de éxito
+         return redirect()->route('registro.index')->with('status', 'Usuario creado exitosamente.');
+     }
     public function destroy($id)
     {
         $registro = User::findOrFail($id);
@@ -129,7 +119,6 @@ public function show(User $registro)
 
         return response()->json(['mensaje' => 'Usuario eliminado exitosamente.']);
     }
-
     // Método para activar un usuario
     public function activar(Request $request)
     {
