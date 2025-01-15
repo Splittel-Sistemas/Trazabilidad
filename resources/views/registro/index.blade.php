@@ -222,12 +222,12 @@
                     url: url,
                     method: 'GET',
                     success: function(response) {
-                        console.log(response);  // Verifica la respuesta en la consola
+                        console.log(response);  
                         $('#apellido').val(response.apellido);
                         $('#email').val(response.email);  
                         $('#name').val(response.name);
-                        $('#password').val('');  // Reseteamos el campo de contraseña
-                        $('#password_confirmation').val('');  // Reseteamos el campo de confirmación de contraseña
+                        $('#password').val('');  
+                        $('#password_confirmation').val('');  
                         
                         // Actualiza la acción del formulario
                         $('#userEditForm').attr('action', '{{ route('registro.update', '__userId__') }}'.replace('__userId__', userId));
@@ -255,13 +255,13 @@
 
             // Manejar el envío del formulario a través de AJAX
             $(document).on('submit', '#userEditForm', function(event) {
-                event.preventDefault();  // Prevenir el envío tradicional del formulario
+                event.preventDefault();  
 
                 var form = $(this);
                 var formData = form.serialize();
 
                 $.ajax({
-                    url: form.attr('action'),  // Utiliza la acción actualizada del formulario
+                    url: form.attr('action'),  
                     method: 'POST',
                     data: formData + '&_method=PUT', 
                     success: function(response) {
@@ -269,7 +269,7 @@
                         if (response.success) {
                             Swal.fire('Éxito', response.message, 'success').then(() => {
                                 $('#userModal').modal('hide');
-                                location.reload(); // Recarga la tabla para reflejar los cambios
+                                location.reload(); 
                             });
                         } else {
                             Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
