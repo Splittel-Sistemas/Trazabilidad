@@ -75,32 +75,34 @@
                 </form>
             </div>
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-sm fs--1">
-                    <thead class="bg-primary text-white">
-                        <tr>
-                            <th class="sort border-top ps-3" data-sort="nombreRol">Nombre del Rol</th>
-                            <th class="sort border-top" data-sort="permisos">Permisos</th>
-                            <th class="sort text-end align-middle pe-0 border-top">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="list">
-                        @foreach ($roles as $role)
-                        <tr>
-                            <td class="nombreRol align-middle ps-3">{{ $role->name }}</td>
-                            <td class="permisos align-middle">
-                                <ul>
-                                    @foreach ($role->permissions as $permissions)
-                                        <li>{{ $permissions->name }}</li>
-                                    @endforeach
-                                </ul>
-                            </td>
-                            <td class="text-center pe-0">
-                                <button type="button" class="btn btn-outline-warning btn-sm btn-edit" data-bs-toggle="modal" data-bs-target="#roleModal" data-id="{{ $role->id }}"><i class="fas fa-edit"></i>Editar</button>  
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="card shadow-sm">
+                    <table class="table table-bordered table-striped table-sm fs--1">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th class="sort border-top ps-3" data-sort="nombreRol">Nombre del Rol</th>
+                                <th class="sort border-top" data-sort="permisos">Permisos</th>
+                                <th class="sort text-end align-middle pe-0 border-top">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="list">
+                            @foreach ($roles as $role)
+                            <tr>
+                                <td class="nombreRol align-middle ps-3">{{ $role->name }}</td>
+                                <td class="permisos align-middle">
+                                    <ul>
+                                        @foreach ($role->permissions as $permissions)
+                                            <li>{{ $permissions->name }}</li>
+                                        @endforeach
+                                    </ul>
+                                </td>
+                                <td class="text-center pe-0">
+                                    <button type="button" class="btn btn-outline-warning btn-sm btn-edit" data-bs-toggle="modal" data-bs-target="#roleModal" data-id="{{ $role->id }}"><i class="fas fa-edit"></i>Editar</button>  
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

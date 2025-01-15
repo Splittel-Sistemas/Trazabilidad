@@ -115,65 +115,70 @@
         <!-- Tabla de datos sin filtro -->
         <div id="tableExample3" data-list='{"valueNames":["orden","articulo","descripcion","cantidad","fechaSAP","fechaEstimada","estatus"],"page":5,"pagination":true}'>
             <div class="search-box mb-3 mx-auto">
-                <form class="position-relative" data-bs-toggle="search" data-bs-display="static">
-                    <input class="form-control search-input search form-control-sm" type="search" placeholder="Buscar" aria-label="Buscar">
-                    <svg class="svg-inline--fa fa-magnifying-glass search-box-icon" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-                        <path fill="currentColor" d="M500.3 443.7..."></path>
-                    </svg>
-                </form>
+                <div class="card shadow-sm">
+                    <form class="position-relative" data-bs-toggle="search" data-bs-display="static">
+                        <input class="form-control search-input search form-control-sm" type="search" placeholder="Buscar" aria-label="Buscar">
+                        <svg class="svg-inline--fa fa-magnifying-glass search-box-icon" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                            <path fill="currentColor" d="M500.3 443.7..."></path>
+                        </svg>
+                    </form>
+                </div>
             </div>
+            
             <div class="table-responsive">
-                <table id="ordenFabricacionTable" class="table table-striped table-sm fs--1 mb-0">
-                    <thead class="bg-primary text-white">
-                        <tr>
-                            <th class="sort border-top ps-3" data-sort="orden">Or. Fabricación</th>
-                            <th class="sort border-top" data-sort="articulo">Artículo</th>
-                            <th class="sort border-top" data-sort="descripcion">Descripción</th>
-                            <th class="sort border-top" data-sort="cantidad">Cantidad Total</th>
-                            <th class="sort border-top" data-sort="fechaSAP">Fecha SAP</th>
-                            <th class="sort border-top" data-sort="fechaEstimada">Fecha Estimada</th>
-                            <th class="sort border-top" data-sort="estatus">Estatus</th>
-                            <th class="sort text-end align-middle pe-0 border-top">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="list">
-                        @foreach ($ordenesFabricacion as $orden)
+                <div class="card shadow-sm">
+                    <table id="ordenFabricacionTable" class="table table-striped table-sm fs--1 mb-0">
+                        <thead class="bg-primary text-white">
                             <tr>
-                                <td class="align-middle ps-3 orden">{{ $orden->OrdenFabricacion }}</td>
-                                <td class="align-middle articulo">{{ $orden->Articulo }}</td>
-                                <td class="align-middle descripcion">{{ $orden->Descripcion }}</td>
-                                <td class="align-middle cantidad">{{ $orden->CantidadTotal }}</td>
-                                <td class="align-middle fechaSAP">{{ $orden->FechaEntregaSAP }}</td>
-                                <td class="align-middle fechaEstimada">{{ $orden->FechaEntrega }}</td>
-                                <td class="align-middle estatus">
-                                    @php
-                                        $badgeClass = match ($orden->estatus) {
-                                            'Completado' => 'badge badge-phoenix fs--2 badge-phoenix-success',
-                                            'En proceso' => 'badge badge-phoenix fs--2 badge-phoenix-warning',
-                                            'Sin cortes' => 'badge badge-phoenix fs--2 badge-phoenix-secondary',
-                                            default => 'badge badge-phoenix fs--2 badge-phoenix-danger',
-                                        };
-                                        $iconClass = match ($orden->estatus) {
-                                            'Completado' => 'ms-1 fas fa-check',
-                                            'En proceso' => 'ms-1 fas fa-spinner',
-                                            'Sin cortes' => 'ms-1 fas fa-times',
-                                            default => 'ms-1 fas fa-exclamation-triangle',
-                                        };
-                                    @endphp
-                                    <span class="{{ $badgeClass }}">
-                                        {{ $orden->estatus }}
-                                        <i class="{{ $iconClass }}"></i>
-                                    </span>
-                                </td>
-                                <td class="text-center align-middle">
-                                    <a href="#" class="btn btn-outline-warning btn-xs ver-detalles"  style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="{{ $orden->id }}">
-                                        <i class="bi bi-eye"></i> Detalles
-                                    </a>
-                                </td>
+                                <th class="sort border-top ps-3" data-sort="orden">Or. Fabricación</th>
+                                <th class="sort border-top" data-sort="articulo">Artículo</th>
+                                <th class="sort border-top" data-sort="descripcion">Descripción</th>
+                                <th class="sort border-top" data-sort="cantidad">Cantidad Total</th>
+                                <th class="sort border-top" data-sort="fechaSAP">Fecha SAP</th>
+                                <th class="sort border-top" data-sort="fechaEstimada">Fecha Estimada</th>
+                                <th class="sort border-top" data-sort="estatus">Estatus</th>
+                                <th class="sort text-end align-middle pe-0 border-top">Acciones</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="list">
+                            @foreach ($ordenesFabricacion as $orden)
+                                <tr>
+                                    <td class="align-middle ps-3 orden">{{ $orden->OrdenFabricacion }}</td>
+                                    <td class="align-middle articulo">{{ $orden->Articulo }}</td>
+                                    <td class="align-middle descripcion">{{ $orden->Descripcion }}</td>
+                                    <td class="align-middle cantidad">{{ $orden->CantidadTotal }}</td>
+                                    <td class="align-middle fechaSAP">{{ $orden->FechaEntregaSAP }}</td>
+                                    <td class="align-middle fechaEstimada">{{ $orden->FechaEntrega }}</td>
+                                    <td class="align-middle estatus">
+                                        @php
+                                            $badgeClass = match ($orden->estatus) {
+                                                'Completado' => 'badge badge-phoenix fs--2 badge-phoenix-success',
+                                                'En proceso' => 'badge badge-phoenix fs--2 badge-phoenix-warning',
+                                                'Sin cortes' => 'badge badge-phoenix fs--2 badge-phoenix-secondary',
+                                                default => 'badge badge-phoenix fs--2 badge-phoenix-danger',
+                                            };
+                                            $iconClass = match ($orden->estatus) {
+                                                'Completado' => 'ms-1 fas fa-check',
+                                                'En proceso' => 'ms-1 fas fa-spinner',
+                                                'Sin cortes' => 'ms-1 fas fa-times',
+                                                default => 'ms-1 fas fa-exclamation-triangle',
+                                            };
+                                        @endphp
+                                        <span class="{{ $badgeClass }}">
+                                            {{ $orden->estatus }}
+                                            <i class="{{ $iconClass }}"></i>
+                                        </span>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        <a href="#" class="btn btn-outline-warning btn-xs ver-detalles"  style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="{{ $orden->id }}">
+                                            <i class="bi bi-eye"></i> Detalles
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="d-flex justify-content-between mt-3">
                 <span data-list-info="data-list-info"></span>
@@ -257,6 +262,8 @@
                         <form>
                             <!-- Contenedor con desplazamiento dinámico -->
                             <div id="partidas-lista" style="max-height: 400px; overflow-y: auto;">
+                               
+                                    
                                 <!-- Aquí se llenarán las partidas dinámicamente -->
                             </div>
                         </form>
@@ -332,30 +339,28 @@ $('#ordenFabricacionTable').on('click', '.ver-detalles', function() {
                 // Mostrar los detalles de la orden en el modal
                 $('#modalBodyContent').html(`
                     <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-sm">
-                            <tbody>
-                                <tr>
-                                    <td><strong>Orden de Fabricación:</strong></td>
-                                    <td>${response.data.OrdenFabricacion}</td>
-                                    <td><strong>Artículo:</strong></td>
-                                    <td>${response.data.Articulo}</td>
-                                    <td><strong>Cantidad Total:</strong></td>
-                                    <td>${response.data.CantidadTotal}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Descripción:</strong></td>
-                                    <td colspan="5">${response.data.Descripcion}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Fecha Entrega SAP:</strong></td>
-                                    <td>${response.data.FechaEntregaSAP}</td>
-                                    <td><strong>Fecha Entrega:</strong></td>
-                                    <td>${response.data.FechaEntrega}</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                              <table id="ordenFabricacionTable" class="table table-striped table-sm fs--1 mb-0">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th class="sort border-top ps-3" data-sort="orden">Or. Fabricación</th>
+                                <th class="sort border-top" data-sort="articulo">Artículo</th>
+                                <th class="sort border-top" data-sort="descripcion">Descripción</th>
+                                <th class="sort border-top" data-sort="cantidad">Cantidad Total</th>
+                                <th class="sort border-top" data-sort="fechaSAP">Fecha SAP</th>
+                                <th class="sort border-top" data-sort="fechaEstimada">Fecha Estimada</th>
+                            </tr>
+                        </thead>
+                        <tbody class="list">
+                            <tr>
+                                <td class="align-middle ps-3 orden">${response.data.OrdenFabricacion}</td>
+                                <td class="align-middle articulo">${response.data.Articulo}</td>
+                                <td class="align-middle descripcion">${response.data.Descripcion}</td>
+                                <td class="align-middle cantidad">${response.data.CantidadTotal}</td>
+                                <td class="align-middle fechaSAP">${response.data.FechaEntregaSAP}</td>
+                                <td class="align-middle fechaEstimada">${response.data.FechaEntrega}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                     </div>
                 `);
                 // Asignar el ID de la orden a un campo oculto

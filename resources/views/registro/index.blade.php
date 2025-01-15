@@ -91,42 +91,43 @@
                 </svg>
             </form>
         </div>
-
         <div class="table-responsive">
-            <table class="table table-striped table-sm fs--1 mb-0">
-                <thead class="bg-primary text-white">
-                    <tr>
-                        <th class="sort border-top" data-sort="nombre">Nombre</th>
-                        <th class="sort border-top ps-3" data-sort="apellido">Apellido</th>
-                        <th class="sort border-top" data-sort="email">Correo</th>
-                        <th class="sort border-top" data-sort="roles">Role</th>
-                        <th class="sort border-top" data-sort="estatus">Activo</th>
-                        <th class="sort border-top text-center  pe-0">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody class="list">
-                    @foreach ($personal as $registro)
-                    <tr>
-                        <td class="align-middle nombre">{{ $registro->name }}</td>
-                        <td class="align-middle ps-3 apellido">{{ $registro->apellido }}</td>
-                        <td class="align-middle email">{{ $registro->email }}</td>
-                        <td class="align-middle roles">
-                            @foreach ($registro->roles as $role)
-                                <span class="badge badge-info">{{ $role->name }}</span>
-                            @endforeach
-                        </td>
-                        <td class="align-middle estatus">
-                            <button class="btn toggle-status {{ $registro->active ? 'active' : 'inactive' }}" data-id="{{ $registro->id }}" data-active="{{ $registro->active ? '1' : '0' }}">
-                                <i class="fa {{ $registro->active ? 'fa-toggle-on' : 'fa-toggle-off' }}" aria-hidden="true"></i>
-                            </button>
-                        </td>
-                        <td class=" text-center pe-0">
-                            <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#userModal" data-id="{{ $registro->id }}"><i class="fas fa-edit"></i> Editar</button>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="card shadow-sm">
+                <table class="table table-striped table-sm fs--1 mb-0">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th class="sort border-top" data-sort="nombre">Nombre</th>
+                            <th class="sort border-top ps-3" data-sort="apellido">Apellido</th>
+                            <th class="sort border-top" data-sort="email">Correo</th>
+                            <th class="sort border-top" data-sort="roles">Role</th>
+                            <th class="sort border-top" data-sort="estatus">Activo</th>
+                            <th class="sort border-top text-center  pe-0">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="list">
+                        @foreach ($personal as $registro)
+                        <tr>
+                            <td class="align-middle nombre">{{ $registro->name }}</td>
+                            <td class="align-middle ps-3 apellido">{{ $registro->apellido }}</td>
+                            <td class="align-middle email">{{ $registro->email }}</td>
+                            <td class="align-middle roles">
+                                @foreach ($registro->roles as $role)
+                                    <span class="badge badge-info">{{ $role->name }}</span>
+                                @endforeach
+                            </td>
+                            <td class="align-middle estatus">
+                                <button class="btn toggle-status {{ $registro->active ? 'active' : 'inactive' }}" data-id="{{ $registro->id }}" data-active="{{ $registro->active ? '1' : '0' }}">
+                                    <i class="fa {{ $registro->active ? 'fa-toggle-on' : 'fa-toggle-off' }}" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                            <td class=" text-center pe-0">
+                                <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#userModal" data-id="{{ $registro->id }}"><i class="fas fa-edit"></i> Editar</button>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="d-flex justify-content-between mt-3">
             <span class="d-none d-sm-inline-block" data-list-info="data-list-info">1 a 5 artículos de 43</span>
