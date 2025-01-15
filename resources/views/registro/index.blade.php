@@ -143,6 +143,7 @@
     </div>
 </div>
 <!-- Modal -->
+<!-- Modal -->
 <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -150,7 +151,7 @@
                 <h5 class="modal-title text-white" id="userModalLabel">Editar Usuario</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <form id="userEditForm" method="POST" action="{{ route('registro.update', 0) }}">
+            <form id="userEditForm" action="{{ route('registro.update', ['id' => $registro->id]) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
@@ -170,12 +171,14 @@
                         </div>
                     </div>
                     <!-- Fila para Correo Electrónico -->
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" name="email" id="email" class="form-control" placeholder="Ingrese su email" required>
-                        </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" id="email" class="form-control" placeholder="Ingrese su email" required>
+                        @error('email')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
+                    
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -206,100 +209,198 @@
         </div>
     </div>
 </div>
-@endsection
 
 @section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
- 
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-
     <script>
+        $(document).ready(function() {
+            // Cargar datos del modal
+            $('button[data-bs-toggle="modal"]').on('click', function() {
+                var userId = $(this).data('id');  
+                var url = "{{ route('registro.show', ['id' => '__userId__']) }}".replace('__userId__', userId);
+                
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    success: function(response) {
+                        console.log(response);  // Verifica la respuesta en la consola
+                        $('#apellido').val(response.apellido);
+                        $('#email').val(response.email);  
+                        $('#name').val(response.name);
+                        $('#password').val('');  // Reseteamos el campo de contraseña
+                        $('#password_confirmation').val('');  // Reseteamos el campo de confirmación de contraseña
+                        
+                        // Actualiza la acción del formulario
+                        $('#userEditForm').attr('action', '{{ route('registro.update', '__userId__') }}'.replace('__userId__', userId));
 
-    $(document).ready(function() {
-        /*$('#usuarios-table').DataTable({
-            "language": {
-                "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
-            }
-        });*/
+                        // Agregar los roles
+                        var roles = response.roles;
+                        var rolesContainer = $('#roles');
+                        rolesContainer.empty();  // Limpiar cualquier rol previamente cargado
 
-        // Cargar datos del modal
-        $('button[data-bs-toggle="modal"]').on('click', function() {
-            var userId = $(this).data('id');  
-            var url = "{{ route('registro.show', ['id' => '__userId__']) }}".replace('__userId__', userId);
-            //var url = '/registro/' + userId;  
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function(response) {
-                    console.log(response);  // Verifica la respuesta en la consola
-                    $('#apellido').val(response.apellido);
-                    $('#email').val(response.email);  
-                    $('#name').val(response.name);
-                    $('#password').val(response.password);
-                   
-                    
-                    // Actualiza la acción del formulario
-                    $('#userEditForm').attr('action', '/registro/' + userId);
+                        @foreach ($roles as $role)
+                            var isChecked = roles.includes({{ $role->id }}) ? 'checked' : '';
+                            rolesContainer.append(
+                                '<div class="form-check">' +
+                                    '<input type="checkbox" class="form-check-input" id="role-{{ $role->id }}" name="roles[]" value="{{ $role->id }}" ' + isChecked + '>' +
+                                    '<label class="form-check-label" for="role-{{ $role->id }}">{{ $role->name }}</label>' +
+                                '</div>'
+                            );
+                        @endforeach
 
-                    // Agregar los roles
-                    var roles = response.roles;
-                    var rolesContainer = $('#roles');
-                    rolesContainer.empty();
-
-                    @foreach ($roles as $role)
-                        var isChecked = roles.includes({{ $role->id }}) ? 'checked' : '';
-                        rolesContainer.append(
-                            '<div class="form-check">' +
-                                '<input type="checkbox" class="form-check-input" id="role-{{ $role->id }}" name="roles[]" value="{{ $role->id }}" ' + isChecked + '>' +
-                                '<label class="form-check-label" for="role-{{ $role->id }}">{{ $role->name }}</label>' +
-                            '</div>'
-                        );
-                    @endforeach
-
-                    // Redibuja el modal
-                    $('#userModal').modal('show');  // Este es el lugar donde debes asegurarte de que se redibuje después de la asignación
-                }
+                        // Mostrar el modal
+                        $('#userModal').modal('show');
+                    }
+                });
             });
 
+            // Manejar el envío del formulario a través de AJAX
+            $(document).on('submit', '#userEditForm', function(event) {
+                event.preventDefault();  // Prevenir el envío tradicional del formulario
 
+                var form = $(this);
+                var formData = form.serialize();
+
+                $.ajax({
+                    url: form.attr('action'),  // Utiliza la acción actualizada del formulario
+                    method: 'POST',
+                    data: formData + '&_method=PUT', 
+                    success: function(response) {
+                        console.log(response);
+                        if (response.success) {
+                            Swal.fire('Éxito', response.message, 'success').then(() => {
+                                $('#userModal').modal('hide');
+                                location.reload(); // Recarga la tabla para reflejar los cambios
+                            });
+                        } else {
+                            Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
+                        }
+                    },
+                    
+                });
+            });
+        });
+    </script>
+@endsection
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+/*
+$(document).ready(function() {
+    // Cargar datos del modal
+    $('button[data-bs-toggle="modal"]').on('click', function() {
+        var userId = $(this).data('id');  
+        var url = "{{ route('registro.show', ['id' => '__userId__']) }}".replace('__userId__', userId);
+        
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function(response) {
+                console.log(response);  // Verifica la respuesta en la consola
+                $('#apellido').val(response.apellido);
+                $('#email').val(response.email);  
+                $('#name').val(response.name);
+                $('#password').val('');  // Reseteamos el campo de contraseña
+                $('#password_confirmation').val('');  // Reseteamos el campo de confirmación de contraseña
+                
+                // Actualiza la acción del formulario
+                $('#userEditForm').attr('action', '{{ route('registro.update', '__userId__') }}'.replace('__userId__', userId));
+
+
+                // Agregar los roles
+                var roles = response.roles;
+                var rolesContainer = $('#roles');
+                rolesContainer.empty();  // Limpiar cualquier rol previamente cargado
+
+                @foreach ($roles as $role)
+                    var isChecked = roles.includes({{ $role->id }}) ? 'checked' : '';
+                    rolesContainer.append(
+                        '<div class="form-check">' +
+                            '<input type="checkbox" class="form-check-input" id="role-{{ $role->id }}" name="roles[]" value="{{ $role->id }}" ' + isChecked + '>' +
+                            '<label class="form-check-label" for="role-{{ $role->id }}">{{ $role->name }}</label>' +
+                        '</div>'
+                    );
+                @endforeach
+
+                // Mostrar el modal
+                $('#userModal').modal('show');
+            }
+        });
+    });
+
+    // Manejar el envío del formulario a través de AJAX
+    $(document).on('submit', '#userEditForm', function(event) {
+        event.preventDefault();  // Prevenir el envío tradicional del formulario
+
+        var form = $(this);
+        var formData = form.serialize();
+
+        $.ajax({
+            url: "{{ route('registro.update', ['id' => $registro->id]) }}",
+            method: 'PUT',  // Método de actualización
+            data: formData,
+            success: function(response) {
+    console.log(response); // Verifica la respuesta completa del servidor
+    if (response.success) {
+        Swal.fire('Éxito', response.message, 'success').then(() => {
+            $('#userModal').modal('hide');
+            location.reload();
+        });
+    } else {
+        Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
+    }
+}
 
         });
+    });
+
+
 
         // Cambio de estado
         $('.toggle-status').on('click', function () {
-    var button = $(this); 
-    var userId = button.data('id'); 
-    var isActive = button.data('active') == '1'; 
+            var button = $(this); 
+            var userId = button.data('id'); 
+            var isActive = button.data('active') == '1'; 
+            var url = isActive ? '/users/desactivar' : '/users/activar';
+            var newState = isActive ? 0 : 1;
 
-    // Usar Laravel route() para obtener la URL
-    var url = isActive ? "{{ route('users.desactivar') }}" : "{{ route('users.activar') }}";
-    var newState = isActive ? 0 : 1;
-
-    $.ajax({
-        url: url,
-        method: 'POST',
-        data: {
-            user_id: userId,
-            _token: $('meta[name="csrf-token"]').attr('content'),
-        },
-        success: function (response) {
-            button.data('active', newState);
-            if (newState) {
-                button.removeClass('inactive').addClass('active');
-                button.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
-            } else {
-                button.removeClass('active').addClass('inactive');
-                button.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
-            }
-        },
-        error: function () {
-            alert('Hubo un error al cambiar el estado.');
-        }
-    });
-});
-
-    });
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    user_id: userId,
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                },
+                success: function (response) {
+                    button.data('active', newState);
+                    if (newState) {
+                        button.removeClass('inactive').addClass('active');
+                        button.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+                    } else {
+                        button.removeClass('active').addClass('inactive');
+                        button.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+                    }
+                },
+                error: function () {
+                    alert('Hubo un error al cambiar el estado.');
+                }
+            });
+        });
+    });*/
     
     </script>
 @endsection
