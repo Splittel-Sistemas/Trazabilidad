@@ -111,6 +111,7 @@ Route::delete('destroy/{id}', [RolesPermisoController::class, 'destroy'])->name(
 
 
 
+Route::post('/filtrar-por-fecha', [CorteController::class, 'filtrarPorFecha'])->name('Fitrar.Fecha');
 
 
 

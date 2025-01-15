@@ -36,20 +36,9 @@
 
 @section('content')
     <!-- Breadcrumbs -->
-    <div class="breadcrumbs mb-4">
-        <div class="row g-0">
-            <div class="col-sm-6">
-                <div class="page-header">
-                    <h1 class="fs-2">Roles & Permisos</h1>
-                </div>
-            </div>
-            <div class="col-sm-6 d-flex justify-content-end">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="#">Areas</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Roles & Permisos</li>
-                </ol>
-            </div>
+    <div class="row gy-3 mb-2 justify-content-between">
+        <div class="col-md-9 col-auto">
+        <h4 class="mb-2 text-1100">Roles & Permisos</h4>
         </div>
     </div>
 
