@@ -212,73 +212,109 @@
 
 @section('scripts')
     <script>
-        $(document).ready(function() {
-            // Cargar datos del modal
-            $('button[data-bs-toggle="modal"]').on('click', function() {
-                var userId = $(this).data('id');  
-                var url = "{{ route('registro.show', ['id' => '__userId__']) }}".replace('__userId__', userId);
+  $(document).ready(function() {
+    // Cargar datos del modal
+    $('button[data-bs-toggle="modal"]').on('click', function() {
+        var userId = $(this).data('id');  
+        var url = "{{ route('registro.show', ['id' => '__userId__']) }}".replace('__userId__', userId);
+        
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function(response) {
+                console.log(response);  // Verifica la respuesta en la consola
+
+                // Rellenar campos del formulario con los datos del usuario
+                $('#apellido').val(response.apellido);
+                $('#email').val(response.email);  
+                $('#name').val(response.name);
+                $('#password').val('');  // Reseteamos el campo de contraseña
+                $('#password_confirmation').val('');  // Reseteamos el campo de confirmación de contraseña
                 
-                $.ajax({
-                    url: url,
-                    method: 'GET',
-                    success: function(response) {
-                        console.log(response);  // Verifica la respuesta en la consola
-                        $('#apellido').val(response.apellido);
-                        $('#email').val(response.email);  
-                        $('#name').val(response.name);
-                        $('#password').val('');  // Reseteamos el campo de contraseña
-                        $('#password_confirmation').val('');  // Reseteamos el campo de confirmación de contraseña
-                        
-                        // Actualiza la acción del formulario
-                        $('#userEditForm').attr('action', '{{ route('registro.update', '__userId__') }}'.replace('__userId__', userId));
+                // Actualiza la acción del formulario con la URL de actualización
+                $('#userEditForm').attr('action', '{{ route('registro.update', '__userId__') }}'.replace('__userId__', userId));
 
-                        // Agregar los roles
-                        var roles = response.roles;
-                        var rolesContainer = $('#roles');
-                        rolesContainer.empty();  // Limpiar cualquier rol previamente cargado
+                // Agregar los roles al formulario
+                var roles = response.roles;
+                var rolesContainer = $('#roles');
+                rolesContainer.empty();  // Limpiar cualquier rol previamente cargado
 
-                        @foreach ($roles as $role)
-                            var isChecked = roles.includes({{ $role->id }}) ? 'checked' : '';
-                            rolesContainer.append(
-                                '<div class="form-check">' +
-                                    '<input type="checkbox" class="form-check-input" id="role-{{ $role->id }}" name="roles[]" value="{{ $role->id }}" ' + isChecked + '>' +
-                                    '<label class="form-check-label" for="role-{{ $role->id }}">{{ $role->name }}</label>' +
-                                '</div>'
-                            );
-                        @endforeach
+                @foreach ($roles as $role)
+                    var isChecked = roles.includes({{ $role->id }}) ? 'checked' : '';
+                    rolesContainer.append(
+                        '<div class="form-check">' +
+                            '<input type="checkbox" class="form-check-input" id="role-{{ $role->id }}" name="roles[]" value="{{ $role->id }}" ' + isChecked + '>' +
+                            '<label class="form-check-label" for="role-{{ $role->id }}">{{ $role->name }}</label>' +
+                        '</div>'
+                    );
+                @endforeach
 
-                        // Mostrar el modal
-                        $('#userModal').modal('show');
-                    }
-                });
-            });
-
-            // Manejar el envío del formulario a través de AJAX
-            $(document).on('submit', '#userEditForm', function(event) {
-                event.preventDefault();  // Prevenir el envío tradicional del formulario
-
-                var form = $(this);
-                var formData = form.serialize();
-
-                $.ajax({
-                    url: form.attr('action'),  // Utiliza la acción actualizada del formulario
-                    method: 'POST',
-                    data: formData + '&_method=PUT', 
-                    success: function(response) {
-                        console.log(response);
-                        if (response.success) {
-                            Swal.fire('Éxito', response.message, 'success').then(() => {
-                                $('#userModal').modal('hide');
-                                location.reload(); // Recarga la tabla para reflejar los cambios
-                            });
-                        } else {
-                            Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
-                        }
-                    },
-                    
-                });
-            });
+                // Mostrar el modal
+                $('#userModal').modal('show');
+            }
         });
+    });
+
+    // Manejar el envío del formulario a través de AJAX
+    $(document).on('submit', '#userEditForm', function(event) {
+        event.preventDefault();  // Prevenir el envío tradicional del formulario
+
+        var form = $(this);
+        var formData = form.serialize();  // Serializar los datos del formulario
+
+        $.ajax({
+            url: form.attr('action'),  // Usa la acción actualizada del formulario
+            method: 'POST',  // Siempre usa POST en AJAX
+            data: formData + '&_method=PUT',  // Simula el PUT pasando el campo _method
+            success: function(response) {
+                console.log(response);
+                if (response.success) {
+                    Swal.fire('Éxito', response.message, 'success').then(() => {
+                        $('#userModal').modal('hide');
+                        location.reload();  // Recarga la página para reflejar los cambios
+                    });
+                } else {
+                    Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
+                }
+            },
+            error: function() {
+                Swal.fire('Error', 'Hubo un problema en el servidor.', 'error');
+            }
+        });
+    });
+
+    // Cambio de estado de usuario (activar/desactivar)
+    $('.toggle-status').on('click', function() {
+        var button = $(this); 
+        var userId = button.data('id'); 
+        var isActive = button.data('active') == '1'; 
+        var url = isActive ? '/users/desactivar' : '/users/activar';
+        var newState = isActive ? 0 : 1;
+
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: {
+                user_id: userId,
+                _token: $('meta[name="csrf-token"]').attr('content'),  // Agregar token CSRF
+            },
+            success: function(response) {
+                button.data('active', newState);
+                if (newState) {
+                    button.removeClass('inactive').addClass('active');
+                    button.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+                } else {
+                    button.removeClass('active').addClass('inactive');
+                    button.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+                }
+            },
+            error: function() {
+                alert('Hubo un error al cambiar el estado.');
+            }
+        });
+    });
+});
+
     </script>
 @endsection
 
