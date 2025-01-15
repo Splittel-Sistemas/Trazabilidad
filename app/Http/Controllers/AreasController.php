@@ -95,6 +95,7 @@ class AreasController extends Controller
                         }
                     } 
                 }else{
+                    
                     foreach( $datos->partidasOF()->orderBy('id', 'desc')->get() as $PartidasordenFabricacion){
                         foreach( $PartidasordenFabricacion->Partidas()->orderBy('id', 'desc')->get() as $Partidas){
                             if(!($Partidas->Areas()->where('Areas_id','=',3)->first() =="" || $Partidas->Areas()->where('Areas_id','=',3)->first() == null )){
@@ -104,14 +105,13 @@ class AreasController extends Controller
                                 <td class="align-middle Inicio">'.$Partidas->Areas()->first()->pivot->FechaComienzo.'</td>
                                 <td class="align-middle Fin">'.$Partidas->Areas()->first()->pivot->FechaTermina.'</td>';
                                 if($Partidas->Areas()->first()->pivot->FechaTermina==""){
-                                    if($Partidas->Estatus==1){
-                                        $texto="Iniciada";$color="success";$icono="check";
-                                    }elseif($Partidas->Estatus==2){$texto="Retrabajo";$color="warning";$icono="cogs";}
+                                    if($Partidas->Estatus==1){$texto="Iniciado";$color="success";$icono="cog";}
+                                    elseif($Partidas->Estatus==2){$texto="Retrabajo";$color="warning";$icono="cogs"; $CantidadCompletada-=$Partidas->CantidadaPartidas;}
                                     $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-'.$color.'"><span class="fw-bold">'.$texto.'</span><span class="ms-1 fas fa-'.$icono.'"></span></div></td>';
                                     if(!($Partidas->Areas()->first()->pivot->FechaTermina=="" || $Partidas->Areas()->first()->pivot->FechaTermina==null) && $Partidas->TipoAccion==0){
                                         $CantidadCompletada+=$Partidas->CantidadaPartidas;
                                     }
-                                }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Completado</span><span class="ms-1 fas fa-check"></span></div></td>';
+                                }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-primary"><span class="fw-bold">Finalizado</span><span class="ms-1 fas fa-check"></span></div></td>';
                                     if(!($Partidas->Areas()->first()->pivot->FechaTermina=="" || $Partidas->Areas()->first()->pivot->FechaTermina==null) && $Partidas->TipoAccion==0){
                                         $CantidadCompletada+=$Partidas->CantidadaPartidas;
                                     }
@@ -123,11 +123,14 @@ class AreasController extends Controller
                         }
                     }
                 }
+                if($CantidadCompletada<0){
+                    $CantidadCompletada=0; 
+                }
                 if($Escaner==0){
                     $Opciones='<option selected="" value="">Todos</option>
-                        <option value="Iniciada">Iniciada</option>
+                        <option value="Iniciado">Iniciado</option>
                         <option value="Retrabajo">Retrabajo</option>
-                        <option value="Finalizada">Finalizada</option>';
+                        <option value="Finalizado">Finalizado</option>';
                         
                 }else{
                     $Opciones='<option selected="" value="">Todos</option>
@@ -346,9 +349,14 @@ class AreasController extends Controller
         $Cantidad = $request->Cantidad;
         $Retrabajo = $request->Retrabajo;
         $Estatus=1;
-        $Estatus = ($Retrabajo == "true") ? 2 : 1;
         $Inicio = $request->Inicio;
         $Fin = $request->Fin;
+        $TipoAccion=0;
+        if($Inicio==1){
+            $Estatus = ($Retrabajo == "true") ? 2 : 1;
+        }else{
+            $Estatus=0;
+        }
         $ContarPartidas=0;
         $CodigoPartes = explode("-", $Codigo);
         //Valida que el codigo este completo
@@ -408,20 +416,31 @@ class AreasController extends Controller
         $FechaHoy=date('Y-m-d H:i:s');
         $ContarPartidas+=$Cantidad;
         if($Estatus==2){
+            $TipoAccion=1;
+        }
+        if($Estatus==2 || $Fin==1){
             $ContarPartidas=0;
         }
         if($ContarPartidas<=$partidasOF->cantidad_partida){
                 $Partidasg = new Partidas();
                 $Partidasg->PartidasOF_id=$partidasOF->id;
                 $Partidasg->CantidadaPartidas=$Cantidad;
-                $Partidasg->TipoAccion=0;
+                $Partidasg->TipoAccion=$TipoAccion;
                 $Partidasg->Estatus=$Estatus;
                 $Partidasg->NumParte=0;
-                $pivotData = [
-                    'FechaComienzo' => $FechaHoy,
-                    'Users_id' => $this->funcionesGenerales->InfoUsuario(),
-                    'Linea_id' => $this->funcionesGenerales->Linea(),
-                ];
+                if($Inicio==1){
+                    $pivotData = [
+                        'FechaComienzo' => $FechaHoy,
+                        'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                        'Linea_id' => $this->funcionesGenerales->Linea(),
+                    ];
+                }else{
+                    $pivotData = [
+                        'FechaTermina' => $FechaHoy,
+                        'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                        'Linea_id' => $this->funcionesGenerales->Linea(),
+                    ];
+                }
                 if ($Partidasg->save()) {
                     $Partidasg->Areas()->attach($Area,$pivotData);
                     return response()->json([

@@ -21,20 +21,17 @@
     <div class="row">
         <div class="col-6">
               <div class="card shadow-sm">
-                {{--<div class="card-header bg-info">
-                    <strong>   </strong>
-                </div>--}}
                 <div class="card-body row" id="filtro">
                     <label for="CodigoEscaner" class="col-form-label col-sm-12 pt-0">Proceso <span class="text-muted"></span></label>
                     <div class="col-8">
                             <div class="form-check form-check-inline ">
-                                <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked>
+                                <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked onclick="MostrarRetrabajo('Entrada')">
                                 <label class="form-check-label" for="Iniciar">
                                   Entrada
                                 </label>
                             </div>
                             <div class="form-check form-check-inline ">
-                                <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar">
+                                <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar" onclick="MostrarRetrabajo('Salida')">
                                 <label class="form-check-label" for="Finalizar">
                                   Salida
                                 </label>
@@ -149,7 +146,13 @@
                             $('#CantidadDiv').fadeIn();
                             $('#IniciarBtn').fadeIn();
                             $('#RetrabajoDiv').fadeIn();
-                            
+                            if(Inicio==1){
+                                const Retrabajo = document.getElementById('Retrabajo');
+                                Retrabajo.disabled = false;
+                            }else{
+                                const Retrabajo = document.getElementById('Retrabajo');
+                            Retrabajo.disabled = true;
+                            }
                             return 0;
                         }
                     }else{
@@ -327,93 +330,111 @@
             CodigoEscaner=$('#CodigoEscaner').val();
             Cantidad=$('#Cantidad').val();
             Retrabajo=document.getElementById('Retrabajo').checked;
-            if(Retrabajo){
+            InicioInput = document.getElementById('Iniciar');
+            if(Retrabajo && InicioInput.checked){
                 Swal.fire({
-                title: 'Retrabajo',
-                text: `¿Desea enviar ${Cantidad} piezas con código ${CodigoEscaner} a Retrabajo?`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Confirmar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                // Verificar si el usuario presionó "Confirmar"
-                if (result.isConfirmed) {
-                    
-                } else {
-                    
-                }
-            });
-            }
-            InicioInput=document.getElementById('Iniciar');
-            if(InicioInput.checked){
-                Inicio=1;
-                Fin=0;
-            }
-            FinalizarInput=document.getElementById('Finalizar');
-            if(FinalizarInput.checked){
-                Inicio=0;
-                Fin=1;
-            }
-            //Validacion Solo numeros Catidad y mayor a 0
-            if(Cantidad<=0){
-                $('#Cantidad').addClass('is-invalid');
-                $('#error_Cantidad').html('Campo cantidad no puede ser 0');
-                return 0;
-            }else{
-                if ($('#Cantidad').hasClass('is-invalid')) {$('#Cantidad').removeClass('is-invalid');}
-                $('#error_Cantidad').html('');
-            }
-            if (!/^\d+$/.test(Cantidad)) {
-                $('#Cantidad').addClass('is-invalid');
-                $('#error_Cantidad').html('Solo se aceptan N&uacute;meros');
-                return 0;
-            }else{
-                if ($('#Cantidad').hasClass('is-invalid')) {$('#Cantidad').removeClass('is-invalid');}
-                $('#error_Cantidad').html('');
-            }
-            //Validacion Solo Numeros y -
-            if (!/^[-\d]+$/.test(CodigoEscaner)) {
-                $('#CodigoEscaner').addClass('is-invalid');
-                $('#error_CodigoEscaner').html('Solo se aceptan N&uacute;meros  y -');
-                return 0;
-            }else{
-                    if ($('#CodigoEscaner').hasClass('is-invalid')) {$('#CodigoEscaner').removeClass('is-invalid');}
-                    $('#error_CodigoEscaner').html('');
-            }
-                $.ajax({
-                    url: "{{route('TipoNoEscaner')}}", 
-                    type: 'POST',
-                    data: {
-                        Codigo: CodigoEscaner,
-                        Cantidad:Cantidad,
-                        Inicio:Inicio,
-                        Fin:Fin,
-                        Retrabajo:Retrabajo,
-                        Area:'{{$Area}}',
-                        _token: '{{ csrf_token()}}'  
-                    },
-                    beforeSend: function() {
-                        $('#CodigoEscanerSuministro').html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /><br>Cargando</p>");
-                    },
-                    success: function(response) {
-                        /*if(response.hasOwnProperty(message)){
-                            error('Error de datos',response.message);
-                            return 0;
-                        }else{
-
-                        }*/
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire({
-                        icon: "error",
-                        title: 'Error: datos no validas',
-                        text:xhr.responseJSON.message,
-                        showConfirmButton: false,
-                        timer: 2500
-                    });
+                    title: 'Retrabajo',
+                    text: `¿Desea enviar ${Cantidad} piezas con código ${CodigoEscaner} a Retrabajo?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirmar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    // Verificar si el usuario presionó "Confirmar"
+                    if (result.isConfirmed) {
+                        TipoNoEscaner();
+                    } else {
+                        return 0;
                     }
-                });
-            })
-    });
+                })
+            }else{
+                TipoNoEscaner();
+            }
+        });
+    })
+    function TipoNoEscaner() {
+        CodigoEscaner=$('#CodigoEscaner').val();
+        Cantidad=$('#Cantidad').val();
+        Retrabajo=document.getElementById('Retrabajo').checked;
+        InicioInput = document.getElementById('Iniciar');
+        if (InicioInput.checked) {
+            Inicio = 1;
+            Fin = 0;
+        }
+        FinalizarInput = document.getElementById('Finalizar');
+        if (FinalizarInput.checked) {
+            Inicio = 0;
+            Fin = 1;
+        }
+
+        // Validación Solo números para Cantidad y mayor a 0
+        if (Cantidad <= 0) {
+            $('#Cantidad').addClass('is-invalid');
+            $('#error_Cantidad').html('Campo cantidad no puede ser 0');
+            return 0;
+        } else {
+            if ($('#Cantidad').hasClass('is-invalid')) { $('#Cantidad').removeClass('is-invalid'); }
+            $('#error_Cantidad').html('');
+        }
+
+        if (!/^\d+$/.test(Cantidad)) {
+            $('#Cantidad').addClass('is-invalid');
+            $('#error_Cantidad').html('Solo se aceptan N&uacute;meros');
+            return 0;
+        } else {
+            if ($('#Cantidad').hasClass('is-invalid')) { $('#Cantidad').removeClass('is-invalid'); }
+            $('#error_Cantidad').html('');
+        }
+
+        // Validación Solo Números y -
+        if (!/^[-\d]+$/.test(CodigoEscaner)) {
+            $('#CodigoEscaner').addClass('is-invalid');
+            $('#error_CodigoEscaner').html('Solo se aceptan N&uacute;meros y -');
+            return 0;
+        } else {
+            if ($('#CodigoEscaner').hasClass('is-invalid')) { $('#CodigoEscaner').removeClass('is-invalid'); }
+            $('#error_CodigoEscaner').html('');
+        }
+        // Realizar la petición AJAX
+        $.ajax({
+            url: "{{route('TipoNoEscaner')}}",
+            type: 'POST',
+            data: {
+                Codigo: CodigoEscaner,
+                Cantidad: Cantidad,
+                Inicio: Inicio,
+                Fin: Fin,
+                Retrabajo: Retrabajo,
+                Area: '{{$Area}}',
+                _token: '{{ csrf_token() }}'
+            },
+            beforeSend: function() {
+                $('#CodigoEscanerSuministro').html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /><br>Cargando</p>");
+            },
+            success: function(response) {
+                // Manejar la respuesta del servidor si es necesario
+            },
+            error: function(xhr, status, error) {
+                /*Swal.fire({
+                    icon: "error",
+                    title: 'Error: datos no válidos',
+                    text: xhr.responseJSON.message,
+                    showConfirmButton: false,
+                    timer: 2500
+                });*/
+            }
+        });
+    }
+    function MostrarRetrabajo(tipo) {
+        const Retrabajo = document.getElementById('Retrabajo');
+        Retrabajo.checked = false;
+        if (tipo === 'Entrada') {
+            // Mostrar el input cuando 'Entrada' esté seleccionado
+            Retrabajo.disabled = false;
+        } else {
+            // Ocultar el input cuando 'Salida' esté seleccionado
+            Retrabajo.disabled = true;
+        }
+    }
 </script>
 @endsection
