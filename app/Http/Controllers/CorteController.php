@@ -14,10 +14,10 @@ class CorteController extends Controller
     public function index()
     {
         // Fecha actual
-        $today = date('Y-m-d');
-        $semna = date('Y-m-d', strtotime('-1 week'));
+        //$today = date('Y-m-d');
+        //$semna = date('Y-m-d', strtotime('-1 week'));
         // Consulta de órdenes de fabricación filtradas por la fecha actual
-        $ordenesFabricacion=$this->filtroOvFecha($today, $semna);
+        $ordenesFabricacion=$this->filtroOvFechaTodas();
         // Agregar estatus calculado
         $ordenesFabricacion->transform(function ($item) {
             $cantidadTotal = $item->CantidadTotal;
@@ -45,11 +45,11 @@ class CorteController extends Controller
 
     public function SinCortesProceso(Request $request)
     {
-        $today = date('Y-m-d');
-        $semna = date('Y-m-d', strtotime('-1 week'));
+        //$today = date('Y-m-d');
+        //$semna = date('Y-m-d', strtotime('-1 week'));
     
         // Consulta de órdenes de fabricación filtradas por la fecha actual
-        $ordenesFabricacion = $this->filtroOvFecha($today, $semna);
+        $ordenesFabricacion = $this->filtroOvFechaTodas();
     
         // Agregar estatus calculado
         $ordenesFabricacion->transform(function ($item) {
@@ -111,8 +111,33 @@ class CorteController extends Controller
         return response()->json($ordenesSinCorteYEnProceso->values()->toArray());
     }
     
+    public function filtroOvFechaTodas()
+    {
+        $ordenesFabricacion = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
+            ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->select(
+                'OrdenFabricacion.id',
+                'OrdenFabricacion.OrdenFabricacion',
+                'OrdenFabricacion.Articulo',
+                'OrdenFabricacion.Descripcion',
+                'OrdenFabricacion.CantidadTotal',
+                'OrdenFabricacion.FechaEntregaSAP',
+                'OrdenFabricacion.FechaEntrega',
+                DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida')
+            )
+            ->groupBy(
+                'OrdenFabricacion.id',
+                'OrdenFabricacion.OrdenFabricacion',
+                'OrdenFabricacion.Articulo',
+                'OrdenFabricacion.Descripcion',
+                'OrdenFabricacion.CantidadTotal',
+                'OrdenFabricacion.FechaEntregaSAP',
+                'OrdenFabricacion.FechaEntrega'
+            )
+            ->get();
 
-    
+        return $ordenesFabricacion;
+    }
 
     public function filtroOvFecha($today, $semna)
     {
@@ -192,6 +217,55 @@ class CorteController extends Controller
 
         return response()->json($ordenesFabricacion);
     }
+    public function fechaCompletado(Request $request){
+         
+        $fecha = $request->input('fecha');
+        
+        if (!$fecha) {
+            return response()->json(['error' => 'La fecha es requerida'], 400);
+        }
+
+        $ordenesFabricacion = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
+            ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->select(
+                'OrdenFabricacion.id',
+                'OrdenFabricacion.OrdenFabricacion',
+                'OrdenFabricacion.Articulo',
+                'OrdenFabricacion.Descripcion',
+                'OrdenFabricacion.CantidadTotal',
+                'OrdenFabricacion.FechaEntregaSAP',
+                'OrdenFabricacion.FechaEntrega',
+                DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida')
+            )
+            ->whereDate('OrdenFabricacion.FechaEntrega', $fecha)
+            ->groupBy(
+                'OrdenFabricacion.id',
+                'OrdenFabricacion.OrdenFabricacion',
+                'OrdenFabricacion.Articulo',
+                'OrdenFabricacion.Descripcion',
+                'OrdenFabricacion.CantidadTotal',
+                'OrdenFabricacion.FechaEntregaSAP',
+                'OrdenFabricacion.FechaEntrega'
+            )
+            ->get();
+            $ordenesFabricacion->transform(function ($item) {
+                $cantidadTotal = $item->CantidadTotal;
+                $sumaCantidadPartida = $item->suma_cantidad_partida;
+        
+                if ($sumaCantidadPartida == 0) {
+                    $item->estatus = 'Sin cortes';
+                } elseif ($sumaCantidadPartida < $cantidadTotal) {
+                    $item->estatus = 'En proceso';
+                } else {
+                    $item->estatus = 'Completado';
+                }
+        
+                return $item;
+            });
+
+        return response()->json($ordenesFabricacion);
+    }
+ 
     public function getData(Request $request)
     {
         $limit = $request->input('length', 10); // Número de registros por página
@@ -310,6 +384,11 @@ class CorteController extends Controller
             'message' => 'Estatus actualizado correctamente',
             'estatus' => $orden->estatus, // Devuelve el estatus calculado
         ]);
+    }
+    public function actualizarTablasecundaria()
+    {
+        $ordenesFabricacion = $this->index()->ordenesFabricacion; // Reutilizar lógica de index
+        return response()->json($ordenesFabricacion);
     }
     public function actualizarTabla()
     {

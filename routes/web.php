@@ -110,6 +110,7 @@ Route::delete('destroy/{id}', [RolesPermisoController::class, 'destroy'])->name(
 
 
 Route::post('/filtrar-por-fecha', [CorteController::class, 'filtrarPorFecha'])->name('Fitrar.Fecha');
+Route::post('/filtrar-por-fechaS', [CorteController::class, 'fechaCompletado'])->name('Fitrar.FechaS');
 
 Route::get('/ordenes-filtradas', [CorteController::class, 'SinCortesProceso'])->name('ordenes.filtradas');
 Route::get('/ordenes/completadas',[CorteController:: class, 'Completado'])->name('ordenes.completadas');
