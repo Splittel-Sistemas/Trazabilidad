@@ -126,7 +126,7 @@
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Suministro</span></div>
                                             </a>
                                         </li>
-                                        <li class="nav-item"><a class="nav-link" href="{{route('Suministro')}}" data-bs-toggle="" aria-expanded="false">
+                                        <li class="nav-item"><a class="nav-link {{ Route::is('Preparado') ? 'nav-tabs active' : '' }}" href="{{route('Preparado')}}" data-bs-toggle="" aria-expanded="false">
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Preparado</span></div>
                                             </a>
                                         </li>

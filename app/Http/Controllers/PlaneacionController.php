@@ -590,7 +590,7 @@ class PlaneacionController extends Controller
                             <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
                             <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
                             <td class="text-center">'.'<button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-link"><i class="fa fa-arrow-left"></i> Regresar</button>'.'</td>
-                            <td class="text-center">'.'<button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn-sm btn-primary"><i class="fa fa-eye"></i> Ver</button>'.'</td>
+                            <td class="text-center">'.'<button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary "><i class="fa fa-eye"></i> Ver</button>'.'</td>
                         </tr>';
             }
             return response()->json([

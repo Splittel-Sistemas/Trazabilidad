@@ -110,7 +110,8 @@
                 Codigo: Codigo,
                 Inicio:Inicio,
                 Finalizar:Finalizar,
-                _token: '{{ csrf_token() }}'  
+                Area:'{{$Area}}',
+                _token: '{{csrf_token()}}'  
             },
             beforeSend: function() {
                 $('#CodigoEscanerSuministro').html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /><br>Cargando</p>");
@@ -123,12 +124,16 @@
                 if(response.status=="success"){
                     $('#DivCointainerTableSuministro').html(response.tabla);
                     if(response.Escaner==1){
+                        if((response.tabla).includes('<td')){
                         TablaList(DivCointainerTableSuministro);
+                        }
                     }
                     $('#CantidadPartidasOF').html('<span class="badge bg-light text-dark">Piezas procesadas '+response.CantidadCompletada+"/"+response.CantidadTotal+'</span>');
                     $('#TituloPartidasOF').html(response.OF);
                     if(response.Escaner==0){
-                        TablaList(DivCointainerTableSuministro);
+                        if((response.tabla).includes('<td')){
+                            TablaList(DivCointainerTableSuministro);
+                        }
                         $('#CantidadDiv').fadeOut();
                         $('#IniciarBtn').fadeOut();
                         $('#RetrabajoDiv').fadeOut();
@@ -263,6 +268,7 @@
                 Inicio:1,
                 Finalizar:0,
                 Confirmacion:1,
+                Area:'{{$Area}}',
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
@@ -412,16 +418,71 @@
                 $('#CodigoEscanerSuministro').html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /><br>Cargando</p>");
             },
             success: function(response) {
-                // Manejar la respuesta del servidor si es necesario
+                $('#ToastGuardado').fadeOut();
+                if(response.status=="dontexist" || response.status=="empty"){
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
+                    $('#ToastGuardadoBody').html('El Codigo '+ CodigoEscaner + ' que intentas ingresar No existe!');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 2000);
+                }else if(response.status=='PasBackerror'){
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
+                    $('#ToastGuardadoBody').html('Aún no se ha completado el proceso de Corte!');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 2000);
+                }else if(response.status=='error'){
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
+                    $('#ToastGuardadoBody').html('Ocurrio un error no fue posible guardar la información para codigo'+CodigoEscaner+'!');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 2000);
+                }else if(response.status=='success'){
+                    if(response.Inicio==1){
+                        mensaje='Nueva Entrada del Codigo '+CodigoEscaner+' Guardada!';
+                    }else if(response.Inicio==0){
+                        mensaje='Salida del Codigo '+CodigoEscaner+' Guardada!';
+                    }
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
+                    $('#ToastGuardadoBody').html(mensaje);
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 2000);
+                }else if(response.status=='SurplusFin'){
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
+                    $('#ToastGuardadoBody').html('Error no guardado, la cantidad de salidas supera los Entradas!');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 2000);
+                }else if(response.status=='SurplusRetrabajo'){
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
+                    $('#ToastGuardadoBody').html('Error no guardado, Para mandar a retrabajo las ordenes tienen que estar en Estatus "Finalizado" !');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 2000);
+                }else if(response.status=='SurplusInicio'){
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
+                    $('#ToastGuardadoBody').html('Error no guardado, La cantidad de entradas no puede superar la cantidad Total de la Partida de la Orden de Fabricación !');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 2000);
+                }
+                ListaCodigo(CodigoEscaner,'CodigoEscanerSuministro')
             },
             error: function(xhr, status, error) {
-                /*Swal.fire({
-                    icon: "error",
-                    title: 'Error: datos no válidos',
-                    text: xhr.responseJSON.message,
-                    showConfirmButton: false,
-                    timer: 2500
-                });*/
+                $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
+                    $('#ToastGuardadoBody').html('Error, Ocurrió un problema, revisa tu conexión, si el percance persiste contacta a TI!');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 3000);
             }
         });
     }
