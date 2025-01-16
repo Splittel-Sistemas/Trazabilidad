@@ -5,7 +5,6 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <style>
-    
 .table-bordered {
     border: 1px solid #ddd;
 }
@@ -63,134 +62,258 @@
             <h4 class="mb-2 text-1100">Cortes</h4>
             </div>
         </div>
-    <div class="col-6 mt-2">
-        <div class="accordion" id="accordionFiltroOV">
-            <div class="card shadow-sm">
-                <div class="accordion-item border-top border-300">
-                    <!-- Filtro por fecha -->
-                    <h4 class="accordion-header" id="headingOne">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroOV" aria-expanded="true" aria-controls="collapseFiltroOV">
-                            <strong>Filtros</strong>
-                        </button>
-                    </h4>
-                    <div class="accordion-collapse collapse show" id="collapseFiltroOV" aria-labelledby="headingOne" data-bs-parent="#accordionFiltroOV">
-                        <div class="accordion-body pt-2">
-                            <form id="filtroForm" method="post" class="form-horizontal">
-                                @csrf
-                                <div class="row">
-                                    <!-- Filtro por fecha -->
-                                    <div class="col-md-6 mb-3">
-                                        <label for="fecha" class="form-label"><strong>Filtro por Fecha</strong></label>
-                                        <div class="input-group">
-                                            <input type="date" name="fecha" id="fecha" class="form-control form-control-sm rounded-3">
-                                            <button id="buscarFecha" class="btn btn-outline-primary btn-sm ms-2 rounded-3">
-                                                <i class="fa fa-search"></i> Buscar
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Filtro por Orden de Fabricación -->
-                                    <div class="col-md-6 mb-3">
-                                        <label for="query" class="form-label"><strong>Filtro por Orden de Fabricación</strong></label>
-                                        <div class="input-group">
-                                            <input type="text" placeholder="Ingresa una Orden de Fabricación" name="query" id="query" class="form-control form-control-sm rounded-3">
-                                            <button id="buscarOV" class="btn btn-outline-primary btn-sm ms-2 rounded-3">
-                                                <i class="fa fa-search"></i> Buscar
-                                            </button>
-                                        </div>
+        <!--modulos sin corte y completados-->
+        <ul class="nav nav-underline" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation"><a class="nav-link" id="proceso-tab" data-bs-toggle="tab" href="#tab-proceso" role="tab" aria-controls="tab-proceso" aria-selected="false" tabindex="-1">
+                <font style="vertical-align: inherit;">
+                    <font style="vertical-align: inherit;">Sin Corte y En Proceso</font>
+                </font></a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="completado-tab" data-bs-toggle="tab" href="#tab-completado" role="tab" aria-controls="tab-completado" aria-selected="false" tabindex="-1">
+                  <font style="vertical-align: inherit;">
+                    <font style="vertical-align: inherit;">Completados</font>
+                  </font>
+                </a>
+              </li>
+          </ul>
+          <div class="tab-content mt-3" id="myTabContent">
+            <div class="tab-pane fade" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                <div class="col-6 mt-2">
+                    <div class="accordion" id="accordionFiltroOV">
+                        <div class="card shadow-sm">
+                            <div class="accordion-item border-top border-300">
+                                <!-- Filtro por fecha -->
+                                <h4 class="accordion-header" id="headingOne">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroOV" aria-expanded="true" aria-controls="collapseFiltroOV">
+                                        <strong>Filtros</strong>
+                                    </button>
+                                </h4>
+                                <div class="accordion-collapse collapse show" id="collapseFiltroOV" aria-labelledby="headingOne" data-bs-parent="#accordionFiltroOV">
+                                    <div class="accordion-body pt-2">
+                                        <form id="filtroForm" method="post" class="form-horizontal">
+                                            @csrf
+                                            <div class="row">
+                                                <!-- Filtro por fecha -->
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="fecha" class="form-label"><strong>Filtro por Fecha</strong></label>
+                                                    <div class="input-group">
+                                                        <input type="date" name="fecha" id="fecha" class="form-control form-control-sm rounded-3">
+                                                        <button id="buscarFecha" class="btn btn-outline-primary btn-sm ms-2 rounded-3">
+                                                            <i class="fa fa-search"></i> Buscar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Filtro por Orden de Fabricación -->
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="query" class="form-label"><strong>Filtro por Orden de Fabricación</strong></label>
+                                                    <div class="input-group">
+                                                        <input type="text" placeholder="Ingresa una Orden de Fabricación" name="query" id="query" class="form-control form-control-sm rounded-3">
+                                                        <button id="buscarOV" class="btn btn-outline-primary btn-sm ms-2 rounded-3">
+                                                            <i class="fa fa-search"></i> Buscar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    
-        <!-- Tabla de datos sin filtro -->
-    <div class="col-12 mt-6">
-        <div class="card p-5 shadow-sm">
-                <div id="tableExample3" data-list='{"valueNames":["orden","articulo","descripcion","cantidad","fechaSAP","fechaEstimada","estatus"],"page":5,"pagination":true}'>
-                    <div class="search-box mb-3 mx-auto">
-                        <div class="card shadow-sm">
-                            <form class="position-relative border border-dark rounded-3" data-bs-toggle="search" data-bs-display="static">
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text bg-light border-0"><i class="uil uil-search text-muted"></i></span>
+                <div class="col-12 mt-6">
+                    <div class="card p-5 shadow-sm">
+                                <div class="table-responsive ">
+                                    <div class="card shadow-sm">
+                                        <table id="procesoTable" class="table table-striped table-sm fs--1 mb-1">
+                                            <thead class="bg-primary text-white">
+                                                <tr>
+                                                    <th class="sort border-top ps-3" data-sort="orden">Or. Fabricación</th>
+                                                    <th class="sort border-top" data-sort="articulo">Artículo</th>
+                                                    <th class="sort border-top" data-sort="descripcion">Descripción</th>
+                                                    <th class="sort border-top" data-sort="cantidad">Cantidad Total</th>
+                                                    <th class="sort border-top" data-sort="fechaSAP">Fecha SAP</th>
+                                                    <th class="sort border-top" data-sort="fechaEstimada">Fecha Estimada</th>
+                                                    <th class="sort border-top" data-sort="estatus">Estatus</th>
+                                                    <th class="sort text-end align-middle pe-0 border-top">Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="list">
+                                                @foreach ($ordenesFabricacion as $orden)
+                                                    <tr>
+                                                        <td class="align-middle ps-3 orden">{{ $orden->OrdenFabricacion }}</td>
+                                                        <td class="align-middle articulo">{{ $orden->Articulo }}</td>
+                                                        <td class="align-middle descripcion">{{ $orden->Descripcion }}</td>
+                                                        <td class="align-middle cantidad">{{ $orden->CantidadTotal }}</td>
+                                                        <td class="align-middle fechaSAP">{{ $orden->FechaEntregaSAP }}</td>
+                                                        <td class="align-middle fechaEstimada">{{ $orden->FechaEntrega }}</td>
+                                                        <td class="align-middle estatus">
+                                                            @php
+                                                                $badgeClass = match ($orden->estatus) {
+                                                                    'Completado' => 'badge badge-phoenix fs--2 badge-phoenix-success',
+                                                                    'En proceso' => 'badge badge-phoenix fs--2 badge-phoenix-warning',
+                                                                    'Sin cortes' => 'badge badge-phoenix fs--2 badge-phoenix-secondary',
+                                                                    default => 'badge badge-phoenix fs--2 badge-phoenix-danger',
+                                                                };
+                                                                $iconClass = match ($orden->estatus) {
+                                                                    'Completado' => 'ms-1 fas fa-check',
+                                                                    'En proceso' => 'ms-1 fas fa-spinner',
+                                                                    'Sin cortes' => 'ms-1 fas fa-times',
+                                                                    default => 'ms-1 fas fa-exclamation-triangle',
+                                                                };
+                                                            @endphp
+                                                            <span class="{{ $badgeClass }}">
+                                                                {{ $orden->estatus }}
+                                                                <i class="{{ $iconClass }}"></i>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center align-middle">
+                                                            <a href="#" class="btn btn-outline-warning btn-xs ver-detalles"  style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="{{ $orden->id }}">
+                                                                <i class="bi bi-eye"></i> Detalles
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
-                                    <input class="form-control search-input search form-control-sm rounded-end border-0" type="search" placeholder="Buscar" aria-label="Buscar">
                                 </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="table-responsive ">
-                        <div class="card shadow-sm">
-                            <table id="ordenFabricacionTable" class="table table-striped table-sm fs--1 mb-1">
-                                <thead class="bg-primary text-white">
-                                    <tr>
-                                        <th class="sort border-top ps-3" data-sort="orden">Or. Fabricación</th>
-                                        <th class="sort border-top" data-sort="articulo">Artículo</th>
-                                        <th class="sort border-top" data-sort="descripcion">Descripción</th>
-                                        <th class="sort border-top" data-sort="cantidad">Cantidad Total</th>
-                                        <th class="sort border-top" data-sort="fechaSAP">Fecha SAP</th>
-                                        <th class="sort border-top" data-sort="fechaEstimada">Fecha Estimada</th>
-                                        <th class="sort border-top" data-sort="estatus">Estatus</th>
-                                        <th class="sort text-end align-middle pe-0 border-top">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="list">
-                                    @foreach ($ordenesFabricacion as $orden)
-                                        <tr>
-                                            <td class="align-middle ps-3 orden">{{ $orden->OrdenFabricacion }}</td>
-                                            <td class="align-middle articulo">{{ $orden->Articulo }}</td>
-                                            <td class="align-middle descripcion">{{ $orden->Descripcion }}</td>
-                                            <td class="align-middle cantidad">{{ $orden->CantidadTotal }}</td>
-                                            <td class="align-middle fechaSAP">{{ $orden->FechaEntregaSAP }}</td>
-                                            <td class="align-middle fechaEstimada">{{ $orden->FechaEntrega }}</td>
-                                            <td class="align-middle estatus">
-                                                @php
-                                                    $badgeClass = match ($orden->estatus) {
-                                                        'Completado' => 'badge badge-phoenix fs--2 badge-phoenix-success',
-                                                        'En proceso' => 'badge badge-phoenix fs--2 badge-phoenix-warning',
-                                                        'Sin cortes' => 'badge badge-phoenix fs--2 badge-phoenix-secondary',
-                                                        default => 'badge badge-phoenix fs--2 badge-phoenix-danger',
-                                                    };
-                                                    $iconClass = match ($orden->estatus) {
-                                                        'Completado' => 'ms-1 fas fa-check',
-                                                        'En proceso' => 'ms-1 fas fa-spinner',
-                                                        'Sin cortes' => 'ms-1 fas fa-times',
-                                                        default => 'ms-1 fas fa-exclamation-triangle',
-                                                    };
-                                                @endphp
-                                                <span class="{{ $badgeClass }}">
-                                                    {{ $orden->estatus }}
-                                                    <i class="{{ $iconClass }}"></i>
-                                                </span>
-                                            </td>
-                                            <td class="text-center align-middle">
-                                                <a href="#" class="btn btn-outline-warning btn-xs ver-detalles"  style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="{{ $orden->id }}">
-                                                    <i class="bi bi-eye"></i> Detalles
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-between mt-3">
-                        <span data-list-info="data-list-info"></span>
-                        <div class="d-flex">
-                            <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
-                            <ul class="mb-0 pagination"></ul>
-                            <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
+                                <div class="d-flex justify-content-between mt-3">
+                                    <span data-list-info="data-list-info"></span>
+                                    <div class="d-flex">
+                                        <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                                        <ul class="mb-0 pagination"></ul>
+                                        <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                </font></font>
             </div>
-        </div>
-    </div>
+            <div class="tab-pane fade" id="tab-completado" role="tabpanel" aria-labelledby="completado-tab"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                <div class="col-6 mt-2">
+                    <div class="accordion" id="accordionFiltroOV">
+                        <div class="card shadow-sm">
+                            <div class="accordion-item border-top border-300">
+                                <!-- Filtro por fecha -->
+                                <h4 class="accordion-header" id="headingOne">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroOV" aria-expanded="true" aria-controls="collapseFiltroOV">
+                                        <strong>Filtros</strong>
+                                    </button>
+                                </h4>
+                                <div class="accordion-collapse collapse show" id="collapseFiltroOV" aria-labelledby="headingOne" data-bs-parent="#accordionFiltroOV">
+                                    <div class="accordion-body pt-2">
+                                        <form id="filtroForm" method="post" class="form-horizontal">
+                                            @csrf
+                                            <div class="row">
+                                                <!-- Filtro por fecha -->
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="fecha" class="form-label"><strong>Filtro por Fecha</strong></label>
+                                                    <div class="input-group">
+                                                        <input type="date" name="fecha" id="fecha" class="form-control form-control-sm rounded-3">
+                                                        <button id="buscarFecha" class="btn btn-outline-primary btn-sm ms-2 rounded-3">
+                                                            <i class="fa fa-search"></i> Buscar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Filtro por Orden de Fabricación -->
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="query" class="form-label"><strong>Filtro por Orden de Fabricación</strong></label>
+                                                    <div class="input-group">
+                                                        <input type="text" placeholder="Ingresa una Orden de Fabricación" name="query" id="query" class="form-control form-control-sm rounded-3">
+                                                        <button id="buscarOV" class="btn btn-outline-primary btn-sm ms-2 rounded-3">
+                                                            <i class="fa fa-search"></i> Buscar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 mt-6">
+                    <div class="card p-5 shadow-sm">
+                                <div class="table-responsive ">
+                                    <div class="card shadow-sm">
+                                        <table id="completadoTable" class="table table-striped table-sm fs--1 mb-1">
+                                            <thead class="bg-primary text-white">
+                                                <tr>
+                                                    <th class="sort border-top ps-3" data-sort="orden">Or. Fabricación</th>
+                                                    <th class="sort border-top" data-sort="articulo">Artículo</th>
+                                                    <th class="sort border-top" data-sort="descripcion">Descripción</th>
+                                                    <th class="sort border-top" data-sort="cantidad">Cantidad Total</th>
+                                                    <th class="sort border-top" data-sort="fechaSAP">Fecha SAP</th>
+                                                    <th class="sort border-top" data-sort="fechaEstimada">Fecha Estimada</th>
+                                                    <th class="sort border-top" data-sort="estatus">Estatus</th>
+                                                    <th class="sort text-end align-middle pe-0 border-top">Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="list">
+                                                @foreach ($ordenesFabricacion as $orden)
+                                                    <tr>
+                                                        <td class="align-middle ps-3 orden">{{ $orden->OrdenFabricacion }}</td>
+                                                        <td class="align-middle articulo">{{ $orden->Articulo }}</td>
+                                                        <td class="align-middle descripcion">{{ $orden->Descripcion }}</td>
+                                                        <td class="align-middle cantidad">{{ $orden->CantidadTotal }}</td>
+                                                        <td class="align-middle fechaSAP">{{ $orden->FechaEntregaSAP }}</td>
+                                                        <td class="align-middle fechaEstimada">{{ $orden->FechaEntrega }}</td>
+                                                        <td class="align-middle estatus">
+                                                            @php
+                                                                $badgeClass = match ($orden->estatus) {
+                                                                    'Completado' => 'badge badge-phoenix fs--2 badge-phoenix-success',
+                                                                    'En proceso' => 'badge badge-phoenix fs--2 badge-phoenix-warning',
+                                                                    'Sin cortes' => 'badge badge-phoenix fs--2 badge-phoenix-secondary',
+                                                                    default => 'badge badge-phoenix fs--2 badge-phoenix-danger',
+                                                                };
+                                                                $iconClass = match ($orden->estatus) {
+                                                                    'Completado' => 'ms-1 fas fa-check',
+                                                                    'En proceso' => 'ms-1 fas fa-spinner',
+                                                                    'Sin cortes' => 'ms-1 fas fa-times',
+                                                                    default => 'ms-1 fas fa-exclamation-triangle',
+                                                                };
+                                                            @endphp
+                                                            <span class="{{ $badgeClass }}">
+                                                                {{ $orden->estatus }}
+                                                                <i class="{{ $iconClass }}"></i>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center align-middle">
+                                                            <a href="#" class="btn btn-outline-warning btn-xs ver-detalles"  style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="{{ $orden->id }}">
+                                                                <i class="bi bi-eye"></i> Detalles
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between mt-3">
+                                    <span data-list-info="data-list-info"></span>
+                                    <div class="d-flex">
+                                        <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                                        <ul class="mb-0 pagination"></ul>
+                                        <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                </font></font>
+            </div>
+            
+
+       
         <!-- Modal de Detalles de la Orden -->
         <div class="modal fade bd-example-modal-x" id="modalDetalleOrden" tabindex="-1"  role="dialog" aria-labelledby="modalDetalleOrdenLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
@@ -307,22 +430,73 @@
         </div>
         <input type="hidden" id="ordenFabricacionId" value="">
     </div>
-</div>
 @endsection
 
 @section('scripts')
 
 <script>
 $(document).ready(function() {
-// Inicialización de la tabla de DataTables
-/*$('#ordenFabricacionTable').DataTable({
-    "language": {
-        "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
-    }
-    
-});*/
-// Evento al hacer clic en "Ver Detalles"
-$('#ordenFabricacionTable').on('click', '.ver-detalles', function() {
+// Evento al hacer clic en "Detalles Completado"
+$('#completadoTable' ).on('click', '.ver-detalles', function() {
+    var ordenFabricacionId = $(this).data('id');
+
+    // Asignar el ID de la orden de fabricación a los botones correspondientes
+    $('#pdfRangos').attr('data-id', ordenFabricacionId);
+    $('#btn-pdf-descarga').attr('data-id', ordenFabricacionId);
+   
+
+    // Obtener los detalles de la orden de fabricación
+    $.ajax({
+        url: '{{ route("corte.getDetalleOrden") }}',
+        type: 'GET',
+        data: { id: ordenFabricacionId },
+        success: function(response) {
+            if (response.success) {
+                // Mostrar los detalles de la orden en el modal
+                $('#modalBodyContent').html(`
+                    <div class="table-responsive">
+                              <table id="ordenFabricacionTable" class="table table-striped table-sm fs--1 mb-0">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th class="sort border-top ps-3" data-sort="orden">Or. Fabricación</th>
+                                <th class="sort border-top" data-sort="articulo">Artículo</th>
+                                <th class="sort border-top" data-sort="descripcion">Descripción</th>
+                                <th class="sort border-top" data-sort="cantidad">Cantidad Total</th>
+                                <th class="sort border-top" data-sort="fechaSAP">Fecha SAP</th>
+                                <th class="sort border-top" data-sort="fechaEstimada">Fecha Estimada</th>
+                            </tr>
+                        </thead>
+                        <tbody class="list">
+                            <tr>
+                                <td class="align-middle ps-3 orden">${response.data.OrdenFabricacion}</td>
+                                <td class="align-middle articulo">${response.data.Articulo}</td>
+                                <td class="align-middle descripcion">${response.data.Descripcion}</td>
+                                <td class="align-middle cantidad">${response.data.CantidadTotal}</td>
+                                <td class="align-middle fechaSAP">${response.data.FechaEntregaSAP}</td>
+                                <td class="align-middle fechaEstimada">${response.data.FechaEntrega}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                `);
+                // Asignar el ID de la orden a un campo oculto
+                $('#ordenFabricacionId').val(response.data.id);
+                // Obtener los cortes registrados para esta orden
+                obtenerCortes(ordenFabricacionId);
+                // Mostrar el modal con los detalles de la orden
+                $('#modalDetalleOrden').modal('show');
+            } else {
+                alert('Error: ' + response.message);
+            }
+        },
+        error: function(xhr) {
+            console.error(xhr.responseText);
+            alert('Error al obtener los detalles de la orden.');
+        }
+    });
+});
+//Evento al hacer clic en Detalles Sin Cortes, En proceso
+$('#procesoTable' ).on('click', '.ver-detalles', function() {
     var ordenFabricacionId = $(this).data('id');
 
     // Asignar el ID de la orden de fabricación a los botones correspondientes
@@ -498,9 +672,9 @@ function actualizarTablaPrincipal() {
 
             data.forEach((orden) => {
                 const estatusClass = {
-                    'Completado': 'badge-phoenix-success',
-                    'En proceso': 'badge-phoenix-warning',
-                    'Sin cortes': 'badge-phoenix-secondary'
+                    'Completado': 'badge badge-phoenix fs--2 badge-phoenix-success',
+                    'En proceso': 'badge badge-phoenix fs--2 badge-phoenix-warning',
+                    'Sin cortes': 'badge badge-phoenix fs--2 badge-phoenix-secondary'
                 }[orden.estatus] || 'badge-phoenix-danger';
 
                 const estatusIcon = {
@@ -603,121 +777,12 @@ $(document).on('click', '.btn-finalizar', function() {
     });
     
 });
-
 // Abrir modal para rangos PDF
 $('#pdfRangos').on('click', function() {
     var ordenFabricacionId = $(this).attr('data-id');
     $('#orden_fabricacion_id').val(ordenFabricacionId);
     $('#myModalRangos').modal('show');
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-// Filtrado por fecha
-$('#buscarFecha').click(function (e) {
-    e.preventDefault();
-
-    // Obtén la fecha seleccionada del input
-    var fechaSeleccionada = $('#fecha').val();
-
-    // Mostrar todas las filas si no se selecciona ninguna fecha
-    if (!fechaSeleccionada) {
-        $('#ordenFabricacionTable tbody tr').show();
-        $('#noDataMessageFecha').hide();
-        return; // Salimos si no se selecciona una fecha
-    }
-
-    // Convertir la fecha seleccionada a un objeto Date
-    var fechaSeleccionadaObj = detectarYConvertirFecha(fechaSeleccionada);
-    if (!fechaSeleccionadaObj) {
-        console.error('La fecha seleccionada no es válida.');
-        return;
-    }
-    var fechaSeleccionadaString = fechaSeleccionadaObj.toISOString().split('T')[0];
-
-    // Inicializar la tabla y control de datos
-    var table = $('#ordenFabricacionTable');
-    var hayDatos = false;
-
-    // Función para detectar y convertir diferentes formatos de fecha
-    function detectarYConvertirFecha(fechaTexto) {
-        const formatos = [
-            { regex: /^(\d{2})-(\d{2})-(\d{4})$/, orden: ['dia', 'mes', 'anio'] }, // dd-mm-yyyy
-            { regex: /^(\d{4})-(\d{2})-(\d{2})$/, orden: ['anio', 'mes', 'dia'] }, // yyyy-mm-dd
-            { regex: /^(\d{1,2})\s+de\s+([a-záéíóú]+)\s+de\s+(\d{4})$/i, orden: ['dia', 'mesTexto', 'anio'] }, // dd de mes de yyyy
-        ];
-
-        const meses = {
-            enero: 0, febrero: 1, marzo: 2, abril: 3, mayo: 4, junio: 5,
-            julio: 6, agosto: 7, septiembre: 8, octubre: 9, noviembre: 10, diciembre: 11
-        };
-
-        for (const formato of formatos) {
-            const match = fechaTexto.match(formato.regex);
-            if (match) {
-                const grupos = match.slice(1);
-                let dia, mes, anio;
-
-                formato.orden.forEach((campo, index) => {
-                    if (campo === 'dia') dia = parseInt(grupos[index], 10);
-                    if (campo === 'mes') mes = parseInt(grupos[index], 10) - 1;
-                    if (campo === 'mesTexto') mes = meses[grupos[index].toLowerCase()];
-                    if (campo === 'anio') anio = parseInt(grupos[index], 10);
-                });
-
-                if (dia !== undefined && mes !== undefined && anio !== undefined) {
-                    return new Date(anio, mes, dia);
-                }
-            }
-        }
-
-        return null; // Si no coincide con ningún formato
-    }
-
-    // Iterar sobre las filas de la tabla
-    table.find('tbody tr').each(function () {
-        var fechaEntrega = $(this).find('td:eq(5)').text().trim();
-
-        // Convertir la fecha de entrega a un objeto Date
-        var fechaEntregaObj = detectarYConvertirFecha(fechaEntrega);
-        if (!fechaEntregaObj) {
-            console.error('Fecha de entrega no válida en la tabla:', fechaEntrega);
-            $(this).hide();
-            return;
-        }
-
-        var fechaEntregaString = fechaEntregaObj.toISOString().split('T')[0];
-
-        // Comparar fechas y mostrar/ocultar filas
-        if (fechaEntregaString === fechaSeleccionadaString) {
-            $(this).show();
-            hayDatos = true;
-        } else {
-            $(this).hide();
-        }
-    });
-
-    // Mostrar mensaje si no hay datos visibles
-    if (!hayDatos) {
-        $('#noDataMessageFecha').show();
-    } else {
-        $('#noDataMessageFecha').hide();
-    }
-});*/
-
 // Evento para mostrar la información de la orden cuando se hace clic en el botón
 $(document).on('click', '.btn-generar-etiquetas', function() {
     var corteId = $(this).data('id');
@@ -756,7 +821,6 @@ $(document).on('click', '.btn-generar-etiquetas', function() {
         }
     });
 });
-
 // Evento para descargar el PDF cuando se hace clic en el botón de descargar
 $(document).on('click', '#btn-descargar-pdf', function() {
     var corteId = $(this).data('id');
@@ -771,7 +835,6 @@ $(document).on('click', '#btn-descargar-pdf', function() {
     // Abre la URL para descargar el PDF
     window.open(url, '_blank');
 });
-
 // Filtro orden de fabricación
 $('#buscarOV').on('click', function(event) {
     event.preventDefault(); // Previene el comportamiento por defecto
@@ -872,7 +935,6 @@ $('#buscarOV').on('click', function(event) {
         }
     });
 });
-
 // Función para obtener la clase del badge según el estatus
 function getBadgeClass(estatus) {
     switch (estatus) {
@@ -882,7 +944,7 @@ function getBadgeClass(estatus) {
     }
 }
 });
-
+//estatus
 $(document).on('click', '.btn-estatus', function () {
         const button = $(this);
         const id = button.data('id');
@@ -933,8 +995,7 @@ $(document).on('click', '.btn-estatus', function () {
     });
 
 });
-</script>
-<script>
+//buscar por fecha
 document.getElementById('buscarFecha').addEventListener('click', function (e) {
     e.preventDefault();
     
@@ -1011,6 +1072,122 @@ document.getElementById('buscarFecha').addEventListener('click', function (e) {
         console.error('Error:', error.message);
         alert('Error al procesar la solicitud: ' + error.message);
     });
+});
+
+
+</script>
+<script>
+    $(document).on('click', '#proceso-tab', function () {
+    // Realiza la solicitud AJAX
+    $.ajax({
+        url: "{{ route('ordenes.filtradas') }}", // Ruta Laravel
+        method: "GET", // Método HTTP
+        data: {
+            estatus: ['En proceso', 'Sin cortes'], // Parámetros enviados
+            _token: "{{ csrf_token() }}" // Token CSRF
+        },
+        success: function (data) {
+            console.log(data);  // Inspecciona lo que se recibe desde el servidor
+
+            const tableBody = $('#procesoTable tbody');
+            tableBody.empty(); // Limpia la tabla
+
+            // Verificar si 'data' es un arreglo
+            if (Array.isArray(data)) {
+                // Llena la tabla con los datos filtrados
+                data.forEach(orden => {
+                    tableBody.append(`
+                        <tr>
+                            <td class="align-middle ps-3 orden">${orden.OrdenFabricacion}</td>
+                            <td class="align-middle articulo">${orden.Articulo}</td>
+                            <td class="align-middle descripcion">${orden.Descripcion}</td>
+                            <td class="align-middle cantidad">${orden.CantidadTotal}</td>
+                            <td class="align-middle fechaSAP">${orden.FechaEntregaSAP}</td>
+                            <td class="align-middle fechaEstimada">${orden.FechaEntrega}</td>
+                            <td class="align-middle estatus">
+                                <span class="${getBadgeClass(orden.estatus)}">
+                                    ${orden.estatus}
+                                    <i class="${getIconClass(orden.estatus)}"></i>
+                                </span>
+                            </td>
+                            <td class="text-center align-middle">
+                                <a href="#" class="btn btn-outline-warning btn-xs ver-detalles" data-id="${orden.id}">
+                                    <i class="bi bi-eye"></i> Detalles
+                                </a>
+                            </td>
+                        </tr>
+                    `);
+                });
+            } else {
+                console.error('La respuesta no es un arreglo:', data);
+            }
+        },
+
+    });
+});
+
+// Funciones auxiliares para asignar clases
+function getBadgeClass(estado) {
+    switch (estado) {
+        case 'Completado': return 'badge badge-phoenix fs--2 badge-phoenix-success';
+        case 'En proceso': return 'badge badge-phoenix fs--2 badge-phoenix-warning';
+        case 'Sin cortes': return 'badge badge-phoenix fs--2 badge-phoenix-secondary';
+        default: return 'badge badge-phoenix fs--2 badge-phoenix-danger';
+    }
+}
+
+function getIconClass(estado) {
+    switch (estado) {
+        case 'Completado': return 'ms-1 fas fa-check';
+        case 'En proceso': return 'ms-1 fas fa-spinner';
+        case 'Sin cortes': return 'ms-1 fas fa-times';
+        default: return 'ms-1 fas fa-exclamation-triangle';
+    }
+}
+$.ajax({
+    url: "{{ route('ordenes.completadas') }}",
+    method: "GET",
+    data: {
+        estatus: ['Completado'],
+        _token: "{{ csrf_token() }}"
+    },
+    success: function (data) {
+        console.log(data); // Inspecciona lo que se recibe desde el servidor
+        const tableBody = $('#completadoTable tbody');
+        tableBody.empty(); // Limpia la tabla
+
+        if (Array.isArray(data)) {
+            data.forEach(orden => {
+                tableBody.append(`
+                    <tr>
+                        <td class="align-middle ps-3 orden">${orden.OrdenFabricacion}</td>
+                        <td class="align-middle articulo">${orden.Articulo}</td>
+                        <td class="align-middle descripcion">${orden.Descripcion}</td>
+                        <td class="align-middle cantidad">${orden.CantidadTotal}</td>
+                        <td class="align-middle fechaSAP">${orden.FechaEntregaSAP}</td>
+                        <td class="align-middle fechaEstimada">${orden.FechaEntrega}</td>
+                        <td class="align-middle estatus">
+                            <span class="${getBadgeClass(orden.estatus)}">
+                                ${orden.estatus}
+                                <i class="${getIconClass(orden.estatus)}"></i>
+                            </span>
+                        </td>
+                        <td class="text-center align-middle">
+                            <a href="#" class="btn btn-outline-warning btn-xs ver-detalles" data-id="${orden.id}">
+                                <i class="bi bi-eye"></i> Detalles
+                            </a>
+                        </td>
+                    </tr>
+                `);
+            });
+        } else {
+            console.error('La respuesta no es un arreglo:', data);
+        }
+    },
+    error: function (xhr, status, error) {
+        console.error('Error en la solicitud AJAX:', error);
+        alert('Ocurrió un error al cargar los datos.');
+    }
 });
 
 </script>

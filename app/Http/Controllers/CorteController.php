@@ -33,10 +33,89 @@ class CorteController extends Controller
     
             return $item;
         });
+
+         // Filtrar los registros según los estatus
+        $ordenesSinCorteYEnProceso = $ordenesFabricacion->filter(function ($orden) {
+            return in_array($orden->estatus, ['Sin Corte', 'En Proceso']);
+        });
+        
     
         return view('Areas.Cortes', compact('ordenesFabricacion'));
     }
-    public function filtroOvFecha($today, $semna){
+
+    public function SinCortesProceso(Request $request)
+    {
+        $today = date('Y-m-d');
+        $semna = date('Y-m-d', strtotime('-1 week'));
+    
+        // Consulta de órdenes de fabricación filtradas por la fecha actual
+        $ordenesFabricacion = $this->filtroOvFecha($today, $semna);
+    
+        // Agregar estatus calculado
+        $ordenesFabricacion->transform(function ($item) {
+            $cantidadTotal = $item->CantidadTotal;
+            $sumaCantidadPartida = $item->suma_cantidad_partida;
+    
+            if ($sumaCantidadPartida == 0) {
+                $item->estatus = 'Sin cortes';
+            } elseif ($sumaCantidadPartida < $cantidadTotal) {
+                $item->estatus = 'En proceso';
+            } else {
+                $item->estatus = 'Completado';
+            }
+    
+            return $item;
+        });
+    
+        // Filtrar los registros según los estatus
+        $ordenesSinCorteYEnProceso = $ordenesFabricacion->filter(function ($orden) {
+            return in_array($orden->estatus, ['Sin cortes', 'En proceso']);
+        });
+    
+        // Convertir la colección a un arreglo
+        return response()->json($ordenesSinCorteYEnProceso->values()->toArray());
+    }
+    
+    public function Completado(Request $request)
+    {
+       ;
+        $today = date('Y-m-d');
+        $semna = date('Y-m-d', strtotime('-1 week'));
+    
+        // Consulta de órdenes de fabricación filtradas por la fecha actual
+        $ordenesFabricacion = $this->filtroOvFecha($today, $semna);
+    
+        // Agregar estatus calculado
+        $ordenesFabricacion->transform(function ($item) {
+            $cantidadTotal = $item->CantidadTotal;
+            $sumaCantidadPartida = $item->suma_cantidad_partida;
+    
+            if ($sumaCantidadPartida == 0) {
+                $item->estatus = 'Sin cortes';
+            } elseif ($sumaCantidadPartida < $cantidadTotal) {
+                $item->estatus = 'En proceso';
+            } else {
+                $item->estatus = 'Completado';
+            }
+    
+            return $item;
+        });
+    
+        // Filtrar los registros según los estatus
+        $ordenesSinCorteYEnProceso = $ordenesFabricacion->filter(function ($orden) {
+            return in_array($orden->estatus, ['Completado']);
+        });
+        
+    
+        // Convertir la colección a un arreglo
+        return response()->json($ordenesSinCorteYEnProceso->values()->toArray());
+    }
+    
+
+    
+
+    public function filtroOvFecha($today, $semna)
+    {
         $ordenesFabricacion = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
             ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->select(
@@ -113,8 +192,6 @@ class CorteController extends Controller
 
         return response()->json($ordenesFabricacion);
     }
-
-    
     public function getData(Request $request)
     {
         $limit = $request->input('length', 10); // Número de registros por página
@@ -316,7 +393,6 @@ class CorteController extends Controller
         // Devolver los resultados con estatus calculado
         return response()->json($resultados);
     }
-    
     public function guardarPartidasOF(Request $request)
     {
         // Validar que los datos recibidos sean correctos
