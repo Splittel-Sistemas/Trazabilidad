@@ -34,6 +34,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&amp;display=swap" rel="stylesheet">
         <link href="{{asset('menu2/vendors/simplebar/simplebar.min.css')}}" rel="stylesheet">
         <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+        <!-- Datatable -->
+        <link rel="stylesheet" href="https://cdn.datatables.net/2.2.1/css/dataTables.bootstrap5.min.css">
         <link href="{{asset('menu2/assets/css/theme-rtl.min.css')}}" type="text/css" rel="stylesheet" id="style-rtl">
         <link href="{{asset('menu2/assets/css/theme.min.css')}}" type="text/css" rel="stylesheet" id="style-default">
         <link href="{{asset('menu2/assets/css/user-rtl.min.css')}}" type="text/css" rel="stylesheet" id="user-style-rtl">
@@ -126,7 +128,7 @@
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Suministro</span></div>
                                             </a>
                                         </li>
-                                        <li class="nav-item"><a class="nav-link" href="{{route('Suministro')}}" data-bs-toggle="" aria-expanded="false">
+                                        <li class="nav-item"><a class="nav-link {{ Route::is('Preparado') ? 'nav-tabs active' : '' }}" href="{{route('Preparado')}}" data-bs-toggle="" aria-expanded="false">
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Preparado</span></div>
                                             </a>
                                         </li>
@@ -4707,6 +4709,9 @@
         <script src="{{asset('menu2/vendors/fontawesome/all.min.js')}}"></script>
         <script src="{{asset('menu2/vendors/lodash/lodash.min.js')}}"></script>
         <script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script>
+        {{--! Datatable --}}
+        <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/2.2.1/js/dataTables.bootstrap5.min.js"></script>
         <script src="{{asset('menu2/vendors/list.js/list.min.js')}}"></script>
         <script src="{{asset('menu2/vendors/feather-icons/feather.min.js')}}"></script>
         <script src="{{asset('menu2/vendors/dayjs/dayjs.min.js')}}"></script>
