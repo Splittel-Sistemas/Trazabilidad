@@ -471,7 +471,7 @@ class AreasController extends Controller
             //Comprobamos si existe la Orden de fabricacion con la partida y el numero de parte ya creado
             $datosPartidas=$datos->Partidas()->where('NumParte','=',$CodigoPartes[2])->orderBy('id', 'desc')->first();
             if(!$datosPartidas==null){
-                $datosPartidasArea = $datosPartidas->Areas()->get();
+                $datosPartidasArea = $datosPartidas->Areas()->where('areas.id','=',$Area)->get();
                 $bandera=0;
                 foreach ($datosPartidasArea as $item) {
                     if($item->pivot->FechaTermina==null OR $item->pivot->FechaTermina==""){
@@ -822,14 +822,7 @@ class AreasController extends Controller
         $TipoEscanerrespuesta=0;
         $EMPartidasOF=$datos->partidasOF->where('id','=',$CodigoPartes[1])->first();
          if($EMPartidasOF=="" || $EMPartidasOF==null){
-            return response()->json([
-                                'tabla' => $menu,
-                                'Escaner' => $Escaner,
-                                'status' => "empty",
-                                'CantidadTotal' => "",
-                                'CantidadCompletada' => $CantidadCompletada,
-                                'OF' => $CodigoPartes[0]                    
-                            ]);
+            return 'error';
         }
         $EMPartidas=$EMPartidasOF->Partidas()->where('NumParte','=',$CodigoPartes[2])
                     ->whereHas('Areas', function ($query) use($Area) {
@@ -850,14 +843,7 @@ class AreasController extends Controller
         $TipoEscanerrespuesta=0;
         $EMPartidasOF=$datos->partidasOF->where('id','=',$CodigoPartes[1])->first();
          if($EMPartidasOF=="" || $EMPartidasOF==null){
-            return response()->json([
-                                'tabla' => $menu,
-                                'Escaner' => $Escaner,
-                                'status' => "empty",
-                                'CantidadTotal' => "",
-                                'CantidadCompletada' => $CantidadCompletada,
-                                'OF' => $CodigoPartes[0]                    
-                            ]);
+            return 'error';
         }
         $EMPartidas=$EMPartidasOF->Partidas()->where('NumParte','=',$CodigoPartes[2])
                     ->whereHas('Areas', function ($query) use($Area) {
