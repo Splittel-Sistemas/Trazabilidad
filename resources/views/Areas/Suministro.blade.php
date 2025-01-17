@@ -83,7 +83,6 @@
 <script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
     function ListaCodigo(Codigo,Contenedor){
-        //VerNumParte=VerNumParte($Codigo);
         $('#ToastGuardado').fadeOut();
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
         if (CadenaVacia(Codigo)) {
@@ -190,6 +189,12 @@
                                     $('#ContentTabla').hide();
                                     $('#CantidadPartidasOF').html('');
                                     break;
+                                case 6:
+                                    Mensaje='Codigo <strong>'+Codigo+'</strong> Aún no termina el proceso posterior!';
+                                    Color='bg-danger';
+                                    $('#ContentTabla').hide();
+                                    $('#CantidadPartidasOF').html('');
+                                    break;
                                 default:
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> Ocurrio un error!';
                                     Color='bg-danger';
@@ -230,24 +235,13 @@
                         $('#ToastGuardado').fadeOut();
                     }, 2500);
                 }else if(response.status=="empty"){
-                    //if(response.Escaner!=0){
                         $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
                         $('#ToastGuardadoBody').html('El codigo No existe!  ');
                         $('#ToastGuardado').fadeIn();
                         setTimeout(function(){
                             $('#ToastGuardado').fadeOut();
                         }, 2000);
-                    //}
                 }
-                /*document.getElementById('CodigoEscanerSuministro').style.display = "";
-                if(response.Escaner==1){
-                    $('#CantidadDiv').hide();
-                    $('#IniciarBtn').hide();
-                }else if(response.Escaner==0){
-                    $('#CantidadDiv').show();
-                    $('#IniciarBtn').show();
-                    $('#CodigoEscanerSuministro').html(response.menu);
-                }*/
             },
             error: function(xhr, status, error) {
                 $('#CantidadDiv').hide();

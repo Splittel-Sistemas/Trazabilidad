@@ -1,5 +1,5 @@
 @extends('layouts.menu2')
-@section('title', 'Suministro')
+@section('title', 'Preparado')
 @section('styles')
 <link rel="stylesheet" href="{{asset('css/Suministro.css')}}">
 <style>
@@ -124,7 +124,9 @@
                 if(response.status=="success"){
                     $('#DivCointainerTableSuministro').html(response.tabla);
                     if(response.Escaner==1){
-                        TablaList(DivCointainerTableSuministro);
+                        if((response.tabla).includes('<td')){
+                            TablaList(DivCointainerTableSuministro);
+                        }
                     }
                     $('#CantidadPartidasOF').html('<span class="badge bg-light text-dark">Piezas procesadas '+response.CantidadCompletada+"/"+response.CantidadTotal+'</span>');
                     $('#TituloPartidasOF').html(response.OF);
@@ -184,6 +186,12 @@
                                     break;
                                 case 5:
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> Aún no termina el proceso anterior!';
+                                    Color='bg-danger';
+                                    $('#ContentTabla').hide();
+                                    $('#CantidadPartidasOF').html('');
+                                    break;
+                                case 6:
+                                    Mensaje='Codigo <strong>'+Codigo+'</strong> Ya se encuentra iniciada en el Area posterios!';
                                     Color='bg-danger';
                                     $('#ContentTabla').hide();
                                     $('#CantidadPartidasOF').html('');
@@ -266,6 +274,7 @@
                 Inicio:1,
                 Finalizar:0,
                 Confirmacion:1,
+                Area:'{{$Area}}',
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {

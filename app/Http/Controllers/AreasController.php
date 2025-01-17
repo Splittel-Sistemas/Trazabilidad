@@ -9,6 +9,8 @@ use App\Models\OrdenFabricacion;
 use App\Models\PartidasOF;
 use App\Models\Partidas;
 
+use function PHPUnit\Framework\returnValue;
+
 class AreasController extends Controller
 {
     protected $funcionesGenerales;
@@ -58,7 +60,13 @@ class AreasController extends Controller
                     if($Area==3){
                         if($Escaner==1){
                             if($Inicio==1){
-                                $TipoEscanerrespuesta=$this->TipoEscaner($CodigoPartes,$CodigoTam,$Area,$confirmacion);
+                                $TipoEscanerrespuesta=$this->CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                                if($TipoEscanerrespuesta!=5){
+                                    $TipoEscanerrespuesta=$this->CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                                    if($TipoEscanerrespuesta!=6){
+                                        $TipoEscanerrespuesta=$this->TipoEscaner($CodigoPartes,$CodigoTam,$Area,$confirmacion);
+                                    }
+                                }
                             }
                             if($Finalizar==1){
                                 $TipoEscanerrespuesta=$this->TipoEscanerFinalizar($CodigoPartes,$CodigoTam,$Area,$confirmacion);
@@ -72,74 +80,121 @@ class AreasController extends Controller
                             }
                         }
                     }else{
-                        /*if($Escaner==1){
-                            /*if($Inicio==1){
-                                $TipoEscanerrespuesta=$this->TipoEscaner($CodigoPartes,$CodigoTam,3,$confirmacion);
+                        if($Escaner==1){
+                            if($Inicio==1){
+                                //Comprobar si ya paso el paso anterior
+                                $TipoEscanerrespuesta=$this->ComprobarAreaAnterior($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                                if($TipoEscanerrespuesta!=5){
+                                    //Comprobar si se encuentra iniciada en el paso posterior
+                                    $TipoEscanerrespuestaPosterior=$this->ComprobarAreaPosterior($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                                    if($TipoEscanerrespuestaPosterior!=6){
+                                        $TipoEscanerrespuesta=$this->TipoEscanerAreas($CodigoPartes,$CodigoTam,$Area,$confirmacion);
+                                    }
+                                }
+                            }else{
+                                $TipoEscanerrespuesta=$this->TipoEscanerAreasFinalizar($CodigoPartes,$CodigoTam,$Area,$confirmacion);
                             }
-                            if($Finalizar==1){
-                                $TipoEscanerrespuesta=$this->TipoEscanerFinalizar($CodigoPartes,$CodigoTam,3,$confirmacion);
-                            }*/
-                        /*}else if($Escaner==0){
-                            /*$TipoManualrespuesta=$datos->partidasOF()->where('id','=',$CodigoPartes[1])->first();
+                        }else if($Escaner==0){
+                            $TipoManualrespuesta=$datos->partidasOF()->where('id','=',$CodigoPartes[1])->first();
                             if(!($TipoManualrespuesta=="" || $TipoManualrespuesta==null)){
                                 $EscanerExiste = 1;
                             }else{
                                 $EscanerExiste = 0;
                             }
-                        }*/
+                        }
                     }
                 }
-                if($Escaner==1){
-                    foreach( $datos->partidasOF()->orderBy('id', 'desc')->get() as $PartidasordenFabricacion){
-                        foreach( $PartidasordenFabricacion->Partidas()->orderBy('id', 'desc')->get() as $Partidas){
-                            if(!($Partidas->Areas()->where('Areas_id','=',$Area)->first() =="" || $Partidas->Areas()->where('Areas_id','=',$Area)->first() == null )){
-                                $menu.='<tr>
-                                <td class="align-middle ps-3 NumParte">'.$Partidas->NumParte.'</td>
-                                <td class="align-middle text-center Cantidad">'.$Partidas->CantidadaPartidas.'</td>
-                                <td class="align-middle Inicio">'.$Partidas->Areas()->first()->pivot->FechaComienzo.'</td>
-                                <td class="align-middle Fin">'.$Partidas->Areas()->first()->pivot->FechaTermina.'</td>';
-                                if($Partidas->Areas()->first()->pivot->FechaTermina==""){
-                                    $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">En proceso</span><span class="ms-1 fas fa-cogs"></span></div></td>';
-                                    if(!($Partidas->Areas()->first()->pivot->FechaTermina=="" || $Partidas->Areas()->first()->pivot->FechaTermina==null) && $Partidas->TipoAccion==0){
-                                        $CantidadCompletada+=$Partidas->CantidadaPartidas;
+                if($Area==3){
+                    if($Escaner==1){
+                        foreach( $datos->partidasOF()->orderBy('id', 'desc')->get() as $PartidasordenFabricacion){
+                            foreach( $PartidasordenFabricacion->Partidas()->orderBy('id', 'desc')->get() as $Partidas){
+                                if(!($Partidas->Areas()->where('Areas_id','=',$Area)->first() =="" || $Partidas->Areas()->where('Areas_id','=',$Area)->first() == null )){
+                                    $menu.='<tr>
+                                    <td class="align-middle ps-3 NumParte">'.$Partidas->NumParte.'</td>
+                                    <td class="align-middle text-center Cantidad">'.$Partidas->CantidadaPartidas.'</td>
+                                    <td class="align-middle Inicio">'.$Partidas->Areas()->first()->pivot->FechaComienzo.'</td>
+                                    <td class="align-middle Fin">'.$Partidas->Areas()->first()->pivot->FechaTermina.'</td>';
+                                    if($Partidas->Areas()->first()->pivot->FechaTermina==""){
+                                        $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">En proceso</span><span class="ms-1 fas fa-cogs"></span></div></td>';
+                                        if(!($Partidas->Areas()->first()->pivot->FechaTermina=="" || $Partidas->Areas()->first()->pivot->FechaTermina==null)){ //&& $Partidas->TipoAccion==0){
+                                            $CantidadCompletada+=$Partidas->CantidadaPartidas;
+                                        }
+                                    }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Completado</span><span class="ms-1 fas fa-check"></span></div></td>';
+                                        if(!($Partidas->Areas()->first()->pivot->FechaTermina=="" || $Partidas->Areas()->first()->pivot->FechaTermina==null)){ //&& $Partidas->TipoAccion==0){
+                                            $CantidadCompletada+=$Partidas->CantidadaPartidas;
+                                        }
                                     }
-                                }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Completado</span><span class="ms-1 fas fa-check"></span></div></td>';
-                                    if(!($Partidas->Areas()->first()->pivot->FechaTermina=="" || $Partidas->Areas()->first()->pivot->FechaTermina==null) && $Partidas->TipoAccion==0){
-                                        $CantidadCompletada+=$Partidas->CantidadaPartidas;
+                                    $menu.='<td class="align-middle text-center Linea">'.$Partidas->Areas()->first()->pivot->Linea.'</td></tr>';
+                                    if($Partidas->Estatus==2){
+                                        $CantidadCompletada-=$Partidas->CantidadaPartidas;
                                     }
                                 }
-                                $menu.='<td class="align-middle text-center Linea">'.$Partidas->Areas()->first()->pivot->Linea.'</td>
+                            }
+                        } 
+                    }else{
+                        foreach( $datos->partidasOF()->orderBy('id', 'desc')->get() as $PartidasordenFabricacion){
+                            foreach( $PartidasordenFabricacion->Partidas()->orderBy('id', 'desc')->get() as $Partidas){
+                                if(!($Partidas->Areas()->where('Areas_id','=',$Area)->first() =="" || $Partidas->Areas()->where('Areas_id','=',$Area)->first() == null )){
+                                    $menu.='<tr>
+                                    <td class="align-middle ps-3 NumParte">No especificado</td>
+                                    <td class="align-middle Cantidad text-center">'.$Partidas->CantidadaPartidas.'</td>
+                                    <td class="align-middle Inicio">'.$Partidas->Areas()->first()->pivot->FechaComienzo.'</td>
+                                    <td class="align-middle Fin">'.$Partidas->Areas()->first()->pivot->FechaTermina.'</td>';
+                                    if($Partidas->Areas()->first()->pivot->FechaTermina==""){
+                                        if($Partidas->Estatus==1){$texto="Iniciado";$color="success";$icono="cog";}
+                                        elseif($Partidas->Estatus==2){$texto="Retrabajo";$color="warning";$icono="cogs"; $CantidadCompletada-=$Partidas->CantidadaPartidas;}
+                                        $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-'.$color.'"><span class="fw-bold">'.$texto.'</span><span class="ms-1 fas fa-'.$icono.'"></span></div></td>';
+                                        if(!($Partidas->Areas()->first()->pivot->FechaTermina=="" || $Partidas->Areas()->first()->pivot->FechaTermina==null) && $Partidas->TipoAccion==0){
+                                            $CantidadCompletada+=$Partidas->CantidadaPartidas;
+                                        }
+                                    }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-primary"><span class="fw-bold">Finalizado</span><span class="ms-1 fas fa-check"></span></div></td>';
+                                        if(!($Partidas->Areas()->first()->pivot->FechaTermina=="" || $Partidas->Areas()->first()->pivot->FechaTermina==null) && $Partidas->TipoAccion==0){
+                                            $CantidadCompletada+=$Partidas->CantidadaPartidas;
+                                        }
+                                    }
+                                    $menu.='<td class="align-middle Linea text-center">'.$Partidas->Areas()->first()->pivot->Linea_id.'</td>
                                         
-                                    </tr>';
-                            }
-                            $Partidas->Estatus;
-                        }
-                    } 
-                }else{
-                    foreach( $datos->partidasOF()->orderBy('id', 'desc')->get() as $PartidasordenFabricacion){
-                        foreach( $PartidasordenFabricacion->Partidas()->orderBy('id', 'desc')->get() as $Partidas){
-                            if(!($Partidas->Areas()->where('Areas_id','=',$Area)->first() =="" || $Partidas->Areas()->where('Areas_id','=',$Area)->first() == null )){
-                                $menu.='<tr>
-                                <td class="align-middle ps-3 NumParte">No especificado</td>
-                                <td class="align-middle Cantidad text-center">'.$Partidas->CantidadaPartidas.'</td>
-                                <td class="align-middle Inicio">'.$Partidas->Areas()->first()->pivot->FechaComienzo.'</td>
-                                <td class="align-middle Fin">'.$Partidas->Areas()->first()->pivot->FechaTermina.'</td>';
-                                if($Partidas->Areas()->first()->pivot->FechaTermina==""){
-                                    if($Partidas->Estatus==1){$texto="Iniciado";$color="success";$icono="cog";}
-                                    elseif($Partidas->Estatus==2){$texto="Retrabajo";$color="warning";$icono="cogs"; $CantidadCompletada-=$Partidas->CantidadaPartidas;}
-                                    $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-'.$color.'"><span class="fw-bold">'.$texto.'</span><span class="ms-1 fas fa-'.$icono.'"></span></div></td>';
-                                    if(!($Partidas->Areas()->first()->pivot->FechaTermina=="" || $Partidas->Areas()->first()->pivot->FechaTermina==null) && $Partidas->TipoAccion==0){
-                                        $CantidadCompletada+=$Partidas->CantidadaPartidas;
-                                    }
-                                }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-primary"><span class="fw-bold">Finalizado</span><span class="ms-1 fas fa-check"></span></div></td>';
-                                    if(!($Partidas->Areas()->first()->pivot->FechaTermina=="" || $Partidas->Areas()->first()->pivot->FechaTermina==null) && $Partidas->TipoAccion==0){
-                                        $CantidadCompletada+=$Partidas->CantidadaPartidas;
-                                    }
+                                        </tr>';
                                 }
-                                $menu.='<td class="align-middle Linea text-center">'.$Partidas->Areas()->first()->pivot->Linea_id.'</td>
-                                       
-                                    </tr>';
                             }
+                        }
+                    }
+                }else{
+                    $ArrayNumParte=[];
+                    if($Escaner==1){
+                        $partidas = $datos->partidasOF()
+                        ->join('partidas', 'partidasOF.id', '=', 'partidas.PartidasOF_id')  // JOIN entre PartidasOF y Partidas
+                        ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')  // JOIN con la tabla pivote (ajustar nombre de la tabla)
+                        ->join('areas', 'partidas_areas.Areas_id', '=', 'areas.id')  // JOIN con Areas a través de la tabla pivote
+                        ->where('areas.id', '=', $Area)  // Filtro por un área específica
+                        ->orderBy('partidas.id', 'desc')  // Ordenar las partidas
+                        ->select('partidasOF.*', 'partidas.*', 'areas.*','partidas_areas.*')  // Seleccionar todas las columnas de las tres tablas
+                        ->get();
+                        foreach( $partidas as $PartidasordenFabricacion){
+                            $ArrayNumParte[]=$PartidasordenFabricacion->NumParte;
+                            $menu.='<tr>
+                                    <td class="align-middle ps-3 NumParte">'.$PartidasordenFabricacion->NumParte.'</td>
+                                    <td class="align-middle text-center Cantidad">'.$PartidasordenFabricacion->CantidadaPartidas.'</td>
+                                    <td class="align-middle Inicio">'.$PartidasordenFabricacion->FechaComienzo.'</td>
+                                    <td class="align-middle Fin">'.$PartidasordenFabricacion->FechaTermina.'</td>';
+                                    if($PartidasordenFabricacion->FechaTermina==""){
+                                        $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">En proceso</span><span class="ms-1 fas fa-cogs"></span></div></td>';
+                                        if(!($PartidasordenFabricacion->FechaTermina=="" || $PartidasordenFabricacion->FechaTermina==null)){ //&& $Partidas->TipoAccion==0){
+                                            $CantidadCompletada+=$PartidasordenFabricacion->CantidadaPartidas;
+                                        }
+                                    }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Completado</span><span class="ms-1 fas fa-check"></span></div></td>';
+                                        if(!($PartidasordenFabricacion->FechaTermina=="" || $PartidasordenFabricacion->FechaTermina==null)){ //&& $Partidas->TipoAccion==0){
+                                            $CantidadCompletada+=$PartidasordenFabricacion->CantidadaPartidas;
+                                        }
+                                    }
+                                    $menu.='<td class="align-middle text-center Linea">'.$PartidasordenFabricacion->Linea.'</td></tr>';
+                                    
+                        }
+                    }
+                    $ArrayNumParte=array_count_values($ArrayNumParte);
+                    foreach ($ArrayNumParte as $key => $item) {
+                        if($item>1){
+                            $CantidadCompletada-=($item-1);
                         }
                     }
                 }
@@ -226,9 +281,6 @@ class AreasController extends Controller
         $Area=$this->funcionesGenerales->encrypt(4);
         return view('Areas.Preparado',compact('Area'));
     }
-    public function PreparadoBuscar(Request $request){
-
-    }
     public function TipoEscaner($CodigoPartes,$CodigoTam,$Area,$confirmacion){
         // Respuestas 0=Error, 1=Guardado, 2=Ya existe, 3=Retrabajo,4=No existe, 5=Aun no pasa el proceso Anterior
         $FechaHoy=date('Y-m-d H:i:s');
@@ -258,6 +310,8 @@ class AreasController extends Controller
                 return 0;
             }
             //Comprobamos si existe la Orden de fabricacion con la partida y el numero de parte ya creado
+            /*$datosPartidas=$datos->Partidas()->where('NumParte','=',$CodigoPartes[2])->orderBy('id', 'desc')->get();
+                if($datosPartidas->count()==0){*/
             $datosPartidas=$datos->Partidas()->where('NumParte','=',$CodigoPartes[2])->orderBy('id', 'desc')->first();
                 if($datosPartidas==null){
                     $Partidas = new Partidas();
@@ -324,6 +378,178 @@ class AreasController extends Controller
                             }
                     }
                 }
+        }
+    }
+    public function TipoEscanerAreas($CodigoPartes,$CodigoTam,$Area,$confirmacion){
+        // Respuestas 0=Error, 1=Guardado, 2=Ya existe, 3=Retrabajo,4=No existe, 5=Aun no pasa el proceso Anterior,6=Ya se encuentra iniciada en el Area posterior
+        $FechaHoy=date('Y-m-d H:i:s');
+        if($CodigoTam!=3 || $CodigoPartes[0]=="" || $CodigoPartes[1]=="" || $CodigoPartes[2]=="" ){
+            return 0;
+        }else{
+            //Comprueba si el codigo pertenece a la partida
+            $ComprobarNumEtiqueta=$this->ComprobarNumEtiqueta($CodigoPartes,$Area);
+            if($ComprobarNumEtiqueta==0){
+                    return 4;
+            }
+            if($ComprobarNumEtiqueta==2){
+                    return 5;
+            }
+            //Comprueba si existe la Orden  de Fabricacion
+            $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
+            if($datos->count()==0){
+                return 0;
+            }
+            if($datos->CantidadTotal<$CodigoPartes[2]){
+                return 0;
+            }
+            //Comprueba si existe el id de la partida
+            $datos= $datos->PartidasOF()->where('id',"=",$CodigoPartes[1])->first();
+            if($datos==null){
+                return 0;
+            }
+            //Comprobamos si existe la Orden de fabricacion con la partida y el numero de parte ya creado
+            $datosPartidas=$datos->Partidas()->where('NumParte','=',$CodigoPartes[2])->orderBy('id', 'desc')->first();
+            $datosPartidasAreas=$datosPartidas->Areas->where('id','=',$Area);
+            if($datosPartidasAreas->count()==0){
+                $pivotData = [
+                    'FechaComienzo' => $FechaHoy,
+                    'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                    'Linea_id' => $this->funcionesGenerales->Linea(),
+                ];
+                $datosPartidas->Areas()->attach($Area,$pivotData);
+                return 1;
+            }else{
+                $bandera=0;
+                foreach ($datosPartidasAreas as $key => $item) {
+                    if($item->pivot->FechaTermina=="" OR $item->pivot->FechaTermina==null){
+                        $bandera=1;
+                    }
+                }
+                if($bandera==1){
+                    return 2;
+                }else{
+                    if($confirmacion==0){
+                        return 3;
+                    }else{
+                        $pivotData = [
+                            'FechaComienzo' => $FechaHoy,
+                            'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                            'Linea_id' => $this->funcionesGenerales->Linea(),
+                        ];
+                        $datosPartidas->Areas()->attach($Area,$pivotData);
+                        return 1;
+                    }
+                }
+            }
+        }
+    }
+    public function TipoEscanerAreasFinalizar($CodigoPartes,$CodigoTam,$Area){
+        // Respuestas 0=Error, 1=Finalizado, 2=No se ha iniciado,3= No se encontro
+        $FechaHoy=date('Y-m-d H:i:s');
+        if($CodigoTam!=3 || $CodigoPartes[0]=="" || $CodigoPartes[1]=="" || $CodigoPartes[2]=="" ){
+            return 0;
+        }else{
+            //Comprueba si el codigo pertenece a la partida
+            $ComprobarNumEtiqueta=$this->ComprobarNumEtiqueta($CodigoPartes,$Area);
+            if($ComprobarNumEtiqueta==0){
+                return 3;
+            }
+            //Comprueba si existe la Orden  de Fabricacion
+            $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
+            if($datos->count()==0){
+                return 0;
+            }
+            //return$datos->CantidadTotal." ".$CodigoPartes[2];
+            if($datos->CantidadTotal<$CodigoPartes[2]){
+                return 0;
+            }
+            //Comprueba si existe el id de la partida
+            $datos= $datos->PartidasOF()->where('id',"=",$CodigoPartes[1])->first();
+            if($datos==null){
+                return 0;
+            }
+            //Comprobamos si existe la Orden de fabricacion con la partida y el numero de parte ya creado
+            $datosPartidas=$datos->Partidas()->where('NumParte','=',$CodigoPartes[2])->orderBy('id', 'desc')->first();
+            if(!$datosPartidas==null){
+                $datosPartidasArea = $datosPartidas->Areas()->get();
+                $bandera=0;
+                foreach ($datosPartidasArea as $item) {
+                    if($item->pivot->FechaTermina==null OR $item->pivot->FechaTermina==""){
+                        $item->pivot->FechaTermina = $FechaHoy;
+                        $item->pivot->save();
+                        $bandera=1;
+                        break;
+                    }
+                }
+                if($bandera==1){
+                    return 1;
+                }else{return 2;}
+            }else{
+                return 3;
+            }
+        }
+    }
+    public function TipoNoEscanerAreas($CodigoPartes,$CodigoTam,$Area,$confirmacion){
+        // Respuestas 0=Error, 1=Guardado, 2=Ya existe, 3=Retrabajo,4=No existe, 5=Aun no pasa el proceso Anterior,6=Ya se encuentra iniciada en el Area posterior
+        $FechaHoy=date('Y-m-d H:i:s');
+        if($CodigoTam!=3 || $CodigoPartes[0]=="" || $CodigoPartes[1]=="" || $CodigoPartes[2]=="" ){
+            return 0;
+        }else{
+            //Comprueba si el codigo pertenece a la partida
+            $ComprobarNumEtiqueta=$this->ComprobarNumEtiqueta($CodigoPartes,$Area);
+            if($ComprobarNumEtiqueta==0){
+                    return 4;
+            }
+            if($ComprobarNumEtiqueta==2){
+                    return 5;
+            }
+            //Comprueba si existe la Orden  de Fabricacion
+            $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
+            if($datos->count()==0){
+                return 0;
+            }
+            if($datos->CantidadTotal<$CodigoPartes[2]){
+                return 0;
+            }
+            //Comprueba si existe el id de la partida
+            $datos= $datos->PartidasOF()->where('id',"=",$CodigoPartes[1])->first();
+            if($datos==null){
+                return 0;
+            }
+            //Comprobamos si existe la Orden de fabricacion con la partida y el numero de parte ya creado
+            $datosPartidas=$datos->Partidas()->where('NumParte','=',$CodigoPartes[2])->orderBy('id', 'desc')->first();
+            $datosPartidasAreas=$datosPartidas->Areas->where('id','=',$Area);
+            if($datosPartidasAreas->count()==0){
+                $pivotData = [
+                    'FechaComienzo' => $FechaHoy,
+                    'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                    'Linea_id' => $this->funcionesGenerales->Linea(),
+                ];
+                $datosPartidas->Areas()->attach($Area,$pivotData);
+                return 1;
+            }else{
+                $bandera=0;
+                foreach ($datosPartidasAreas as $key => $item) {
+                    if($item->pivot->FechaTermina=="" OR $item->pivot->FechaTermina==null){
+                        $bandera=1;
+                    }
+                }
+                if($bandera==1){
+                    return 2;
+                }else{
+                    if($confirmacion==0){
+                        return 3;
+                    }else{
+                        $pivotData = [
+                            'FechaComienzo' => $FechaHoy,
+                            'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                            'Linea_id' => $this->funcionesGenerales->Linea(),
+                        ];
+                        $datosPartidas->Areas()->attach($Area,$pivotData);
+                        return 1;
+                    }
+                }
+            }
         }
     }
     public function TipoEscanerFinalizar($CodigoPartes,$CodigoTam,$Area){
@@ -590,6 +816,86 @@ class AreasController extends Controller
             }else{
                 return 0;
             }
+        }
+    }
+    public function ComprobarAreaAnterior($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
+        $TipoEscanerrespuesta=0;
+        $EMPartidasOF=$datos->partidasOF->where('id','=',$CodigoPartes[1])->first();
+         if($EMPartidasOF=="" || $EMPartidasOF==null){
+            return response()->json([
+                                'tabla' => $menu,
+                                'Escaner' => $Escaner,
+                                'status' => "empty",
+                                'CantidadTotal' => "",
+                                'CantidadCompletada' => $CantidadCompletada,
+                                'OF' => $CodigoPartes[0]                    
+                            ]);
+        }
+        $EMPartidas=$EMPartidasOF->Partidas()->where('NumParte','=',$CodigoPartes[2])
+                    ->whereHas('Areas', function ($query) use($Area) {
+                    $query->where('areas.id', '=', $Area-1); 
+                    })->get();
+        if($EMPartidas->count()==0){
+            $TipoEscanerrespuesta=5;
+        }else{
+            foreach ($EMPartidas as $key => $item) {
+                if($item->Areas()->first()->pivot->FechaTermina=="" OR $item->Areas()->first()->pivot->FechaTermina==null){
+                        $TipoEscanerrespuesta=5;
+                }
+            }
+        }
+        return $TipoEscanerrespuesta;
+    }
+    public function ComprobarAreaPosterior($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
+        $TipoEscanerrespuesta=0;
+        $EMPartidasOF=$datos->partidasOF->where('id','=',$CodigoPartes[1])->first();
+         if($EMPartidasOF=="" || $EMPartidasOF==null){
+            return response()->json([
+                                'tabla' => $menu,
+                                'Escaner' => $Escaner,
+                                'status' => "empty",
+                                'CantidadTotal' => "",
+                                'CantidadCompletada' => $CantidadCompletada,
+                                'OF' => $CodigoPartes[0]                    
+                            ]);
+        }
+        $EMPartidas=$EMPartidasOF->Partidas()->where('NumParte','=',$CodigoPartes[2])
+                    ->whereHas('Areas', function ($query) use($Area) {
+                    $query->where('areas.id', '=', $Area+1); 
+                    })->get();
+        if(!($EMPartidas->count()==0)){
+            foreach ($EMPartidas as $key => $item) {
+                if($item->Areas()->first()->pivot->FechaTermina=="" OR $item->Areas()->first()->pivot->FechaTermina==null){
+                        $TipoEscanerrespuesta=6;
+                }
+            }
+        }
+        return $TipoEscanerrespuesta;
+    }
+    public function CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
+        $partidas = $datos->partidasOF()
+                        ->join('partidas', 'partidasOF.id', '=', 'partidas.PartidasOF_id')  // JOIN entre PartidasOF y Partidas
+                        ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')  // JOIN con la tabla pivote (ajustar nombre de la tabla)
+                        ->join('areas', 'partidas_areas.Areas_id', '=', 'areas.id')  // JOIN con Areas a través de la tabla pivote
+                        ->where('partidas_areas.FechaTermina', '=', null)  // Filtro por un área específica
+                        ->where('areas.id', '==', $Area-1)  // Filtro por un área específica
+                        ->select('partidasOF.*', 'partidas.*', 'areas.*','partidas_areas.*')  // Seleccionar todas las columnas de las tres tablas
+                        ->get()->count();
+        if($partidas>0){
+            return 5;
+        }
+    }
+    public function CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
+        $partidas = $datos->partidasOF()
+                        ->join('partidas', 'partidasOF.id', '=', 'partidas.PartidasOF_id')  // JOIN entre PartidasOF y Partidas
+                        ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')  // JOIN con la tabla pivote (ajustar nombre de la tabla)
+                        ->join('areas', 'partidas_areas.Areas_id', '=', 'areas.id')  // JOIN con Areas a través de la tabla pivote
+                        ->where('partidas_areas.FechaTermina', '=', null)  // Filtro por un área específica
+                        ->where('areas.id', '!=', $Area)  // Filtro por un área específica
+                        ->select('partidasOF.*', 'partidas.*', 'areas.*','partidas_areas.*')  // Seleccionar todas las columnas de las tres tablas
+                        ->get()->count();
+        if($partidas>0){
+            return 6;
         }
     }
 }
