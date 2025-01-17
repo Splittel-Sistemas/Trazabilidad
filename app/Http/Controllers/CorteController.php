@@ -152,6 +152,8 @@ class CorteController extends Controller
                 'OrdenFabricacion.CantidadTotal',
                 'OrdenFabricacion.FechaEntregaSAP',
                 'OrdenFabricacion.FechaEntrega',
+                
+                
                 DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida')
             )
 
