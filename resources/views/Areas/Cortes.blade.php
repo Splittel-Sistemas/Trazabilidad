@@ -163,15 +163,15 @@
                       </thead>
                       <tbody class="list">
                         @foreach ($ordenesFabricacion as $orden)
-                        <tr>
+                        <!--<tr>
                           <td class="align-middle ps-3 orden">{{ $orden->OrdenFabricacion }}</td>
                           <td class="align-middle articulo">{{ $orden->Articulo }}</td>
                           <td class="align-middle descripcion">{{ $orden->Descripcion }}</td>
                           <td class="align-middle cantidad">{{ $orden->CantidadTotal }}</td>
                           <td class="align-middle fechaSAP">{{ $orden->FechaEntregaSAP }}</td>
-                          <td class="align-middle fechaEstimada">{{ $orden->FechaEntrega }}</td>
+                          <td class="align-middle fechaEstimada">{{ $orden->FechaEntrega }}</td>-->
                           <td class="align-middle estatus">
-                            @php
+                           <!-- @php
                             $badgeClass = match ($orden->estatus) {
                             'En proceso' => 'badge badge-phoenix fs--2 badge-phoenix-warning',
                             'Sin cortes' => 'badge badge-phoenix fs--2 badge-phoenix-secondary',
@@ -187,9 +187,9 @@
                               {{ $orden->estatus }}
                               <i class="{{ $iconClass }}"></i>
                             </span>
-                          </td>
+                          </td>-->
                           <td class="text-center align-middle">
-                            <a href="#" class="btn btn-outline-warning btn-xs ver-detalles" style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="{{ $orden->id }}">
+                            <a href="#" class="btn btn-outline-warning btn-xs verdetalles" style="padding: 2px 6px; font-size: 12px; border-radius: 4px;" data-id="{{ $orden->id }}">
                               <i class="bi bi-eye"></i> Detalles
                             </a>
                           </td>
@@ -245,8 +245,6 @@
                     </svg>
                   </form>
                 </div>
-
-          
                 <div class="cool mt-5">
                     <div class="card shadow-sm">
                     <div class="table-responsive">
@@ -265,7 +263,7 @@
                             </thead>
                             <tbody class="list">
                             @foreach ($ordenesFabricacion as $orden)
-                            <tr>
+                            <!--<tr>
                                 <td class="align-middle ps-3 orden">{{ $orden->OrdenFabricacion }}</td>
                                 <td class="align-middle articulo">{{ $orden->Articulo }}</td>
                                 <td class="align-middle descripcion">{{ $orden->Descripcion }}</td>
@@ -295,7 +293,7 @@
                                     <i class="bi bi-eye"></i> Detalles
                                 </a>
                                 </td>
-                            </tr>
+                            </tr>-->
                             @endforeach
                             </tbody>
                         </table>
@@ -427,7 +425,10 @@
 <!-- JavaScript de DataTables -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+
 <script>
+    /*
     $(document).ready(function () {
         $('#procesoTable').DataTable({
             // Opciones adicionales de configuración
@@ -443,13 +444,13 @@
             ]
         });
     });
-    
+    */
 </script>
 
 <script>
 $(document).ready(function() {
 // Evento al hacer clic en "Detalles Completado"
-$('#completadoTable' ).on('click', '.ver-detalles', function() {
+/*$('#completadoTable' ).on('click', '.detalles', function() {
     var ordenFabricacionId = $(this).data('id');
 
     // Asignar el ID de la orden de fabricación a los botones correspondientes
@@ -459,7 +460,7 @@ $('#completadoTable' ).on('click', '.ver-detalles', function() {
 
     // Obtener los detalles de la orden de fabricación
     $.ajax({
-        url: '{{ route("corte.getDetalleOrden") }}',
+        url: '{{ route("corte.DetallesCompletado") }}',
         type: 'GET',
         data: { id: ordenFabricacionId },
         success: function(response) {
@@ -494,7 +495,7 @@ $('#completadoTable' ).on('click', '.ver-detalles', function() {
                 // Asignar el ID de la orden a un campo oculto
                 $('#ordenFabricacionId').val(response.data.id);
                 // Obtener los cortes registrados para esta orden
-                obtenerCortes(ordenFabricacionId);
+                obtenerCortescompletado(ordenFabricacionId);
                 // Mostrar el modal con los detalles de la orden
                 $('#modalDetalleOrden').modal('show');
             } else {
@@ -506,9 +507,9 @@ $('#completadoTable' ).on('click', '.ver-detalles', function() {
             alert('Error al obtener los detalles de la orden.');
         }
     });
-});
+});*/
 //Evento al hacer clic en Detalles Sin Cortes, En proceso
-$('#procesoTable' ).on('click', '.ver-detalles', function() {
+$('#procesoTable' ).on('click', '.verdetalles', function() {
     var ordenFabricacionId = $(this).data('id');
 
     // Asignar el ID de la orden de fabricación a los botones correspondientes
@@ -639,6 +640,38 @@ $('#confirmar').click(function () {
         }
     });
 });
+function obtenerCortescompletado(ordenFabricacionId) {
+    $.ajax({
+        url: '{{ route("corte.getCortes") }}',
+        type: 'GET',
+        data: { id: ordenFabricacionId },
+        success: function (cortesResponse) {
+            if (cortesResponse.success) {
+                const cortesHtml = cortesResponse.data.reverse().map((corte, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${corte.cantidad_partida}</td>
+                        <td>${corte.fecha_fabricacion}</td>
+                        <td>${corte.FechaFinalizacion || ''}</td>
+                        <td>
+                            <button type="button" class="btn btn-outline-primary btn-generar-etiquetas" data-id="${corte.id}">Generar Etiquetas</button>
+                        </td>
+                       
+                        
+                    </tr>
+                `).join('');
+
+                $('#tablaCortes tbody').html(cortesHtml);
+            } else {
+                $('#tablaCortes tbody').html('<tr><td colspan="6" class="text-center">No se encontraron cortes.</td></tr>');
+            }
+        },
+        error: function (xhr) {
+            console.error(xhr.responseText);
+            alert('Error al obtener los cortes.');
+        }
+    });
+}
 // Función para obtener y mostrar los cortes registrados
 function obtenerCortes(ordenFabricacionId) {
     $.ajax({
@@ -713,7 +746,7 @@ function actualizarTablaPrincipal() {
                         </td>
                         <td class="text-center align-middle">
                             <a href="#" class="btn btn-outline-warning btn-xs ver-detalles" data-id="${orden.id}">
-                                <i class="bi bi-eye me-1"></i> Detalles
+                                <i class="bi bi-eye me-1"></i> Ver Detalles
                             </a>
                            
                         </td>
@@ -1203,15 +1236,10 @@ document.getElementById('btnBuscarFechaUnica').addEventListener('click', functio
     });
 });
 
-
-
-
-
-
-
 ///////////////////////////////////////////////////////////
 </script>
 <script>
+    
     $(document).on('click', '#proceso-tab', function () {
     // Realiza la solicitud AJAX
     $.ajax({
@@ -1246,18 +1274,26 @@ document.getElementById('btnBuscarFechaUnica').addEventListener('click', functio
                                 </span>
                             </td>
                             <td class="text-center align-middle">
-                                <a href="#" class="btn btn-outline-warning btn-xs ver-detalles" data-id="${orden.id}">
-                                    <i class="bi bi-eye"></i> Detalles
+                                <a href="#" class="btn btn-outline-warning btn-xs verdetalles" data-id="${orden.id}">
+                                    <i class="bi bi-eye"></i> Ver Detalles
                                 </a>
                             </td>
                         </tr>
                     `);
                 });
+                new List('tableExample3', {
+                    valueNames: ['orden', 'articulo', 'descripcion', 'cantidad', 'fechaSAP', 'fechaEstimada', 'estatus'],
+                    page: 5,
+                    pagination: true
+                });
             } else {
                 console.error('La respuesta no es un arreglo:', data);
             }
         },
-
+        error: function (xhr, status, error) {
+            console.error('Error en la solicitud AJAX:', error);
+            alert('Ocurrió un error al cargar los datos.');
+        }
     });
 });
 
@@ -1291,7 +1327,7 @@ $(document).on('click', '#completado-tab', function () {
             console.log(data); // Inspecciona lo que se recibe desde el servidor
             const tableBody = $('#completadoTable tbody');
             tableBody.empty(); // Limpia la tabla
-
+            
             if (Array.isArray(data)) {
                 data.forEach(orden => {
                     tableBody.append(`
@@ -1309,12 +1345,19 @@ $(document).on('click', '#completado-tab', function () {
                                 </span>
                             </td>
                             <td class="text-center align-middle">
-                                <a href="#" class="btn btn-outline-warning btn-xs ver-detalles" data-id="${orden.id}">
+                                <a href="#" class="btn btn-outline-warning btn-xs detalles" data-id="${orden.id}">
                                     <i class="bi bi-eye"></i> Detalles
                                 </a>
                             </td>
                         </tr>
                     `);
+                });
+
+                // Inicializa la funcionalidad de búsqueda, ordenación y paginación
+                new List('tableExample3', {
+                    valueNames: ['orden', 'articulo', 'descripcion', 'cantidad', 'fechaSAP', 'fechaEstimada', 'estatus'],
+                    page: 5,
+                    pagination: true
                 });
             } else {
                 console.error('La respuesta no es un arreglo:', data);
@@ -1326,8 +1369,10 @@ $(document).on('click', '#completado-tab', function () {
         }
     });
 });
+
 </script>
 <script>
+    /*
     document.addEventListener('DOMContentLoaded', function () {
     var myTab = new bootstrap.Tab(document.getElementById('proceso-tab'));
     myTab.show();
