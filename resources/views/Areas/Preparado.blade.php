@@ -84,7 +84,6 @@
 <script>
     function ListaCodigo(Codigo,Contenedor){
         //VerNumParte=VerNumParte($Codigo);
-        $('#ToastGuardado').fadeOut();
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
         if (CadenaVacia(Codigo)) {
             return 0;
@@ -117,6 +116,7 @@
                 $('#CodigoEscanerSuministro').html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /><br>Cargando</p>");
             },
             success: function(response) {
+                //$('#ToastGuardado').fadeOut();
                 $('#CantidadDiv').hide();
                 $('#IniciarBtn').hide();
                 $('#RetrabajoDiv').hide();
@@ -479,7 +479,15 @@
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
                     }, 2000);
+                }else if(response.status=='SurplusInicioAnt'){
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
+                    $('#ToastGuardadoBody').html('Error no guardado, La cantidad de entradas, Aún faltan de procesarse piezas en la area Anterior !');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 2000);
                 }
+                
                 ListaCodigo(CodigoEscaner,'CodigoEscanerSuministro')
             },
             error: function(xhr, status, error) {

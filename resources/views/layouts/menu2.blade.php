@@ -132,19 +132,19 @@
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Preparado</span></div>
                                             </a>
                                         </li>
-                                        <li class="nav-item"><a class="nav-link" href="pages/landing/alternate.html" data-bs-toggle="" aria-expanded="false">
+                                        <li class="nav-item"><a class="nav-link {{ Route::is('Ensamble') ? 'nav-tabs active' : '' }}" href="{{route('Ensamble')}}" data-bs-toggle="" aria-expanded="false">
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Ensamble</span></div>
                                             </a>
                                         </li>
-                                        <li class="nav-item"><a class="nav-link" href="pages/landing/alternate.html" data-bs-toggle="" aria-expanded="false">
+                                        <li class="nav-item"><a class="nav-link href="{{ Route::is('Pulido') ? 'nav-tabs active' : '' }}" href="{{route('Pulido')}}" data-bs-toggle="" aria-expanded="false">
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Pulido</span></div>
                                             </a>
                                         </li>
-                                        <li class="nav-item"><a class="nav-link" href="pages/landing/alternate.html" data-bs-toggle="" aria-expanded="false">
+                                        <li class="nav-item"><a class="nav-link href="{{ Route::is('Medicion') ? 'nav-tabs active' : '' }}" href="{{route('Medicion')}}" data-bs-toggle="" aria-expanded="false">
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Medicion</span></div>
                                             </a>
                                         </li>
-                                        <li class="nav-item"><a class="nav-link" href="pages/landing/alternate.html" data-bs-toggle="" aria-expanded="false">
+                                        <li class="nav-item"><a class="nav-link href="{{ Route::is('Visualizacion') ? 'nav-tabs active' : '' }}" href="{{route('Visualizacion')}}" data-bs-toggle="" aria-expanded="false">
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Visualizaci&oacute;n</span></div>
                                             </a>
                                         </li>
