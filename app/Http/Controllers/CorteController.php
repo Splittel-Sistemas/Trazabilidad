@@ -84,6 +84,7 @@ class CorteController extends Controller
     
         // Consulta de órdenes de fabricación filtradas por la fecha actual
         $ordenesFabricacion = $this->filtroOvFecha($today, $semna);
+        
     
         // Agregar estatus calculado
         $ordenesFabricacion->transform(function ($item) {

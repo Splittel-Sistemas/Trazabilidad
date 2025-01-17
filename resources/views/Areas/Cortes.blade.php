@@ -138,7 +138,7 @@
                                     <form class="position-relative border rounded-3" data-bs-toggle="search" data-bs-display="static">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text bg-light border-0 rounded-start">
+                                                <span class="input-group-text bg-light border-2 rounded-start">
                                                     <i class="uil uil-search text-muted"></i>
                                                 </span>
                                             </div>
@@ -147,7 +147,6 @@
                                     </form>
                                 </div>
                             </div>
-                
                             <!-- Table -->
                             <div class="table-responsive">
                                 <table id="procesoTable" class="table table-striped table-sm fs--1 mb-1">
@@ -215,7 +214,7 @@
                 </font></font>
             </div>
                     
-            <div class="tab-pane fade" id="tab-completado" role="tabpanel" aria-labelledby="completado-tab"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+         <div class="tab-pane fade" id="tab-completado" role="tabpanel" aria-labelledby="completado-tab"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
 
                 <div class="col-6 mt-2">
                     <div class="accordion" id="accordionFiltroUnico">
@@ -335,7 +334,7 @@
                     </div>
                 </div>
                 </font></font>
-            </div>
+        </div>
         <!-- Modal de Detalles de la Orden -->
         <div class="modal fade bd-example-modal-x" id="modalDetalleOrden" tabindex="-1"  role="dialog" aria-labelledby="modalDetalleOrdenLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
@@ -1410,6 +1409,30 @@ $.ajax({
             }
         });
     });
+    function TablaList(procesoTable) {
+    var options = {
+        valueNames: ['orden', 'articulo', 'descripcion', 'cantidad', 'fechaSAP', 'fechaEstimada', 'estatus'], // Clases del HTML
+        page: 10,
+        pagination: true,
+    };
+
+    // Crear la instancia de List.js
+    var userList = new List(procesoTable, options);
+
+    // Agregar el evento para el filtro
+    document.querySelector('[data-list-filter="data-list-filter"]').addEventListener('change', function() {
+        var filterValue = this.value; // Obtener el valor seleccionado del filtro
+        if (filterValue === "") {
+            userList.filter(); // Si no hay filtro seleccionado, mostrar todos los elementos
+        } else {
+            userList.filter(function(item) {
+                return item.values().estatus.toLowerCase().includes(filterValue.toLowerCase());
+            });
+        }
+    });
+}
+
+
 </script>
 
 
