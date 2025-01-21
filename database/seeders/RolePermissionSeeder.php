@@ -1,44 +1,87 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Role;
 use App\Models\Permission;
-use App\Models\User;
 
 class RolePermissionSeeder extends Seeder
 {
     public function run()
     {
         // Crear permisos si no existen
-        $verDashboard = Permission::firstOrCreate(['name' => 'Ver dashboard']);
-        $gestionarUsuarios = Permission::firstOrCreate(['name' => 'Gestionar usuarios']);
-        $verInformes = Permission::firstOrCreate(['name' => 'Ver informes']);
-        $editarContenido = Permission::firstOrCreate(['name' => 'Editar contenido']);
+        $verDashboard = Permission::firstOrCreate(['name' => 'Dashboard']);
+        $verCortes = Permission::firstOrCreate(['name' => 'Vista Cortes']);
+        $verPlaneacion = Permission::firstOrCreate(['name' => 'Vista Planeacion']);
+        $verSuministro = Permission::firstOrCreate(['name' => 'Vista Suministro']);
+        $verPreparado = Permission::firstOrCreate(['name' => 'Vista Preparado']);
+        $verEnsambre = Permission::firstOrCreate(['name' => 'Vista Ensambre']);
+        $verPulido = Permission::firstOrCreate(['name' => 'Vista Pulido']);
+        $verMedicion = Permission::firstOrCreate(['name' => 'Vista Medicion']);
+        $verVisualizacion = Permission::firstOrCreate(['name' => 'Vista Visualizacion']);
 
-        // Crear roles
-        $admin = Role::create(['name' => 'Administrador']);
-        $supervisor = Role::create(['name' => 'Supervisor']);
-        $operador = Role::create(['name' => 'Operador']);
+        // Crear roles si no existen
+        $personalAdministrativo = Role::firstOrCreate(['name' => 'Administrador']);
+        $personalCortes = Role::firstOrCreate(['name' => 'Cortes']);
+        $personalPlaneacion = Role::firstOrCreate(['name' => 'Planeacion']);
+        $personalSuministros = Role::firstOrCreate(['name' => 'Suministros']);
+        $personalPreparado = Role::firstOrCreate(['name' => 'Preparado']);
+        $personalEnsamble = Role::firstOrCreate(['name' => 'Ensamble']);
+        $personalPulido = Role::firstOrCreate(['name' => 'Pulido']);
+        $personalMedicion = Role::firstOrCreate(['name' => 'Medicion']);
+        $personalVisualizacion = Role::firstOrCreate(['name' => 'Visualizacion']);
 
-        // Asignar permisos a roles
-        $admin->permissions()->attach([
-            $verDashboard->id, 
-            $gestionarUsuarios->id, 
-            $verInformes->id, 
-            $editarContenido->id
+        // Asignar permisos a roles utilizando givePermissionTo
+        $personalAdministrativo->givePermissionTo([
+            $verDashboard,
+            $verVisualizacion,
+            $verMedicion,
+            $verPulido,
+            $verEnsambre,
+            $verPreparado,
+            $verCortes,
+            $verPlaneacion,
         ]);
-        
-        $supervisor->permissions()->attach([
-            $verDashboard->id, 
-            $gestionarUsuarios->id, 
-            $verInformes->id
+
+        $personalVisualizacion->givePermissionTo([
+            $verDashboard,
+            $verVisualizacion,
         ]);
-        
-        $operador->permissions()->attach([
-            $verDashboard->id, 
-            $verInformes->id
+
+        $personalMedicion->givePermissionTo([
+            $verDashboard,
+            $verMedicion,
+        ]);
+
+        $personalPulido->givePermissionTo([
+            $verDashboard,
+            $verPulido,
+        ]);
+
+        $personalEnsamble->givePermissionTo([
+            $verDashboard,
+            $verEnsambre,
+        ]);
+
+        $personalPreparado->givePermissionTo([
+            $verDashboard,
+            $verPreparado,
+        ]);
+
+        $personalCortes->givePermissionTo([
+            $verDashboard,
+            $verCortes,
+        ]);
+
+        $personalPlaneacion->givePermissionTo([
+            $verDashboard,
+            $verPlaneacion,
+        ]);
+
+        $personalSuministros->givePermissionTo([
+            $verDashboard,
+            $verSuministro,
         ]);
     }
 }
-

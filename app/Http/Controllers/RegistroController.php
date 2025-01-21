@@ -9,21 +9,50 @@ use App\Models\Role;
 use App\Models\Permission; 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class RegistroController extends Controller
 {
     // Método para listar todos los usuarios
     public function index()
     {
-        $personal = User::all(); // Obtiene todos los usuarios
-        $roles = Role::all(); 
-        $permissions = Permission::all();
+
+        $user = Auth::user();
+       
         
-        return view('registro.index', compact('personal', 'roles', 'permissions'));
+       
+        if ($user->hasPermission('Vistas Editar')) {
+            
+            $roles = Role::with('permissions')->get();
+            $personal = User::all();
+            $roles = Role::all(); 
+            $permissions = Permission::all();
+            
+           
+            return view('registro.index', compact('personal', 'roles', 'permissions'));
+        } else {
+            
+            return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
+        }
     }
+
+         
+
+        
+        
+    
   // RegistroController.php
     public function edit(User $registro)
     {
+
+        
+
+        
+
+
+
+
+
         //$role = Role::with('permissions')->findOrFail($id); 
         $roles = Role::all(); // Obtener todos los roles disponibles
         $userRoles = $registro->roles->pluck('id'); // Obtener los roles asignados al usuario
