@@ -248,7 +248,11 @@
                                     <div class="mb-2 d-flex align-items-center">
                                         <label for="numCortes" class="form-label ms-2 mb-0">Registrar Cantidad:</label> <!-- Eliminar margen inferior con mb-0 -->
                                         <input type="number" class="form-control form-control-sm ms-2" id="numCortes" name="numCortes" min="0" placeholder="Ingresa el número" required>
+                                        
+
+                                        @if(Auth::user()->hasPermission("CorteEdit"))
                                         <button type="button" id="confirmar" class="btn btn-outline-success btn-sm ms-2" >Confirmar</button>
+                                        @endif
                                     </div>
                                     
                                 </form>
@@ -262,7 +266,12 @@
                                                     <th>Cortes De Piezas</th>
                                                     <th>Fecha De Registro</th>
                                                     <th>Fecha De Finalizacion</th>
-                                                    <th> <button class="btn btn-outline-primary  btn-sm ms-2" id="pdfRangos" data-id="">Generar PDF de Rangos</button></th>
+                                                    <th>
+                                                        @if(Auth::user()->hasPermission("CorteEdit"))
+                                                         <button class="btn btn-outline-primary  btn-sm ms-2" id="pdfRangos" data-id="">Generar PDF de Rangos</button>
+                                                        @endif
+
+                                                     </th>
                                                     
                                                 </tr>
                                             </thead>
@@ -329,43 +338,24 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                    @if(Auth::user()->hasPermission("UsuriosEdit"))
                                     <button type="submit" id="btn-pdf-descarga" class="btn btn-primary" data-id="">Generar PDF</button>
+                                    @endif
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="modalRegresar" tabindex="-1" aria-labelledby="modalRegresarLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="modalRegresarLabel">Detalles del Corte</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                    <p id="mensajeRegresar"></p>
-                    <div id="cortesDetalles"></div>
-                    </div>
-                    <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" id="regresarBtn">Regresar</button>
-                    </div>
-                </div>
-                </div>
-            </div>
+            
             <input type="hidden" id="ordenFabricacionId" value="">
         </div>
     </div>
 @endsection
 
 <script>
- 
-</script>
 
-<script>
-    
-  document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     
     var tab = new bootstrap.Tab(document.querySelector('#proceso-tab'));
     tab.show(); // Muestra la pestaña "Sin Corte y En Proceso"
@@ -417,6 +407,7 @@
 
                   // Llamar a la función que obtiene los cortes de la orden
                   obtenerCortes(ordenFabricacionId);
+                  
 
                   // Mostrar el modal con los detalles de la orden
                   $('#modalDetalleOrden').modal('show');
@@ -467,7 +458,8 @@
               // Preparar datos para guardar
               const datosPartidas = [{
                   cantidad_partida: numCortes,
-                  fecha_fabricacion: new Date().toISOString().split('T')[0],
+                  fecha_fabricacion: new Date().toISOString().replace('T', ' ').split('.')[0],
+
                   orden_fabricacion_id: ordenFabricacionId
               }];
 
@@ -529,6 +521,51 @@
                                 }
                             });
                             $.ajax({
+                                url: "{{ route('ordenes.completadas') }}",
+                                method: "GET",
+                                headers: {
+                                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                                },
+                                success: function (data) {
+                                    console.log(data); // Imprime la respuesta en la consola
+
+                                    const tableBody = $('#completadoTable tbody');
+                                    tableBody.empty(); // Limpia la tabla
+
+                                    // Asegúrate de que 'data' sea un arreglo, en caso de que sea un objeto
+                                    const dataArray = Array.isArray(data) ? data : Object.values(data);
+
+                                    // Recorrer los datos y agregar las filas a la tabla
+                                    dataArray.forEach(orden => {
+                                        tableBody.append(`
+                                            <tr>
+                                                <td class="align-middle ps-3 orden">${orden.OrdenFabricacion}</td>
+                                                <td class="align-middle articulo">${orden.Articulo}</td>
+                                                <td class="align-middle descripcion">${orden.Descripcion}</td>
+                                                <td class="align-middle cantidad">${orden.CantidadTotal}</td>
+                                                <td class="align-middle fechaSAP">${orden.FechaEntregaSAP}</td>
+                                                <td class="align-middle fechaEstimada">${orden.FechaEntrega}</td>
+                                                <td class="align-middle estatus">
+                                                    <span class="${getBadgeClass(orden.estatus)}">
+                                                        ${orden.estatus}
+                                                        <i class="${getIconClass(orden.estatus)}"></i>
+                                                    </span>
+                                                </td>
+                                                <td class="text-center align-middle">
+                                                <a href="#" class="btn btn-outline-info btn-xs ver-regresar" data-id="${orden.id}">
+                                                        <i class="bi bi-eye"></i>Detalles
+                                                </a>
+                                                </td>
+                                            </tr>
+                                        `);
+                                    });
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error('Error en la solicitud AJAX:', error);
+                                    alert('Ocurrió un error al cargar los datos.');
+                                }
+                            });
+                            $.ajax({
                                 url: '{{ route("corte.getDetalles") }}',
                                 type: 'GET',
                                 data: { id: ordenFabricacionId },
@@ -566,7 +603,8 @@
                                         $('#ordenFabricacionId').val(response.data.id);
 
                                         // Llamar a la función que obtiene los cortes de la orden
-                                        obtenerCortesregresar(ordenFabricacionId);
+                                       
+                                       
 
                                         // Mostrar el modal con los detalles de la orden
                                         $('#modalDetalleOrden').modal('show');
@@ -617,6 +655,12 @@
                         
                     </tr>
                 `).join('');
+                // Asignar el ID de la orden a un campo oculto (si es necesario)
+                $('#ordenFabricacionId').val(response.data.id);
+
+            // Llamar a la función que obtiene los cortes de la orden
+            obtenerCortes(ordenFabricacionId);
+            obtenerCortesregresar(ordenFabricacionId);
 
                 $('#tablaCortes tbody').html(cortesHtml);
             } else {
@@ -630,7 +674,8 @@
     });
   }
   // Función para obtener y mostrar los cortes registrados
-  function obtenerCortes(ordenFabricacionId) {
+  function obtenerCortes(ordenFabricacionId)
+ {
     $.ajax({
         url: '{{ route("corte.getCortes") }}',
         type: 'GET',
@@ -641,13 +686,15 @@
                     <tr id="corte-${corte.id}">
                         <td>${index + 1}</td>
                         <td>${corte.cantidad_partida}</td>
-                        <td>${corte.fecha_fabricacion}</td>
+                        <td>${corte.fecha_fabricacion || ''}</td>
                         <td>${corte.FechaFinalizacion || ''}</td>
                         <td>
                             <button type="button" class="btn btn-outline-primary btn-generar-etiquetas" data-id="${corte.id}">Generar Etiquetas</button>
                         </td>
                         <td>
+                            
                             <button type="button" class="btn btn-outline-warning btn-regresar" data-id="${corte.id}">Eliminar</button>
+                            
                         </td>
                         <td>
                             <button type="button" class="btn btn-outline-danger btn-finalizar" data-id="${corte.id}">Finalizar</button>
@@ -672,6 +719,95 @@
                                 _token: $('meta[name="csrf-token"]').attr('content')  // Agregamos el token CSRF
                             },
                             success: function(response) {
+                                $.ajax({
+                    url: "{{ route('ordenes.completadas') }}",
+                    method: "GET",
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    success: function (data) {
+                        console.log(data); // Imprime la respuesta en la consola
+
+                        const tableBody = $('#completadoTable tbody');
+                        tableBody.empty(); // Limpia la tabla
+
+                        // Asegúrate de que 'data' sea un arreglo, en caso de que sea un objeto
+                        const dataArray = Array.isArray(data) ? data : Object.values(data);
+
+                        // Recorrer los datos y agregar las filas a la tabla
+                        dataArray.forEach(orden => {
+                            tableBody.append(`
+                                <tr>
+                                    <td class="align-middle ps-3 orden">${orden.OrdenFabricacion}</td>
+                                    <td class="align-middle articulo">${orden.Articulo}</td>
+                                    <td class="align-middle descripcion">${orden.Descripcion}</td>
+                                    <td class="align-middle cantidad">${orden.CantidadTotal}</td>
+                                    <td class="align-middle fechaSAP">${orden.FechaEntregaSAP}</td>
+                                    <td class="align-middle fechaEstimada">${orden.FechaEntrega}</td>
+                                    <td class="align-middle estatus">
+                                        <span class="${getBadgeClass(orden.estatus)}">
+                                            ${orden.estatus}
+                                            <i class="${getIconClass(orden.estatus)}"></i>
+                                        </span>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                    <a href="#" class="btn btn-outline-info btn-xs ver-regresar" data-id="${orden.id}">
+                                            <i class="bi bi-eye"></i>Detalles
+                                    </a>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error en la solicitud AJAX:', error);
+                        alert('Ocurrió un error al cargar los datos.');
+                    }
+                });
+                $.ajax({
+                    url: "{{ route('ordenes.cerradas') }}",
+                    method: "GET",
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                    },
+                    success: function (data) {
+                        const tableBody = $('#procesoTable tbody');
+                        tableBody.empty(); // Limpia la tabla antes de agregar nuevos datos
+
+                        // Asegúrate de que 'data' sea un arreglo, en caso de que sea un objeto
+                        const dataArray = Array.isArray(data) ? data : Object.values(data);
+
+                        // Iterar sobre los datos y construir las filas de la tabla
+                        dataArray.forEach(orden => {
+                            tableBody.append(`
+                                <tr>
+                                    <td class="align-middle ps-3 orden">${orden.OrdenFabricacion}</td>
+                                    <td class="align-middle articulo">${orden.Articulo}</td>
+                                    <td class="align-middle descripcion">${orden.Descripcion}</td>
+                                    <td class="align-middle cantidad">${orden.CantidadTotal}</td>
+                                    <td class="align-middle fechaSAP">${orden.FechaEntregaSAP}</td>
+                                    <td class="align-middle fechaEstimada">${orden.FechaEntrega}</td>
+                                    <td class="align-middle estatus">
+                                        <span class="${getBadgeClass(orden.estatus)}">
+                                            ${orden.estatus}
+                                            <i class="${getIconClass(orden.estatus)}"></i>
+                                        </span>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        <a href="#" class="btn btn-outline-warning btn-xs ver-detalles" data-id="${orden.id}">
+                                            <i class="bi bi-eye"></i> Detalles
+                                        </a>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error en la solicitud AJAX:', error);
+                        alert('Ocurrió un error al cargar los datos.');
+                    }
+                });
+
                                 if (response.success) {
                                     // Eliminar la fila de la tabla
                                     $(`#corte-${corteId}`).remove();
@@ -679,6 +815,7 @@
                                 } else {
                                     alert('Error al eliminar el corte.');
                                 }
+
                             },
                             error: function(xhr) {
                                 console.error(xhr.responseText);
@@ -714,15 +851,18 @@
           success: function(response)
           
           {
+
+
               if (response.success) {
                   // Recargar la tabla de cortes
+                  
                   obtenerCortes($('#ordenFabricacionId').val());
               } else {
                   alert('Error al finalizar el corte: ' + response.message);
               }
               obtenerCortes(ordenFabricacionId);
               $.ajax({
-                              url: "{{ route('orden-fabricacion.update-status') }}",
+                url: "{{ route('orden-fabricacion.update-status') }}",
                               method: "POST",
                               data: {
                                   id: ordenFabricacionId,
@@ -899,80 +1039,84 @@
         });
   });
   document.getElementById('buscarUnico').addEventListener('click', function (e) {
-    e.preventDefault();
+        e.preventDefault();
     
-    const fecha = document.getElementById('inputFechaUnica').value;
-    
-    if (!fecha) {
-        alert('Por favor, selecciona una fecha.');
-        return;
-    }
+        const fecha = document.getElementById('inputFechaUnica').value;
+        
+        if (!fecha) {
+            alert('Por favor, selecciona una fecha.');
+            return;
+        }
 
-    // Realiza la solicitud AJAX
-    fetch('{{ route("Fitrar.Fechacerrado") }}', { 
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({ fecha })
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Error al filtrar los datos.');
-        return response.json();
-    })
-    .then(data => {
-        const tableBody = document.querySelector('#completadoTable tbody');
-        tableBody.innerHTML = ''; // Limpiar la tabla
+        // Realiza la solicitud AJAX
+        fetch('{{ route("Fitrar.Fechacerrado") }}', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ fecha })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Error al filtrar los datos.');
+            return response.json();
+        })
+        .then(data => {
+            const tableBody = document.querySelector('#completadoTable tbody');
+            tableBody.innerHTML = ''; // Limpiar la tabla
 
-        // Filtrar los datos para excluir los completados
-        const datosFiltrados = data.filter(item => item.estatus !== 'Abiertos');
+            // Filtrar los datos para excluir los completados
+            const datosFiltrados = data.filter(item => item.estatus !== 'Abiertos');
 
-        // Agrega las filas a la tabla
-        datosFiltrados.forEach(item => {
-            // Determina las clases e íconos del estatus
-            let badgeClass = '';
-            let badgeIcon = '';
-            switch (item.estatus) {
-                case 'Cerrados':
-                    badgeClass = 'badge badge-phoenix fs--2 badge-phoenix-warning';
-                    badgeIcon = 'ms-1 fas fa-spinner';
-                    break;
-                case 'Abierto':
-                    badgeClass = 'badge badge-phoenix fs--2 badge-phoenix-secondary';
-                    badgeIcon = 'ms-1 fas fa-times';
-                    break;
-                default:
-                    badgeClass = 'badge-danger';
-                    badgeIcon = 'fas fa-times';
-            }
-            
-            // Crea una fila de la tabla
-            var row = `
-                <tr>
-                    <td>${item.OrdenFabricacion}</td>
-                    <td>${item.Articulo}</td>
-                    <td>${item.Descripcion}</td>
-                    <td>${item.CantidadTotal}</td>
-                    <td>${item.FechaEntregaSAP}</td>
-                    <td>${item.FechaEntrega}</td>
-                    <td><span class="badge ${badgeClass} d-block mt-2" style="font-size: 12px;">
-                        <span class="fw-bold">${item.estatus}</span>
-                        <span class="ms-1 ${badgeIcon}"></span>
-                    </span></td>
-                    <td> <a href="#" class="btn btn-outline-info btn-xs ver-regresar" data-id="${item.id}">
-                         <i class="bi bi-eye"></i>Detalles
-                    </a></td>
-                </tr>
-            `;
-            $('#completadoTable tbody').append(row);
+            // Agrega las filas a la tabla
+            datosFiltrados.forEach(item => {
+                // Determina las clases e íconos del estatus
+                let badgeClass = '';
+                let badgeIcon = '';
+                switch (item.estatus) {
+                    case 'Cerrados':
+                        badgeClass = 'badge badge-phoenix fs--2 badge-phoenix-warning';
+                        badgeIcon = 'ms-1 fas fa-spinner';
+                        break;
+                    case 'Abierto':
+                        badgeClass = 'badge badge-phoenix fs--2 badge-phoenix-secondary';
+                        badgeIcon = 'ms-1 fas fa-times';
+                        break;
+                    default:
+                        badgeClass = 'badge-danger';
+                        badgeIcon = 'fas fa-times';
+                }
+                
+                // Crea una fila de la tabla
+                var row = `
+                    <tr>
+                        <td>${item.OrdenFabricacion}</td>
+                        <td>${item.Articulo}</td>
+                        <td>${item.Descripcion}</td>
+                        <td>${item.CantidadTotal}</td>
+                        <td>${item.FechaEntregaSAP}</td>
+                        <td>${item.FechaEntrega}</td>
+                        <td><span class="badge ${badgeClass} d-block mt-2" style="font-size: 12px;">
+                            <span class="fw-bold">${item.estatus}</span>
+                            <span class="ms-1 ${badgeIcon}"></span>
+                        </span></td>
+                        <td>  
+                            
+                            <a href="#" class="btn btn-outline-info btn-xs ver-regresar" data-id="${item.id}">
+                            <i class="bi bi-eye"></i>Detalles
+                            
+                            </a>
+                        </td>
+                    </tr>
+                `;
+                $('#completadoTable tbody').append(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error.message);
+            alert('Error al procesar la solicitud: ' + error.message);
         });
-    })
-    .catch(error => {
-        console.error('Error:', error.message);
-        alert('Error al procesar la solicitud: ' + error.message);
-    });
-  });
+   });
     // Llamada AJAX para obtener las ordenes cerradas
    
     $.ajax({
@@ -1018,9 +1162,7 @@
             alert('Ocurrió un error al cargar los datos.');
         }
     });
-
     // Llamada AJAX para obtener las ordenes completadas
-    
     $.ajax({
         url: "{{ route('ordenes.completadas') }}",
         method: "GET",
@@ -1126,8 +1268,7 @@
               alert('Error al obtener los detalles de la orden.');
           }
       });
-  });
-
+    });
   // Función para obtener y mostrar los cortes registrados
   function obtenerCortesregresar(ordenFabricacionId) {
     $.ajax({
@@ -1136,6 +1277,7 @@
         data: { id: ordenFabricacionId },
         success: function (cortesResponse) {
             if (cortesResponse.success) {
+                const userCanEdit = cortesResponse.userCanEdit;
                 const cortesHtml = cortesResponse.data.reverse().map((corte, index) => `
                     <tr id="corte-${corte.id}">
                         <td>${index + 1}</td>
@@ -1143,10 +1285,14 @@
                         <td>${corte.fecha_fabricacion}</td>
                         <td>${corte.FechaFinalizacion || ''}</td>
                         <td>
-                            <button type="button" class="btn btn-outline-primary btn-generar-etiquetas" data-id="${corte.id}">Generar Etiquetas</button>
+                             ${userCanEdit ? `
+                                <button type="button" class="btn btn-outline-primary btn-generar-etiquetas" data-id="${corte.id}">Generar Etiquetas</button>
+                            ` : ''}
                         </td>
                         <td>
-                            <button type="button" class="btn btn-outline-danger btn-regresar" data-id="${corte.id}">regresar</button>
+                            ${userCanEdit ? `
+                                <button type="button" class="btn btn-outline-danger btn-regresar" data-id="${corte.id}">regresar</button>
+                            ` : ''}
                         </td>
                     </tr>
                 `).join('');
@@ -1178,6 +1324,94 @@
                         }
                     });
                 });
+                $.ajax({
+                    url: "{{ route('ordenes.completadas') }}",
+                    method: "GET",
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    success: function (data) {
+                        console.log(data); // Imprime la respuesta en la consola
+
+                        const tableBody = $('#completadoTable tbody');
+                        tableBody.empty(); // Limpia la tabla
+
+                        // Asegúrate de que 'data' sea un arreglo, en caso de que sea un objeto
+                        const dataArray = Array.isArray(data) ? data : Object.values(data);
+
+                        // Recorrer los datos y agregar las filas a la tabla
+                        dataArray.forEach(orden => {
+                            tableBody.append(`
+                                <tr>
+                                    <td class="align-middle ps-3 orden">${orden.OrdenFabricacion}</td>
+                                    <td class="align-middle articulo">${orden.Articulo}</td>
+                                    <td class="align-middle descripcion">${orden.Descripcion}</td>
+                                    <td class="align-middle cantidad">${orden.CantidadTotal}</td>
+                                    <td class="align-middle fechaSAP">${orden.FechaEntregaSAP}</td>
+                                    <td class="align-middle fechaEstimada">${orden.FechaEntrega}</td>
+                                    <td class="align-middle estatus">
+                                        <span class="${getBadgeClass(orden.estatus)}">
+                                            ${orden.estatus}
+                                            <i class="${getIconClass(orden.estatus)}"></i>
+                                        </span>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                    <a href="#" class="btn btn-outline-info btn-xs ver-regresar" data-id="${orden.id}">
+                                            <i class="bi bi-eye"></i>Detalles
+                                    </a>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error en la solicitud AJAX:', error);
+                        alert('Ocurrió un error al cargar los datos.');
+                    }
+                });
+                $.ajax({
+                    url: "{{ route('ordenes.cerradas') }}",
+                    method: "GET",
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                    },
+                    success: function (data) {
+                        const tableBody = $('#procesoTable tbody');
+                        tableBody.empty(); // Limpia la tabla antes de agregar nuevos datos
+
+                        // Asegúrate de que 'data' sea un arreglo, en caso de que sea un objeto
+                        const dataArray = Array.isArray(data) ? data : Object.values(data);
+
+                        // Iterar sobre los datos y construir las filas de la tabla
+                        dataArray.forEach(orden => {
+                            tableBody.append(`
+                                <tr>
+                                    <td class="align-middle ps-3 orden">${orden.OrdenFabricacion}</td>
+                                    <td class="align-middle articulo">${orden.Articulo}</td>
+                                    <td class="align-middle descripcion">${orden.Descripcion}</td>
+                                    <td class="align-middle cantidad">${orden.CantidadTotal}</td>
+                                    <td class="align-middle fechaSAP">${orden.FechaEntregaSAP}</td>
+                                    <td class="align-middle fechaEstimada">${orden.FechaEntrega}</td>
+                                    <td class="align-middle estatus">
+                                        <span class="${getBadgeClass(orden.estatus)}">
+                                            ${orden.estatus}
+                                            <i class="${getIconClass(orden.estatus)}"></i>
+                                        </span>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        <a href="#" class="btn btn-outline-warning btn-xs ver-detalles" data-id="${orden.id}">
+                                            <i class="bi bi-eye"></i> Detalles
+                                        </a>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error en la solicitud AJAX:', error);
+                        alert('Ocurrió un error al cargar los datos.');
+                    }
+                });
 
             } else {
                 $('#tablaCortes tbody').html('<tr><td colspan="6" class="text-center">No se encontraron cortes.</td></tr>');
@@ -1185,19 +1419,16 @@
         },
         error: function (xhr) {
             console.error(xhr.responseText);
-            alert('Error al obtener los cortes.');
+            alert('Sin acceso a Tabla de cortes.');
         }
     });
- }
-
+  }
   function getBadgeClass(estatus) {
     return estatus.toLowerCase() === 'abierta' ? 'badge bg-success' : 'badge bg-danger';
   }
-
  function getIconClass(estatus) {
         return estatus.toLowerCase() === 'abierta' ? 'bi bi-check-circle' : 'bi bi-x-circle';
  }
-
 });
 
 </script>

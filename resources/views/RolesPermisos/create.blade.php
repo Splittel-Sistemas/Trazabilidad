@@ -1,6 +1,18 @@
 @extends('layouts.menu2') 
 @section('title', 'Crear Rol') 
+<style>
+    .permissions-container {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los elementos pasen a una nueva línea si no caben */
+    gap: 10px;       /* Espaciado entre elementos */
+}
 
+.form-check {
+    display: flex;
+    align-items: center; /* Alinea el checkbox con el texto */
+}
+
+</style>
 @section('content')
 <div class="breadcrumbs mb-4">
     <div class="row g-0">
@@ -35,17 +47,20 @@
                     <div class="form-group">
                         <label class="font-weight-bold text-dark">Permisos</label>
                         <small class="form-text text-muted">Seleccione uno o más Permisos.</small>
-                        @foreach ($permissions as $value)
-                            <div class="form-check">
-                                <input type="checkbox" name="permissions[]" id="permission_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
-                                    {{ (isset($registro) && $registro->permissions->contains($value->id)) ? 'checked' : '' }}>
-                                <label for="permission_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
-                            </div>
-                        @endforeach
+                        <div class="permissions-container d-flex flex-wrap">
+                            @foreach ($permissions as $value)
+                                <div class="form-check mr-3 mb-2">
+                                    <input type="checkbox" name="permissions[]" id="permission_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
+                                        {{ (isset($registro) && $registro->permissions->contains($value->id)) ? 'checked' : '' }}>
+                                    <label for="permission_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
+                                </div>
+                            @endforeach
+                        </div>
                         @error('roles') 
                             <div class="text-danger mt-2">{{ $message }}</div> 
                         @enderror
                     </div>
+                    
                 </div>
             </div>
             <button type="submit" class="btn btn-success btn-lg btn-block rounded-pill shadow-lg transition-all hover:bg-success hover:text-white">Registrar</button>
