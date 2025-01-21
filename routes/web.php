@@ -45,8 +45,31 @@ Route::get('/Area/Medicion', [AreasController::class,'Medicion'])->name('Medicio
 Route::get('/Area/Visualizacion', [AreasController::class,'Visualizacion'])->name('Visualizacion');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas');
 
-//Rutas cortes
+
 Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
+Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden');
+Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
+Route::get('corte/getCortes', [CorteController::class, 'getCortes'])->name('corte.getCortes');
+Route::get('/orden-fabricacion/{ordenFabricacionId}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('orden-fabricacion.cortes-info');
+Route::post('corte/finalizar/corte', [CorteController::class, 'finalizarCorte'])->name('corte.finalizarCorte');
+Route::post('/orden-fabricacion/update-status', [CorteController::class, 'updateStatus'])->name('orden-fabricacion.update-status');
+Route::post('/filtrar-por-fecha', [CorteController::class, 'filtrarPorFecha'])->name('Fitrar.Fecha');
+Route::get('/ordenes/completadas',[CorteController:: class, 'Completado'])->name('ordenes.completadas');
+Route::get('/ruta-para-actualizar-tabla', [CorteController::class, 'actualizarTabla'])->name('actualizar.tabla');
+Route::delete('/corte/eliminar', [CorteController::class, 'eliminarCorte'])->name('corte.eliminarCorte');
+Route::delete('/corte/eliminar1', [CorteController::class, 'eliminarCorte1'])->name('corte.eliminarCorte1');
+
+
+
+
+Route::post('/filtrar-fecha', [CorteController::class, 'filtrarPorFechac'])->name('Fitrar.Fechacerrado');
+
+Route::get('/corte/detalles', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalles');
+
+
+Route::get('/ordenes/cerradas',[CorteController:: class, 'index'])->name('ordenes.cerradas');
+//Rutas cortes
+/*
     Route::get('/cortes/getData', [CorteController::class, 'getData'])->name('corte.getData');
     Route::get('/detalles', [CorteController::class, 'verDetalles'])->name('detalles');
     Route::get('/buscar-ordenes', [CorteController::class, 'buscarOrdenVenta'])->name('buscar.ordenes');
@@ -59,7 +82,7 @@ Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
     Route::get('/orden-fabricacion/{ordenFabricacionId}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('orden-fabricacion.cortes-info');
     Route::post('/orden-fabricacion/update-status', [CorteController::class, 'updateStatus'])->name('orden-fabricacion.update-status');
 Route::get('/ruta-para-actualizar-tabla', [CorteController::class, 'actualizarTabla'])->name('actualizar.tabla');
-
+*/
 
 Route::get('/corte/DetallesCompletado', [CorteController::class, 'DetallesCompletado'])->name('corte.DetallesCompletado');
 
@@ -112,11 +135,10 @@ Route::get('/RolesPermisos', [RolesPermisoController::class, 'index'])->name('Ro
 Route::delete('destroy/{id}', [RolesPermisoController::class, 'destroy'])->name('destroy');
 
 
-Route::post('/filtrar-por-fecha', [CorteController::class, 'filtrarPorFecha'])->name('Fitrar.Fecha');
 Route::post('/filtrar-por-fechaS', [CorteController::class, 'fechaCompletado'])->name('Fitrar.FechaS');
 
 Route::get('/ordenes-filtradas', [CorteController::class, 'SinCortesProceso'])->name('ordenes.filtradas');
-Route::get('/ordenes/completadas',[CorteController:: class, 'Completado'])->name('ordenes.completadas');
+
 
 
 

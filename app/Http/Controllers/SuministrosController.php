@@ -15,8 +15,19 @@ class SuministrosController extends Controller
 
     public function index()
     {
-        return view('suministros/cortes');
+        // Obtener el usuario autenticado
+       /* $user = Auth::user();
+    
+        // Verificar si el usuario tiene el permiso 'Vista Suministro'
+        if ($user->hasPermission('Vista Suministro')) {
+            // Retornar la vista correspondiente
+            return view('suministros.cortes');
+        } else {
+            // Redirigir a una página de error si no tiene permiso
+            return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
+        }*/
     }
+    
 
     public function enviar(Request $request)
 {

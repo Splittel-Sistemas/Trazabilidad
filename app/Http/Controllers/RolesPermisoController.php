@@ -1,20 +1,36 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Role;
 use App\Models\Permission;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class RolesPermisoController extends Controller
 {
+ 
+  
+    
     public function index()
     {
-        $roles = Role::with('permissions')->get();
-        $permissions = Permission::all();
-
-        return view('RolesPermisos.index', compact('roles', 'permissions'));
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+       
+    
+       
+        if ($user->hasPermission('Vistas Editar')) {
+            
+            $roles = Role::with('permissions')->get();
+           
+            $permissions = Permission::all();
+            
+           
+            return view('RolesPermisos.index', compact('roles', 'permissions'));
+        } else {
+            
+            return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
+        }
     }
 
     /**

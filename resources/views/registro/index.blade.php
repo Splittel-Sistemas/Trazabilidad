@@ -56,6 +56,7 @@
 </div>
 <!-- Contenido principal -->
 <div class="container my-4">
+    
     <a href="{{ route('registro.create') }}" class="btn btn-outline-info mb-3">Agregar Usuario</a>
 
     @if (session('status'))

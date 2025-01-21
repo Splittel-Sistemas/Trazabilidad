@@ -10,6 +10,7 @@ use App\Models\OrdenVenta;
 use App\Models\OrdenFabricacion;
 use App\Models\FechasBuffer;
 use App\Models\RegistrosBuffer;
+use Illuminate\Support\Facades\Auth;
 
 class PlaneacionController extends Controller
 {
@@ -19,29 +20,44 @@ class PlaneacionController extends Controller
     {
         $this->funcionesGenerales = $funcionesGenerales;
     }
-    public function index(){
-        //$FechaInicio=date('Ymd', strtotime('-1 day'));
-        $FechaInicio=date('Ymd');
-        $FechaFin=date('Ymd');
-        //$FechaInicio=date('Ymd');
-        $NumOV="";
-        $message="";
-        $datos=$this->OrdenesVenta($FechaFin,$FechaInicio,$NumOV);
-        if($datos!=0){
-            if(empty($datos)){
-                $status="empty";
-            }else{
-                $status="success";
+    public function index()
+    {
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+    
+        // Verificar el permiso 'Vista Planeacion'
+        if ($user->hasPermission('Vista Planeacion')) {
+    
+            // Inicializar las fechas
+            $FechaInicio = date('Ymd');
+            $FechaFin = date('Ymd');
+            $NumOV = "";
+            $message = "";
+    
+            // Obtener los datos de las órdenes de venta
+            $datos = $this->OrdenesVenta($FechaFin, $FechaInicio, $NumOV);
+    
+            // Determinar el estado según los datos
+            if ($datos != 0) {
+                $status = empty($datos) ? "empty" : "success";
+            } else {
+                $status = "error";
             }
-        }else{
-            $status="error";
+    
+            // Ajustar formato de las fechas para la vista
+            $FechaInicio = date('Y-m-d');
+            $FechaFin = date('Y-m-d');
+    
+            // Retornar la vista con los datos
+            return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status'));
+    
+        } else {
+    
+            // Redirigir a una página de error si no tiene permiso
+            return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
         }
-        //$FechaInicio=date('Y-m-d', strtotime('-1 day'));
-        $FechaInicio=date('Y-m-d');
-        $FechaFin=date('Y-m-d');
-        //$FechaInicio=date('Y-m-d');
-        return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin','status'));
     }
+    
     public function PartidasOF(Request $request){
         //datos para la consulta
         $schema = 'HN_OPTRONICS';

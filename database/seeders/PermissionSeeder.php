@@ -14,6 +14,9 @@ class PermissionSeeder extends Seeder
             'Gestionar usuarios',
             'Ver informes',
             'Editar contenido',
+            'Vista Cortes',
+            'Vista Planeacion',
+            'Vista Suministro',
         ];
 
         foreach ($permissions as $permission) {
@@ -21,5 +24,3 @@ class PermissionSeeder extends Seeder
         }
     }
 }
-
-

@@ -8,6 +8,7 @@ use App\Http\Controllers\FuncionesGeneralesController;
 use App\Models\OrdenFabricacion;
 use App\Models\PartidasOF;
 use App\Models\Partidas;
+use Illuminate\Support\Facades\Auth;
 
 class AreasController extends Controller
 {
@@ -19,7 +20,18 @@ class AreasController extends Controller
     //Area 3 Suministro
     public function Suministro(){
         $Area=$this->funcionesGenerales->encrypt(3);
-        return view('Areas.Suministro',compact('Area'));
+        $user = Auth::user();
+       
+    
+        
+        if ($user->hasPermission('Vista Suministro')) {
+           
+            return view('Areas.Suministro',compact('Area'));
+        } else {
+           
+            return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
+        }
+        
     }
     public function SuministroBuscar(Request $request){
         if ($request->has('Confirmacion')) {
