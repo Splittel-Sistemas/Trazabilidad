@@ -662,6 +662,30 @@ public function eliminarCorte1(Request $request)
             ]);
         }
  }
+ public function buscar(Request $request)
+{
+    $query = Producto::query();
+
+    // Filtrar por el campo de búsqueda
+    if ($request->has('buscar') && $request->input('buscar') != '') {
+        $busqueda = $request->input('buscar');
+        
+        // Realizar la búsqueda en las columnas específicas
+        $query->where(function($q) use ($busqueda) {
+            $q->where('orden_fabricacion', 'like', '%' . $busqueda . '%')
+              ->orWhere('articulo', 'like', '%' . $busqueda . '%')
+              ->orWhere('descripcion', 'like', '%' . $busqueda . '%')
+              ->orWhere('cantidad_total', 'like', '%' . $busqueda . '%')
+              ->orWhere('fecha', 'like', '%' . $busqueda . '%')
+              ->orWhere('estatus', 'like', '%' . $busqueda . '%');
+        });
+    }
+
+    $resultados = $query->get();
+
+    return view('productos.index', compact('resultados'));
+}
+
     
 
 

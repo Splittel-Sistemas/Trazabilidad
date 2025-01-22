@@ -201,6 +201,8 @@
                         </div>
                     </div>
                     <br><br>
+                
+                    
                     <div class="table-responsive">
                         <table id="completadoTable" class="table table-striped table-sm fs--1 mb-1">
                                 <thead class="bg-primary text-white">
@@ -352,6 +354,10 @@
         </div>
     </div>
 @endsection
+
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
 
 <script>
 
