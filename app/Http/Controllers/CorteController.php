@@ -18,14 +18,6 @@ class CorteController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        
-        // Verificar si el usuario tiene el permiso 'Vista Cortes' antes de continuar
-        if ($user->hasPermission('Vista Cortes')) {
-            // Redirigir a una URL externa si no tiene el permiso
-            return redirect()->away('https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.webempresa.com%2Fblog%2Fcomo-solucionar-lo-siento-no-tiene-permiso-para-acceder-a-esta-pagina-en-wordpress.html&psig=AOvVaw1WUBMhb9wLnLsyRcQ4WtLn&ust=1737495531718000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCLiprbGhhYsDFQAAAAAdAAAAABAK');
-        }
-    
-        // Si el usuario tiene el permiso 'Vista Cortes', proceder con la lógica
     
         $ordenesFabricacion = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
             ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
@@ -466,20 +458,19 @@ class CorteController extends Controller
                 'OrdenFabricacion.FechaEntrega'
             )
             ->get();
-            $ordenesFabricacion->transform(function ($item) {
-                $cantidadTotal = $item->CantidadTotal;
-                $sumaCantidadPartida = $item->suma_cantidad_partida;
-        
-                if ($sumaCantidadPartida == 0) {
-                    $item->estatus = 'Abierta';
-                } elseif ($sumaCantidadPartida < $cantidadTotal) {
-                    $item->estatus = 'Abierta';
-                } else {
-                    $item->estatus = 'Cerrada';
-                }
-        
-                return $item;
-            });
+           // Asignar estatus
+        $ordenesFabricacion->transform(function ($item) {
+            $cantidadTotal = $item->CantidadTotal;
+            $sumaCantidadPartida = $item->suma_cantidad_partida;
+    
+            $item->estatus = $sumaCantidadPartida < $cantidadTotal ? 'abierto' : 'Cerrado';
+            return $item;
+        });
+    
+        // Filtrar solo estatus "abierto"
+        $ordenesAbiertas = $ordenesFabricacion->filter(function ($orden) {
+            return strtolower($orden->estatus) === 'abierto';
+        });
 
         return response()->json($ordenesFabricacion);
     }
@@ -515,7 +506,6 @@ class CorteController extends Controller
         // Convertir la colección a un arreglo y devolverlo
         return response()->json($ordenesCompletadas->values()->toArray());
     }
-    
     public function filtroOvFecha($today, $semna)
     {
         $ordenesFabricacion = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
@@ -547,9 +537,9 @@ class CorteController extends Controller
             ->get();
             return $ordenesFabricacion;
     }
-   public function cerradas($today, $semana)
-   {
-   }
+    public function cerradas($today, $semana)
+    {
+    }
    public function filtrarPorFechaC(Request $request)
     {
         $fecha = $request->input('fecha');
@@ -624,7 +614,7 @@ class CorteController extends Controller
             ]);
         }
   }
-public function eliminarCorte1(Request $request)
+ public function eliminarCorte1(Request $request)
  {
         $corteId = $request->id;
 

@@ -53,8 +53,8 @@ Route::get('corte/getCortes', [CorteController::class, 'getCortes'])->name('cort
 Route::get('/orden-fabricacion/{ordenFabricacionId}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('orden-fabricacion.cortes-info');
 Route::post('corte/finalizar/corte', [CorteController::class, 'finalizarCorte'])->name('corte.finalizarCorte');
 Route::post('/orden-fabricacion/update-status', [CorteController::class, 'updateStatus'])->name('orden-fabricacion.update-status');
-Route::post('/filtrar-por-fecha', [CorteController::class, 'filtrarPorFecha'])->name('Fitrar.Fecha');
-Route::get('/ordenes/completadas',[CorteController:: class, 'Completado'])->name('ordenes.completadas');
+Route::get('/filtrar-por-fecha', [CorteController::class, 'filtrarPorFecha'])->name('Fitrar.Fecha');
+Route::get('/ordenes/completadas',[CorteController:: class, 'Completado'])->name('ordenes.cerradas');
 Route::get('/ruta-para-actualizar-tabla', [CorteController::class, 'actualizarTabla'])->name('actualizar.tabla');
 Route::delete('/corte/eliminar', [CorteController::class, 'eliminarCorte'])->name('corte.eliminarCorte');
 Route::delete('/corte/eliminar1', [CorteController::class, 'eliminarCorte1'])->name('corte.eliminarCorte1');
@@ -68,7 +68,7 @@ Route::post('/filtrar-fecha', [CorteController::class, 'filtrarPorFechac'])->nam
 Route::get('/corte/detalles', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalles');
 
 
-Route::get('/ordenes/cerradas',[CorteController:: class, 'index'])->name('ordenes.cerradas');
+Route::get('/ordenes/cerradas',[CorteController:: class, 'index'])->name('ordenes.abiertas');
 //Rutas cortes
 /*
     Route::get('/cortes/getData', [CorteController::class, 'getData'])->name('corte.getData');
