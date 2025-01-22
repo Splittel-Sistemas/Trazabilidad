@@ -201,8 +201,6 @@
                         </div>
                     </div>
                     <br><br>
-                
-                    
                     <div class="table-responsive">
                         <table id="completadoTable" class="table table-striped table-sm fs--1 mb-1">
                                 <thead class="bg-primary text-white">
@@ -354,18 +352,60 @@
         </div>
     </div>
 @endsection
+@section('scripts')
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<!-- Script de inicialización -->
+<script>
+   $(document).ready(function () {
+    $('#completadoTable').DataTable({
+        // Configuraciones opcionales
+        responsive: true, // Hace la tabla responsive
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-MX.json" // Traducción al español
+        },
+        ajax: {
+            url: 'URL_A_TU_API_O_ARCHIVO_JSON', // Ruta al JSON con los datos
+            dataSrc: '' // Ajustar si el JSON no tiene una estructura plana
+        },
+        columns: [
+            { data: 'orden' },
+            { data: 'articulo' },
+            { data: 'descripcion' },
+            { data: 'cantidad' },
+            { data: 'fechaSAP' },
+            { data: 'fechaEstimada' },
+            { data: 'estatus' },
+            {
+                data: null,
+                className: 'text-end',
+                render: function (data, type, row) {
+                    return `<button class="btn btn-sm btn-primary">Acción</button>`;
+                }
+            }
+        ]
+    });
+});
+
+</script>
 
 <script>
+
 
 document.addEventListener("DOMContentLoaded", function () {
     
     var tab = new bootstrap.Tab(document.querySelector('#proceso-tab'));
     tab.show(); // Muestra la pestaña "Sin Corte y En Proceso"
    ////////////////////////////////////////////////////////////////////////////////////////
+
+   
   $('#procesoTable').on('click', '.ver-detalles', function() {
       var ordenFabricacionId = $(this).data('id');
 
@@ -1438,3 +1478,4 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 </script>
+@endsection

@@ -42,15 +42,6 @@ class RegistroController extends Controller
   // RegistroController.php
     public function edit(User $registro)
     {
-
-        
-
-        
-
-
-
-
-
         //$role = Role::with('permissions')->findOrFail($id); 
         $roles = Role::all(); // Obtener todos los roles disponibles
         $userRoles = $registro->roles->pluck('id'); // Obtener los roles asignados al usuario
