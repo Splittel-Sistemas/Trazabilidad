@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\FuncionesGeneralesController;
 use Illuminate\Support\Facades\Log;
 use App\Models\OrdenVenta;
+use App\Models\PartidasOF;
 use App\Models\OrdenFabricacion;
 use App\Models\FechasBuffer;
 use App\Models\RegistrosBuffer;
@@ -79,8 +80,9 @@ class PlaneacionController extends Controller
                 FROM {$schema}.\"ORDR\" T0
                 INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
                 LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
-                WHERE T0.\"DocNum\" = '{$ordenventa}'  
-                ORDER BY T1.\"VisOrder\"";
+                WHERE T0.\"DocNum\" = '{$ordenventa}' 
+                ORDER BY T1.\"PoTrgNum\""; 
+                //ORDER BY T1.\"VisOrder\"";
         //Ejecucion de la consulta
         $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
         
@@ -102,7 +104,7 @@ class PlaneacionController extends Controller
         $html .= '<thead>
                     <tr>
                         <th class="text-center">Todo <input type="checkbox" id="selectAll'.$ordenventa.'" onclick="SeleccionaFilas(this)"></th>
-                        <th>Orden Fab.</th>
+                        <th>Orden Fabricación</th>
                         <th>Artículo</th>
                         <th>Descripción</th>
                         <th>Cantidad</th>
@@ -174,7 +176,8 @@ class PlaneacionController extends Controller
                 }else{
                     $status="success";
                     foreach ($datos as $index => $orden) {
-                        $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)">
+                        if($orden['Estatus']>0){
+                            $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)">
                                             <td role="button" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '" onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] .', `' . $orden['Cliente'] . '`)">
                                                 ' . $orden['OV'] . " - " . $orden['Cliente'] . '
                                             </td>
@@ -187,6 +190,7 @@ class PlaneacionController extends Controller
                                             <td style="display:none"> ' . $orden['Cliente']. '</td>
                                             <td style="display:none"> ' . $orden['OV']. '</td>
                                         </tr>';
+                        }
                     }
                 }
             }else{
@@ -209,7 +213,8 @@ class PlaneacionController extends Controller
                 }else{
                     $status="success";
                     foreach ($datos as $index => $orden) {
-                        $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '">
+                        if($orden['Estatus']>0){
+                            $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '">
                                             <td onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] .', `' . $orden['Cliente'] . '`)">
                                                 ' . $orden['OV'] . " - " . $orden['Cliente'] . '
                                             </td>
@@ -221,6 +226,7 @@ class PlaneacionController extends Controller
                                             <td style="display:none"> ' . $orden['Cliente']. '</td>
                                             <td style="display:none"> ' . $orden['OV']. '</td>
                                         </tr>';
+                        }
                     }
                 }
             }else{
@@ -266,6 +272,7 @@ class PlaneacionController extends Controller
                     $respuestaOF->Descripcion=$DatosPlaneacion[$i]->Descripcion;
                     $respuestaOF->CantidadTotal=$DatosPlaneacion[$i]->Cantidad;
                     $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
+                    $respuestaOF->EstatusEntrega=0;
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
                     $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
                     $respuestaOF->save();
@@ -289,6 +296,7 @@ class PlaneacionController extends Controller
                     $respuestaOF->Descripcion=$DatosPlaneacion[$i]->Descripcion;
                     $respuestaOF->CantidadTotal=$DatosPlaneacion[$i]->Cantidad;
                     $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
+                    $respuestaOF->EstatusEntrega=0;
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
                     $respuestaOF->save();
                 }
@@ -314,13 +322,17 @@ class PlaneacionController extends Controller
         //return $datos;
         $tabla="";
         if(count($datos)>0){
-            for ($i=0; $i < count($datos); $i++) { 
-                $tabla.='<tr>
+            for ($i=0; $i < count($datos); $i++) {
+                $countdatosOrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion','=',$datos[$i]['OrdenFabricacion'])->first();
+                $countdatosOrdenFabricacion=$countdatosOrdenFabricacion->partidasOF()->get()->count();
+                if($countdatosOrdenFabricacion==0){ 
+                    $tabla.='<tr>
                             <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
                             <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
                             <td class="text-center">'.'<button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-link"><i class="fa fa-arrow-left"></i> Regresar</button>'.'</td>
                             <td class="text-center">'.'<button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary "><i class="fa fa-eye"></i> Ver</button>'.'</td>
                         </tr>';
+                }
             }
             return response()->json([
                 'status' => "success",
@@ -454,13 +466,42 @@ class PlaneacionController extends Controller
         }
         $sql = 'SELECT T0."DocNum" AS "OV", T0."CardName" AS "Cliente", T0."DocDate" AS "Fecha", 
                 T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" FROM ' . $schema . '.ORDR T0 
-                WHERE '.$where;
+                WHERE '.$where.'ORDER BY T0."DocNum"';
         try {
             $datos = $this->funcionesGenerales->ejecutarConsulta($sql);
         } catch (\Exception $e) {
             return $datos=0;
         }
+        for($i=0;$i<count($datos);$i++){
+            $num_partidas=$this->OrdenFabricacion($datos[$i]['OV']);
+            $datos[$i]['Estatus']=$num_partidas;
+        }
         return $datos;
+    }
+    public function OrdenFabricacion($ordenventa){
+        $schema = 'HN_OPTRONICS';
+        //Consulta a SAP para traer las partidas de una OV
+        $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
+                    T1.\"Dscription\" AS \"Descripcion\", 
+                    ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
+                    T2.\"DueDate\" AS \"Fecha entrega OF\", 
+                    T1.\"PoTrgNum\" AS \"Orden de F.\" ,
+                    T1.\"LineNum\" AS \"LineNum\"
+                FROM {$schema}.\"ORDR\" T0
+                INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
+                LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
+                WHERE T0.\"DocNum\" = '{$ordenventa}'
+                ORDER BY T1.\"PoTrgNum\"";  
+                //ORDER BY T1.\"VisOrder\"";
+        //Ejecucion de la consulta
+        $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
+        $partidasOF=OrdenVenta::where('OrdenVenta','=',$ordenventa)->first();
+        if($partidasOF==null || $partidasOF==""){
+            $countpartidas=0;
+        }else{
+            $countpartidas=$partidasOF->ordenesFabricacions()->get()->count();
+        }
+        return count($partidas)-$countpartidas;
     }
     //Funcion para comprobar si existe una Orden de Fabricacion de una OV
     public function comprobar_existe_partida($OrdenVenta, $Ordenfabricacion){
@@ -476,7 +517,7 @@ class PlaneacionController extends Controller
     }
     //Funcion para comprobar si existe una OV
     public function comprobar_OV($DocNumOv){
-        $datos=OrdenVenta:: where('OrdenVenta','=',$DocNumOv)->first();
+        $datos=OrdenVenta::where('OrdenVenta','=',$DocNumOv)->first();
         if(!$datos){
             $datos=0;
         }else{
@@ -499,8 +540,9 @@ class PlaneacionController extends Controller
                 FROM {$schema}.\"ORDR\" T0
                 INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
                 LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
-                WHERE T0.\"DocNum\" = '{$ordenventa}'  
-                ORDER BY T1.\"VisOrder\"";
+                WHERE T0.\"DocNum\" = '{$ordenventa}'
+                ORDER BY T1.\"PoTrgNum\"";  
+                //ORDER BY T1.\"VisOrder\"";
         //Ejecucion de la consulta
         $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
         return $partidas;
@@ -510,7 +552,7 @@ class PlaneacionController extends Controller
         $datos=OrdenFabricacion::join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
                                 ->where('FechaEntrega','=',$Fecha)
                                 ->select('ordenfabricacion.id as ordenfabricacion_id', 'ordenventa.id as ordenventa_id','OrdenVenta','OrdenFabricacion') 
-                                ->orderBy('ordenfabricacion_id', 'desc') // Orden descendente
+                                ->orderBy('OrdenVenta', 'asc') // Orden descendente
                                 ->get();
         return $datos->toArray();
     }
@@ -597,7 +639,7 @@ class PlaneacionController extends Controller
         ->where('ordenfabricacion.OrdenFabricacion', 'like', '%'.$FiltroOF_table2. '%')
         ->orWhere('ordenventa.OrdenVenta', 'like', '%'.$FiltroOF_table2. '%')
         ->select('ordenfabricacion.id as ordenfabricacion_id', 'ordenventa.id as ordenventa_id','OrdenVenta','OrdenFabricacion') 
-        ->orderBy('ordenfabricacion_id', 'desc') // Orden descendente
+        ->orderBy('OrdenVenta', 'asc') // Orden descendente
         ->get();
         $tabla="";
         if(count($datos)>0){
@@ -669,7 +711,8 @@ class PlaneacionController extends Controller
                 LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
                 WHERE T0.\"DocNum\" = '{$ordenventa}'  
                 AND T1.\"PoTrgNum\" ='{$ordenfabricacion}'
-                ORDER BY T1.\"VisOrder\"";
+                ORDER BY T1.\"PoTrgNum\"";
+                //ORDER BY T1.\"VisOrder\"";
         //Ejecucion de la consulta
         $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
         return $partidas;

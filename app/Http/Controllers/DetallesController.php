@@ -9,7 +9,7 @@ class DetallesController extends Controller
 
 {
     public function show( Request $request)
-    {
+        {
                 return view('layouts.ordenes.detalles');
             
         }

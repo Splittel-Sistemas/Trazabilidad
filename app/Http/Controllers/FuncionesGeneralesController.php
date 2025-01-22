@@ -39,7 +39,6 @@ class FuncionesGeneralesController extends Controller
     }
     public function ejecutarConsulta($sql)
     {
-        
         $this->connectToSap();
         if (!$this->connection) {
             throw new \Exception("No se ha establecido conexión a SAP.");
@@ -54,9 +53,7 @@ class FuncionesGeneralesController extends Controller
         $datos = [];
         while ($row = odbc_fetch_array($result)) {
             $datos[] = $row;
-        }
-
-       
+        }  
         return $datos;
     }
     public function obtenerDatosDeSap()

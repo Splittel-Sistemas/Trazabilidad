@@ -20,9 +20,8 @@ class HomeControler extends Controller
         if (!$user || !$user->active) {
             // Si el usuario no está autenticado o está desactivado, lo redirigimos al login
             Auth::logout();  // Cerrar la sesión si el usuario está desactivado
-            return redirect()->route('login')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
+            return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
         }
-
         // Si el usuario está activo, continua con la carga de la página
         return view('home');  // Ajusta esto al nombre de tu vista Home
     }
