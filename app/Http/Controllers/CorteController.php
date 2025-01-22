@@ -17,58 +17,62 @@ class CorteController extends Controller
 {
     public function index(Request $request)
     {
-        // Obtener el usuario autenticado
         $user = Auth::user();
-    
-        // Verificar si el usuario tiene el permiso 'Vista Cortes'
+        
+        // Verificar si el usuario tiene el permiso 'Vista Cortes' antes de continuar
         if ($user->hasPermission('Vista Cortes')) {
-            // Obtener las órdenes de fabricación con sus datos relacionados
-            $ordenesFabricacion = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
-                ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                ->select(
-                    'OrdenFabricacion.id',
-                    'OrdenFabricacion.OrdenFabricacion',
-                    'OrdenFabricacion.Articulo',
-                    'OrdenFabricacion.Descripcion',
-                    'OrdenFabricacion.CantidadTotal',
-                    'OrdenFabricacion.FechaEntregaSAP',
-                    'OrdenFabricacion.FechaEntrega',
-                    DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida')
-                )
-                ->groupBy(
-                    'OrdenFabricacion.id',
-                    'OrdenFabricacion.OrdenFabricacion',
-                    'OrdenFabricacion.Articulo',
-                    'OrdenFabricacion.Descripcion',
-                    'OrdenFabricacion.CantidadTotal',
-                    'OrdenFabricacion.FechaEntregaSAP',
-                    'OrdenFabricacion.FechaEntrega'
-                )
-                ->get();
-    
-            // Asignar estatus a las órdenes
-            $ordenesFabricacion->transform(function ($item) {
-                $item->estatus = $item->suma_cantidad_partida < $item->CantidadTotal ? 'abierto' : 'cerrado';
-                return $item;
-            });
-    
-            // Filtrar órdenes con estatus "abierto"
-            $ordenesAbiertas = $ordenesFabricacion->filter(function ($orden) {
-                return strtolower($orden->estatus) === 'abierto';
-            });
-    
-            // Si es una solicitud AJAX, devolver JSON
-            if ($request->ajax()) {
-                return response()->json($ordenesAbiertas->values());
-            }
-    
-            // Devolver la vista con los datos procesados
-            return view('Areas.Cortes', compact('ordenesAbiertas', 'ordenesFabricacion'));
+            // Redirigir a una URL externa si no tiene el permiso
+            return redirect()->away('https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.webempresa.com%2Fblog%2Fcomo-solucionar-lo-siento-no-tiene-permiso-para-acceder-a-esta-pagina-en-wordpress.html&psig=AOvVaw1WUBMhb9wLnLsyRcQ4WtLn&ust=1737495531718000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCLiprbGhhYsDFQAAAAAdAAAAABAK');
         }
     
-        // Redirigir a la URL externa si no tiene el permiso
-        return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
+        // Si el usuario tiene el permiso 'Vista Cortes', proceder con la lógica
+    
+        $ordenesFabricacion = OrdenFabricacion::join('OrdenVenta', 'OrdenFabricacion.OrdenVenta_id', '=', 'OrdenVenta.id')
+            ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->select(
+                'OrdenFabricacion.id',
+                'OrdenFabricacion.OrdenFabricacion',
+                'OrdenFabricacion.Articulo',
+                'OrdenFabricacion.Descripcion',
+                'OrdenFabricacion.CantidadTotal',
+                'OrdenFabricacion.FechaEntregaSAP',
+                'OrdenFabricacion.FechaEntrega',
+                DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida')
+            )
+            ->groupBy(
+                'OrdenFabricacion.id',
+                'OrdenFabricacion.OrdenFabricacion',
+                'OrdenFabricacion.Articulo',
+                'OrdenFabricacion.Descripcion',
+                'OrdenFabricacion.CantidadTotal',
+                'OrdenFabricacion.FechaEntregaSAP',
+                'OrdenFabricacion.FechaEntrega'
+            )
+            ->get();
+    
+        // Asignar estatus
+        $ordenesFabricacion->transform(function ($item) {
+            $cantidadTotal = $item->CantidadTotal;
+            $sumaCantidadPartida = $item->suma_cantidad_partida;
+    
+            $item->estatus = $sumaCantidadPartida < $cantidadTotal ? 'abierto' : 'Cerrado';
+            return $item;
+        });
+    
+        // Filtrar solo estatus "abierto"
+        $ordenesAbiertas = $ordenesFabricacion->filter(function ($orden) {
+            return strtolower($orden->estatus) === 'abierto';
+        });
+    
+        // Si es solicitud AJAX, devolver JSON
+        if ($request->ajax()) {
+            return response()->json($ordenesAbiertas->values()); // Convierte a arreglo
+        }
+    
+        // Si no, devolver la vista normal
+        return view('Areas.Cortes', compact('ordenesAbiertas', 'ordenesFabricacion'));
     }
+    
     public function getDetalleOrden(Request $request)
     {
         $ordenId = $request->id;
@@ -118,8 +122,7 @@ class CorteController extends Controller
             'datos_partidas' => 'required|array', // 'datos_partidas' debe ser un array
             'datos_partidas.*.orden_fabricacion_id' => 'required|exists:OrdenFabricacion,id', 
             'datos_partidas.*.cantidad_partida' => 'required|integer|min:1', 
-            'datos_partidas.*.fecha_fabricacion' => 'required|date_format:Y-m-d H:i:s',
-
+            'datos_partidas.*.fecha_fabricacion' => 'required|date', 
         ]);
     
         // Validar y guardar las partidas
@@ -188,35 +191,29 @@ class CorteController extends Controller
     public function getCortes(Request $request)
     {
         $ordenFabricacionId = $request->id;
-    
+
         // Obtiene las partidas relacionadas con la orden de fabricación
         $partidas = PartidasOF::where('OrdenFabricacion_id', $ordenFabricacionId)
             ->orderBy('created_at', 'desc')
             ->get();
-    
-        // Verifica si el usuario tiene el permiso 'CorteEdit'
-        $userCanEdit = Auth::user()->hasPermission('CompletadosEdit');
-    
+
         // Formatea los datos antes de enviarlos
         $data = $partidas->map(function ($partida) {
             return [
                 'id' => $partida->id,
                 'cantidad_partida' => $partida->cantidad_partida,
-                'fecha_fabricacion' => $partida->fecha_fabricacion
-                    ? Carbon::parse($partida->fecha_fabricacion)->format('d-m-Y H:i')
-                    : null,
-                'FechaFinalizacion' => $partida->FechaFinalizacion
-                    ? Carbon::parse($partida->FechaFinalizacion)->format('d-m-Y H:i')
-                    : null,
+                'fecha_fabricacion' => Carbon::parse($partida->fecha_fabricacion)->format('d-m-Y'), 
+                'FechaFinalizacion' => $partida->FechaFinalizacion 
+                    ? Carbon::parse($partida->FechaFinalizacion)->format('d-m-Y') 
+                    : null, 
             ];
         });
-    
+
         return response()->json([
             'success' => true,
             'data' => $data,
-            'userCanEdit' => $userCanEdit, // Se agrega la variable para el permiso
         ]);
-    }
+    } 
     public function finalizarCorte(Request $request)
     {
         // Validar que el ID exista y que la fecha sea válida
@@ -662,30 +659,6 @@ public function eliminarCorte1(Request $request)
             ]);
         }
  }
- public function buscar(Request $request)
-{
-    $query = Producto::query();
-
-    // Filtrar por el campo de búsqueda
-    if ($request->has('buscar') && $request->input('buscar') != '') {
-        $busqueda = $request->input('buscar');
-        
-        // Realizar la búsqueda en las columnas específicas
-        $query->where(function($q) use ($busqueda) {
-            $q->where('orden_fabricacion', 'like', '%' . $busqueda . '%')
-              ->orWhere('articulo', 'like', '%' . $busqueda . '%')
-              ->orWhere('descripcion', 'like', '%' . $busqueda . '%')
-              ->orWhere('cantidad_total', 'like', '%' . $busqueda . '%')
-              ->orWhere('fecha', 'like', '%' . $busqueda . '%')
-              ->orWhere('estatus', 'like', '%' . $busqueda . '%');
-        });
-    }
-
-    $resultados = $query->get();
-
-    return view('productos.index', compact('resultados'));
-}
-
     
 
 
@@ -805,7 +778,7 @@ public function eliminarCorte1(Request $request)
                 'OrdenFabricacion.CantidadTotal',
                 'OrdenFabricacion.FechaEntregaSAP',
                 'OrdenFabricacion.FechaEntrega',
-                DB::raw('IFNULL(SUM(partidasof.CantidadPartida), 0) as suma_cantidad_partida')
+                DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida')
             )
             ->groupBy(
                 'OrdenFabricacion.id',
@@ -1112,7 +1085,7 @@ public function eliminarCorte1(Request $request)
                     'OrdenFabricacion.FechaEntrega', 
                     'OrdenFabricacion.created_at', 
                     'OrdenFabricacion.updated_at',
-                    DB::raw('IFNULL(SUM(partidasof.CantidadPartida), 0) as suma_cantidad_partida'))
+                    DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida'))
             ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->groupBy('OrdenFabricacion.id', 
                     'OrdenFabricacion.OrdenVenta_id', 
