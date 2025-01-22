@@ -31,6 +31,40 @@
         .btn.toggle-status:hover i {
             transform: scale(1.2);
         }
+        .permisos ul {
+        display: flex;
+        flex-wrap: wrap; /* Ajusta los elementos a la siguiente línea */
+        max-height: 80px; /* Limita la altura para filas más pequeñas */
+        overflow-y: auto; /* Agrega scrollbar si hay demasiados elementos */
+        padding: 0;
+        margin: 0;
+    }
+
+    .permisos li {
+        flex: 1 1 calc(20% - 0.4rem); /* Hasta 5 elementos por fila */
+        max-width: calc(20% - 0.4rem);
+        margin-bottom: 0.25rem; /* Menor espacio vertical entre filas */
+        white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+        overflow: hidden; /* Oculta texto excedente */
+        text-overflow: ellipsis; /* Muestra "..." si el texto es muy largo */
+        text-align: left; /* Alinea el texto a la izquierda */
+        font-size: 0.85rem; /* Tamaño de texto más pequeño */
+        color: #333; /* Texto con color neutro */
+    }
+    .permissions-container {
+        display: flex;
+        flex-wrap: wrap; /* Permite que los elementos pasen a una nueva línea si no caben */
+        gap: 10px;       /* Espaciado entre elementos */
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center; /* Alinea el checkbox con el texto */
+    }
+
+
+       
+
     </style>
 @endsection
 
@@ -44,7 +78,11 @@
 
     <!-- Contenido principal -->
     <div class="container my-4">
+        @if(Auth::user()->hasPermission("RolesEdit"))
+
         <a href="{{ route('RolesPermisos.create') }}" class="btn btn-outline-info mb-3">Agregar Rol</a>
+       
+        @endif
         @if (session('status'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('status') }}
@@ -78,16 +116,26 @@
                             <tr>
                                 <td class="nombreRol align-middle ps-3">{{ $role->name }}</td>
                                 <td class="permisos align-middle">
-                                    <ul>
-                                        @foreach ($role->permissions as $permissions)
-                                            <li>{{ $permissions->name }}</li>
+                                    <ul class="list-unstyled d-flex flex-wrap">
+                                        @foreach ($role->permissions as $permission)
+                                            <li class="me-2 mb-1 text-truncate">
+                                                <span class="bullet">•</span> {{ $permission->name }}
+                                            </li>
                                         @endforeach
                                     </ul>
                                 </td>
                                 <td class="text-center pe-0">
-                                    <button type="button" class="btn btn-outline-warning btn-sm btn-edit" data-bs-toggle="modal" data-bs-target="#roleModal" data-id="{{ $role->id }}"><i class="fas fa-edit"></i>Editar</button>  
+                                    @if(Auth::user()->hasPermission("RolesEdit"))
+                                    <button type="button" class="btn btn-outline-warning btn-sm btn-edit" 
+                                            data-bs-toggle="modal" data-bs-target="#roleModal" 
+                                            data-id="{{ $role->id }}">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button> 
+                                    @endif 
                                 </td>
+                              
                             </tr>
+                            
                             @endforeach
                         </tbody>
                     </table>
@@ -114,7 +162,7 @@
                         </div>
                         <div class="form-group">
                             <label for="rolePermissions">Permisos</label>
-                            <div id="rolePermissions" class="form-check">
+                            <div id="rolePermissions"  class="permissions-container d-flex flex-wrap">
                                 <!-- Los checkboxes se generarán aquí dinámicamente -->
                             </div>
                         </div>

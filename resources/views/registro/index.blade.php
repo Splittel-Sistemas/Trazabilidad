@@ -44,6 +44,13 @@
     .btn.toggle-status:hover {
         transform: scale(2.2); /* Aumenta el tamaño al pasar el cursor */
     }
+    #roles .form-check {
+    display: flex;
+    align-items: center;
+    margin-right: 1rem; /* Espaciado entre roles */
+    margin-bottom: 0.5rem; /* Espaciado vertical para nuevas filas */
+}
+
     </style>
 @endsection
 
@@ -56,9 +63,9 @@
 </div>
 <!-- Contenido principal -->
 <div class="container my-4">
-    
+    @if(Auth::user()->hasPermission("UsuriosEdit"))
     <a href="{{ route('registro.create') }}" class="btn btn-outline-info mb-3">Agregar Usuario</a>
-
+    @endif
     @if (session('status'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('status') }}
@@ -106,13 +113,17 @@
                                 @endforeach
                             </td>
                             <td class="align-middle estatus">
+                                @if(Auth::user()->hasPermission("UsuriosEdit"))
                                 <button class="btn toggle-status {{ $registro->active ? 'active' : 'inactive' }}" data-id="{{ $registro->id }}" data-active="{{ $registro->active ? '1' : '0' }}">
                                     <i class="fa {{ $registro->active ? 'fa-toggle-on' : 'fa-toggle-off' }}" aria-hidden="true"></i>
                                 </button>
+                                @endif
                             </td>
                             <td class=" text-center pe-0">
+                            @if(Auth::user()->hasPermission("UsuriosEdit"))
                                 <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#userModal" data-id="{{ $registro->id }}"><i class="fas fa-edit"></i> Editar</button>
                             </td>
+                            @endif
                         </tr>
                         @endforeach
                     </tbody>
@@ -186,7 +197,7 @@
                     <!-- Fila para Roles -->
                     <div class="form-group">
                         <label for="roles">Roles</label>
-                        <div id="roles" class="form-check">
+                        <div id="roles" class="form-check d-flex flex-wrap">
                             <!-- Los roles se generarán aquí dinámicamente -->
                         </div>
                     </div>

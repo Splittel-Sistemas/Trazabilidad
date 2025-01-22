@@ -69,8 +69,6 @@ class CorteController extends Controller
         // Redirigir a la URL externa si no tiene el permiso
         return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
     }
-    
-    
     public function getDetalleOrden(Request $request)
     {
         $ordenId = $request->id;
@@ -120,7 +118,8 @@ class CorteController extends Controller
             'datos_partidas' => 'required|array', // 'datos_partidas' debe ser un array
             'datos_partidas.*.orden_fabricacion_id' => 'required|exists:OrdenFabricacion,id', 
             'datos_partidas.*.cantidad_partida' => 'required|integer|min:1', 
-            'datos_partidas.*.fecha_fabricacion' => 'required|date', 
+            'datos_partidas.*.fecha_fabricacion' => 'required|date_format:Y-m-d H:i:s',
+
         ]);
     
         // Validar y guardar las partidas
@@ -189,29 +188,35 @@ class CorteController extends Controller
     public function getCortes(Request $request)
     {
         $ordenFabricacionId = $request->id;
-
+    
         // Obtiene las partidas relacionadas con la orden de fabricación
         $partidas = PartidasOF::where('OrdenFabricacion_id', $ordenFabricacionId)
             ->orderBy('created_at', 'desc')
             ->get();
-
+    
+        // Verifica si el usuario tiene el permiso 'CorteEdit'
+        $userCanEdit = Auth::user()->hasPermission('CompletadosEdit');
+    
         // Formatea los datos antes de enviarlos
         $data = $partidas->map(function ($partida) {
             return [
                 'id' => $partida->id,
                 'cantidad_partida' => $partida->cantidad_partida,
-                'fecha_fabricacion' => Carbon::parse($partida->fecha_fabricacion)->format('d-m-Y'), 
-                'FechaFinalizacion' => $partida->FechaFinalizacion 
-                    ? Carbon::parse($partida->FechaFinalizacion)->format('d-m-Y') 
-                    : null, 
+                'fecha_fabricacion' => $partida->fecha_fabricacion
+                    ? Carbon::parse($partida->fecha_fabricacion)->format('d-m-Y H:i')
+                    : null,
+                'FechaFinalizacion' => $partida->FechaFinalizacion
+                    ? Carbon::parse($partida->FechaFinalizacion)->format('d-m-Y H:i')
+                    : null,
             ];
         });
-
+    
         return response()->json([
             'success' => true,
             'data' => $data,
+            'userCanEdit' => $userCanEdit, // Se agrega la variable para el permiso
         ]);
-    } 
+    }
     public function finalizarCorte(Request $request)
     {
         // Validar que el ID exista y que la fecha sea válida
@@ -657,6 +662,30 @@ public function eliminarCorte1(Request $request)
             ]);
         }
  }
+ public function buscar(Request $request)
+{
+    $query = Producto::query();
+
+    // Filtrar por el campo de búsqueda
+    if ($request->has('buscar') && $request->input('buscar') != '') {
+        $busqueda = $request->input('buscar');
+        
+        // Realizar la búsqueda en las columnas específicas
+        $query->where(function($q) use ($busqueda) {
+            $q->where('orden_fabricacion', 'like', '%' . $busqueda . '%')
+              ->orWhere('articulo', 'like', '%' . $busqueda . '%')
+              ->orWhere('descripcion', 'like', '%' . $busqueda . '%')
+              ->orWhere('cantidad_total', 'like', '%' . $busqueda . '%')
+              ->orWhere('fecha', 'like', '%' . $busqueda . '%')
+              ->orWhere('estatus', 'like', '%' . $busqueda . '%');
+        });
+    }
+
+    $resultados = $query->get();
+
+    return view('productos.index', compact('resultados'));
+}
+
     
 
 

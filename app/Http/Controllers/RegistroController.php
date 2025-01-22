@@ -37,8 +37,6 @@ class RegistroController extends Controller
     }
 
          
-
-        
         
     
   // RegistroController.php

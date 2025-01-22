@@ -1,7 +1,20 @@
 @extends('layouts.menu2') 
 @section('title', 'Crear Usuario')
 
+<style>
+    .roles-container {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los elementos pasen a una nueva línea si no caben */
+    gap: 10px;       /* Espaciado entre elementos */
+}
 
+.form-check {
+    display: flex;
+    align-items: center; /* Alinea el checkbox con el texto */
+}
+
+    
+</style>
 @section('content')
     <div class="breadcrumbs mb-4">
         <div class="row gy-3 mb-2 justify-content-between">
@@ -64,19 +77,20 @@
             <div class="form-group">
                 <label class="font-weight-bold">Roles</label>
                 <small class="form-text text-muted">Seleccione uno o más roles.</small>
-        
-                @foreach ($roles as $value)
-                    <div class="form-check">
-                        <input type="checkbox" name="roles[]" id="role_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
-                            {{ (isset($registro) && $registro->roles->contains($value->id)) ? 'checked' : '' }}>
-                        <label for="role_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
-                    </div>
-                @endforeach
-        
+                <div class="roles-container d-flex flex-wrap">
+                    @foreach ($roles as $value)
+                        <div class="form-check mr-3 mb-2">
+                            <input type="checkbox" name="roles[]" id="role_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
+                                {{ (isset($registro) && $registro->roles->contains($value->id)) ? 'checked' : '' }}>
+                            <label for="role_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
+                        </div>
+                    @endforeach
+                </div>
                 @error('roles') 
                     <div class="text-danger">{{ $message }}</div> 
                 @enderror
             </div>
+            
             <!-- Botón de envío -->
             <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-success btn-lg rounded-pill shadow-lg transition-all hover:bg-success hover:text-white">Registrar</button>

@@ -58,6 +58,7 @@ Route::get('/ordenes/completadas',[CorteController:: class, 'Completado'])->name
 Route::get('/ruta-para-actualizar-tabla', [CorteController::class, 'actualizarTabla'])->name('actualizar.tabla');
 Route::delete('/corte/eliminar', [CorteController::class, 'eliminarCorte'])->name('corte.eliminarCorte');
 Route::delete('/corte/eliminar1', [CorteController::class, 'eliminarCorte1'])->name('corte.eliminarCorte1');
+Route::post('/buscar',[CorteController::class, 'buscar'])->name('buscar.todo');
 
 
 
