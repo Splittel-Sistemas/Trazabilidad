@@ -640,6 +640,7 @@
                     }else{
                         TablaOrdenFabricacion(inputFecha.value);
                     }
+                    $('#Filtro_fecha-btn').trigger('click');
                     success("Guardado!","Las ordenes de fabricación "+OrdenFabricacion+" se guardaron correctamente!");
                 } else if(response.status==="empty") {
                 }else{
@@ -756,6 +757,7 @@
                         $fecha=document.getElementById('FiltroOF_Fecha_table2').value;
                         TablaOrdenFabricacion($fecha);
                     }
+                    $('#Filtro_fecha-btn').trigger('click');
                     success("Guardado","Orden de Fabricación  "+response.OF+" regresada correctamente");
                 }else if(response.status=="iniciado"){
                     error("Error!","La Orden de Fabricación ya se encuentra iniciada, no es posible detenerla");
