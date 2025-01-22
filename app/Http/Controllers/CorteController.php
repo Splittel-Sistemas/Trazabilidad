@@ -124,7 +124,7 @@ class CorteController extends Controller
                 'OrdenFabricacion.CantidadTotal',
                 'OrdenFabricacion.FechaEntregaSAP',
                 'OrdenFabricacion.FechaEntrega',
-                DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida')
+                DB::raw('IFNULL(SUM(partidasof.CantidadPartida), 0) as suma_cantidad_partida')
             )
             ->groupBy(
                 'OrdenFabricacion.id',
@@ -429,7 +429,7 @@ class CorteController extends Controller
                     'OrdenFabricacion.FechaEntrega', 
                     'OrdenFabricacion.created_at', 
                     'OrdenFabricacion.updated_at',
-                    DB::raw('IFNULL(SUM(partidasof.cantidad_partida), 0) as suma_cantidad_partida'))
+                    DB::raw('IFNULL(SUM(partidasof.CantidadPartida), 0) as suma_cantidad_partida'))
             ->leftJoin('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->groupBy('OrdenFabricacion.id', 
                     'OrdenFabricacion.OrdenVenta_id', 

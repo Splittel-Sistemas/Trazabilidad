@@ -93,16 +93,18 @@
                                         </tr>
                                     @elseif($status=="success")
                                         @foreach ($datos as $orden)
-                                        <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true">
-                                            <td role="button" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}" onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, `{{ $orden['Cliente'] }}`)">
-                                                {{ $orden['OV']." - ".$orden['Cliente']}}
-                                            </td>
-                                        </tr>
-                                        <tr id="details{{ $loop->index }}" class="collapse">
-                                            <td class="table-border" id="details{{ $loop->index . 'llenar' }}">
-                                                <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
-                                            </td>
-                                        </tr>
+                                            @if($orden['Estatus']>0)
+                                                <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true">
+                                                    <td role="button" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}" onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, `{{ $orden['Cliente'] }}`)">
+                                                        {{ $orden['OV']." - ".$orden['Cliente']}}
+                                                    </td>
+                                                </tr>
+                                                <tr id="details{{ $loop->index }}" class="collapse">
+                                                    <td class="table-border" id="details{{ $loop->index . 'llenar' }}">
+                                                        <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
+                                                    </td>
+                                                </tr>
+                                            @endif
                                         @endforeach
                                     @else
                                     <tr class="text-center mt-4"><td>Ocurrio un error!, no fue posible cargar los datos</td></tr>
@@ -135,7 +137,7 @@
                         <thead class="table-primary text-center">
                             <tr>
                                 <th colspan="6" class="fw-bold">
-                                    <p style="color: black" id="filtro-fecha-Ov">Órden de Fabricación <br> <span id="FiltroOF_text">Fecha: {{\Carbon\Carbon::parse($FechaFin)->format('d/m/Y')}}</span></p>
+                                    <p style="color: black" id="filtro-fecha-Ov">Planeaci&oacute;n <br> <span id="FiltroOF_text">Fecha: {{\Carbon\Carbon::parse($FechaFin)->format('d/m/Y')}}</span></p>
                                     <div class="input-group">
                                         <input type="text" name="FiltroOF_table2"  id="FiltroOF_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Buscar Orden de fabricación o Orden de Venta" >
                                         <button id="buscarOV" class="btn btn-sm btn-primary">
@@ -145,8 +147,8 @@
                                 </th>
                             </tr>
                             <tr>
-                                <th>Orden Vent.</th>
-                                <th>Orden Fabri.</th>
+                                <th>&Oacute;rden Venta</th>
+                                <th>&Oacute;rden Fabricaci&oacute;n</th>
                                 <th>Acciones</th>
                                 <th>Detalles</th>
                             </tr>
@@ -245,8 +247,8 @@
                                             </th>
                                         </tr>
                                         <tr>
-                                            <th>Orden Vent.</th>
-                                            <th>Orden Fabri.</th>
+                                            <th>&Oacute;rden Venta</th>
+                                            <th>&Oacute;rden Fabrici&oacute;n</th>
                                             <th>Acciones</th>
                                             <th>Detalles</th>
                                         </tr>

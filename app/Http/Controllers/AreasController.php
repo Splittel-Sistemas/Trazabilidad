@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\FuncionesGeneralesController;
 use App\Models\OrdenFabricacion;
 use App\Models\PartidasOF;
@@ -14,14 +15,82 @@ use function PHPUnit\Framework\returnValue;
 class AreasController extends Controller
 {
     protected $funcionesGenerales;
-    public function __construct(FuncionesGeneralesController $funcionesGenerales)
-    {
+    public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
     }
     //Area 3 Suministro
     public function Suministro(){
+        //EstatusEntrega==0 aun no iniciado; 1 igual a terminado
+        $OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->get();
+        foreach($OrdenFabricacion as $orden) {
+            $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
+        }
         $Area=$this->funcionesGenerales->encrypt(3);
-        return view('Areas.Suministro',compact('Area'));
+        return view('Areas.Suministro1',compact('Area','OrdenFabricacion'));
+    }
+    public function SuministroRecargarTabla(){
+        //EstatusEntrega==0 aun no iniciado; 1 igual a terminado
+        try {
+            $OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->get();
+            $tabla="";
+            foreach($OrdenFabricacion as $orden) {
+                $tabla.='<tr>
+                        <td>'. $orden->OrdenFabricacion .'</td>
+                        <td>'. $orden->Articulo .'</td>
+                        <td>'. $orden->Descripcion .'</td>
+                        <td>'. $orden->CantidadTotal .'</td>
+                        <td>'. $orden->FechaEntrega .'</td>
+                        <td><button class="btn btn-sm btn-outline-primary" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Planear</button></td>
+                    </tr>';
+            }
+            return response()->json([
+                    'status' => 'success',
+                    'table' => $tabla,
+                ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'table' => "",
+            ], 500);
+        }
+    }
+    public function SuministroEmision(Request $request){
+        $id=$this->funcionesGenerales->decrypt($request->id);
+        $OrdenFabricacion=OrdenFabricacion::where('id','=',$id)->first();
+        if($OrdenFabricacion==""){
+            return response()->json([
+                'status' => 'empty',
+                'table' => "",
+            ], 500);
+        }else{
+            $Emisiones=$this->Emisiones($OrdenFabricacion->OrdenFabricacion);
+            $tabla='<div class="table-responsive">
+                        <table id="TableEmisiones" class="table table-sm fs--1 mb-0">
+                            <thead>
+                                <tr class="bg-light">
+                                    <th>Numero Emisi&oacute;n</th>
+                                    <th>Piezas</th>
+                                    <th>Fecha Emisi&oacute;n</th>
+                                    <th>Acci&oacute;n</th>
+                                </tr>
+                            </thead>
+                            <tbody class="list" id="OrdenFabricacionBody">';
+                                foreach ($Emisiones as $Emision){
+                                    $tabla.="<tr>
+                                                <th>".$Emision['NoEmision']."</th>
+                                                <td>".$Emision['Cantidad']."</td>
+                                                <td>".$Emision['FechaEmision']."</td>
+                                                <td>".'<button class="btn btn-outline-success rounded-pill me-1 mb-1" onclick="GuardarEmision(\''.$this->funcionesGenerales->encrypt($Emision['NoEmision']).'\',\''.$Emision['Cantidad'].'\')">Detalles</button>'."</td>
+                                            </tr>";
+                                }
+            $tabla.='</tbody>
+                        </table>
+                    </div>';
+            return response()->json([
+                'status' => 'success',
+                'table' => $tabla,
+            ], 200);
+        }
     }
     public function SuministroBuscar(Request $request){
         if ($request->has('Confirmacion')) {
@@ -1065,5 +1134,20 @@ class AreasController extends Controller
         if($partidas>0){
             return 6;
         }
+    }
+    //Consultas a SAP
+    public function Emisiones($OrdenFabricacion){
+        $OrdenFabricacion;
+        $schema = 'HN_OPTRONICS';
+        /*$query_emisiones="SELECT T00.\"DocNum\" \"NoEmision\", T00.\"DocDate\" \"FechaEmision\", T111.\"ItemCode\" \"Componente\", T111.\"Dscription\" \"Descripcion\",
+                            T111.\"Quantity\" \"Cantidad\", T111.\"WhsCode\" \"Almacen\"*/
+        $query_emisiones="SELECT DISTINCT T00.\"DocNum\" \"NoEmision\", TO_DATE(T00.\"DocDate\") \"FechaEmision\", T00.\"Ref2\" \"Cantidad\"                       
+                        FROM {$schema}.\"OIGE\" T00
+                        LEFT JOIN {$schema}.\"IGE1\" T111 ON T00.\"DocEntry\" = T111.\"DocEntry\"
+                        LEFT JOIN {$schema}.\"OWOR\" T222 ON T111.\"BaseEntry\" = T222.\"DocEntry\" AND T111.\"BaseType\" = T222.\"ObjType\"
+                        LEFT JOIN {$schema}.\"WOR1\" T333 ON T222.\"DocEntry\" = T333.\"DocEntry\" AND T111.\"BaseLine\" = T333.\"LineNum\"
+                        WHERE T222.\"DocNum\" = ".$OrdenFabricacion."
+                        ORDER BY 1";
+        return$emisiones=$this->funcionesGenerales->ejecutarConsulta($query_emisiones);
     }
 }
