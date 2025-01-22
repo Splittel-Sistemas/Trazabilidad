@@ -15,7 +15,6 @@ return new class extends Migration
         Schema::create('permissions', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
-            $table->timestamps();
         });
         DB::table('permissions')->insert([
             ['name' => 'CompletadosEdit'],
