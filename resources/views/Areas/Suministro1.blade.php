@@ -101,6 +101,9 @@
                         "searching": true, // Habilitar búsqueda
                         "ordering": true, // Habilitar ordenación de columnas
                         "info": true, // Muestra información sobre el total de elementos
+                        "language": {
+                            "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
+                        }
                     });
                 }
             }

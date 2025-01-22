@@ -120,12 +120,12 @@
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Planeaci&oacute;n</span></div>
                                             </a>
                                         </li>
-                                        <li class="nav-item"><a class="nav-link {{ Route::is('Suministro') ? 'nav-tabs active' : '' }}" href="{{route('Suministro')}}" data-bs-toggle="" aria-expanded="false">
-                                            <div class="d-flex align-items-center"><span class="nav-link-text">Suministro</span></div>
-                                            </a>
-                                        </li>
                                         <li class="nav-item"><a class="nav-link {{ Route::is('corte.index') ? 'nav-tabs active' : '' }}" href="{{route('corte.index')}}" data-bs-toggle="" aria-expanded="false">
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Corte</span></div>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item"><a class="nav-link {{ Route::is('Suministro') ? 'nav-tabs active' : '' }}" href="{{route('Suministro')}}" data-bs-toggle="" aria-expanded="false">
+                                            <div class="d-flex align-items-center"><span class="nav-link-text">Suministro</span></div>
                                             </a>
                                             <hr class="p-0 m-1">
                                         </li>
