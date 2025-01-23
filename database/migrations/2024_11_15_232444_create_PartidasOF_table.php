@@ -15,7 +15,7 @@ class CreatePartidasOFTable extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->integer('cantidad_partida');
-            $table->integer('NumeroPartida');
+            $table->integer('NumeroPartida')->nullable();
             $table->string('TipoPartida',1)->nullable();
             $table->dateTime('FechaFabricacion');
             $table->datetime('FechaComienzo')->nullable();

@@ -27,21 +27,14 @@ class AreasController extends Controller
             $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
         }
         $Area=$this->funcionesGenerales->encrypt(3);
-<<<<<<< HEAD
         $user = Auth::user();
-       
-    
-        
         if ($user->hasPermission('Vista Suministro')) {
            
-            return view('Areas.Suministro',compact('Area'));
+            return view('Areas.Suministro1',compact('Area','OrdenFabricacion'));
         } else {
            
             return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
         }
-        
-=======
-        return view('Areas.Suministro1',compact('Area','OrdenFabricacion'));
     }
     public function SuministroRecargarTabla(){
         //EstatusEntrega==0 aun no iniciado; 1 igual a terminado
@@ -106,7 +99,6 @@ class AreasController extends Controller
                 'table' => $tabla,
             ], 200);
         }
->>>>>>> de2dd79474cad1cf50bedb688b639dd0ab6f871e
     }
     public function SuministroBuscar(Request $request){
         if ($request->has('Confirmacion')) {

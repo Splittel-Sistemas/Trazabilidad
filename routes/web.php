@@ -37,7 +37,6 @@ Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Deta
 Route::get('/Area/Corte', [AreasController::class,'Corte'])->name('Corte');
 //Suministro
 Route::get('/Area/Suministro', [AreasController::class,'Suministro'])->name('Suministro');
-Route::get('/Area/Suministro/Tabla', [AreasController::class,'SuministroRecargarTabla'])->name('SuministroRecargarTabla');
 Route::post('/Area/Suministro/Emision', [AreasController::class,'SuministroEmision'])->name('SuministroEmision');
 Route::get('/Area/Suministro/buscar', [AreasController::class,'SuministroBuscar'])->name('SuministroBuscar');
 Route::post('/Area/Suministro/NoEscaner', [AreasController::class,'TipoNoEscaner'])->name('TipoNoEscaner');
@@ -48,6 +47,9 @@ Route::get('/Area/Medicion', [AreasController::class,'Medicion'])->name('Medicio
 Route::get('/Area/Visualizacion', [AreasController::class,'Visualizacion'])->name('Visualizacion');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas');
 
+//Corte Nuevas
+Route::get('/Area/Corte/Tabla', [CorteController::class,'CorteRecargarTabla'])->name('CorteRecargarTabla');
+Route::post('/Area/Corte/InfoModal', [CorteController::class,'CortesDatosModal'])->name('CortesDatosModal');
 
 Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden');
