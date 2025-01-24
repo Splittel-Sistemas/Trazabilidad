@@ -3,6 +3,8 @@
 @section('styles')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
+</style>
+{{--<style>
     .table-bordered {
         border: 1px solid #ddd;
     }
@@ -73,7 +75,7 @@
         color: white !important; /* Letras blancas al pasar el ratón */
     }
 
-</style>
+</style>--}}
 @endsection
 @section('content')
 
@@ -141,6 +143,7 @@
                                         <th>Orden Fabricación</th>
                                         <th>Artículo</th>
                                         <th>Descripción</th>
+                                        <th>Piezas Cortadas</th>
                                         <th>Cantidad Total</th>
                                         <th>Fecha Planeada</th>
                                         <th>Acciones</th>
@@ -152,6 +155,7 @@
                                                 <td>{{ $orden->OrdenFabricacion }}</td>
                                                 <td>{{ $orden->Articulo }}</td>
                                                 <td>{{ $orden->Descripcion }}</td>
+                                                <td>{{ $orden->Piezascortadas }}</td>
                                                 <td>{{ $orden->CantidadTotal }}</td>
                                                 <td>{{ $orden->FechaEntrega }}</td>
                                                 <td><button class="btn btn-sm btn-outline-primary" onclick="Planear('{{$orden->idEncript}}')">Cortes</button></td>
@@ -349,15 +353,42 @@
     </div>
      <!--MODAL PARA PLANEACION-->
      <div class="modal fade" id="ModalSuministro" tabindex="-1" data-bs-backdrop="static" aria-labelledby="ModalSuministroLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-          <div class="modal-content">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable" style="height: 90%">
+          <div class="modal-content" style="height: 100%">
             <div class="modal-header bg-info">
-              <h5 class="modal-title text-white" id="ModalSuministroLabel">Cortes</h5><button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1 text-white"></span></button>
+              <h5 class="modal-title text-white" id="ModalSuministroLabel">Cortes</h5><button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1 text-white"></span></button>
             </div>
             <div class="modal-body" id="ModalSuministroBody">
-                <div class="modal-body" id="ModalSuministroBodyInfoOF">
+                <div class="" id="ModalSuministroBodyInfoOF">
                 </div>
-                <div class="modal-body" id="ModalSuministroBodyPartidasOF">
+                <div class="row">
+                    <form id="CortesForm" class="row g-3 needs-validation" novalidate="">
+                        <div class="col-6">
+                            <label class="form-label" for="Cantitadpiezas">Ingresa n&uacute;mero de piezas a cortar </label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm has-validation" id="Cantitadpiezas" type="number" oninput="RegexNumeros(this)" placeholder="Ingresa una cantidad" />
+                                <button id="btnGrupoPiezasCorte" class="btn btn-success btn-sm float-end">Guardar</button>
+                            </div>
+                            <div class="invalid-feedback" id="error_cantidad"></div>
+                            <div class="form-check mt-2 mb-2">
+                                <input class="form-check-input" id="Retrabajo" type="checkbox" />
+                                <label class="form-check-label" for="Retrabajo">Retrabajo</label>
+                                <div class="invalid-feedback" id="error_retrabajo"></div>
+                                <button id="btnGrupoPiezasCorte1" class="btn btn-success btn-sm float-end" style="display: none">Guardar</button>
+                            </div>
+                            <input type="hidden" id="CantitadpiezasIdOF">
+                        </div>
+                        <div class="col-6 mt-2">
+                            <div id="Emisiones" class="mt-2 mb-2" style="display:none;">
+                                <label class="form-label" for="Cantitadpiezas">Selecciona una Orden de Producci&oacute;n </label>
+                                <select id="EmisionesOpciones" class="form-select form-select-sm" aria-label=".form-select-sm">
+                                </select>
+                                <div class="invalid-feedback" id="error_emision"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="mt-3" id="ModalSuministroBodyPartidasOF">
                 </div>
             </div>
             <div class="modal-footer" id="ModalSuministroFooter">
@@ -380,6 +411,76 @@
                         "language": {
                             "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
                         }
+        });
+        document.getElementById("Retrabajo").addEventListener("change", function() {
+            if (this.checked) {
+                TraerEmisiones();
+                $('#Emisiones').fadeIn(600);
+                $('#btnGrupoPiezasCorte1').fadeIn();
+                $('#btnGrupoPiezasCorte').fadeOut();
+            }else{
+                $('#EmisionesOpciones').html('');
+                $('#Emisiones').fadeOut(600);
+                $('#btnGrupoPiezasCorte').fadeIn();
+                $('#btnGrupoPiezasCorte1').fadeOut();
+            }
+        });
+        $('#btnGrupoPiezasCorte').click(function() {
+            event.preventDefault();
+            Cantitadpiezas=$('#Cantitadpiezas');
+            errorCantidad=$('#error_cantidad');
+            CantitadpiezasIdOF=$('#CantitadpiezasIdOF').val();
+            if(Cantitadpiezas.val()=="" || Cantitadpiezas.val()==null || Cantitadpiezas.val()==0){
+                Cantitadpiezas.addClass('is-invalid');
+                errorCantidad.text('Por favor, ingresa un número valido, mayor a 0.');
+                errorCantidad.show();
+                return 0; 
+            }else{
+                Cantitadpiezas.removeClass('is-invalid');
+                errorCantidad.text('');
+                errorCantidad.hide(); 
+            }
+            $.ajax({
+                url: "{{route('GuardarCorte')}}", 
+                type: 'POST',
+                data: {
+                    id:CantitadpiezasIdOF,
+                    Cantitadpiezas:Cantitadpiezas.val(),
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+
+                },
+                success: function(response) {
+                    if(response.status=="success"){
+                        success('Guardado correctamente!',response.message);
+                    }else if(response.status=="error"){
+                        error('Error',response.message);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    error('Error Server',jqXHR.responseJSON.message);
+                }
+            });
+            /*$.ajax({
+                url: "{{route('GuardarCorte')}}", 
+                type: 'POST',
+                data: {
+                    id:CantitadpiezasIdOF,
+                    Cantitadpiezas:Cantitadpiezas,
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+
+                },
+                success: function(response) {
+                    $('#EmisionesOpciones').html(response.opciones);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    errorBD();
+                }
+            });*/
+
         });
         setInterval(RecargarTabla, 300000);
     });
@@ -412,7 +513,14 @@
         });
     }
     function Planear(OrdenFabricacion){
+        $('#Emisiones').fadeOut(100);
         $('#ModalSuministro').modal('show');
+        $('#ModalSuministroBodyInfoOF').html('');
+        $('#ModalSuministroBodyPartidasOF').html('');
+        $('#CantitadpiezasIdOF').val('');
+        $('#btnGrupoPiezasCorte').fadeIn();
+        $('#btnGrupoPiezasCorte1').fadeOut();
+        document.getElementById("Retrabajo").checked=false;
         $.ajax({
             url: "{{route('CortesDatosModal')}}", 
             type: 'POST',
@@ -421,24 +529,41 @@
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
-            },
+                $('#ModalSuministroBodyInfoOF').html('<div class="d-flex justify-content-center align-items-center"><div class="spinner-grow text-info text-center" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                $('#ModalSuministroBodyPartidasOF').html('<div class="d-flex justify-content-center align-items-center"><div class="spinner-grow text-info text-center" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                },
             success: function(response) {
                 if(response.status=="success"){
+                    $('#CantitadpiezasIdOF').val(response.id);
                     $('#ModalSuministroBodyInfoOF').html(response.Ordenfabricacioninfo);
-                    /*$('#procesoTable').DataTable().destroy();
-                    $('#procesoTableBody').html(response.table);
-                    $('#procesoTable').DataTable({
-                        "pageLength": 10,  // Paginación de 10 elementos por página
-                        "lengthChange": false, // Desactiva la opción de cambiar el número de elementos por página
-                        "paging": true, // Habilitar paginación
-                        "searching": true, // Habilitar búsqueda
-                        "ordering": true, // Habilitar ordenación de columnas
-                        "info": true, // Muestra información sobre el total de elementos
-                        "language": {
-                            "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
-                        }
-                    });*/
+                    $('#ModalSuministroBodyPartidasOF').html(response.Ordenfabricacionpartidas);
                 }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                $('#ModalSuministroBodyInfoOF').html('');
+                $('#ModalSuministroBodyPartidasOF').html('');
+                errorBD();
+            }
+        });
+    }
+    function TraerEmisiones(){
+        OrdenFabricacion=$('#CantitadpiezasIdOF').val();
+        $('#EmisionesOpciones').html('');
+        $.ajax({
+            url: "{{route('TraerEmisiones')}}", 
+            type: 'POST',
+            data: {
+                id:OrdenFabricacion,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+
+            },
+            success: function(response) {
+                $('#EmisionesOpciones').html(response.opciones);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                errorBD();
             }
         });
     }

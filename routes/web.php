@@ -48,10 +48,13 @@ Route::get('/Area/Visualizacion', [AreasController::class,'Visualizacion'])->nam
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas');
 
 //Corte Nuevas
+Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
 Route::get('/Area/Corte/Tabla', [CorteController::class,'CorteRecargarTabla'])->name('CorteRecargarTabla');
 Route::post('/Area/Corte/InfoModal', [CorteController::class,'CortesDatosModal'])->name('CortesDatosModal');
+Route::post('/Area/Corte/Emisiones', [CorteController::class,'TraerEmisiones'])->name('TraerEmisiones');
+Route::post('/Area/Corte/Corte/Guardar', [CorteController::class,'GuardarCorte'])->name('GuardarCorte');
 
-Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
+
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
 Route::get('corte/getCortes', [CorteController::class, 'getCortes'])->name('corte.getCortes');
