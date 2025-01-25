@@ -3,6 +3,13 @@
 @section('styles')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
+    .btn-link{
+        transform: scale(1.5);
+    }
+    .btn-link:hover {
+    transform: scale(1.8);
+    transition: transform 0.3s ease; /* Añade una transición suave */
+}
 </style>
 {{--<style>
     .table-bordered {
@@ -88,23 +95,7 @@
         </div>
     </div>
     <div>
-        <!-- Módulos sin corte y completados -->
-        <ul class="nav nav-underline" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <a class="nav-link active" id="proceso-tab" data-bs-toggle="tab" href="#tab-proceso" role="tab" aria-controls="tab-proceso" aria-selected="false" tabindex="-1">
-                    Abiertos
-                </a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link" id="completado-tab" data-bs-toggle="tab" href="#tab-completado" role="tab" aria-controls="tab-completado" aria-selected="false" tabindex="-1">
-                    Cerrados
-                </a>
-            </li>
-        </ul>
-        <div class="tab-content mt-4" id="myTabContent">
-                <!-- Tab Proceso -->
-            <div class="tab-pane fade show active" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab">
-                <div class="col-5 mt-1 mb-4">
+                {{--<div class="col-5 mt-1 mb-4">
                     <div class="accordion" id="accordionFiltroOV">
                         <div class="card shadow-sm">
                             <div class="accordion-item border-top border-300 p-1">
@@ -133,40 +124,127 @@
                             </div>
                         </div>
                     </div>
+                </div>--}}
+    <div class="card">
+        <div class="card-body">
+            <!-- Módulos sin corte y completados -->
+            <ul class="nav nav-underline" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="proceso-tab" data-bs-toggle="tab" href="#tab-proceso" role="tab" aria-controls="tab-proceso" aria-selected="false" tabindex="-1">
+                        Abiertos
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="completado-tab" data-bs-toggle="tab" href="#tab-completado" role="tab" aria-controls="tab-completado" aria-selected="false" tabindex="-1">
+                        Cerrados
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <div class="tab-content mt-4" id="myTabContent">
+                <!-- Tab Proceso -->
+                <div class="tab-pane fade show active" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab">
+                    <div class="table-responsive">
+                        <table id="procesoTable" class="table table-sm">
+                            <thead>
+                                <tr class="bg-light">
+                                    <th>Orden Fabricación</th>
+                                    <th>Artículo</th>
+                                    <th>Descripción</th>
+                                    <th>Piezas Cortadas</th>
+                                    <th>Cantidad Total</th>
+                                    <th>Fecha Planeada</th>
+                                    <th>Estatus</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="procesoTableBody" class="list">
+                            @foreach($OrdenesFabricacionAbiertas as $orden)
+                                <tr>
+                                    <td>{{ $orden->OrdenFabricacion }}</td>
+                                    <td>{{ $orden->Articulo }}</td>
+                                    <td>{{ $orden->Descripcion }}</td>
+                                    <td>{{ $orden->Piezascortadas }}</td>
+                                    <td>{{ $orden->CantidadTotal }}</td>
+                                    <td>{{ $orden->FechaEntrega }}</td>
+                                    <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                                    <td><button class="btn btn-sm btn-outline-primary px-3 py-1" onclick="Planear('{{$orden->idEncript}}')">Cortes</button></td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table id="procesoTable" class="table table-sm">
-                                <thead>
-                                    <tr class="bg-light">
-                                        <th>Orden Fabricación</th>
-                                        <th>Artículo</th>
-                                        <th>Descripción</th>
-                                        <th>Piezas Cortadas</th>
-                                        <th>Cantidad Total</th>
-                                        <th>Fecha Planeada</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="procesoTableBody" class="list">
-                                    @foreach($OrdenesFabricacionAbiertas as $orden)
-                                        <tr>
-                                                <td>{{ $orden->OrdenFabricacion }}</td>
-                                                <td>{{ $orden->Articulo }}</td>
-                                                <td>{{ $orden->Descripcion }}</td>
-                                                <td>{{ $orden->Piezascortadas }}</td>
-                                                <td>{{ $orden->CantidadTotal }}</td>
-                                                <td>{{ $orden->FechaEntrega }}</td>
-                                                <td><button class="btn btn-sm btn-outline-primary" onclick="Planear('{{$orden->idEncript}}')">Cortes</button></td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                <div class="tab-pane fade" id="tab-completado" role="tabpanel" aria-labelledby="completado-tab">
+                    <div class="col-6 mt-1 mb-4">
+                        <div class="accordion" id="accordionFiltroUnico">
+                            <div class="accordion-item shadow-sm">
+                                <h4 class="accordion-header" id="headingFiltroUnico">
+                                    <button class="accordion-button btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroUnico" aria-expanded="true" aria-controls="collapseFiltroUnico">
+                                        <strong>Filtro Fecha</strong>
+                                    </button>
+                                </h4>
+                                <div class="accordion-collapse collapse collapse" id="collapseFiltroUnico" aria-labelledby="headingFiltroUnico" data-bs-parent="#accordionFiltroUnico">
+                                    <div class="accordion-body pt-2">
+                                        <form id="formFiltroUnico" method="post" class="form-horizontal">
+                                            @csrf
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="inputFechaUnica" class="form-label"><strong>Fecha Inicio</strong></label>
+                                                    <div class="input-group">
+                                                        <input type="date" name="fecha" id="inputFechaUnica" value="{{$fechaAtras}}" class="form-control form-control-sm">
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <label for="inputFechaUnica" class="form-label"><strong>Fecha Fin</strong></label>
+                                                    <div class="input-group">
+                                                        <input type="date" name="fecha" id="inputFechaUnica" value="{{$fecha}}" class="form-control form-control-sm">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 mt-2">
+                                                    <button id="buscarUnico" class="btn btn-primary btn-sm float-end">
+                                                        <i class="fa fa-search"></i> Buscar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="completadoTable" class="table table-sm fs--1 mb-1">
+                            <thead>
+                                <tr class="bg-light">
+                                    <th>Orden Fabricación</th>
+                                    <th>Artículo</th>
+                                    <th>Descripción</th>
+                                    <th>Piezas Cortadas</th>
+                                    <th>Cantidad Total</th>
+                                    <th>Fecha Planeada</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="procesoTableBody" class="list">
+                            @foreach($OrdenesFabricacionAbiertas as $orden)
+                                <tr>
+                                    <td>{{ $orden->OrdenFabricacion }}</td>
+                                    <td>{{ $orden->Articulo }}</td>
+                                    <td>{{ $orden->Descripcion }}</td>
+                                    <td>{{ $orden->Piezascortadas }}</td>
+                                    <td>{{ $orden->CantidadTotal }}</td>
+                                    <td>{{ $orden->FechaEntrega }}</td>
+                                    <td><button class="btn btn-sm btn-outline-primary" onclick="Planear('{{$orden->idEncript}}')">Cortes</button></td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
             <!-- Modal de Detalles de la Orden -->
             <div class="modal fade" id="modalDetalleOrden" tabindex="-1"  role="dialog" aria-labelledby="modalDetalleOrdenLabel" aria-hidden="true">
                 <div class="modal-dialog modal-xl">
@@ -238,7 +316,7 @@
                 </div>
             </div>
             <!-- Tab Completado -->
-            <div class="tab-pane fade" id="tab-completado" role="tabpanel" aria-labelledby="completado-tab">
+            {{--<div class="tab-pane fade" id="tab-completado" role="tabpanel" aria-labelledby="completado-tab">
                     <div class="col-6 mt-2">
                         <div class="accordion" id="accordionFiltroUnico">
                             <div class="card shadow-sm">
@@ -291,7 +369,7 @@
                         </table>
                     </div>
                 </div>
-            <!-- Modal para mostrar la información de la orden -->
+            --}}<!-- Modal para mostrar la información de la orden -->
             <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -388,7 +466,7 @@
                         </div>
                     </form>
                 </div>
-                <div class="mt-3" id="ModalSuministroBodyPartidasOF">
+                <div class="mt-0" id="ModalSuministroBodyPartidasOF">
                 </div>
             </div>
             <div class="modal-footer" id="ModalSuministroFooter">
@@ -401,17 +479,7 @@
 @section('scripts')
 <script>
     $(document).ready(function() {
-        $('#procesoTable').DataTable({
-                        "pageLength": 10,  // Paginación de 10 elementos por página
-                        "lengthChange": false, // Desactiva la opción de cambiar el número de elementos por página
-                        "paging": true, // Habilitar paginación
-                        "searching": true, // Habilitar búsqueda
-                        "ordering": true, // Habilitar ordenación de columnas
-                        "info": true, // Muestra información sobre el total de elementos
-                        "language": {
-                            "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
-                        }
-        });
+        DataTable('procesoTable',true);
         document.getElementById("Retrabajo").addEventListener("change", function() {
             if (this.checked) {
                 TraerEmisiones();
@@ -430,6 +498,10 @@
             Cantitadpiezas=$('#Cantitadpiezas');
             errorCantidad=$('#error_cantidad');
             CantitadpiezasIdOF=$('#CantitadpiezasIdOF').val();
+            if(CantitadpiezasIdOF=='' || CantitadpiezasIdOF==null){
+                error('Partida no guardada','No fue posible guardar los datos de la partida, todos los campos son requeridos');
+                return 0;
+            }
             if(Cantitadpiezas.val()=="" || Cantitadpiezas.val()==null || Cantitadpiezas.val()==0){
                 Cantitadpiezas.addClass('is-invalid');
                 errorCantidad.text('Por favor, ingresa un número valido, mayor a 0.');
@@ -445,6 +517,7 @@
                 type: 'POST',
                 data: {
                     id:CantitadpiezasIdOF,
+                    retrabajo:'Normal',
                     Cantitadpiezas:Cantitadpiezas.val(),
                     _token: '{{ csrf_token() }}'  
                 },
@@ -454,33 +527,89 @@
                 success: function(response) {
                     if(response.status=="success"){
                         success('Guardado correctamente!',response.message);
+                        RecargarTabla();
+                        Planear(response.OF);
                     }else if(response.status=="error"){
                         error('Error',response.message);
+                    }else if(response.status=="errorCantidada"){
+                        error('Cantidad no disponible!',response.message);
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     error('Error Server',jqXHR.responseJSON.message);
                 }
             });
-            /*$.ajax({
+        });
+        $('#btnGrupoPiezasCorte1').click(function() {
+            event.preventDefault();
+            Cantitadpiezas=$('#Cantitadpiezas');
+            errorCantidad=$('#error_cantidad');
+            EmisionesOpciones=$('#EmisionesOpciones');
+            errorEmision=$('#error_emision');
+            Retrabajo=$('#Retrabajo');
+            errorRetrabajo=$('#error_retrabajo');
+            CantitadpiezasIdOF=$('#CantitadpiezasIdOF').val();
+            if(CantitadpiezasIdOF=='' || CantitadpiezasIdOF==null){
+                error('Partida no guardada','No fue posible guardar los datos de la partida, todos los campos son requeridos');
+                return 0;
+            }
+            if(Cantitadpiezas.val()=="" || Cantitadpiezas.val()==null || Cantitadpiezas.val()==0){
+                Cantitadpiezas.addClass('is-invalid');
+                errorCantidad.text('Por favor, ingresa un número valido, mayor a 0.');
+                errorCantidad.show();
+                return 0; 
+            }else{
+                Cantitadpiezas.removeClass('is-invalid');
+                errorCantidad.text('');
+                errorCantidad.hide(); 
+            }
+            if(EmisionesOpciones.val()=='' || EmisionesOpciones.val()==null){
+                EmisionesOpciones.addClass('is-invalid');
+                errorEmision.text('Campo requerido, selecciona una Emisión de producción.');
+                errorEmision.show();
+                return 0; 
+            }else{
+                EmisionesOpciones.removeClass('is-invalid');
+                errorEmision.text('');
+                errorEmision.hide(); 
+            }
+            if(!Retrabajo.is(':checked')){
+                Retrabajo.addClass('is-invalid');
+                errorRetrabajo.text('Campo requerido, Es necesario marcar la casilla.');
+                errorRetrabajo.show();
+                return 0; 
+            }else{
+                Retrabajo.removeClass('is-invalid');
+                errorRetrabajo.text('');
+                errorRetrabajo.hide(); 
+            }
+            $.ajax({
                 url: "{{route('GuardarCorte')}}", 
                 type: 'POST',
                 data: {
                     id:CantitadpiezasIdOF,
-                    Cantitadpiezas:Cantitadpiezas,
+                    retrabajo:'Retrabajo',
+                    Cantitadpiezas:Cantitadpiezas.val(),
                     _token: '{{ csrf_token() }}'  
                 },
                 beforeSend: function() {
 
                 },
                 success: function(response) {
-                    $('#EmisionesOpciones').html(response.opciones);
+                    if(response.status=="success"){
+                        success('Guardado correctamente!',response.message);
+                        RecargarTabla();
+                        Planear(response.OF);
+                    }else if(response.status=="error"){
+                        error('Error',response.message);
+                    }else if(response.status=="errorCantidada"){
+                        error('Cantidad no disponible!',response.message);
+                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    errorBD();
+                    error('Error Server',jqXHR.responseJSON.message);
                 }
-            });*/
-
+            });
         });
         setInterval(RecargarTabla, 300000);
     });
@@ -497,22 +626,13 @@
                 if(response.status=="success"){
                     $('#procesoTable').DataTable().destroy();
                     $('#procesoTableBody').html(response.table);
-                    $('#procesoTable').DataTable({
-                        "pageLength": 10,  // Paginación de 10 elementos por página
-                        "lengthChange": false, // Desactiva la opción de cambiar el número de elementos por página
-                        "paging": true, // Habilitar paginación
-                        "searching": true, // Habilitar búsqueda
-                        "ordering": true, // Habilitar ordenación de columnas
-                        "info": true, // Muestra información sobre el total de elementos
-                        "language": {
-                            "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
-                        }
-                    });
+                    DataTable('procesoTable',true);
                 }
             }
         });
     }
     function Planear(OrdenFabricacion){
+        $('#Cantitadpiezas').val('');
         $('#Emisiones').fadeOut(100);
         $('#ModalSuministro').modal('show');
         $('#ModalSuministroBodyInfoOF').html('');
@@ -537,6 +657,8 @@
                     $('#CantitadpiezasIdOF').val(response.id);
                     $('#ModalSuministroBodyInfoOF').html(response.Ordenfabricacioninfo);
                     $('#ModalSuministroBodyPartidasOF').html(response.Ordenfabricacionpartidas);
+                    $('#procesoTable').DataTable().destroy();
+                    //DataTable('TablePartidasModal',false);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -566,6 +688,68 @@
                 errorBD();
             }
         });
+    }
+    function Cancelar(id){
+        $.ajax({
+            url: "{{route('CancelarCorte')}}", 
+            type: 'POST',
+            data: {
+                id:id,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+
+            },
+            success: function(response) {
+                if(response.status=='success'){
+                    Planear(response.OF);
+                    success("Cancelada Correctamente!",response.message);
+                    RecargarTabla()
+                }else if(ifresponse.status=='errornoexiste'){
+                    error("Error!",response.message);
+                }else if(response.status=='erroriniciada'){
+                    error("Error!",response.message);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                errorBD();
+            }
+        });
+    }
+    function Finalizar(id){
+        $.ajax({
+            url: "{{route('FinalizarCorte')}}", 
+            type: 'POST',
+            data: {
+                id:id,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+
+            },
+            success: function(response) {
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                errorBD();
+            }
+        });
+    }
+    function DataTable(tabla, busqueda){
+        $('#'+tabla).DataTable({
+                        "pageLength": 10,  // Paginación de 10 elementos por página
+                        "lengthChange": false, // Desactiva la opción de cambiar el número de elementos por página
+                        "paging": true, // Habilitar paginación
+                        "searching": busqueda, // Habilitar búsqueda
+                        "ordering": true, // Habilitar ordenación de columnas
+                        "info": true, // Muestra información sobre el total de elementos
+                        "language": {
+                            "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
+                        },
+                        "initComplete": function(settings, json) {
+                            $('#procesoTable').css('font-size', '0.7rem'); // Aplica el tamaño de fuente a la tabla
+                        }
+        });
+
     }
 </script>
 

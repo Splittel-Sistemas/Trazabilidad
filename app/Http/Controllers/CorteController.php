@@ -18,12 +18,14 @@ class CorteController extends Controller
     public function index(){
         // Fecha actual
         $fecha = date('Y-m-d');
+        $fechaAtras=date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
         $OrdenesFabricacionAbiertas=$this->OrdenesFabricacionAbiertas();
+        //return$OrdenesFabricacionCerradas=$this->OrdenesFabricacionCerradas($fecha,$fechaAtras);
         foreach($OrdenesFabricacionAbiertas as $orden) {
             $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
-            $orden['Piezascortadas'] = $orden->partidasOF()->get()->count();
+            $orden['Piezascortadas'] = $orden->partidasOF()->get()->sum('cantidad_partida');
         }
-        return view('Areas.Cortes', compact('OrdenesFabricacionAbiertas','fecha'));
+        return view('Areas.Cortes', compact('OrdenesFabricacionAbiertas','fecha','fechaAtras'));
     }
     public function CorteRecargarTabla(){
         //EstatusEntrega==0 aun no iniciado; 1 igual a terminado
@@ -35,10 +37,11 @@ class CorteController extends Controller
                         <td>'. $orden->OrdenFabricacion .'</td>
                         <td>'. $orden->Articulo .'</td>
                         <td>'. $orden->Descripcion .'</td>
-                        <td>'. $orden->partidasOF()->get()->count().'</td>
+                        <td>'. $orden->partidasOF()->get()->sum('cantidad_partida').'</td>
                         <td>'. $orden->CantidadTotal .'</td>
                         <td>'. $orden->FechaEntrega .'</td>
-                        <td><button class="btn btn-sm btn-outline-primary" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Planear</button></td>
+                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                        <td><button class="btn btn-sm btn-outline-primary px-3 py-1" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Planear</button></td>
                     </tr>';
             }
             return response()->json([
@@ -55,18 +58,19 @@ class CorteController extends Controller
     public function CortesDatosModal(Request $request){
         $id=$this->funcionesGenerales->decrypt($request->id);
         $OrdenFabricacion=OrdenFabricacion::where('id','=',$id)->first();
-        $Ordenfabricacionpartidas='<table class="table table-sm fs--1 mb-0" style="width:100%">
+        $Ordenfabricacionpartidas='<table id="TablePartidasModal" class="table table-sm fs--1 mb-0" style="width:100%">
                         <thead>
                             <tr>
-                                <th class="text-center" colspan="6">Partidas</th>
+                                <th class="text-center" colspan="8">Partidas</th>
                             </tr>
                             <tr>
-                                <th class="text-center">Numero Partida</th>
+                                <th class="text-center">Número Partida</th>
+                                 <th class="text-center">Piezas Cortadas</th>
                                 <th class="text-center">Tipo Partida</th>
-                                <th class="text-center">Piezas Cortadas</th>
-                                <th class="text-center">Numero Partida</th>
+                                <th class="text-center">Rango de etiquetas</th>
                                 <th class="text-center">Estatus</th>
                                 <th class="text-center">Etiquetas</th>
+                                <th class="text-center" colspan="2">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>';
@@ -82,15 +86,15 @@ class CorteController extends Controller
             $Ordenfabricacioninfo.='
                             <tr>
                                 <th class="table-active">Articulo</th>
-                                <td class="text-center">'.$OrdenFabricacion->Articulo.'</td>
+                                <th class="text-center">'.$OrdenFabricacion->Articulo.'</th>
                                 <th class="table-active" colspan="1">Fecha Planeación</th>
                                 <td class="text-center" colspan="3">'.$OrdenFabricacion->FechaEntrega.'</td>
                             </tr>
                             <tr>
                                 <th class="table-active" colspan="1">Cantidad Total</th>
-                                <td class="text-center" colspan="1">'.$OrdenFabricacion->CantidadTotal.'</td>
+                                <th class="text-center" colspan="1">'.$OrdenFabricacion->CantidadTotal.'</th>
                                 <th class="table-active" colspan="1">Piezas cortadas al momento </th>
-                                <td class="text-center" colspan="1">'.$OrdenFabricacion->partidasOF()->get()->count().'</td>
+                                <th class="text-center" colspan="1">'.$OrdenFabricacion->partidasOF()->get()->sum('cantidad_partida').'</th>
                             </tr>
                             <tr>
                                 <th class="table-active" colspan="1">Descripción</th>
@@ -99,35 +103,43 @@ class CorteController extends Controller
             $PartidasOF=$OrdenFabricacion->partidasOF()->get();
             if($PartidasOF->count()==0){
                 $Ordenfabricacionpartidas.='<tr>
-                                            <td class="text-center" colspan="6">Aún no existen partidas creadas</td>
+                                            <td class="text-center" colspan="9">Aún no existen partidas creadas</td>
                                         </tr>';
             }else{
+                $RangoEtiquetas=1;
                 foreach($PartidasOF as $partida){
                     $Ordenfabricacionpartidas.='<tr>
-                        <td class="text-center">'.$partida->NumeroPartida.'</td>';
-                                    if($partida->TipoPartida=='R'){
-                                        $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Retrabajo</span></div></td>';
-                                    }else{
-                                        $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Normal</span></div></td>';
-                                    }
+                        <th class="text-center">'.$partida->NumeroPartida.'</th>';
                     $Ordenfabricacionpartidas.='<td class="text-center">'.$partida->cantidad_partida.'</td>';
+                    if($partida->TipoPartida=='R'){
+                        $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Retrabajo</span></div></td>';
+                    }else{
+                        $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Normal</span></div></td>';
+                    }
+                    if($partida->cantidad_partida==1){
+                        $Ordenfabricacionpartidas.='<td class="text-center">'.$RangoEtiquetas.'</td>';
+                    }else{
+                        $Ordenfabricacionpartidas.='<td class="text-center">'.$RangoEtiquetas."-".($RangoEtiquetas+$partida->cantidad_partida-1).'</td>';
+                    }
                     if(!($partida->FechaFinalizacion=='' || $partida->FechaFinalizacion==null)){
                         $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Cerrada</span></div></td>';
                     }else{
                         $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>';
                     }
-                    $Ordenfabricacionpartidas.='<td class="text-center">'.$partida->NumeroPartida.'</td>
-                        <td class="text-center">etiquetas</td>
-                        </tr>';
+                    $Ordenfabricacionpartidas.='<td class="text-center"><button class="btn btn-link me-1 mb-1" type="button"><i class="fas fa-download"></i></button></td>
+                                <td class="text-center"><button class="btn btn-sm btn-outline-secondary rounded-pill me-1 mb-1 px-3 py-1" type="button" onclick="Cancelar(\''.$this->funcionesGenerales->encrypt($partida->id).'\')">Cancelar</button></td>            
+                                <td><button class="btn btn-sm btn-outline-danger rounded-pill me-1 mb-1 px-3 py-1" type="button" onclick="Finalizar(\''.$this->funcionesGenerales->encrypt($partida->id).'\')">Finalizar</button></td>
+                                </tr>';
+                        $RangoEtiquetas+=$partida->cantidad_partida;
                 }
             }
         }else{
-        $Ordenfabricacioninfo.='<tr>
-                                    <td class="text-center" colspan="4">Datos no encontrados</td>
-                                </tr>';
-        $Ordenfabricacionpartidas.='<tr>
-                                    <td class="text-center" colspan="6">Aún no existen partidas creadas</td>
-                                </tr>';
+            $Ordenfabricacioninfo.='<tr>
+                                        <td class="text-center" colspan="4">Datos no encontrados</td>
+                                    </tr>';
+            $Ordenfabricacionpartidas.='<tr>
+                                        <td class="text-center" colspan="6">Aún no existen partidas creadas</td>
+                                    </tr>';
         }
         $Ordenfabricacioninfo.='</tbody></table>';
         return response()->json([
@@ -162,6 +174,7 @@ class CorteController extends Controller
             $FechaHoy=date('Y-m-d H:i:s');
             $id=$this->funcionesGenerales->decrypt($request->id);
             $Cantitadpiezas=$request->Cantitadpiezas;
+            $retrabajo=$request->retrabajo;
             $OrdenFabricacion=OrdenFabricacion::where('id','=',$id)->first();
             if($OrdenFabricacion==null || $OrdenFabricacion==''){
                 return response()->json([
@@ -169,12 +182,12 @@ class CorteController extends Controller
                     'message' =>'La Orden de Fabricación no existe!',
                 ], 200);
             }else{
-                $partidasOFsum=$OrdenFabricacion->partidasOF()->get()->sum('cantidad_partida');
+                $partidasOFsum=$OrdenFabricacion->partidasOF()->where('TipoPartida','=','N')->get()->sum('cantidad_partida');
                 $partidasOFsum+=$Cantitadpiezas;
-                if($partidasOFsum>$OrdenFabricacion->CantidadTotal){
+                if($partidasOFsum>$OrdenFabricacion->CantidadTotal && $retrabajo=='Normal'){
                     return response()->json([
                         'status' => 'errorCantidada',
-                        'message' =>'Partida no guardada, la cantidad solicitada no puede ser mayor a la cantidad Solicitada !',
+                        'message' =>'Partida no guardada, La cantidad total de piezas de las partidas no puede ser mayor al número Total de piezas de la Orden de Fabricación!',
                     ], 200);
                 }
                 $partidaOF = new PartidasOF();
@@ -184,13 +197,24 @@ class CorteController extends Controller
                 if($NumeroPartida=="" || $NumeroPartida==null){
                     $partidaOF->NumeroPartida=1;
                 }else{$partidaOF->NumeroPartida=$NumeroPartida->NumeroPartida+1;}
-                $partidaOF->TipoPartida='N';
+                if($retrabajo=='Retrabajo'){
+                    $partidaOF->TipoPartida='R';
+                    $Verterminados=$OrdenFabricacion->partidasOF()->where('TipoPartida','=','N')->where('FechaFinalizacion','!=',"")->get()->sum('cantidad_partida');
+                    if($Verterminados<$Cantitadpiezas){
+                        return response()->json([
+                            'status' => 'errorCantidada',
+                            'message' =>'Partida no guardada, La cantidad solicitada de piezas para Retrabajo tiene que ser menor o igual al número de Partidas Finalizadas!',
+                        ], 200);
+                    }
+
+                }elseif($retrabajo=='Normal'){$partidaOF->TipoPartida='N';}
                 $partidaOF->FechaFabricacion=$FechaHoy;
                 $partidaOF->FechaComienzo=$FechaHoy;
                 $partidaOF->save();
                 return response()->json([
                     'status' => 'success',
-                    'message' =>'Partida Guaradada Correctamente!',
+                    'message' =>'Partida Guardada Correctamente!',
+                    'OF' =>$this->funcionesGenerales->encrypt($OrdenFabricacion->id),
                 ], 200);
             }
         } catch (\Exception $e) {
@@ -202,8 +226,36 @@ class CorteController extends Controller
         }
 
     }
+    public function CancelarCorte(Request $request){
+        $id=$this->funcionesGenerales->decrypt($request->id);
+        $PartidaOF = PartidasOF::find($id);
+        if($PartidaOF=="" || $PartidaOF==null){
+            return response()->json([
+                'status' => 'errornoexiste',
+                'message' =>'La Orden de Fabricación no existe!',
+            ]);
+        }else{
+            $Partidas=$PartidaOF->partidas()->get();
+            if($Partidas->count()==0){
+                $PartidaOF->delete();
+                return response()->json([
+                    'status' => 'success',
+                    'message' =>'Partida '.$PartidaOF->NumeroPartida.' Cancelada correctamente!',
+                    'OF' =>$this->funcionesGenerales->encrypt($PartidaOF->ordenFabricacion()->first()->id),
+                ]);
+            }else{
+                return response()->json([
+                    'status' => 'erroriniciada',
+                    'message' =>'Ocurrio un error!, No se puede cancelar la Partida, porque ya se encuentra iniciada',
+                ]);
 
-
+            }
+        }
+    }
+    public function FinalizarCorte(Request $request){
+        $id=$this->funcionesGenerales->decrypt($request->id);
+        return$partida = PartidasOF::find($id);
+    }
     //Consultas a SAP
     public function Emisiones($OrdenFabricacion){
         $OrdenFabricacion;
@@ -219,6 +271,35 @@ class CorteController extends Controller
                         ORDER BY 1";
         return$emisiones=$this->funcionesGenerales->ejecutarConsulta($query_emisiones);
     }
+
+    //Ordenes de Fbaricacion Filtro Fecha, Abierta=0 Cerrada=1
+    public function OrdenesFabricacionAbiertas(){
+        return$OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->orderBy('FechaEntrega', 'asc')->get();
+    }
+    public function OrdenesFabricacionCerradas($Fechainicio, $Fechafin){
+        return$OrdenFabricacion=PartidasOF::where('FechaFinalizacion','>=',$Fechainicio)
+                                    ->where('FechaFinalizacion','<=',$Fechafin)
+                                    ->orderBy('FechaFinalizacion', 'desc')
+                                    ->get();
+        $tabla="";
+            foreach($OrdenFabricacion as $orden) {
+                $tabla.='<tr>
+                        <td>'. $orden->OrdenFabricacion .'</td>
+                        <td>'. $orden->Articulo .'</td>
+                        <td>'. $orden->Descripcion .'</td>
+                        <td>'. $orden->partidasOF()->get()->sum('cantidad_partida').'</td>
+                        <td>'. $orden->CantidadTotal .'</td>
+                        <td>'. $orden->FechaEntrega .'</td>
+                        <td><button class="btn btn-sm btn-outline-primary" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Planear</button></td>
+                    </tr>';
+            }
+        if($tabla==""){
+            $tabla.='<tr><td colspan="7"></td></tr>';
+        }
+        return $tabla;
+    }
+
+
 
     public function SinCortesProceso(Request $request){
         //$today = date('Y-m-d');
@@ -740,7 +821,7 @@ class CorteController extends Controller
             'data' => $data,
         ]);
     } 
-    public function finalizarCorte(Request $request){
+    /*public function finalizarCorte(Request $request){
         // Validar que el ID exista y que la fecha sea válida
         $request->validate([
             'id' => 'required|exists:partidasof,id', 
@@ -760,7 +841,7 @@ class CorteController extends Controller
             
         ]);
         
-    }
+    }*/
     public function getEstatus(Request $request){
         $ordenFabricacion = OrdenFabricacion::findOrFail($request->id);
         return response()->json([
@@ -1008,13 +1089,6 @@ class CorteController extends Controller
             Log::error('Error al generar PDF: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    }
-    //Ordenes de Fbaricacion Filtro Fecha, Abierta=0 Cerrada=1
-    public function OrdenesFabricacionAbiertas(){
-        return$OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->orderBy('FechaEntrega', 'asc')->get();
-    }
-    public function OrdenesFabricacionCerradas($fecha){
-        return$OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','1')->where('FechaEntrega','=',$fecha)->orderBy('FechaEntrega', 'asc')->get();
     }
 }
 

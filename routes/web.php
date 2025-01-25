@@ -53,6 +53,8 @@ Route::get('/Area/Corte/Tabla', [CorteController::class,'CorteRecargarTabla'])->
 Route::post('/Area/Corte/InfoModal', [CorteController::class,'CortesDatosModal'])->name('CortesDatosModal');
 Route::post('/Area/Corte/Emisiones', [CorteController::class,'TraerEmisiones'])->name('TraerEmisiones');
 Route::post('/Area/Corte/Corte/Guardar', [CorteController::class,'GuardarCorte'])->name('GuardarCorte');
+Route::post('/Area/Corte/Corte/Cancelar', [CorteController::class,'CancelarCorte'])->name('CancelarCorte');
+Route::post('/Area/Corte/Corte/Finalizar', [CorteController::class,'FinalizarCorte'])->name('FinalizarCorte');
 
 
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden');
