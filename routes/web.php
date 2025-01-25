@@ -10,7 +10,17 @@ use App\Http\Controllers\AreasController;
 use App\Http\Controllers\RolesPermisoController;
 use App\Http\Controllers\PreparadoController;
 use GuzzleHttp\Promise\Coroutine;
+use App\Http\Controllers\BusquedaController;
 use Illuminate\Routing\Route as RoutingRoute;
+
+Route::get('/busquedas',[BusquedaController::class, 'index'])->name('Busquedas.OV');
+
+Route::get('/tablaventa',[BusquedaController::class, 'obtenerOrdenesVenta'])->name('Buscar.Venta');
+Route::get('/tablafabricacion',[BusquedaController::class, 'obtenerOrdenesFabricacion'])->name('Buscar.Fabricacion');
+Route::get('/detallesventa',[BusquedaController::class, 'detallesventa'])->name('Buscar.Venta.Detalle');
+//Route::get('/buscar-ordenes', [BusquedaController::class, 'buscarOrdenes'])->name('buscar.ordenes');
+
+
 
 
 // Ruta para mostrar el formulario de login
@@ -168,6 +178,8 @@ Route::get('/ordenes-filtradas', [CorteController::class, 'SinCortesProceso'])->
 
 
 
+
+
 //registro 
 //Route::view('/registro', "usuarios.registro")->name('register');
 
@@ -266,16 +278,9 @@ Route::post('/FiltroOrden', [CorteController::class, 'FiltroOrden'])->name('Filt
 Route::get('/buscar-orden', [BarcodeController::class, 'searchOrder']);
 
 Route::get('/orden-fabricacion', [CorteController::class, 'create']);
-Route::post('/orden-fabricacion', [CorteController::class, 'store']);
+Route::post('/orden-fabricacion', [CorteController::class, 'store']);*/
 
 
 
 
 
-use App\Http\Controllers\DetallesController;
-*/
-//Route::get('/orden/{id}', [DetallesController::class, 'show'])->name('orden.show');
-
-
-
- 

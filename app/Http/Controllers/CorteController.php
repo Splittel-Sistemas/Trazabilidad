@@ -134,11 +134,16 @@ class CorteController extends Controller
                 return response("La cantidad total acumulada ({$nuevaSuma}) excede la cantidad total permitida ({$ordenFabricacion->CantidadTotal}) para la Orden.", 422);
             }
     
+          
+            $numeroPartida = PartidasOF::where('OrdenFabricacion_id', $partida['orden_fabricacion_id'])
+                ->count() + 1;
+    
             // Crear la partida si pasa la validación
             PartidasOF::create([
                 'OrdenFabricacion_id' => $partida['orden_fabricacion_id'],
                 'cantidad_partida' => $partida['cantidad_partida'],
                 'fecha_fabricacion' => $partida['fecha_fabricacion'],
+                'NumeroPartida' => $numeroPartida, 
             ]);
         }
     
@@ -147,6 +152,7 @@ class CorteController extends Controller
             'message' => 'Las partidas se guardaron correctamente',
         ]);
     }
+    
     public function getCortesInfo($id)
     {
         try {
