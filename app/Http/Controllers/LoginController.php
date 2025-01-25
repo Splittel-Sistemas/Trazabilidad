@@ -31,7 +31,7 @@ public function login(Request $request)
     ];
 
     $remember = $request->has('remember');
-
+   
     // Intentar autenticar al usuario
     if (Auth::attempt($credentials, $remember)) {
         // Regenerar la sesión
