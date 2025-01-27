@@ -240,6 +240,13 @@ class PlaneacionController extends Controller
     }
     public function PartidasOFGuardar(Request $request){
         $DatosPlaneacion=json_decode($request->input('DatosPlaneacion'));
+        $FechaHoy=date('Y-m-d');
+        $Fechaplaneada=$DatosPlaneacion[0]->Fecha_planeada;
+        if($Fechaplaneada<$FechaHoy){
+            return response()->json([
+                'status' => "errordate",
+            ]);
+        }
         $bandera="";
         $NumOV="";
         $NumOF=[];

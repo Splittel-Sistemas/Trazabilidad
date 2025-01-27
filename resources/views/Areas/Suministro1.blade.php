@@ -59,7 +59,6 @@
               <h5 class="modal-title text-white" id="ModalSuministroLabel">Emisiones</h5><button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1 text-white"></span></button>
             </div>
             <div class="modal-body" id="ModalSuministroBody">
-            
             </div>
             <div class="modal-footer" id="ModalSuministroFooter">
                 <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>

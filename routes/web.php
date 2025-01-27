@@ -46,6 +46,10 @@ Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Deta
 //Rutas Ares
 Route::get('/Area/Corte', [AreasController::class,'Corte'])->name('Corte');
 Route::get('/Area/Suministro', [AreasController::class,'Suministro'])->name('Suministro');
+<<<<<<< HEAD
+=======
+Route::post('/Area/Suministro/Emision', [AreasController::class,'SuministroEmision'])->name('SuministroEmision');
+>>>>>>> Dev-Leo
 Route::get('/Area/Suministro/buscar', [AreasController::class,'SuministroBuscar'])->name('SuministroBuscar');
 Route::post('/Area/Suministro/NoEscaner', [AreasController::class,'TipoNoEscaner'])->name('TipoNoEscaner');
 Route::get('/Area/Preparado', [AreasController::class,'Preparado'])->name('Preparado');
@@ -55,8 +59,16 @@ Route::get('/Area/Medicion', [AreasController::class,'Medicion'])->name('Medicio
 Route::get('/Area/Visualizacion', [AreasController::class,'Visualizacion'])->name('Visualizacion');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas');
 
-
+//Corte Nuevas
 Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
+Route::get('/Area/Corte/Tabla', [CorteController::class,'CorteRecargarTabla'])->name('CorteRecargarTabla');
+Route::post('/Area/Corte/InfoModal', [CorteController::class,'CortesDatosModal'])->name('CortesDatosModal');
+Route::post('/Area/Corte/Emisiones', [CorteController::class,'TraerEmisiones'])->name('TraerEmisiones');
+Route::post('/Area/Corte/Corte/Guardar', [CorteController::class,'GuardarCorte'])->name('GuardarCorte');
+Route::post('/Area/Corte/Corte/Cancelar', [CorteController::class,'CancelarCorte'])->name('CancelarCorte');
+Route::post('/Area/Corte/Corte/Finalizar', [CorteController::class,'FinalizarCorte'])->name('FinalizarCorte');
+
+
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
 Route::get('corte/getCortes', [CorteController::class, 'getCortes'])->name('corte.getCortes');
