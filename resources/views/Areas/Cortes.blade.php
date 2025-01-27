@@ -93,7 +93,6 @@
                 <h4 class="mb-2 text-1100">Cortes</h4>
             </div>
         </div>
-<<<<<<< HEAD
         <!-- Módulos sin corte y completados -->
         <ul class="nav nav-underline" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
@@ -585,9 +584,6 @@
 @endsection
 @section('scripts')
 <script>
-<<<<<<< HEAD
-
-=======
     $(document).ready(function() {
         DataTable('procesoTable',true);
         document.getElementById("Retrabajo").addEventListener("change", function() {
