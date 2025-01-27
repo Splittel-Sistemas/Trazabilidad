@@ -899,8 +899,6 @@
         tab.show(); // Muestra la pestaña "Sin Corte y En Proceso"
     ////////////////////////////////////////////////////////////////////////////////////////
 
-<<<<<<< HEAD
-
 document.addEventListener("DOMContentLoaded", function () {
     var tab = new bootstrap.Tab(document.querySelector('#proceso-tab'));
     tab.show(); // Muestra la pestaña "Sin Corte y En Proceso"
@@ -1105,7 +1103,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const numCortes = parseInt($('#numCortes').val().trim());
         const ordenFabricacionId = $('#ordenFabricacionId').val();
 
-<<<<<<< HEAD
                   // Mostrar el modal con los detalles de la orden
                   $('#modalDetalleOrden').modal('show');
               } else {
@@ -2551,7 +2548,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return estatus.toLowerCase() === 'abierta' ? 'bi bi-check-circle' : 'bi bi-x-circle';
     }
     });
-<<<<<<< HEAD
+
  }
  // Evento para descargar el PDF cuando se hace clic en el botón de descargar
  $(document).on('click', '#btn-descargar-pdf', function() {
