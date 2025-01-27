@@ -74,10 +74,7 @@ Route::post('/buscar',[CorteController::class, 'buscar'])->name('buscar.todo');
 
 
 Route::post('/filtrar-fecha', [CorteController::class, 'filtrarPorFechac'])->name('Fitrar.Fechacerrado');
-
 Route::get('/corte/detalles', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalles');
-
-
 Route::get('/ordenes/cerradas',[CorteController:: class, 'index'])->name('ordenes.cerradas');
 //Rutas cortes
 /*

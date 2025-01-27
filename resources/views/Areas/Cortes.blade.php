@@ -85,7 +85,6 @@
 </style>--}}
 @endsection
 @section('content')
-
     <!-- Breadcrumbs -->
     <div class="breadcrumbs mb-3">
         <div class="row gy-3 mb-2 justify-content-between">
