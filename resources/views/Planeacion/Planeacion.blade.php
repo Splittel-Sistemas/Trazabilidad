@@ -456,6 +456,8 @@
                 },
                 success: function(response) {
                     if (response.status === 'success') {
+                        $('#startDate').val('${FechaAyer[2]}-${FechaAyer[1]}-${FechaAyer[0]}');  
+                        $('#endDate').val('${FechaHoy[2]}-${FechaHoy[1]}-${FechaHoy[0]}'); 
                         $('#table_OV_body').html(response.data);  
                         $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
                     } else if(response.status==="empty") {
@@ -643,7 +645,10 @@
                     $('#Filtro_fecha-btn').trigger('click');
                     success("Guardado!","Las ordenes de fabricación "+OrdenFabricacion+" se guardaron correctamente!");
                 } else if(response.status==="empty") {
+                } else if(response.status==='errordate'){
+                    error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente, la fecha de planeación tiene que ser igual o mayor a la fecha de Actual");
                 }else{
+                    $('#Filtro_fecha-btn').trigger('click');
                     error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
                 }
             },
