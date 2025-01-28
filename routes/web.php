@@ -13,15 +13,6 @@ use GuzzleHttp\Promise\Coroutine;
 use App\Http\Controllers\BusquedaController;
 use Illuminate\Routing\Route as RoutingRoute;
 
-Route::get('/busquedas',[BusquedaController::class, 'index'])->name('Busquedas.OV');
-
-Route::get('/tablaventa',[BusquedaController::class, 'obtenerOrdenesVenta'])->name('Buscar.Venta');
-Route::get('/tablafabricacion',[BusquedaController::class, 'obtenerOrdenesFabricacion'])->name('Buscar.Fabricacion');
-Route::get('/detallesventa',[BusquedaController::class, 'detallesventa'])->name('Buscar.Venta.Detalle');
-//Route::get('/buscar-ordenes', [BusquedaController::class, 'buscarOrdenes'])->name('buscar.ordenes');
-
-
-
 
 // Ruta para mostrar el formulario de login
 Route::get('/login', [loginController::class, 'login_view'])->name('login_view');
@@ -55,7 +46,7 @@ Route::get('/Area/Medicion', [AreasController::class,'Medicion'])->name('Medicio
 Route::get('/Area/Visualizacion', [AreasController::class,'Visualizacion'])->name('Visualizacion');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas');
 
-
+//rutas corte
 Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
@@ -69,16 +60,29 @@ Route::get('/ruta-para-actualizar-tabla', [CorteController::class, 'actualizarTa
 Route::delete('/corte/eliminar', [CorteController::class, 'eliminarCorte'])->name('corte.eliminarCorte');
 Route::delete('/corte/eliminar1', [CorteController::class, 'eliminarCorte1'])->name('corte.eliminarCorte1');
 Route::post('/buscar',[CorteController::class, 'buscar'])->name('buscar.todo');
-
-
-
-
 Route::post('/filtrar-fecha', [CorteController::class, 'filtrarPorFechac'])->name('Fitrar.Fechacerrado');
-
 Route::get('/corte/detalles', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalles');
-
-
 Route::get('/ordenes/cerradas',[CorteController:: class, 'index'])->name('ordenes.abiertas');
+
+
+
+
+//rutas busquedas
+Route::get('/busquedas',[BusquedaController::class, 'index'])->name('Busquedas.OV');
+Route::get('/tablaventa',[BusquedaController::class, 'obtenerOrdenesVenta'])->name('Buscar.Venta');
+Route::get('/tablafabricacion',[BusquedaController::class, 'obtenerOrdenesFabricacion'])->name('Buscar.Fabricacion');
+Route::get('/detallesventa',[BusquedaController::class, 'detallesventa'])->name('Buscar.Venta.Detalle');
+Route::get('/graficador', [BusquedaController::class, 'Graficador'])-> name('graficador');
+
+
+
+
+
+
+
+
+
+
 //Rutas cortes
 /*
     Route::get('/cortes/getData', [CorteController::class, 'getData'])->name('corte.getData');

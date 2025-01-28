@@ -168,8 +168,31 @@
 }
 
 .stage.pending span {
-    color: #999;
+    color: #4492ec;
 }
+
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* 4 columnas */
+      gap: 20px; /* Espacio entre los elementos */
+      width: 100%; /* Ajusta el ancho total del contenedor */
+      max-width: 1200px;
+    }
+    .grid-item {
+      text-align: center; /* Centrar el texto y el canvas */
+    }
+    .small-title {
+      font-size: 16px; /* Tamaño ajustado */
+      margin-bottom: 10px; /* Espacio entre el título y el canvas */
+    }
+    canvas {
+      user-select: none;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      border: 1px solid #ddd; /* Opcional: agrega borde a los canvas */
+      bord
+    }
+
 
     </style>
 @endsection
@@ -204,8 +227,6 @@
                     <tr>
                         <th class="sort border-top ps-3" data-sort="venta">Orden De Venta</th>
                         <th class="sort border-top" data-sort="fabricacion">Nombre Cliente</th>
-                        <th class="sort border-top" data-sort="Articulos">Articulo </th>
-                        <th class="sort border-top" data-sort="total">Cantidad Total</th>
                         <th class="sort border-top" data-sort="total">Detalles</th>
                         
                     </tr>
@@ -227,11 +248,10 @@
                 <thead class="bg-info">
                     <tr>
                         <th class="sort border-top" data-sort="fabricacion">Orden De Fabricación</th>
-                        <th class="sort border-top" data-sort="partidas">Partidas</th>
+                        <th class="sort border-top" data-sort="partidas">Articulo</th>
+                        <th class="sort border-top" data-sort="partidas">Descripcion</th>
+                        <th class="sort border-top" data-sort="partidas">Cantidad Total</th>
                         <th class="sort border-top" data-sort="estatus">Estatus</th>
-                        <th class="sort border-top" data-sort="estatus">Detalles</th>
-
-                        
                     </tr>
                 </thead>
                 <tbody id="tabla-resultadosFabricacion">  
@@ -255,7 +275,6 @@
                         <div class="progress">
                             <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                         </div>
-                    
                         <!-- Lista de etapas -->
                         <ul class="progress-bar-stages">
                             <li class="stage" id="progress-tab1">
@@ -314,8 +333,59 @@
                             </li>
                             
                         </ul>
+                        <br> 
+                        <div class="grid-container" id="canvases">
+                        
+                            <!-- Estación Cortes -->
+                            <div class="grid-item">
+                              <h1 class="small-title">Estación Cortes</h1>
+                              <canvas id="corte" width="300" height="300"></canvas>
+                            </div>
+                        
+                            <!-- Estación Suministros -->
+                            <div class="grid-item">
+                              <h1 class="small-title">Estación Suministros</h1>
+                              <canvas id="suministro" width="300" height="300"></canvas>
+                            </div>
+                            
+                        
+                            <!-- Estación Preparado -->
+                            <div class="grid-item">
+                              <h1 class="small-title">Estación Preparado</h1>
+                              <canvas id="preparado" width="300" height="300"></canvas>
+                            </div>
+                        
+                            <!-- Estación Ensamble -->
+                            <div class="grid-item">
+                              <h1 class="small-title">Estación Ensamble</h1>
+                              <canvas id="ensamble" width="300" height="300"></canvas>
+                            </div>
+                        
+                            <!-- Estación Pulido -->
+                            <div class="grid-item">
+                              <h1 class="small-title">Estación Pulido</h1>
+                              <canvas id="pulido" width="300" height="300"></canvas>
+                            </div>
+                        
+                            <!-- Estación Medición -->
+                            <div class="grid-item">
+                              <h1 class="small-title">Estación Medición</h1>
+                              <canvas id="medicion" width="300" height="300"></canvas>
+                            </div>
+                        
+                            <!-- Estación Visualización -->
+                            <div class="grid-item">
+                              <h1 class="small-title">Estación Visualización</h1>
+                              <canvas id="visualizacion" width="300" height="300"></canvas>
+                            </div>
+                        
+                            <!-- Estación Empaque -->
+                            <div class="grid-item">
+                              <h1 class="small-title">Estación Empaque</h1>
+                              <canvas id="empaque" width="300" height="300"></canvas>
+                            </div>
+                        </div>
                     <div class="modal-footer">
-                        <button class="btn btn-primary" type="button" id="startProgressButton">Iniciar Progreso</button>
                         <button class="btn btn-outline-primary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     </div>
                 </div>
@@ -326,345 +396,365 @@
 @endsection
 
 @section('scripts')
-    <!-- Optional Scripts -->
-
-
+    <!-- Scripts -->
+    <script src="vendors/echarts/echarts.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
- // Función para alternar entre las tablas de Venta y Fabricación
-function toggleTable() {
-    var radioVenta = document.getElementById("flexRadioDefault1");
-    var radioFabricacion = document.getElementById("flexRadioDefault2");
+    
+    // Función para alternar entre las tablas de Venta y Fabricación
+    function toggleTable() {
+        var radioVenta = document.getElementById("flexRadioDefault1");
+        var radioFabricacion = document.getElementById("flexRadioDefault2");
 
-    if (radioVenta.checked) {
-        document.getElementById("tablaVenta").style.display = "block";
-        document.getElementById("tablaFabricacion").style.display = "none";
-        cargarDatosVenta();  
-    } else if (radioFabricacion.checked) {
-        document.getElementById("tablaVenta").style.display = "none";
-        document.getElementById("tablaFabricacion").style.display = "block";
-        cargarDatosFabricacion();  // Cargar los datos de la tabla de fabricación
-    }
-}
-
-// Cargar datos de la tabla de orden de venta
-function cargarDatosVenta() {
-    var search = $('input[name="search"]').val();
-    $.ajax({
-        url: '{{ route("Buscar.Venta") }}',
-        method: 'GET',
-        data: { search: search },
-        success: function (data) {
-            console.log(data);  // Verifica la estructura de 'data'
-
-            var tbody = $('#tabla-resultadosVenta');
-            tbody.empty();
-
-            if (data.length > 0) {
-                data.forEach(function (item) {
-                    console.log(item);  // Verifica todo el objeto 'item'
-                    var row = `
-                        <tr>
-                            <td>${item.OrdenVenta}</td>
-                            <td>${item.NombreCliente}</td>
-                            <td>${item.Articulo}</td>
-                            <td>${item.CantidadTotal}</td>
-                             <td class="text-center align-middle">
-                                <a href="#" class="btn btn-outline-warning btn-xs ver-detalles" 
-                                    data-id="${item.id}"
-                                    data-ordenventa="${item.OrdenVenta}"
-                                    data-nombrecliente="${item.NombreCliente}"
-                                    data-articulo="${item.Articulo}"
-                                    data-cantidatotal="${item.CantidadTotal}">
-                                    <i class="bi bi-eye"></i> Detalles
-                                </a>
-                            </td>
-                        </tr>`;
-                    tbody.append(row);
-                });
-            } else {
-                tbody.append('<tr><td colspan="5">No se encontraron resultados</td></tr>');
-            }
-
-
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert('Error al cargar los datos de la Orden de Venta. Estado: ' + textStatus + ', Error: ' + errorThrown);
+        if (radioVenta.checked) {
+            document.getElementById("tablaVenta").style.display = "block";
+            document.getElementById("tablaFabricacion").style.display = "none";
+            cargarDatosVenta();  
+        } else if (radioFabricacion.checked) {
+            document.getElementById("tablaVenta").style.display = "none";
+            document.getElementById("tablaFabricacion").style.display = "block";
+            cargarDatosFabricacion();  // Cargar los datos de la tabla de fabricación
         }
-    });
-}
-$(document).on('click', '.ver-detalles', function (e) {
-    e.preventDefault();
+    }
 
-    var ordenVenta = $(this).data('ordenventa');
-    var CantidadTotal = $(this).data('cantidatotal');
-    console.log(CantidadTotal);
+    // Cargar datos de la tabla de orden de venta
+    function cargarDatosVenta() {
+        var search = $('input[name="search"]').val();
+        $.ajax({
+            url: '{{ route("Buscar.Venta") }}',
+            method: 'GET',
+            data: { search: search },
+            success: function (data) {
+                console.log(data);  
 
-    // Limpiar los estados anteriores
-    $('.progress-bar').css('width', '0%').text('0%');
-    $('.progress-bar-stages .stage').removeClass('pending active completed').addClass('pending');
+                var tbody = $('#tabla-resultadosVenta');
+                tbody.empty();
 
-    $.ajax({
-        url: '{{ route("Buscar.Venta.Detalle") }}',
-        type: 'GET',
-        data: { 
-        id: ordenVenta, 
-        CantidadTotal: CantidadTotal // Asegúrate de que CantidadTotal tenga un valor definido
-    },
-        success: function (response) {
-            if (response.partidasAreas) {
-                var totalEtapas = $('.progress-bar-stages .stage').length;
-                var etapasCompletadas = 0;
-
-                // Recorrer las etapas y asignar el estado correspondiente
-                response.partidasAreas.forEach(function (partida) {
-                    var estadoId = {
-                        'planeacion': '#stage1',
-                        'corte': '#stage2',
-                        'suministro': '#stage3',
-                        'preparado': '#stage4',
-                        'ensamble': '#stage5',
-                        'pulido': '#stage6',
-                        'medicion': '#stage7',
-                        'visualizacion': '#stage8',
-                        'Abierto': '#stage9',
-                        
-                    }[partida.Estado];
-
-                    if (estadoId) {
-                        // Cambiar a "completado" las etapas alcanzadas
-                        $(estadoId).removeClass('pending').addClass('completed');
-                        etapasCompletadas++;
-                    }
-                });
-
-                // Resaltar la etapa activa
-                var estadoActivo = response.partidasAreas.find(partida => partida.EstadoActual);
-                if (estadoActivo) {
-                    var activoId = {
-                        'planeacion': '#stage1',
-                        'corte': '#stage2',
-                        'suministro': '#stage3',
-                        'preparado': '#stage4',
-                        'ensamble': '#stage5',
-                        'pulido': '#stage6',
-                        'medicion': '#stage7',
-                        'visualizacion': '#stage8',
-                        'Abierto': '#stage9',
-                       
-                    }[estadoActivo.Estado];
-
-                    if (activoId) {
-                        $(activoId).removeClass('pending completed').addClass('active');
-                    }
+                if (data.length > 0) {
+                    data.forEach(function (item) {
+                        console.log(item);  
+                        var row = `
+                            <tr>
+                                <td>${item.OrdenVenta}</td>
+                                <td>${item.NombreCliente}</td>
+                                <td class="text-center align-middle">
+                                    <a href="#" class="btn btn-outline-warning btn-xs ver-detalles" 
+                                        data-id="${item.id}"
+                                        data-ordenventa="${item.OrdenVenta}"
+                                        data-nombrecliente="${item.NombreCliente}">
+                                        <i class="bi bi-eye"></i> Detalles
+                                    </a>
+                                </td>
+                            </tr>`;
+                        tbody.append(row);
+                    });
+                } else {
+                    tbody.append('<tr><td colspan="5">No se encontraron resultados</td></tr>');
                 }
 
-                // Actualizar la barra de progreso
-                var porcentaje = Math.round((etapasCompletadas / totalEtapas) * 100);
-                $('#progressBar').css('width', porcentaje + '%').text(porcentaje + '%');
 
-                // Mostrar el modal
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert('Error al cargar los datos de la Orden de Venta. Estado: ' + textStatus + ', Error: ' + errorThrown);
+            }
+        });
+    }
+
+    //detalles de la princip
+    $(document).on('click', '.ver-detalles', function (e) {
+        var ordenVenta = $(this).data('ordenventa');
+    
+        $('.progress-bar').css('width', '0%').text('0%');
+        $('.progress-bar-stages .stage').removeClass('pending active completed').addClass('pending');
+
+        $.ajax({
+            url: '{{ route("Buscar.Venta.Detalle") }}',
+            type: 'GET',
+            data: { 
+                id: ordenVenta, 
+            
+            },
+            success: function (response) {
+                if (response.partidasAreas) {
+                    if (response.partidasAreas !== null) {
+                        var totalEtapas = $('.progress-bar-stages .stage').length;
+                        var etapasCompletadas = 0;
+
+                        response.partidasAreas.forEach(function (partida) {
+                            var estadoId = {
+                                'planeacion': '#stage1',
+                                'corte': '#stage2',
+                                'suministro': '#stage3',
+                                'preparado': '#stage4',
+                                'ensamble': '#stage5',
+                                'pulido': '#stage6',
+                                'medicion': '#stage7',
+                                'visualizacion': '#stage8',
+                                'Abierto': '#stage9',
+                            }[partida.Estado];
+
+                            if (estadoId) {
+                                $(estadoId).removeClass('pending').addClass('completed');
+                                etapasCompletadas++;
+                            }
+                        });
+
+                        var estadoActivo = response.partidasAreas.find(partida => partida.EstadoActual);
+                        if (estadoActivo) {
+                            var activoId = {
+                                'planeacion': '#stage1',
+                                'corte': '#stage2',
+                                'suministro': '#stage3',
+                                'preparado': '#stage4',
+                                'ensamble': '#stage5',
+                                'pulido': '#stage6',
+                                'medicion': '#stage7',
+                                'visualizacion': '#stage8',
+                                'Abierto': '#stage9',
+                            }[estadoActivo.Estado];
+
+                            if (activoId) {
+                                $(activoId).removeClass('pending completed').addClass('active');
+                            }
+                        }
+
+                        var porcentaje = Math.round((etapasCompletadas / totalEtapas) * 100);
+                        $('#progressBar').css('width', porcentaje + '%').text(porcentaje + '%');
+                    } else {
+                        $('#progressBar').css('width', '0%').text('0%');
+                        $('.progress-bar-stages .stage').removeClass('pending active completed').addClass('pending');
+                    }
+                } else {
+
+                    $('#progressBar').css('width', '0%').text('0%');
+                    $('.progress-bar-stages .stage').removeClass('pending active completed').addClass('pending');
+                }
+
                 $('#exampleModal').modal('show');
-            } else {
-                alert('No se encontraron datos para esta venta.');
+            },
+            error: function () {
+                alert('Error al obtener los datos de la venta.');
             }
-        },
-        error: function () {
-            alert('Error al obtener los datos de la venta.');
-        }
+        });
+        const endpoints = [
+            {
+                tipo: 'cortes',
+                id: 'corte',
+            },
+            {
+                tipo: 'suministros',
+                id: 'suministro',
+            },
+            {
+                tipo: 'preparado',
+                id: 'preparado',
+            },
+            {
+                tipo: 'ensamble',
+                id: 'ensamble',
+
+            },
+            {
+                tipo: 'pulido',
+                id: 'pulido',
+            },
+            {
+                tipo:'medicion',
+                id: 'medicion',
+            },
+            {
+                tipo: 'visualizacion',
+                id: 'visualizacion',
+            },
+            {
+                tipo: 'empaque',
+                id: 'empaque',
+            },
+
+        ];
+
+        endpoints.forEach(endpoint => {
+            $.ajax({
+                url: '{{ route("graficador") }}', 
+                type: 'GET',
+                data: { 
+                    id: ordenVenta, 
+                    tipo: endpoint.tipo, 
+                },
+                success: function (response) {
+                    if (response.length > 0) {
+                        const firstOrder = response[0];
+                        drawGauge(endpoint.id, firstOrder.Progreso, `Orden: ${firstOrder.OrdenVenta}`);
+                    } else {
+                        console.log('No hay datos para mostrar.');
+                        drawGauge(endpoint.id, 0, 'Sin Datos');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
+                }
+            });
+        });
+
+
     });
-});
 
+    //funcion para cargar los canvases
+    function drawGauge(canvasId, value, label) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
 
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = 120;
+        const startAngle = Math.PI;
+        const endAngle = 2 * Math.PI;
 
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-// Cargar datos de la tabla de orden de fabricación
+        // Draw background arc
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.lineWidth = 20;
+        ctx.strokeStyle = '#e0e0e0'; // Color del fondo (gris claro)
+        ctx.stroke();
 
-function cargarDatosFabricacion() {
-    var search = $('#inputBusquedaFabricacion').val(); 
+        // Draw foreground arc (el progreso)
+        ctx.beginPath();
+        const valueAngle = startAngle + (value / 100) * (endAngle - startAngle);
+        ctx.arc(centerX, centerY, radius, startAngle, valueAngle);
+        ctx.strokeStyle = '#3b82f6'; // Color del progreso (puedes cambiarlo)
+        ctx.stroke();
 
-    $.ajax({
-        url: '{{ route("Buscar.Fabricacion") }}', 
-        method: 'GET',
-        data: { search: search }, 
-        success: function (data) {
-            var tbody = $('#tabla-resultadosFabricacion');
-            tbody.empty(); 
+        // Draw center text
+        ctx.font = '24px Arial';
+        ctx.fillStyle = '#000'; // Color del texto
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`${value}%`, centerX, centerY - 20); // Muestra el valor en el centro
 
-            if (data.length > 0) {
-                data.forEach(function (item) {
-                    var row = `
-                        <tr>
-                            <td>${item.OrdenFabricacion}</td>
-                            <td>${item.total_partidas}</td>
-                           <td>
-                                <div class="progress" style="height: 25px; background-color: #f2f2f2; border-radius: 5px; overflow: hidden;">
-                                    <div 
-                                        class="progress-bar progress-bar-striped progress-bar-animated" 
-                                        role="progressbar" 
-                                        aria-valuenow="${item.progreso}" 
-                                        aria-valuemin="0" 
-                                        aria-valuemax="100" 
-                                        style="width: ${item.progreso}%; font-weight: bold; font-size: 14px; line-height: 25px; color: #fff;
-                                            background-color: ${item.progreso < 20 ? '#f44336' : item.progreso < 50 ? '#ff9800' : item.progreso < 70 ? '#ffeb3b' : '#4caf50'};">
-                                        ${Math.round(item.progreso)}%
-                                    </div>
-                                </div>
-                            </td>
-                            <td> <i class="bi bi-eye"></i> Detalles
-
-                            </td>
-
-                        </tr>`;
-                    tbody.append(row);
-                });
-            } else {
-                tbody.append('<tr><td colspan="4">No se encontraron resultados</td></tr>');
-            }
-        },
-        error: function () {
-            alert('Error al cargar los datos de la Orden de Fabricación');
-        }
-    });
-}
-
-
-
-// Filtrar tabla según lo que se escribe en el buscador
-function filtrarTabla(tipo) {
-    var input, filter, table, tr, td, i, txtValue;
-    if (tipo === 'venta') {
-        input = document.getElementById("buscadorVenta");
-        table = document.getElementById("tabla-resultadosVenta");
-    } else {
-        input = document.getElementById("buscadorFabricacion");
-        table = document.getElementById("tabla-resultadosFabricacion");
+        // Draw label below
+        ctx.font = '16px Arial';
+        ctx.fillStyle = '#555'; // Color del texto de la etiqueta
+        ctx.fillText(label, centerX, centerY + 40); // Muestra la etiqueta debajo
     }
 
-    filter = input.value.toUpperCase();
-    tr = table.getElementsByTagName("tr");
+    // Cargar datos de la tabla de orden de fabricación
 
-    for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td");
-        let match = false;
-        for (let j = 0; j < td.length; j++) {
-            if (td[j]) {
-                txtValue = td[j].textContent || td[j].innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    match = true;
-                    break;
+    function cargarDatosFabricacion() {
+        var search = $('#inputBusquedaFabricacion').val(); 
+
+        $.ajax({
+            url: '{{ route("Buscar.Fabricacion") }}', 
+            method: 'GET',
+            data: { search: search }, 
+            success: function (data) {
+                var tbody = $('#tabla-resultadosFabricacion');
+                tbody.empty(); 
+
+                if (data.length > 0) {
+                    data.forEach(function (item) {
+                        var row = `
+                            <tr>
+                                <td>${item.OrdenFabricacion}</td>
+                                <td>${item.Articulo}</td>
+                                <td>${item.Descripcion}</td>
+                                <td>${item.CantidadTotal}</td>
+                            <td>
+                                    <div class="progress" style="height: 25px; background-color: #f2f2f2; border-radius: 5px; overflow: hidden;">
+                                        <div 
+                                            class="progress-bar progress-bar-striped progress-bar-animated" 
+                                            role="progressbar" 
+                                            aria-valuenow="${item.progreso}" 
+                                            aria-valuemin="0" 
+                                            aria-valuemax="100" 
+                                            style="width: ${item.progreso}%; font-weight: bold; font-size: 14px; line-height: 25px; color: #fff;
+                                                background-color: ${item.progreso < 20 ? '#f44336' : item.progreso < 50 ? '#ff9800' : item.progreso < 70 ? '#ffeb3b' : '#4caf50'};">
+                                            ${Math.round(item.progreso)}%
+                                        </div>
+                                    </div>
+                                </td>
+                                
+
+                            </tr>`;
+                        tbody.append(row);
+                    });
+                } else {
+                    tbody.append('<tr><td colspan="4">No se encontraron resultados</td></tr>');
+                }
+            },
+            error: function () {
+                alert('Error al cargar los datos de la Orden de Fabricación');
+            }
+        });
+    }
+
+    // Filtrar tabla según lo que se escribe en el buscador
+    function filtrarTabla(tipo) {
+        var input, filter, table, tr, td, i, txtValue;
+        if (tipo === 'venta') {
+            input = document.getElementById("buscadorVenta");
+            table = document.getElementById("tabla-resultadosVenta");
+        } else {
+            input = document.getElementById("buscadorFabricacion");
+            table = document.getElementById("tabla-resultadosFabricacion");
+        }
+
+        filter = input.value.toUpperCase();
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td");
+            let match = false;
+            for (let j = 0; j < td.length; j++) {
+                if (td[j]) {
+                    txtValue = td[j].textContent || td[j].innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        match = true;
+                        break;
+                    }
                 }
             }
-        }
-        if (match) {
-            tr[i].style.display = "";
-        } else {
-            tr[i].style.display = "none";
+            if (match) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
         }
     }
-}
 
-// Cargar los datos iniciales al cargar la página
-$(document).ready(function () {
-    cargarDatosVenta();  
+    // Cargar los datos iniciales al cargar la página
+    $(document).ready(function () {
+        cargarDatosVenta();  
 
-    $('#buscarVenta').on('click', function () {
-        cargarDatosVenta();
-    });
-
-    
-    $('input[name="search"]').on('keypress', function (e) {
-        if (e.keyCode === 13) { 
-            e.preventDefault();
+        $('#buscarVenta').on('click', function () {
             cargarDatosVenta();
-        }
-    });
-
-    
-    $('#buscarFabricacion').on('click', function () {
-        cargarDatosFabricacion();
-    });
-
-    
-    $('#inputBusquedaFabricacion').on('keypress', function (e) {
-        if (e.keyCode === 13) { 
-            e.preventDefault();
-            cargarDatosFabricacion();
-        }
-    });
-});
-</script>
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Detalles de Venta</h5>
-                <button type="button" class="btn p-1" data-bs-dismiss="modal" aria-label="Close">
-                    <svg class="svg-inline--fa fa-xmark fs--1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
-                        <path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"></path>
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="progress">
-                    <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
-                </div>
-                <ul id="stages-list" class="list-unstyled mt-3">
-                    <li>Planificación</li>
-                    <li>Cortes</li>
-                    <li>Suministros</li>
-                    <li>Preparado</li>
-                    <li>Ensamble</li>
-                    <li>Pulido</li>
-                    <li>Medición</li>
-                    <li>Visualización</li>
-                    <li>Abierto</li>
-                    <li>Cerrado</li>
-                    <li>Retrabajo</li>
-                </ul>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" type="button" id="startProgressButton">Iniciar Progreso</button>
-                <button class="btn btn-outline-primary" type="button" data-bs-dismiss="modal">Cancelar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-  const stages = [
-    "Planificación", "Cortes", "Suministros", "Preparado", "Ensamble",
-    "Pulido", "Medición", "Visualización", "Abierto", "Cerrado", "Retrabajo"
-  ];
-
-  let currentStage = 0;
-
-  const progressBar = document.getElementById("progress-bar");
-  const stagesList = document.getElementById("stages-list");
-  const startButton = document.getElementById("startProgressButton");
-
-  startButton.addEventListener("click", () => {
-    if (currentStage < stages.length) {
-      updateProgress();
-      currentStage++;
-    }
-  });
-
-  function updateProgress() {
-    const progressPercentage = (currentStage / stages.length) * 100;
-    progressBar.style.width = progressPercentage + "%";
-
-    const listItems = stagesList.querySelectorAll("li");
-    listItems.forEach((item, index) => {
-      if (index <= currentStage) {
-        item.style.color = "green";
-      } else {
-        item.style.color = "gray";
-      }
-    });
-  }
-</script>
-
+        });
 
         
+        $('input[name="search"]').on('keypress', function (e) {
+            if (e.keyCode === 13) { 
+                e.preventDefault();
+                cargarDatosVenta();
+            }
+        });
+
+        
+        $('#buscarFabricacion').on('click', function () {
+            cargarDatosFabricacion();
+        });
+
+        
+        $('#inputBusquedaFabricacion').on('keypress', function (e) {
+            if (e.keyCode === 13) { 
+                e.preventDefault();
+                cargarDatosFabricacion();
+            }
+        });
+    });
+
+</script>
 @endsection
 

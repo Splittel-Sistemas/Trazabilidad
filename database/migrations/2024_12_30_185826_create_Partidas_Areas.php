@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('Areas_id');
             $table->unsignedBigInteger('Users_id');
             $table->unsignedBigInteger('Linea_id');
+            $table->unsignedBigInteger('Cantidad');
             $table->foreign('Partidas_id')->references('id')->on('Partidas')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('Areas_id')->references('id')->on('Areas')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('Users_id')->references('id')->on('Users')->onDelete('cascade')->onUpdate('cascade');
