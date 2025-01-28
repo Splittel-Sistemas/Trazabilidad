@@ -112,7 +112,7 @@ class BusquedaController extends Controller
     {
         $idVenta = $request->input('id');
         $tipo = $request->input('tipo'); 
-    
+        //para cargar los datos 
         if (!empty($idVenta)) {
             //estacion eccorte
             if ($tipo === 'cortes') {
@@ -183,6 +183,7 @@ class BusquedaController extends Controller
                     )
                     ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.OrdenVenta_ID')
                     ->get();
+            //estacion pulido
             }elseif($tipo === 'pulido'){
                 $result= DB::table('ordenventa')
                     ->join('ordenfabricacion', 'OrdenVenta.id', '=', 'ordenfabricacion.OrdenVenta_id') 
@@ -200,6 +201,7 @@ class BusquedaController extends Controller
                     )
                     ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.OrdenVenta_ID')
                     ->get();
+            //estacion medicion
             }elseif($tipo === 'medicion'){
                 $result= DB::table('ordenventa')
                     ->join('ordenfabricacion', 'OrdenVenta.id', '=', 'ordenfabricacion.OrdenVenta_id') 
@@ -217,6 +219,7 @@ class BusquedaController extends Controller
                     )
                     ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.OrdenVenta_ID')
                     ->get();
+            //estacion visualizacion
             }elseif($tipo === 'visualizacion'){
                 $result= DB::table('ordenventa')
                     ->join('ordenfabricacion', 'OrdenVenta.id', '=', 'ordenfabricacion.OrdenVenta_id') 
@@ -234,6 +237,7 @@ class BusquedaController extends Controller
                     )
                     ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.OrdenVenta_ID')
                     ->get();
+            //estacion empaque
             }elseif($tipo === 'empaque'){
                 $result= DB::table('ordenventa')
                     ->join('ordenfabricacion', 'OrdenVenta.id', '=', 'ordenfabricacion.OrdenVenta_id') 
