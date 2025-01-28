@@ -217,24 +217,28 @@
                             <thead>
                                 <tr class="bg-light">
                                     <th>Orden Fabricación</th>
+                                    <th>N&uacute;mero Partida</th>
                                     <th>Artículo</th>
                                     <th>Descripción</th>
                                     <th>Piezas Cortadas</th>
                                     <th>Cantidad Total</th>
-                                    <th>Fecha Planeada</th>
+                                    <th>Fecha Cierre</th>
+                                    <th>Estatus</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="procesoTableBody" class="list">
-                            @foreach($OrdenesFabricacionAbiertas as $orden)
+                            <tbody id="completadoTableBody" class="list">
+                                @foreach($OrdenesFabricacionCerradas as $orden1)
                                 <tr>
-                                    <td>{{ $orden->OrdenFabricacion }}</td>
-                                    <td>{{ $orden->Articulo }}</td>
-                                    <td>{{ $orden->Descripcion }}</td>
-                                    <td>{{ $orden->Piezascortadas }}</td>
-                                    <td>{{ $orden->CantidadTotal }}</td>
-                                    <td>{{ $orden->FechaEntrega }}</td>
-                                    <td><button class="btn btn-sm btn-outline-primary" onclick="Planear('{{$orden->idEncript}}')">Cortes</button></td>
+                                    <td>{{ $orden1->OrdenFabricacion }}</td>
+                                    <td>{{ $orden1->NumeroPartida}}</td>
+                                    <td>{{ $orden1->Articulo }}</td>
+                                    <td>{{ $orden1->Descripcion }}</td>
+                                    <td>{{ $orden1->Piezascortadas }}</td>
+                                    <td>{{ $orden1->CantidadTotal }}</td>
+                                    <td>{{ $orden1->FechaFinalizacion }}</td>
+                                    <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Cerrada</span></div></td>
+                                    <td><button class="btn btn-sm btn-outline-primary px-3 py-1" onclick="Planear('{{$orden1->idEncript}}')">Cortes</button></td>
                                 </tr>
                             @endforeach
                             </tbody>
@@ -394,10 +398,10 @@
                 </div>
             </div>
             <!-- Modal -->
-            <div class="modal fade" id="myModalRangos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
+            <!--<div class="modal fade" id="myModalRangos" tabindex="-1" data-bs-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                        <div class="modal-header p-2" style="background-color: #84c3ec; --bs-bg-opacity: .8;">
+                        <div class="modal-header p-2 bg-primary">
                             <h5 class="modal-title" id="exampleModalLabel">Selecciona los Rangos para el PDF</h5>
                             <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" style="color: red; font-size: 1.25rem; background: none; border: none; padding: 3; line-height: 2;">&times;</button>
                         </div>
@@ -423,13 +427,12 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            
+            </div>-->
             <input type="hidden" id="ordenFabricacionId" value="">
         </div>
     </div>
-     <!--MODAL PARA PLANEACION-->
-     <div class="modal fade" id="ModalSuministro" tabindex="-1" data-bs-backdrop="static" aria-labelledby="ModalSuministroLabel" aria-hidden="true">
+    <!--MODAL PARA PLANEACION-->
+    <div class="modal fade" id="ModalSuministro" tabindex="-1" data-bs-backdrop="static" aria-labelledby="ModalSuministroLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable" style="height: 90%">
           <div class="modal-content" style="height: 100%">
             <div class="modal-header bg-info">
@@ -473,12 +476,37 @@
             </div>
           </div>
         </div>
+    </div>
+    <!--MODAL SELECCIONAR COLOR-->
+    <div class="modal fade" id="ModalColor" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog ">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Color de Etiquetas</h5><button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1"></span></button>
+            </div>
+            <div class="modal-body">
+                <select class="form-select" id="Coloretiqueta">
+                    <option value="1" style="background-color: blue; color: white;">Azul</option>
+                    <option value="2" style="background-color: red; color: white;">Rojo</option>
+                    <option value="3" style="background-color: #d5006d;color: white;">Rosa Mexicano</option>
+                    <option value="4" style="background-color: #6b3e26;color: white;">Café</option>
+                    <option value="5" style="background-color: #006747;color: white;">Verde Bandera</option>
+                    <option value="6" style="background-color: yellow;">Amarillo</option>
+                    <option value="7" style="background-color: #d4e157;">Verde Limón</option>
+                    <option value="8" style="background-color: pink;">Rosa</option>
+                    <option value="9" style="background-color: orange;">Naranja</option>
+                </select></div>
+            <div class="modal-footer"><button class="btn btn-outline-primary" id="DescargarEtiquetas" type="button">Descargar</button><button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cancelar</button></div>
+          </div>
+        </div>
       </div>
 @endsection
 @section('scripts')
 <script>
     $(document).ready(function() {
+        //$('#procesoTableBody').html('{{$OrdenesFabricacionCerradas}}');
         DataTable('procesoTable',true);
+        DataTable('completadoTable',true);
         document.getElementById("Retrabajo").addEventListener("change", function() {
             if (this.checked) {
                 TraerEmisiones();
@@ -656,7 +684,7 @@
                     $('#CantitadpiezasIdOF').val(response.id);
                     $('#ModalSuministroBodyInfoOF').html(response.Ordenfabricacioninfo);
                     $('#ModalSuministroBodyPartidasOF').html(response.Ordenfabricacionpartidas);
-                    $('#procesoTable').DataTable().destroy();
+                    //$('#TablePartidasModal').DataTable().destroy();
                     //DataTable('TablePartidasModal',false);
                 }
             },
@@ -688,7 +716,10 @@
             }
         });
     }
-    function Cancelar(id){
+    function Cancelar(id,Numpartida){
+        confirmacion('Cancelar Partida','¿Desea cancelar la partida Número '+Numpartida+'?','Confirmar','CancelarAccion(\''+id+'\')');
+    }
+    function CancelarAccion(id){
         $.ajax({
             url: "{{route('CancelarCorte')}}", 
             type: 'POST',
@@ -704,9 +735,11 @@
                     Planear(response.OF);
                     success("Cancelada Correctamente!",response.message);
                     RecargarTabla()
-                }else if(ifresponse.status=='errornoexiste'){
+                }else if(response.status=='errornoexiste'){
                     error("Error!",response.message);
                 }else if(response.status=='erroriniciada'){
+                    error("Error!",response.message);
+                }else if(response.status=='errorfinalizada'){
                     error("Error!",response.message);
                 }
             },
@@ -724,9 +757,17 @@
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
-
             },
             success: function(response) {
+                if(response.status=='success'){
+                    Planear(response.OF);
+                    success("Finalizada Correctamente!",response.message);
+                    RecargarTabla();
+                }else if(response.status=='errornoexiste'){
+                    error("Error!",response.message);
+                }else if(response.status=='errorfinalizada'){
+                    error("Error!",response.message);
+                }
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 errorBD();
@@ -749,6 +790,20 @@
                         }
         });
 
+    }
+    function Etiquetas(id){
+        $('#ModalColor').modal('show');
+        $('#DescargarEtiquetas').attr('onclick', 'etiquetaColor("'+id+'");');
+        // Generar la URL usando Laravel route()
+    }
+    function etiquetaColor(id){
+        Coloretiqueta=$('#Coloretiqueta').val();
+        var url = "{{ route('generar.pdf')}}?id=_corteId_&Coloretiqueta =_Coloretiqueta_";
+        url = url.replace('_corteId_', id);
+        url = url.replace('_Coloretiqueta_', Coloretiqueta);
+        // Abre la URL para descargar el PDF
+        window.open(url, '_blank');
+        $('#ModalColor').modal('hide');
     }
 </script>
 

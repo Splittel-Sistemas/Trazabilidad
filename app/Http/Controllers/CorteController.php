@@ -20,12 +20,12 @@ class CorteController extends Controller
         $fecha = date('Y-m-d');
         $fechaAtras=date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
         $OrdenesFabricacionAbiertas=$this->OrdenesFabricacionAbiertas();
-        //return$OrdenesFabricacionCerradas=$this->OrdenesFabricacionCerradas($fecha,$fechaAtras);
+        $OrdenesFabricacionCerradas=$this->OrdenesFabricacionCerradas($fechaAtras, $fecha);
         foreach($OrdenesFabricacionAbiertas as $orden) {
             $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
             $orden['Piezascortadas'] = $orden->partidasOF()->get()->sum('cantidad_partida');
         }
-        return view('Areas.Cortes', compact('OrdenesFabricacionAbiertas','fecha','fechaAtras'));
+        return view('Areas.Cortes', compact('OrdenesFabricacionAbiertas','OrdenesFabricacionCerradas','fecha','fechaAtras'));
     }
     public function CorteRecargarTabla(){
         //EstatusEntrega==0 aun no iniciado; 1 igual a terminado
@@ -126,8 +126,8 @@ class CorteController extends Controller
                     }else{
                         $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>';
                     }
-                    $Ordenfabricacionpartidas.='<td class="text-center"><button class="btn btn-link me-1 mb-1" type="button"><i class="fas fa-download"></i></button></td>
-                                <td class="text-center"><button class="btn btn-sm btn-outline-secondary rounded-pill me-1 mb-1 px-3 py-1" type="button" onclick="Cancelar(\''.$this->funcionesGenerales->encrypt($partida->id).'\')">Cancelar</button></td>            
+                    $Ordenfabricacionpartidas.='<td class="text-center"><button class="btn btn-link me-1 mb-1" onclick="Etiquetas(\''.$this->funcionesGenerales->encrypt($partida->id).'\')" type="button"><i class="fas fa-download"></i></button></td>
+                                <td class="text-center"><button class="btn btn-sm btn-outline-secondary rounded-pill me-1 mb-1 px-3 py-1" type="button" onclick="Cancelar(\''.$this->funcionesGenerales->encrypt($partida->id).'\',\''.$partida->NumeroPartida.'\')">Cancelar</button></td>            
                                 <td><button class="btn btn-sm btn-outline-danger rounded-pill me-1 mb-1 px-3 py-1" type="button" onclick="Finalizar(\''.$this->funcionesGenerales->encrypt($partida->id).'\')">Finalizar</button></td>
                                 </tr>';
                         $RangoEtiquetas+=$partida->cantidad_partida;
@@ -199,14 +199,15 @@ class CorteController extends Controller
                 }else{$partidaOF->NumeroPartida=$NumeroPartida->NumeroPartida+1;}
                 if($retrabajo=='Retrabajo'){
                     $partidaOF->TipoPartida='R';
-                    $Verterminados=$OrdenFabricacion->partidasOF()->where('TipoPartida','=','N')->where('FechaFinalizacion','!=',"")->get()->sum('cantidad_partida');
+                    $Verterminados=$OrdenFabricacion->partidasOF()->where('FechaFinalizacion','!=',"")->get()->sum('cantidad_partida');
+                    $CantidadRetrabajo=$OrdenFabricacion->partidasOF()->where('TipoPartida','=','R')->get()->sum('cantidad_partida');
+                    $Verterminados-=$CantidadRetrabajo;
                     if($Verterminados<$Cantitadpiezas){
                         return response()->json([
                             'status' => 'errorCantidada',
                             'message' =>'Partida no guardada, La cantidad solicitada de piezas para Retrabajo tiene que ser menor o igual al número de Partidas Finalizadas!',
                         ], 200);
                     }
-
                 }elseif($retrabajo=='Normal'){$partidaOF->TipoPartida='N';}
                 $partidaOF->FechaFabricacion=$FechaHoy;
                 $partidaOF->FechaComienzo=$FechaHoy;
@@ -237,6 +238,13 @@ class CorteController extends Controller
         }else{
             $Partidas=$PartidaOF->partidas()->get();
             if($Partidas->count()==0){
+                if(!($PartidaOF->FechaFinalizacion == "" || $PartidaOF->FechaFinalizacion == null)){
+                    return response()->json([
+                        'status' => 'errorfinalizada',
+                        'message' =>'Partida '.$PartidaOF->NumeroPartida.' Ocurrio un error!, No se puede cancelar la Partida, porque ya se encuentra finalizada',
+                        'OF' =>$this->funcionesGenerales->encrypt($PartidaOF->ordenFabricacion()->first()->id),
+                    ]);
+                }
                 $PartidaOF->delete();
                 return response()->json([
                     'status' => 'success',
@@ -254,7 +262,29 @@ class CorteController extends Controller
     }
     public function FinalizarCorte(Request $request){
         $id=$this->funcionesGenerales->decrypt($request->id);
-        return$partida = PartidasOF::find($id);
+        $PartidasOF = PartidasOF::find($id);
+        if($PartidasOF=="" || $PartidasOF==null){
+            return response()->json([
+                'status' => 'errornoexiste',
+                'message' =>'La Orden de Fabricación no existe!',
+            ]);
+        }
+        if(!($PartidasOF->FechaFinalizacion == "" || $PartidasOF->FechaFinalizacion == null)){
+            return response()->json([
+                'status' => 'errorfinalizada',
+                'message' =>'Partida '.$PartidasOF->NumeroPartida.' Ocurrio un error!, La partida ya se encuentra finalizada',
+                'OF' =>$this->funcionesGenerales->encrypt($PartidasOF->ordenFabricacion()->first()->id),
+            ]);
+        }
+        $fechaHoy=date('Y-m-d H:i:s');
+        $PartidasOF->FechaFinalizacion = $fechaHoy;
+        $PartidasOF->save();
+        return response()->json([
+            'status' => 'success',
+            'message' =>'Partida '.$PartidasOF->NumeroPartida.' Finalizada correctamente!',
+            'OF' =>$this->funcionesGenerales->encrypt($PartidasOF->ordenFabricacion()->first()->id),
+        ]);
+
     }
     //Consultas a SAP
     public function Emisiones($OrdenFabricacion){
@@ -271,32 +301,122 @@ class CorteController extends Controller
                         ORDER BY 1";
         return$emisiones=$this->funcionesGenerales->ejecutarConsulta($query_emisiones);
     }
-
     //Ordenes de Fbaricacion Filtro Fecha, Abierta=0 Cerrada=1
     public function OrdenesFabricacionAbiertas(){
         return$OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->orderBy('FechaEntrega', 'asc')->get();
     }
     public function OrdenesFabricacionCerradas($Fechainicio, $Fechafin){
-        return$OrdenFabricacion=PartidasOF::where('FechaFinalizacion','>=',$Fechainicio)
-                                    ->where('FechaFinalizacion','<=',$Fechafin)
+        $PartidasOF=PartidasOF::where('FechaFinalizacion','>=',$Fechainicio.' 00:00:00')
+                                    ->where('FechaFinalizacion','<=',$Fechafin.' 00:00:00')
                                     ->orderBy('FechaFinalizacion', 'desc')
                                     ->get();
-        $tabla="";
-            foreach($OrdenFabricacion as $orden) {
-                $tabla.='<tr>
-                        <td>'. $orden->OrdenFabricacion .'</td>
-                        <td>'. $orden->Articulo .'</td>
-                        <td>'. $orden->Descripcion .'</td>
-                        <td>'. $orden->partidasOF()->get()->sum('cantidad_partida').'</td>
-                        <td>'. $orden->CantidadTotal .'</td>
-                        <td>'. $orden->FechaEntrega .'</td>
+        //$tabla="";
+            foreach($PartidasOF as $orden) {
+                $orden->id="";
+                $OrdenFabricacion=$orden->ordenFabricacion()->first();
+                $orden['OrdenFabricacion'] = $OrdenFabricacion->OrdenFabricacion;
+                $orden['Articulo'] = $OrdenFabricacion->Articulo;
+                $orden['Descripcion'] = $OrdenFabricacion->Descripcion;
+                $orden['CantidadTotal'] = $OrdenFabricacion->CantidadTotal;
+                $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
+                /*$tabla.='<tr>
+                        <td>'. $OrdenFabricacion->OrdenFabricacion .'</td>
+                        <td>'. $orden->NumeroPartida.'</td>
+                        <td>'. $OrdenFabricacion->Articulo .'</td>
+                        <td>'. $OrdenFabricacion->Descripcion .'</td>
+                        <td>'. $orden->cantidad_partida.'</td>
+                        <td>'. $OrdenFabricacion->CantidadTotal .'</td>
+                        <td>'. $orden->FechaFinalizacion .'</td>
                         <td><button class="btn btn-sm btn-outline-primary" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Planear</button></td>
-                    </tr>';
+                    </tr>';*/
             }
-        if($tabla==""){
+        /*if($tabla==""){
             $tabla.='<tr><td colspan="7"></td></tr>';
+        }*/
+        return $PartidasOF;
+    }
+    public function generarPDF(Request $request){
+        try {
+            $partidaId = $this->funcionesGenerales->decrypt($request->input('id'));
+            $Coloretiqueta = $request->input('Coloretiqueta_');
+            if (!$partidaId) {
+                throw new \Exception('ID no recibido');
+            }
+            $colores = [
+                1 => ['nombre' => 'Azul Claro', 'rgb' => [120, 120, 255]], // Azul más claro y más fuerte
+                2 => ['nombre' => 'Rojo Claro', 'rgb' => [255, 105, 105]], // Rojo más claro y más fuerte
+                3 => ['nombre' => 'Rosa Mexicano Claro', 'rgb' => [255, 100, 150]], // Rosa Mexicano más claro y más fuerte
+                4 => ['nombre' => 'Café Claro', 'rgb' => [150, 115, 90]], // Café más claro y más fuerte
+                5 => ['nombre' => 'Verde Bandera Claro', 'rgb' => [85, 150, 120]], // Verde Bandera más claro y más fuerte
+                6 => ['nombre' => 'Amarillo Claro', 'rgb' => [255, 255, 80]], // Amarillo más claro y más fuerte
+                7 => ['nombre' => 'Verde Limón Claro', 'rgb' => [230, 255, 100]], // Verde Limón más claro y más fuerte
+                8 => ['nombre' => 'Rosa Claro', 'rgb' => [255, 210, 220]], // Rosa más claro y más fuerte
+                9 => ['nombre' => 'Naranja Claro', 'rgb' => [255, 180, 120]] // Naranja más claro y más fuerte
+            ];
+            $R= isset($colores[$Coloretiqueta])?$colores[$Coloretiqueta]['rgb'][0]:255;
+            $G= isset($colores[$Coloretiqueta])?$colores[$Coloretiqueta]['rgb'][1]:255;
+            $B= isset($colores[$Coloretiqueta])?$colores[$Coloretiqueta]['rgb'][2]:255;
+            // Buscar la partida por ID
+            $PartidaOF = PartidasOF::find($partidaId);
+            if (is_null($PartidaOF) || is_null($PartidaOF->ordenFabricacion()->first())) {
+                throw new \Exception('No se encontraron datos para este ID.');
+            }
+            $OrdenFabricacion = $PartidaOF->ordenFabricacion;
+            $PartidasOFEtiq=$OrdenFabricacion->partidasOF()->get();
+            $inicio=0;
+            $inicio=0;
+            $fin=0;
+            //Asignamos el numero de inicio y fin de la etiqueta para la partida seleccionada
+            foreach($PartidasOFEtiq as $PartidaOFEtiq){
+                $fin+=$PartidaOFEtiq->cantidad_partida;
+                if($PartidaOFEtiq->id==$partidaId){
+                    break;
+                }
+                $inicio+=$PartidaOFEtiq->cantidad_partida;
+            }
+            // Preparar las partidas relacionadas solo para la partida seleccionada
+            $partidasData = [];
+            $contador = $inicio+1; 
+
+            for ($i = $inicio; $i < $fin; $i++) {
+                $partidasData[] = [
+                    'cantidad' => $contador, 
+                    'descripcion' => $OrdenFabricacion->Descripcion ?? 'Sin Descripción',
+                    'OrdenFabricacion' => $OrdenFabricacion->OrdenFabricacion ?? 'Sin Orden de Fabricación',
+                    'Codigo'=> $OrdenFabricacion->OrdenFabricacion.'-'.$partidaId.'-'.$contador,
+                ];
+                $contador++; // Incrementar el contador
+            }
+            // Crear PDF
+            $pdf = new TCPDF();
+            $pdf->SetMargins(3, 3, 3);
+            $pdf->SetFont('helvetica', 'B', 10);
+
+            foreach ($partidasData as $partida) {
+                //Color de la pagina
+                $pdf->AddPage('L', array(70, 100)); // Añadir una nueva página de 50mm x 100mm
+                $pdf->SetFillColor($R, $G, $B); 
+                $pdf->Rect(0, 0, $pdf->GetPageWidth(), $pdf->GetPageHeight(), 'F');
+                $pdf->SetTextColor(0, 0, 0);  // Color de texto negro
+                $content = 
+                    'Número Cable: ' . strip_tags($partida['cantidad']) . "\n" .
+                    'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" .
+                    'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
+
+                // Añadir el contenido a la página
+                $pdf->MultiCell(0, 5, $content, 0, 'L', 0, 1);
+                $CodigoBarras = strip_tags($partida['Codigo']);
+                $pdf->SetXY(30, $pdf->GetY() + 5);
+                $pdf->write1DBarcode($CodigoBarras, 'C128', '', '', 40, 10, 0.4, array(), 'N');
+                $pdf->Cell(0,5, $CodigoBarras, 0, 1, 'C');
+            }
+            ob_end_clean();
+            // Generar el archivo PDF y devolverlo al navegador
+            return $pdf->Output('orden_fabricacion_' . $partidaId . '.pdf', 'D');
+        } catch (\Exception $e) {
+            Log::error('Error al generar PDF: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        return $tabla;
     }
 
 
@@ -935,82 +1055,6 @@ class CorteController extends Controller
         ];
     
         return response()->json($response);
-    }
-    public function generarPDF(Request $request){
-        try {
-            $partidaId = $request->input('id');
-            if (!$partidaId) {
-                throw new \Exception('ID no recibido');
-            }
-
-            // Buscar la partida por ID
-            $partida = PartidasOF::with('ordenFabricacion')->find($partidaId);
-
-            if (is_null($partida) || is_null($partida->ordenFabricacion)) {
-                throw new \Exception('No se encontraron datos para este ID.');
-            }
-
-            // Obtener la orden de fabricación relacionada
-            $ordenFabricacion = $partida->ordenFabricacion;
-
-            // Calcular el inicio del contador para esta OrdenFabricacion_id
-            $numeroInicial = PartidasOF::where('OrdenFabricacion_id', $partida->OrdenFabricacion_id)
-                ->where('id', '<', $partidaId)
-                ->sum('cantidad_partida') + 1;
-
-            // Preparar las partidas relacionadas solo para la partida seleccionada
-            $partidasData = [];
-            $contador = $numeroInicial; 
-
-            for ($i = 1; $i <= $partida->cantidad_partida; $i++) {
-                $partidasData[] = [
-                    'cantidad' => $contador, 
-                    'descripcion' => $ordenFabricacion->Descripcion ?? 'Sin Descripción',
-                    'orden_fabricacion' => $ordenFabricacion->OrdenFabricacion ?? 'Sin Orden de Fabricación',
-                ];
-                $contador++; // Incrementar el contador
-            }
-
-            // Invertir el array de partidas
-            $partidasData = array_reverse($partidasData);
-
-            // Crear PDF
-            $pdf = new TCPDF();
-            $pdf->SetMargins(5, 5, 5);
-            $pdf->AddPage();
-
-            // Título del PDF
-            $pdf->SetFont('helvetica', 'B', 10);
-            $pdf->Cell(0, 10, 'Orden de Fabricación: ' . strip_tags($ordenFabricacion->OrdenFabricacion), 0, 1, 'C');
-            $pdf->SetFont('helvetica', '', 8);
-            $pdf->Cell(0, 5, 'Descripción: ' . strip_tags($ordenFabricacion->Descripcion), 0, 1, 'C');
-            $pdf->Ln(5);
-
-            // Generar contenido para cada partida
-            foreach ($partidasData as $partida) {
-                $content = 
-                    'No: ' . strip_tags($partida['cantidad']) . "\n" .
-                    'Orden de Fabricación: ' . strip_tags($partida['orden_fabricacion']) . "\n" .
-                    'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
-
-                $startY = $pdf->GetY();
-                $rectWidth = 80;
-                $rectHeight = 15;
-                $pdf->Rect(10, $startY, $rectWidth, $rectHeight, 'D');
-                $pdf->SetXY(12, $startY + 1);
-                $pdf->SetFont('helvetica', '', 6);
-                $pdf->MultiCell($rectWidth - 4, 5, strip_tags($content), 0, 'L', 0, 1);
-                $pdf->SetFont('helvetica', '', 8);
-            }
-
-            ob_end_clean();
-
-            // Generar el archivo PDF y devolverlo al navegador
-            return $pdf->Output('orden_fabricacion_' . $partidaId . '.pdf', 'D');
-        } catch (\Exception $e) {
-            Log::error('Error al generar PDF: ' . $e->getMessage());
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
     }
     public function PDFCondicion(Request $request){
         try {

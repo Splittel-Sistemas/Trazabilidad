@@ -34,7 +34,19 @@ Route::post('/Planeacion/partidas/EscanerEstatus', [PlaneacionController::class,
 Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Detalles'])->name('PartidasOF_Detalles');
 
 //Rutas Ares
-Route::get('/Area/Corte', [AreasController::class,'Corte'])->name('Corte');
+//Route::get('/Area/Corte', [AreasController::class,'Corte'])->name('Corte');
+//Corte Nuevas
+Route::get('/Area/Corte', [CorteController::class, 'index'])->name('corte.index');
+Route::get('/Area/Corte/Tabla', [CorteController::class,'CorteRecargarTabla'])->name('CorteRecargarTabla');
+Route::post('/Area/Corte/InfoModal', [CorteController::class,'CortesDatosModal'])->name('CortesDatosModal');
+Route::post('/Area/Corte/Emisiones', [CorteController::class,'TraerEmisiones'])->name('TraerEmisiones');
+Route::post('/Area/Corte/Corte/Guardar', [CorteController::class,'GuardarCorte'])->name('GuardarCorte');
+Route::post('/Area/Corte/Corte/Cancelar', [CorteController::class,'CancelarCorte'])->name('CancelarCorte');
+Route::post('/Area/Corte/Corte/Finalizar', [CorteController::class,'FinalizarCorte'])->name('FinalizarCorte');
+//Generar PDF
+Route::get('/Area/Corte/GenerarPDF', [CorteController::class, 'generarPDF'])->name('generarPDF');
+
+
 //Suministro
 Route::get('/Area/Suministro', [AreasController::class,'Suministro'])->name('Suministro');
 Route::post('/Area/Suministro/Emision', [AreasController::class,'SuministroEmision'])->name('SuministroEmision');
@@ -46,15 +58,6 @@ Route::get('/Area/Pulido', [AreasController::class,'Pulido'])->name('Pulido');
 Route::get('/Area/Medicion', [AreasController::class,'Medicion'])->name('Medicion');
 Route::get('/Area/Visualizacion', [AreasController::class,'Visualizacion'])->name('Visualizacion');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas');
-
-//Corte Nuevas
-Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
-Route::get('/Area/Corte/Tabla', [CorteController::class,'CorteRecargarTabla'])->name('CorteRecargarTabla');
-Route::post('/Area/Corte/InfoModal', [CorteController::class,'CortesDatosModal'])->name('CortesDatosModal');
-Route::post('/Area/Corte/Emisiones', [CorteController::class,'TraerEmisiones'])->name('TraerEmisiones');
-Route::post('/Area/Corte/Corte/Guardar', [CorteController::class,'GuardarCorte'])->name('GuardarCorte');
-Route::post('/Area/Corte/Corte/Cancelar', [CorteController::class,'CancelarCorte'])->name('CancelarCorte');
-Route::post('/Area/Corte/Corte/Finalizar', [CorteController::class,'FinalizarCorte'])->name('FinalizarCorte');
 
 
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden');
