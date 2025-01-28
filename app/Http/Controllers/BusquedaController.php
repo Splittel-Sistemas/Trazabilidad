@@ -1,17 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\DB;
 use App\Models\PartidasOF;
 use App\Models\OrdenFabricacion;
 use App\Models\Partidas;
 use App\Models\OrdenVenta;
-
-
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
 use TCPDF;
@@ -32,7 +28,7 @@ class BusquedaController extends Controller
         return view('layouts.busquedas', compact('partidasAreas'));
     
     }
-     // Controlador para las órdenes de Venta
+    // Controlador para las órdenes de Venta
     public function obtenerOrdenesVenta(Request $request)
     {
         $search = $request->input('search');
@@ -80,7 +76,6 @@ class BusquedaController extends Controller
     
         return response()->json($ordenesFabricacion);
     }
-    
     //boton detalles de la orden de venta        
     public function detallesventa(Request $request)
     {
@@ -155,6 +150,7 @@ class BusquedaController extends Controller
                     ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
                     ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
                     ->where('ordenventa.OrdenVenta', $idVenta)
+                    ->where('partidas_areas.Areas_id', 4)
                     ->select(
                         'ordenventa.OrdenVenta',
                         'ordenfabricacion.OrdenVenta_Id',
@@ -173,6 +169,7 @@ class BusquedaController extends Controller
                     ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
                     ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
                     ->where('ordenventa.OrdenVenta', $idVenta)
+                    ->where('partidas_areas.Areas_id', 4)
                     ->select(
                         'ordenventa.OrdenVenta',
                         'ordenfabricacion.OrdenVenta_Id',
@@ -191,6 +188,7 @@ class BusquedaController extends Controller
                     ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
                     ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
                     ->where('ordenventa.OrdenVenta', $idVenta)
+                    ->where('partidas_areas.Areas_id', 6)
                     ->select(
                         'ordenventa.OrdenVenta',
                         'ordenfabricacion.OrdenVenta_Id',
@@ -209,6 +207,7 @@ class BusquedaController extends Controller
                     ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
                     ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
                     ->where('ordenventa.OrdenVenta', $idVenta)
+                    ->where('partidas_areas.Areas_id', 7)
                     ->select(
                         'ordenventa.OrdenVenta',
                         'ordenfabricacion.OrdenVenta_Id',
@@ -227,6 +226,7 @@ class BusquedaController extends Controller
                     ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
                     ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
                     ->where('ordenventa.OrdenVenta', $idVenta)
+                    ->where('partidas_areas.Areas_id', 8)
                     ->select(
                         'ordenventa.OrdenVenta',
                         'ordenfabricacion.OrdenVenta_Id',
@@ -239,32 +239,34 @@ class BusquedaController extends Controller
                     ->get();
             //estacion empaque
             }elseif($tipo === 'empaque'){
-                $result= DB::table('ordenventa')
+                $result = DB::table('ordenventa')
                     ->join('ordenfabricacion', 'OrdenVenta.id', '=', 'ordenfabricacion.OrdenVenta_id') 
                     ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
                     ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
                     ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
                     ->where('ordenventa.OrdenVenta', $idVenta)
+                    ->where('partidas_areas.Areas_id', 9)
                     ->select(
                         'ordenventa.OrdenVenta',
                         'ordenfabricacion.OrdenVenta_Id',
+                        'partidas_areas.Areas_id',  
                         DB::raw('GROUP_CONCAT(ordenfabricacion.OrdenFabricacion) as OrdenesFabricacion'),
                         DB::raw('SUM(ordenfabricacion.CantidadTotal) as CantidadTotal'),
                         DB::raw('SUM(partidas_areas.Cantidad) as TotalPartidas'),
                         DB::raw('ROUND((SUM(partidas_areas.Cantidad) / SUM(ordenfabricacion.CantidadTotal)) * 100, 2) as Progreso')
                     )
-                    ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.OrdenVenta_ID')
+                    ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.OrdenVenta_ID', 'partidas_areas.Areas_id')  
                     ->get();
+
             } else {
                 return response()->json([], 400); 
             }
+           
             return response()->json($result);
         } else {
             return response()->json([], 204); 
         }
     }
- 
-    
 }
 
 
