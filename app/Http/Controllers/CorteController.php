@@ -21,10 +21,6 @@ class CorteController extends Controller
         $fechaAtras=date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
         $OrdenesFabricacionAbiertas=$this->OrdenesFabricacionAbiertas();
         $OrdenesFabricacionCerradas=$this->OrdenesFabricacionCerradas($fechaAtras, $fecha);
-        foreach($OrdenesFabricacionAbiertas as $orden) {
-            $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
-            $orden['Piezascortadas'] = $orden->partidasOF()->get()->sum('cantidad_partida');
-        }
         return view('Areas.Cortes', compact('OrdenesFabricacionAbiertas','OrdenesFabricacionCerradas','fecha','fechaAtras'));
     }
     public function CorteRecargarTabla(){
@@ -37,7 +33,8 @@ class CorteController extends Controller
                         <td>'. $orden->OrdenFabricacion .'</td>
                         <td>'. $orden->Articulo .'</td>
                         <td>'. $orden->Descripcion .'</td>
-                        <td>'. $orden->partidasOF()->get()->sum('cantidad_partida').'</td>
+                        <td>'. $orden->Piezascortadas.'</td>
+                        <td>'. $orden->PiezascortadasR.'</td>
                         <td>'. $orden->CantidadTotal .'</td>
                         <td>'. $orden->FechaEntrega .'</td>
                         <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
@@ -279,6 +276,14 @@ class CorteController extends Controller
         $fechaHoy=date('Y-m-d H:i:s');
         $PartidasOF->FechaFinalizacion = $fechaHoy;
         $PartidasOF->save();
+        //Sacamos las partidas que ya estan finalizadas 
+        $OrdenFabricacion=$PartidasOF->ordenFabricacion()->first();
+        $SumaPartidas=$OrdenFabricacion->partidasOF()->where('TipoPartida','=','N')->where('FechaFinalizacion','!=',null)->get()->sum('cantidad_partida');
+        $PartidasIniciadas=$OrdenFabricacion->partidasOF()->where('FechaFinalizacion','=',null)->get();
+        if($OrdenFabricacion->CantidadTotal==$SumaPartidas && $PartidasIniciadas->count()==0){
+            $OrdenFabricacion->EstatusEntrega=1;
+            $OrdenFabricacion->save();
+        }
         return response()->json([
             'status' => 'success',
             'message' =>'Partida '.$PartidasOF->NumeroPartida.' Finalizada correctamente!',
@@ -303,37 +308,37 @@ class CorteController extends Controller
     }
     //Ordenes de Fbaricacion Filtro Fecha, Abierta=0 Cerrada=1
     public function OrdenesFabricacionAbiertas(){
-        return$OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->orderBy('FechaEntrega', 'asc')->get();
+        $OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->orderBy('FechaEntrega', 'asc')->get();
+        foreach($OrdenFabricacion as $orden) {
+            $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
+            $orden['Piezascortadas'] = $orden->partidasOF()->where('TipoPartida','N')->get()->sum('cantidad_partida');
+            $orden['PiezascortadasR'] = $orden->partidasOF()->where('TipoPartida','R')->get()->sum('cantidad_partida');
+            $orden->id="";
+        }
+        return $OrdenFabricacion;
     }
     public function OrdenesFabricacionCerradas($Fechainicio, $Fechafin){
-        $PartidasOF=PartidasOF::where('FechaFinalizacion','>=',$Fechainicio.' 00:00:00')
-                                    ->where('FechaFinalizacion','<=',$Fechafin.' 00:00:00')
-                                    ->orderBy('FechaFinalizacion', 'desc')
-                                    ->get();
-        //$tabla="";
-            foreach($PartidasOF as $orden) {
+        $OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','1')
+                                ->join('PartidasOF', 'OrdenFabricacion.id', '=', 'PartidasOF.OrdenFabricacion_id')
+                                //->whereBetween('PartidasOF.FechaFinalizacion', [$Fechainicio.' 00:00:00', $Fechafin.' 00:00:00'])
+                                ->select('OrdenFabricacion.*', 'PartidasOF.*')
+                                ->orderBy('OrdenFabricacion.OrdenFabricacion') // Ordena por OrdenFabricacion descendente
+                                ->orderBy('PartidasOF.FechaFinalizacion', 'desc') // Ordena por FechaFinalizacion descendente
+                                ->get();
+        $arrayOF= [];                        
+        foreach($OrdenFabricacion as $key =>$orden) {
+            if (!in_array($orden->OrdenFabricacion, $arrayOF)) {
+                $OrdenFabricacion1=OrdenFabricacion::where('id',$orden->OrdenFabricacion_id)->first();
+                $arrayOF[]=$orden->OrdenFabricacion;
+                $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->OrdenFabricacion_id);
+                $orden['Piezascortadas'] = $OrdenFabricacion1->partidasOF()->where('TipoPartida','N')->get()->sum('cantidad_partida');
+                $orden['PiezascortadasR'] = $OrdenFabricacion1->partidasOF()->where('TipoPartida','R')->get()->sum('cantidad_partida');
                 $orden->id="";
-                $OrdenFabricacion=$orden->ordenFabricacion()->first();
-                $orden['OrdenFabricacion'] = $OrdenFabricacion->OrdenFabricacion;
-                $orden['Articulo'] = $OrdenFabricacion->Articulo;
-                $orden['Descripcion'] = $OrdenFabricacion->Descripcion;
-                $orden['CantidadTotal'] = $OrdenFabricacion->CantidadTotal;
-                $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
-                /*$tabla.='<tr>
-                        <td>'. $OrdenFabricacion->OrdenFabricacion .'</td>
-                        <td>'. $orden->NumeroPartida.'</td>
-                        <td>'. $OrdenFabricacion->Articulo .'</td>
-                        <td>'. $OrdenFabricacion->Descripcion .'</td>
-                        <td>'. $orden->cantidad_partida.'</td>
-                        <td>'. $OrdenFabricacion->CantidadTotal .'</td>
-                        <td>'. $orden->FechaFinalizacion .'</td>
-                        <td><button class="btn btn-sm btn-outline-primary" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Planear</button></td>
-                    </tr>';*/
+            }else{
+                unset($OrdenFabricacion[$key]);
             }
-        /*if($tabla==""){
-            $tabla.='<tr><td colspan="7"></td></tr>';
-        }*/
-        return $PartidasOF;
+        }
+        return $OrdenFabricacion;
     }
     public function generarPDF(Request $request){
         try {
@@ -343,15 +348,15 @@ class CorteController extends Controller
                 throw new \Exception('ID no recibido');
             }
             $colores = [
-                1 => ['nombre' => 'Azul Claro', 'rgb' => [120, 120, 255]], // Azul más claro y más fuerte
-                2 => ['nombre' => 'Rojo Claro', 'rgb' => [255, 105, 105]], // Rojo más claro y más fuerte
-                3 => ['nombre' => 'Rosa Mexicano Claro', 'rgb' => [255, 100, 150]], // Rosa Mexicano más claro y más fuerte
+                1 => ['nombre' => 'Azul Claro', 'rgb' => [14, 14, 231]], // Azul más claro y más fuerte
+                2 => ['nombre' => 'Rojo Claro', 'rgb' => [241, 48, 48]], // Rojo más claro y más fuerte
+                3 => ['nombre' => 'Rosa Mexicano Claro', 'rgb' => [236, 42, 104]], // Rosa Mexicano más claro y más fuerte
                 4 => ['nombre' => 'Café Claro', 'rgb' => [150, 115, 90]], // Café más claro y más fuerte
-                5 => ['nombre' => 'Verde Bandera Claro', 'rgb' => [85, 150, 120]], // Verde Bandera más claro y más fuerte
-                6 => ['nombre' => 'Amarillo Claro', 'rgb' => [255, 255, 80]], // Amarillo más claro y más fuerte
-                7 => ['nombre' => 'Verde Limón Claro', 'rgb' => [230, 255, 100]], // Verde Limón más claro y más fuerte
+                5 => ['nombre' => 'Verde Bandera Claro', 'rgb' => [5, 112, 62]], // Verde Bandera más claro y más fuerte
+                6 => ['nombre' => 'Amarillo Claro', 'rgb' => [252, 252, 44]], // Amarillo más claro y más fuerte
+                7 => ['nombre' => 'Verde Limón Claro', 'rgb' => [230, 252, 122]], // Verde Limón más claro y más fuerte
                 8 => ['nombre' => 'Rosa Claro', 'rgb' => [255, 210, 220]], // Rosa más claro y más fuerte
-                9 => ['nombre' => 'Naranja Claro', 'rgb' => [255, 180, 120]] // Naranja más claro y más fuerte
+                9 => ['nombre' => 'Naranja Claro', 'rgb' => [255, 168, 53]] // Naranja más claro y más fuerte
             ];
             $R= isset($colores[$Coloretiqueta])?$colores[$Coloretiqueta]['rgb'][0]:255;
             $G= isset($colores[$Coloretiqueta])?$colores[$Coloretiqueta]['rgb'][1]:255;
@@ -418,6 +423,9 @@ class CorteController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+
+
 
 
 
