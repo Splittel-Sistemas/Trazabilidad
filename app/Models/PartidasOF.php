@@ -22,7 +22,7 @@ class PartidasOF extends Model
     {
         return $this->belongsTo(OrdenFabricacion::class, 'OrdenFabricacion_id');
     }
-
+    
     public function partidasArea()
     {
         return $this->hasMany(PartidasArea::class, 'PartidasOF_id');

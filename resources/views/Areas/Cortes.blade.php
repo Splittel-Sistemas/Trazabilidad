@@ -9,7 +9,7 @@
     .btn-link:hover {
     transform: scale(1.8);
     transition: transform 0.3s ease; /* Añade una transición suave */
-}
+    }
 </style>
 @endsection
 @section('content')
@@ -75,9 +75,9 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="tab-completado" role="tabpanel" aria-labelledby="completado-tab">
-                        <div class="col-6 mt-1 mb-1">
+                        <div class="col-6 mt-1 mb-1 ">
                             <div class="accordion" id="accordionFiltroUnico">
-                                <div class="accordion-item shadow-sm">
+                                <div class="accordion-item shadow-sm card border border-light">
                                     <h4 class="accordion-header" id="headingFiltroUnico">
                                         <button class="accordion-button btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroUnico" aria-expanded="true" aria-controls="collapseFiltroUnico">
                                             <strong>Filtro Fecha</strong>
@@ -85,20 +85,21 @@
                                     </h4>
                                     <div class="accordion-collapse collapse collapse" id="collapseFiltroUnico" aria-labelledby="headingFiltroUnico" data-bs-parent="#accordionFiltroUnico">
                                         <div class="accordion-body pt-2">
-                                            <form id="formFiltroUnico" method="post" class="form-horizontal">
                                                 @csrf
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <label for="inputFechaUnica" class="form-label"><strong>Fecha Inicio</strong></label>
                                                         <div class="input-group">
-                                                            <input type="date" name="fecha" id="inputFechaUnica" value="{{$fechaAtras}}" class="form-control form-control-sm">
+                                                            <input type="date" name="fecha" id="inputFechaInicio" value="{{$fechaAtras}}" class="form-control form-control-sm">
                                                         </div>
+                                                        <div class="invalid-feedback" id="error_inputFechaInicio"></div>
                                                     </div>
-                                                    <div class="col-6">
+                                                    <div class="col-md-6">
                                                         <label for="inputFechaUnica" class="form-label"><strong>Fecha Fin</strong></label>
                                                         <div class="input-group">
-                                                            <input type="date" name="fecha" id="inputFechaUnica" value="{{$fecha}}" class="form-control form-control-sm">
+                                                            <input type="date" name="fecha" id="inputFechaFin" value="{{$fecha}}" class="form-control form-control-sm">
                                                         </div>
+                                                        <div class="invalid-feedback" id="error_inputFechaFin"></div>
                                                     </div>
                                                     <div class="col-12 mt-2">
                                                         <button id="buscarUnico" class="btn btn-primary btn-sm float-end">
@@ -106,7 +107,6 @@
                                                         </button>
                                                     </div>
                                                 </div>
-                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -228,13 +228,16 @@
               <h5 class="modal-title" id="ModalRetrabajoLabel">Orden de Fabricaci&oacute;n a Retrabajo</h5><button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1"></span></button>
             </div>
             <div class="modal-body">
-                <div class="col-md-8">
-                    <label class="form-label" for="RetrabajoOF">Orden de Fabricación</label>
-                    <input class="form-control" id="RetrabajoOF" type="text"  required="" oninput="RegexNumeros(this)" placeholder="Ingresa Numero de Orden de Fabricación"/>
-                    <div class="valid-feedback" id="error_RetrabajoOF"></div>
-                  </div>
+                    <div class="col-8">
+                        <label class="form-label" for="RetrabajoOF">Orden de Fabricación</label>
+                            <input class="form-control search-input form-control-sm" id="RetrabajoOF" type="text"  required="" oninput="RegexNumeros(this); RetrabajoMostrarOFBuscar(this)" placeholder="Ingresa Número de Orden de Fabricación"/>
+                        <div id="RetrabajoOFOpciones" class="list-group" style="position:;max-height: 7rem;overflow-y: auto;">
+
+                        </div>
+                        <div class="invalid-feedback" id="error_RetrabajoOF"></div>
+                    </div>
             </div>
-            <div class="modal-footer"><button class="btn btn-outline-info" id="DescargarEtiquetas" type="button"><i class="fas fa-search"></i>Buscar</button><button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cancelar</button></div>
+            <div class="modal-footer"><button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cancelar</button></div>
           </div>
         </div>
     </div>
@@ -264,7 +267,7 @@
         //$('#procesoTableBody').html('{{$OrdenesFabricacionCerradas}}');
         DataTable('procesoTable',true);
         $('.dt-layout-start:first').append(
-        '<button class="btn btn-outline-info mb-0" data-bs-toggle="modal" data-bs-target="#ModalRetrabajo"><i class="fas fa-plus"></i> Retrabajo</button>');
+        '<button class="btn btn-info mb-0" data-bs-toggle="modal" data-bs-target="#ModalRetrabajo" onclick="LimpiarOF()"><i class="fas fa-plus"></i> Retrabajo</button>');
         DataTable('completadoTable',true);
         document.getElementById("Retrabajo").addEventListener("change", function() {
             if (this.checked) {
@@ -314,6 +317,7 @@
                     if(response.status=="success"){
                         success('Guardado correctamente!',response.message);
                         RecargarTabla();
+                        RecargarTablaCerradas();
                         Planear(response.OF);
                     }else if(response.status=="error"){
                         error('Error',response.message);
@@ -369,11 +373,13 @@
                 errorRetrabajo.text('');
                 errorRetrabajo.hide(); 
             }
+            
             $.ajax({
                 url: "{{route('GuardarCorte')}}", 
                 type: 'POST',
                 data: {
                     id:CantitadpiezasIdOF,
+                    emision:EmisionesOpciones.val(),
                     retrabajo:'Retrabajo',
                     Cantitadpiezas:Cantitadpiezas.val(),
                     _token: '{{ csrf_token() }}'  
@@ -384,18 +390,58 @@
                 success: function(response) {
                     if(response.status=="success"){
                         success('Guardado correctamente!',response.message);
+                        RecargarTablaCerradas();
                         RecargarTabla();
                         Planear(response.OF);
                     }else if(response.status=="error"){
                         error('Error',response.message);
                     }else if(response.status=="errorCantidada"){
                         error('Cantidad no disponible!',response.message);
+                    }else if(response.status=="errorEmision"){
+                        error('Orden de emisión requerida!',response.message);
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     error('Error Server',jqXHR.responseJSON.message);
                 }
             });
+        });
+        $('#buscarUnico').click(function() {
+            RecargarTablaCerradas();
+        });
+        $('#inputFechaFin').change(function() {
+            fechainicio=$('#inputFechaInicio');
+            fechafin=$('#inputFechaFin');
+            $('#error_inputFechaInicio').hide();
+            fechainicio.removeClass('is-invalid');
+            errorinputFechaFin=$('#error_inputFechaFin');
+            if(fechafin.val()<fechainicio.val()){
+                fechafin.addClass('is-invalid');
+                errorinputFechaFin.text('El campo Fecha Fin tiene que se mayor a Fecha Inicio.');
+                errorinputFechaFin.show();
+                return 0; 
+            }else{
+                fechafin.removeClass('is-invalid');
+                errorinputFechaFin.text('');
+                errorinputFechaFin.hide(); 
+            }
+        });
+        $('#inputFechaInicio').change(function() {
+            fechainicio=$('#inputFechaInicio');
+            fechafin=$('#inputFechaFin');
+            fechafin.removeClass('is-invalid');
+            $('#error_inputFechaFin').hide();
+            errorinputFechaInicio=$('#error_inputFechaInicio');
+            if(fechafin.val()<fechainicio.val()){
+                fechainicio.addClass('is-invalid');
+                errorinputFechaInicio.text('El campo Fecha Inicio tiene que ser menor a Fecha Fin.');
+                errorinputFechaInicio.show();
+                return 0; 
+            }else{
+                fechainicio.removeClass('is-invalid');
+                errorinputFechaInicio.text('');
+                errorinputFechaInicio.hide(); 
+            }
         });
         setInterval(RecargarTabla, 300000);
     });
@@ -414,12 +460,14 @@
                     $('#procesoTableBody').html(response.table);
                     DataTable('procesoTable',true);
                     $('.dt-layout-start:first').append(
-                    '<button class="btn btn-outline-info mb-0" data-bs-toggle="modal" data-bs-target="#ModalRetrabajo"><i class="fas fa-plus"></i> Retrabajo</button>');
+                    '<button class="btn btn-info mb-0" data-bs-toggle="modal" data-bs-target="#ModalRetrabajo" onclick="LimpiarOF()"><i class="fas fa-plus"></i> Retrabajo</button>');
                 }
             }
         });
     }
     function Planear(OrdenFabricacion){
+        $('#Retrabajo').prop('checked', false);
+        $('#Retrabajo').prop('disabled', false);
         $('#Cantitadpiezas').val('');
         $('#Emisiones').fadeOut(100);
         $('#ModalSuministro').modal('show');
@@ -495,7 +543,8 @@
                 if(response.status=='success'){
                     Planear(response.OF);
                     success("Cancelada Correctamente!",response.message);
-                    RecargarTabla()
+                    RecargarTabla();
+                    RecargarTablaCerradas();
                 }else if(response.status=='errornoexiste'){
                     error("Error!",response.message);
                 }else if(response.status=='erroriniciada'){
@@ -524,6 +573,7 @@
                     Planear(response.OF);
                     success("Finalizada Correctamente!",response.message);
                     RecargarTabla();
+                    RecargarTablaCerradas();
                 }else if(response.status=='errornoexiste'){
                     error("Error!",response.message);
                 }else if(response.status=='errorfinalizada'){
@@ -545,6 +595,7 @@
                         "info": true, // Muestra información sobre el total de elementos
                         "language": {
                             "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
+                            "search":"Buscar",
                         },
                         "initComplete": function(settings, json) {
                             $('#'+tabla).css('font-size', '0.7rem');
@@ -569,6 +620,7 @@
         /*$('#Cantitadpiezas').val('');
         $('#Emisiones').fadeOut(100);
         $('#ModalSuministro').modal('show');*/
+        $('#ModalDetalle').modal('show');
         $('#ModalDetalleBodyInfoOF').html('');
         $('#ModalDetalleBodyPartidasOF').html('');
         /*$('#CantitadpiezasIdOF').val('');
@@ -579,7 +631,8 @@
             url: "{{route('CortesDatosModal')}}", 
             type: 'POST',
             data: {
-                id:OrdenFabricacion,
+                id:id,
+                detalles:"detalles",
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
@@ -599,6 +652,71 @@
                 $('#ModalDetalleBodyInfoOF').html('');
                 $('#ModalDetalleBodyPartidasOF').html('');
                 errorBD();
+            }
+        });
+    }
+    function LimpiarOF(){
+        $('#RetrabajoOF').val('');
+    }
+    function RetrabajoMostrarOFBuscar(RetrabajoOF){
+        $('#RetrabajoOFOpciones').html('');
+        if(RetrabajoOF.value==""){
+            return 0;
+        }if((RetrabajoOF.value).length<5){
+            return 0;
+        }
+        $.ajax({
+            url: "{{route('BuscarCorte')}}", 
+            type: 'POST',
+            data: {
+                OF:RetrabajoOF.value,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+
+            },
+            success: function(response) {
+                $('#RetrabajoOFOpciones').html(response);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                $('#RetrabajoOFOpciones').html('');
+            }
+        });
+    }
+    function RetrabajoMostrarOFBuscarModal(id){
+        $('#ModalRetrabajo').modal('hide');
+        $('#RetrabajoOFOpciones').html('');
+        Planear(id);
+        $('#Retrabajo').prop('checked', true);
+        $('#Retrabajo').prop('disabled', true);
+        $('#Emisiones').fadeIn(100);
+        $('#btnGrupoPiezasCorte').fadeOut(100);
+        $('#btnGrupoPiezasCorte1').fadeIn(100);
+        $('#CantitadpiezasIdOF').val(id)
+        TraerEmisiones();
+    }
+    function RecargarTablaCerradas(){
+        fechainicio=$('#inputFechaInicio');
+        fechafin=$('#inputFechaFin');
+        if(fechafin.val()<fechainicio.val()){
+                return 0; 
+            }
+        $.ajax({
+            url: "{{route('CorteRecargarTablaCerrada')}}", 
+            type: 'GET',
+            data: {
+                fechainicio:fechainicio.val(),
+                fechafin:fechafin.val(),
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+            },
+            success: function(response) {
+                if(response.status=="success"){
+                    $('#completadoTable').DataTable().destroy();
+                    $('#completadoTableBody').html(response.table);
+                    DataTable('completadoTable',true);
+                }
             }
         });
     }

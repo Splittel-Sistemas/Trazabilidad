@@ -38,11 +38,13 @@ Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Deta
 //Corte Nuevas
 Route::get('/Area/Corte', [CorteController::class, 'index'])->name('corte.index');
 Route::get('/Area/Corte/Tabla', [CorteController::class,'CorteRecargarTabla'])->name('CorteRecargarTabla');
+Route::get('/Area/Corte/Tabla/Cerrada', [CorteController::class,'CorteRecargarTablaCerrada'])->name('CorteRecargarTablaCerrada');
 Route::post('/Area/Corte/InfoModal', [CorteController::class,'CortesDatosModal'])->name('CortesDatosModal');
 Route::post('/Area/Corte/Emisiones', [CorteController::class,'TraerEmisiones'])->name('TraerEmisiones');
-Route::post('/Area/Corte/Corte/Guardar', [CorteController::class,'GuardarCorte'])->name('GuardarCorte');
-Route::post('/Area/Corte/Corte/Cancelar', [CorteController::class,'CancelarCorte'])->name('CancelarCorte');
-Route::post('/Area/Corte/Corte/Finalizar', [CorteController::class,'FinalizarCorte'])->name('FinalizarCorte');
+Route::post('/Area/Corte/Guardar', [CorteController::class,'GuardarCorte'])->name('GuardarCorte');
+Route::post('/Area/Corte/Cancelar', [CorteController::class,'CancelarCorte'])->name('CancelarCorte');
+Route::post('/Area/Corte/Finalizar', [CorteController::class,'FinalizarCorte'])->name('FinalizarCorte');
+Route::post('/Area/Corte/Buscar', [CorteController::class,'BuscarCorte'])->name('BuscarCorte');
 //Generar PDF
 Route::get('/Area/Corte/GenerarPDF', [CorteController::class, 'generarPDF'])->name('generarPDF');
 

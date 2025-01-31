@@ -17,7 +17,8 @@ class CreateOrdenFabricacionTable extends Migration
             $table->string('Articulo');
             $table->string('Descripcion');
             $table->integer('CantidadTotal');
-            $table->tinyInteger('EstatusEntrega')->nullable();
+            $table->tinyInteger('EstatusEntrega')->default(0)->nullable();
+            $table->tinyInteger('EstatusOF')->default(0)->nullable();
             $table->date('FechaEntregaSAP');
             $table->date('FechaEntrega');
             $table->foreign('OrdenVenta_id')->references('id')
