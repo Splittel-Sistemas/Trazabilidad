@@ -28,7 +28,7 @@ class BusquedaController extends Controller
         return view('layouts.busquedas', compact('partidasAreas'));
     
     }
-    
+
 ///inicia orden venta
 
     // Controlador para las órdenes de Venta
@@ -520,8 +520,3 @@ class BusquedaController extends Controller
 ////
     
 }
-
-    
-
-
-
