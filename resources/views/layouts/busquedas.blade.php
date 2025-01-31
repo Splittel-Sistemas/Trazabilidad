@@ -9,8 +9,9 @@
         /*estilo de boton detalles*/
         .ver-detalles:hover {
             background-color: #0c705f; /* Un tono más oscuro de azul */
-            transform: translateY(-2px); /* Ligeramente hacia arriba */
+            transform: translateY(-2px) ; /* Ligeramente hacia arriba */
         }
+        
 
         /*estilo de barrade progreso*/
         .progress-bar-stages {
@@ -156,14 +157,14 @@
         /* Clase para resaltar solo el ícono y el texto */
         .selected-stage .stage-circle,
             .selected-stage span {
-                background-color:#05610a ; 
+                background-color:#299ae6 ; 
                 color: white; 
             }
 
             
             .selected-stage .stage-circle,
             .selected-stage span {
-                background-color: #05610a; 
+                background-color: #299ae6; 
                 color: white;
         }
 
@@ -389,6 +390,7 @@
                 </div>
             </div>
         </div>
+
         <!--modal principal-->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-xl">
@@ -976,61 +978,78 @@
 
     //funcion para cargar los canvases general para Or-V Y Or-F
     function drawGauge(canvasId, value, label) {
-        const canvas = document.getElementById(canvasId);
-        canvas.style.webkitTapHighlightColor = 'rgba(0, 0, 0, 0)'; // Desactivar el resaltado táctil
+    const canvas = document.getElementById(canvasId);
+    canvas.style.webkitTapHighlightColor = 'rgba(0, 0, 0, 0)'; // Desactivar el resaltado táctil
 
-        const ctx = canvas.getContext('2d');
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const radius = 120;
-        const startAngle = Math.PI;
-        const endAngle = 2 * Math.PI;
+    const ctx = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = 85;
+    const startAngle = Math.PI;
+    const endAngle = 2 * Math.PI;
 
-        // Limpiar el lienzo
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Variables para ajustar manualmente las posiciones de los números
+    const offsetX = 0; // Desplazamiento horizontal de los números (0 = centrado)
+    const offsetY = 30; // Desplazamiento vertical de los números (ajústalo según necesites)
 
-        // Dibujar el arco de fondo con borde más delgado
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-        ctx.lineWidth = 50;  // Ancho de línea ajustado para mejor balance
-        ctx.strokeStyle = '#e0e0e0';  // Gris suave para el fondo
-        ctx.lineCap = 'butt';
-        ctx.stroke();
+    // Limpiar el lienzo
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Determinar el color del arco según el valor
-        let strokeColor;
-        if (value <= 20) strokeColor = '#e74c3c'; // Rojo
-        else if (value <= 50) strokeColor = '#f39c12'; // Naranja
-        else if (value <= 90) strokeColor = '#f1c40f'; // Amarillo
-        else strokeColor = '#05610a'; // Verde
+    // Dibujar el arco de fondo con borde más delgado
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+    ctx.lineWidth = 50;  // Ancho de línea ajustado para mejor balance
+    ctx.strokeStyle = '#e0e0e0';  // Gris suave para el fondo
+    ctx.lineCap = 'butt';
+    ctx.stroke();
 
-        // Ajuste para hacer el principio y final del arco un poco cuadrado
-        const valueAngle = startAngle + (value / 100) * (endAngle - startAngle);
+    // Determinar el color del arco según el valor
+    let strokeColor;
+    if (value <= 20) strokeColor = '#e74c3c'; // Rojo
+    else if (value <= 50) strokeColor = '#f39c12'; // Naranja
+    else if (value <= 90) strokeColor = '#f1c40f'; // Amarillo
+    else strokeColor = '#15e631'; // Verde
 
-        // Dibujar el arco del valor con color dinámico
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, startAngle, valueAngle);
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = 45; // Ancho del arco ajustado para mejor visibilidad
-        ctx.lineCap = 'butt'; // Ajustar el borde a cuadrado en el inicio y final
-        ctx.stroke();
+    // Ajuste para hacer el principio y final del arco un poco cuadrado
+    const valueAngle = startAngle + (value / 100) * (endAngle - startAngle);
 
-        // Determinar el color del texto del valor
-        let valueTextColor = strokeColor; // Usar el mismo color del arco
-        ctx.font = '30px Arial';  // Fuente más grande para el valor
-        ctx.fillStyle = valueTextColor;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle'; // Asegura que el texto esté alineado verticalmente en el medio
+    // Dibujar el arco del valor con color dinámico
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, startAngle, valueAngle);
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 40; // Ancho del arco ajustado para mejor visibilidad
+    ctx.lineCap = 'butt'; // Ajustar el borde a cuadrado en el inicio y final
+    ctx.stroke();
 
-        // Ajustar la posición vertical del texto para alinearlo con el arco
-        // Aquí, `centerY` ajustado verticalmente para que esté alineado con el arco
-        ctx.fillText(`${value}%`, centerX, centerY);
+    // Determinar el color del texto del valor
+    let valueTextColor = strokeColor; // Usar el mismo color del arco
+    ctx.font = '30px Arial';  // Fuente más grande para el valor
+    ctx.fillStyle = valueTextColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle'; // Asegura que el texto esté alineado verticalmente en el medio
 
-        // Etiqueta debajo del valor
-        ctx.font = '18px Arial';
-        ctx.fillStyle = '#17a2b8';  // Color suave para la etiqueta
-        ctx.fillText(label, centerX, centerY + 40);  // Espaciado ajustado
-    }
+    // Ajustar la posición vertical del texto para alinearlo con el arco
+    // Aquí, `centerY` ajustado verticalmente para que esté alineado con el arco
+    ctx.fillText(`${value}%`, centerX, centerY);
+
+    // Etiqueta debajo del valor
+    ctx.font = '18px Arial';
+    ctx.fillStyle = '#17a2b8';  // Color suave para la etiqueta
+    ctx.fillText(label, centerX, centerY + 40);  // Espaciado ajustado
+
+    // Dibujar las marcas de 0 y 100 fuera del arco, ajustable manualmente
+    ctx.font = '16px Arial';
+    ctx.fillStyle = '#000000';  // Color para los números de la escala
+
+    // Dibujar el "0" justo debajo del inicio del arco
+    ctx.fillText('0', centerX - radius, centerY+ 20);
+
+    // Dibujar el "100" en el final del arco
+    ctx.fillText('100', centerX + radius, centerY + 20); // Ajusta la posición vertical
+    //la posición
+}
+
+
 
     //para el clic de .stage
     $(document).ready(function() {
@@ -1079,7 +1098,8 @@
                     } else if (displayProgress > 50 && displayProgress <= 90) {
                         progressColor = 'yellow'; // Amarillo
                     } else if (displayProgress > 90 && displayProgress <= 100) {
-                        progressColor = 'green'; // Verde
+                        progressColor = '#05610a'; // Verde
+
                     }
 
                     // Crear la barra de progreso con el porcentaje
