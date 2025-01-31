@@ -3,106 +3,101 @@
 @section('title', 'Busquedas')
 
 @section('styles')
-    <!-- Meta CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!--estilos-->
     <style>
+        /*estilo de boton detalles*/
         .ver-detalles:hover {
-        background-color: #0177b7; /* Un tono más oscuro de azul */
-        transform: translateY(-2px); /* Ligeramente hacia arriba */
+            background-color: #0c705f; /* Un tono más oscuro de azul */
+            transform: translateY(-2px); /* Ligeramente hacia arriba */
         }
-           
-        .progress-container {
-            width: 100%;
-            padding: 20px 0;
-            text-align: center;
-            position: relative;
-            margin-bottom: 40px;
-        }
-    
-        /* Barra de progreso */
-        .progress {
-            width: 100%;
-            height: 30px;
-            background-color: #f0f0f0;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-    
-        .progress-bar {
-            height: 100%;
-            text-align: center;
-            color: white;
-            line-height: 30px;
-            border-radius: 15px;
-            transition: width 0.5s ease, background-color 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        }
-    
-        /* Lista de etapas */
+
+        /*estilo de barrade progreso*/
         .progress-bar-stages {
-            list-style: none;
-            display: flex;
-            justify-content: space-between;
-            padding: 0;
-            margin: 0;
-            position: relative;
-            width: 100%;
-            align-items: center;
+                list-style: none;
+                display: flex;
+                justify-content: space-between;
+                padding: 0;
+                margin: 0;
+            }
+
+            .stage {
+                text-align: center;
+                cursor: pointer;
+                flex: 1;
+            }
+
+            .stage-circle {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background-color: #a0d2e9;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 18px;
+                margin: 0 auto;
+            }
+
+            .stage span {
+                display: block;
+                margin-top: 5px;
+            }
+
+            #progress-wrapper {
+                padding: 10px;
+                background-color: #f4f4f4;
+                border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            .task-progress-bar {
+                margin-bottom: 15px;
+                padding: 5px;
+                background-color: #fff;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .task-label {
+                display: block;
+                font-weight: bold;
+                margin-bottom: 5px;
+                color: #333;
+            }
+
+            .task-progress {
+                height: 20px;
+                border-radius: 5px;
+                background-color: #dfe4ea;
+                text-align: center;
+                color: white;
+                line-height: 20px;
+                font-weight: bold;
+                transition: width 2s ease-in-out;
+            }
+
+            .wizard-buttons {
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                border: none;
+                cursor: pointer;
+            }
+
+            .btn-secondary {
+                background-color: #6c757d;
+                color: white;
+            }
+
+            .btn-primary {
+                background-color: #007bff;
+                color: white;
         }
-    
-        .stage {
-            position: relative;
-            text-align: center;
-            flex: 1;
-            transition: all 0.4s ease;
-            color: #999;
-            cursor: pointer;
-            opacity: 0.7;
-        }
-    
-        .stage:hover {
-            opacity: 1;
-        }
-    
-        .stage-circle {
-            width: 60px;
-            height: 60px;
-            background-color: #e0e0e0;
-            border-radius: 50%;
-            margin: 0 auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
-        }
-    
-        .stage-circle i {
-            font-size: 24px;
-            color: #fff;
-        }
-    
-        .stage.pending .stage-circle {
-            background-color: #e0e0e0;
-            transform: scale(1);
-        }
-    
-        .stage.pending span {
-            color: #999;
-        }
-    
-        .stage.completed .stage-circle {
-            background-color: #28a745;
-            transform: scale(1.2);
-            box-shadow: 0 0 12px rgba(0, 255, 0, 0.5);
-        }
-    
-        .stage.completed span {
-            color: #28a745;
-            font-weight: bold;
-        }
-    
         /* Estilos de los botones */
         .btn-primary, .btn-secondary {
             padding: 10px 20px;
@@ -111,96 +106,118 @@
             transition: background-color 0.3s ease, transform 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-    
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-    
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #004085;
-            transform: scale(1.05);
-        }
-    
-        .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
-        }
-    
-        .btn-secondary:hover {
-            background-color: #5a6268;
-            border-color: #4e555b;
-            transform: scale(1.05);
-        }
-    
-        .btn-primary:active, .btn-secondary:active {
-            transform: scale(1);
-        }
-    
-        .ml-2 {
-            margin-left: 10px;
-        }
-        /* Estilo para la etapa activa */
-        .stage.active .stage-circle {
-            background-color: #149756; /* Azul para la etapa activa */
-            transform: scale(1.2);
-            box-shadow: 0 0 12px rgba(240, 5, 5, 0.5);
+        
+        /* Barra de progreso */
+        .task-progress-bar {
+                margin-bottom: 15px; /* Mayor espacio entre barras */
+                position: relative;
+                background-color: #f1f1f1;
+                border-radius: 10px;
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 8px; /* Menos padding */
+                font-size: 12px; /* Reducir tamaño de la fuente en el contenedor */
+            }
+
+            /* Etiqueta de la tarea (orden) */
+            .task-label {
+                font-weight: normal; /* Reducir peso de la fuente */
+                text-align: center;
+                margin-bottom: 5px; /* Reducir margen debajo de la etiqueta */
+            }
+
+            /* Barra de progreso */
+            .task-progress {
+                height: 20px; /* Reducir altura de la barra */
+                border-radius: 10px;
+                position: relative;
+                overflow: hidden;
+                display: flex;
+                align-items: center; /* Centrar el texto dentro de la barra */
+                justify-content: center;
+            }
+
+            /* Texto que muestra el porcentaje */
+            .progress-text {
+                color: rgb(0, 0, 0);
+                font-size: 12px; /* Reducir tamaño de texto */
+                font-weight: normal; /* Reducir peso de la fuente */
+            }
+
+            /* Ajustar la apariencia de la barra cuando se pasa el progreso */
+            .task-progress-bar .task-progress {
+                font-size: 10px; /* Reducir tamaño de texto en la barra */
+            }
+
+            .task-progress-bar .task-progress span {
+                font-size: 10px; /* Reducir aún más el tamaño del porcentaje */
         }
 
-        .stage.active span {
-            color: #ff391f;
-            font-weight: bold;
+        
+        /* Clase para resaltar solo el ícono y el texto */
+        .selected-stage .stage-circle,
+            .selected-stage span {
+                background-color:#05610a ; 
+                color: white; 
+            }
+
+            
+            .selected-stage .stage-circle,
+            .selected-stage span {
+                background-color: #05610a; 
+                color: white;
         }
 
-        /* Etapa completada (mantiene el estilo existente) */
-        .stage.completed .stage-circle {
-            background-color: #234ec5; /* Verde para etapa completada */
-            transform: scale(1.2);
-            box-shadow: 0 0 12px rgba(233, 14, 14, 0.5);
-        }
-
-        .stage.completed span {
-            color: #ff2111;
-            font-weight: bold;
-        }
-
-        /* Etapa pendiente */
-        .stage.pending .stage-circle {
-            background-color: #cfdcf0; /* Gris claro para pendientes */
-            transform: scale(1);
-        }
-
-        .stage.pending span {
-            color: #4492ec;
-        }
-
-
+        /* Estilos generales */
         .grid-container {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr); /* 4 columnas */
-        gap: 20px; /* Espacio entre los elementos */
-        width: 100%; /* Ajusta el ancho total del contenedor */
-        max-width: 1200px;
-        }
-        .grid-item {
-        text-align: center; /* Centrar el texto y el canvas */
-        }
-        .small-title {
-        font-size: 16px; /* Tamaño ajustado */
-        margin-bottom: 10px; /* Espacio entre el título y el canvas */
-        }
-        canvas {
-        user-select: none;
-        -webkit-tap-highlight-color: rgba(22, 216, 250, 0.959);
-        border: 1px solid #0998da; /* Opcional: agrega borde a los canvas */
-       
-        }
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr); 
+                    gap: 0px; 
+                    width: 100%;
+                    max-width: 90%;
+                    margin: 0 auto; 
+                    padding: 0; 
+                }
 
+                .grid-item {
+                    text-align: center;
+                    padding: 10px;
+                    border-radius: 8px; 
+                    background-color: #f9f9f9; 
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    margin-bottom: 0; 
+                }
 
+                .grid-item:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); 
+                }
+
+                .small-title {
+                    font-size: 18px; 
+                    margin-bottom: 10px; 
+                    font-weight: 600; 
+                    color: #444; 
+                    letter-spacing: 0.5px; 
+                }
+
+                canvas {
+                    user-select: none;
+                    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+                    border: 2px solid #17a2b8; 
+                    border-radius: 8px; 
+                    width: 100%;
+                    max-width: 250px;
+                    height: 150px;
+                    margin: 0 auto; 
+                    padding: 0;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+                    background-color: #fff; 
+                    display: block; 
+        }
     </style>
-@endsection
 
+@endsection
 @section('content')
     <!-- Breadcrumbs -->
     <div class="row gy-3 mb-2 justify-content-between">
@@ -209,70 +226,180 @@
         </div>
     </div>
     <div class="container my-4">
-        <div class="form-check">
-            <input class="form-check-input" id="flexRadioDefault1" type="radio" name="flexRadioDefault" checked onclick="toggleTable()">
-            <label class="form-check-label" for="flexRadioDefault1">Buscar Por Orden De Venta</label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" id="flexRadioDefault2" type="radio" name="flexRadioDefault" onclick="toggleTable()">
-            <label class="form-check-label" for="flexRadioDefault2">Buscar Por Orden De Fabricación</label>
+        <!--click orden venta-->
+        <div class="card-body p-3" style="height: 85px; width: 20%; background-color: #88a7d4; border-radius: 8px; box-shadow: 0 2px 5px rgba(223, 223, 223, 0.1); color: white;">
+            <!-- contenido -->
+            <div class="form-check">
+                <input class="form-check-input" id="flexRadioDefault1" type="radio" name="flexRadioDefault" checked onclick="toggleTable()">
+                <label class="form-check-label text-white" for="flexRadioDefault1">Orden De Venta</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" id="flexRadioDefault2" type="radio" name="flexRadioDefault" onclick="toggleTable()">
+                <label class="form-check-label text-white" for="flexRadioDefault2">Orden De Fabricación</label>
+            </div>
         </div>
         <!-- Tabla 1: Orden de Venta -->
         <div id="tablaVenta" style="display:block;">
-            <form id="form-buscar-venta">
-                <div class="d-flex">
-                    <input class="form-control search-input search form-control-sm" type="text" name="search" placeholder="Buscar Por Orden De Venta...."style="flex: 1 1 0%;">
-                    <button class="btn btn-outline-primary" type="button" id="buscarVenta" style="flex: 0 1 auto;"> 
-                        <i class="uil uil-search"></i>Buscar
-                    </button>
+            <div class="card border border-light mx-auto" style="max-width: 420px; border-radius: 40px; box-shadow: 0 1px 1px rgba(23, 60, 182, 0.1); height: 50px; width: 44%;">
+                <div class="card-body p-1 d-flex align-items-center" style="height: 100%;">
+                    <form id="form-buscar-venta" style="width: 100%;">
+                        <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
+                            <input class="form-control search-input search form-control-sm" type="text" name="search" placeholder="Buscar Por Orden De Venta..." style="flex: 1; border-radius: 20px; padding: 10px;">
+                            <button class="btn btn-outline-primary ml-2" type="button" id="buscarVenta" style="border-radius: 20px;">
+                                <i class="uil uil-search"></i> Buscar
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
             <div style="margin-top: 20px;"></div>
             <div class="table-responsive">
-                <table class="table table-sm fs--1 mb-0">
-                  <thead>
-                    <tr class="bg-info text-white">
-                        <th class="sort border-top ps-3" data-sort="venta">Orden De Venta</th>
-                        <th class="sort border-top" data-sort="fabricacion">Nombre Cliente</th>
-                        <th class="sort border-top text-center pe-3" data-sort="total">Detalles</th>
-                    </tr>
-                    </thead>
-                    <tbody class="list" id="tabla-resultadosVenta">
-                    </tbody>
-                </table>
+                <div class="card-body p-3" style="height: 100%; width: 100%; background-color: #b9d0f1; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); color: white;">
+                    <table class="table table-sm fs--1 mb-0">
+                    <thead>
+                        <tr class="bg-info text-white">
+                            <th class="sort border-top ps-3" data-sort="venta">Orden De Venta</th>
+                            <th class="sort border-top" data-sort="fabricacion">Nombre Cliente</th>
+                            <th class="sort border-top text-center pe-3" data-sort="total">Detalles</th>
+                        </tr>
+                        </thead>
+                        <tbody class="list" id="tabla-resultadosVenta">
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <!-- Tabla 2: Orden de Fabricación -->
         <div id="tablaFabricacion" style="display:none;">
-            <form id="form-buscar-fabricacion">
-                <div class="d-flex">
-                    <input class="form-control search-input search form-control-sm" type="text" id="inputBusquedaFabricacion" name="search" placeholder="Buscar Por Orden De Fabricación..." style="flex: 1 1 40%;">
-                    <button class="btn btn-outline-primary" type="button" id="buscarFabricacion" style="flex: 0 1 auto;">
-                        <i class="uil uil-search"></i> Buscar
-                    </button>
+            <div class="card border border-light mx-auto" style="max-width: 420px; border-radius: 40px; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); height: 50px; width: 44%;">
+                <div class="card-body p-3 d-flex align-items-center" style="height: 100%;">
+                    <form id="form-buscar-fabricacion" style="width: 100%;">
+                        <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
+                            <input class="form-control search-input search form-control-sm" type="text" id="inputBusquedaFabricacion" name="search" placeholder="Buscar Por Orden De Fabricación..." style="flex: 1; border-radius: 20px; padding: 10px;">
+                            <button class="btn btn-outline-primary ml-2" type="button" id="buscarFabricacion" style="border-radius: 20px;">
+                                <i class="uil uil-search"></i> Buscar
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
+            
             <div style="margin-top: 20px;"></div>
-            <table class="table table-sm fs--1 mb-0">
-                <thead>
-                    <tr class="bg-info text-white">
-                        <th class="sort border-top" data-sort="fabricacion">Orden De Fabricación</th>
-                        <th class="sort border-top" data-sort="partidas">Artículo</th>
-                        <th class="sort border-top" data-sort="partidas">Descripción</th>
-                        <th class="sort border-top" data-sort="partidas">Cantidad Total</th>
-                        <th class="sort border-top" data-sort="estatus">Estatus</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-resultadosFabricacion">
-                </tbody>
-            </table>
+            <div class="card-body p-3" style="height: 100%; width: 100%; background-color: #b9d0f1; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); color: white;">
+                <table class="table table-sm fs--1 mb-0">
+                    <thead>
+                        <tr class="bg-info text-white">
+                            <th class="sort border-top" data-sort="fabricacion">Orden De Fabricación</th>
+                            <th class="sort border-top" data-sort="partidas">Artículo</th>
+                            <th class="sort border-top" data-sort="partidas">Descripción</th>
+                            <th class="sort border-top" data-sort="partidas">Cantidad Total</th>
+                            
+                            <th class="sort border-top" data-sort="estatus">Detalles</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-resultadosFabricacion">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--modal fabricacion-->
+        <div class="modal fade" id="example2Modal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-info" id="exampleModalLabel">
+                            Detalles De Orden Fabricacion
+                            <span id="ordenFabricacionNumero" class="ms-3 text-muted"></span>
+                        </h5>
+                        
+                        <button type="button" class="btn p-1" data-bs-dismiss="modal" aria-label="Close">
+                            <svg class="svg-inline--fa fa-xmark fs--1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
+                                <path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        
+                        <!-- Barra de progreso -->
+                        <div class="progress" style="height: 22px; border-radius: 10px; box-shadow: 0px 3px 6px rgba(0,0,0,0.2); overflow: hidden;">
+                            <div id="plemasProgressBar" class="progress-bar text-white fw-bold progress-animated" role="progressbar" 
+                                 style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;" 
+                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                0%
+                            </div>
+                        </div>
+                        
+                        
+
+                        <br>
+                        <div class="grid-container" id="plemasCanvases">
+                            <!-- Estación Cortes -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Estación Cortes</h1>
+                                <canvas id="plemasCorte" width="300" height="300"></canvas>
+                            </div>
+        
+                            <!-- Estación Suministros -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Estación Suministros</h1>
+                                <canvas id="plemasSuministro" width="300" height="300"></canvas>
+                            </div>
+        
+                            <!-- Estación Preparado -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Estación Preparado</h1>
+                                <canvas id="plemasPreparado" width="300" height="300"></canvas>
+                            </div>
+        
+                            <!-- Estación Ensamble -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Estación Ensamble</h1>
+                                <canvas id="plemasEnsamble" width="300" height="300"></canvas>
+                            </div>
+        
+                            <!-- Estación Pulido -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Estación Pulido</h1>
+                                <canvas id="plemasPulido" width="300" height="300"></canvas>
+                            </div>
+        
+                            <!-- Estación Medición -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Estación Medición</h1>
+                                <canvas id="plemasMedicion" width="300" height="300"></canvas>
+                            </div>
+        
+                            <!-- Estación Visualización -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Estación Visualización</h1>
+                                <canvas id="plemasVisualizacion" width="300" height="300"></canvas>
+                            </div>
+        
+                            <!-- Estación Empaque -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Estación Empaque</h1>
+                                <canvas id="plemasEmpaque" width="300" height="300"></canvas>
+                            </div>
+                        </div>
+        
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
         </div>
         <!--modal principal-->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title text-info" id="exampleModalLabel">Detalles de Venta</h5>
+                        <h5 class="modal-title text-info" id="exampleModalLabel">
+                            Detalles De Orden Venta
+                            <span id="ordenVentaNumero" class="ms-3 text-muted"></span>
+                        </h5>
+                        
+                        
                         <button type="button" class="btn p-1" data-bs-dismiss="modal" aria-label="Close">
                             <svg class="svg-inline--fa fa-xmark fs--1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
                                 <path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"></path>
@@ -281,9 +408,10 @@
                     </div>
                     <div class="modal-body">
                         <!-- Barra de progreso -->
-                        <div class="progress">
+                        <div class="progress" style="height: 20px;">
                             <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                         </div>
+                        <br>
                         <!-- Lista de etapas -->
                         <ul class="progress-bar-stages">
                             <li class="stage" id="stage1">
@@ -292,56 +420,92 @@
                                 </div>
                                 <span>1. Planeación</span>
                             </li>
-                            <li class="stage" id="stage2">
+                        
+                            <li class="stage" id="stage2" >
                                 <div class="stage-circle">
                                     <i class="fas fa-cut"></i>
                                 </div>
                                 <span>2. Corte</span>
+                                
+                                <!-- Contenedor de progreso que estará dentro del <li> -->
+                                <div id="progress-wrapper-2" class="collapse" style="margin-top: 10px;">
+                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
+                                </div>
                             </li>
-                            <li class="stage" id="stage3">
+                        
+                            <li class="stage" id="stage3" >
                                 <div class="stage-circle">
-                                    <i class="fas fa-tools"></i>
+                                    <i class="fas fa-cut"></i>
                                 </div>
                                 <span>3. Suministro</span>
+                                
+                                <!-- Contenedor de progreso que estará dentro del <li> -->
+                                <div id="progress-wrapper-3" class="collapse" style="margin-top: 10px;">
+                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
+                                </div>
                             </li>
+                        
                             <li class="stage" id="stage4">
                                 <div class="stage-circle">
                                     <i class="fas fa-tools"></i>
                                 </div>
-                                <span>3. Preparado</span>
+                                <span>4. Preparado</span>
+                                <div id="progress-wrapper-4" class="collapse" style="margin-top: 10px;">
+                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
+                                </div>
                             </li>
+                        
                             <li class="stage" id="stage5">
                                 <div class="stage-circle">
                                     <i class="fas fa-tools"></i>
                                 </div>
-                                <span>3. Ensamble</span>
+                                <span>5. Ensamble</span>
+                                <div id="progress-wrapper-5" class="collapse" style="margin-top: 10px;">
+                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
+                                </div>
                             </li>
+                        
                             <li class="stage" id="stage6">
                                 <div class="stage-circle">
                                     <i class="fas fa-tools"></i>
                                 </div>
-                                <span>3. Pulido</span>
+                                <span>6. Pulido</span>
+                                <div id="progress-wrapper-6" class="collapse" style="margin-top: 10px;">
+                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
+                                </div>
                             </li>
+                        
                             <li class="stage" id="stage7">
                                 <div class="stage-circle">
                                     <i class="fas fa-tools"></i>
                                 </div>
-                                <span>3. Medicion</span>
+                                <span>7. Medición</span>
+                                <div id="progress-wrapper-7" class="collapse" style="margin-top: 10px;">
+                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
+                                </div>
                             </li>
+                        
                             <li class="stage" id="stage8">
                                 <div class="stage-circle">
                                     <i class="fas fa-tools"></i>
                                 </div>
-                                <span>3. Visualizacion</span>
+                                <span>8. Visualización</span>
+                                <div id="progress-wrapper-8" class="collapse" style="margin-top: 10px;">
+                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
+                                </div>
                             </li>
+                        
                             <li class="stage" id="stage9">
                                 <div class="stage-circle">
                                     <i class="fas fa-tools"></i>
                                 </div>
-                                <span>3. Empaque</span>
+                                <span>9. Empaque</span>
+                                <div id="progress-wrapper-9" class="collapse" style="margin-top: 10px;">
+                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
+                                </div>
                             </li>
-
-                        </ul> 
+                        </ul>
+                        
                         <br> 
                         <div class="grid-container" id="canvases">
                         
@@ -350,44 +514,36 @@
                               <h1 class="small-title">Estación Cortes</h1>
                               <canvas id="corte" width="300" height="300"></canvas>
                             </div>
-                        
                             <!-- Estación Suministros -->
                             <div class="grid-item">
                               <h1 class="small-title">Estación Suministros</h1>
                               <canvas id="suministro" width="300" height="300"></canvas>
                             </div>
-                            
-                        
                             <!-- Estación Preparado -->
                             <div class="grid-item">
                               <h1 class="small-title">Estación Preparado</h1>
                               <canvas id="preparado" width="300" height="300"></canvas>
                             </div>
-                        
                             <!-- Estación Ensamble -->
                             <div class="grid-item">
                               <h1 class="small-title">Estación Ensamble</h1>
                               <canvas id="ensamble" width="300" height="300"></canvas>
                             </div>
-                        
                             <!-- Estación Pulido -->
                             <div class="grid-item">
                               <h1 class="small-title">Estación Pulido</h1>
                               <canvas id="pulido" width="300" height="300"></canvas>
                             </div>
-                        
                             <!-- Estación Medición -->
                             <div class="grid-item">
                               <h1 class="small-title">Estación Medición</h1>
                               <canvas id="medicion" width="300" height="300"></canvas>
                             </div>
-                        
                             <!-- Estación Visualización -->
                             <div class="grid-item">
                               <h1 class="small-title">Estación Visualización</h1>
                               <canvas id="visualizacion" width="300" height="300"></canvas>
                             </div>
-                        
                             <!-- Estación Empaque -->
                             <div class="grid-item">
                               <h1 class="small-title">Estación Empaque</h1>
@@ -400,7 +556,9 @@
                 </div>
             </div>
         </div>
-        <input type="hidden" id="idVenta" value="">    
+        <!--modal fabricacion-->
+        <input type="hidden" id="idVenta" value="">
+        <input type="hidden" id="idFabricacion" value="">     
     </div>
 @endsection
 
@@ -410,7 +568,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    
+
     // Función para alternar entre las tablas de Venta y Fabricación
     function toggleTable() {
     var radioVenta = document.getElementById("flexRadioDefault1");
@@ -432,7 +590,7 @@
         document.getElementById("inputBusquedaFabricacion").value = '';
         document.getElementById("tabla-resultadosFabricacion").innerHTML = '';
     }
-}
+    }
     // Cargar datos de la tabla de orden de venta
     $('#buscarVenta').on('click', function () {
         var search = $('input[name="search"]').val().trim();
@@ -443,8 +601,9 @@
 
         cargarDatosVenta(search);
     });
-
+    //cargar los datode venta
     function cargarDatosVenta(search) {
+        
         $.ajax({
             url: '{{ route("Buscar.Venta") }}',
             method: 'GET',
@@ -472,6 +631,7 @@
                                     </a>
                                 </td>
                             </tr>`;
+                            
                         tbody.append(row);
                     });
                 } else {
@@ -483,13 +643,22 @@
             }
         });
     }
-
-    //detalles de la principio
+    //detalles de la orden venta
     $(document).on('click', '.ver-detalles', function (e) {
         var ordenVenta = $(this).data('ordenventa');
+        
+        // Muestra el valor en el elemento
+        $('#stage2').data('ordenventa', ordenVenta);
+        $('#stage3').data('ordenventa', ordenVenta);
+        $('#stage4').data('ordenventa', ordenVenta);
+        $('#stage5').data('ordenventa', ordenVenta);
+        $('#stage6').data('ordenventa', ordenVenta);
+        $('#stage7').data('ordenventa', ordenVenta);
+        $('#stage8').data('ordenventa', ordenVenta);
+        $('#stage9').data('ordenventa', ordenVenta);
 
         $('.progress-bar').css('width', '0%').text('0%');
-        $('.progress-bar-stages .stage').removeClass('pending active completed').addClass('pending');
+        $('.progress-bar-stages .stage').removeClass('pending active completed no-data').addClass('pending');
 
         $.ajax({
             url: '{{ route("Buscar.Venta.Detalle") }}',
@@ -514,7 +683,7 @@
                         }[partida.Estado];
 
                         if (estadoId) {
-                            $(estadoId).removeClass('pending').addClass('completed');
+                            $(estadoId).removeClass('pending active no-data').addClass('completed');
                             etapasCompletadas++;
                         }
                     });
@@ -538,12 +707,18 @@
                         }
                     }
 
+                    // Actualizar el porcentaje de progreso
                     var porcentaje = Math.round((etapasCompletadas / totalEtapas) * 100);
                     $('#progressBar').css('width', porcentaje + '%').text(porcentaje + '%');
+
+                    // Actualiza el número de la orden en el modal
+                    $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
                 } else {
-                    // Reinicia todo si no hay datos
+                    // Si no hay datos, aplica el estado "no-data"
+                    $('.progress-bar-stages .stage').addClass('no-data');
                     $('#progressBar').css('width', '0%').text('0%');
-                    $('.progress-bar-stages .stage').removeClass('pending active completed').addClass('pending');
+                    // También puedes actualizar el número de orden en este caso
+                    $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
                 }
 
                 $('#exampleModal').modal('show');
@@ -552,6 +727,9 @@
                 alert('Error al obtener los datos de la venta.');
             }
         });
+
+
+
         const endpoints = [
             {
                 tipo: 'cortes',
@@ -590,24 +768,25 @@
         ];
         endpoints.forEach(endpoint => {
             $.ajax({
-                    url: '{{ route("graficador") }}', 
-                    type: 'GET',
-                    data: { 
-                        id: ordenVenta, 
-                        tipo: endpoint.tipo, 
-                    },
-                    success: function (response) {
-                        if (response.length > 0) {
-                            const firstOrder = response[0];
-                            drawGauge(endpoint.id, firstOrder.Progreso, `Orden: ${firstOrder.OrdenVenta}`);
-                        } else {
-                            console.log('No hay datos para mostrar.');
-                            drawGauge(endpoint.id, 0, 'Sin Datos');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
+                url: '{{ route("graficador") }}',
+                type: 'GET',
+                data: { 
+                    id: ordenVenta, 
+                    tipo: endpoint.tipo, 
+                },
+                success: function (response) {
+                    if (response.length > 0) {
+                        const firstOrder = response[0];
+                        const progreso = Math.min(firstOrder.Progreso, 100); // Limita a 100%
+                        drawGauge(endpoint.id, progreso, '');
+                    } else {
+                        console.log('No hay datos para mostrar.');
+                        drawGauge(endpoint.id, 0, 'Sin Datos');
                     }
+                },
+                error: function(xhr, status, error) {
+                    console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
+                }
             });
         });
 
@@ -623,6 +802,8 @@
 
             cargarDatosFabricacion(search);
     });
+
+    //cargar los datos de fabricacion
     function cargarDatosFabricacion(search) {
         $.ajax({
             url: '{{ route("Buscar.Fabricacion") }}', 
@@ -641,19 +822,16 @@
                                 <td>${item.Articulo}</td>
                                 <td>${item.Descripcion}</td>
                                 <td>${item.CantidadTotal}</td>
-                                <td>
-                                    <div class="progress" style="height: 25px; background-color: #f2f2f2; border-radius: 5px; overflow: hidden; width: 300px;">
-                                        <div 
-                                            class="progress-bar progress-bar-striped progress-bar-animated" 
-                                            role="progressbar" 
-                                            aria-valuenow="${item.progreso}" 
-                                            aria-valuemin="0" 
-                                            aria-valuemax="100" 
-                                            style="width: ${item.progreso}%; font-weight: bold; font-size: 14px; line-height: 25px; color: #fff;
-                                                background-color: ${item.progreso < 20 ? '#f44336' : item.progreso < 50 ? '#ff9800' : item.progreso < 70 ? '#ffeb3b' : '#4caf50'};">
-                                            ${Math.round(item.progreso)}%
-                                        </div>
-                                    </div>
+                                
+                                <td class="text-center align-middle">
+                                    <a href="#" class="btn btn-info btn-sm ver-fabricacion" 
+                                    data-id="${item.id}"
+                                    data-ordenfabricacion="${item.OrdenFabricacion}"
+                                    data-descripcion="${item.Descripcion}"
+                                    data-cantidadtotal="${item.CantidadTotal}"
+                                    style="border-radius: 3px; padding: 4px 8px; font-size: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); transition: background-color 0.3s, transform 0.2s;">
+                                        <i class="bi bi-eye uil-comment-info"></i> Detalles
+                                    </a>
                                 </td>
                             </tr>`;
                         tbody.append(row);
@@ -671,49 +849,289 @@
         });
     }
 
-    //funcion para cargar los canvases
+    //detalles de la orden de fabricacion
+    $(document).on('click', '.ver-fabricacion', function (e) {
+        var ordenfabricacion = $(this).data('ordenfabricacion');
+        console.log(ordenfabricacion);  // Para depuración
+
+        $.ajax({
+            url: '{{ route("Detalles.Fabricacion") }}',
+            type: 'GET',
+            data: { id: ordenfabricacion },
+            success: function (response) {
+                var progressBar = $('#plemasProgressBar');
+
+                if (response.progreso !== undefined) {
+                    var progreso = response.progreso;
+
+                    // Actualizar la barra de progreso con animación
+                    progressBar.css('width', progreso + '%').text(progreso + '%');
+
+                    // Quitar clases de color antes de agregar la nueva
+                    progressBar.removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
+
+                    // Asignar color según el porcentaje
+                    if (progreso >= 0 && progreso < 20) {
+                        progressBar.addClass('bg-danger');  // Rojo
+                    } else if (progreso >= 20 && progreso < 40) {
+                        progressBar.addClass('bg-warning');  // Naranja
+                    } else if (progreso >= 40 && progreso < 70) {
+                        progressBar.addClass('bg-primary');  // Azul para una transición más agradable
+                    } else if (progreso >= 70 && progreso < 90) {
+                        progressBar.addClass('bg-info');  // Celeste/Azul claro
+                    } else {
+                        progressBar.addClass('bg-success');  // Verde
+                    }
+
+                    // Actualizar el número de orden de fabricación
+                    $('#ordenFabricacionNumero').removeClass('text-muted').addClass('text-info').text(ordenfabricacion);
+                } else {
+                    // Reiniciar la barra si no hay datos
+                    progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
+
+                    // Actualizar el número de orden de fabricación con la clase 'text-muted'
+                    $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
+                }
+
+                // Mostrar el modal
+                $('#example2Modal').modal('show');
+            },
+            error: function () {
+                alert('Error al obtener los datos de la fabricación.');
+            }
+        });
+
+
+        const endpoints = [
+            {
+                tipo: 'plemasCorte',
+                id: 'plemasCorte',
+            },
+            {
+                tipo: 'plemasSuministro',
+                id: 'plemasSuministro',
+            },
+            {
+                tipo: 'plemasPreparado',
+                id: 'plemasPreparado',
+            },
+            {
+                tipo: 'plemasEnsamble',
+                id: 'plemasEnsamble',
+
+            },
+            {
+                tipo: 'plemasPulido',
+                id: 'plemasPulido',
+            },
+            {
+                tipo:'plemasMedicion',
+                id: 'plemasMedicion',
+            },
+            {
+                tipo: 'plemasVisualizacion',
+                id: 'plemasVisualizacion',
+            },
+            {
+                tipo: 'plemasEmpaque',
+                id: 'plemasEmpaque',
+            },
+
+        ];
+        endpoints.forEach(endpoint => {
+            $.ajax({
+                url: '{{ route("graficadoOF") }}',
+                type: 'GET',
+                data: { 
+                    id: ordenfabricacion, 
+                    tipo: endpoint.tipo, 
+                },
+                success: function (response) {
+                    if (response.length > 0) {
+                        const firstOrder = response[0];
+                        let cantidadTotal = firstOrder.CantidadTotal;
+                        let totalPartidas = firstOrder.TotalPartidas;
+                        let retrabajo = 0;
+                        let label = '';
+
+                        if (totalPartidas > cantidadTotal) {
+                            retrabajo = totalPartidas - cantidadTotal;
+                            totalPartidas = cantidadTotal; 
+                            label = `Retrabajo: ${retrabajo}`;
+                        }
+
+                        let progreso = Math.round((totalPartidas / cantidadTotal) * 100);
+                        drawGauge(endpoint.id, progreso, label);
+                    } else {
+                        console.log('No hay datos para mostrar.');
+                        drawGauge(endpoint.id, 0, 'Sin Datos');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
+                }
+            });
+        });
+    });
+
+    //funcion para cargar los canvases general para Or-V Y Or-F
     function drawGauge(canvasId, value, label) {
         const canvas = document.getElementById(canvasId);
-        const ctx = canvas.getContext('2d');
+        canvas.style.webkitTapHighlightColor = 'rgba(0, 0, 0, 0)'; // Desactivar el resaltado táctil
 
+        const ctx = canvas.getContext('2d');
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         const radius = 120;
         const startAngle = Math.PI;
         const endAngle = 2 * Math.PI;
 
-        // Clear canvas
+        // Limpiar el lienzo
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Dibuja el arco de fondo
+        // Dibujar el arco de fondo con borde más delgado
         ctx.beginPath();
         ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-        ctx.lineWidth = 15;
-        ctx.strokeStyle = '#e0e0e0'; 
-        ctx.lineCap = 'round'; 
+        ctx.lineWidth = 50;  // Ancho de línea ajustado para mejor balance
+        ctx.strokeStyle = '#e0e0e0';  // Gris suave para el fondo
+        ctx.lineCap = 'butt';
         ctx.stroke();
 
-        // Inicia un nuevo trazo en el lienzo
-        ctx.beginPath();
+        // Determinar el color del arco según el valor
+        let strokeColor;
+        if (value <= 20) strokeColor = '#e74c3c'; // Rojo
+        else if (value <= 50) strokeColor = '#f39c12'; // Naranja
+        else if (value <= 90) strokeColor = '#f1c40f'; // Amarillo
+        else strokeColor = '#05610a'; // Verde
+
+        // Ajuste para hacer el principio y final del arco un poco cuadrado
         const valueAngle = startAngle + (value / 100) * (endAngle - startAngle);
+
+        // Dibujar el arco del valor con color dinámico
+        ctx.beginPath();
         ctx.arc(centerX, centerY, radius, startAngle, valueAngle);
-        ctx.strokeStyle = '#3b82f6'; 
-        ctx.lineWidth = 5; // Puedes ajustar el grosor del trazo
-        ctx.lineCap = 'round'; // Opcional: Da un estilo redondeado al final de la línea
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 45; // Ancho del arco ajustado para mejor visibilidad
+        ctx.lineCap = 'butt'; // Ajustar el borde a cuadrado en el inicio y final
         ctx.stroke();
 
-        // Draw center text
-        ctx.font = '24px Arial';
-        ctx.fillStyle = 'red'; // Color del texto
+        // Determinar el color del texto del valor
+        let valueTextColor = strokeColor; // Usar el mismo color del arco
+        ctx.font = '30px Arial';  // Fuente más grande para el valor
+        ctx.fillStyle = valueTextColor;
         ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(`${value}%`, centerX, centerY - 20); // Muestra el valor en el centro
+        ctx.textBaseline = 'middle'; // Asegura que el texto esté alineado verticalmente en el medio
 
-        // Draw label below
-        ctx.font = '16px Arial';
-        ctx.fillStyle = '#17a2b8';        // Color del texto de la etiqueta
-        ctx.fillText(label, centerX, centerY + 40); // Muestra la etiqueta debajo
+        // Ajustar la posición vertical del texto para alinearlo con el arco
+        // Aquí, `centerY` ajustado verticalmente para que esté alineado con el arco
+        ctx.fillText(`${value}%`, centerX, centerY);
+
+        // Etiqueta debajo del valor
+        ctx.font = '18px Arial';
+        ctx.fillStyle = '#17a2b8';  // Color suave para la etiqueta
+        ctx.fillText(label, centerX, centerY + 40);  // Espaciado ajustado
     }
+
+    //para el clic de .stage
+    $(document).ready(function() {
+        $('.stage').on('click', function() {
+            var stageId = $(this).attr('id');
+            var progressWrapperId = '#progress-wrapper-' + stageId.replace('stage', '');
+            $(progressWrapperId).collapse('toggle'); // Muestra u oculta el contenedor de progreso
+
+            // Agregar o quitar la clase 'selected-stage' para resaltar el ícono y el texto
+            $('.stage').removeClass('selected-stage');
+            $(this).addClass('selected-stage');
+
+            var ordenVenta = $(this).data('ordenventa'); // Obtiene la orden de venta asociada
+
+            loadProgressData(ordenVenta, stageId); // Llamada unificada
+        });
+    });
+
+    // Función para cargar los datos de progreso combinados
+    function loadProgressData(ordenVenta, stageId) {
+        $.ajax({
+            url: '{{ route("graficarOR.OF") }}', // Ruta al controlador
+            method: 'GET',
+            data: {
+                id: ordenVenta,
+                stage: stageId, // Pasamos el identificador de la etapa
+                _token: $('meta[name="csrf-token"]').attr('content') // Token de seguridad
+            },
+            success: function(response) {
+                var progressWrapper = $('#progress-wrapper-' + stageId.replace('stage', ''));
+                progressWrapper.empty(); // Limpiar el contenido anterior
+
+                // Generar las barras de progreso dinámicamente
+                response.forEach(function(item, index) {
+                    var progressPercentage = item.Progreso;
+                    var displayProgress = progressPercentage > 100 ? 100 : progressPercentage;
+                    var progressBar = $('<div>', { class: 'task-progress-bar', id: 'task-progress' + (index + 1) });
+                    var progressLabel = $('<div>', { class: 'task-label', text: 'Orden ' + item.OrdenesFabricacion });
+
+                    // Lógica para asignar colores según el progreso
+                    var progressColor;
+                    if (displayProgress >= 0 && displayProgress <= 30) {
+                        progressColor = 'red'; // Rojo
+                    } else if (displayProgress > 30 && displayProgress <= 50) {
+                        progressColor = 'orange'; // Naranja
+                    } else if (displayProgress > 50 && displayProgress <= 90) {
+                        progressColor = 'yellow'; // Amarillo
+                    } else if (displayProgress > 90 && displayProgress <= 100) {
+                        progressColor = 'green'; // Verde
+                    }
+
+                    // Crear la barra de progreso con el porcentaje
+                    var progress = $('<div>', {
+                        class: 'task-progress',
+                        text: displayProgress + '%',
+                        css: {
+                            width: displayProgress + '%',
+                            backgroundColor: progressColor // Aplicar el color
+                        }
+                    });
+
+                    // Agregar el texto de la orden y el progreso dentro de la barra
+                    var progressText = $('<div>', {
+                        class: 'progress-text',
+                        text: displayProgress + '%'
+                    });
+
+                    progressBar.append(progressLabel).append(progress).append(progressText);
+                    progressWrapper.append(progressBar);
+
+                    // Si el progreso es mayor a 100%, agregar una barra para el "Retrabajo"
+                    if (progressPercentage > 100) {
+                        var retrabajoPercentage = progressPercentage - 100;
+                        var retrabajoBar = $('<div>', { class: 'task-progress-bar retrabajo', id: 'task-retrabajo' + (index + 1) });
+                        var retrabajoLabel = $('<div>', { class: 'task-label', text: 'Retrabajo ' + item.OrdenesFabricacion });
+
+                        var retrabajoProgress = $('<div>', {
+                            class: 'task-progress',
+                            text: retrabajoPercentage + '%',
+                            css: {
+                                width: retrabajoPercentage + '%',
+                                backgroundColor: 'blue' // Color para retrabajo
+                            }
+                        });
+
+                        var retrabajoText = $('<div>', {
+                            class: 'progress-text',
+                            text: retrabajoPercentage + '%'
+                        });
+
+                        retrabajoBar.append(retrabajoLabel).append(retrabajoProgress).append(retrabajoText);
+                        progressWrapper.append(retrabajoBar);
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error en la solicitud AJAX:', error);
+            }
+        });
+    }
+
 </script>
 @endsection
 
