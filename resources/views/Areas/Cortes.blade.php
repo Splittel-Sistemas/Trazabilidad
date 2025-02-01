@@ -38,10 +38,10 @@
                     </li>
                 </ul>
                 <hr>
-                <div class="tab-content mt-4" id="myTabContent">
+                <div class="tab-content mt-4 " id="myTabContent">
                     <!-- Tab Proceso -->
                     <div class="tab-pane fade show active" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab">
-                        <div class="table-responsive">
+                        <div class="table-responsive card">
                             <table id="procesoTable" class="table table-sm">
                                 <thead>
                                     <tr class="bg-light">
@@ -75,8 +75,8 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="tab-completado" role="tabpanel" aria-labelledby="completado-tab">
-                        <div class="col-6 mt-1 mb-1 ">
-                            <div class="accordion" id="accordionFiltroUnico">
+                        <div class="col-6 mt-2  mb-4 ">
+                            <div class="accordion ml-3" id="accordionFiltroUnico">
                                 <div class="accordion-item shadow-sm card border border-light">
                                     <h4 class="accordion-header" id="headingFiltroUnico">
                                         <button class="accordion-button btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroUnico" aria-expanded="true" aria-controls="collapseFiltroUnico">
@@ -112,7 +112,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive card">
                             <table id="completadoTable" class="table table-sm fs--1 mb-1">
                                 <thead>
                                     <tr class="bg-light">

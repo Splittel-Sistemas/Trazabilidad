@@ -198,9 +198,12 @@ class CorteController extends Controller
         }else{
             $opciones='<option selected disabled>Selecciona una Emisión de producción</option>';
             $Emisiones=$this->Emisiones($OrdenFabricacion->OrdenFabricacion);
-                                foreach ($Emisiones as $Emision){
-                                    $opciones.='<option value="'.$Emision['NoEmision'].'">'.$Emision['NoEmision'].'</option>';
-                                }
+                foreach ($Emisiones as $Emision){
+                    $Emisiondatos=$OrdenFabricacion->Emisions()->where('NumEmision',$Emision['NoEmision'])->first();
+                        if($Emisiondatos==""){
+                            $opciones.='<option value="'.$Emision['NoEmision'].'">'.$Emision['NoEmision'].'</option>';
+                        }
+                }
             return response()->json([
                 'status' => 'success',
                 'opciones' => $opciones,
@@ -246,7 +249,8 @@ class CorteController extends Controller
                             'message' =>'Partida no guardada, La cantidad solicitada de piezas para Retrabajo tiene que ser menor o igual al número de Partidas Finalizadas!',
                         ], 200);
                     }
-                    if($emision==""){
+                    $ordenemision=$request->emision;
+                    if($ordenemision==""){
                         return response()->json([
                             'status' => 'errorEmision',
                             'message' =>'Partida no guardada, La orden de Emision es requerida!',
@@ -260,13 +264,14 @@ class CorteController extends Controller
                 $partidaOF->FechaComienzo=$FechaHoy;
                 $partidaOF->save();
                 if($retrabajo=='Retrabajo'){
-                    $emision = $request->emision;
                     $emision = new Emision(); 
-                    $emision->NumEmision = $emision;  
+                    $emision->OrdenFabricacion_id = $OrdenFabricacion->id;
+                    $emision->NumEmision = $ordenemision; 
+                    $emision->NumEmision = $ordenemision;  
                     $emision->Etapaid = $partidaOF->id;  
-                    $emision->EtapaEmision = 'C';  
+                    $emision->EtapaEmision = 'C'; 
                     // Asocias la emisión a la orden de fabricación
-                    $OrdenFabricacion->Emisions()->save($emision);
+                    $emision->save();
                 }
                 $OrdenFabricacion->EstatusEntrega=0;
                 $OrdenFabricacion->save();
@@ -304,7 +309,11 @@ class CorteController extends Controller
                     ]);
                 }
                 $OrdenFabricacion=$PartidaOF->ordenFabricacion()->first();
+                $OrdenEmision=$OrdenFabricacion->Emisions()->where("EtapaEmision",'C')->where("Etapaid",$PartidaOF->id)->first();
                 $PartidaOF->delete();
+                if($OrdenEmision!=""){
+                    $OrdenEmision->delete();
+                }
                 $SumaPartidas=$OrdenFabricacion->partidasOF()->where('TipoPartida','=','N')->where('FechaFinalizacion','!=',null)->get()->sum('cantidad_partida');
                 $PartidasIniciadas=$OrdenFabricacion->partidasOF()->where('FechaFinalizacion','=',null)->get();
                 if($OrdenFabricacion->CantidadTotal==$SumaPartidas && $PartidasIniciadas->count()==0){
@@ -477,7 +486,7 @@ class CorteController extends Controller
             // Preparar las partidas relacionadas solo para la partida seleccionada
             $partidasData = [];
             $contador = $inicio+1; 
-
+            $partidaId=$PartidaOF->NumeroPartida;
             for ($i = $inicio; $i < $fin; $i++) {
                 $partidasData[] = [
                     'cantidad' => $contador, 

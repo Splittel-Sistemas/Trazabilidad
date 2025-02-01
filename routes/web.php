@@ -34,7 +34,6 @@ Route::post('/Planeacion/partidas/EscanerEstatus', [PlaneacionController::class,
 Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Detalles'])->name('PartidasOF_Detalles');
 
 //Rutas Ares
-//Route::get('/Area/Corte', [AreasController::class,'Corte'])->name('Corte');
 //Corte Nuevas
 Route::get('/Area/Corte', [CorteController::class, 'index'])->name('corte.index');
 Route::get('/Area/Corte/Tabla', [CorteController::class,'CorteRecargarTabla'])->name('CorteRecargarTabla');
@@ -45,12 +44,11 @@ Route::post('/Area/Corte/Guardar', [CorteController::class,'GuardarCorte'])->nam
 Route::post('/Area/Corte/Cancelar', [CorteController::class,'CancelarCorte'])->name('CancelarCorte');
 Route::post('/Area/Corte/Finalizar', [CorteController::class,'FinalizarCorte'])->name('FinalizarCorte');
 Route::post('/Area/Corte/Buscar', [CorteController::class,'BuscarCorte'])->name('BuscarCorte');
-//Generar PDF
-Route::get('/Area/Corte/GenerarPDF', [CorteController::class, 'generarPDF'])->name('generarPDF');
-
-
+Route::get('/Area/Corte/GenerarPDF', [CorteController::class, 'generarPDF'])->name('generarPDF');//Generar PDF
 //Suministro
 Route::get('/Area/Suministro', [AreasController::class,'Suministro'])->name('Suministro');
+Route::get('/Area/Suministro/SuministroRecargarTabla', [AreasController::class,'SuministroRecargarTabla'])->name('SuministroRecargarTabla');
+Route::post('/Area/Suministro/InfoModal', [AreasController::class,'SuministroDatosModal'])->name('SuministroDatosModal');
 Route::post('/Area/Suministro/Emision', [AreasController::class,'SuministroEmision'])->name('SuministroEmision');
 Route::get('/Area/Suministro/buscar', [AreasController::class,'SuministroBuscar'])->name('SuministroBuscar');
 Route::post('/Area/Suministro/NoEscaner', [AreasController::class,'TipoNoEscaner'])->name('TipoNoEscaner');

@@ -22,33 +22,55 @@ class AreasController extends Controller
     //Area 3 Suministro
     public function Suministro(){
         //EstatusEntrega==0 aun no iniciado; 1 igual a terminado
-        $OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->get();
-        foreach($OrdenFabricacion as $orden) {
+        $Area=3;
+        $PartidasOFA=PartidasOF::where('EstatusPartidaOF','=','0')
+            ->where('FechaFinalizacion','!=','')
+            ->orderBy('FechaFinalizacion')
+            ->get();
+        foreach($PartidasOFA as $orden) {
+            $ordenFabri=$orden->ordenFabricacion;
             $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
+            $orden['OrdenFabricacion']=$ordenFabri->OrdenFabricacion;
+            $orden['Articulo']=$ordenFabri->Articulo;
+            $orden['Descripcion']=$ordenFabri->Descripcion;
+            $orden->id="";
+        }
+        $PartidasOFC=PartidasOF::where('EstatusPartidaOF','=','0')
+            ->where('FechaFinalizacion','!=','')
+            ->orderBy('FechaFinalizacion')
+            ->get();
+        foreach($PartidasOFC as $orden) {
+            $ordenFabri=$orden->ordenFabricacion;
+            $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
+            $orden['OrdenFabricacion']=$ordenFabri->OrdenFabricacion;
+            $orden['Articulo']=$ordenFabri->Articulo;
+            $orden['Descripcion']=$ordenFabri->Descripcion;
+            $orden->id="";
         }
         $Area=$this->funcionesGenerales->encrypt(3);
         $user = Auth::user();
         if ($user->hasPermission('Vista Suministro')) {
            
-            return view('Areas.Suministro1',compact('Area','OrdenFabricacion'));
-        } else {
+            return view('Areas.Suministro',compact('Area','PartidasOFA','PartidasOFC'));
+        }else {
            
             return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
         }
     }
     public function SuministroRecargarTabla(){
-        //EstatusEntrega==0 aun no iniciado; 1 igual a terminado
+        //Partidas->Estatus==1 aun no iniciado; 2 igual a terminado
         try {
-            $OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->get();
+            $PartidasOF=PartidasOF::where('EstatusPartidaOF','=','0')->get();
             $tabla="";
-            foreach($OrdenFabricacion as $orden) {
+            foreach($PartidasOF as $orden) {
+                $ordenFabri=$orden->ordenFabricacion->first();
                 $tabla.='<tr>
-                        <td>'. $orden->OrdenFabricacion .'</td>
-                        <td>'. $orden->Articulo .'</td>
-                        <td>'. $orden->Descripcion .'</td>
-                        <td>'. $orden->CantidadTotal .'</td>
-                        <td>'. $orden->FechaEntrega .'</td>
-                        <td><button class="btn btn-sm btn-outline-primary" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Planear</button></td>
+                        <td>'. $ordenFabri->OrdenFabricacion .'</td>
+                        <td>'. $ordenFabri->Articulo .'</td>
+                        <td>'. $ordenFabri->Descripcion.'</td>
+                        <td>'. $orden->cantidad_partida .'</td>
+                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                        <td><button class="btn btn-sm btn-outline-primary" onclick="Detalles(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Planear</button></td>
                     </tr>';
             }
             return response()->json([
@@ -62,6 +84,133 @@ class AreasController extends Controller
             ], 500);
         }
     }
+    public function SuministroDatosModal(Request $request){
+        //Partidas->Estatus==1 aun no iniciado; 2 igual a terminado
+        $id=$this->funcionesGenerales->decrypt($request->id);
+        $Area=3;
+        $PartidasOF = PartidasOF::find($id);
+        $OrdenFabricacion=OrdenFabricacion::find($PartidasOF->OrdenFabricacion_id);
+        $Ordenfabricacionpartidas='<table id="TablePartidasModal" class="table table-sm fs--1 mb-0" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="text-center" colspan="8">Partidas</th>
+                            </tr>
+                            <tr>
+                                <th class="text-center">Número Partida</th>
+                                 <th class="text-center">Unidades Suministradas</th>
+                                <th class="text-center">Tipo Partida</th>
+                                <th class="text-center">Estatus</th>
+                                <th class="text-center" colspan="2">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>';
+        $Ordenfabricacioninfo='<table class="table table-sm fs--1 mb-0" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="text-center" colspan="4">Orden de Fabricacion:  '.$OrdenFabricacion->OrdenFabricacion.'</th>
+                            </tr>
+                            <tr>
+                                <th class="text-center" colspan="4">Orden de Venta:  '.$OrdenFabricacion->ordenVenta->OrdenVenta.'</th>
+                            </tr>
+                        </thead>
+                        <tbody>';
+        if(!($OrdenFabricacion==null || $OrdenFabricacion=="")){
+            $id=$this->funcionesGenerales->encrypt($OrdenFabricacion->id);
+            $Partidas=$PartidasOF->partidas()
+                        ->whereHas('areas', function ($query) {
+                            $query->where('areas.id', 3);
+                        })
+            ->get();
+            $PartidaNormal=0;
+            $PartidaRetrabajo=0;
+            $PartidaTotal=0;
+            if($Partidas->count()>0){
+                foreach($Partidas as $par){
+                    if($par->Estatus==2 && $par->Areas()->where('areas.id','=',3)->first()->pivot->FechaTermina!=""){
+                        $PartidaRetrabajo+=$par->CantidadaPartidas;
+                        $PartidaTotal+=$par->CantidadaPartidas;
+                    }
+                    elseif($par->Estatus==1 && $par->Areas()->where('areas.id','=',3)->first()->pivot->FechaTermina!=""){
+                        $PartidaNormal+=$par->CantidadaPartidas;
+                        $PartidaTotal+=$par->CantidadaPartidas;
+                    }
+                }
+            }
+            $Ordenfabricacioninfo.='
+                            <tr>
+                                <th class="table-active">Articulo</th>
+                                <th class="text-center">'.$OrdenFabricacion->Articulo.'</th>
+                                <th class="table-active" colspan="1">Fecha Planeación</th>
+                                <td class="text-center" colspan="3">'.$OrdenFabricacion->FechaEntrega.'</td>
+                            </tr>
+                            <tr>
+                                <th class="table-active" colspan="1">Cantidad Partidas</th>
+                                <th class="text-center" colspan="1">'.$PartidasOF->cantidad_partida.'</th>
+                                <th class="table-active" colspan="1">Piezas completadas </th>
+                                <th class="text-center" colspan="1">'.$PartidaTotal.'</th>
+                            </tr>
+                            <tr>
+                                <th class="table-active" colspan="1">Descripción</th>
+                                <td class="text-center" colspan="3">'.$OrdenFabricacion->Descripcion.'</td>
+                            </tr>
+                            <tr>
+                                <th class="table-active" colspan="1">Piezas Entrada Normal</th>
+                                <th class="text-center" colspan="1">'.$PartidaNormal.'</th>
+                                <th class="table-active" colspan="1">Piezas Entrada Retrabajo </th>
+                                <th class="text-center" colspan="1">'.$PartidaRetrabajo.'</th>
+                            </tr>';
+            
+            $Partidas=$PartidasOF->partidas()
+            ->whereHas('Areas', function ($query) use($Area) {
+                $query->where('areas.id', '=', $Area); 
+            })->get();
+            if($Partidas->count()==0){
+                $Ordenfabricacionpartidas.='<tr>
+                                            <td class="text-center" colspan="5">Aún no existen partidas creadas</td>
+                                        </tr>';
+            }else{
+                foreach($Partidas as $key=>$parti){
+                    $Ordenfabricacionpartidas.='<tr>
+                        <th class="text-center">'.($key+1).'</th>';
+                    $Ordenfabricacionpartidas.='<td class="text-center">'.$parti->CantidadaPartidas.'</td>';
+                    if($parti->Estatus==2){
+                        $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Retrabajo</span></div></td>';
+                    }else{
+                        $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Normal</span></div></td>';
+                    }
+                    if(!($parti->FechaFinalizacion=='' || $parti->FechaFinalizacion==null)){
+                        $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Cerrada</span></div></td>';
+                    }else{
+                        $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>';
+                    }
+                    if ($request->has('detalles')) {
+                        $Ordenfabricacionpartidas.='<td class="text-center"></td><td></td>
+                        </tr>';
+                    }else{
+                        $Ordenfabricacionpartidas.='<td class="text-center"><button class="btn btn-sm btn-outline-secondary rounded-pill me-1 mb-1 px-3 py-1" type="button" onclick="Cancelar(\''.$this->funcionesGenerales->encrypt($parti->id).'\',\''.$parti->NumeroPartida.'\')">Cancelar</button></td>            
+                        <td><button class="btn btn-sm btn-outline-danger rounded-pill me-1 mb-1 px-3 py-1" type="button" onclick="Finalizar(\''.$this->funcionesGenerales->encrypt($parti->id).'\')">Finalizar</button></td>
+                        </tr>';
+                    }
+                }
+            }
+        }else{
+            $Ordenfabricacioninfo.='<tr>
+                                        <td class="text-center" colspan="4">Datos no encontrados</td>
+                                    </tr>';
+            $Ordenfabricacionpartidas.='<tr>
+                                        <td class="text-center" colspan="6">Aún no existen partidas creadas</td>
+                                    </tr>';
+        }
+        $Ordenfabricacioninfo.='</tbody></table>';
+        return response()->json([
+            'status' => 'success',
+            'Ordenfabricacioninfo' => $Ordenfabricacioninfo,
+            'Ordenfabricacionpartidas' => $Ordenfabricacionpartidas,
+            'id' => $id
+        ], 200);
+    }
+
+
     public function SuministroEmision(Request $request){
         $id=$this->funcionesGenerales->decrypt($request->id);
         $OrdenFabricacion=OrdenFabricacion::where('id','=',$id)->first();
@@ -1142,6 +1291,8 @@ class AreasController extends Controller
         if($partidas>0){
             return 6;
         }
+    }
+    public function ContarPartidasSuma($Area){
     }
     //Consultas a SAP
     public function Emisiones($OrdenFabricacion){

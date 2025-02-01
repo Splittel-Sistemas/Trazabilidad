@@ -3,7 +3,6 @@
 @section('styles')
 <link rel="stylesheet" href="{{asset('css/Suministro.css')}}">
 <style>
-    /* Positioning the toast in the top-right corner */
     #ToastGuardado {
         position: fixed; /* Fixed position */
         top: 5rem; /* Distance from the top */
@@ -15,66 +14,177 @@
 @section('content')
     <div class="row gy-3 mb-2 justify-content-between">
         <div class="col-md-9 col-auto">
-        <h4 class="mb-2 text-1100">Suministro</h4>
+            <h4 class="mb-2 text-1100">Suministro</h4>
         </div>
     </div>
-    <div class="row">
-        <div class="col-6">
-              <div class="card shadow-sm">
-                <div class="card-body row" id="filtro">
-                    <label for="CodigoEscaner" class="col-form-label col-sm-12 pt-0">Proceso <span class="text-muted"></span></label>
-                    <div class="col-8">
-                            <div class="form-check form-check-inline ">
-                                <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked onclick="MostrarRetrabajo('Entrada')">
-                                <label class="form-check-label" for="Iniciar">
-                                  Entrada
-                                </label>
+    <div class="card">
+        <div class="card-body">
+            <!-- Módulos sin corte y completados -->
+            <ul class="nav nav-underline" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="proceso-tab" data-bs-toggle="tab" href="#tab-proceso" role="tab" aria-controls="tab-proceso" aria-selected="false" tabindex="-1">
+                        Abiertos
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="completado-tab" data-bs-toggle="tab" href="#tab-completado" role="tab" aria-controls="tab-completado" aria-selected="false" tabindex="-1">
+                        Cerrados
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <div class="tab-content mt-4" id="myTabContent">
+                <div class="tab-pane fade show active" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab">
+                    {{--<div class="col-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body row" id="filtro">
+                                <label for="CodigoEscaner" class="col-form-label col-sm-12 pt-0">Proceso <span class="text-muted"></span></label>
+                                <div class="col-8">
+                                        <div class="form-check form-check-inline ">
+                                            <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked onclick="MostrarRetrabajo('Entrada')">
+                                            <label class="form-check-label" for="Iniciar">
+                                            Entrada
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-inline ">
+                                            <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar" onclick="MostrarRetrabajo('Salida')">
+                                            <label class="form-check-label" for="Finalizar">
+                                            Salida
+                                            </label>
+                                        </div>
+                                </div>
+                                <hr>
+                                <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
+                                    <div class="col-8" id="CodigoDiv">
+                                        <div class="">
+                                            <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
+                                            <!--<a href=""><i class="fa fa-toggle-on"></i></a>-->
+                                            <div class="input-group">
+                                                <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro')" id="CodigoEscaner" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
+                                                <div class="invalid-feedback" id="error_CodigoEscaner"></div>
+                                            </div>
+                                            <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4" id="CantidadDiv" style="display: none">
+                                        <div class="form-group">
+                                            <label for="Cantidad">Cantidad</label>
+                                            <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
+                                            <div class="invalid-feedback" id="error_Cantidad"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 mt-2" id="RetrabajoDiv" style="display: none">
+                                        <div class="form-check">
+                                            <input class="form-check-input" id="Retrabajo" type="checkbox" />
+                                            <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 mt-2" id="IniciarBtn" style="display: none">
+                                        <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i> Iniciar</button>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="form-check form-check-inline ">
-                                <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar" onclick="MostrarRetrabajo('Salida')">
-                                <label class="form-check-label" for="Finalizar">
-                                  Salida
-                                </label>
+                        </div>
+                    </div>--}}
+                    <div id="ContentTabla" class="col-12 mt-2">
+                        <div class="card" id="DivCointainerTableSuministro">
+                            <div class="table-responsive">
+                                <table id="TablaSuministroAbiertas" class="table table-sm fs--1 mb-1">
+                                    <thead>
+                                        <tr class="bg-light">
+                                            <th>Orden Fabricación</th>
+                                            <th>Artículo</th>
+                                            <th>Descripción</th>
+                                            <th>Cantidad Partida</th>
+                                            <th>Estatus</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="TablaSuministroAbiertasBody" class="list">
+                                        @foreach($PartidasOFA as $partida)
+                                        <tr>
+                                            <td class="text-center">{{$partida->OrdenFabricacion }}</td>
+                                            <td>{{$partida->Articulo }}</td>
+                                            <td>{{$partida->Descripcion }}</td>
+                                            <td class="text-center">{{$partida->cantidad_partida }}</td>
+                                            <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                                            <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Planear('{{$partida->idEncript}}')">Detalles</button></td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
                             </div>
+                        </div>
                     </div>
-                    <hr>
-                    <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
-                        <div class="col-8" id="CodigoDiv">
-                            <div class="">
-                                <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
-                                <!--<a href=""><i class="fa fa-toggle-on"></i></a>-->
-                                <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro')" id="CodigoEscaner" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
-                                    <div class="invalid-feedback" id="error_CodigoEscaner"></div>
-                                </div>
-                                <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-4" id="CantidadDiv" style="display: none">
-                            <div class="form-group">
-                                <label for="Cantidad">Cantidad</label>
-                                <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
-                                <div class="invalid-feedback" id="error_Cantidad"></div>
-                            </div>
-                        </div>
-                        <div class="col-6 mt-2" id="RetrabajoDiv" style="display: none">
-                            <div class="form-check">
-                                <input class="form-check-input" id="Retrabajo" type="checkbox" />
-                                <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
-                            </div>
-                        </div>
-                        <div class="col-6 mt-2" id="IniciarBtn" style="display: none">
-                            <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i> Iniciar</button>
-                        </div>
-                    </form>
+                </div>
+                <div class="tab-pane fade" id="tab-completado" role="tabpanel" aria-labelledby="completado-tab">
                 </div>
             </div>
         </div>
-        <div id="ContentTabla" class="col-12 mt-2" style="display: none">
-            <div class="card" id="DivCointainerTableSuministro">
+    </div>
+    <!--MODAL DETALLE-->
+    <div class="modal fade" id="ModalDetalle" tabindex="-1" data-bs-backdrop="static" aria-labelledby="ModalDetalleLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable" style="height: 90%">
+          <div class="modal-content" style="height: 100%">
+            <div class="modal-header bg-info">
+              <h5 class="modal-title text-white" id="ModalDetalleLabel">Detalles Partidas de Orden de Fabricaci&oacute;n</h5><button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1 text-white"></span></button>
             </div>
+            <div class="modal-body" id="ModalDetalleBody">
+                <div class="" id="ModalDetalleBodyInfoOF">
+                </div>
+                <div class="mt-0" id="ModalDetalleBodyPartidasOF">
+                </div>
+            </div>
+            <div class="modal-footer" id="ModalDetalleFooter">
+                <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
         </div>
+    </div>
+    <!--MODAL PARA PLANEACION-->
+    <div class="modal fade" id="ModalSuministro" tabindex="-1" data-bs-backdrop="static" aria-labelledby="ModalSuministroLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable" style="height: 90%">
+          <div class="modal-content" style="height: 100%">
+            <div class="modal-header bg-info">
+              <h5 class="modal-title text-white" id="ModalSuministroLabel">Cortes</h5><button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1 text-white"></span></button>
+            </div>
+            <div class="modal-body" id="ModalSuministroBody">
+                <div class="" id="ModalSuministroBodyInfoOF">
+                </div>
+                <div class="row">
+                    <form id="CortesForm" class="row g-3 needs-validation" novalidate="">
+                        <div class="col-6">
+                            <label class="form-label" for="Cantitadpiezas">Ingresa n&uacute;mero de Unidades a Suministrar </label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm has-validation" id="Cantitadpiezas" type="number" oninput="RegexNumeros(this)" placeholder="Ingresa una cantidad" />
+                            </div>
+                            <div class="invalid-feedback" id="error_cantidad"></div>
+                            <div class="form-check mt-2 mb-2">
+                                <input class="form-check-input" id="Retrabajo" type="checkbox" />
+                                <label class="form-check-label" for="Retrabajo">Retrabajo</label>
+                                <div class="invalid-feedback" id="error_retrabajo"></div>
+                                <button id="btnGrupoPiezasCorte1" class="btn btn-success btn-sm float-end">Guardar</button>
+                            </div>
+                            <input type="hidden" id="CantitadpiezasIdOF">
+                        </div>
+                        <div class="col-6 mt-2">
+                            <div id="Emisiones" class="mt-2 mb-2" style="display:none;">
+                                <label class="form-label" for="Cantitadpiezas">Selecciona una Orden de Producci&oacute;n </label>
+                                <select id="EmisionesOpciones" class="form-select form-select-sm" aria-label=".form-select-sm">
+                                </select>
+                                <div class="invalid-feedback" id="error_emision"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="mt-0" id="ModalSuministroBodyPartidasOF">
+                </div>
+            </div>
+            <div class="modal-footer" id="ModalSuministroFooter">
+                <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
         </div>
     </div>
     <div  id="ContainerToastGuardado"></div>
@@ -82,6 +192,85 @@
 @section('scripts')
 <script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
+    $(document).ready(function() {
+        DataTable('TablaSuministroAbiertas',true);
+        $('.dt-layout-start:first').append(
+        '<button class="btn btn-info mb-0" data-bs-toggle="modal" data-bs-target="#ModalRetrabajo" onclick="LimpiarOF()"><i class="fas fa-plus"></i> Retrabajo</button>');
+    });
+    function Detalles(id){
+        $('#ModalDetalle').modal('show');
+        $('#ModalDetalleBodyInfoOF').html('');
+        $('#ModalDetalleBodyPartidasOF').html('');
+        //document.getElementById("Retrabajo").checked=false;
+        $.ajax({
+            url: "{{route('SuministroDatosModal')}}", 
+            type: 'POST',
+            data: {
+                id:id,
+                detalles:"detalles",
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                $('#ModalDetalleBodyInfoOF').html('<div class="d-flex justify-content-center align-items-center"><div class="spinner-grow text-info text-center" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                $('#ModalDetalleBodyPartidasOF').html('<div class="d-flex justify-content-center align-items-center"><div class="spinner-grow text-info text-center" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                },
+            success: function(response) {
+                if(response.status=="success"){
+                    $('#CantitadpiezasIdOF').val(response.id);
+                    $('#ModalDetalleBodyInfoOF').html(response.Ordenfabricacioninfo);
+                    $('#ModalDetalleBodyPartidasOF').html(response.Ordenfabricacionpartidas);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                $('#ModalDetalleBodyInfoOF').html('');
+                $('#ModalDetalleBodyPartidasOF').html('');
+                errorBD();
+            }
+        });
+    }
+    function Planear(OrdenFabricacion){
+        $('#Retrabajo').prop('checked', false);
+        $('#Retrabajo').prop('disabled', false);
+        $('#Cantitadpiezas').val('');
+        $('#Emisiones').fadeIn(100);
+        $('#ModalSuministro').modal('show');
+        $('#ModalSuministroBodyInfoOF').html('');
+        $('#ModalSuministroBodyPartidasOF').html('');
+        $('#CantitadpiezasIdOF').val('');
+        //$('#btnGrupoPiezasCorte').fadeIn();
+        $('#btnGrupoPiezasCorte1').fadeIn();
+        document.getElementById("Retrabajo").checked=false;
+        $.ajax({
+            url: "{{route('SuministroDatosModal')}}", 
+            type: 'POST',
+            data: {
+                id:OrdenFabricacion,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+                $('#ModalSuministroBodyInfoOF').html('<div class="d-flex justify-content-center align-items-center"><div class="spinner-grow text-info text-center" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                $('#ModalSuministroBodyPartidasOF').html('<div class="d-flex justify-content-center align-items-center"><div class="spinner-grow text-info text-center" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                },
+            success: function(response) {
+                if(response.status=="success"){
+                    $('#CantitadpiezasIdOF').val(response.id);
+                    $('#ModalSuministroBodyInfoOF').html(response.Ordenfabricacioninfo);
+                    $('#ModalSuministroBodyPartidasOF').html(response.Ordenfabricacionpartidas);
+                    //$('#TablePartidasModal').DataTable().destroy();
+                    //DataTable('TablePartidasModal',false);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                $('#ModalSuministroBodyInfoOF').html('');
+                $('#ModalSuministroBodyPartidasOF').html('');
+                errorBD();
+            }
+        });
+    }
+
+
+
+
     function ListaCodigo(Codigo,Contenedor){
         $('#ToastGuardado').fadeOut();
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
@@ -490,6 +679,23 @@
             // Ocultar el input cuando 'Salida' esté seleccionado
             Retrabajo.disabled = true;
         }
+    }
+    function DataTable(tabla, busqueda){
+        $('#'+tabla).DataTable({
+                        "pageLength": 10,  // Paginación de 10 elementos por página
+                        "lengthChange": false, // Desactiva la opción de cambiar el número de elementos por página
+                        "paging": true, // Habilitar paginación
+                        "searching": busqueda, // Habilitar búsqueda
+                        "ordering": true, // Habilitar ordenación de columnas
+                        "info": true, // Muestra información sobre el total de elementos
+                        "language": {
+                            "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
+                            "search":"Buscar",
+                        },
+                        "initComplete": function(settings, json) {
+                            $('#'+tabla).css('font-size', '0.7rem');
+                        }
+        });
     }
 </script>
 @endsection
