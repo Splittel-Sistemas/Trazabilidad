@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Auth;
 
 class CorteController extends Controller
 {
-<<<<<<< HEAD
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -664,13 +663,11 @@ class CorteController extends Controller
     /*
     public function index()
     {
-=======
     protected $funcionesGenerales;
     public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
     }
     public function index(){
->>>>>>> Dev-Leo
         // Fecha actual
         $fecha = date('Y-m-d');
         $fechaAtras=date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
@@ -916,7 +913,7 @@ class CorteController extends Controller
         $OrdenFabricacion;
         $schema = 'HN_OPTRONICS';
         /*$query_emisiones="SELECT T00.\"DocNum\" \"NoEmision\", T00.\"DocDate\" \"FechaEmision\", T111.\"ItemCode\" \"Componente\", T111.\"Dscription\" \"Descripcion\",
-                            T111.\"Quantity\" \"Cantidad\", T111.\"WhsCode\" \"Almacen\"*/
+                            T111.\"Quantity\" \"Cantidad\", T111.\"WhsCode\" \"Almacen\"*//*
         $query_emisiones="SELECT DISTINCT T00.\"DocNum\" \"NoEmision\", TO_DATE(T00.\"DocDate\") \"FechaEmision\", T00.\"Ref2\" \"Cantidad\"                       
                         FROM {$schema}.\"OIGE\" T00
                         LEFT JOIN {$schema}.\"IGE1\" T111 ON T00.\"DocEntry\" = T111.\"DocEntry\"
@@ -1545,7 +1542,7 @@ class CorteController extends Controller
             
         ]);
         
-    }*/
+    }*//*
     public function getEstatus(Request $request){
         $ordenFabricacion = OrdenFabricacion::findOrFail($request->id);
         return response()->json([
@@ -1793,8 +1790,8 @@ class CorteController extends Controller
             Log::error('Error al generar PDF: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    }
-        */
+    }*/
+        
 }
 
 

@@ -8,10 +8,9 @@
     <style>
         /*estilo de boton detalles*/
         .ver-detalles:hover {
-            background-color: #0c705f; /* Un tono más oscuro de azul */
-            transform: translateY(-2px) ; /* Ligeramente hacia arriba */
+            background-color: #0c705f; /
+            transform: translateY(-2px) ; 
         }
-        
 
         /*estilo de barrade progreso*/
         .progress-bar-stages {
@@ -107,7 +106,7 @@
             transition: background-color 0.3s ease, transform 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        
+    
         /* Barra de progreso */
         .task-progress-bar {
                 margin-bottom: 15px; /* Mayor espacio entre barras */
@@ -153,7 +152,6 @@
                 font-size: 10px; /* Reducir aún más el tamaño del porcentaje */
         }
 
-        
         /* Clase para resaltar solo el ícono y el texto */
         .selected-stage .stage-circle,
             .selected-stage span {
@@ -174,7 +172,7 @@
                     grid-template-columns: repeat(4, 1fr); 
                     gap: 0px; 
                     width: 100%;
-                    max-width: 90%;
+                    max-width: 100%;
                     margin: 0 auto; 
                     padding: 0; 
                 }
@@ -228,15 +226,15 @@
     </div>
     <div class="container my-4">
         <!--click orden venta-->
-        <div class="card-body p-3" style="height: 85px; width: 20%; background-color: #88a7d4; border-radius: 8px; box-shadow: 0 2px 5px rgba(223, 223, 223, 0.1); color: white;">
+        <div class="card-body p-3" style="height: 85px; width: 20%; background-color: #fdfdfde7; border-radius: 8px; box-shadow: 0 2px 5px rgba(223, 223, 223, 0.1); color: white;">
             <!-- contenido -->
             <div class="form-check">
                 <input class="form-check-input" id="flexRadioDefault1" type="radio" name="flexRadioDefault" checked onclick="toggleTable()">
-                <label class="form-check-label text-white" for="flexRadioDefault1">Orden De Venta</label>
+                <label class="form-check-label text-black" for="flexRadioDefault1">Orden De Venta</label>
             </div>
             <div class="form-check">
                 <input class="form-check-input" id="flexRadioDefault2" type="radio" name="flexRadioDefault" onclick="toggleTable()">
-                <label class="form-check-label text-white" for="flexRadioDefault2">Orden De Fabricación</label>
+                <label class="form-check-label text-black" for="flexRadioDefault2">Orden De Fabricación</label>
             </div>
         </div>
         <!-- Tabla 1: Orden de Venta -->
@@ -255,7 +253,7 @@
             </div>
             <div style="margin-top: 20px;"></div>
             <div class="table-responsive">
-                <div class="card-body p-3" style="height: 100%; width: 100%; background-color: #b9d0f1; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); color: white;">
+                <div class="card-body p-3" style="height: 100%; width: 100%; background-color: #fdfdfde7; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); color: white;">
                     <table class="table table-sm fs--1 mb-0">
                     <thead>
                         <tr class="bg-info text-white">
@@ -286,7 +284,7 @@
             </div>
             
             <div style="margin-top: 20px;"></div>
-            <div class="card-body p-3" style="height: 100%; width: 100%; background-color: #b9d0f1; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); color: white;">
+            <div class="card-body p-3" style="height: 100%; width: 100%; background-color: #fdfdfde7; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); color: white;">
                 <table class="table table-sm fs--1 mb-0">
                     <thead>
                         <tr class="bg-info text-white">
@@ -309,7 +307,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title text-info" id="exampleModalLabel">
-                            Detalles De Orden Fabricacion
+                            Detalles De Orden Fabricacion:
                             <span id="ordenFabricacionNumero" class="ms-3 text-muted"></span>
                         </h5>
                         
@@ -322,16 +320,13 @@
                     <div class="modal-body">
                         
                         <!-- Barra de progreso -->
-                        <div class="progress" style="height: 22px; border-radius: 10px; box-shadow: 0px 3px 6px rgba(0,0,0,0.2); overflow: hidden;">
+                        <div class="progress" style="height: 22px; border-radius: 10px; box-shadow: 0px 3px 6px rgba(0,0,0,0.2); overflow: hidden; width: 90%; margin-left: 5%;">
                             <div id="plemasProgressBar" class="progress-bar text-white fw-bold progress-animated" role="progressbar" 
                                  style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;" 
                                  aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                 0%
                             </div>
                         </div>
-                        
-                        
-
                         <br>
                         <div class="grid-container" id="plemasCanvases">
                             <!-- Estación Cortes -->
@@ -397,7 +392,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title text-info" id="exampleModalLabel">
-                            Detalles De Orden Venta
+                            Detalles De Orden Venta:
                             <span id="ordenVentaNumero" class="ms-3 text-muted"></span>
                         </h5>
                         
@@ -978,78 +973,76 @@
 
     //funcion para cargar los canvases general para Or-V Y Or-F
     function drawGauge(canvasId, value, label) {
-    const canvas = document.getElementById(canvasId);
-    canvas.style.webkitTapHighlightColor = 'rgba(0, 0, 0, 0)'; // Desactivar el resaltado táctil
+        const canvas = document.getElementById(canvasId);
+        canvas.style.webkitTapHighlightColor = 'rgba(0, 0, 0, 0)'; // Desactivar el resaltado táctil
 
-    const ctx = canvas.getContext('2d');
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const radius = 85;
-    const startAngle = Math.PI;
-    const endAngle = 2 * Math.PI;
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = 85;
+        const startAngle = Math.PI;
+        const endAngle = 2 * Math.PI;
 
-    // Variables para ajustar manualmente las posiciones de los números
-    const offsetX = 0; // Desplazamiento horizontal de los números (0 = centrado)
-    const offsetY = 30; // Desplazamiento vertical de los números (ajústalo según necesites)
+        // Variables para ajustar manualmente las posiciones de los números
+        const offsetX = 0; // Desplazamiento horizontal de los números (0 = centrado)
+        const offsetY = 30; // Desplazamiento vertical de los números (ajústalo según necesites)
 
-    // Limpiar el lienzo
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Limpiar el lienzo
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Dibujar el arco de fondo con borde más delgado
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-    ctx.lineWidth = 50;  // Ancho de línea ajustado para mejor balance
-    ctx.strokeStyle = '#e0e0e0';  // Gris suave para el fondo
-    ctx.lineCap = 'butt';
-    ctx.stroke();
+        // Dibujar el arco de fondo con borde más delgado
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.lineWidth = 50;  // Ancho de línea ajustado para mejor balance
+        ctx.strokeStyle = '#e0e0e0';  // Gris suave para el fondo
+        ctx.lineCap = 'butt';
+        ctx.stroke();
 
-    // Determinar el color del arco según el valor
-    let strokeColor;
-    if (value <= 20) strokeColor = '#e74c3c'; // Rojo
-    else if (value <= 50) strokeColor = '#f39c12'; // Naranja
-    else if (value <= 90) strokeColor = '#f1c40f'; // Amarillo
-    else strokeColor = '#15e631'; // Verde
+        // Determinar el color del arco según el valor
+        let strokeColor;
+        if (value <= 20) strokeColor = '#e74c3c'; // Rojo
+        else if (value <= 50) strokeColor = '#f39c12'; // Naranja
+        else if (value <= 90) strokeColor = '#f1c40f'; // Amarillo
+        else strokeColor = '#15e631'; // Verde
 
-    // Ajuste para hacer el principio y final del arco un poco cuadrado
-    const valueAngle = startAngle + (value / 100) * (endAngle - startAngle);
+        // Ajuste para hacer el principio y final del arco un poco cuadrado
+        const valueAngle = startAngle + (value / 100) * (endAngle - startAngle);
 
-    // Dibujar el arco del valor con color dinámico
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, startAngle, valueAngle);
-    ctx.strokeStyle = strokeColor;
-    ctx.lineWidth = 40; // Ancho del arco ajustado para mejor visibilidad
-    ctx.lineCap = 'butt'; // Ajustar el borde a cuadrado en el inicio y final
-    ctx.stroke();
+        // Dibujar el arco del valor con color dinámico
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, startAngle, valueAngle);
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 40; // Ancho del arco ajustado para mejor visibilidad
+        ctx.lineCap = 'butt'; // Ajustar el borde a cuadrado en el inicio y final
+        ctx.stroke();
 
-    // Determinar el color del texto del valor
-    let valueTextColor = strokeColor; // Usar el mismo color del arco
-    ctx.font = '30px Arial';  // Fuente más grande para el valor
-    ctx.fillStyle = valueTextColor;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle'; // Asegura que el texto esté alineado verticalmente en el medio
+        // Determinar el color del texto del valor
+        let valueTextColor = strokeColor; // Usar el mismo color del arco
+        ctx.font = '30px Arial';  // Fuente más grande para el valor
+        ctx.fillStyle = valueTextColor;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle'; // Asegura que el texto esté alineado verticalmente en el medio
 
-    // Ajustar la posición vertical del texto para alinearlo con el arco
-    // Aquí, `centerY` ajustado verticalmente para que esté alineado con el arco
-    ctx.fillText(`${value}%`, centerX, centerY);
+        // Ajustar la posición vertical del texto para alinearlo con el arco
+        // Aquí, `centerY` ajustado verticalmente para que esté alineado con el arco
+        ctx.fillText(`${value}%`, centerX, centerY);
 
-    // Etiqueta debajo del valor
-    ctx.font = '18px Arial';
-    ctx.fillStyle = '#17a2b8';  // Color suave para la etiqueta
-    ctx.fillText(label, centerX, centerY + 40);  // Espaciado ajustado
+        // Etiqueta debajo del valor
+        ctx.font = '18px Arial';
+        ctx.fillStyle = '#17a2b8';  // Color suave para la etiqueta
+        ctx.fillText(label, centerX, centerY + 40);  // Espaciado ajustado
 
-    // Dibujar las marcas de 0 y 100 fuera del arco, ajustable manualmente
-    ctx.font = '16px Arial';
-    ctx.fillStyle = '#000000';  // Color para los números de la escala
+        // Dibujar las marcas de 0 y 100 fuera del arco, ajustable manualmente
+        ctx.font = '16px Arial';
+        ctx.fillStyle = '#000000';  // Color para los números de la escala
 
-    // Dibujar el "0" justo debajo del inicio del arco
-    ctx.fillText('0', centerX - radius, centerY+ 20);
+        // Dibujar el "0" justo debajo del inicio del arco
+        ctx.fillText('0', centerX - radius, centerY+ 20);
 
-    // Dibujar el "100" en el final del arco
-    ctx.fillText('100', centerX + radius, centerY + 20); // Ajusta la posición vertical
-    //la posición
-}
-
-
+        // Dibujar el "100" en el final del arco
+        ctx.fillText('100', centerX + radius, centerY + 20); // Ajusta la posición vertical
+        //la posición
+    }
 
     //para el clic de .stage
     $(document).ready(function() {
@@ -1123,7 +1116,7 @@
 
                     // Si el progreso es mayor a 100%, agregar una barra para el "Retrabajo"
                     if (progressPercentage > 100) {
-                        var retrabajoPercentage = progressPercentage - 100;
+                        var retrabajoPercentage = (progressPercentage - 100).toFixed(2);
                         var retrabajoBar = $('<div>', { class: 'task-progress-bar retrabajo', id: 'task-retrabajo' + (index + 1) });
                         var retrabajoLabel = $('<div>', { class: 'task-label', text: 'Retrabajo ' + item.OrdenesFabricacion });
 
@@ -1140,6 +1133,7 @@
                             class: 'progress-text',
                             text: retrabajoPercentage + '%'
                         });
+
 
                         retrabajoBar.append(retrabajoLabel).append(retrabajoProgress).append(retrabajoText);
                         progressWrapper.append(retrabajoBar);

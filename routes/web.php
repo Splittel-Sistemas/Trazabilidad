@@ -12,6 +12,7 @@ use App\Http\Controllers\PreparadoController;
 use GuzzleHttp\Promise\Coroutine;
 use App\Http\Controllers\BusquedaController;
 use Illuminate\Routing\Route as RoutingRoute;
+use App\Http\Controllers\DashboardControlle;
 
 
 // Ruta para mostrar el formulario de login
@@ -77,7 +78,22 @@ Route::get('/detallesOF',[BusquedaController::class, 'DetallesOF'])->name('Detal
 Route::get('/graficadorOF',[BusquedaController::class,'GraficadorFabricacion'])->name('graficadoOF');
 Route::get('/graficasOR/OF',[BusquedaController::class,'GraficarOROF'])->name('graficarOR.OF');
 
-Route::post('/wizard/save', [BusquedaController::class, 'save'])->name('wizard.save');
+//rutas del dashboard
+Route::get('/dashboard',[DashboardControlle::class, 'index'])->name('principal.index');
+Route::get('/retrabajo', [DashboardControlle:: class, 'Ordenes'])->name('ordenes.retrabajo');
+
+Route::get('/cerradas', [DashboardControlle::class, 'cerradas'])->name('ordenes.cerredas');
+Route::get('/abiertas', [DashboardControlle:: class, 'abiertas'])->name('ordenes.abiertas');
+
+
+
+Route::get('/graficasdores', [DashboardControlle:: class, 'graficas'])->name('graficas.dashboard');
+Route::get('/graficasuser', [DashboardControlle:: class, 'tablausuarios'])->name('tabla.usuarios');
+// routes/web.php
+Route::get('/detalles-oc', [DashboardControlle::class, 'detallesOC'])->name('ordenes.detallesOC');
+Route::get('/tiempo', [DashboardControlle::class, 'tiempoOC'])->name('ordenes.tiempo');
+Route::get('/progreso-das',[DashboardControlle::class, 'progreso'])->name('progreso.dash');
+
 
 
 
