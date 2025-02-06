@@ -8,345 +8,475 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* General Styles */
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 0;
-    }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
 
-    /* Dashboard Layout */
-    .dashboard-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-        gap: 30px;
-        padding: 30px;
-        justify-items: center;
-    }
-
-    /* Summary Section */
-    .summary-container {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-bottom: 30px;
-        flex-wrap: wrap;
-    }
-
-    .summary-box {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        min-width: 250px;
-        font-size: 1.3em;
-        font-weight: bold;
-        transition: transform 0.3s, box-shadow 0.3s;
-        cursor: pointer;
-    }
-
-    /* Hover effect for summary boxes */
-    .summary-box:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Icon Styling */
-    .summary-box i {
-        font-size: 2.5em;
-        margin-bottom: 10px;
-    }
-
-    /* Order Status Styling */
-    .closed-orders {
-        border-top: 4px solid #28a745;
-        color: #28a745;
-    }
-
-    .open-orders {
-        border-top: 4px solid #dc3545;
-        color: #dc3545;
-    }
-
-    /* Specific hover effects for each type of status */
-    .closed-orders:hover {
-        background-color: #218838;
-        color: white;
-        border-top: 4px solid #218838;
-    }
-
-    .open-orders:hover {
-        background-color: #c82333;
-        color: white;
-        border-top: 4px solid #c82333;
-    }
-
-    /* Progress Box Container */
-    .progress-box-container {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 100%; /* Ensures full width */
-        max-width: 1200px; /* Increases max width */
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        margin: 0 auto; /* Centers the container */
-    }
-
-    /* Progress Bar Container */
-    .progress-bar-container {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-    }
-
-    .progress-bar-container span {
-        font-size: 16px;
-        width: 150px;
-    }
-
-    /* Progress Bar Styling */
-    .progress-bar {
-        width: 70%;  /* Maintains 70% of the container's width */
-        height: 20px; /* Increases the height for better visibility */
-        background-color: #ddd;
-        border-radius: 5px;
-        transition: width 0.5s ease;
-    }
-
-    #progress-2 {
-        background-color: #28a745;
-    }
-
-    #progress-3 {
-        background-color: #007bff;
-    }
-
-    #progress-4 {
-        background-color: #ff9800;
-    }
-
-    #progress-5 {
-        background-color: #dc3545;
-    }
-
-    #progress-6 {
-        background-color: #9c27b0;
-    }
-
-    #progress-7 {
-        background-color: #3f51b5;
-    }
-
-    #progress-8 {
-        background-color: #009688;
-    }
-
-    #progress-9 {
-        background-color: #ff5722;
-    }
-
-    /* Hover effect for progress bars */
-    .progress-bar-container:hover {
-        transform: translateY(-3px);
-        cursor: pointer;
-    }
-
-    /* Chart Section */
-    .chart-container {
-        width: 100%;
-        max-width: 800px;
-        background: white;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Hover effect for chart boxes */
-    .chart-container:hover {
-        transform: translateY(-12px);
-        cursor: pointer;
-    }
-
-    /* Full width chart (Day Chart) */
-    .chart-container.full-width {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
+        /* Dashboard Layout */
         .dashboard-container {
-            grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            padding: 30px;
+            justify-items: center;
         }
 
+        /* Summary Section */
         .summary-container {
-            flex-direction: column;
-            align-items: center;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
         }
 
-        .chart-container {
+        .summary-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            min-width: 250px;
+            font-size: 1.3em;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        /* Hover effect for summary boxes */
+        .summary-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Icon Styling */
+        .summary-box i {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        /* Order Status Styling */
+        .closed-orders {
+            border-top: 4px solid #28a745;
+            color: #28a745;
+        }
+
+        .open-orders {
+            border-top: 4px solid #dc3545;
+            color: #dc3545;
+        }
+
+        /* Specific hover effects for each type of status */
+        .closed-orders:hover {
+            background-color: #218838;
+            color: white;
+            border-top: 4px solid #218838;
+        }
+
+        .open-orders:hover {
+            background-color: #c82333;
+            color: white;
+            border-top: 4px solid #c82333;
+        }
+
+        /* Progress Box Container */
+        .progress-box-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%; /* Ensures full width */
+            max-width: 1200px; /* Increases max width */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 0 auto; /* Centers the container */
+        }
+
+        /* Progress Bar Container */
+        .progress-bar-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             width: 100%;
         }
-    }
-    .progress-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-}
 
-.progress-label {
-    width: 100px; /* Ajusta el ancho según el espacio disponible */
-    font-weight: bold;
-    margin-right: 10px;
-    text-align: right; /* Alinea el texto a la derecha */
-}
+        .progress-bar-container span {
+            font-size: 16px;
+            width: 150px;
+        }
 
-.progress {
-    flex-grow: 1;
-    height: 22px;
-    border-radius: 10px;
-    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-    width: 90%;
-    margin-left: 5%;
-}
+        /* Progress Bar Styling */
+        .progress-bar {
+            width: 70%;  /* Maintains 70% of the container's width */
+            height: 20px; /* Increases the height for better visibility */
+            background-color: #ddd;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        #progress-2 {
+            background-color: #28a745;
+        }
+
+        #progress-3 {
+            background-color: #007bff;
+        }
+
+        #progress-4 {
+            background-color: #ff9800;
+        }
+
+        #progress-5 {
+            background-color: #dc3545;
+        }
+
+        #progress-6 {
+            background-color: #9c27b0;
+        }
+
+        #progress-7 {
+            background-color: #3f51b5;
+        }
+
+        #progress-8 {
+            background-color: #009688;
+        }
+
+        #progress-9 {
+            background-color: #ff5722;
+        }
+
+        #step-Corte {
+            background-color: #28a745;
+        }
+
+        #step-Suministro {
+            background-color: #007bff;
+        }
+
+        #step-Preparado {
+            background-color: #ff9800;
+        }
+
+        #step-Ensamble {
+            background-color: #dc3545;
+        }
+
+        #step-Pulido {
+            background-color: #9c27b0;
+        }
+
+        #step-Medicion{
+            background-color: #3f51b5;
+        }
+
+        #step-Visualizacion {
+            background-color: #009688;
+        }
+
+        #step-Abierto{
+            background-color: #ff5722;
+        }
+
+
+        /* Hover effect for progress bars */
+        .progress-bar-container:hover {
+            transform: translateY(-3px);
+            cursor: pointer;
+        }
+
+        /* Chart Section */
+        .chart-container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hover effect for chart boxes */
+        .chart-container:hover {
+            transform: translateY(-12px);
+            cursor: pointer;
+        }
+
+        /* Full width chart (Day Chart) */
+        .chart-container.full-width {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .chart-container {
+                width: 100%;
+            }
+        }
+        .progress-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        }
+
+        .progress-label {
+            width: 100px; /* Ajusta el ancho según el espacio disponible */
+            font-weight: bold;
+            margin-right: 10px;
+            text-align: right; /* Alinea el texto a la derecha */
+        }
+
+        .progress {
+            flex-grow: 1;
+            height: 22px;
+            border-radius: 10px;
+            box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            width: 90%;
+            margin-left: 5%;
+        }
+        .progress-title {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+
+
+        
+        
 
 
     </style>
 @endsection
 
 @section('content')
-<div class="summary-container">
-    <div class="summary-box closed-orders">
-        <i class="fas fa-check-circle"></i>
-        <h3>Órdenes Cerradas</h3>
-        <p id="closedOrders">0%</p>
+    <div class="summary-container">
+        <div class="summary-box closed-orders">
+            <i class="fas fa-check-circle"></i>
+            <h3>Órdenes Fab. Cerradas</h3>
+            <p id="closedOrders">0%</p>
+        </div>
+        <div class="summary-box open-orders">
+            <i class="fas fa-exclamation-circle"></i>
+            <h3>Órdenes Fab. Abiertas</h3>
+            <p id="openOrders">0%</p>
+        </div>
     </div>
-    <div class="summary-box open-orders">
-        <i class="fas fa-exclamation-circle"></i>
-        <h3>Órdenes Abiertas</h3>
-        <p id="openOrders">0%</p>
+
+    <div class="dashboard-container">
+        <div class="chart-container">
+            <canvas id="monthlyChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="weeklyChart"></canvas>
+        </div>
     </div>
-</div>
 
-<div class="dashboard-container">
-    <div class="chart-container">
-        <canvas id="monthlyChart"></canvas>
+    <div class="dashboard-container">
+        <div class="chart-container full-width">
+            <canvas id="dayChart"></canvas>
+        </div>
     </div>
-    <div class="chart-container">
-        <canvas id="weeklyChart"></canvas>
+
+    <!-- Contenedor de las barras de progreso -->
+    <div class="progress-box"> 
+        <h2 class="progress-title">Progreso De Producción</h2>
+        <div class="progress-box-container">
+            <div class="progress-item">
+                <span class="progress-label">Cortes</span>
+                <div class="progress">
+                    <div id="progress-2" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Suministro</span>
+                <div class="progress">
+                    <div id="progress-3" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Preparado</span>
+                <div class="progress">
+                    <div id="progress-4" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Ensamble</span>
+                <div class="progress">
+                    <div id="progress-5" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Pulido</span>
+                <div class="progress">
+                    <div id="progress-6" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Medicion</span>
+                <div class="progress">
+                    <div id="progress-7" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Visualizacion</span>
+                <div class="progress">
+                    <div id="progress-8" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Empaque</span>
+                <div class="progress">
+                    <div id="progress-9" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+            </div>
+        </div>   
     </div>
-</div>
-
-<div class="dashboard-container">
-    <div class="chart-container full-width">
-        <canvas id="dayChart"></canvas>
+    <hr>
+    
+    <div class="progress-box">
+        <h2 class="progress-title">Progreso De Producción Por Orden Fabricacion</h2>
+        <div class="progress-box-container">
+            <div class="progress-item">
+                <span class="progress-label">Cortes</span>
+                <div class="progress">
+                    <div id="step-Corte" class="progress-bar text-white fw-bold progress-animated"
+                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                        0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Suministro</span>
+                <div class="progress">
+                    <div id="step-Suministro"  class="progress-bar text-white fw-bold progress-animated"
+                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                    0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Preparado</span>
+                <div class="progress">
+                    <div id="step-Preparado" class="progress-bar text-white fw-bold progress-animated"
+                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                        0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Ensamble</span>
+                <div class="progress">
+                    <div id="step-Ensamble"  class="progress-bar text-white fw-bold progress-animated"
+                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                    0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Pulido</span>
+                <div class="progress">
+                    <div id="step-Pulido"  class="progress-bar text-white fw-bold progress-animated"
+                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                    0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Medición</span>
+                <div class="progress">
+                    <div id="step-Medicion"  class="progress-bar text-white fw-bold progress-animated"
+                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                    0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Visualización</span>
+                <div class="progress">
+                    <div id="step-Visualizacion" class="progress-bar text-white fw-bold progress-animated"
+                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                    0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Empaque</span>
+                <div class="progress">
+                    <div id="step-Abierto"  class="progress-bar text-white fw-bold progress-animated"
+                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                    0%
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-
-<!-- Contenedor de las barras de progreso -->
-<div class="progress-box-container">
-    <div class="progress-box-container">
-        <div class="progress-item">
-            <span class="progress-label">Cortes</span>
-            <div class="progress">
-                <div id="progress-2" class="progress-bar text-white fw-bold progress-animated"
-                     role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                    0%
-                </div>
-            </div>
-        </div>
-    
-        <div class="progress-item">
-            <span class="progress-label">Suministro</span>
-            <div class="progress">
-                <div id="progress-3" class="progress-bar text-white fw-bold progress-animated"
-                     role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                    0%
-                </div>
-            </div>
-        </div>
-    
-        <div class="progress-item">
-            <span class="progress-label">Preparado</span>
-            <div class="progress">
-                <div id="progress-4" class="progress-bar text-white fw-bold progress-animated"
-                     role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                    0%
-                </div>
-            </div>
-        </div>
-    
-        <div class="progress-item">
-            <span class="progress-label">Ensamble</span>
-            <div class="progress">
-                <div id="progress-5" class="progress-bar text-white fw-bold progress-animated"
-                     role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                    0%
-                </div>
-            </div>
-        </div>
-        <div class="progress-item">
-            <span class="progress-label">Pulido</span>
-            <div class="progress">
-                <div id="progress-6" class="progress-bar text-white fw-bold progress-animated"
-                     role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                    0%
-                </div>
-            </div>
-        </div>
-        <div class="progress-item">
-            <span class="progress-label">Medicion</span>
-            <div class="progress">
-                <div id="progress-7" class="progress-bar text-white fw-bold progress-animated"
-                     role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                    0%
-                </div>
-            </div>
-        </div>
-        <div class="progress-item">
-            <span class="progress-label">Visualizacion</span>
-            <div class="progress">
-                <div id="progress-8" class="progress-bar text-white fw-bold progress-animated"
-                     role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                    0%
-                </div>
-            </div>
-        </div>
-        <div class="progress-item">
-            <span class="progress-label">Empaque</span>
-            <div class="progress">
-                <div id="progress-9" class="progress-bar text-white fw-bold progress-animated"
-                     role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                    0%
-                </div>
-            </div>
-        </div>
-    
-</div>
-
-
-
-
-
-
-
     
     
-    
+
+
+
 
     <!--modal cerradas-->
     <div class="modal fade" id="example2Modal" tabindex="-1" aria-hidden="true">
@@ -386,6 +516,7 @@
             </div>
         </div>
     </div>    
+
     <div class="modal fade" id="example3Modal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -668,62 +799,153 @@
                 console.error("Error obteniendo los datos de los gráficos:", error);
             }
         }
-
-        
-
-
         window.onload = function() {
+            fetchProgresoOF();
+    fetchProgresoDash();
+   
+};
+
+
+// Obtener progreso general del dashboard
+function fetchProgresoDash() {
     fetch("{{ route('progreso.dash') }}")
         .then(response => response.json())
         .then(data => {
-            console.log(data.progreso); // Verifica los valores recibidos
-            if (data.progreso) {
-                updateProgressBars(data.progreso);
+            console.log("Progreso General:", data.progreso);
+            if (data && data.progreso) {
+                updateProgressBars(data.progreso); // Actualizar las barras con los datos generales
             } else {
-                console.error("No se recibió datos de progreso válidos.");
+                console.error("No se recibieron datos de progreso válidos.");
             }
         })
         .catch(error => {
-            console.error('Error fetching progress data:', error);
+            console.error('Error obteniendo datos de progreso:', error);
         });
-};
-
+}
+// Actualizar las barras de progreso del dashboard
 function updateProgressBars(progreso) {
-    const areas = ['2', '3', '4', '5', '6', '7', '8', '9']; // Las áreas ya definidas
-    areas.forEach(area => {
-        let porcentaje = progreso[area] || 0; // Si no hay valor, toma 0
-        let progressBar = document.getElementById(`progress-${area}`);
-        if (progressBar) {
-            // Si el porcentaje es 0, forzamos un valor mínimo (por ejemplo, 1%) para mostrar el progreso
-            let displayPercentage = porcentaje === 0 ? 1 : porcentaje;
-            animateProgressBar(progressBar, displayPercentage);
+    Object.keys(progreso).forEach(area => {
+        const porcentaje = progreso[area];
+        let progressBarGeneral = document.getElementById(`progress-${area}`);
+        if (progressBarGeneral) {
+            animateProgressBar(progressBarGeneral, porcentaje);
         }
     });
 }
 
-// Función para animar la barra de progreso en base al porcentaje
-function animateProgressBar(progressBar, targetPercentage) {
-    let currentPercentage = 0; // Empezamos desde 0%
-    
-    // La cantidad de incremento que debe tener la barra en cada paso
-    const increment = 0.5; // Incremento de 0.5% en cada paso (ajustable)
-
-    // Función recursiva para aumentar gradualmente el progreso
-    function update() {
-        if (currentPercentage < targetPercentage) {
-            currentPercentage += increment; // Aumentar el progreso poco a poco
-            if (currentPercentage > targetPercentage) {
-                currentPercentage = targetPercentage; // Asegurarse de no sobrepasar el objetivo
+// Obtener progreso de órdenes de fabricación
+function fetchProgresoOF() {
+    fetch("{{ route('of.progreso') }}")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Progreso Órdenes de Fabricación:", data.progreso);
+            if (data.progreso) {
+                updateOFProgressBars(data.progreso); 
+            } else {
+                console.error("No se recibieron datos de progreso de orden de fabricación.");
             }
-            progressBar.style.width = `${currentPercentage}%`; // Actualizar la barra
-            progressBar.setAttribute('aria-valuenow', currentPercentage); // Para accesibilidad
-            progressBar.textContent = `${Math.round(currentPercentage)}%`; // Mostrar el porcentaje real en el texto
-            requestAnimationFrame(update); // Llamar nuevamente para continuar la animación
-        }
-    }
-
-    update(); // Iniciar la animación
+        })
+        .catch(error => {
+            console.error('Error obteniendo datos de progreso de orden de fabricación:', error);
+        });
 }
+
+function updateOFProgressBars(progreso) {
+    Object.keys(progreso).forEach(orden => {
+        const progresoOrden = progreso[orden].detalle;
+        Object.keys(progresoOrden).forEach(areaName => {
+            const porcentaje = progresoOrden[areaName];
+            let progressBarGeneral = document.getElementById(`step-${areaName}`);
+            if (progressBarGeneral) {
+                animateProgressBar(progressBarGeneral, porcentaje);
+            }
+        });
+    });
+}
+
+function animateProgressBar(bar, porcentaje) {
+    bar.style.width = `${porcentaje}%`;
+    bar.innerHTML = `${porcentaje}%`;
+}
+
+
+// Actualizar las barras de progreso por orden de fabricación
+
+
+// Animar las barras de progreso
+function animateProgressBar(progressBar, percentage) {
+    progressBar.style.width = `${percentage}%`;
+    progressBar.setAttribute('aria-valuenow', percentage);
+    progressBar.textContent = `${percentage}%`;
+}
+
+// Llamadas iniciales a las funciones de progreso
+fetchProgresoDash(); // Para obtener el progreso general
+fetchProgresoOF(); // Para obtener el progreso de las órdenes de fabricación
+
+
+
+
+
+        
+
+/*
+        window.onload = function() {
+            fetch("{{ route('of.progreso') }}")
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.progreso); // Verifica los valores recibidos
+                    if (data.progreso) {
+                        updateProgressBars(data.progreso);
+                    } else {
+                        console.error("No se recibió datos de progreso válidos.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching progress data:', error);
+                });
+        };
+
+        function updateProgressBars(progreso) {
+    Object.keys(progreso).forEach(ordenId => {
+        const ordenProgreso = progreso[ordenId];
+        Object.keys(ordenProgreso.detalle).forEach(area => {
+            let porcentaje = ordenProgreso.detalle[area] || 0;
+            let progressBar = document.getElementById(`progress-${area}`);
+            if (progressBar) {
+                let displayPercentage = porcentaje === 0 ? 1 : porcentaje;
+                animateProgressBar(progressBar, displayPercentage);
+            }
+        });
+    });
+}
+
+        // Función para animar la barra de progreso en base al porcentaje
+        function animateProgressBar(progressBar, targetPercentage) {
+            let currentPercentage = 0; // Empezamos desde 0%
+            
+            // La cantidad de incremento que debe tener la barra en cada paso
+            const increment = 0.5; // Incremento de 0.5% en cada paso (ajustable)
+
+            // Función recursiva para aumentar gradualmente el progreso
+            function update() {
+                if (currentPercentage < targetPercentage) {
+                    currentPercentage += increment; // Aumentar el progreso poco a poco
+                    if (currentPercentage > targetPercentage) {
+                        currentPercentage = targetPercentage; // Asegurarse de no sobrepasar el objetivo
+                    }
+                    progressBar.style.width = `${currentPercentage}%`; // Actualizar la barra
+                    progressBar.setAttribute('aria-valuenow', currentPercentage); // Para accesibilidad
+                    progressBar.textContent = `${Math.round(currentPercentage)}%`; // Mostrar el porcentaje real en el texto
+                    requestAnimationFrame(update); // Llamar nuevamente para continuar la animación
+                }
+            }
+
+            update(); // Iniciar la animación
+        }
+*/
+
+
 
 
     </script>
