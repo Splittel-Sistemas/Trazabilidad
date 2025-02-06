@@ -357,6 +357,7 @@
         $('#ModalSuministroBodyPartidasOF').html('');
         $('#CantitadpiezasIdPartidasOF').val('');
         $('#btnGrupoPiezasCorte1').fadeIn();
+        $('#ModalRetrabajo').modal('hide');
         document.getElementById("Retrabajo").checked=false;
         //Regresa todo normal
         Cantitadpiezas=$('#Cantitadpiezas');
@@ -520,6 +521,7 @@
     }
     function LimpiarOF(){
         $('#RetrabajoOF').val('');
+        $('#RetrabajoOFOpciones').html('');
     }
     function RetrabajoMostrarOFBuscar(RetrabajoOF){
         $('#RetrabajoOFOpciones').html('');

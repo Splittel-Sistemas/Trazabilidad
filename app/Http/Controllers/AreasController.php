@@ -380,13 +380,13 @@ class AreasController extends Controller
         if($BuscarSuministro->count()==0){
             $opciones.='<a class="list-group-item list-group-item-action">Orden de Fabricacion no encontrada</a>';
         }else{
-            foreach($BuscarSuministro as $key=>$ofSuministro){
-                $ofNumPartida=$ofSuministro->PartidasOF;
-                    foreach($ofNumPartida as $NumPartida){
+            foreach($BuscarSuministro as $ofSuministro){
+                $ofNumPartida=$ofSuministro->PartidasOF->whereNotNull('FechaFinalizacion');
+                    foreach($ofNumPartida as $key=>$NumPartida){
                         if($key==0){
-                            $opciones.='<a href="#" class="m-0 p-0 list-group-item list-group-item-action active" onclick="RetrabajoMostrarOFBuscarModal(\''.$this->funcionesGenerales->encrypt($ofSuministro->id).'\')">'.$ofSuministro->OrdenFabricacion.'-'.$NumPartida->NumeroPartida.'</a>';
+                            $opciones.='<a href="#" class="m-0 p-0 list-group-item list-group-item-action active" onclick="Planear(\''.$this->funcionesGenerales->encrypt($NumPartida->id).'\')">'.$ofSuministro->OrdenFabricacion.'-'.$NumPartida->NumeroPartida.'</a>';
                         }else{
-                                $opciones.='<a href="#" class="m-0 p-0 list-group-item list-group-item-action" onclick="RetrabajoMostrarOFBuscarModal(\''.$this->funcionesGenerales->encrypt($ofSuministro->id).'\')">'.$ofSuministro->OrdenFabricacion.'-'.$NumPartida->NumeroPartida.'</a>';
+                            $opciones.='<a href="#" class="m-0 p-0 list-group-item list-group-item-action" onclick="Planear(\''.$this->funcionesGenerales->encrypt($NumPartida->id).'\')">'.$ofSuministro->OrdenFabricacion.'-'.$NumPartida->NumeroPartida.'</a>';
                         }
                     }
             }
@@ -395,8 +395,7 @@ class AreasController extends Controller
     }
 
 
-
-
+    
 
     public function SuministroBuscar(Request $request){
         if ($request->has('Confirmacion')) {
