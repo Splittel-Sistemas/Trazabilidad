@@ -166,6 +166,33 @@ Route::get('/ordenes-filtradas', [CorteController::class, 'SinCortesProceso'])->
 
 
 
+//rutas busquedas
+Route::get('/busquedas',[BusquedaController::class, 'index'])->name('Busquedas.OV');
+Route::get('/tablaventa',[BusquedaController::class, 'obtenerOrdenesVenta'])->name('Buscar.Venta');
+Route::get('/tablafabricacion',[BusquedaController::class, 'obtenerOrdenesFabricacion'])->name('Buscar.Fabricacion');
+Route::get('/detallesventa',[BusquedaController::class, 'detallesventa'])->name('Buscar.Venta.Detalle');
+Route::get('/graficador', [BusquedaController::class, 'Graficador'])-> name('graficador');
+Route::get('/detallesOF',[BusquedaController::class, 'DetallesOF'])->name('Detalles.Fabricacion');
+Route::get('/graficadorOF',[BusquedaController::class,'GraficadorFabricacion'])->name('graficadoOF');
+Route::get('/graficasOR/OF',[BusquedaController::class,'GraficarOROF'])->name('graficarOR.OF');
+
+//rutas del dashboard
+Route::get('/dashboard',[DashboardControlle::class, 'index'])->name('principal.index');
+Route::get('/retrabajo', [DashboardControlle:: class, 'Ordenes'])->name('ordenes.retrabajo');
+
+Route::get('/cerradas', [DashboardControlle::class, 'cerradas'])->name('ordenes.cerredas');
+Route::get('/abiertas', [DashboardControlle:: class, 'abiertas'])->name('ordenes.abiertas');
+
+
+
+Route::get('/graficasdores', [DashboardControlle:: class, 'graficas'])->name('graficas.dashboard');
+Route::get('/graficasuser', [DashboardControlle:: class, 'tablausuarios'])->name('tabla.usuarios');
+// routes/web.php
+Route::get('/detalles-oc', [DashboardControlle::class, 'detallesOC'])->name('ordenes.detallesOC');
+Route::get('/tiempo', [DashboardControlle::class, 'tiempoOC'])->name('ordenes.tiempo');
+Route::get('/progreso-das',[DashboardControlle::class, 'progreso'])->name('progreso.dash');
+Route::get('/progreso-of',[DashboardControlle::class,'progresoof'])->name('of.progreso');
+
 
 
 
