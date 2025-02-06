@@ -9,6 +9,8 @@ use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\AreasController;
 use App\Http\Controllers\RolesPermisoController;
 use App\Http\Controllers\PreparadoController;
+
+use App\Http\Controllers\DashboardControlle;
 use GuzzleHttp\Promise\Coroutine;
 use Illuminate\Routing\Route as RoutingRoute;
 
