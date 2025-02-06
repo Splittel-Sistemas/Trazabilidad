@@ -150,6 +150,39 @@
             background-color: #ff5722;
         }
 
+        #step-Corte {
+            background-color: #28a745;
+        }
+
+        #step-Suministro {
+            background-color: #007bff;
+        }
+
+        #step-Preparado {
+            background-color: #ff9800;
+        }
+
+        #step-Ensamble {
+            background-color: #dc3545;
+        }
+
+        #step-Pulido {
+            background-color: #9c27b0;
+        }
+
+        #step-Medicion{
+            background-color: #3f51b5;
+        }
+
+        #step-Visualizacion {
+            background-color: #009688;
+        }
+
+        #step-Abierto{
+            background-color: #ff5722;
+        }
+
+
         /* Hover effect for progress bars */
         .progress-bar-container:hover {
             transform: translateY(-3px);
@@ -223,6 +256,11 @@
         }
 
 
+
+        
+        
+
+
     </style>
 @endsection
 
@@ -256,188 +294,188 @@
     </div>
 
     <!-- Contenedor de las barras de progreso -->
-    <div class="progress-box">
-        <h2 class="progress-title">Progreso de Producción</h2>
+    <div class="progress-box"> 
+        <h2 class="progress-title">Progreso De Producción</h2>
         <div class="progress-box-container">
-            <div class="progress-box-container">
-                <div class="progress-item">
-                    <span class="progress-label">Cortes</span>
-                    <div class="progress">
-                        <div id="progress-2" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
+            <div class="progress-item">
+                <span class="progress-label">Cortes</span>
+                <div class="progress">
+                    <div id="progress-2" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
                     </div>
                 </div>
-            
-                <div class="progress-item">
-                    <span class="progress-label">Suministro</span>
-                    <div class="progress">
-                        <div id="progress-3" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Suministro</span>
+                <div class="progress">
+                    <div id="progress-3" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
                     </div>
                 </div>
-            
-                <div class="progress-item">
-                    <span class="progress-label">Preparado</span>
-                    <div class="progress">
-                        <div id="progress-4" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Preparado</span>
+                <div class="progress">
+                    <div id="progress-4" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
                     </div>
                 </div>
-            
-                <div class="progress-item">
-                    <span class="progress-label">Ensamble</span>
-                    <div class="progress">
-                        <div id="progress-5" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Ensamble</span>
+                <div class="progress">
+                    <div id="progress-5" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
                     </div>
                 </div>
-                <div class="progress-item">
-                    <span class="progress-label">Pulido</span>
-                    <div class="progress">
-                        <div id="progress-6" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Pulido</span>
+                <div class="progress">
+                    <div id="progress-6" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
                     </div>
                 </div>
-                <div class="progress-item">
-                    <span class="progress-label">Medicion</span>
-                    <div class="progress">
-                        <div id="progress-7" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Medicion</span>
+                <div class="progress">
+                    <div id="progress-7" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
                     </div>
                 </div>
-                <div class="progress-item">
-                    <span class="progress-label">Visualizacion</span>
-                    <div class="progress">
-                        <div id="progress-8" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Visualizacion</span>
+                <div class="progress">
+                    <div id="progress-8" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
                     </div>
                 </div>
-                <div class="progress-item">
-                    <span class="progress-label">Empaque</span>
-                    <div class="progress">
-                        <div id="progress-9" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Empaque</span>
+                <div class="progress">
+                    <div id="progress-9" class="progress-bar text-white fw-bold progress-animated"
+                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
+                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
                     </div>
                 </div>
-            </div>   
+            </div>
+        </div>   
+    </div>
+    <hr>
+    
+    <div class="progress-box">
+        <h2 class="progress-title">Progreso De Producción Por Orden Fabricacion</h2>
+        <div class="progress-box-container">
+            <div class="progress-item">
+                <span class="progress-label">Cortes</span>
+                <div class="progress">
+                    <div id="step-Corte" class="progress-bar text-white fw-bold progress-animated"
+                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                        0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Suministro</span>
+                <div class="progress">
+                    <div id="step-Suministro"  class="progress-bar text-white fw-bold progress-animated"
+                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                    0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Preparado</span>
+                <div class="progress">
+                    <div id="step-Preparado" class="progress-bar text-white fw-bold progress-animated"
+                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                        0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Ensamble</span>
+                <div class="progress">
+                    <div id="step-Ensamble"  class="progress-bar text-white fw-bold progress-animated"
+                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                    0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Pulido</span>
+                <div class="progress">
+                    <div id="step-Pulido"  class="progress-bar text-white fw-bold progress-animated"
+                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                    0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Medición</span>
+                <div class="progress">
+                    <div id="step-Medicion"  class="progress-bar text-white fw-bold progress-animated"
+                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                    0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Visualización</span>
+                <div class="progress">
+                    <div id="step-Visualizacion" class="progress-bar text-white fw-bold progress-animated"
+                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                    0%
+                    </div>
+                </div>
+            </div>
+    
+            <div class="progress-item">
+                <span class="progress-label">Empaque</span>
+                <div class="progress">
+                    <div id="step-Abierto"  class="progress-bar text-white fw-bold progress-animated"
+                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
+                    0%
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <!--CONTENEDOR DE LAS BARRAS POR OF-->
+    
+    
 
-    <div class="progress-box">
-        <h2 class="progress-title">Progreso de Producción por .OF</h2>
-        <div class="progress-box-container">
-            <div class="progress-box-container">
-                <div class="progress-item">
-                    <span class="progress-label">Cortes</span>
-                    <div class="progress">
-                        <div id="progress-10" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
-                    </div>
-                </div>
-            
-                <div class="progress-item">
-                    <span class="progress-label">Suministro</span>
-                    <div class="progress">
-                        <div id="progress-11" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
-                    </div>
-                </div>
-            
-                <div class="progress-item">
-                    <span class="progress-label">Preparado</span>
-                    <div class="progress">
-                        <div id="progress-12" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
-                    </div>
-                </div>
-            
-                <div class="progress-item">
-                    <span class="progress-label">Ensamble</span>
-                    <div class="progress">
-                        <div id="progress-13" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
-                    </div>
-                </div>
-                <div class="progress-item">
-                    <span class="progress-label">Pulido</span>
-                    <div class="progress">
-                        <div id="progress-14" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
-                    </div>
-                </div>
-                <div class="progress-item">
-                    <span class="progress-label">Medicion</span>
-                    <div class="progress">
-                        <div id="progress-15" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
-                    </div>
-                </div>
-                <div class="progress-item">
-                    <span class="progress-label">Visualizacion</span>
-                    <div class="progress">
-                        <div id="progress-16" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
-                    </div>
-                </div>
-                <div class="progress-item">
-                    <span class="progress-label">Empaque</span>
-                    <div class="progress">
-                        <div id="progress-17" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
-                        </div>
-                    </div>
-                </div>
-            </div>   
-        </div>
-    </div>
+
 
 
     <!--modal cerradas-->
@@ -761,10 +799,97 @@
                 console.error("Error obteniendo los datos de los gráficos:", error);
             }
         }
+        window.onload = function() {
+            fetchProgresoOF();
+    fetchProgresoDash();
+   
+};
+
+
+// Obtener progreso general del dashboard
+function fetchProgresoDash() {
+    fetch("{{ route('progreso.dash') }}")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Progreso General:", data.progreso);
+            if (data && data.progreso) {
+                updateProgressBars(data.progreso); // Actualizar las barras con los datos generales
+            } else {
+                console.error("No se recibieron datos de progreso válidos.");
+            }
+        })
+        .catch(error => {
+            console.error('Error obteniendo datos de progreso:', error);
+        });
+}
+// Actualizar las barras de progreso del dashboard
+function updateProgressBars(progreso) {
+    Object.keys(progreso).forEach(area => {
+        const porcentaje = progreso[area];
+        let progressBarGeneral = document.getElementById(`progress-${area}`);
+        if (progressBarGeneral) {
+            animateProgressBar(progressBarGeneral, porcentaje);
+        }
+    });
+}
+
+// Obtener progreso de órdenes de fabricación
+function fetchProgresoOF() {
+    fetch("{{ route('of.progreso') }}")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Progreso Órdenes de Fabricación:", data.progreso);
+            if (data.progreso) {
+                updateOFProgressBars(data.progreso); 
+            } else {
+                console.error("No se recibieron datos de progreso de orden de fabricación.");
+            }
+        })
+        .catch(error => {
+            console.error('Error obteniendo datos de progreso de orden de fabricación:', error);
+        });
+}
+
+function updateOFProgressBars(progreso) {
+    Object.keys(progreso).forEach(orden => {
+        const progresoOrden = progreso[orden].detalle;
+        Object.keys(progresoOrden).forEach(areaName => {
+            const porcentaje = progresoOrden[areaName];
+            let progressBarGeneral = document.getElementById(`step-${areaName}`);
+            if (progressBarGeneral) {
+                animateProgressBar(progressBarGeneral, porcentaje);
+            }
+        });
+    });
+}
+
+function animateProgressBar(bar, porcentaje) {
+    bar.style.width = `${porcentaje}%`;
+    bar.innerHTML = `${porcentaje}%`;
+}
+
+
+// Actualizar las barras de progreso por orden de fabricación
+
+
+// Animar las barras de progreso
+function animateProgressBar(progressBar, percentage) {
+    progressBar.style.width = `${percentage}%`;
+    progressBar.setAttribute('aria-valuenow', percentage);
+    progressBar.textContent = `${percentage}%`;
+}
+
+// Llamadas iniciales a las funciones de progreso
+fetchProgresoDash(); // Para obtener el progreso general
+fetchProgresoOF(); // Para obtener el progreso de las órdenes de fabricación
+
+
+
+
 
         
 
-
+/*
         window.onload = function() {
             fetch("{{ route('of.progreso') }}")
                 .then(response => response.json())
@@ -795,7 +920,6 @@
     });
 }
 
-
         // Función para animar la barra de progreso en base al porcentaje
         function animateProgressBar(progressBar, targetPercentage) {
             let currentPercentage = 0; // Empezamos desde 0%
@@ -819,6 +943,9 @@
 
             update(); // Iniciar la animación
         }
+*/
+
+
 
 
     </script>
