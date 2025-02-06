@@ -10,9 +10,7 @@ use App\Http\Controllers\AreasController;
 use App\Http\Controllers\RolesPermisoController;
 use App\Http\Controllers\PreparadoController;
 use GuzzleHttp\Promise\Coroutine;
-use App\Http\Controllers\BusquedaController;
 use Illuminate\Routing\Route as RoutingRoute;
-use App\Http\Controllers\DashboardControlle;
 
 
 // Ruta para mostrar el formulario de login
@@ -36,8 +34,30 @@ Route::post('/Planeacion/partidas/EscanerEstatus', [PlaneacionController::class,
 Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Detalles'])->name('PartidasOF_Detalles');
 
 //Rutas Ares
-Route::get('/Area/Corte', [AreasController::class,'Corte'])->name('Corte');
+//Corte Nuevas
+Route::get('/Area/Corte', [CorteController::class, 'index'])->name('corte.index');
+Route::get('/Area/Corte/Tabla', [CorteController::class,'CorteRecargarTabla'])->name('CorteRecargarTabla');
+Route::get('/Area/Corte/Tabla/Cerrada', [CorteController::class,'CorteRecargarTablaCerrada'])->name('CorteRecargarTablaCerrada');
+Route::post('/Area/Corte/InfoModal', [CorteController::class,'CortesDatosModal'])->name('CortesDatosModal');
+Route::post('/Area/Corte/Emisiones', [CorteController::class,'TraerEmisiones'])->name('TraerEmisiones');
+Route::post('/Area/Corte/Guardar', [CorteController::class,'GuardarCorte'])->name('GuardarCorte');
+Route::post('/Area/Corte/Cancelar', [CorteController::class,'CancelarCorte'])->name('CancelarCorte');
+Route::post('/Area/Corte/Finalizar', [CorteController::class,'FinalizarCorte'])->name('FinalizarCorte');
+Route::post('/Area/Corte/Buscar', [CorteController::class,'BuscarCorte'])->name('BuscarCorte');
+Route::get('/Area/Corte/GenerarPDF', [CorteController::class, 'generarPDF'])->name('generarPDF');//Generar PDF
+//Suministro
 Route::get('/Area/Suministro', [AreasController::class,'Suministro'])->name('Suministro');
+Route::get('/Area/Suministro/Tabla', [AreasController::class,'SuministroRecargarTabla'])->name('SuministroRecargarTabla');
+Route::get('/Area/Suministro/Tabla/Cerrada', [AreasController::class,'SuministroRecargarTablaCerrada'])->name('SuministroRecargarTablaCerrada');
+Route::post('/Area/Suministro/InfoModal', [AreasController::class,'SuministroDatosModal'])->name('SuministroDatosModal');
+Route::post('/Area/Suministro/Emision', [AreasController::class,'SuministroEmision'])->name('SuministroEmision');
+Route::post('/Area/Suministro/Guardar', [AreasController::class,'SuministroGuardar'])->name('SuministroGuardar');
+Route::post('/Area/Suministro/Cancelar', [AreasController::class,'SuministroCancelar'])->name('SuministroCancelar');
+Route::post('/Area/Suministro/Finalizar', [AreasController::class,'SuministroFinalizar'])->name('SuministroFinalizar');
+Route::post('/Area/Suministro/Buscar', [AreasController::class,'BuscarSuministro'])->name('BuscarSuministro');
+
+
+
 Route::get('/Area/Suministro/buscar', [AreasController::class,'SuministroBuscar'])->name('SuministroBuscar');
 Route::post('/Area/Suministro/NoEscaner', [AreasController::class,'TipoNoEscaner'])->name('TipoNoEscaner');
 Route::get('/Area/Preparado', [AreasController::class,'Preparado'])->name('Preparado');
@@ -47,63 +67,26 @@ Route::get('/Area/Medicion', [AreasController::class,'Medicion'])->name('Medicio
 Route::get('/Area/Visualizacion', [AreasController::class,'Visualizacion'])->name('Visualizacion');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas');
 
-//rutas corte
-Route::get('/cortes', [CorteController::class, 'index'])->name('corte.index');
+
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida');
 Route::get('corte/getCortes', [CorteController::class, 'getCortes'])->name('corte.getCortes');
 Route::get('/orden-fabricacion/{ordenFabricacionId}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('orden-fabricacion.cortes-info');
 Route::post('corte/finalizar/corte', [CorteController::class, 'finalizarCorte'])->name('corte.finalizarCorte');
 Route::post('/orden-fabricacion/update-status', [CorteController::class, 'updateStatus'])->name('orden-fabricacion.update-status');
-Route::get('/filtrar-por-fecha', [CorteController::class, 'filtrarPorFecha'])->name('Fitrar.Fecha');
-Route::get('/ordenes/completadas',[CorteController:: class, 'Completado'])->name('ordenes.cerradas');
+Route::post('/filtrar-por-fecha', [CorteController::class, 'filtrarPorFecha'])->name('Fitrar.Fecha');
+Route::get('/ordenes/completadas',[CorteController:: class, 'Completado'])->name('ordenes.completadas');
 Route::get('/ruta-para-actualizar-tabla', [CorteController::class, 'actualizarTabla'])->name('actualizar.tabla');
 Route::delete('/corte/eliminar', [CorteController::class, 'eliminarCorte'])->name('corte.eliminarCorte');
 Route::delete('/corte/eliminar1', [CorteController::class, 'eliminarCorte1'])->name('corte.eliminarCorte1');
 Route::post('/buscar',[CorteController::class, 'buscar'])->name('buscar.todo');
+
+
+
+
 Route::post('/filtrar-fecha', [CorteController::class, 'filtrarPorFechac'])->name('Fitrar.Fechacerrado');
 Route::get('/corte/detalles', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalles');
-Route::get('/ordenes/cerradas',[CorteController:: class, 'index'])->name('ordenes.abiertas');
-
-
-
-
-//rutas busquedas
-Route::get('/busquedas',[BusquedaController::class, 'index'])->name('Busquedas.OV');
-Route::get('/tablaventa',[BusquedaController::class, 'obtenerOrdenesVenta'])->name('Buscar.Venta');
-Route::get('/tablafabricacion',[BusquedaController::class, 'obtenerOrdenesFabricacion'])->name('Buscar.Fabricacion');
-Route::get('/detallesventa',[BusquedaController::class, 'detallesventa'])->name('Buscar.Venta.Detalle');
-Route::get('/graficador', [BusquedaController::class, 'Graficador'])-> name('graficador');
-Route::get('/detallesOF',[BusquedaController::class, 'DetallesOF'])->name('Detalles.Fabricacion');
-Route::get('/graficadorOF',[BusquedaController::class,'GraficadorFabricacion'])->name('graficadoOF');
-Route::get('/graficasOR/OF',[BusquedaController::class,'GraficarOROF'])->name('graficarOR.OF');
-
-//rutas del dashboard
-Route::get('/dashboard',[DashboardControlle::class, 'index'])->name('principal.index');
-Route::get('/retrabajo', [DashboardControlle:: class, 'Ordenes'])->name('ordenes.retrabajo');
-
-Route::get('/cerradas', [DashboardControlle::class, 'cerradas'])->name('ordenes.cerredas');
-Route::get('/abiertas', [DashboardControlle:: class, 'abiertas'])->name('ordenes.abiertas');
-
-
-
-Route::get('/graficasdores', [DashboardControlle:: class, 'graficas'])->name('graficas.dashboard');
-Route::get('/graficasuser', [DashboardControlle:: class, 'tablausuarios'])->name('tabla.usuarios');
-// routes/web.php
-Route::get('/detalles-oc', [DashboardControlle::class, 'detallesOC'])->name('ordenes.detallesOC');
-Route::get('/tiempo', [DashboardControlle::class, 'tiempoOC'])->name('ordenes.tiempo');
-Route::get('/progreso-das',[DashboardControlle::class, 'progreso'])->name('progreso.dash');
-
-
-
-
-
-
-
-
-
-
-
+Route::get('/ordenes/cerradas',[CorteController:: class, 'index'])->name('ordenes.cerradas');
 //Rutas cortes
 /*
     Route::get('/cortes/getData', [CorteController::class, 'getData'])->name('corte.getData');
@@ -174,8 +157,6 @@ Route::delete('destroy/{id}', [RolesPermisoController::class, 'destroy'])->name(
 Route::post('/filtrar-por-fechaS', [CorteController::class, 'fechaCompletado'])->name('Fitrar.FechaS');
 
 Route::get('/ordenes-filtradas', [CorteController::class, 'SinCortesProceso'])->name('ordenes.filtradas');
-
-
 
 
 
@@ -303,9 +284,16 @@ Route::post('/FiltroOrden', [CorteController::class, 'FiltroOrden'])->name('Filt
 Route::get('/buscar-orden', [BarcodeController::class, 'searchOrder']);
 
 Route::get('/orden-fabricacion', [CorteController::class, 'create']);
-Route::post('/orden-fabricacion', [CorteController::class, 'store']);*/
+Route::post('/orden-fabricacion', [CorteController::class, 'store']);
 
 
 
 
 
+use App\Http\Controllers\DetallesController;
+*/
+//Route::get('/orden/{id}', [DetallesController::class, 'show'])->name('orden.show');
+
+
+
+ 

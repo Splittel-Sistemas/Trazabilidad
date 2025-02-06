@@ -82,5 +82,19 @@ class FuncionesGeneralesController extends Controller
     public function Linea(){
         return 1;
     }
+    public function Emisiones($OrdenFabricacion){
+        $OrdenFabricacion;
+        $schema = 'HN_OPTRONICS';
+        /*$query_emisiones="SELECT T00.\"DocNum\" \"NoEmision\", T00.\"DocDate\" \"FechaEmision\", T111.\"ItemCode\" \"Componente\", T111.\"Dscription\" \"Descripcion\",
+                            T111.\"Quantity\" \"Cantidad\", T111.\"WhsCode\" \"Almacen\"*/
+        $query_emisiones="SELECT DISTINCT T00.\"DocNum\" \"NoEmision\", TO_DATE(T00.\"DocDate\") \"FechaEmision\", T00.\"Ref2\" \"Cantidad\"                       
+                        FROM {$schema}.\"OIGE\" T00
+                        LEFT JOIN {$schema}.\"IGE1\" T111 ON T00.\"DocEntry\" = T111.\"DocEntry\"
+                        LEFT JOIN {$schema}.\"OWOR\" T222 ON T111.\"BaseEntry\" = T222.\"DocEntry\" AND T111.\"BaseType\" = T222.\"ObjType\"
+                        LEFT JOIN {$schema}.\"WOR1\" T333 ON T222.\"DocEntry\" = T333.\"DocEntry\" AND T111.\"BaseLine\" = T333.\"LineNum\"
+                        WHERE T222.\"DocNum\" = ".$OrdenFabricacion."
+                        ORDER BY 1";
+        return$emisiones=$this->ejecutarConsulta($query_emisiones);
+    }
     
 }
