@@ -86,12 +86,12 @@ class BusquedaController extends Controller
         ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
         ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id') // Eliminado el leftJoin duplicado
         ->select(
-            'ordenventa.OrdenVenta',
-            DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
-            DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'), // Eliminado DISTINCT en SUM
-            DB::raw('ROUND((SUM(partidasof_areas.cantidad) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso') // Corregido cálculo de progreso
-        )
-        ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal');
+                'ordenventa.OrdenVenta',
+                DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
+                DB::raw('SUM(DISTINCT partidasof_areas.cantidad) as TotalPartidas'),
+                DB::raw('ROUND((SUM(DISTINCT partidasof_areas.cantidad) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso')
+            )
+            ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal');
         
 
             
