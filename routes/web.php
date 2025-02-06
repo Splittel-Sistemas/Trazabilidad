@@ -93,6 +93,7 @@ Route::get('/graficasuser', [DashboardControlle:: class, 'tablausuarios'])->name
 Route::get('/detalles-oc', [DashboardControlle::class, 'detallesOC'])->name('ordenes.detallesOC');
 Route::get('/tiempo', [DashboardControlle::class, 'tiempoOC'])->name('ordenes.tiempo');
 Route::get('/progreso-das',[DashboardControlle::class, 'progreso'])->name('progreso.dash');
+Route::get('/progreso-of',[DashboardControlle::class,'progresoof'])->name('of.progreso');
 
 
 

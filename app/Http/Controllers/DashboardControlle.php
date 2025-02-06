@@ -152,7 +152,7 @@ class DashboardControlle extends Controller
             'ordenes' => $ordenesAbiertas
         ]);
     }
-    
+
     public function graficas()
     {
         // Órdenes por día
@@ -226,8 +226,124 @@ class DashboardControlle extends Controller
             'progreso' => $progreso
         ]);
     }
+    public function progresoof()
+    {
+        // Obtener todas las órdenes de fabricación distintas
+        $ordenes = DB::table('ordenfabricacion')
+            ->leftJoin('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->leftJoin('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
+            ->leftJoin('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')
+            ->select(
+                'ordenfabricacion.id',
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal'
+            )
+            ->groupBy('ordenfabricacion.id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+            ->get();
+    
+        $areas = ['2', '3', '4', '5', '6', '7', '8', '9'];
+        $progreso = [];
+        $totalProgresoAcumulado = 0;
+        $contadorOrdenesConDatos = 0;  // Para contar cuántas órdenes tienen progreso
+    
+        foreach ($ordenes as $orden) {
+            $totalCantidad = $orden->CantidadTotal;
+            $ordenId = $orden->id;
+            $progresoOrden = [];
+            $sumaPorcentajes = 0;
+            $cantidadAreasConDatos = 0;
+            $avancesArea9 = 0; // Variable para verificar si el área 9 está al 100%
+    
+            foreach ($areas as $area) {
+                // Calcular la cantidad sumada en esta área para la orden específica
+                $cantidadPorArea = DB::table('partidas_areas')
+                    ->join('partidas', 'partidas_areas.Partidas_id', '=', 'partidas.id')
+                    ->join('partidasof', 'partidas.PartidasOf_id', '=', 'partidasof.id')
+                    ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
+                    ->where('partidas_areas.Areas_id', $area)
+                    ->where('ordenfabricacion.id', $ordenId)
+                    ->sum('partidas_areas.Cantidad');
+    
+                // Calcular porcentaje por área
+                $porcentaje = ($totalCantidad > 0) ? ($cantidadPorArea / $totalCantidad) * 100 : 0;
+    
+                // Guardar el porcentaje en el progreso de la orden
+                $progresoOrden[$area] = number_format($porcentaje, 2, '.', '');
+    
+                // Sumar los porcentajes solo si hay datos en la cantidad
+                if ($porcentaje > 0) {
+                    $sumaPorcentajes += $porcentaje;
+                    $cantidadAreasConDatos++;
+                }
+    
+                // Si el área 9 tiene datos, guardamos el progreso específico
+                if ($area == '9' && $porcentaje > 0) {
+                    $avancesArea9 = $porcentaje;
+                }
+            }
+    
+            // Si el área 9 está al 100%, consideramos el progreso total como 100%, de lo contrario calculamos el promedio
+            if ($avancesArea9 == 100) {
+                $progresoTotal = 100; // Si el área 9 llegó a 100%, el progreso es 100%
+            } else {
+                // Si el área 9 no está completo, calculamos el progreso basado en las áreas con datos
+                $progresoTotal = ($cantidadAreasConDatos > 0) ? ($sumaPorcentajes / $cantidadAreasConDatos) : 0;
+            }
+    
+            // Incrementar el progreso acumulado con el progreso de la orden
+            $totalProgresoAcumulado += $progresoTotal;
+            $contadorOrdenesConDatos++;
+    
+            $progreso[$orden->OrdenFabricacion] = [
+                'progreso_orden' => number_format($progresoTotal, 2, '.', ''), // Progreso total
+                'Cantidad_total' => number_format($totalCantidad, 2, '.', ''),
+                'detalle' => $progresoOrden // Detalle por áreas
+            ];
+        }
+    
+        // Calcular el progreso total acumulado para todas las órdenes
+        $progresoTotalFinal = ($contadorOrdenesConDatos > 0) ? ($totalProgresoAcumulado / $contadorOrdenesConDatos) : 0;
+    
+        return response()->json([
+            'progreso' => $progreso,
+            'progreso_total_final' => number_format($progresoTotalFinal, 2, '.', '')
+        ]);
+    }
+    
 
 
+    
+    
+
+    
+        /*
+
+    // Contar el total de órdenes de fabricación
+    $totalOf = $of->count();
+
+    // Lista de áreas
+    $areas = ['2', '3', '4', '5', '6', '7', '8', '9'];
+    $progreso = [];
+
+    foreach ($areas as $area) {
+        // Obtener la cantidad total para el área
+        $cantidadPorArea = DB::table('partidas_areas')
+            ->join('partidas', 'partidas_areas.Partidas_id', '=', 'partidas.id')
+            ->join('partidasof', 'partidas.PartidasOf_id', '=', 'partidasof.id')
+            ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
+            ->where('partidas_areas.Areas_id', $area)
+            ->sum('partidas_areas.Cantidad');
+
+        // Calcular el porcentaje
+        $porcentaje = ($totalOf > 0) ? ($cantidadPorArea / $totalOf) * 100 : 0;
+        $progreso[$area] = number_format($porcentaje, 2, '.', '');
+    }
+    dd($progreso);
+    return response()->json([
+        'progreso' => $progreso
+    ]);*/
 }
+
+
 
 
