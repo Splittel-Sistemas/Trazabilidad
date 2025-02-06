@@ -27,7 +27,8 @@ class CorteController extends Controller
     public function CorteRecargarTabla(){
         //EstatusEntrega==0 aun no iniciado; 1 igual a terminado
         try {
-            $OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->get();
+            //$OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->get();
+            $OrdenFabricacion=$this->OrdenesFabricacionAbiertas();
             $tabla="";
             foreach($OrdenFabricacion as $orden) {
                 $tabla.='<tr>
@@ -39,7 +40,7 @@ class CorteController extends Controller
                         <td>'. $orden->CantidadTotal .'</td>
                         <td>'. $orden->FechaEntrega .'</td>
                         <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                        <td><button class="btn btn-sm btn-outline-primary px-3 py-1" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Planear</button></td>
+                        <td><button class="btn btn-sm btn-outline-primary px-3 py-1" onclick="Planear(\''.$orden->idEncript.'\')">Planear</button></td>
                     </tr>';
             }
             return response()->json([
@@ -299,7 +300,7 @@ class CorteController extends Controller
                 'message' =>'La Orden de Fabricación no existe!',
             ]);
         }else{
-            $Partidas=$PartidaOF->partidas()->get();
+            $Partidas=$PartidaOF->Areas()->where('Areas_id',3)->get();
             if($Partidas->count()==0){
                 if(!($PartidaOF->FechaFinalizacion == "" || $PartidaOF->FechaFinalizacion == null)){
                     return response()->json([
@@ -328,7 +329,7 @@ class CorteController extends Controller
             }else{
                 return response()->json([
                     'status' => 'erroriniciada',
-                    'message' =>'Ocurrio un error!, No se puede cancelar la Partida, porque ya se encuentra iniciada',
+                    'message' =>'Ocurrio un error!, No se puede cancelar la Partida, porque ya se encuentra iniciada en la siguiente Área',
                 ]);
 
             }
@@ -532,7 +533,7 @@ class CorteController extends Controller
 
 
 
-
+/*
     public function SinCortesProceso(Request $request){
         //$today = date('Y-m-d');
         //$semna = date('Y-m-d', strtotime('-1 week'));
@@ -1074,7 +1075,7 @@ class CorteController extends Controller
         ]);
         
     }*/
-    public function getEstatus(Request $request){
+    /*public function getEstatus(Request $request){
         $ordenFabricacion = OrdenFabricacion::findOrFail($request->id);
         return response()->json([
             'success' => true,
@@ -1245,7 +1246,7 @@ class CorteController extends Controller
             Log::error('Error al generar PDF: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    }
+    }*/
 }
 
 

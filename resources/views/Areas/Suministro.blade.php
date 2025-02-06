@@ -94,6 +94,7 @@
                                     <thead>
                                         <tr class="bg-light">
                                             <th>Orden Fabricación</th>
+                                            <th>N&uacute;mero Partida</th>
                                             <th>Artículo</th>
                                             <th>Descripción</th>
                                             <th>Cantidad Partida</th>
@@ -105,6 +106,7 @@
                                         @foreach($PartidasOFA as $partida)
                                         <tr>
                                             <td class="text-center">{{$partida->OrdenFabricacion }}</td>
+                                            <td class="text-center">{{$partida->NumeroPartida }}</td>
                                             <td>{{$partida->Articulo }}</td>
                                             <td>{{$partida->Descripcion }}</td>
                                             <td class="text-center">{{$partida->cantidad_partida }}</td>
@@ -119,6 +121,38 @@
                     </div>
                 </div>
                 <div class="tab-pane fade" id="tab-completado" role="tabpanel" aria-labelledby="completado-tab">
+                    <div id="ContentTabla" class="col-12 mt-2">
+                        <div class="card" id="DivCointainerTableSuministro">
+                            <div class="table-responsive">
+                                <table id="TablaSuministroCerradas" class="table table-sm fs--1 mb-1">
+                                    <thead>
+                                        <tr class="bg-light">
+                                            <th>Orden Fabricación</th>
+                                            <th>N&uacute;mero Partida</th>
+                                            <th>Artículo</th>
+                                            <th>Descripción</th>
+                                            <th>Cantidad Partida</th>
+                                            <th>Estatus</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="TablaSuministroCerradasBody" class="list">
+                                        @foreach($PartidasOFC as $partida)
+                                        <tr>
+                                            <td class="text-center">{{$partida->OrdenFabricacion }}</td>
+                                            <td class="text-center">{{$partida->NumeroPartida }}</td>
+                                            <td>{{$partida->Articulo }}</td>
+                                            <td>{{$partida->Descripcion }}</td>
+                                            <td class="text-center">{{$partida->cantidad_partida }}</td>
+                                            <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                                            <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Planear('{{$partida->idEncript}}')">Detalles</button></td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -147,7 +181,7 @@
         <div class="modal-dialog modal-xl modal-dialog-scrollable" style="height: 90%">
           <div class="modal-content" style="height: 100%">
             <div class="modal-header bg-info">
-              <h5 class="modal-title text-white" id="ModalSuministroLabel">Cortes</h5><button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1 text-white"></span></button>
+              <h5 class="modal-title text-white" id="ModalSuministroLabel">Suministro</h5><button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1 text-white"></span></button>
             </div>
             <div class="modal-body" id="ModalSuministroBody">
                 <div class="" id="ModalSuministroBodyInfoOF">
@@ -156,17 +190,15 @@
                     <form id="CortesForm" class="row g-3 needs-validation" novalidate="">
                         <div class="col-6">
                             <label class="form-label" for="Cantitadpiezas">Ingresa n&uacute;mero de Unidades a Suministrar </label>
-                            <div class="input-group">
                                 <input class="form-control form-control-sm has-validation" id="Cantitadpiezas" type="number" oninput="RegexNumeros(this)" placeholder="Ingresa una cantidad" />
-                            </div>
                             <div class="invalid-feedback" id="error_cantidad"></div>
                             <div class="form-check mt-2 mb-2">
                                 <input class="form-check-input" id="Retrabajo" type="checkbox" />
                                 <label class="form-check-label" for="Retrabajo">Retrabajo</label>
                                 <div class="invalid-feedback" id="error_retrabajo"></div>
-                                <button id="btnGrupoPiezasCorte1" class="btn btn-success btn-sm float-end">Guardar</button>
+                                <button id="btnGrupoUnidadaesSuministro" class="btn btn-success btn-sm float-end">Guardar</button>
                             </div>
-                            <input type="hidden" id="CantitadpiezasIdOF">
+                            <input type="hidden" id="CantitadpiezasIdPartidasOF">
                         </div>
                         <div class="col-6 mt-2">
                             <div id="Emisiones" class="mt-2 mb-2" style="display:none;">
@@ -187,6 +219,27 @@
           </div>
         </div>
     </div>
+    <!--MODAL RETRABAJO-->
+    <div class="modal fade" id="ModalRetrabajo" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog ">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="ModalRetrabajoLabel">Orden de Fabricaci&oacute;n a Retrabajo</h5><button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1"></span></button>
+            </div>
+            <div class="modal-body">
+                    <div class="col-8">
+                        <label class="form-label" for="RetrabajoOF">Orden de Fabricación</label>
+                            <input class="form-control search-input form-control-sm" id="RetrabajoOF" type="text"  required="" oninput="RegexNumeros(this); RetrabajoMostrarOFBuscar(this)" placeholder="Ingresa Número de Orden de Fabricación"/>
+                        <div id="RetrabajoOFOpciones" class="list-group" style="position:;max-height: 7rem;overflow-y: auto;">
+
+                        </div>
+                        <div class="invalid-feedback" id="error_RetrabajoOF"></div>
+                    </div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cancelar</button></div>
+          </div>
+        </div>
+    </div>
     <div  id="ContainerToastGuardado"></div>
 @endsection
 @section('scripts')
@@ -196,6 +249,72 @@
         DataTable('TablaSuministroAbiertas',true);
         $('.dt-layout-start:first').append(
         '<button class="btn btn-info mb-0" data-bs-toggle="modal" data-bs-target="#ModalRetrabajo" onclick="LimpiarOF()"><i class="fas fa-plus"></i> Retrabajo</button>');
+        DataTable('TablaSuministroCerradas',true);
+        $('#btnGrupoUnidadaesSuministro').click(function() {
+            event.preventDefault();
+            Cantitadpiezas=$('#Cantitadpiezas');
+            errorCantidad=$('#error_cantidad');
+            EmisionesOpciones=$('#EmisionesOpciones');
+            errorEmision=$('#error_emision');
+            Retrabajo=$('#Retrabajo');
+            errorRetrabajo=$('#error_retrabajo');
+            CantitadpiezasIdPartidasOF=$('#CantitadpiezasIdPartidasOF').val();
+            if(CantitadpiezasIdPartidasOF=='' || CantitadpiezasIdPartidasOF==null){
+                error('Partida no guardada','No fue posible guardar los datos de la partida, todos los campos son requeridos');
+                return 0;
+            }
+            if(Cantitadpiezas.val()=="" || Cantitadpiezas.val()==null || Cantitadpiezas.val()==0){
+                Cantitadpiezas.addClass('is-invalid');
+                errorCantidad.text('Por favor, ingresa un número valido, mayor a 0.');
+                errorCantidad.show();
+                return 0; 
+            }else{
+                Cantitadpiezas.removeClass('is-invalid');
+                errorCantidad.text('');
+                errorCantidad.hide(); 
+            }
+            if(EmisionesOpciones.val()=='' || EmisionesOpciones.val()==null){
+                EmisionesOpciones.addClass('is-invalid');
+                errorEmision.text('Campo requerido, selecciona una Emisión de producción.');
+                errorEmision.show();
+                return 0; 
+            }else{
+                EmisionesOpciones.removeClass('is-invalid');
+                errorEmision.text('');
+                errorEmision.hide(); 
+            }
+            
+            $.ajax({
+                url: "{{route('SuministroGuardar')}}", 
+                type: 'POST',
+                data: {
+                    id:CantitadpiezasIdPartidasOF,
+                    emision:EmisionesOpciones.val(),
+                    retrabajo:Retrabajo.prop('checked'),
+                    Cantitadpiezas:Cantitadpiezas.val(),
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+                },
+                success: function(response) {
+                    if(response.status=="success"){
+                        success('Guardado correctamente!',response.message);
+                        RecargarTablaCerradas();
+                        RecargarTabla();
+                        Planear(response.OF);
+                    }else if(response.status=="error"){
+                        error('Error',response.message);
+                    }else if(response.status=="errorCantidada"){
+                        error('Cantidad no disponible!',response.message);
+                    }else if(response.status=="errorEmision"){
+                        error('Orden de emisión requerida!',response.message);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    error('Error Server',jqXHR.responseJSON.message);
+                }
+            });
+        });
     });
     function Detalles(id){
         $('#ModalDetalle').modal('show');
@@ -216,7 +335,7 @@
                 },
             success: function(response) {
                 if(response.status=="success"){
-                    $('#CantitadpiezasIdOF').val(response.id);
+                    $('#CantitadpiezasIdPartidasOF').val(response.idPartidaOF);
                     $('#ModalDetalleBodyInfoOF').html(response.Ordenfabricacioninfo);
                     $('#ModalDetalleBodyPartidasOF').html(response.Ordenfabricacionpartidas);
                 }
@@ -236,10 +355,22 @@
         $('#ModalSuministro').modal('show');
         $('#ModalSuministroBodyInfoOF').html('');
         $('#ModalSuministroBodyPartidasOF').html('');
-        $('#CantitadpiezasIdOF').val('');
-        //$('#btnGrupoPiezasCorte').fadeIn();
+        $('#CantitadpiezasIdPartidasOF').val('');
         $('#btnGrupoPiezasCorte1').fadeIn();
         document.getElementById("Retrabajo").checked=false;
+        //Regresa todo normal
+        Cantitadpiezas=$('#Cantitadpiezas');
+        errorCantidad=$('#error_cantidad');
+        EmisionesOpciones=$('#EmisionesOpciones');
+        errorEmision=$('#error_emision');
+        CantitadpiezasIdPartidasOF=$('#CantitadpiezasIdPartidasOF').val();
+        Cantitadpiezas=$('#Cantitadpiezas');
+        Cantitadpiezas.removeClass('is-invalid');
+                errorCantidad.text('');
+                errorCantidad.hide();
+        EmisionesOpciones.removeClass('is-invalid');
+                errorEmision.text('');
+                errorEmision.hide();
         $.ajax({
             url: "{{route('SuministroDatosModal')}}", 
             type: 'POST',
@@ -253,9 +384,10 @@
                 },
             success: function(response) {
                 if(response.status=="success"){
-                    $('#CantitadpiezasIdOF').val(response.id);
+                    $('#CantitadpiezasIdPartidasOF').val(response.idPartidaOF);
                     $('#ModalSuministroBodyInfoOF').html(response.Ordenfabricacioninfo);
                     $('#ModalSuministroBodyPartidasOF').html(response.Ordenfabricacionpartidas);
+                    TraerEmisiones();
                     //$('#TablePartidasModal').DataTable().destroy();
                     //DataTable('TablePartidasModal',false);
                 }
@@ -264,6 +396,153 @@
                 $('#ModalSuministroBodyInfoOF').html('');
                 $('#ModalSuministroBodyPartidasOF').html('');
                 errorBD();
+            }
+        });
+    }
+    function TraerEmisiones(){
+        OrdenFabricacion=$('#CantitadpiezasIdPartidasOF').val();
+        $('#EmisionesOpciones').html('');
+        $.ajax({
+            url: "{{route('SuministroEmision')}}", 
+            type: 'POST',
+            data: {
+                id:OrdenFabricacion,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+
+            },
+            success: function(response) {
+                $('#EmisionesOpciones').html(response.opciones);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                errorBD();
+            }
+        });
+    }
+    function Cancelar(id){
+        confirmacion('Cancelar Partida','¿Desea cancelar la la partida?','Confirmar','CancelarAccion(\''+id+'\')');
+    }
+    function CancelarAccion(id){
+        $.ajax({
+            url: "{{route('SuministroCancelar')}}", 
+            type: 'POST',
+            data: {
+                id:id,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+
+            },
+            success: function(response) {
+                if(response.status=='success'){
+                    Planear(response.OF);
+                    success("Cancelada Correctamente!",response.message);
+                    RecargarTabla();
+                    RecargarTablaCerradas();
+                }else if(response.status=='errornoexiste'){
+                    error("Error!",response.message);
+                }else if(response.status=='erroriniciada'){
+                    error("Error!",response.message);
+                }else if(response.status=='errorfinalizada'){
+                    error("Error!",response.message);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                errorBD();
+            }
+        });
+    }
+    function Finalizar(id){
+        $.ajax({
+            url: "{{route('SuministroFinalizar')}}", 
+            type: 'POST',
+            data: {
+                id:id,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+            },
+            success: function(response) {
+                if(response.status=='success'){
+                    Planear(response.OF);
+                    success("Finalizada Correctamente!",response.message);
+                    RecargarTabla();
+                    RecargarTablaCerradas();
+                }else if(response.status=='errornoexiste'){
+                    error("Error!",response.message);
+                }else if(response.status=='errorfinalizada'){
+                    error("Error!",response.message);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                errorBD();
+            }
+        });
+    }
+    function RecargarTabla(){
+        $.ajax({
+            url: "{{route('SuministroRecargarTabla')}}", 
+            type: 'GET',
+            data: {
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+            },
+            success: function(response) {
+                if(response.status=="success"){
+                    $('#TablaSuministroAbiertas').DataTable().destroy();
+                    $('#TablaSuministroAbiertasBody').html(response.table);
+                    DataTable('TablaSuministroAbiertas',true);
+                    $('.dt-layout-start:first').append(
+                    '<button class="btn btn-info mb-0" data-bs-toggle="modal" data-bs-target="#ModalRetrabajo" onclick="LimpiarOF()"><i class="fas fa-plus"></i> Retrabajo</button>');
+                }
+            }
+        });
+    }
+    function RecargarTablaCerradas(){
+        $.ajax({
+            url: "{{route('SuministroRecargarTablaCerrada')}}", 
+            type: 'GET',
+            data: {
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+            },
+            success: function(response) {
+                if(response.status=="success"){
+                    $('#TablaSuministroCerradas').DataTable().destroy();
+                    $('#TablaSuministroCerradasBody').html(response.table);
+                    DataTable('TablaSuministroCerradas',true);
+                }
+            }
+        });
+    }
+    function LimpiarOF(){
+        $('#RetrabajoOF').val('');
+    }
+    function RetrabajoMostrarOFBuscar(RetrabajoOF){
+        $('#RetrabajoOFOpciones').html('');
+        if(RetrabajoOF.value==""){
+            return 0;
+        }if((RetrabajoOF.value).length<5){
+            return 0;
+        }
+        $.ajax({
+            url: "{{route('BuscarSuministro')}}", 
+            type: 'POST',
+            data: {
+                OF:RetrabajoOF.value,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+
+            },
+            success: function(response) {
+                $('#RetrabajoOFOpciones').html(response);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                $('#RetrabajoOFOpciones').html('');
             }
         });
     }

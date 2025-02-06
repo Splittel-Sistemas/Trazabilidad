@@ -47,9 +47,17 @@ Route::post('/Area/Corte/Buscar', [CorteController::class,'BuscarCorte'])->name(
 Route::get('/Area/Corte/GenerarPDF', [CorteController::class, 'generarPDF'])->name('generarPDF');//Generar PDF
 //Suministro
 Route::get('/Area/Suministro', [AreasController::class,'Suministro'])->name('Suministro');
-Route::get('/Area/Suministro/SuministroRecargarTabla', [AreasController::class,'SuministroRecargarTabla'])->name('SuministroRecargarTabla');
+Route::get('/Area/Suministro/Tabla', [AreasController::class,'SuministroRecargarTabla'])->name('SuministroRecargarTabla');
+Route::get('/Area/Suministro/Tabla/Cerrada', [AreasController::class,'SuministroRecargarTablaCerrada'])->name('SuministroRecargarTablaCerrada');
 Route::post('/Area/Suministro/InfoModal', [AreasController::class,'SuministroDatosModal'])->name('SuministroDatosModal');
 Route::post('/Area/Suministro/Emision', [AreasController::class,'SuministroEmision'])->name('SuministroEmision');
+Route::post('/Area/Suministro/Guardar', [AreasController::class,'SuministroGuardar'])->name('SuministroGuardar');
+Route::post('/Area/Suministro/Cancelar', [AreasController::class,'SuministroCancelar'])->name('SuministroCancelar');
+Route::post('/Area/Suministro/Finalizar', [AreasController::class,'SuministroFinalizar'])->name('SuministroFinalizar');
+Route::post('/Area/Suministro/Buscar', [AreasController::class,'BuscarSuministro'])->name('BuscarSuministro');
+
+
+
 Route::get('/Area/Suministro/buscar', [AreasController::class,'SuministroBuscar'])->name('SuministroBuscar');
 Route::post('/Area/Suministro/NoEscaner', [AreasController::class,'TipoNoEscaner'])->name('TipoNoEscaner');
 Route::get('/Area/Preparado', [AreasController::class,'Preparado'])->name('Preparado');

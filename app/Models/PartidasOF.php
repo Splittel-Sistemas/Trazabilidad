@@ -23,11 +23,15 @@ class PartidasOF extends Model
         return $this->belongsTo(OrdenFabricacion::class, 'OrdenFabricacion_id');
     }
     
-    public function partidasArea()
+    /*public function partidasArea()
     {
         return $this->hasMany(PartidasArea::class, 'PartidasOF_id');
-    } 
-
+    }*/ 
+    public function Areas()
+    {
+        return $this->belongsToMany(Areas::class,'PartidasOF_Areas','PartidasOF_id','Areas_id')
+        ->withPivot('FechaComienzo', 'FechaTermina', 'Areas_id', 'Linea_id','Cantidad','id','TipoPartida','NumeroEtiqueta');
+    }
     public function Partidas()
     {
         return $this->hasMany(Partidas::class, 'PartidasOF_id');

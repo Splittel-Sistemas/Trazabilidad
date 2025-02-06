@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('Partidas_Areas', function (Blueprint $table) {
+        Schema::create('PartidasOF_Areas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('Partidas_id');
+            $table->unsignedBigInteger('PartidasOF_id');
             $table->unsignedBigInteger('Areas_id');
             $table->unsignedBigInteger('Users_id');
             $table->unsignedBigInteger('Linea_id');
             $table->integer('Cantidad');
-            $table->foreign('Partidas_id')->references('id')->on('Partidas')->onDelete('cascade')->onUpdate('cascade');
+            $table->integer('NumeroEtiqueta')->nullable();
+            $table->string('TipoPartida',1)->nullable();//R retrabajo=R Normal=N
+            $table->foreign('PartidasOF_id')->references('id')->on('PartidasOF')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('Areas_id')->references('id')->on('Areas')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('Users_id')->references('id')->on('Users')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('Linea_id')->references('id')->on('Linea')->onDelete('cascade')->onUpdate('cascade');
@@ -33,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('Partidas_Areas');
+        Schema::dropIfExists('PartidasOF_Areas');
     }
 };
