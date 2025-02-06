@@ -23,15 +23,16 @@ public function login(Request $request)
         'email' => 'required|email',
         'password' => 'required',
     ]);
+    $remember = $request->has('remember');
+  
 
     // Obtener las credenciales
     $credentials = [
         'email' => $request->email,
         'password' => $request->password,
     ];
-
-    $remember = $request->has('remember');
    
+
     // Intentar autenticar al usuario
     if (Auth::attempt($credentials, $remember)) {
         // Regenerar la sesión

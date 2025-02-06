@@ -182,14 +182,9 @@ Route::get('/graficasOR/OF',[BusquedaController::class,'GraficarOROF'])->name('g
 //rutas del dashboard
 Route::get('/dashboard',[DashboardControlle::class, 'index'])->name('principal.index');
 Route::get('/retrabajo', [DashboardControlle:: class, 'Ordenes'])->name('ordenes.retrabajo');
-
 Route::get('/cerradas', [DashboardControlle::class, 'cerradas'])->name('ordenes.cerredas');
 Route::get('/abiertas', [DashboardControlle:: class, 'abiertas'])->name('ordenes.abiertas');
-
-
-
 Route::get('/graficasdores', [DashboardControlle:: class, 'graficas'])->name('graficas.dashboard');
-Route::get('/graficasuser', [DashboardControlle:: class, 'tablausuarios'])->name('tabla.usuarios');
 // routes/web.php
 Route::get('/detalles-oc', [DashboardControlle::class, 'detallesOC'])->name('ordenes.detallesOC');
 Route::get('/tiempo', [DashboardControlle::class, 'tiempoOC'])->name('ordenes.tiempo');

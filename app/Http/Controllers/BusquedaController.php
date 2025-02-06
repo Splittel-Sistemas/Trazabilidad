@@ -21,8 +21,8 @@ class BusquedaController extends Controller
     public function index(Request $request)
     {
         $partidaId = 1;
-        $partidasAreas = DB::table('partidas_areas')
-        ->where('Partidas_id', $partidaId)  
+        $partidasAreas = DB::table('partidasof_areas')
+        ->where('PartidasOF_id', $partidaId)  
         ->get();
 
         return view('layouts.busquedas', compact('partidasAreas'));
@@ -55,22 +55,15 @@ class BusquedaController extends Controller
         $idVenta = $request->input('id');
 
         $partidasAreas = DB::table('ordenventa')
-            ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.id') 
+            ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id') 
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-            ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
-            ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
-            ->join('areas', 'partidas_areas.Areas_id', '=', 'areas.id') 
+            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+            ->join('areas', 'partidasof_areas.Areas_id', '=', 'areas.id') 
             ->where('ordenventa.OrdenVenta', $idVenta) 
-            ->whereIn('partidas_areas.Areas_id', [9])
+            ->whereIn('partidasof_areas.Areas_id', [9])
 
-            ->select('partidas_areas.Partidas_id', 'areas.nombre as Estado', 'ordenventa.OrdenVenta') 
+            ->select('partidasof_areas.PartidasOF_id', 'areas.nombre as Estado', 'ordenventa.OrdenVenta') 
             ->get();
-            
-            
-            
-
-
-    
         if ($partidasAreas->isEmpty()) {
         
             $partidasAreas = null; 
@@ -89,35 +82,37 @@ class BusquedaController extends Controller
 
         // Consulta base sin duplicados
         $query = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
-            ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-            ->leftJoin('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')
-            ->select(
-                'ordenventa.OrdenVenta',
-                DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
-                DB::raw('SUM(DISTINCT partidas_areas.cantidad) as TotalPartidas'),
-                DB::raw('ROUND((SUM(DISTINCT partidas_areas.cantidad) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso')
-            )
-            ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal');
+        ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id') // Eliminado el leftJoin duplicado
+        ->select(
+            'ordenventa.OrdenVenta',
+            DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
+            DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'), // Eliminado DISTINCT en SUM
+            DB::raw('ROUND((SUM(partidasof_areas.cantidad) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso') // Corregido cálculo de progreso
+        )
+        ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal');
+        
+
+            
             
             // Lógica para seleccionar la etapa
             if ($stage == 'stage2') {
-                $query->where('partidas_areas.Areas_id', 2);
+                $query->where('partidasof_areas.Areas_id', 2);
             } elseif ($stage == 'stage3') {
-                $query->where('partidas_areas.Areas_id', 3);
+                $query->where('partidasof_areas.Areas_id', 3);
             } elseif ($stage == 'stage4') {
-                $query->where('partidas_areas.Areas_id', 4);
+                $query->where('partidasof_areas.Areas_id', 4);
             } elseif ($stage == 'stage5') {
-                $query->where('partidas_areas.Areas_id', 5);
+                $query->where('partidasof_areas.Areas_id', 5);
             } elseif ($stage == 'stage6') {
-                $query->where('partidas_areas.Areas_id', 6);
+                $query->where('partidasof_areas.Areas_id', 6);
             } elseif ($stage == 'stage7') {
-                $query->where('partidas_areas.Areas_id', 7);
+                $query->where('partidasof_areas.Areas_id', 7);
             } elseif ($stage == 'stage8') {
-                $query->where('partidas_areas.Areas_id', 8);
+                $query->where('partidasof_areas.Areas_id', 8);
             } elseif ($stage == 'stage9') {
-                $query->where('partidas_areas.Areas_id', 9);
+                $query->where('.partidasof_areasAreas_id', 9);
             }
 
             $OR = $query->get();
@@ -129,56 +124,56 @@ class BusquedaController extends Controller
     {
         $idVenta = $request->input('id');
         $tipo = $request->input('tipo'); 
+       
         //para cargar los datos 
         if (!empty($idVenta)) {
             //estacion eccorte
+           
+      
             if ($tipo === 'cortes') {
                 $result = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
-                    ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
-                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                    ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-                    ->leftJoin('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
-                    ->where('partidas_areas.Areas_id', 2)
-                    ->select(
-                        'ordenventa.OrdenVenta',
-                        DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
-                        DB::raw('SUM(DISTINCT ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), 
-                        DB::raw('SUM(partidas_areas.cantidad) as SumaTotalPartidas'),
-                        DB::raw('ROUND((SUM(partidas_areas.cantidad) / SUM(DISTINCT ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
-                    )
-                    ->groupBy('ordenventa.OrdenVenta')
-                    ->get();
+                ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+                ->select(
+                    DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
+                    DB::raw('SUM(ordenfabricacion.CantidadTotal) as SumaCantidadTotal'),
+                    DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalPartidas'),
+                    DB::raw('ROUND((SUM(partidasof.cantidad_partida) / SUM(ordenfabricacion.CantidadTotal)) * 100) as Progreso')
+                )
+                ->groupBy('ordenventa.id')
+                ->get();
+            
             //estacion suministros
             } elseif ($tipo === 'suministros') {
                 $result = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
                 ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
                 ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-                ->leftJoin('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') // LEFT JOIN para evitar que afecte los resultados
-                ->where('partidas_areas.Areas_id', 3)
+                ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+                ->where('partidasof_areas.Areas_id', 3)
                 ->select(
                     'ordenventa.OrdenVenta',
                     DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
-                    DB::raw('SUM(DISTINCT ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), 
-                    DB::raw('SUM(partidas_areas.cantidad) as SumaTotalPartidas'),
-                    DB::raw('ROUND((SUM(partidas_areas.cantidad) / SUM(DISTINCT ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
+                    DB::raw('SUM(ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), // Remover DISTINCT en SUM
+                    DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalPartidas'),
+                    DB::raw('ROUND((SUM(partidasof_areas.cantidad) / SUM(ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
                 )
                 ->groupBy('ordenventa.OrdenVenta')
                 ->get();
+               
             //estacion preparado
             } elseif ($tipo === 'preparado') {
                 $result = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
                 ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
                 ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-                ->leftJoin('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') // LEFT JOIN para evitar que afecte los resultados
-                ->where('partidas_areas.Areas_id', 4)
+                ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id') 
+                ->where('partidasof_areas.Areas_id', 4)
+               
                 ->select(
                     'ordenventa.OrdenVenta',
                     DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
-                    DB::raw('SUM(DISTINCT ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), 
-                    DB::raw('SUM(partidas_areas.cantidad) as SumaTotalPartidas'),
-                    DB::raw('ROUND((SUM(partidas_areas.cantidad) / SUM(DISTINCT ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
+                    DB::raw('SUM(ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), // Remover DISTINCT en SUM
+                    DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalPartidas'),
+                    DB::raw('ROUND((SUM(partidasof_areas.cantidad) / SUM(ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
                 )
                 ->groupBy('ordenventa.OrdenVenta')
                 ->get();
@@ -187,49 +182,46 @@ class BusquedaController extends Controller
                 $result = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
                 ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
                 ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-                ->leftJoin('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') // LEFT JOIN para evitar que afecte los resultados
-                ->where('partidas_areas.Areas_id', 5)
+                ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id') 
+                ->where('partidasof_areas.Areas_id', 5)
                 ->select(
                     'ordenventa.OrdenVenta',
-                        DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
-                        DB::raw('SUM(DISTINCT ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), 
-                        DB::raw('SUM(partidas_areas.cantidad) as SumaTotalPartidas'),
-                        DB::raw('ROUND((SUM(partidas_areas.cantidad) / SUM(DISTINCT ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
-                    )
-                    ->groupBy('ordenventa.OrdenVenta')
-                    ->get();
+                    DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
+                    DB::raw('SUM(ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), // Remover DISTINCT en SUM
+                    DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalPartidas'),
+                    DB::raw('ROUND((SUM(partidasof_areas.cantidad) / SUM(ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
+                )
+                ->groupBy('ordenventa.OrdenVenta')
+                ->get();
             //estacion pulido
             }elseif($tipo === 'pulido'){
                 $result = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
                 ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
                 ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-                ->leftJoin('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') // LEFT JOIN para evitar que afecte los resultados
-                ->where('partidas_areas.Areas_id', 6)
+                ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id') 
+                ->where('partidasof_areas.Areas_id', 6)
                 ->select(
                     'ordenventa.OrdenVenta',
-                        DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
-                        DB::raw('SUM(DISTINCT ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), 
-                        DB::raw('SUM(partidas_areas.cantidad) as SumaTotalPartidas'),
-                        DB::raw('ROUND((SUM(partidas_areas.cantidad) / SUM(DISTINCT ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
-                    )
-                    ->groupBy('ordenventa.OrdenVenta')
-                    ->get();
+                    DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
+                    DB::raw('SUM(ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), // Remover DISTINCT en SUM
+                    DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalPartidas'),
+                    DB::raw('ROUND((SUM(partidasof_areas.cantidad) / SUM(ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
+                )
+                ->groupBy('ordenventa.OrdenVenta')
+                ->get();
             //estacion medicion
             }elseif($tipo === 'medicion'){
                 $result = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
                 ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
                 ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-                ->leftJoin('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') // LEFT JOIN para evitar que afecte los resultados
-                ->where('partidas_areas.Areas_id', 7)
+                ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id') 
+                ->where('partidasof_areas.Areas_id', 7)
                 ->select(
                     'ordenventa.OrdenVenta',
                     DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
-                    DB::raw('SUM(DISTINCT ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), 
-                    DB::raw('SUM(partidas_areas.cantidad) as SumaTotalPartidas'),
-                    DB::raw('ROUND((SUM(partidas_areas.cantidad) / SUM(DISTINCT ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
+                    DB::raw('SUM(ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), // Remover DISTINCT en SUM
+                    DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalPartidas'),
+                    DB::raw('ROUND((SUM(partidasof_areas.cantidad) / SUM(ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
                 )
                 ->groupBy('ordenventa.OrdenVenta')
                 ->get();
@@ -238,15 +230,14 @@ class BusquedaController extends Controller
                 $result = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
                 ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
                 ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-                ->leftJoin('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') // LEFT JOIN para evitar que afecte los resultados
-                ->where('partidas_areas.Areas_id', 8)
+                ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id') 
+                ->where('partidasof_areas.Areas_id', 8)
                 ->select(
                     'ordenventa.OrdenVenta',
                     DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
-                    DB::raw('SUM(DISTINCT ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), 
-                    DB::raw('SUM(partidas_areas.cantidad) as SumaTotalPartidas'),
-                    DB::raw('ROUND((SUM(partidas_areas.cantidad) / SUM(DISTINCT ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
+                    DB::raw('SUM(ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), // Remover DISTINCT en SUM
+                    DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalPartidas'),
+                    DB::raw('ROUND((SUM(partidasof_areas.cantidad) / SUM(ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
                 )
                 ->groupBy('ordenventa.OrdenVenta')
                 ->get();
@@ -255,15 +246,14 @@ class BusquedaController extends Controller
                 $result = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
                 ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
                 ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-                ->leftJoin('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') // LEFT JOIN para evitar que afecte los resultados
-                ->where('partidas_areas.Areas_id', 9)
+                ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+                ->where('partidasof_areas.Areas_id', 9)
                 ->select(
                     'ordenventa.OrdenVenta',
                     DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
-                    DB::raw('SUM(DISTINCT ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), 
-                    DB::raw('SUM(partidas_areas.cantidad) as SumaTotalPartidas'),
-                    DB::raw('ROUND((SUM(partidas_areas.cantidad) / SUM(DISTINCT ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
+                    DB::raw('SUM(ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), // Remover DISTINCT en SUM
+                    DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalPartidas'),
+                    DB::raw('ROUND((SUM(partidasof_areas.cantidad) / SUM(ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
                 )
                 ->groupBy('ordenventa.OrdenVenta')
                 ->get();
