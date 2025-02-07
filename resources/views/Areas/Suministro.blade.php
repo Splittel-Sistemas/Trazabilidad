@@ -121,6 +121,43 @@
                     </div>
                 </div>
                 <div class="tab-pane fade" id="tab-completado" role="tabpanel" aria-labelledby="completado-tab">
+                    <div class="col-6 mt-2  mb-4 ">
+                        <div class="accordion ml-3" id="accordionFiltroUnico">
+                            <div class="accordion-item shadow-sm card border border-light">
+                                <h4 class="accordion-header" id="headingFiltroUnico">
+                                    <button class="accordion-button btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroUnico" aria-expanded="true" aria-controls="collapseFiltroUnico">
+                                        <strong>Filtro Fecha</strong>
+                                    </button>
+                                </h4>
+                                <div class="accordion-collapse collapse collapse" id="collapseFiltroUnico" aria-labelledby="headingFiltroUnico" data-bs-parent="#accordionFiltroUnico">
+                                    <div class="accordion-body pt-2">
+                                            @csrf
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="inputFechaUnica" class="form-label"><strong>Fecha Inicio</strong></label>
+                                                    <div class="input-group">
+                                                        <input type="date" name="fecha" id="inputFechaInicio" value="{{$fechaAtras}}" class="form-control form-control-sm">
+                                                    </div>
+                                                    <div class="invalid-feedback" id="error_inputFechaInicio"></div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="inputFechaUnica" class="form-label"><strong>Fecha Fin</strong></label>
+                                                    <div class="input-group">
+                                                        <input type="date" name="fecha" id="inputFechaFin" value="{{$fecha}}" class="form-control form-control-sm">
+                                                    </div>
+                                                    <div class="invalid-feedback" id="error_inputFechaFin"></div>
+                                                </div>
+                                                <div class="col-12 mt-2">
+                                                    <button id="buscarUnico" class="btn btn-primary btn-sm float-end">
+                                                        <i class="fa fa-search"></i> Buscar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div id="ContentTabla" class="col-12 mt-2">
                         <div class="card" id="DivCointainerTableSuministro">
                             <div class="table-responsive">
@@ -132,6 +169,7 @@
                                             <th>Artículo</th>
                                             <th>Descripción</th>
                                             <th>Cantidad Partida</th>
+                                            <th>Fecha Finalizacion</th>
                                             <th>Estatus</th>
                                             <th>Acciones</th>
                                         </tr>
@@ -144,8 +182,9 @@
                                             <td>{{$partida->Articulo }}</td>
                                             <td>{{$partida->Descripcion }}</td>
                                             <td class="text-center">{{$partida->cantidad_partida }}</td>
+                                            <td class="text-center">{{$partida->FechaFinalizacion }}</td>
                                             <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                                            <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Planear('{{$partida->idEncript}}')">Detalles</button></td>
+                                            <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Detalles('{{$partida->idEncript}}')">Detalles</button></td>
                                         </tr>
                                     @endforeach
                                     </tbody>
@@ -315,6 +354,44 @@
                 }
             });
         });
+        $('#buscarUnico').click(function() {
+            RecargarTablaCerradas();
+        });
+        $('#inputFechaFin').change(function() {
+            fechainicio=$('#inputFechaInicio');
+            fechafin=$('#inputFechaFin');
+            $('#error_inputFechaInicio').hide();
+            fechainicio.removeClass('is-invalid');
+            errorinputFechaFin=$('#error_inputFechaFin');
+            if(fechafin.val()<fechainicio.val()){
+                fechafin.addClass('is-invalid');
+                errorinputFechaFin.text('El campo Fecha Fin tiene que se mayor a Fecha Inicio.');
+                errorinputFechaFin.show();
+                return 0; 
+            }else{
+                fechafin.removeClass('is-invalid');
+                errorinputFechaFin.text('');
+                errorinputFechaFin.hide(); 
+            }
+        });
+        $('#inputFechaInicio').change(function() {
+            fechainicio=$('#inputFechaInicio');
+            fechafin=$('#inputFechaFin');
+            fechafin.removeClass('is-invalid');
+            $('#error_inputFechaFin').hide();
+            errorinputFechaInicio=$('#error_inputFechaInicio');
+            if(fechafin.val()<fechainicio.val()){
+                fechainicio.addClass('is-invalid');
+                errorinputFechaInicio.text('El campo Fecha Inicio tiene que ser menor a Fecha Fin.');
+                errorinputFechaInicio.show();
+                return 0; 
+            }else{
+                fechainicio.removeClass('is-invalid');
+                errorinputFechaInicio.text('');
+                errorinputFechaInicio.hide(); 
+            }
+        });
+        setInterval(RecargarTabla, 300000);
     });
     function Detalles(id){
         $('#ModalDetalle').modal('show');
@@ -502,10 +579,17 @@
         });
     }
     function RecargarTablaCerradas(){
+        fechainicio=$('#inputFechaInicio');
+        fechafin=$('#inputFechaFin');
+        if(fechafin.val()<fechainicio.val()){
+                return 0; 
+        }
         $.ajax({
             url: "{{route('SuministroRecargarTablaCerrada')}}", 
             type: 'GET',
             data: {
+                fechainicio:fechainicio.val(),
+                fechafin:fechafin.val(),
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
@@ -552,7 +636,7 @@
 
 
 
-    function ListaCodigo(Codigo,Contenedor){
+    /*function ListaCodigo(Codigo,Contenedor){
         $('#ToastGuardado').fadeOut();
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
         if (CadenaVacia(Codigo)) {
@@ -960,7 +1044,7 @@
             // Ocultar el input cuando 'Salida' esté seleccionado
             Retrabajo.disabled = true;
         }
-    }
+    }*/
     function DataTable(tabla, busqueda){
         $('#'+tabla).DataTable({
                         "pageLength": 10,  // Paginación de 10 elementos por página
