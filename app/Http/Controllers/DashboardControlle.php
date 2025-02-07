@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardControlle extends Controller
 {
-    //
+    // ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+    //->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
     public function index()
     {
 
@@ -45,10 +46,9 @@ class DashboardControlle extends Controller
     
         // Obtener las órdenes cerradas
         $ordenes = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-            ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')
-            ->where('partidas_areas.Areas_id', 9)
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+        ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+            ->where('partidasof_areas.Areas_id', 9)
             ->select(
                 'ordenfabricacion.OrdenFabricacion',
                 'ordenfabricacion.Articulo',
@@ -61,29 +61,28 @@ class DashboardControlle extends Controller
     
         // Obtener los tiempos de las etapas
         $tiempos = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-            ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
             ->select(
                 'ordenfabricacion.OrdenFabricacion',
                 //fecha de inicio
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 2 THEN partidas_areas.FechaComienzo END) as TiempoCorte"),
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 3 THEN partidas_areas.FechaComienzo END) as TiempoSuministro"),
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 4 THEN partidas_areas.FechaComienzo END) as TiempoPreparado"),
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 5 THEN partidas_areas.FechaComienzo END) as TiempoEnsamble"),
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 6 THEN partidas_areas.FechaComienzo END) as TiempoPulido"),
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 7 THEN partidas_areas.FechaComienzo END) as TiempoMedicion"),
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 8 THEN partidas_areas.FechaComienzo END) as TiempoVisualizacion"),
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 9 THEN partidas_areas.FechaComienzo END) as TiempoAbierto"),
+                DB::raw("MAX(partidasof.FechaComienzo) AS TiempoCorte"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 3 THEN partidasof_areas.FechaComienzo END) as TiempoSuministro"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 4 THEN partidasof_areas.FechaComienzo END) as TiempoPreparado"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 5 THEN partidasof_areas.FechaComienzo END) as TiempoEnsamble"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 6 THEN partidasof_areas.FechaComienzo END) as TiempoPulido"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 7 THEN partidasof_areas.FechaComienzo END) as TiempoMedicion"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 8 THEN partidasof_areas.FechaComienzo END) as TiempoVisualizacion"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 9 THEN partidasof_areas.FechaComienzo END) as TiempoAbierto"),
                 // Fecha final
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 2 THEN partidas_areas.FechaTermina END) as FinCorte"),
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 3 THEN partidas_areas.FechaTermina END) as FinSuministro"),
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 4 THEN partidas_areas.FechaTermina END) as FinPreparado"),
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 5 THEN partidas_areas.FechaTermina END) as FinEnsamble"),
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 6 THEN partidas_areas.FechaTermina END) as FinPulido"),
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 7 THEN partidas_areas.FechaTermina END) as FinMedicion"),
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 8 THEN partidas_areas.FechaTermina END) as FinVisualizacion"),
-                DB::raw("MAX(CASE WHEN partidas_areas.Areas_id = 9 THEN partidas_areas.FechaTermina END) as FinAbierto")
+                DB::raw("MAX(partidasof.FechafINALIZACION) AS FinCorte"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 3 THEN partidasof_areas.FechaTermina END) as FinSuministro"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 4 THEN partidasof_areas.FechaTermina END) as FinPreparado"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 5 THEN partidasof_areas.FechaTermina END) as FinEnsamble"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 6 THEN partidasof_areas.FechaTermina END) as FinPulido"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 7 THEN partidasof_areas.FechaTermina END) as FinMedicion"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 8 THEN partidasof_areas.FechaTermina END) as FinVisualizacion"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 9 THEN partidasof_areas.FechaTermina END) as FinAbierto")
             )
             ->groupBy('ordenfabricacion.OrdenFabricacion')
             ->get();
@@ -132,17 +131,20 @@ class DashboardControlle extends Controller
     public function abiertas()
     {
         $totalOrdenes = DB::table('ordenfabricacion')->count();
-        
-        $ordenesAbiertas = DB::table('ordenfabricacion')
-                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-                ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')
-                ->where('partidas_areas.Areas_id', 2)
-                ->select('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.Articulo', 'ordenfabricacion.Descripcion', 'ordenfabricacion.CantidadTotal', 'partidasof.cantidad_partida')
-                ->distinct()
-                ->get(); // Obtiene los datos
 
-        // Para contar el número de resultados
+        $ordenesAbiertas = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('partidasof_areas')
+                    ->whereRaw('partidasof_areas.PartidasOF_id = partidasof.id')
+                    ->where('partidasof_areas.Areas_id', 9);
+            })
+            ->select('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.Articulo', 'ordenfabricacion.Descripcion', 'ordenfabricacion.CantidadTotal', 'partidasof.cantidad_partida')
+            ->distinct()
+            ->get();
+        
         $ordenesAbiertasCount = $ordenesAbiertas->count();
         
         $porcentajeAbiertas = $totalOrdenes > 0 ? ($ordenesAbiertasCount / $totalOrdenes) * 100 : 0;
@@ -151,16 +153,16 @@ class DashboardControlle extends Controller
             'retrabajo' => round($porcentajeAbiertas, 2),
             'ordenes' => $ordenesAbiertas
         ]);
+        
     }
 
     public function graficas()
     {
         // Órdenes por día
         $ordenesPorDia = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-            ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')
-            ->where('partidas_areas.Areas_id', 9)
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+            ->where('partidasOF_areas.Areas_id', 9)
             ->selectRaw('DATE_FORMAT(ordenfabricacion.created_at, "%Y-%m-%d") as dia, COUNT(DISTINCT ordenfabricacion.id) as total')
             ->groupBy('dia')
             ->orderBy('dia', 'asc')
@@ -168,10 +170,9 @@ class DashboardControlle extends Controller
     
         // Órdenes por semana
         $ordenesPorSemana = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-            ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')
-            ->where('partidas_areas.Areas_id', 9)
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+            ->where('partidasOF_areas.Areas_id', 9)
             ->selectRaw('YEARWEEK(ordenfabricacion.created_at) as semana, COUNT(DISTINCT ordenfabricacion.id) as total')
             ->groupBy('semana')
             ->orderBy('semana', 'asc')
@@ -179,10 +180,9 @@ class DashboardControlle extends Controller
     
         // Órdenes por mes
         $ordenesPorMes = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-            ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')
-            ->where('partidas_areas.Areas_id', 9)
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+            ->where('partidasOF_areas.Areas_id', 9)
             ->selectRaw('DATE_FORMAT(ordenfabricacion.created_at, "%Y-%m") as mes, COUNT(DISTINCT ordenfabricacion.id) as total')
             ->groupBy('mes')
             ->orderBy('mes', 'asc')
@@ -195,34 +195,53 @@ class DashboardControlle extends Controller
         ]);
     }
 
+
     public function progreso()
     {
-        $totalCantidad = DB::table('ordenfabricacion')
-            ->leftJoin('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->leftJoin('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-            ->leftJoin('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')
-            ->distinct()
-            ->sum('ordenfabricacion.CantidadTotal');
-
-        $areas = ['2', '3', '4', '5', '6', '7', '8', '9'];
+    
+        $areas = ['3', '4', '5', '6', '7', '8', '9']; // No filtrar por área '2'
         $progreso = [];
-
+    
+        // Consulta para el área 2 (Cortes)
+        $cortes = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->select(
+                'partidasof.OrdenFabricacion_id',
+                DB::raw('SUM(partidasof.cantidad_partida) as TotalPartidas'),
+                DB::raw('ROUND((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso')
+            )
+            ->groupBy('partidasof.OrdenFabricacion_id', 'ordenfabricacion.CantidadTotal')
+            ->get();
+        // dd($cortes);
+    
+        // Si quieres solo un valor de progreso para el área 2, calculamos un promedio
+        $progreso['2'] = $cortes->avg('Progreso');  // Promedio de todos los progresos de cortes
+    
+        // Cálculo del progreso para las demás áreas
         foreach ($areas as $area) {
-            $cantidadPorArea = DB::table('partidas_areas')
-                ->join('partidas', 'partidas_areas.Partidas_id', '=', 'partidas.id')
-                ->join('partidasof', 'partidas.PartidasOf_id', '=', 'partidasof.id')
+            $cantidadPorArea = DB::table('partidasof_areas')
+                ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
                 ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
-                ->where('partidas_areas.Areas_id', $area)
-                ->sum('partidas_areas.Cantidad');
-
-            $porcentaje = ($totalCantidad > 0) ? ($cantidadPorArea / max($totalCantidad, 1)) * 100 : 0;
-            $progreso[$area] = number_format($porcentaje, 2, '.', '');
+                ->where('partidasof_areas.Areas_id', $area)
+                ->select(
+                    'partidasof_areas.Areas_id',
+                    'ordenfabricacion.CantidadTotal',
+                    'partidasof_areas.Partidasof_id',
+                    DB::raw('SUM(partidasof_areas.Cantidad) as TotalPartidas'),
+                    DB::raw('ROUND((SUM(partidasof_areas.Cantidad) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso')
+                )
+                ->groupBy('partidasof_areas.Areas_id', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.Partidasof_id')
+                ->get();
+    
+            // Solo guardamos el progreso calculado en la consulta
+            $progreso[$area] = $cantidadPorArea->avg('Progreso'); // Promedio del progreso de cada área
         }
-
+    
         return response()->json([
             'progreso' => $progreso
         ]);
     }
+    
 
     public function progresoof()
     {
@@ -296,6 +315,7 @@ class DashboardControlle extends Controller
     }
     
     
+
 
     
         /*

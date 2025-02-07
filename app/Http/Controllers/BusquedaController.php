@@ -77,47 +77,67 @@ class BusquedaController extends Controller
     //progreso de stage
     public function GraficarOROF(Request $request)
     {
-        $idVenta = $request->input('id');  // Usamos 'id' para obtener el valor de ordenVenta
+        $idVenta = $request->input('id');  // Obtenemos el ID de la orden de venta
         $stage = $request->input('stage'); // Obtenemos la etapa
 
         // Consulta base sin duplicados
         $query = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
-        ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id') // Eliminado el leftJoin duplicado
-        ->select(
+            ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->select(
                 'ordenventa.OrdenVenta',
+                'ordenfabricacion.CantidadTotal',
+                'ordenfabricacion.OrdenFabricacion',
+                'partidasof.id as PartidaOF_ID',
                 DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
-                DB::raw('SUM(DISTINCT partidasof_areas.cantidad) as TotalPartidas'),
-                DB::raw('ROUND((SUM(DISTINCT partidasof_areas.cantidad) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso')
+                DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalPartidas'),
+                DB::raw('ROUND((SUM(partidasof_areas.cantidad) / NULLIF(ordenfabricacion.CantidadTotal, 0)) * 100, 2) as Progreso')
             )
-            ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal');
-        
+            ->groupBy('partidasof.id', 'ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.OrdenFabricacion');
 
-            
-            
-            // Lógica para seleccionar la etapa
-            if ($stage == 'stage2') {
-                $query->where('partidasof_areas.Areas_id', 2);
-            } elseif ($stage == 'stage3') {
-                $query->where('partidasof_areas.Areas_id', 3);
-            } elseif ($stage == 'stage4') {
-                $query->where('partidasof_areas.Areas_id', 4);
-            } elseif ($stage == 'stage5') {
-                $query->where('partidasof_areas.Areas_id', 5);
-            } elseif ($stage == 'stage6') {
-                $query->where('partidasof_areas.Areas_id', 6);
-            } elseif ($stage == 'stage7') {
-                $query->where('partidasof_areas.Areas_id', 7);
-            } elseif ($stage == 'stage8') {
-                $query->where('partidasof_areas.Areas_id', 8);
-            } elseif ($stage == 'stage9') {
-                $query->where('.partidasof_areasAreas_id', 9);
-            }
+        // Consulta para los cortes
+        $cortes = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
+            ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->select(   'ordenventa.OrdenVenta',
+                'ordenfabricacion.CantidadTotal',
+                'ordenfabricacion.OrdenFabricacion',
+                'partidasof.id as PartidaOF_ID',
+                DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
+                DB::raw('SUM(ordenfabricacion.CantidadTotal) as SumaCantidadTotal'),
+                DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalPartidas'),
+                DB::raw('ROUND((SUM(partidasof.cantidad_partida) / NULLIF(SUM(ordenfabricacion.CantidadTotal), 0)) * 100, 2) as Progreso')
+            )
+            ->groupBy('partidasof.id', 'ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.OrdenFabricacion');
 
+        // Aplicación del filtro según la etapa
+        if ($stage == 'stage3') {
+            $query->where('partidasof_areas.Areas_id', 3);
+        } elseif ($stage == 'stage4') {
+            $query->where('partidasof_areas.Areas_id', 4);
+        } elseif ($stage == 'stage5') {
+            $query->where('partidasof_areas.Areas_id', 5);
+        } elseif ($stage == 'stage6') {
+            $query->where('partidasof_areas.Areas_id', 6);
+        } elseif ($stage == 'stage7') {
+            $query->where('partidasof_areas.Areas_id', 7);
+        } elseif ($stage == 'stage8') {
+            $query->where('partidasof_areas.Areas_id', 8);
+        } elseif ($stage == 'stage9') {
+            $query->where('partidasof_areas.Areas_id', 9);
+        }
+
+        // Obtener resultados
+        if ($stage == 'stage2') {
+            $OR = $cortes->get();
+        } else {
             $OR = $query->get();
-            return response()->json($OR);
+        }
+
+        return response()->json($OR);
     }
+
 
     //graficadores
     public function Graficador(Request $request)
@@ -148,17 +168,29 @@ class BusquedaController extends Controller
                 $result = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
                 ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
                 ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+                ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id') 
                 ->where('partidasof_areas.Areas_id', 3)
+               
                 ->select(
                     'ordenventa.OrdenVenta',
                     DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
                     DB::raw('SUM(ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), // Remover DISTINCT en SUM
                     DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalPartidas'),
-                    DB::raw('ROUND((SUM(partidasof_areas.cantidad) / SUM(ordenfabricacion.CantidadTotal)) * 100) as Progreso') 
+                    DB::raw('ROUND((SUM(partidasof_areas.cantidad) / SUM(ordenfabricacion.CantidadTotal)) * 100) as Progreso') ,
                 )
-                ->groupBy('ordenventa.OrdenVenta')
-                ->get();
+                    ->groupBy('ordenventa.OrdenVenta')
+                    ->get();
+
+                    // Ahora para calcular el porcentaje total ponderado
+                    
+
+
+
+                /* DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
+                    DB::raw('SUM(ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), // Remover DISTINCT en SUM
+                    DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalPartidas'),
+                    DB::raw('ROUND((SUM(partidasof_areas.cantidad) / SUM(ordenfabricacion.CantidadTotal)) * 100) as Progreso') */
+               
                
             //estacion preparado
             } elseif ($tipo === 'preparado') {
@@ -276,9 +308,8 @@ class BusquedaController extends Controller
     {
         $search = $request->input('search');
         $ordenesFabricacion = DB::table('ordenfabricacion')
-        ->join('partidasof', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
-        ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
-        ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+        ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
         ->select(
             'ordenfabricacion.OrdenFabricacion', 
             'ordenfabricacion.Articulo', 
@@ -305,39 +336,37 @@ class BusquedaController extends Controller
             // Obtener las partidas y sus estados
             $ordenfabricacion = DB::table('ordenfabricacion')
                 ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-                ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
-                ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
-                ->join('areas', 'partidas_areas.Areas_id', '=', 'areas.id') 
+                ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+                ->join('areas', 'partidasOF_areas.Areas_id', '=', 'areas.id') 
                 ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion) 
-                ->whereIn('partidas_areas.Areas_id', [9])
-                ->select('partidas_areas.Partidas_id', 'areas.nombre as Estado', 'ordenfabricacion.OrdenFabricacion') 
+                ->whereIn('partidasof_areas.Areas_id', [9])
+                ->select('partidasof_areas.PartidasOF_id', 'areas.nombre as Estado', 'ordenfabricacion.OrdenFabricacion') 
                 ->get();
             
             // Obtener el progreso de fabricación
             $progreso = DB::table('ordenfabricacion')
                 ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-                ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
-                ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
-                ->join('areas', 'partidas_areas.Areas_id', '=', 'areas.id') 
+                ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+                ->join('areas', 'partidasof_areas.Areas_id', '=', 'areas.id') 
                 ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion) 
-                ->whereIn('partidas_areas.Areas_id', [9])
+                ->whereIn('partidasof_areas.Areas_id', [9])
                 ->select(
-                    'partidas_areas.Partidas_id',
-                    'partidas_areas.id',
-                    'partidas_areas.Areas_id',
-                    'partidas_areas.Cantidad',
+                    'partidasof_areas.PartidasOF_id',
+                    'partidasof_areas.id',
+                    'partidasof_areas.Areas_id',
+                    'partidasof_areas.Cantidad',
                     'ordenfabricacion.OrdenFabricacion',
                     'ordenfabricacion.CantidadTotal',
-                    DB::raw('SUM(partidas_areas.cantidad) as cantidad_total'),
+                    DB::raw('SUM(partidasof_areas.cantidad) as cantidad_total'),
                     DB::raw('COALESCE(ordenfabricacion.CantidadTotal, 1) as CantidadTotal')
                 )
                 ->groupBy(
                     'ordenfabricacion.OrdenFabricacion',
                     'ordenfabricacion.CantidadTotal',
-                    'partidas_areas.Partidas_id',
-                    'partidas_areas.Areas_id', 
-                    'partidas_areas.id',
-                    'partidas_areas.Cantidad'
+                    'partidasof_areas.PartidasOF_id',
+                    'partidasof_areas.Areas_id', 
+                    'partidasof_areas.id',
+                    'partidasof_areas.Cantidad'
                 )
                 ->get();
             
@@ -369,133 +398,125 @@ class BusquedaController extends Controller
         if (!empty($idFabricacion)) {
             //estacion eccorte
             if ($tipoOF === 'plemasCorte') {
+
+                
                 $resultOF = DB::table('ordenfabricacion')
-                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                    ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-                    ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')
-                    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-                    ->where('partidas_areas.Areas_id', 2)
-                    ->select(
-                        'ordenfabricacion.OrdenFabricacion',
-                        DB::raw('(ordenfabricacion.CantidadTotal)'),
-                        DB::raw('SUM(partidas_areas.cantidad) as TotalPartidas'),
-                        DB::raw('ROUND((SUM(partidas_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
-                    )
-                    ->groupBy('partidas_areas.Partidas_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
-                    ->get();
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+                ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                ->select(
+                    'ordenfabricacion.OrdenFabricacion',
+                    DB::raw('(ordenfabricacion.CantidadTotal)'),
+                    DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                    DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                )
+                ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                ->get();
                     
             //estacion suministros
             } elseif ($tipoOF === 'plemasSuministro') {
                 $resultOF = DB::table('ordenfabricacion')
-                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                    ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
-                    ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
                     ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-                    ->where('partidas_areas.Areas_id', 3)
+                    ->where('partidasof_areas.Areas_id', 3)
                     ->select(
                         'ordenfabricacion.OrdenFabricacion',
                         DB::raw('(ordenfabricacion.CantidadTotal)'),
-                        DB::raw('SUM(partidas_areas.cantidad) as TotalPartidas'),
-                        DB::raw('ROUND((SUM(partidas_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidas_areas.Partidas_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
                     ->get();
             //estacion preparado
             } elseif ($tipoOF === 'plemasPreparado') {
                 $resultOF = DB::table('ordenfabricacion')
-                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                    ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
-                    ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
                     ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-                    ->where('partidas_areas.Areas_id', 4)
+                    ->where('partidasof_areas.Areas_id',4)
                     ->select(
                         'ordenfabricacion.OrdenFabricacion',
                         DB::raw('(ordenfabricacion.CantidadTotal)'),
-                        DB::raw('SUM(partidas_areas.cantidad) as TotalPartidas'),
-                        DB::raw('ROUND((SUM(partidas_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidas_areas.Partidas_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
                     ->get();
             //estacion ensamble
             }elseif($tipoOF === 'plemasEnsamble'){
-                $resultOF= DB::table('ordenfabricacion')
-                     ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                    ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
-                    ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
+                $resultOF = DB::table('ordenfabricacion')
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
                     ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-                    ->where('partidas_areas.Areas_id', 5)
+                    ->where('partidasof_areas.Areas_id', 5)
                     ->select(
                         'ordenfabricacion.OrdenFabricacion',
                         DB::raw('(ordenfabricacion.CantidadTotal)'),
-                        DB::raw('SUM(partidas_areas.cantidad) as TotalPartidas'),
-                        DB::raw('ROUND((SUM(partidas_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidas_areas.Partidas_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
                     ->get();
             //estacion pulido
             }elseif($tipoOF === 'plemasPulido'){
-                $resultOF= DB::table('ordenfabricacion') 
-                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                    ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
-                    ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
+                $resultOF = DB::table('ordenfabricacion')
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
                     ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-                    ->where('partidas_areas.Areas_id', 6)
+                    ->where('partidasof_areas.Areas_id', 6)
                     ->select(
                         'ordenfabricacion.OrdenFabricacion',
                         DB::raw('(ordenfabricacion.CantidadTotal)'),
-                        DB::raw('SUM(partidas_areas.cantidad) as TotalPartidas'),
-                        DB::raw('ROUND((SUM(partidas_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidas_areas.Partidas_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
                     ->get();
             //estacion medicion
             }elseif($tipoOF === 'plemasMedicion'){
-                $resultOF= DB::table('ordenfabricacion')
-                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                    ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
-                    ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
+                $resultOF = DB::table('ordenfabricacion')
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
                     ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-                    ->where('partidas_areas.Areas_id', 7)
-                    ->select(
-                        'ordenfabricacion.OrdenFabricacion',
-                        DB::raw('GROUP_CONCAT(ordenfabricacion.OrdenFabricacion) as OrdenesFabricacion'),
-                        DB::raw('SUM(ordenfabricacion.CantidadTotal) as CantidadTotal'),
-                        DB::raw('SUM(partidas_areas.cantidad) as TotalPartidas'),
-                        DB::raw('ROUND((SUM(partidas_areas.cantidad) / SUM(ordenfabricacion.CantidadTotal)) * 100, 2) as Progreso')
-                    )
-                    ->groupBy('ordenfabricacion.OrdenFabricacion')
-                    ->get();
-            //estacion visualizacion
-            }elseif($tipoOF === 'plemasVisualizacion'){
-                $resultOF= DB::table('ordenfabricacion')
-                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                    ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
-                    ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
-                    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-                    ->where('partidas_areas.Areas_id', 8)
+                    ->where('partidasof_areas.Areas_id', 7)
                     ->select(
                         'ordenfabricacion.OrdenFabricacion',
                         DB::raw('(ordenfabricacion.CantidadTotal)'),
-                        DB::raw('SUM(partidas_areas.cantidad) as TotalPartidas'),
-                        DB::raw('ROUND((SUM(partidas_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidas_areas.Partidas_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                    ->get();
+            //estacion visualizacion
+            }elseif($tipoOF === 'plemasVisualizacion'){
+                $resultOF = DB::table('ordenfabricacion')
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+                    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                    ->where('partidasof_areas.Areas_id', 8)
+                    ->select(
+                        'ordenfabricacion.OrdenFabricacion',
+                        DB::raw('(ordenfabricacion.CantidadTotal)'),
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                    )
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
                     ->get();
             //estacion empaque
             }elseif($tipoOF=== 'plemasEmpaque'){
                 $resultOF = DB::table('ordenfabricacion')
-                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                    ->join('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id') 
-                    ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id') 
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
                     ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-                    ->where('partidas_areas.Areas_id', 9)
+                    ->where('partidasof_areas.Areas_id', 9)
                     ->select(
                         'ordenfabricacion.OrdenFabricacion',
                         DB::raw('(ordenfabricacion.CantidadTotal)'),
-                        DB::raw('SUM(partidas_areas.cantidad) as TotalPartidas'),
-                        DB::raw('ROUND((SUM(partidas_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidas_areas.Partidas_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
                     ->get();
 
             } else {
