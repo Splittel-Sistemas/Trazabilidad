@@ -113,7 +113,7 @@ class AreasController extends Controller
         ];
         $PartidasOF->Areas()->attach(3, $data);
         $idPartidaOFArea=$PartidasOF->Areas()->orderBy('id','desc')->first();
-        return$emisionRegistro=Emision::where('NumEmision',$emision)->first();
+        $emisionRegistro=Emision::where('NumEmision',$emision)->first();
         if($emisionRegistro==""){
             $PartidasOF->OrdenFabricacion->first()->id;
             $emisionregistro=new Emision();
@@ -445,23 +445,37 @@ class AreasController extends Controller
                 if($CodigoTam==3){
                     if($Escaner==1){
                         if($Inicio==1){
-                            $Piezasiniciadas=$this->CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                            $TipoEscanerrespuesta=$Piezasiniciadas=$this->CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
                             if($Piezasiniciadas!=6){
-                                $retrabajo=$request->Retrabajo;
-                                $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo);
+                                if($Area!=4){//Si el area es diferente de Suministro 4
+                                    $TipoEscanerrespuesta=$Piezasiniciadas=$this->CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                                    if($Piezasiniciadas != 5){
+                                        $retrabajo=$request->Retrabajo;
+                                        if($Area==4){
+                                            $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo);
+                                        }else{
+                                            $TipoEscanerrespuesta=$this->ValidarPasoUnaVezAA($Area,$CodigoPartes);
+                                            if($TipoEscanerrespuesta>0){
+                                                $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo);
+                                            }else{$TipoEscanerrespuesta=5;}
+                                        }
+                                    }
+                                }else{
+                                    $retrabajo=$request->Retrabajo;
+                                    $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo);
+                                }
                             }
+                        }else{
+                                $TipoEscanerrespuesta=$this->FinalizarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
                         }
-                        /*else{
-                            $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
-                        }*/
-                    }/*else if($Escaner==0){
-                        $TipoManualrespuesta=$datos->partidasOF()->where('id','=',$CodigoPartes[1])->first();
+                    }else if($Escaner==0){
+                        $TipoManualrespuesta=$datos->partidasOF()->where('NumeroPartida','=',$CodigoPartes[1])->first();
                         if(!($TipoManualrespuesta=="" || $TipoManualrespuesta==null)){
                             $EscanerExiste = 1;
                         }else{
                             $EscanerExiste = 0;
                         }
-                    }*/
+                    }
                 }
                 $CantidadCompletada=$this->NumeroCompletadas($CodigoPartes,$Area);
                 if($CantidadCompletada<0){
@@ -470,13 +484,12 @@ class AreasController extends Controller
                 if($Escaner==1){
                     //Opciones de la tabla
                     $Opciones='<option selected="" value="">Todos</option>
-                        <option value="Iniciado">Iniciado</option>
-                        <option value="Retrabajo">Retrabajo</option>
-                        <option value="Finalizado">Finalizado</option>';
+                        <option value="Abierta">Abiertas</option>
+                        <option value="Cerrada">Cerradas</option>';
                     //Mostrar las partidas    
                     $partidas = $datos->partidasOF;
                             foreach( $partidas as $PartidasordenFabricacion){
-                                $PartdaArea=$PartidasordenFabricacion->Areas;
+                                $PartdaArea=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->get();
                                 foreach($PartdaArea as $PartdaAr){
                                     $menu.='<tr>
                                             <td class="align-middle ps-3 NumParte">'.$datos->OrdenFabricacion.'-'.$PartidasordenFabricacion->NumeroPartida.'-'.$PartdaAr['pivot']->NumeroEtiqueta.'</td>
@@ -489,16 +502,17 @@ class AreasController extends Controller
                                     $menu.='<td class="align-middle Inicio">'.$PartdaAr['pivot']->FechaComienzo.'</td>
                                             <td class="align-middle Fin">'.$PartdaAr['pivot']->FechaTermina.'</td>';
                                             if($PartdaAr['pivot']->FechaTermina==""){
-                                                $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">En proceso</span><span class="ms-1 fas fa-cogs"></span></div></td>';
-                                            }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Completado</span><span class="ms-1 fas fa-check"></span></div></td>';
+                                                $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Abierta</span><span class="ms-1 fas fa-cogs"></span></div></td>';
+                                            }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Cerrada</span><span class="ms-1 fas fa-check"></span></div></td>';
                                             }
                                             $menu.='<td class="align-middle text-center Linea">'.$PartdaAr['pivot']->Linea_id.'</td></tr>';
                                 }
                         }
                 }else{
                     $Opciones='<option selected="" value="">Todos</option>
-                        <option value="En proceso">En proceso</option>
-                        <option value="Completado">Completado</option>';
+                        <option value="Iniciado">Iniciado</option>
+                        <option value="Retrabajo">Retrabajo</option>
+                        <option value="Finalizado">Finalizado</option>';
                 }
                 $menu='<div class="card-body">
                     <div id="ContainerTableSuministros" class="table-list">
@@ -572,7 +586,7 @@ class AreasController extends Controller
     public function CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
         $PartidasOF=$OrdenFabricacion->PartidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
-        $PartidasOFAreas=$PartidasOF->Areas()->where('Areas_id','<',$Area)->whereNotNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->count();
+        $PartidasOFAreas=$PartidasOF->Areas()->where('Areas_id','<',$Area)->whereNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->count();
         if($PartidasOFAreas>0){
             return 5;
         }
@@ -581,7 +595,7 @@ class AreasController extends Controller
     public function CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
         $PartidasOF=$OrdenFabricacion->PartidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
-        $PartidasOFAreas=$PartidasOF->Areas()->where('Areas_id','>',$Area)->whereNotNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->count();
+        return$PartidasOFAreas=$PartidasOF->Areas()->where('Areas_id','>',$Area)->whereNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->count();
         if($PartidasOFAreas>0){
             return 6;
         }
@@ -625,6 +639,22 @@ class AreasController extends Controller
             return 3;
         }
     }
+    public function FinalizarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
+        $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
+        if($OrdenFabricacion==""){
+            return 3;
+        }
+        $PartidasOF=$OrdenFabricacion->PartidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
+        if($PartidasOF==""){
+            return 3;
+        }
+        $PartidasOFAreasAbierto=$PartidasOF->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->first();
+        if($PartidasOFAreasAbierto==""){
+            return 2;
+        }
+        DB::table('partidasof_areas')->where('id', $PartidasOFAreasAbierto['pivot']->id)->update(['FechaTermina' => now()]);
+        return 1; 
+    }
     public function NumeroCompletadas($CodigoPartes,$Area){
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
         $PartidasOF=$OrdenFabricacion->PartidasOF;
@@ -636,7 +666,211 @@ class AreasController extends Controller
         }
         return $Suma;
     }
+    public function TipoNoEscaner(Request $request){ 
+        $request->validate([
+            'Codigo' => 'required|string|max:255',
+            'Cantidad' => 'required|Integer|min:1',
+        ]);
+        //Desencripta el Area
+        $Area =$this->funcionesGenerales->decrypt($request->Area);
+        $Codigo = $request->Codigo;
+        $Cantidad = $request->Cantidad;
+        $Retrabajo = $request->Retrabajo;
+        $Estatus=1;
+        $Inicio = $request->Inicio;
+        $Fin = $request->Fin;
+        $TipoAccion=0;
+        if($Inicio==1){
+            $Estatus = ($Retrabajo == "true") ? 2 : 1;
+        }else{
+            $Estatus=0;
+        }
+        $ContarPartidas=0;
+        $CodigoPartes = explode("-", $Codigo);
+        //Valida que el codigo este completo
+        if(count($CodigoPartes)!=3){
+            return response()->json([
+                'Inicio'=>$Inicio,
+                'Fin'=>$Fin,
+                'status' => "dontexist",
+                'CantidadTotal' => "",
+                'CantidadCompletada' => "",
+                'OF' => $CodigoPartes[0],       
+            ]);
+        }
+        $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
+        //La orden de Fabricacion No existe
+        if($datos==""){
+            return response()->json([
+                'Inicio'=>$Inicio,
+                'Fin'=>$Fin,
+                'status' => "empty",
+                'CantidadTotal' => "",
+                'CantidadCompletada' => "",
+                'OF' => $CodigoPartes[0],      
+            ]);
+        }
+        $partidasOF=$datos->partidasOF()->where('NumeroPartida','=',$CodigoPartes[1])->first();
+        //La partida Of No existe
+        if($partidasOF=="" OR $partidasOF==null){
+            return response()->json([
+                'Inicio'=>$Inicio,
+                'Fin'=>$Fin,
+                'status' => "dontexist",
+                'CantidadTotal' => "",
+                'CantidadCompletada' => "",
+                'OF' => $CodigoPartes[0],       
+            ]);
+        }
+        $contarpasoanterior=$partidasOF->Areas()->where('Areas_id',$Area-1)->whereNotNull('FechaTermina')->get();
+        $contarActuales=$partidasOF->Areas()->where('Areas_id',$Area)->whereNotNull('FechaTermina')->get();
+        $CantidadTotalEstimada=$Cantidad+($contarActuales->SUM('pivot.Cantidad'));
+        $CanidadtAA=$contarpasoanterior->SUM('pivot.Cantidad');
+        $CanidadtAAR=$contarpasoanterior->where('pivot.TipoPartida','R')->SUM('pivot.Cantidad');
+        $CanidadtAA=$CanidadtAA-$CanidadtAAR;
+        if($CantidadTotalEstimada>$CanidadtAA){
+            return response()->json([
+                'Inicio'=>$Inicio,
+                'Fin'=>$Fin,
+                'status' => "SurplusInicio",
+                'CantidadTotal' => "",
+                'CantidadCompletada' => "",
+                'OF' => $CodigoPartes[0],       
+            ]);
+        }
+        /*a cambiar de propietario un ticket 2025-0859
+        Fernanda Rodriguez... 263
+        Amairani 268*/
 
+
+        //Valida que ya se haya Completado su paso Anterior
+        /*if($partidasOF->FechaFinalizacion=="" OR $partidasOF->FechaFinalizacion==null){
+            return response()->json([
+                'Inicio'=>$Inicio,
+                'Fin'=>$Fin,
+                'status' => "PasBackerror",
+                'CantidadTotal' => "",
+                'CantidadCompletada' => "",
+                'OF' => $CodigoPartes[0],       
+            ]);
+        }*/
+        //1 = iniciado, 0 = Finalizado, 2 = Retrabajo
+    /*return$Partidas=$partidasOF->Partidas()->where('Estatus','=','1')
+            ->whereHas('Areas', function ($query) use($Area) {
+                $query->where('areas.id', '=', $Area); 
+            })->get();
+        foreach ($Partidas as $key => $item) {
+            $ContarPartidas+=$item->CantidadaPartidas;
+        }
+        $FechaHoy=date('Y-m-d H:i:s');
+        $ContarPartidas+=$Cantidad;
+        if($Estatus==2){
+            $TipoAccion=1;
+        }
+        //Validacion al finalizar las partidas a finalizar no pueden ser mayores a las entradas
+        if($Fin==1){
+            $PartidasInicio=$partidasOF->Partidas()->where('Estatus','=','1')
+            ->whereHas('Areas', function ($query) use($Area) {
+                $query->where('areas.id', '=', $Area); 
+            })->get()->sum('CantidadaPartidas');
+            $PartidasFin=$partidasOF->Partidas()->where('Estatus','=','0')
+            ->whereHas('Areas', function ($query) use($Area) {
+                $query->where('areas.id', '=', $Area); 
+            })->get()->sum('CantidadaPartidas');
+            $PartidasRetrabajo=$partidasOF->Partidas()->where('Estatus','=','2')
+            ->whereHas('Areas', function ($query) use($Area) {
+                $query->where('areas.id', '=', $Area); 
+            })->get()->sum('CantidadaPartidas');
+            //return $PartidasInicio." ".$PartidasFin." ".$PartidasRetrabajo;
+            if(($PartidasInicio+$PartidasRetrabajo-$PartidasFin)<$Cantidad){
+                return response()->json([
+                    'Inicio'=>$Inicio,
+                    'Fin'=>$Fin,
+                    'status' => "SurplusFin",
+                    'OF' => $CodigoPartes[0],       
+                ]);
+            }
+        }
+        //Validacion al mandar a Retrabajo las partidas a retrabajo no pueden ser mayor a las salidas
+        if($Estatus==2){
+            $PartidasInicio=$partidasOF->Partidas()->where('Estatus','=','1')
+            ->whereHas('Areas', function ($query) use($Area) {
+                $query->where('areas.id', '=', $Area); 
+            })->get()->sum('CantidadaPartidas');
+            $PartidasFin=$partidasOF->Partidas()->where('Estatus','=','0')
+            ->whereHas('Areas', function ($query) use($Area) {
+                $query->where('areas.id', '=', $Area); 
+            })->get()->sum('CantidadaPartidas');
+            $PartidasRetrabajo=$partidasOF->Partidas()->where('Estatus','=','2')
+            ->whereHas('Areas', function ($query) use($Area) {
+                $query->where('areas.id', '=', $Area); 
+            })->get()->sum('CantidadaPartidas');
+            if($partidasOF->cantidad_partida<$Cantidad ||($PartidasFin-$PartidasRetrabajo)<$Cantidad){
+                //if(($PartidasInicio+$PartidasRetrabajo-$PartidasFin)<$Cantidad){
+                    return response()->json([
+                        'Inicio'=>$Inicio,
+                        'Fin'=>$Fin,
+                        'status' => "SurplusRetrabajo",
+                        'OF' => $CodigoPartes[0],       
+                    ]);  
+                //}
+            }
+        }
+            if($Estatus==2 || $Fin==1){
+                $ContarPartidas=0;
+            }
+            if($ContarPartidas<=$partidasOF->cantidad_partida){
+                    $Partidasg = new Partidas();
+                    $Partidasg->PartidasOF_id=$partidasOF->id;
+                    $Partidasg->CantidadaPartidas=$Cantidad;
+                    $Partidasg->TipoAccion=$TipoAccion;
+                    $Partidasg->Estatus=$Estatus;
+                    $Partidasg->NumParte=0;
+                    if($Inicio==1){
+                        $pivotData = [
+                            'FechaComienzo' => $FechaHoy,
+                            'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                            'Linea_id' => $this->funcionesGenerales->Linea(),
+                        ];
+                    }else{
+                        $pivotData = [
+                            'FechaTermina' => $FechaHoy,
+                            'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                            'Linea_id' => $this->funcionesGenerales->Linea(),
+                        ];
+                    }
+                    if ($Partidasg->save()) {
+                        $Partidasg->Areas()->attach($Area,$pivotData);
+                        return response()->json([
+                            'Inicio'=>$Inicio,
+                            'Fin'=>$Fin,
+                            'status' => "success",
+                            'OF' => $CodigoPartes[0],       
+                        ]);
+                    } else {
+                        return response()->json([
+                            'Inicio'=>$Inicio,
+                            'Fin'=>$Fin,
+                            'status' => "error",
+                            'OF' => $CodigoPartes[0],       
+                        ]);
+                    }
+            }else{
+                return response()->json([
+                    'Inicio'=>$Inicio,
+                    'Fin'=>$Fin,
+                    'status' => "SurplusInicio",
+                    'OF' => $CodigoPartes[0],       
+                ]);
+            }*/
+            //131860-1-1
+    }
+    public function ValidarPasoUnaVezAA($Area,$CodigoPartes){
+        $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
+        $PartidasOF=$OrdenFabricacion->PartidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
+        $PasoUnaVezAA=$PartidasOF->Areas()->where('Areas_id',$Area-1)->whereNotNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->count();
+        return $PasoUnaVezAA;
+    }
 
 
 
@@ -1370,7 +1604,7 @@ class AreasController extends Controller
             }
         }
     }
-    public function TipoNoEscaner(Request $request){ 
+    public function TipoNoEscaner1(Request $request){ 
         $request->validate([
             'Codigo' => 'required|string|max:255',
             'Cantidad' => 'required|Integer|min:1',

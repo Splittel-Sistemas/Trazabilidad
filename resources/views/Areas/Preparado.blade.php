@@ -208,7 +208,7 @@
                                     Color='bg-success';
                                     break;
                                 case 2:
-                                    Mensaje='Codigo <strong>'+Codigo+'</strong> Aún no ha sido inicializado!';
+                                    Mensaje='Codigo <strong>'+Codigo+'</strong> El codigo Aún no ha sido inicializado!';
                                     Color='bg-danger';
                                     break;
                                 case 3:
@@ -259,7 +259,7 @@
             }
         }); 
     }
-    function ListaCodigoaaaaaa(Codigo,Contenedor){
+    /*function ListaCodigoaaaaaa(Codigo,Contenedor){
         //VerNumParte=VerNumParte($Codigo);
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
         if (CadenaVacia(Codigo)) {
@@ -422,35 +422,26 @@
                         }, 2000);
                     //}
                 }
-                /*document.getElementById('CodigoEscanerSuministro').style.display = "";
-                if(response.Escaner==1){
-                    $('#CantidadDiv').hide();
-                    $('#IniciarBtn').hide();
-                }else if(response.Escaner==0){
-                    $('#CantidadDiv').show();
-                    $('#IniciarBtn').show();
-                    $('#CodigoEscanerSuministro').html(response.menu);
-                }*/
             },
             error: function(xhr, status, error) {
                 $('#CantidadDiv').hide();
                 $('#IniciarBtn').hide();
             }
         }); 
-    }
+    }*/
     function TraerDatos(id,OF){
         $('#CodigoEscaner').val(OF+"-"+id);
         $('#CodigoEscanerSuministro').html('');
     }
     function Retrabajo(Codigo){
         $.ajax({
-            url: "{{route('SuministroBuscar')}}", 
-            type: 'GET',
+            url: "{{route('PreparadoBuscar')}}", 
+            type: 'POST',
             data: {
                 Codigo: Codigo,
                 Inicio:1,
                 Finalizar:0,
-                Confirmacion:1,
+                Retrabajo: 'si',
                 Area:'{{$Area}}',
                 _token: '{{ csrf_token() }}'  
             },
@@ -497,6 +488,7 @@
                     }
         };
         userList = new List(TableName, options);
+        userList.sort('Inicio', { order: 'desc' });
         document.querySelector('[data-list-filter="data-list-filter"]').addEventListener('change', function() {
             var filterValue = this.value; // Obtener el valor seleccionado
             if (filterValue === "") {
@@ -611,7 +603,7 @@
                     }, 2000);
                 }else if(response.status=='PasBackerror'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
-                    $('#ToastGuardadoBody').html('Aún no se ha completado el proceso de Corte!');
+                    $('#ToastGuardadoBody').html('La cantidad solicitada aún no puede ser procesada!, Aún no han pasado las piezas del paso anterior');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
