@@ -103,6 +103,21 @@
                                 </a>
                             </div>
                         </li>
+                        <li class="nav-item"><!-- usuarios-->
+                            <p class="navbar-vertical-label">Progreso</p>
+                            <hr class="navbar-vertical-line" /><!-- parent pages-->
+                            <div class="nav-item-wrapper">
+                                <a class="nav-link label-1 {{ Route::is('RolesPermisos.index') ? 'active' : '' }}" href="{{ route('Busquedas.OV') }}" role="button" data-bs-toggle="" aria-expanded="false">
+                                    <div class="d-flex align-items-center">
+                                        <span class="nav-link-icon"><span data-feather="bar-chart-2"></span></span>
+                                        <span class="nav-link-text-wrapper">
+                                            <span class="nav-link-text">Progreso</span>
+                                        </span>
+                                    </div>
+                                </a>
+                                
+                            </div>
+                        </li>
                         <li class="nav-item"><!-- Areas-->
                             <!-- label-->
                             <p class="navbar-vertical-label">Estaciones</p>

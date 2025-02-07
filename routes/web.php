@@ -180,16 +180,16 @@ Route::get('/graficadorOF',[BusquedaController::class,'GraficadorFabricacion'])-
 Route::get('/graficasOR/OF',[BusquedaController::class,'GraficarOROF'])->name('graficarOR.OF');
 
 //rutas del dashboard
-Route::get('/dashboard',[DashboardControlle::class, 'index'])->name('principal.index');
-Route::get('/retrabajo', [DashboardControlle:: class, 'Ordenes'])->name('ordenes.retrabajo');
-Route::get('/cerradas', [DashboardControlle::class, 'cerradas'])->name('ordenes.cerredas');
-Route::get('/abiertas', [DashboardControlle:: class, 'abiertas'])->name('ordenes.abiertas');
-Route::get('/graficasdores', [DashboardControlle:: class, 'graficas'])->name('graficas.dashboard');
+
+Route::get('/retrabajo', [HomeControler:: class, 'Ordenes'])->name('ordenes.retrabajo');
+Route::get('/cerradas', [HomeControler::class, 'cerradas'])->name('ordenes.cerredas');
+Route::get('/abiertas', [HomeControler:: class, 'abiertas'])->name('ordenes.abiertas');
+Route::get('/graficasdores', [HomeControler:: class, 'graficas'])->name('graficas.dashboard');
 // routes/web.php
-Route::get('/detalles-oc', [DashboardControlle::class, 'detallesOC'])->name('ordenes.detallesOC');
-Route::get('/tiempo', [DashboardControlle::class, 'tiempoOC'])->name('ordenes.tiempo');
-Route::get('/progreso-das',[DashboardControlle::class, 'progreso'])->name('progreso.dash');
-Route::get('/progreso-of',[DashboardControlle::class,'progresoof'])->name('of.progreso');
+Route::get('/detalles-oc', [HomeControler::class, 'detallesOC'])->name('ordenes.detallesOC');
+Route::get('/tiempo', [HomeControler::class, 'tiempoOC'])->name('ordenes.tiempo');
+Route::get('/progreso-das',[HomeControler::class, 'progreso'])->name('progreso.dash');
+Route::get('/progreso-of',[HomeControler::class,'progresoof'])->name('of.progreso');
 
 
 
