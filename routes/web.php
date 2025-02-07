@@ -58,12 +58,12 @@ Route::post('/Area/Suministro/Guardar', [AreasController::class,'SuministroGuard
 Route::post('/Area/Suministro/Cancelar', [AreasController::class,'SuministroCancelar'])->name('SuministroCancelar');
 Route::post('/Area/Suministro/Finalizar', [AreasController::class,'SuministroFinalizar'])->name('SuministroFinalizar');
 Route::post('/Area/Suministro/Buscar', [AreasController::class,'BuscarSuministro'])->name('BuscarSuministro');
-
-
+//Preparado
+Route::get('/Area/Preparado', [AreasController::class,'Preparado'])->name('Preparado');
+Route::post('/Area/Preparado/buscar', [AreasController::class,'PreparadoBuscar'])->name('PreparadoBuscar');
 
 Route::get('/Area/Suministro/buscar', [AreasController::class,'SuministroBuscar'])->name('SuministroBuscar');
 Route::post('/Area/Suministro/NoEscaner', [AreasController::class,'TipoNoEscaner'])->name('TipoNoEscaner');
-Route::get('/Area/Preparado', [AreasController::class,'Preparado'])->name('Preparado');
 Route::get('/Area/Ensamble', [AreasController::class,'Ensamble'])->name('Ensamble');
 Route::get('/Area/Pulido', [AreasController::class,'Pulido'])->name('Pulido');
 Route::get('/Area/Medicion', [AreasController::class,'Medicion'])->name('Medicion');
