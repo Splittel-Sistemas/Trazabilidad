@@ -502,7 +502,7 @@
                                 <th class="sort border-top ps-3">Artículo</th>
                                 <th class="sort border-top">Descripción</th>
                                 <th class="sort border-top">Cantidad Total</th>
-                                <th class="sort border-top">Partidas</th>
+                                <th class="sort border-top">Cortes</th>
                                
                                 <th class="border-top">Detalles</th>
                             </tr>
@@ -541,7 +541,7 @@
                                 <th class="sort border-top ps-3" data-sort="Articulo">Articulo</th>
                                 <th class="sort border-top" data-sort="Descripcion">Descripcion</th>
                                 <th class="sort border-top" data-sort="CantidadTotal">Cantidad Total</th>
-                                <th class="sort border-top" data-sort="Partidas">Partidas</th>
+                                <th class="sort border-top" data-sort="Partidas">Cortes</th>
                                 
                             </tr>
                         </thead>

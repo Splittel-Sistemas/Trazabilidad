@@ -107,7 +107,7 @@
                                             @endif
                                         @endforeach
                                     @else
-                                    <tr class="text-center mt-4"><td>Ocurrio un error!, no fue posible cargar los datos</td></tr>
+                                    <tr class="text-center mt-4"><td>Ocurrio un error!, No fue posible cargar los datos</td></tr>
                                     @endif
                                 </tbody>
                             </table>
@@ -118,7 +118,7 @@
             <div class="col-md-6 mb-2">
                 <!-- Área de Dropzone -->
                 <div class="col 12 mb-2 pt-1">
-                    <label for="Filtrofecha_table2">Selecciona una fecha:</label>
+                    <label for="Filtrofecha_table2">Selecciona una Fecha:</label>
                     <div class="input-group ">
                         <input type="date" name="FiltroOF_Fecha_table2"  id="FiltroOF_Fecha_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
                         <button id="buscarOV" class="btn btn-primary btn-sm" onclick="RecargarTablaOF();">
@@ -128,8 +128,8 @@
                 </div>
                 <div ondrop="drop(event)" ondragover="allowDrop(event)" 
                     class="dropzone mt-4 border-dashed rounded-2 min-h-0 mb-4">
-                    <h5>Arrastra aquí los datos</h5>
-                    <p class="text-muted">Suelta los artículos que deseas migrar aquí</p>
+                    <h5>Arrastra la Orden de Fabricacion</h5>
+                    <p class="text-muted">Suelta la Orden Fabricacion</p>
                 </div>
                 <!-- Tabla de Migrados -->
                 <div id="container_table_OF_migrados" class="table-responsive">
@@ -150,7 +150,6 @@
                                 <th>&Oacute;rden Venta</th>
                                 <th>&Oacute;rden Fabricaci&oacute;n</th>
                                 <th>Acciones</th>
-                                <th>Detalles</th>
                             </tr>
                         </thead>
                         <tbody id="table-2-content">
@@ -222,7 +221,7 @@
                             <div class="col 12 mb-2 pt-1">
                                 <div class="form-row">
                                     <div class="col-12 mb-3">
-                                        <label for="Filtrofecha_table2">Selecciona una fecha:</label>
+                                        <label for="Filtrofecha_table2">Selecciona una Fecha:</label>
                                         <div class="input-group">
                                             <input type="date" name="FiltroOF_Fecha_table2_vencidas" onchange="PartidasOF_modal(this)"  id="FiltroOF_Fecha_table2_vencidas" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
                                             <button id="buscarOV_vencidas" onclick="RecargarTablaOF();" class="btn btn-primary btn-sm">
@@ -234,8 +233,8 @@
                             </div>
                             <div ondrop="drop(event)" ondragover="allowDrop(event)" 
                                 class="dropzone mt-4 border-dashed rounded-2 min-h-0 mb-4">
-                                <h5>Arrastra aquí los datos</h5>
-                                <p class="text-muted">Suelta los artículos que deseas migrar aquí</p>
+                                <h5>Arrastra la Orden de Fabricacion</h5>
+                                <p class="text-muted">Suelta la Orden Fabricacion </p>
                             </div>
                             <!-- Tabla de Migrados -->
                             <div id="container_table_OF_migrados_vencidos" class="table-responsive">
@@ -250,7 +249,7 @@
                                             <th>&Oacute;rden Venta</th>
                                             <th>&Oacute;rden Fabrici&oacute;n</th>
                                             <th>Acciones</th>
-                                            <th>Detalles</th>
+                                           
                                         </tr>
                                     </thead>
                                     <tbody id="table-2-content_vencidos">
@@ -322,7 +321,7 @@
                         $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo '+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
                         $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
                     }else{
-                        error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                        error("Ocurrio un error!....","Los datos no pudieron ser procesados correctamente");
                     }
                 },
                 error: function(xhr, status, error) {
@@ -358,7 +357,7 @@
                     } else if(response.status==="empty") {
                         $('#table_OV_body').html('<p>No existen registros para lo orden de venta '+OV+'</p>');
                     }else{
-                        error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                        error("Ocurrio un error!....","Los datos no pudieron ser procesados correctamente");
                     }
                 },
                 error: function(xhr, status, error) {
@@ -427,7 +426,7 @@
                         $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
                         $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br>'+FormatoFecha(startDate)+' - '+FormatoFecha(endDate)+'</p>');
                     }else{
-                        error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                        error("Ocurrio un error!....","Los datos no pudieron ser procesados correctamente");
                     }
                     $('#startDate_filtroantnext').val(startDate);  
                     $('#endDate_filtroantnext').val(endDate); 
@@ -464,7 +463,7 @@
                         $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
                         $('#table_OV_body').html('<p class="text-center">No existen registros para el periodo <br> '+FormatoFecha(startDate)+' - '+FormatoFecha(endDate)+'</p>');
                     }else{
-                        error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                        error("Ocurrio un error!....","Los datos no pudieron ser procesados correctamente");
                     }
                     $('#startDate_filtroantnext').val(startDate);  
                     $('#endDate_filtroantnext').val(endDate); 
@@ -646,10 +645,10 @@
                     success("Guardado!","Las ordenes de fabricación "+OrdenFabricacion+" se guardaron correctamente!");
                 } else if(response.status==="empty") {
                 } else if(response.status==='errordate'){
-                    error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente, la fecha de planeación tiene que ser igual o mayor a la fecha de Actual");
+                    error("Ocurrio un error!....","Los datos no pudieron ser procesados correctamente, la fecha de planeación tiene que ser igual o mayor a la fecha de Actual");
                 }else{
                     $('#Filtro_fecha-btn').trigger('click');
-                    error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
+                    error("Ocurrio un error!....","Los datos no pudieron ser procesados correctamente");
                 }
             },
             error: function(xhr, status, error) {
