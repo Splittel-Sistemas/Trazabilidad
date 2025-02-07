@@ -445,11 +445,11 @@ class AreasController extends Controller
                 if($CodigoTam==3){
                     if($Escaner==1){
                         if($Inicio==1){
-                            $TipoEscanerrespuesta=$Piezasiniciadas=$this->CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
-                            if($Piezasiniciadas!=6){
+                            $TipoEscanerrespuesta=$this->CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                            if($TipoEscanerrespuesta!=6){
                                 if($Area!=4){//Si el area es diferente de Suministro 4
-                                    $TipoEscanerrespuesta=$Piezasiniciadas=$this->CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
-                                    if($Piezasiniciadas != 5){
+                                    $TipoEscanerrespuesta=$this->CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                                    if($TipoEscanerrespuesta != 5){
                                         $retrabajo=$request->Retrabajo;
                                         if($Area==4){
                                             $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo);
@@ -587,19 +587,21 @@ class AreasController extends Controller
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
         $PartidasOF=$OrdenFabricacion->PartidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
         $PartidasOFAreas=$PartidasOF->Areas()->where('Areas_id','<',$Area)->whereNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->count();
-        if($PartidasOFAreas>0){
+        if($PartidasOFAreas!=0){
             return 5;
+        }else{
+            return 1;
         }
-        return 1;
     }
     public function CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
         $PartidasOF=$OrdenFabricacion->PartidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
-        return$PartidasOFAreas=$PartidasOF->Areas()->where('Areas_id','>',$Area)->whereNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->count();
-        if($PartidasOFAreas>0){
+        $PartidasOFAreas=$PartidasOF->Areas()->where('Areas_id','>',$Area)->whereNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->count();
+        if($PartidasOFAreas!=0){
             return 6;
+        }else{
+            return 1;
         }
-        return 1;
     }
     public function GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo){
 
