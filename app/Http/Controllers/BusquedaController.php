@@ -393,25 +393,25 @@ class BusquedaController extends Controller
     public function GraficadorFabricacion(Request $request)
     {
         $idFabricacion = $request->input('id');
+        
         $tipoOF = $request->input('tipo'); 
         //para cargar los datos 
         if (!empty($idFabricacion)) {
             //estacion eccorte
             if ($tipoOF === 'plemasCorte') {
-
-                
                 $resultOF = DB::table('ordenfabricacion')
                 ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-                ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+                
                 ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
                 ->select(
                     'ordenfabricacion.OrdenFabricacion',
                     DB::raw('(ordenfabricacion.CantidadTotal)'),
-                    DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
-                    DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                    DB::raw('SUM(partidasof.cantidad_partida) as TotalPartidas'),
+                    DB::raw('ROUND((SUM(partidasof.cantidad_partida) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                 )
-                ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                ->groupBy('partidasof.cantidad_partida', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
                 ->get();
+                
                     
             //estacion suministros
             } elseif ($tipoOF === 'plemasSuministro') {
