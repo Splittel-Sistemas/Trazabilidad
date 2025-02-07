@@ -595,7 +595,7 @@ class AreasController extends Controller
     public function CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
         $PartidasOF=$OrdenFabricacion->PartidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
-        return$PartidasOFAreas=$PartidasOF->Areas()->where('Areas_id','>',$Area)->whereNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->count();
+        $PartidasOFAreas=$PartidasOF->Areas()->where('Areas_id','>',$Area)->whereNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->count();
         if($PartidasOFAreas>0){
             return 6;
         }
