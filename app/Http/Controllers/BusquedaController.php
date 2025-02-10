@@ -324,6 +324,7 @@ class BusquedaController extends Controller
         })
         ->distinct()
         ->get();
+       
 
         return response()->json($ordenesFabricacion);
     }

@@ -255,6 +255,10 @@
             margin-bottom: 10px;
         }
 
+        .fondo-rojo {
+    background-color: red;
+}
+
 
 
         
@@ -472,12 +476,6 @@
             </div>
         </div>
     </div>
-    
-    
-
-
-
-
     <!--modal cerradas-->
     <div class="modal fade" id="example2Modal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl">
@@ -580,9 +578,13 @@
                 // Obtener órdenes abiertas
                 const openResponse = await fetch("{{ route('ordenes.abiertas') }}");
                 const openData = await openResponse.json();
-                console.log("Órdenes Abiertas:", openData); 
-                const openValue = openData.retrabajo ?? 0; 
-                document.getElementById('openOrders').innerText = openValue + '%';
+                console.log("Órdenes Abiertas:", openData);
+
+                // Usamos el total de órdenes y las órdenes abiertas para mostrar el formato 1/10
+                const totalOrdenes = openData.totalOrdenes ?? 0;
+                const ordenesAbiertasCount = openData.ordenesAbiertasCount ?? 0;
+                document.getElementById('openOrders').innerText = `${ordenesAbiertasCount}/${totalOrdenes}`;
+
 
             } catch (error) {
                 console.error('Error obteniendo los datos de órdenes:', error);

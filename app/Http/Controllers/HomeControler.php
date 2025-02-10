@@ -27,27 +27,7 @@ class HomeControler extends Controller
         // Si el usuario está activo, continua con la carga de la página
         return view('home');  // Ajusta esto al nombre de tu vista Home
     }
-    public function Ordenes()
-    {
-        
-        $totalOrdenes = DB::table('ordenfabricacion')->count();
-        if ($totalOrdenes === 0) {
-            return response()->json([
-                'retrabajo' => 0
-            ]);
-        }
-        
-        $ordenesRetrabajo = DB::table('ordenfabricacion')
-            ->where('EstatusEntrega', 1)
-            ->count();
-       
-        $retrabajoPorcentaje = round(($ordenesRetrabajo / $totalOrdenes) * 100, 2);
-
-        return response()->json([
-            'retrabajo' => $retrabajoPorcentaje
-        ]);
-        
-    }
+   
   
     public function cerradas()
     {
@@ -141,7 +121,7 @@ class HomeControler extends Controller
     public function abiertas()
     {
         $totalOrdenes = DB::table('ordenfabricacion')->count();
-
+    
         $ordenesAbiertas = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
@@ -151,20 +131,23 @@ class HomeControler extends Controller
                     ->whereRaw('partidasof_areas.PartidasOF_id = partidasof.id')
                     ->where('partidasof_areas.Areas_id', 9);
             })
-            ->select('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.Articulo', 'ordenfabricacion.Descripcion', 'ordenfabricacion.CantidadTotal', 'partidasof.cantidad_partida')
+            ->select('partidasof.cantidad_partida', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.Articulo', 'ordenfabricacion.Descripcion', 'ordenfabricacion.CantidadTotal', 'partidasof.cantidad_partida')
             ->distinct()
             ->get();
-        
+    
         $ordenesAbiertasCount = $ordenesAbiertas->count();
-        
+    
+        // Calculamos el porcentaje de ordenes abiertas
         $porcentajeAbiertas = $totalOrdenes > 0 ? ($ordenesAbiertasCount / $totalOrdenes) * 100 : 0;
-        
+    
         return response()->json([
             'retrabajo' => round($porcentajeAbiertas, 2),
-            'ordenes' => $ordenesAbiertas
+            'ordenes' => $ordenesAbiertas,
+            'totalOrdenes' => $totalOrdenes,
+            'ordenesAbiertasCount' => $ordenesAbiertasCount,
         ]);
-        
     }
+    
 
     public function graficas()
     {

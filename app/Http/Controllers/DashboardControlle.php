@@ -129,7 +129,7 @@ class DashboardControlle extends Controller
     }
     
     public function abiertas()
-    {
+    {/*
         $totalOrdenes = DB::table('ordenfabricacion')->count();
 
         $ordenesAbiertas = DB::table('ordenfabricacion')
@@ -148,11 +148,12 @@ class DashboardControlle extends Controller
         $ordenesAbiertasCount = $ordenesAbiertas->count();
         
         $porcentajeAbiertas = $totalOrdenes > 0 ? ($ordenesAbiertasCount / $totalOrdenes) * 100 : 0;
+        dd($ordenesAbiertas);
         
         return response()->json([
             'retrabajo' => round($porcentajeAbiertas, 2),
             'ordenes' => $ordenesAbiertas
-        ]);
+        ]);*/
         
     }
 

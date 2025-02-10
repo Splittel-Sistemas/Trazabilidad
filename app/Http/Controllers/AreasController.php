@@ -252,7 +252,11 @@ class AreasController extends Controller
                             <tr>
                                 <th class="table-active" colspan="1">Piezas Entrada Normal</th>
                                 <th class="text-center" colspan="1">'.$PartidaNormal.'</th>
-                                <th class="table-active" colspan="1">Piezas Entrada Retrabajo </th>
+                       <th class="table-active" colspan="1" style="background-color: rgb(255, 59, 59); color: white;">Piezas Entrada Retrabajo</th>
+
+
+
+
                                 <th class="text-center" colspan="1">'.$PartidaRetrabajo.'</th>
                             </tr>';
         

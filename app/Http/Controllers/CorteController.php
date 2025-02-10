@@ -135,6 +135,7 @@ class CorteController extends Controller
                                     <tr>
                                         <th class="table-active p-1"  style="width: 30%;" >Descripción</th>
                                         <td class="text-center p-1"  style="width: 20%;"  colspan="3">'.$OrdenFabricacion->Descripcion.'</td>
+                                        
                                     </tr>
                                 </tbody>
                             </table>';
