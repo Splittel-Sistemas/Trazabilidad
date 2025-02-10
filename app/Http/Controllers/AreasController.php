@@ -283,12 +283,29 @@ class AreasController extends Controller
                         $Ordenfabricacionpartidas.='<td class="text-center"></td><td></td>
                         </tr>';
                     }else{
-                        $Ordenfabricacionpartidas.='<td class="text-center"><button class="btn btn-sm btn-outline-secondary rounded-pill me-1 mb-1 px-3 py-1" type="button" onclick="Cancelar(\''.$this->funcionesGenerales->encrypt($parti['pivot']->id).'\')">Cancelar</button></td>            
-                        <td><button class="btn btn-sm btn-outline-danger rounded-pill me-1 mb-1 px-3 py-1" type="button" onclick="Finalizar(\''.$this->funcionesGenerales->encrypt($parti['pivot']->id).'\')">Finalizar</button></td>
-                        </tr>';
+                        // Mostrar botones solo si FechaTermina es NULL o está vacío
+                        if($parti['pivot']->FechaTermina == '' || $parti['pivot']->FechaTermina == null){
+                            $Ordenfabricacionpartidas .= '<td class="text-center">
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill me-1 mb-1 px-3 py-1" 
+                                    type="button" 
+                                    onclick="Cancelar(\'' . $this->funcionesGenerales->encrypt($parti['pivot']->id) . '\')">
+                                    Cancelar
+                                </button>
+                            </td>            
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger rounded-pill me-1 mb-1 px-3 py-1" 
+                                    type="button" 
+                                    onclick="Finalizar(\'' . $this->funcionesGenerales->encrypt($parti['pivot']->id) . '\')">
+                                    Finalizar
+                                </button>
+                            </td>
+                            </tr>';
+                        }
                     }
+                    
                 }
             }
+            
         }else{
             $Ordenfabricacioninfo.='<tr>
                                         <td class="text-center" colspan="4">Datos no encontrados</td>

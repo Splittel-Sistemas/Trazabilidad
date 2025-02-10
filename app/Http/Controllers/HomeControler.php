@@ -36,8 +36,8 @@ class HomeControler extends Controller
     
         // Obtener las órdenes cerradas
         $ordenes = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-        ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
             ->where('partidasof_areas.Areas_id', 9)
             ->select(
                 'ordenfabricacion.OrdenFabricacion',
@@ -55,7 +55,6 @@ class HomeControler extends Controller
             ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
             ->select(
                 'ordenfabricacion.OrdenFabricacion',
-                //fecha de inicio
                 DB::raw("MAX(partidasof.FechaComienzo) AS TiempoCorte"),
                 DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 3 THEN partidasof_areas.FechaComienzo END) as TiempoSuministro"),
                 DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 4 THEN partidasof_areas.FechaComienzo END) as TiempoPreparado"),
@@ -64,7 +63,6 @@ class HomeControler extends Controller
                 DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 7 THEN partidasof_areas.FechaComienzo END) as TiempoMedicion"),
                 DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 8 THEN partidasof_areas.FechaComienzo END) as TiempoVisualizacion"),
                 DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 9 THEN partidasof_areas.FechaComienzo END) as TiempoAbierto"),
-                // Fecha final
                 DB::raw("MAX(partidasof.FechafINALIZACION) AS FinCorte"),
                 DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 3 THEN partidasof_areas.FechaTermina END) as FinSuministro"),
                 DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 4 THEN partidasof_areas.FechaTermina END) as FinPreparado"),
@@ -76,14 +74,10 @@ class HomeControler extends Controller
             )
             ->groupBy('ordenfabricacion.OrdenFabricacion')
             ->get();
-
-           
     
         // Combina los resultados de las órdenes con los tiempos
         $ordenesConTiempos = $ordenes->map(function($orden) use ($tiempos) {
-            
             $tiempo = $tiempos->firstWhere('OrdenFabricacion', $orden->OrdenFabricacion);
-            //inicio de tiempos 
             $orden->TiempoCorte = $tiempo ? $tiempo->TiempoCorte : "";
             $orden->TiempoSuministro = $tiempo ? $tiempo->TiempoSuministro : "";
             $orden->TiempoPreparado = $tiempo ? $tiempo->TiempoPreparado : "";
@@ -92,8 +86,6 @@ class HomeControler extends Controller
             $orden->TiempoMedicion = $tiempo ? $tiempo->TiempoMedicion : "";
             $orden->TiempoVisualizacion = $tiempo ? $tiempo->TiempoVisualizacion : "";
             $orden->TiempoAbierto = $tiempo ? $tiempo->TiempoAbierto : "";
-            
-           //final de tiempos
             $orden->FinCorte = $tiempo ? $tiempo->FinCorte : "";
             $orden->FinSuministro = $tiempo ? $tiempo->FinSuministro : "";
             $orden->FinPreparado = $tiempo ? $tiempo->FinPreparado : "";
@@ -102,18 +94,16 @@ class HomeControler extends Controller
             $orden->FinMedicion = $tiempo ? $tiempo->FinMedicion : "";
             $orden->FinVisualizacion = $tiempo ? $tiempo->FinVisualizacion : "";
             $orden->FinAbierto = $tiempo ? $tiempo->FinAbierto : "";
-            
             return $orden;
         });
-        
     
-        // Calcular el porcentaje de órdenes cerradas
+        // Calcular la fracción de órdenes cerradas
         $ordenesCerradasCount = $ordenesConTiempos->count();
-        $porcentajeCerradas = $totalOrdenes > 0 ? ($ordenesCerradasCount / $totalOrdenes) * 100 : 0;
+        $fraccionCerradas = $totalOrdenes > 0 ? "$ordenesCerradasCount/$totalOrdenes" : "0/$totalOrdenes";
     
         // Retornar los datos en formato JSON
         return response()->json([
-            'retrabajo' => round($porcentajeCerradas, 2),
+            'retrabajo' => $fraccionCerradas,
             'ordenes' => $ordenesConTiempos
         ]);
     }

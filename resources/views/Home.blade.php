@@ -572,8 +572,9 @@
                 const closedResponse = await fetch("{{ route('ordenes.cerredas') }}");
                 const closedData = await closedResponse.json();
                 console.log("Órdenes Cerradas:", closedData); 
-                const closedValue = closedData.retrabajo ?? 0; 
-                document.getElementById('closedOrders').innerText = closedValue + '%';
+                const closedValue = closedData.retrabajo ?? "0/0"; // Manejo de casos donde no haya datos
+                document.getElementById('closedOrders').innerText = closedValue;
+
 
                 // Obtener órdenes abiertas
                 const openResponse = await fetch("{{ route('ordenes.abiertas') }}");
