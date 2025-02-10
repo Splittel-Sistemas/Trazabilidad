@@ -336,8 +336,8 @@ class PlaneacionController extends Controller
                     $tabla.='<tr>
                             <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
                             <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
-                            <td class="text-center">'.'<button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" <a class="btn btn-link text-danger"><i class="fa fa-arrow-left"></i> Cancelar</button>
-                             <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary "><i class="fa fa-eye"></i>Detalles</button>'.'
+                            <td class="text-center">'.'<button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" <a class="btn btn-sm btn-danger"><i class="fa fa-arrow-left"></i> Cancelar</button>
+                             <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary "><i class="fa fa-eye"></i> Detalles</button>'.'
                              </td>
                         </tr>';
                 }
@@ -656,7 +656,7 @@ class PlaneacionController extends Controller
                 $tabla.='<tr>
                             <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
                             <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
-                            <td class="text-center">'.'<button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" <a class="btn btn-link text-danger"><i class="fa fa-arrow-left"></i>Cancelar</button>
+                            <td class="text-center">'.'<button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" <a class="btn btn-sm btn-danger"><i class="fa fa-arrow-left"></i>Cancelar</button>
                                 <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary "><i class="fa fa-eye"></i> Detalles</button>'.'
                              </td>
                         </tr>';

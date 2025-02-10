@@ -118,7 +118,7 @@
             <div class="col-md-6 mb-2">
                 <!-- Área de Dropzone -->
                 <div class="col 12 mb-2 pt-1">
-                    <label for="Filtrofecha_table2">Selecciona una Fecha:</label>
+                    <label for="Filtrofecha_table2">Selecciona la fecha de planeaci&oacute;n:</label>
                     <div class="input-group ">
                         <input type="date" name="FiltroOF_Fecha_table2"  id="FiltroOF_Fecha_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
                         <button id="buscarOV" class="btn btn-primary btn-sm" onclick="RecargarTablaOF();">
@@ -221,7 +221,7 @@
                             <div class="col 12 mb-2 pt-1">
                                 <div class="form-row">
                                     <div class="col-12 mb-3">
-                                        <label for="Filtrofecha_table2">Selecciona una Fecha:</label>
+                                        <label for="Filtrofecha_table2">Selecciona la fecha de planeaci&oacute;n:</label>
                                         <div class="input-group">
                                             <input type="date" name="FiltroOF_Fecha_table2_vencidas" onchange="PartidasOF_modal(this)"  id="FiltroOF_Fecha_table2_vencidas" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
                                             <button id="buscarOV_vencidas" onclick="RecargarTablaOF();" class="btn btn-primary btn-sm">

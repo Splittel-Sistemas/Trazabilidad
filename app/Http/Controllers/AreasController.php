@@ -146,7 +146,7 @@ class AreasController extends Controller
                         <td>'. $ordenFabri->Descripcion.'</td>
                         <td>'. $orden->cantidad_partida .'</td>
                         <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                        <td><button class="btn btn-sm btn-outline-primary" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Planear</button></td>
+                        <td><button class="btn btn-sm btn-outline-primary" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Cortes</button></td>
                     </tr>';
             }
             return response()->json([
