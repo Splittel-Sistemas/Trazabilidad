@@ -160,7 +160,7 @@ class CorteController extends Controller
                     }else{
                         $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>';
                     }
-                    $Ordenfabricacionpartidas.='<td class="text-center"><button class="btn btn-link me-1 mb-1" onclick="Etiquetas(\''.$this->funcionesGenerales->encrypt($partida->id).'\')" type="button"><i class="fas fa-download"></i></button></td>';
+                    $Ordenfabricacionpartidas.='<td class="text-center"><button class="btn btn-link me-1 mb-1" onclick="etiquetaColor(\''.$this->funcionesGenerales->encrypt($partida->id).'\')" type="button"><i class="fas fa-download"></i></button></td>';
                     if ($request->has('detalles')) {
                         $Ordenfabricacionpartidas.='<td class="text-center"></td><td></td>
                         </tr>';
@@ -448,7 +448,7 @@ class CorteController extends Controller
     public function generarPDF(Request $request){
         try {
             $partidaId = $this->funcionesGenerales->decrypt($request->input('id'));
-            $Coloretiqueta = $request->input('Coloretiqueta_');
+            $Coloretiqueta = rand(1, 9);
             if (!$partidaId) {
                 throw new \Exception('ID no recibido');
             }
@@ -506,7 +506,7 @@ class CorteController extends Controller
                 //Color de la pagina
                 $pdf->AddPage('L', array(70, 100)); // Añadir una nueva página de 50mm x 100mm
                 $pdf->SetFillColor($R, $G, $B); 
-                $pdf->Rect(0, 0, $pdf->GetPageWidth(), $pdf->GetPageHeight(), 'F');
+                $pdf->Rect(0, 0, $pdf->GetPageWidth(),3, 'F');
                 $pdf->SetTextColor(0, 0, 0);  // Color de texto negro
                 $content = 
                     'Número Cable: ' . strip_tags($partida['cantidad']) . "\n" .
@@ -522,9 +522,9 @@ class CorteController extends Controller
             }
             ob_end_clean();
             // Generar el archivo PDF y devolverlo al navegador
-            return $pdf->Output('orden_fabricacion_' . $partidaId . '.pdf', 'D');
+            return $pdf->Output('orden_fabricacion_' . $partidaId . '.pdf', 'I');//D descarga, I devolver
         } catch (\Exception $e) {
-            Log::error('Error al generar PDF: ' . $e->getMessage());
+            //Log::error('Error al generar PDF: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

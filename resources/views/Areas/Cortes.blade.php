@@ -197,29 +197,6 @@
           </div>
         </div>
     </div>
-    <!--MODAL SELECCIONAR COLOR-->
-    <div class="modal fade" id="ModalColor" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog ">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Color de Etiquetas</h5><button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1"></span></button>
-            </div>
-            <div class="modal-body">
-                <select class="form-select" id="Coloretiqueta">
-                    <option value="1" style="background-color:rgb(14, 14, 231); color: white;">Azul</option>
-                    <option value="2" style="background-color: rgb(241, 48, 48); color: white;">Rojo</option>
-                    <option value="5" style="background-color: rgb(5, 112, 62);color: white;">Verde Bandera</option>
-                    <option value="3" style="background-color: rgb(236, 42, 104);color: white;">Rosa Mexicano</option>
-                    <option value="4" style="background-color: rgb(150, 115, 90);color: white;">Café</option>
-                    <option value="6" style="background-color: rgb(252, 252, 44);">Amarillo</option>
-                    <option value="9" style="background-color: rgb(255, 168, 53);">Naranja</option>
-                    <option value="7" style="background-color: rgb(230, 252, 122);">Verde Limón</option>
-                    <option value="8" style="background-color: rgb(255, 210, 220);">Rosa</option>
-                </select></div>
-            <div class="modal-footer"><button class="btn btn-outline-info" id="DescargarEtiquetas" type="button">Descargar</button><button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cancelar</button></div>
-          </div>
-        </div>
-    </div>
     <!--MODAL RETRABAJO-->
     <div class="modal fade" id="ModalRetrabajo" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog ">
@@ -258,6 +235,23 @@
                 <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
             </div>
           </div>
+        </div>
+    </div>
+    <!--MODAL PDF-->
+    <div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-dark">
+                    <h6 class="modal-title text-white" id="ModalDetalleLabel">Imprimir PDF</h6><button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1 text-white"></span></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Aquí se cargará el PDF en un iframe -->
+                    <iframe id="pdfIframe" src="" width="100%" height="300px"></iframe>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -602,19 +596,18 @@
                         }
         });
     }
-    function Etiquetas(id){
-        $('#ModalColor').modal('show');
-        $('#DescargarEtiquetas').attr('onclick', 'etiquetaColor("'+id+'");');
-        // Generar la URL usando Laravel route()
-    }
     function etiquetaColor(id){
         Coloretiqueta=$('#Coloretiqueta').val();
-        var url = "{{ route('generar.pdf')}}?id=_corteId_&Coloretiqueta =_Coloretiqueta_";
+        var url = "{{ route('generar.pdf')}}?id=_corteId_";
         url = url.replace('_corteId_', id);
-        url = url.replace('_Coloretiqueta_', Coloretiqueta);
+        // Asignar la URL al iframe para mostrar el PDF
+    document.getElementById('pdfIframe').src = url;
+    
+    // Abrir el modal con el iframe
+    $('#pdfModal').modal('show');
         // Abre la URL para descargar el PDF
-        window.open(url, '_blank');
-        $('#ModalColor').modal('hide');
+        /*var ventana = window.open(url, '_blank');
+        $('#ModalColor').modal('hide');*/
     }
     function Detalles(id){
         /*$('#Cantitadpiezas').val('');

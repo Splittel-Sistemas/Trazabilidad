@@ -118,7 +118,7 @@
             <div class="col-md-6 mb-2">
                 <!-- Área de Dropzone -->
                 <div class="col 12 mb-2 pt-1">
-                    <label for="Filtrofecha_table2">Selecciona una fecha:</label>
+                    <label for="Filtrofecha_table2">Selecciona la fecha de planeaci&oacute;n:</label>
                     <div class="input-group ">
                         <input type="date" name="FiltroOF_Fecha_table2"  id="FiltroOF_Fecha_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
                         <button id="buscarOV" class="btn btn-primary btn-sm" onclick="RecargarTablaOF();">
@@ -646,7 +646,7 @@
                     success("Guardado!","Las ordenes de fabricación "+OrdenFabricacion+" se guardaron correctamente!");
                 } else if(response.status==="empty") {
                 } else if(response.status==='errordate'){
-                    error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente, la fecha de planeación tiene que ser igual o mayor a la fecha de Actual");
+                    error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente, la fecha de planeación tiene que ser igual o mayor a la fecha Actual");
                 }else{
                     $('#Filtro_fecha-btn').trigger('click');
                     error("Ocurrio un error!....","los datos no pudieron ser procesados correctamente");
