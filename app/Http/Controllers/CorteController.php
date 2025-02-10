@@ -116,7 +116,7 @@ class CorteController extends Controller
                         </thead>
                         <tbody>';
         if(!($OrdenFabricacion==null || $OrdenFabricacion=="")){
-            $id=$this->funcionesGenerales->encrypt($OrdenFabricacion->id);//gris 30 y 20 blanco style="width: 20%;"
+            $id=$this->funcionesGenerales->encrypt($OrdenFabricacion->id);
             $Ordenfabricacioninfo.='
                               <table class="table table-bordered table-sm text-xs"> 
                                 <tbody>
