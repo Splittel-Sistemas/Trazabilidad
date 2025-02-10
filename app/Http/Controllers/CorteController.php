@@ -170,13 +170,6 @@ class CorteController extends Controller
                         </tr>';
                     }else{
                         if($partida->FechaFinalizacion == '' || $partida->FechaFinalizacion == null){
-                            $Ordenfabricacionpartidas .= '<td>
-                                <button class="btn btn-sm btn-outline-danger rounded-pill me-1 mb-1 px-3 py-1" 
-                                    type="button" 
-                                    onclick="Finalizar(\'' . $this->funcionesGenerales->encrypt($partida->id) . '\')">
-                                    Finalizar
-                                </button>
-                            </td>';
                             $Ordenfabricacionpartidas .= '<td class="text-center">
                             <button class="btn btn-sm btn-outline-secondary rounded-pill me-1 mb-1 px-3 py-1" 
                                 type="button" 
@@ -184,6 +177,13 @@ class CorteController extends Controller
                                 Cancelar
                             </button>
                         </td>';  
+                        $Ordenfabricacionpartidas .= '<td>
+                        <button class="btn btn-sm btn-outline-danger rounded-pill me-1 mb-1 px-3 py-1" 
+                            type="button" 
+                            onclick="Finalizar(\'' . $this->funcionesGenerales->encrypt($partida->id) . '\')">
+                            Finalizar
+                        </button>
+                    </td>';
                         }
                         $Ordenfabricacionpartidas .= '</tr>';
                     }
