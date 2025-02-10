@@ -40,7 +40,7 @@ class CorteController extends Controller
                         <td>'. $orden->CantidadTotal .'</td>
                         <td>'. $orden->FechaEntrega .'</td>
                         <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                        <td><button class="btn btn-sm btn-outline-primary px-3 py-1" onclick="Planear(\''.$orden->idEncript.'\')">Planear</button></td>
+                        <td><button class="btn btn-sm btn-outline-primary px-3 py-1" onclick="Planear(\''.$orden->idEncript.'\')">Cortes</button></td>
                     </tr>';
             }
             return response()->json([
@@ -116,24 +116,28 @@ class CorteController extends Controller
                         </thead>
                         <tbody>';
         if(!($OrdenFabricacion==null || $OrdenFabricacion=="")){
-            $id=$this->funcionesGenerales->encrypt($OrdenFabricacion->id);
+            $id=$this->funcionesGenerales->encrypt($OrdenFabricacion->id);//gris 30 y 20 blanco style="width: 20%;"
             $Ordenfabricacioninfo.='
-                            <tr>
-                                <th class="table-active">Articulo</th>
-                                <th class="text-center">'.$OrdenFabricacion->Articulo.'</th>
-                                <th class="table-active" colspan="1">Fecha Planeación</th>
-                                <td class="text-center" colspan="3">'.$OrdenFabricacion->FechaEntrega.'</td>
-                            </tr>
-                            <tr>
-                                <th class="table-active" colspan="1">Cantidad Total</th>
-                                <th class="text-center" colspan="1">'.$OrdenFabricacion->CantidadTotal.'</th>
-                                <th class="table-active" colspan="1">Piezas cortadas al momento </th>
-                                <th class="text-center" colspan="1">'.$OrdenFabricacion->partidasOF()->get()->sum('cantidad_partida').'</th>
-                            </tr>
-                            <tr>
-                                <th class="table-active" colspan="1">Descripción</th>
-                                <td class="text-center" colspan="3">'.$OrdenFabricacion->Descripcion.'</td>
-                            </tr>';
+                              <table class="table table-bordered table-sm text-xs"> 
+                                <tbody>
+                                    <tr>
+                                        <th class="table-active p-1"  style="width: 30%;" >Artículo</th>
+                                        <td class="text-center p-1"  style="width: 20%;">'.$OrdenFabricacion->Articulo.'</td>
+                                        <th class="table-active p-1"  style="width: 30%;" >Fecha Planeación</th>
+                                        <td class="text-center p-1"  style="width: 20%;" >'.$OrdenFabricacion->FechaEntrega.'</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-active p-1"  style="width: 30%;" >Cantidad Total</th>
+                                        <td class="text-center p-1"  style="width: 20%;" >'.$OrdenFabricacion->CantidadTotal.'</td>
+                                        <th class="table-active p-1"  style="width: 30%;" >Piezas cortadas</th>
+                                        <td class="text-center p-1"  style="width: 20%;" >'.$OrdenFabricacion->partidasOF()->get()->sum('cantidad_partida').'</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="table-active p-1"  style="width: 30%;" >Descripción</th>
+                                        <td class="text-center p-1"  style="width: 20%;"  colspan="3">'.$OrdenFabricacion->Descripcion.'</td>
+                                    </tr>
+                                </tbody>
+                            </table>';
             $PartidasOF=$OrdenFabricacion->partidasOF()->get();
             if($PartidasOF->count()==0){
                 $Ordenfabricacionpartidas.='<tr>
@@ -165,10 +169,26 @@ class CorteController extends Controller
                         $Ordenfabricacionpartidas.='<td class="text-center"></td><td></td>
                         </tr>';
                     }else{
-                        $Ordenfabricacionpartidas.='<td class="text-center"><button class="btn btn-sm btn-outline-secondary rounded-pill me-1 mb-1 px-3 py-1" type="button" onclick="Cancelar(\''.$this->funcionesGenerales->encrypt($partida->id).'\',\''.$partida->NumeroPartida.'\')">Cancelar</button></td>            
-                        <td><button class="btn btn-sm btn-outline-danger rounded-pill me-1 mb-1 px-3 py-1" type="button" onclick="Finalizar(\''.$this->funcionesGenerales->encrypt($partida->id).'\')">Finalizar</button></td>
-                        </tr>';
+                        if($partida->FechaFinalizacion == '' || $partida->FechaFinalizacion == null){
+                            $Ordenfabricacionpartidas .= '<td>
+                                <button class="btn btn-sm btn-outline-danger rounded-pill me-1 mb-1 px-3 py-1" 
+                                    type="button" 
+                                    onclick="Finalizar(\'' . $this->funcionesGenerales->encrypt($partida->id) . '\')">
+                                    Finalizar
+                                </button>
+                            </td>';
+                            $Ordenfabricacionpartidas .= '<td class="text-center">
+                            <button class="btn btn-sm btn-outline-secondary rounded-pill me-1 mb-1 px-3 py-1" 
+                                type="button" 
+                                onclick="Cancelar(\'' . $this->funcionesGenerales->encrypt($partida->id) . '\',\'' . $partida->NumeroPartida . '\')">
+                                Cancelar
+                            </button>
+                        </td>';  
+                        }
+                        $Ordenfabricacionpartidas .= '</tr>';
                     }
+                    
+                    
                         $RangoEtiquetas+=$partida->cantidad_partida;
                 }
             }
