@@ -31,8 +31,8 @@
                                                 <div class="row">
                                                     <div class=" col-6">
                                                         <label class="form-label" for="startDateInput">Fecha inicio </label>
-                                                        <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio }}">
-                                                        <input type="hidden" name="startDate_filtroantnext" id="startDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio }}">
+                                                        <input type="date" name="startDate" id="startDate" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio}}">
+                                                        <input type="hidden" name="startDate_filtroantnext" id="startDate_filtroantnext" class="form-control form-control-sm w-autoborder-primary" value="{{$FechaInicio}}">
                                                     </div>
                                                     <div class=" col-6">
                                                         <label class="form-label" for="endDateInput">Fecha fin </label>
@@ -72,13 +72,14 @@
                                     <div class="accordion-body pt-0">
                                         <div class="card-body p-1">
                                             <div class="d-flex justify-content-between">
-                                                <div>
                                                     <div class="row">
                                                         <h6 class="text-700 col-6">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
                                                         <h6 class="text-700 col-6">Estimado de piezas por d&iacute;a: <span id="Estimadopiezas">0</span></h6>
                                                         <h6 class="text-700 col-6">Piezas planeadas: <span id="Piezasplaneadas">0</span></h6>
+                                                        <h6 class="text-700 col-6">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>  
+                                                        <h6 class="text-700 col-6"></h6>
+                                                        <div class="col-12"><button class="btn btn-link mx-4 p-0" type="button" data-bs-toggle="modal" onclick="LlenarModalPorcentajes()" data-bs-target="#ParametrosPorcentaje"><i class="far fa-edit"></i>Capacidad productiva</button></div>  
                                                     </div>
-                                                </div>
                                             </div>
                                             <div class="pb-1 pt-1 d-flex justify-content-center aling-items-center">
                                                    <div class="p-0" id="PrcentajePlaneacion" style="width: 10rem;height:10rem"></div>
@@ -207,7 +208,7 @@
             </div>
         </div>
     </div>
-<!-- Toast ver las Ordenes de Fabricacion Pendientes por asignar-->
+    <!-- Toast ver las Ordenes de Fabricacion Pendientes por asignar-->
     <div id="element" class="d-flex flex-center" aria-live="polite" aria-atomic="true"  style="position: fixed; bottom: 0.5rem; right: 1rem; z-index: 1050;" data-bs-delay="30000">
         <div class="toast show p-0" role="alert" data-bs-autohide="false" aria-live="assertive" aria-atomic="true" >
             <div class="toast-header bg-danger text-white p-1">
@@ -221,7 +222,7 @@
             </div>
         </div>
     </div>
-<!-- Modal Planeacion de Ordenes de Fabricacion vencido o por vencer-->
+    <!-- Modal Planeacion de Ordenes de Fabricacion vencido o por vencer-->
     <div id="ModalPlaneacionVencidos" class="modal fade"  role="dialog" aria-labelledby="ModalPlaneacionVencidosLabel" aria-hidden="true" style="overflow-y: auto;">
         <div class="modal-dialog modal-lg" style="max-width: 90%; width: 90%;">
             <div class="modal-content">
@@ -313,7 +314,7 @@
             </div>
         </div>
     </div>
-<!-- Modal Detalles Ordenes de Fabricacion-->
+    <!-- Modal Detalles Ordenes de Fabricacion-->
     <div class="modal fade m-4" id="ModalOrdenesFabricacion"  role="dialog" aria-labelledby="ModalOrdenesFabricacionLabel" aria-hidden="true" >
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -328,7 +329,35 @@
             </div>
         </div>
     </div>
+    <!--Modal Parametros-->
+    <div class="modal fade" id="ParametrosPorcentaje" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="ParametrosPorcentajeLabel">Modificar Par&aacute;metros</h5><button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1"></span></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="mb-1 col-6">
+                        <label class="form-label" for="CantidadPersona">Cantidad de personas:</label>
+                        <input class="form-control" id="CantidadPersona" oninput="RegexNumeros(this)" type="text" placeholder="Ingresa una cantidad" />
+                        <div class="invalid-feedback" id="error_CantidadPersona"></div>
+                      </div>
+                      <div class="mb-1 col-6">
+                        <label class="form-label" for="Piezaspersona">Piezas por persona:</label>
+                        <input class="form-control" id="Piezaspersona" oninput="RegexNumeros(this)"  type="text" placeholder="Ingresa una cantidad" />
+                        <div class="invalid-feedback" id="error_Piezaspersona"></div>
+                      </div>
+                </div>  
+            </div>
+            <div class="modal-footer"><button class="btn btn-primary" onclick="GuardarParametrosPorcentajes()">Guardar</button><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancelar</button></div>
+          </div>
+        </div>
+    </div>
+    <input type="hidden" id="FechaInicioActual" value="{{$FechaInicio }}">
+    <input type="hidden" id="FechaFinActual" value="{{$FechaFin}}">
 @endsection
+
 @section('scripts')
 <script src="{{ asset('js/OrdenesVenta.js') }}"></script>
 <script>
@@ -348,6 +377,8 @@
                 $('#error_endDate').html('Requerido Fecha fin menor a Fecha inicio');
                 return 0;
             }
+            $('#FechaInicioActual').val(startDate);
+            $('#FechaFinActual').val(endDate);
             $.ajax({
                 url: "{{route('PlaneacionFF')}}", 
                 type: 'POST',
@@ -449,10 +480,12 @@
             });
         });
         $('#back_filterBtn').click(function() {
-            var startDate =$('#startDate_filtroantnext').val();  
+            var startDate =$('#FechaInicioActual').val();  
             startDate=RestarDia(startDate)
-            var endDate = $('#endDate_filtroantnext').val(); 
+            var endDate = $('#FechaInicioActual').val(); 
             endDate=RestarDia(endDate);
+            $('#FechaInicioActual').val(startDate);
+            $('#FechaFinActual').val(endDate);
             $.ajax({
                 url: "{{route('PlaneacionFF')}}", 
                 type: 'POST',
@@ -466,6 +499,8 @@
                     // You can display a loading spinner here
                 },
                 success: function(response) {
+                    $('#startDate').val(startDate);  
+                    $('#endDate').val(endDate); 
                     if (response.status === 'success') {
                         $('#table_OV_body').html(response.data);  
                         $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
@@ -484,10 +519,12 @@
             });
         });
         $('#next_filterBtn').click(function() {
-            var startDate =$('#startDate_filtroantnext').val();  
+            var startDate =$('#FechaFinActual').val();  
             startDate=SumarDia(startDate);
-            var endDate = $('#endDate_filtroantnext').val(); 
+            var endDate = $('#FechaFinActual').val(); 
             endDate=SumarDia(endDate);
+            $('#FechaInicioActual').val(startDate);
+            $('#FechaFinActual').val(endDate);
             $.ajax({
                 url: "{{route('PlaneacionFF')}}", 
                 type: 'POST',
@@ -501,9 +538,9 @@
                     // You can display a loading spinner here
                 },
                 success: function(response) {
+                    $('#startDate').val(startDate);  
+                    $('#endDate').val(endDate); 
                     if (response.status === 'success') {
-                        $('#startDate').val('${FechaAyer[2]}-${FechaAyer[1]}-${FechaAyer[0]}');  
-                        $('#endDate').val('${FechaHoy[2]}-${FechaHoy[1]}-${FechaHoy[0]}'); 
                         $('#table_OV_body').html(response.data);  
                         $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>'+FormatoFecha(response.fechaHoy)+' - '+FormatoFecha(response.fechaAyer)+'</p>');
                     } else if(response.status==="empty") {
@@ -688,6 +725,7 @@
                         LlenarTablaVencidas();
                     }else{
                         TablaOrdenFabricacion(inputFecha.value);
+                        PorcentajeLlenadas();
                     }
                     $('#Filtro_fecha-btn').trigger('click');
                     success("Guardado!","Las ordenes de fabricación "+OrdenFabricacion+" se guardaron correctamente!");
@@ -711,6 +749,7 @@
         const año = fechaObjeto.getFullYear();
         document.getElementById('FiltroOF_text').innerHTML= "Fecha: "+dia+"/"+mes+"/"+año;
         TablaOrdenFabricacion(document.getElementById('FiltroOF_Fecha_table2').value);
+        PorcentajeLlenadas();
     });
     function TablaOrdenFabricacion(fecha){
         var modal = $('#ModalPlaneacionVencidos');
@@ -808,6 +847,7 @@
                     }else{
                         $fecha=document.getElementById('FiltroOF_Fecha_table2').value;
                         TablaOrdenFabricacion($fecha);
+                        PorcentajeLlenadas();
                     }
                     $('#Filtro_fecha-btn').trigger('click');
                     success("Guardado","Orden de Fabricación  "+response.OF+" regresada correctamente");
@@ -872,10 +912,12 @@
                     Cuerpo.html(response.data);
                     $('#FiltroOF_vencidos_text').html(fecha);
                     TablaOrdenFabricacion(fecha);
+                    PorcentajeLlenadas();
                     //Titulo.html('Detalles Orden de Fabricación '+response.OF);
                 }else{
                     Cuerpo.html(response.data);
                     TablaOrdenFabricacion(fecha);
+                    PorcentajeLlenadas();
                 }
                 //$('#table-2-content').html(response.tabla);
                 //$('#ModalOrdenesFabricacionLabel').html('Titulo');
@@ -889,12 +931,14 @@
     function RecargarTablaOF(){
         fecha=$('#FiltroOF_Fecha_table2').val();
         TablaOrdenFabricacion(fecha);
+        PorcentajeLlenadas();
     }
     function MostrarBtnFaltantes(boton){
         $('#'+boton).fadeIn(1000);
     }
     function PartidasOF_modal(fecha){
         TablaOrdenFabricacion(fecha.value);
+        PorcentajeLlenadas();
     }
     // Función para buscar una palabra en una tabla con clase 'table-light'
     function buscarPalabraEnTabla(palabra) {
@@ -968,6 +1012,8 @@
                     $("#Piezasplaneadas").html(response.PlaneadoPorDia);
                     $("#Porcentajefaltante").html(PorcentajeFaltante);
                     $("#Porcentajeplaneada").html(response.PorcentajePlaneada);
+                    $('#Fecha_Grafica').html(response.Fecha_Grafica);
+                    $('#Piezasfaltantes').html(response.Piezasfaltantes);
                     var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
                     var option = {
                     tooltip: {
@@ -1010,6 +1056,64 @@
                     myChart.setOption(option);
                 }
             });
+    }
+    function GuardarParametrosPorcentajes(){
+        CantidadPersona=$('#CantidadPersona').val();
+        Piezaspersona=$('#Piezaspersona').val();
+        Fecha=$('#FiltroOF_Fecha_table2').val();
+        errorCantidadPersona=$('#error_CantidadPersona');
+        errorPiezaspersona=$('#error_Piezaspersona');
+        if(CantidadPersona==0 || CantidadPersona==""){
+            errorCantidadPersona.text('Por favor, ingresa un número valido, mayor a 0.');
+            errorCantidadPersona.show();
+            return 0; 
+        }else{
+            errorCantidadPersona.text('');
+            errorCantidadPersona.hide(); 
+        }
+        if(Piezaspersona==0 || Piezaspersona==""){
+            errorPiezaspersona.text('Por favor, ingresa un número valido, mayor a 0.');
+            errorPiezaspersona.show();
+            return 0; 
+        }else{
+            errorPiezaspersona.text('');
+            errorPiezaspersona.hide(); 
+        }
+        $.ajax({
+            url: "{{route('GuardarParametrosPorcentajes')}}", 
+            type: 'POST',
+            data: {
+                CantidadPersona:CantidadPersona,
+                Piezaspersona: Piezaspersona,
+                Fecha:Fecha,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+            },
+            success: function(response) {
+                PorcentajeLlenadas();
+            },
+            error: function(xhr, status, error) {
+                errorBD();
+            }
+        }); 
+        $('#ParametrosPorcentaje').modal('hide');
+    }
+    function LlenarModalPorcentajes(){
+        Cantidadpersonas=$('#Cantidadpersonas').html();
+        Estimadopiezas=$('#Estimadopiezas').html();
+        if(Cantidadpersonas==0 || Estimadopiezas==0){
+            Cantidadpersonas=0;
+            Estimadopiezas=0;
+        }else{
+            Estimadopiezas=Estimadopiezas/Cantidadpersonas;
+        }
+        $('#CantidadPersona').val(Cantidadpersonas);
+        $('#Piezaspersona').val(Estimadopiezas);
+        errorCantidadPersona=$('#error_CantidadPersona');
+        errorPiezaspersona=$('#error_Piezaspersona');
+        errorCantidadPersona.hide(); 
+        errorPiezaspersona.hide(); 
     }
 </script>
 @endsection

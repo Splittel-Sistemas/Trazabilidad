@@ -36,7 +36,7 @@ Route::post('/Planeacion/partidas/FiltroFechas', [PlaneacionController::class,'P
 Route::post('/Planeacion/partidas/EscanerEstatus', [PlaneacionController::class,'CambiarEstatusEscaner'])->name('CambiarEstatusEscaner');
 Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Detalles'])->name('PartidasOF_Detalles');
 Route::get('/Planeacion/PorcentajesPlaneacion', [PlaneacionController::class,'PorcentajesPlaneacion'])->name('PorcentajesPlaneacion');
-
+Route::post('/Planeacion/Porcentaje/Guardar', [PlaneacionController::class,'GuardarParametrosPorcentajes'])->name('GuardarParametrosPorcentajes');
 //Rutas Ares
 //Corte Nuevas
 Route::get('/Area/Corte', [CorteController::class, 'index'])->name('corte.index');

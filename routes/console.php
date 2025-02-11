@@ -11,12 +11,26 @@ use App\Http\Controllers\PlaneacionController;
 //php artisan schedule:work
 //*Comando para ejecutar manualmente
 //php artisan schedule:run
+//Llenar 
 Schedule::call(function () {
     $planeacionController = App::make(PlaneacionController::class);
     // Llamar al método del controlador
     $fecha=$planeacionController->LlenarTablaBuffer();
     Log::info($fecha);
-})->everyThirtySeconds();//->everyMinute();///->dailyAt('23:59');
+})->dailyAt('23:59');
+
+Schedule::call(function () {
+    $planeacionController = App::make(PlaneacionController::class);
+    // Llamar al método del controlador
+    $fecha=$planeacionController->PlaneacionDiaPorcentajePlaneacion();
+    Log::info($fecha);
+})->dailyAt('00:01');
+Schedule::call(function () {
+    $planeacionController = App::make(PlaneacionController::class);
+    // Llamar al método del controlador
+    $fecha=$planeacionController->PlaneacionDiaPorcentajePlaneacion();
+    Log::info($fecha);
+})->hourly();
 /*Artisan::command('inspire', function () {
     $quote = Inspiring::quote();
     $this->comment($quote);
