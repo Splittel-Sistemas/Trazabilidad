@@ -323,8 +323,15 @@
             <canvas id="plemasEmpaque" width="150" height="150"></canvas>
         </div>
     </div>
-   
-    <!---------------------------------------------------------->
+    <!------------------------->
+    <h1 class="progress-title">Ordenes Fabricación</h1>
+    <div class="grid-container" style="display: flex; justify-content: center;">
+        <div class="grid-item">
+            <h1 class="small-title"></h1>
+            <canvas id="plemasordenes" width="700" height="300"></canvas>
+        </div>     
+    </div>
+    <!------------------------>
     <h1 class="progress-title">Tablas de Progresos</h1>
     <div class="container mt-4">
         <div class="row">
@@ -382,42 +389,8 @@
             </div>
         </div>
     </div>
-    
-     <!------------------------------------------------>
-
-    <h1 class="progress-title">Ordenes Fabricación</h1>
-    <div class="grid-container" style="display: flex; justify-content: center;">
-        <div class="grid-item">
-            <h1 class="small-title"></h1>
-            <canvas id="plemasordenes" width="700" height="300"></canvas>
-        </div>
-        
-    </div>
-     <!------------------------------------------------>
-
-    
-    
-
-    
-
-    <!----------------------------------------------------------------------------------->
-    <!--
-    <div class="dashboard-container">
-        <div class="chart-container">
-            <canvas id="monthlyChart"></canvas>
-        </div>
-        <div class="chart-container">
-            <canvas id="weeklyChart"></canvas>
-        </div>
-    </div>
-
-    <div class="dashboard-container">
-        <div class="chart-container full-width">
-            <canvas id="dayChart"></canvas>
-        </div>
-    </div>-->
-
-    <!-- Contenedor de las barras de progreso -->
+    <!----------------------->
+    <br>
     <div class="progress-box"> 
         <h2 class="progress-title">Progreso De Producción</h2>
         <div class="progress-box-container">
@@ -511,6 +484,33 @@
         </div>   
     </div>
     <hr>
+    
+
+
+    
+    
+
+    
+
+    <!----------------------------------------------------------------------------------->
+    <!--
+    <div class="dashboard-container">
+        <div class="chart-container">
+            <canvas id="monthlyChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="weeklyChart"></canvas>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="chart-container full-width">
+            <canvas id="dayChart"></canvas>
+        </div>
+    </div>-->
+
+    <!-- Contenedor de las barras de progreso -->
+    
     <!---
     <div class="progress-box">
         <h2 class="progress-title">Progreso De Producción Por Orden Fabricacion</h2>
@@ -596,101 +596,318 @@
             </div>
         </div>
     </div>-->
-    <!--modal cerradas-->
-    <div class="modal fade" id="example2Modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-info" id="exampleModalLabel">
-                        Órdenes Cerradas:
-                        <span id="ordenFabricacionNumero" class="ms-3 text-muted"></span>
-                    </h5>
-                    <button type="button" class="btn p-1" data-bs-dismiss="modal" aria-label="Close">
-                        <svg class="svg-inline--fa fa-xmark fs--1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
-                            <path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div id="retrabajo1" class="mb-3"></div>
-                    <table class="table table-striped table-sm fs--1 mb-0">
-                        <thead class="bg-primary text-white">
-                            <tr>
-                                <th class="sort border-top">Orden Fabricación</th>
-                                <th class="sort border-top ps-3">Artículo</th>
-                                <th class="sort border-top">Descripción</th>
-                                <th class="sort border-top">Cantidad Total</th>
-                                <th class="sort border-top">Cortes</th>
-                               
-                                <th class="border-top">Detalles</th>
-                            </tr>
-                        </thead>
-                        <tbody id="orden-list"></tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>    
-
-    <div class="modal fade" id="example3Modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-info" id="example3ModalLabel">
-                        Órdenes Abiertas:
-                    </h5>
-                    <button type="button" class="btn p-1" data-bs-dismiss="modal" aria-label="Close">
-                        <svg class="svg-inline--fa fa-xmark fs--1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
-                            <path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div id="retrabajo" class="mb-3"></div> <!-- Aquí se mostrará el porcentaje de retrabajo -->
-                    <table class="table table-striped table-sm fs--1 mb-0">
-                        <thead class="bg-primary text-white">
-                            <tr>
-                                <th class="sort border-top" data-sort="Orden">Orden Fabricacion</th>
-                                <th class="sort border-top ps-3" data-sort="Articulo">Articulo</th>
-                                <th class="sort border-top" data-sort="Descripcion">Descripcion</th>
-                                <th class="sort border-top" data-sort="CantidadTotal">Cantidad Total</th>
-                                <th class="sort border-top" data-sort="Partidas">Cortes</th>
-                                
-                            </tr>
-                        </thead>
-                        <tbody id="modalContent"></tbody>
-                    </table>
-                </div>
-                
-                <div class="modal-footer">
-                    <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
     
 
-<!--
-    <div class="summary-box closed-orders">
-        <i class="fas fa-check-circle"></i>
-        <h3>Órdenes Fab. Cerradas</h3>
-        <p id="closedOrders">/</p>
-    </div>
-    <div class="summary-box open-orders">
-        <i class="fas fa-exclamation-circle"></i>
-        <h3>Órdenes Fab. Abiertas</h3>
-        <p id="openOrders">/</p>
-    </div>
--->
+    <!--
+        <div class="summary-box closed-orders">
+            <i class="fas fa-check-circle"></i>
+            <h3>Órdenes Fab. Cerradas</h3>
+            <p id="closedOrders">/</p>
+        </div>
+        <div class="summary-box open-orders">
+            <i class="fas fa-exclamation-circle"></i>
+            <h3>Órdenes Fab. Abiertas</h3>
+            <p id="openOrders">/</p>
+        </div>
+    -->
 @endsection
 
 @section('scripts')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
+
+// Obtener progreso general del dashboard
+function fetchProgresoDash() {
+    fetch("{{ route('progreso.dash') }}")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Progreso General:", data.progreso);
+            if (data && data.progreso) {
+                updateProgressBars(data.progreso); // Actualizar las barras con los datos generales
+            } else {
+                console.error("No se recibieron datos de progreso válidos.");
+            }
+        })
+        .catch(error => {
+            console.error('Error obteniendo datos de progreso:', error);
+        });
+}
+// Actualizar las barras de progreso del dashboard
+function updateProgressBars(progreso) {
+    Object.keys(progreso).forEach(area => {
+        const porcentaje = progreso[area];
+        let progressBarGeneral = document.getElementById(`progress-${area}`);
+        if (progressBarGeneral) {
+            animateProgressBar(progressBarGeneral, porcentaje);
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("{{ route('indicadores.CE') }}")
+        .then(response => response.json())
+        .then(data => {
+            const estaciones = [
+                "plemasCorte", "plemasSuministro", "plemasPreparado", "plemasEnsamble",
+                "plemasPulido", "plemasMedicion", "plemasVisualizacion", "plemasEmpaque"
+            ];
+
+            estaciones.forEach(id => {
+                let canvas = document.getElementById(id);
+                if (!canvas) return;
+
+                // Obtener el contenedor del canvas
+                let container = canvas.parentElement;
+                container.style.display = "flex";
+                container.style.alignItems = "center";
+                container.style.gap = "10px"; 
+
+                let ctx = canvas.getContext("2d");
+                canvas.style.width = "150px";
+                canvas.style.height = "150px";
+
+                let completado = data[id] ? data[id].completado : 0;
+                let pendiente = data[id] ? data[id].pendiente : 0;
+                let totalOrdenes = data[id] ? data[id].totalOrdenes : 0; 
+
+
+                let porcentajeCompletado = totalOrdenes > 0 ? ((completado / totalOrdenes) * 100).toFixed(2) : 0;
+                let porcentajePendiente = totalOrdenes > 0 ? ((pendiente / totalOrdenes) * 100).toFixed(2) : 0;
+
+                let infoDiv = container.querySelector(".info-grafico");
+                if (!infoDiv) {
+                    infoDiv = document.createElement("div");
+                    infoDiv.classList.add("info-grafico");
+                    container.appendChild(infoDiv);
+                }
+
+                infoDiv.innerHTML = `
+                    <strong>${id.replace("plemas", "")}</strong><br>
+                    Completado: <span style="color: #28a745;">${completado}/${totalOrdenes} (${porcentajeCompletado}%)</span><br>
+                    Pendiente: <span style="color: #FFC107;">${pendiente}/${totalOrdenes} (${porcentajePendiente}%)</span>
+                `;
+                infoDiv.style.fontSize = "14px";
+
+                new Chart(ctx, {
+                    type: "doughnut",
+                    data: {
+                        labels: ["Completado", "Pendiente"],
+                        datasets: [{
+                            data: [completado, pendiente],
+                            backgroundColor: ["#28a745", "#FFC107"],
+                            cutout: "70%"
+                        }]
+                    },
+                    options: {
+                        responsive: false,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                align: 'center'
+                            },
+                            tooltip: {
+                                enabled: true,
+                                mode: 'index',
+                                intersect: false
+                            }
+                        },
+                        elements: {
+                            arc: {
+                                borderWidth: 0
+                            }
+                        }
+                    }
+                });
+            });
+        })
+        .catch(error => console.error('Error al cargar los datos:', error));
+        
+});
+
+fetch("{{ route('orden.cerredas') }}")
+    .then(response => response.json())
+    .then(data => {
+        const id = "plemasordenes"; 
+        let canvas = document.getElementById(id);
+        if (!canvas) return;
+
+        let container = canvas.parentElement;
+        container.style.display = "flex";
+        container.style.alignItems = "center";
+        container.style.gap = "10px";
+
+        let myChart = echarts.init(canvas);
+
+        // Obtener datos del backend
+        let completadas = data.ordenesCompletadas ?? 0;
+        let abiertas = data.ordenesAbiertas ?? 0;
+        let totalOrdenes = data.totalOrdenes > 0 ? data.totalOrdenes : (completadas + abiertas);
+
+        // Calcular porcentajes
+        let porcentajeCompletadas = totalOrdenes > 0 ? ((completadas / totalOrdenes) * 100).toFixed(2) : 0;
+        let porcentajeAbiertas = totalOrdenes > 0 ? ((abiertas / totalOrdenes) * 100).toFixed(2) : 0;
+
+        // Mostrar los datos en el indicador
+        let infoDiv = container.querySelector(".info-grafico");
+        if (!infoDiv) {
+            infoDiv = document.createElement("div");
+            infoDiv.classList.add("info-grafico");
+            container.appendChild(infoDiv);
+        }
+
+        infoDiv.innerHTML = `
+            <strong>Órdenes</strong><br>
+            Completadas: <span style="color: #28a745;">${completadas}/${totalOrdenes} (${porcentajeCompletadas}%)</span><br>
+            Abiertas: <span style="color: #dc3545;">${abiertas}/${totalOrdenes} (${porcentajeAbiertas}%)</span><br>
+        `;
+
+        // Definir opciones del gráfico
+        let option = {
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left'
+            },
+            series: [
+                {
+                    name: 'Órdenes',
+                    type: 'pie',
+                    radius: '80%',
+                    data: [
+                        { value: completadas, name: 'Completadas', itemStyle: { color: '#28a745' } },
+                        { value: abiertas, name: 'Abiertas', itemStyle: { color: '#dc3545' } }
+                    ],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+
+        // Renderizar gráfico
+        myChart.setOption(option);
+    })
+    .catch(error => console.error('Error al cargar los datos:', error));
+
+function cargarOrdenesCerradas() {
+    $.ajax({
+        url: "{{ route('tabla.abiertas') }}",
+        method: 'GET',
+        success: function (data) {
+            // Mostrar el porcentaje de órdenes cerradas
+            $('#ordenFabricacionNumero').text(data.ordenesAbiertasCount); 
+
+            // Llenar la tabla con los datos
+            var tabla = $('#orden-list');
+            tabla.empty(); 
+
+            // Iterar sobre los datos y agregar filas a la tabla
+            data.ordenes.forEach(function (orden) {
+                var fila = `<tr>
+                    <td>${orden.OrdenFabricacion}</td>
+                    <td>${orden.Articulo}</td>
+                    <td>${orden.Descripcion}</td>
+                    <td>${orden.CantidadTotal}</td>
+                    <td>${orden.SumaTotalcantidad_partida}</td>
+                    <td><button class="btn btn-info">Detalles</button></td>
+                </tr>`;
+                tabla.append(fila);
+            });
+        },
+        error: function (error) {
+            console.log("Error al cargar los datos: ", error);
+        }
+    });
+}
+function cargarOrdenesCompletas() {
+    $.ajax({
+        url: "{{ route('tabla.completas') }}",
+        method: 'GET',
+        success: function (data) {
+            // Mostrar el porcentaje de órdenes cerradas
+            $('#ordenesCompletadasNumero').text(data.retrabajo); 
+
+            // Llenar la tabla con los datos
+            var tabla = $('#ordenes-completadas-list');
+            tabla.empty(); 
+
+            // Iterar sobre los datos y agregar filas a la tabla
+            data.ordenes.forEach(function (orden) {
+                var fila = `<tr>
+                    <td>${orden.OrdenFabricacion}</td>
+                    <td>${orden.Articulo}</td>
+                    <td>${orden.Descripcion}</td>
+                    <td>${orden.CantidadTotal}</td>
+                    <td>${orden.cantidad_partida}</td>
+                    <td><button class="btn btn-info">Detalles</button></td>
+                </tr>`;
+                tabla.append(fila);
+            });
+        },
+        error: function (error) {
+            console.log("Error al cargar los datos: ", error);
+        }
+    });
+}
+// Obtener progreso de órdenes de fabricación
+function fetchProgresoOF() {
+    fetch("{{ route('of.progreso') }}")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Progreso Órdenes de Fabricación:", data.progreso);
+            if (data.progreso) {
+                updateOFProgressBars(data.progreso); 
+            } else {
+                console.error("No se recibieron datos de progreso de orden de fabricación.");
+            }
+        })
+        .catch(error => {
+            console.error('Error obteniendo datos de progreso de orden de fabricación:', error);
+        });
+}
+
+function updateOFProgressBars(progreso) {
+    Object.keys(progreso).forEach(orden => {
+        const progresoOrden = progreso[orden].detalle;
+        Object.keys(progresoOrden).forEach(areaName => {
+            const porcentaje = progresoOrden[areaName];
+            let progressBarGeneral = document.getElementById(`step-${areaName}`);
+            if (progressBarGeneral) {
+                animateProgressBar(progressBarGeneral, porcentaje);
+            }
+        });
+    });
+}
+
+function animateProgressBar(bar, porcentaje) {
+    bar.style.width = `${porcentaje}%`;
+    bar.innerHTML = `${porcentaje}%`;
+}
+
+// Animar las barras de progreso
+function animateProgressBar(progressBar, percentage) {
+    progressBar.style.width = `${percentage}%`;
+    progressBar.setAttribute('aria-valuenow', percentage);
+    progressBar.textContent = `${percentage}%`;
+}
+
+
+// Llamadas iniciales a las funciones de progreso
+fetchProgresoDash(); 
+fetchProgresoOF(); 
+$(document).ready(function () {
+    cargarOrdenesCerradas();
+    cargarOrdenesCompletas();
+});
         /*
         document.addEventListener("DOMContentLoaded", async function () {
             await fetchOrders();
@@ -939,299 +1156,6 @@
    
 };
 */
-
-// Obtener progreso general del dashboard
-function fetchProgresoDash() {
-    fetch("{{ route('progreso.dash') }}")
-        .then(response => response.json())
-        .then(data => {
-            console.log("Progreso General:", data.progreso);
-            if (data && data.progreso) {
-                updateProgressBars(data.progreso); // Actualizar las barras con los datos generales
-            } else {
-                console.error("No se recibieron datos de progreso válidos.");
-            }
-        })
-        .catch(error => {
-            console.error('Error obteniendo datos de progreso:', error);
-        });
-}
-// Actualizar las barras de progreso del dashboard
-function updateProgressBars(progreso) {
-    Object.keys(progreso).forEach(area => {
-        const porcentaje = progreso[area];
-        let progressBarGeneral = document.getElementById(`progress-${area}`);
-        if (progressBarGeneral) {
-            animateProgressBar(progressBarGeneral, porcentaje);
-        }
-    });
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-    fetch("{{ route('indicadores.CE') }}")
-        .then(response => response.json())
-        .then(data => {
-            const estaciones = [
-                "plemasCorte", "plemasSuministro", "plemasPreparado", "plemasEnsamble",
-                "plemasPulido", "plemasMedicion", "plemasVisualizacion", "plemasEmpaque"
-            ];
-
-            estaciones.forEach(id => {
-                let canvas = document.getElementById(id);
-                if (!canvas) return;
-
-                // Obtener el contenedor del canvas
-                let container = canvas.parentElement;
-                container.style.display = "flex";
-                container.style.alignItems = "center";
-                container.style.gap = "10px"; 
-
-                let ctx = canvas.getContext("2d");
-                canvas.style.width = "150px";
-                canvas.style.height = "150px";
-
-                let completado = data[id] ? data[id].completado : 0;
-                let pendiente = data[id] ? data[id].pendiente : 0;
-                let totalOrdenes = data[id] ? data[id].totalOrdenes : 0; 
-
-
-                let porcentajeCompletado = totalOrdenes > 0 ? ((completado / totalOrdenes) * 100).toFixed(2) : 0;
-                let porcentajePendiente = totalOrdenes > 0 ? ((pendiente / totalOrdenes) * 100).toFixed(2) : 0;
-
-                let infoDiv = container.querySelector(".info-grafico");
-                if (!infoDiv) {
-                    infoDiv = document.createElement("div");
-                    infoDiv.classList.add("info-grafico");
-                    container.appendChild(infoDiv);
-                }
-
-                infoDiv.innerHTML = `
-                    <strong>${id.replace("plemas", "")}</strong><br>
-                    Completado: <span style="color: #28a745;">${completado}/${totalOrdenes} (${porcentajeCompletado}%)</span><br>
-                    Pendiente: <span style="color: #FFC107;">${pendiente}/${totalOrdenes} (${porcentajePendiente}%)</span>
-                `;
-                infoDiv.style.fontSize = "14px";
-
-                new Chart(ctx, {
-                    type: "doughnut",
-                    data: {
-                        labels: ["Completado", "Pendiente"],
-                        datasets: [{
-                            data: [completado, pendiente],
-                            backgroundColor: ["#28a745", "#FFC107"],
-                            cutout: "70%"
-                        }]
-                    },
-                    options: {
-                        responsive: false,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top',
-                                align: 'center'
-                            },
-                            tooltip: {
-                                enabled: true,
-                                mode: 'index',
-                                intersect: false
-                            }
-                        },
-                        elements: {
-                            arc: {
-                                borderWidth: 0
-                            }
-                        }
-                    }
-                });
-            });
-        })
-        .catch(error => console.error('Error al cargar los datos:', error));
-        
-});
-
-fetch("{{ route('orden.cerredas') }}")
-        .then(response => response.json())
-        .then(data => {
-            const id = "plemasordenes"; 
-            let canvas = document.getElementById(id);
-            if (!canvas) return;
-
-            let container = canvas.parentElement;
-            container.style.display = "flex";
-            container.style.alignItems = "center";
-            container.style.gap = "10px";
-
-            let myChart = echarts.init(canvas);
-
-            // Obtener datos del backend
-            let completadas = data.ordenesCompletadas ?? 0;
-            let enProceso = data.ordenesEnProceso ?? 0;
-            let totalOrdenes = data.totalOrdenes > 0 ? data.totalOrdenes : (completadas + enProceso);
-
-            // Calcular porcentajes
-            let porcentajeCompletadas = totalOrdenes > 0 ? ((completadas / totalOrdenes) * 100).toFixed(2) : 0;
-            let porcentajeEnProceso = totalOrdenes > 0 ? ((enProceso / totalOrdenes) * 100).toFixed(2) : 0;
-
-            // Mostrar los datos en el indicador
-            let infoDiv = container.querySelector(".info-grafico");
-            if (!infoDiv) {
-                infoDiv = document.createElement("div");
-                infoDiv.classList.add("info-grafico");
-                container.appendChild(infoDiv);
-            }
-
-            infoDiv.innerHTML = `
-                <strong>Órdenes</strong><br>
-                Completadas: <span style="color: #28a745;">${completadas}/${totalOrdenes} (${porcentajeCompletadas}%)</span><br>
-                Abiertas: <span style="color: #dc3545;">${enProceso}/${totalOrdenes} (${porcentajeEnProceso}%)</span><br>
-            `;
-
-            // Definir opciones del gráfico
-            let option = {
-                tooltip: {
-                    trigger: 'item'
-                },
-                legend: {
-                    orient: 'vertical',
-                    left: 'left'
-                },
-                series: [
-                    {
-                        name: 'Órdenes',
-                        type: 'pie',
-                        radius: '80%',
-                        data: [
-                            { value: completadas, name: 'Completadas', itemStyle: { color: '#28a745' } },
-                            { value: enProceso, name: 'Abiertas', itemStyle: { color: '#dc3545' } }
-                        ],
-                        emphasis: {
-                            itemStyle: {
-                                shadowBlur: 10,
-                                shadowOffsetX: 0,
-                                shadowColor: 'rgba(0, 0, 0, 0.5)'
-                            }
-                        }
-                    }
-                ]
-            };
-
-            // Renderizar gráfico
-            myChart.setOption(option);
-        })
-.catch(error => console.error('Error al cargar los datos:', error));
-
-function cargarOrdenesCerradas() {
-    $.ajax({
-        url: "{{ route('tabla.abiertas') }}",
-        method: 'GET',
-        success: function (data) {
-            // Mostrar el porcentaje de órdenes cerradas
-            $('#ordenFabricacionNumero').text(data.ordenesAbiertasCount); 
-
-            // Llenar la tabla con los datos
-            var tabla = $('#orden-list');
-            tabla.empty(); 
-
-            // Iterar sobre los datos y agregar filas a la tabla
-            data.ordenes.forEach(function (orden) {
-                var fila = `<tr>
-                    <td>${orden.OrdenFabricacion}</td>
-                    <td>${orden.Articulo}</td>
-                    <td>${orden.Descripcion}</td>
-                    <td>${orden.CantidadTotal}</td>
-                    <td>${orden.SumaTotalcantidad_partida}</td>
-                    <td><button class="btn btn-info">Detalles</button></td>
-                </tr>`;
-                tabla.append(fila);
-            });
-        },
-        error: function (error) {
-            console.log("Error al cargar los datos: ", error);
-        }
-    });
-}
-function cargarOrdenesCompletas() {
-    $.ajax({
-        url: "{{ route('tabla.completas') }}",
-        method: 'GET',
-        success: function (data) {
-            // Mostrar el porcentaje de órdenes cerradas
-            $('#ordenesCompletadasNumero').text(data.retrabajo); 
-
-            // Llenar la tabla con los datos
-            var tabla = $('#ordenes-completadas-list');
-            tabla.empty(); 
-
-            // Iterar sobre los datos y agregar filas a la tabla
-            data.ordenes.forEach(function (orden) {
-                var fila = `<tr>
-                    <td>${orden.OrdenFabricacion}</td>
-                    <td>${orden.Articulo}</td>
-                    <td>${orden.Descripcion}</td>
-                    <td>${orden.CantidadTotal}</td>
-                    <td>${orden.FinAbierto}</td>
-                    <td><button class="btn btn-info">Detalles</button></td>
-                </tr>`;
-                tabla.append(fila);
-            });
-        },
-        error: function (error) {
-            console.log("Error al cargar los datos: ", error);
-        }
-    });
-}
-// Obtener progreso de órdenes de fabricación
-function fetchProgresoOF() {
-    fetch("{{ route('of.progreso') }}")
-        .then(response => response.json())
-        .then(data => {
-            console.log("Progreso Órdenes de Fabricación:", data.progreso);
-            if (data.progreso) {
-                updateOFProgressBars(data.progreso); 
-            } else {
-                console.error("No se recibieron datos de progreso de orden de fabricación.");
-            }
-        })
-        .catch(error => {
-            console.error('Error obteniendo datos de progreso de orden de fabricación:', error);
-        });
-}
-
-function updateOFProgressBars(progreso) {
-    Object.keys(progreso).forEach(orden => {
-        const progresoOrden = progreso[orden].detalle;
-        Object.keys(progresoOrden).forEach(areaName => {
-            const porcentaje = progresoOrden[areaName];
-            let progressBarGeneral = document.getElementById(`step-${areaName}`);
-            if (progressBarGeneral) {
-                animateProgressBar(progressBarGeneral, porcentaje);
-            }
-        });
-    });
-}
-
-function animateProgressBar(bar, porcentaje) {
-    bar.style.width = `${porcentaje}%`;
-    bar.innerHTML = `${porcentaje}%`;
-}
-
-// Animar las barras de progreso
-function animateProgressBar(progressBar, percentage) {
-    progressBar.style.width = `${percentage}%`;
-    progressBar.setAttribute('aria-valuenow', percentage);
-    progressBar.textContent = `${percentage}%`;
-}
-
-
-// Llamadas iniciales a las funciones de progreso
-fetchProgresoDash(); 
-fetchProgresoOF(); 
-$(document).ready(function () {
-    cargarOrdenesCerradas();
-    cargarOrdenesCompletas();
-});
-
 
 </script>
 
