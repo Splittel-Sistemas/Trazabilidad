@@ -28,8 +28,7 @@ class HomeControler extends Controller
         return view('home');  // Ajusta esto al nombre de tu vista Home
     }
    
-  
-    public function cerradas()
+    /*public function cerradas()
     {
         // Definir correctamente la variable $totalOrdenes
         $totalOrdenes = DB::table('ordenfabricacion')->count();
@@ -137,8 +136,7 @@ class HomeControler extends Controller
             'ordenesAbiertasCount' => $ordenesAbiertasCount,
         ]);
     }
-    
-
+*/
     public function graficas()
     {
         // Órdenes por día
@@ -178,7 +176,6 @@ class HomeControler extends Controller
         ]);
     }
 
-
     public function progreso()
     {
     
@@ -197,8 +194,8 @@ class HomeControler extends Controller
             ->get();
         // dd($cortes);
     
-        // Si quieres solo un valor de progreso para el área 2, calculamos un promedio
-        $progreso['2'] = $cortes->avg('Progreso');  // Promedio de todos los progresos de cortes
+
+        $progreso['2'] = $cortes->avg('Progreso');  
     
         // Cálculo del progreso para las demás áreas
         foreach ($areas as $area) {
@@ -217,7 +214,7 @@ class HomeControler extends Controller
                 ->get();
     
             // Solo guardamos el progreso calculado en la consulta
-            $progreso[$area] = $cantidadPorArea->avg('Progreso'); // Promedio del progreso de cada área
+            $progreso[$area] = $cantidadPorArea->avg('Progreso'); 
         }
     
         return response()->json([
@@ -225,75 +222,300 @@ class HomeControler extends Controller
         ]);
     }
     
-
     public function progresoof()
     {
-        $ordenes = DB::table('ordenfabricacion')
-            ->leftJoin('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->leftJoin('partidas', 'partidasof.id', '=', 'partidas.PartidasOf_id')
-            ->leftJoin('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')
+    }
+
+    public function graficasdia()
+    {
+        $areas = DB::table('partidasof_areas')
+            ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
             ->select(
-                'ordenfabricacion.id',
                 'ordenfabricacion.OrdenFabricacion',
-                'ordenfabricacion.CantidadTotal'
+                'ordenfabricacion.CantidadTotal',
+                'partidasof_areas.Areas_id',
+                'partidasof_areas.id',
+                DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalcantidad_partida'),
+                DB::raw('ROUND((SUM(partidasof_areas.cantidad) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso')
             )
-            ->groupBy('ordenfabricacion.id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+            ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9]) 
+            ->groupBy('partidasof_areas.Areas_id', 'partidasof_areas.id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
             ->get();
     
-        // Mapeo de área de la base de datos a nombre de área
-        $areas = [
-            '2' => 'Cortes', '3' => 'Suministro', '4' => 'Preparado', 
-            '5' => 'Ensamble', '6' => 'Pulido', '7' => 'Medicion', '8' => 'Visualizacion', '9' => 'Abierto'
+        $cortes = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal',
+                DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalcantidad_partida'),
+                DB::raw('ROUND((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso')
+            )
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+            ->get();
+    
+        
+        $totalOrdenes = DB::table('ordenfabricacion')->count();
+    
+        $estacionesAreas = [
+            3 => 'plemasSuministro',
+            4 => 'plemasPreparado',
+            5 => 'plemasEnsamble',
+            6 => 'plemasPulido',
+            7 => 'plemasMedicion',
+            8 => 'plemasVisualizacion',
+            9 => 'plemasEmpaque'
         ];
-        $progreso = [];
-        $totalProgresoAcumulado = 0;
-        $contadorOrdenesConDatos = 0;
     
-        foreach ($ordenes as $orden) {
-            $totalCantidad = $orden->CantidadTotal;
-            $ordenId = $orden->id;
-            $progresoOrden = [];
-            $sumaPorcentajes = 0;
-            $cantidadAreasConDatos = 0;
-            $avancesArea9 = 0;
+        $estacionesCortes = [
+            2 => 'plemasCorte'
+        ];
     
-            foreach ($areas as $areaId => $areaName) {
-                $cantidadPorArea = DB::table('partidas_areas')
-                    ->join('partidas', 'partidas_areas.Partidas_id', '=', 'partidas.id')
-                    ->join('partidasof', 'partidas.PartidasOf_id', '=', 'partidasof.id')
-                    ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
-                    ->where('partidas_areas.Areas_id', $areaId)
-                    ->where('ordenfabricacion.id', $ordenId)
-                    ->sum('partidas_areas.Cantidad');
+        $datos = [];
     
-                $porcentaje = ($totalCantidad > 0) ? ($cantidadPorArea / max($totalCantidad, 1)) * 100 : 0;
-                $progresoOrden[$areaName] = number_format($porcentaje, 2, '.', '');
-    
-                if ($porcentaje > 0) {
-                    $sumaPorcentajes += $porcentaje;
-                    $cantidadAreasConDatos++;
-                }
-    
-                if ($areaId == '9' && $porcentaje > 0) {
-                    $avancesArea9 = $porcentaje;
-                }
-            }
-    
-            $progresoTotal = ($avancesArea9 == 100) ? 100 : (($cantidadAreasConDatos > 0) ? ($sumaPorcentajes / $cantidadAreasConDatos) : 0);
-            $totalProgresoAcumulado += $progresoTotal;
-            $contadorOrdenesConDatos++;
-    
-            $progreso[$orden->OrdenFabricacion] = [
-                'progreso_orden' => number_format($progresoTotal, 2, '.', ''),
-                'Cantidad_total' => number_format($totalCantidad, 2, '.', ''),
-                'detalle' => $progresoOrden
+        foreach (array_merge($estacionesAreas, $estacionesCortes) as $estacion) {
+            $datos[$estacion] = [
+                'completado' => 0,
+                'pendiente' => 0,
+                'totalOrdenes' => $totalOrdenes 
             ];
         }
     
-        $progresoTotalFinal = ($contadorOrdenesConDatos > 0) ? ($totalProgresoAcumulado / $contadorOrdenesConDatos) : 0;
+        foreach ($areas as $area) {
+            if (isset($estacionesAreas[$area->Areas_id])) {
+                $nombreEstacion = $estacionesAreas[$area->Areas_id];
+    
+                if ((float)$area->Progreso == 100.00) {
+                    $datos[$nombreEstacion]['completado']++;
+                } else {
+                    $datos[$nombreEstacion]['pendiente']++;
+                }
+            }
+        }
+    
+        $completadosCorte = 0;
+        $pendientesCorte = 0;
+    
+        foreach ($cortes as $corte) {
+            if ((float)$corte->Progreso == 100.00) {
+                $completadosCorte++;
+            } else {
+                $pendientesCorte++;
+            }
+        }
+    
+        $datos['plemasCorte']['completado'] = $completadosCorte;
+        $datos['plemasCorte']['pendiente'] = $pendientesCorte;
+    
+        return response()->json($datos);
+    }
+
+    public function cerradas()
+    {
+        // Contar todas las órdenes en la tabla
+        $totalOrdenes = DB::table('ordenfabricacion')->count();
+    
+        // Órdenes Completadas (Cerradas - Área 9)
+        $ordenesCompletadas = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->where('partidasof_areas.Areas_id', 9)  // Solo cerradas
+            ->distinct('ordenfabricacion.id')
+            ->count();
+    
+        // Órdenes en Proceso (Excluye Área 9)
+        $ordenesEnProceso = DB::table('ordenfabricacion')
+           
+            ->select(
+                'ordenfabricacion.OrdenFabricacion'
+            )
+            ->distinct('ordenfabricacion.id')
+            ->count();
+   
+    
+        // Órdenes Abiertas (Sin partidas registradas, es decir, aún no iniciadas)
+   
     
         return response()->json([
-            'progreso' => $progreso
+            'ordenesCompletadas' => $ordenesCompletadas,
+            'ordenesEnProceso' => $ordenesEnProceso,
+            'totalOrdenes' => $totalOrdenes, // Aseguramos que se envía el total
         ]);
     }
-}
+
+
+    public function tablasAbiertas()
+    {
+        $ordenesAbiertas = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+           
+
+            ->select(
+                'ordenfabricacion.OrdenFabricacion', 
+                'ordenfabricacion.Articulo', 
+                'ordenfabricacion.Descripcion', 
+                'ordenfabricacion.CantidadTotal', 
+                
+            )
+            ->distinct()
+            ->get();
+            //dd($ordenesAbiertas);
+         
+    
+        $ordenesAbiertasCount = $ordenesAbiertas->count();
+    
+        // Calculamos el porcentaje de ordenes abiertas
+       
+        return response()->json([
+            'ordenes' => $ordenesAbiertas,
+            'ordenesAbiertasCount' => $ordenesAbiertasCount,
+        ]);
+    }
+    public function tablasCompletadas()
+    {
+        // Definir correctamente la variable $totalOrdenes
+        $totalOrdenes = DB::table('ordenfabricacion')->count();
+
+        // Obtener las órdenes cerradas
+        $ordenes = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+            ->where('partidasof_areas.Areas_id', 9)
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.Articulo',
+                'ordenfabricacion.Descripcion',
+                'ordenfabricacion.CantidadTotal',
+                'partidasof.cantidad_partida'
+            )
+            ->distinct()
+            ->get();
+
+        // Obtener los tiempos de las etapas
+        $tiempos = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                DB::raw("MAX(partidasof.FechaComienzo) AS TiempoCorte"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 3 THEN partidasof_areas.FechaComienzo END) as TiempoSuministro"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 4 THEN partidasof_areas.FechaComienzo END) as TiempoPreparado"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 5 THEN partidasof_areas.FechaComienzo END) as TiempoEnsamble"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 6 THEN partidasof_areas.FechaComienzo END) as TiempoPulido"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 7 THEN partidasof_areas.FechaComienzo END) as TiempoMedicion"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 8 THEN partidasof_areas.FechaComienzo END) as TiempoVisualizacion"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 9 THEN partidasof_areas.FechaComienzo END) as TiempoAbierto"),
+                DB::raw("MAX(partidasof.FechafINALIZACION) AS FinCorte"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 3 THEN partidasof_areas.FechaTermina END) as FinSuministro"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 4 THEN partidasof_areas.FechaTermina END) as FinPreparado"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 5 THEN partidasof_areas.FechaTermina END) as FinEnsamble"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 6 THEN partidasof_areas.FechaTermina END) as FinPulido"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 7 THEN partidasof_areas.FechaTermina END) as FinMedicion"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 8 THEN partidasof_areas.FechaTermina END) as FinVisualizacion"),
+                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 9 THEN partidasof_areas.FechaTermina END) as FinAbierto")
+            )
+            ->groupBy('ordenfabricacion.OrdenFabricacion')
+            ->get();
+
+        // Combina los resultados de las órdenes con los tiempos
+        $ordenesConTiempos = $ordenes->map(function($orden) use ($tiempos) {
+            $tiempo = $tiempos->firstWhere('OrdenFabricacion', $orden->OrdenFabricacion);
+            $orden->TiempoCorte = $tiempo ? $tiempo->TiempoCorte : "";
+            $orden->TiempoSuministro = $tiempo ? $tiempo->TiempoSuministro : "";
+            $orden->TiempoPreparado = $tiempo ? $tiempo->TiempoPreparado : "";
+            $orden->TiempoEnsamble = $tiempo ? $tiempo->TiempoEnsamble : "";
+            $orden->TiempoPulido = $tiempo ? $tiempo->TiempoPulido : "";
+            $orden->TiempoMedicion = $tiempo ? $tiempo->TiempoMedicion : "";
+            $orden->TiempoVisualizacion = $tiempo ? $tiempo->TiempoVisualizacion : "";
+            $orden->TiempoAbierto = $tiempo ? $tiempo->TiempoAbierto : "";
+            $orden->FinCorte = $tiempo ? $tiempo->FinCorte : "";
+            $orden->FinSuministro = $tiempo ? $tiempo->FinSuministro : "";
+            $orden->FinPreparado = $tiempo ? $tiempo->FinPreparado : "";
+            $orden->FinEnsamble = $tiempo ? $tiempo->FinEnsamble : "";
+            $orden->FinPulido = $tiempo ? $tiempo->FinPulido : "";
+            $orden->FinMedicion = $tiempo ? $tiempo->FinMedicion : "";
+            $orden->FinVisualizacion = $tiempo ? $tiempo->FinVisualizacion : "";
+            $orden->FinAbierto = $tiempo ? $tiempo->FinAbierto : "";
+            return $orden;
+        });
+
+        // Calcular la fracción de órdenes cerradas
+        $ordenesCerradasCount = $ordenesConTiempos->count();
+        $fraccionCerradas = $totalOrdenes > 0 ? "$ordenesCerradasCount/$totalOrdenes" : "0/$totalOrdenes";
+
+        // Retornar los datos en formato JSON
+        return response()->json([
+            'retrabajo' => $fraccionCerradas,
+            'ordenes' => $ordenesConTiempos
+        ]);
+    }
+
+   
+
+    }
+    
+    
+
+    
+
+
+
+        /*
+        $totalOrdenes = DB::table('ordenfabricacion')->count();
+        
+        // Obtener las órdenes cerradas (completadas)
+        $ordenesCompletadas = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+            ->where('partidasof_areas.Areas_id', 9)  // Solo las cerradas
+            ->count();
+    
+        // Obtener las órdenes en proceso (en progreso pero no cerradas)
+        $ordenesEnProceso = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->whereNull('partidasof_areas.Areas_id')  // Áreas que no han llegado a 9
+            ->count();
+    
+        // Obtener las órdenes abiertas
+        $ordenesAbiertas = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('partidasof_areas')
+                    ->whereRaw('partidasof_areas.PartidasOF_id = partidasof.id')
+                    ->where('partidasof_areas.Areas_id', 9);  // No se ha cerrado
+            })
+            ->count();
+        
+        // Calcular el porcentaje de cada tipo de orden
+        $porcentajeCompletadas = ($ordenesCompletadas / $totalOrdenes) * 100;
+        $porcentajeEnProceso = ($ordenesEnProceso / $totalOrdenes) * 100;
+        $porcentajeAbiertas = 100 - ($porcentajeCompletadas + $porcentajeEnProceso);  // El resto son abiertas
+    
+        return response()->json([
+            'completadas' => $ordenesCompletadas,
+            'enProceso' => $ordenesEnProceso,
+            'abiertas' => $ordenesAbiertas,
+            'porcentajes' => [
+                'completadas' => $porcentajeCompletadas,
+                'enProceso' => $porcentajeEnProceso,
+                'abiertas' => $porcentajeAbiertas
+            ],
+            'totalOrdenes' => $totalOrdenes,
+            'ordenes' => [
+                'completadas' => $ordenesCompletadas,
+                'enProceso' => $ordenesEnProceso,
+                'abiertas' => $ordenesAbiertas
+            ]
+        ]);
+        */
+    
+    
+    
+
+      
+    
+        
+

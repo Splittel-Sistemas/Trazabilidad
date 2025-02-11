@@ -182,7 +182,7 @@ Route::get('/graficasOR/OF',[BusquedaController::class,'GraficarOROF'])->name('g
 //rutas del dashboard
 
 Route::get('/retrabajo', [HomeControler:: class, 'Ordenes'])->name('ordenes.retrabajo');
-Route::get('/cerradas', [HomeControler::class, 'cerradas'])->name('ordenes.cerredas');
+Route::get('/cerradas', [HomeControler::class, 'cerradas'])->name('orden.cerredas');
 Route::get('/abiertas', [HomeControler:: class, 'abiertas'])->name('ordenes.abiertas');
 Route::get('/graficasdores', [HomeControler:: class, 'graficas'])->name('graficas.dashboard');
 // routes/web.php
@@ -190,6 +190,10 @@ Route::get('/detalles-oc', [HomeControler::class, 'detallesOC'])->name('ordenes.
 Route::get('/tiempo', [HomeControler::class, 'tiempoOC'])->name('ordenes.tiempo');
 Route::get('/progreso-das',[HomeControler::class, 'progreso'])->name('progreso.dash');
 Route::get('/progreso-of',[HomeControler::class,'progresoof'])->name('of.progreso');
+Route::get('/inddicadores-ce',[HomeControler::class,'graficasdia'])->name('indicadores.CE');
+Route::get('/ordenes-abiertas',[HomeControler::class, 'tablasAbiertas'])->name('tabla.abiertas');
+Route::get('/ordenes-completada', [HomeControler::class, 'tablasCompletadas'])->name('tabla.completas');
+
 
 
 

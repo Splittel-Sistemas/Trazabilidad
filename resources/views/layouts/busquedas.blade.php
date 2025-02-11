@@ -225,9 +225,7 @@
         </div>
     </div>
     <div class="container my-4">
-        <!--click orden venta-->
-        <div class="card-body p-3" style="height: 85px; width: 20%; background-color: #fdfdfde7; border-radius: 8px; box-shadow: 0 2px 5px rgba(223, 223, 223, 0.1); color: white;">
-            <!-- contenido -->
+        <div class="card" style="width: 200px; height: 65px;">
             <div class="form-check">
                 <input class="form-check-input" id="flexRadioDefault1" type="radio" name="flexRadioDefault" checked onclick="toggleTable()">
                 <label class="form-check-label text-black" for="flexRadioDefault1">Orden De Venta</label>
@@ -253,7 +251,7 @@
             </div>
             <div style="margin-top: 20px;"></div>
             <div class="table-responsive">
-                <div class="card-body p-3" style="height: 100%; width: 100%; background-color: #fdfdfde7; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); color: white;">
+                <div class="card" style="width: 1400px; height: 500px;">
                     <table class="table table-sm fs--1 mb-0">
                     <thead>
                         <tr class="bg-info text-white">
@@ -284,7 +282,7 @@
             </div>
             
             <div style="margin-top: 20px;"></div>
-            <div class="card-body p-3" style="height: 100%; width: 100%; background-color: #fdfdfde7; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); color: white;">
+            <div class="card" style="width: 1400px; height: 500px;">
                 <table class="table table-sm fs--1 mb-0">
                     <thead>
                         <tr class="bg-info text-white">
