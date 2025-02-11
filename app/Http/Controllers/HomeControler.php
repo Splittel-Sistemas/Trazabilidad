@@ -315,7 +315,7 @@ class HomeControler extends Controller
         // Contar todas las órdenes en la tabla
         $totalOrdenes = DB::table('ordenfabricacion')->count();
     
-        // Órdenes Completadas (Cerradas - Área 9)
+        // Contar órdenes completadas (las que llegaron al Área 9)
         $ordenesCompletadas = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
@@ -323,42 +323,43 @@ class HomeControler extends Controller
             ->distinct('ordenfabricacion.id')
             ->count();
     
-        // Órdenes en Proceso (Excluye Área 9)
-        $ordenesEnProceso = DB::table('ordenfabricacion')
-           
-            ->select(
-                'ordenfabricacion.OrdenFabricacion'
-            )
-            ->distinct('ordenfabricacion.id')
-            ->count();
-   
-    
-        // Órdenes Abiertas (Sin partidas registradas, es decir, aún no iniciadas)
-   
+        // Contar órdenes abiertas (sin contar las completadas)
+        $ordenesAbiertas = $totalOrdenes - $ordenesCompletadas;
     
         return response()->json([
             'ordenesCompletadas' => $ordenesCompletadas,
-            'ordenesEnProceso' => $ordenesEnProceso,
-            'totalOrdenes' => $totalOrdenes, // Aseguramos que se envía el total
+            'ordenesAbiertas' => $ordenesAbiertas, // Ahora este dato es correcto
+            'totalOrdenes' => $totalOrdenes,
         ]);
     }
-
+    
 
     public function tablasAbiertas()
     {
         $ordenesAbiertas = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-           
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->where(function ($query) {
+            $query->whereNull('partidasof_areas.Areas_id')  // Incluye registros sin relación en partidasof_areas
+                ->orWhereNotIn('partidasof_areas.Areas_id', [9, 3, 4, 5, 6, 7, 8]); // Excluye estos valores
+        })
+        ->select(
+            'ordenfabricacion.OrdenFabricacion', 
+            'ordenfabricacion.Articulo', 
+            'ordenfabricacion.Descripcion', 
+            'ordenfabricacion.CantidadTotal', 
+            DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalcantidad_partida')
+        )
+        ->groupBy(
+            'ordenfabricacion.OrdenFabricacion',
+            'ordenfabricacion.Descripcion',  
+            'ordenfabricacion.Articulo',  
+            'ordenfabricacion.CantidadTotal'
+        )
+        ->get();
 
-            ->select(
-                'ordenfabricacion.OrdenFabricacion', 
-                'ordenfabricacion.Articulo', 
-                'ordenfabricacion.Descripcion', 
-                'ordenfabricacion.CantidadTotal', 
-                
-            )
-            ->distinct()
-            ->get();
+        
+    
             //dd($ordenesAbiertas);
          
     
@@ -450,9 +451,7 @@ class HomeControler extends Controller
         ]);
     }
 
-   
-
-    }
+}
     
     
 
