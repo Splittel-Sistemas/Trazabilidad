@@ -328,7 +328,7 @@
     <h1 class="progress-title">Tablas de Progresos</h1>
     <div class="container mt-4">
         <div class="row">
-            <!-- Card para Órdenes Cerradas -->
+            <!-- Card para Órdenes Abiertas -->
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
@@ -336,19 +336,21 @@
                             Órdenes Abiertas: <span id="ordenFabricacionNumero" class="ms-3 text-muted"></span>
                         </h5>
                         <div id="retrabajo1" class="mb-3"></div>
-                        <table class="table table-striped table-sm fs--1 mb-0">
-                            <thead class="bg-danger text-white">
-                                <tr>
-                                    <th class="sort border-top">Orden Fabricación</th>
-                                    <th class="sort border-top ps-3">Artículo</th>
-                                    <th class="sort border-top">Descripción</th>
-                                    <th class="sort border-top">Cantidad Total</th>
-                                    <th class="sort border-top">Cortes</th>
-                                    <th class="border-top">Detalles</th>
-                                </tr>
-                            </thead>
-                            <tbody id="orden-list"></tbody>
-                        </table>
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            <table class="table table-striped table-sm fs--1 mb-0">
+                                <thead class="bg-danger text-white">
+                                    <tr>
+                                        <th class="sort border-top">Orden Fabricación</th>
+                                        <th class="sort border-top ps-3">Artículo</th>
+                                        <th class="sort border-top">Descripción</th>
+                                        <th class="sort border-top">Cantidad Total</th>
+                                        <th class="sort border-top">Cortes</th>
+                                        <th class="border-top">Detalles</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orden-list"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -360,28 +362,30 @@
                         <h5 class="text-success">
                             Órdenes Completadas: <span id="ordenesCompletadasNumero" class="ms-3 text-muted"></span>
                         </h5>
-                        <table class="table table-striped table-sm fs--1 mb-0">
-                            <thead class="bg-success text-white">
-                                <tr>
-                                    <th class="sort border-top">Orden Fabricación</th>
-                                    <th class="sort border-top ps-3">Artículo</th>
-                                    <th class="sort border-top">Descripción</th>
-                                    <th class="sort border-top">Cantidad Total</th>
-                                    <th class="sort border-top">Fecha de Finalización</th>
-                                    <th class="border-top">Detalles</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ordenes-completadas-list"></tbody>
-                        </table>
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            <table class="table table-striped table-sm fs--1 mb-0">
+                                <thead class="bg-success text-white">
+                                    <tr>
+                                        <th class="sort border-top">Orden Fabricación</th>
+                                        <th class="sort border-top ps-3">Artículo</th>
+                                        <th class="sort border-top">Descripción</th>
+                                        <th class="sort border-top">Cantidad Total</th>
+                                        <th class="sort border-top">Fecha de Finalización</th>
+                                        <th class="border-top">Detalles</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordenes-completadas-list"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
      <!------------------------------------------------>
 
     <h1 class="progress-title">Ordenes Fabricación</h1>
-    
     <div class="grid-container" style="display: flex; justify-content: center;">
         <div class="grid-item">
             <h1 class="small-title"></h1>
@@ -963,56 +967,6 @@ function updateProgressBars(progreso) {
     });
 }
 
-// Obtener progreso de órdenes de fabricación
-function fetchProgresoOF() {
-    fetch("{{ route('of.progreso') }}")
-        .then(response => response.json())
-        .then(data => {
-            console.log("Progreso Órdenes de Fabricación:", data.progreso);
-            if (data.progreso) {
-                updateOFProgressBars(data.progreso); 
-            } else {
-                console.error("No se recibieron datos de progreso de orden de fabricación.");
-            }
-        })
-        .catch(error => {
-            console.error('Error obteniendo datos de progreso de orden de fabricación:', error);
-        });
-}
-
-function updateOFProgressBars(progreso) {
-    Object.keys(progreso).forEach(orden => {
-        const progresoOrden = progreso[orden].detalle;
-        Object.keys(progresoOrden).forEach(areaName => {
-            const porcentaje = progresoOrden[areaName];
-            let progressBarGeneral = document.getElementById(`step-${areaName}`);
-            if (progressBarGeneral) {
-                animateProgressBar(progressBarGeneral, porcentaje);
-            }
-        });
-    });
-}
-
-function animateProgressBar(bar, porcentaje) {
-    bar.style.width = `${porcentaje}%`;
-    bar.innerHTML = `${porcentaje}%`;
-}
-
-
-
-// Animar las barras de progreso
-function animateProgressBar(progressBar, percentage) {
-    progressBar.style.width = `${percentage}%`;
-    progressBar.setAttribute('aria-valuenow', percentage);
-    progressBar.textContent = `${percentage}%`;
-}
-
-// Llamadas iniciales a las funciones de progreso
-fetchProgresoDash(); // Para obtener el progreso general
-fetchProgresoOF(); // Para obtener el progreso de las órdenes de fabricación
-
-
-
 document.addEventListener("DOMContentLoaded", function () {
     fetch("{{ route('indicadores.CE') }}")
         .then(response => response.json())
@@ -1167,14 +1121,6 @@ fetch("{{ route('orden.cerredas') }}")
         })
 .catch(error => console.error('Error al cargar los datos:', error));
 
-$(document).ready(function () {
-    cargarOrdenesCerradas();
-    cargarOrdenesCompletas();
-});
-
-
-
- 
 function cargarOrdenesCerradas() {
     $.ajax({
         url: "{{ route('tabla.abiertas') }}",
@@ -1194,7 +1140,7 @@ function cargarOrdenesCerradas() {
                     <td>${orden.Articulo}</td>
                     <td>${orden.Descripcion}</td>
                     <td>${orden.CantidadTotal}</td>
-                    <td>${orden.cantidad_partida}</td>
+                    <td>${orden.SumaTotalcantidad_partida}</td>
                     <td><button class="btn btn-info">Detalles</button></td>
                 </tr>`;
                 tabla.append(fila);
@@ -1235,6 +1181,56 @@ function cargarOrdenesCompletas() {
         }
     });
 }
+// Obtener progreso de órdenes de fabricación
+function fetchProgresoOF() {
+    fetch("{{ route('of.progreso') }}")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Progreso Órdenes de Fabricación:", data.progreso);
+            if (data.progreso) {
+                updateOFProgressBars(data.progreso); 
+            } else {
+                console.error("No se recibieron datos de progreso de orden de fabricación.");
+            }
+        })
+        .catch(error => {
+            console.error('Error obteniendo datos de progreso de orden de fabricación:', error);
+        });
+}
+
+function updateOFProgressBars(progreso) {
+    Object.keys(progreso).forEach(orden => {
+        const progresoOrden = progreso[orden].detalle;
+        Object.keys(progresoOrden).forEach(areaName => {
+            const porcentaje = progresoOrden[areaName];
+            let progressBarGeneral = document.getElementById(`step-${areaName}`);
+            if (progressBarGeneral) {
+                animateProgressBar(progressBarGeneral, porcentaje);
+            }
+        });
+    });
+}
+
+function animateProgressBar(bar, porcentaje) {
+    bar.style.width = `${porcentaje}%`;
+    bar.innerHTML = `${porcentaje}%`;
+}
+
+// Animar las barras de progreso
+function animateProgressBar(progressBar, percentage) {
+    progressBar.style.width = `${percentage}%`;
+    progressBar.setAttribute('aria-valuenow', percentage);
+    progressBar.textContent = `${percentage}%`;
+}
+
+
+// Llamadas iniciales a las funciones de progreso
+fetchProgresoDash(); 
+fetchProgresoOF(); 
+$(document).ready(function () {
+    cargarOrdenesCerradas();
+    cargarOrdenesCompletas();
+});
 
 
 </script>

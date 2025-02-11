@@ -343,22 +343,33 @@ class HomeControler extends Controller
         ]);
     }
 
-
+    //->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
     public function tablasAbiertas()
     {
         $ordenesAbiertas = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-           
+    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+    ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+    ->where(function ($query) {
+        $query->whereNull('partidasof_areas.Areas_id')  // Incluye registros sin relación en partidasof_areas
+              ->orWhere('partidasof_areas.Areas_id', '!=', 9); // Excluye si Areas_id es 9
+    })
+    ->select(
+        'ordenfabricacion.OrdenFabricacion', 
+        'ordenfabricacion.Articulo', 
+        'ordenfabricacion.Descripcion', 
+        'ordenfabricacion.CantidadTotal', 
+        DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalcantidad_partida')
+    )
+    ->groupBy(
+        'ordenfabricacion.OrdenFabricacion',
+        'ordenfabricacion.Descripcion',  
+        'ordenfabricacion.Articulo',  
+        'ordenfabricacion.CantidadTotal'
+    )
+    ->get();
 
-            ->select(
-                'ordenfabricacion.OrdenFabricacion', 
-                'ordenfabricacion.Articulo', 
-                'ordenfabricacion.Descripcion', 
-                'ordenfabricacion.CantidadTotal', 
-                
-            )
-            ->distinct()
-            ->get();
+    
+    
             //dd($ordenesAbiertas);
          
     
@@ -450,9 +461,7 @@ class HomeControler extends Controller
         ]);
     }
 
-   
-
-    }
+}
     
     
 
