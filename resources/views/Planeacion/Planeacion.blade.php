@@ -57,6 +57,53 @@
                 </div>
               </div>
         </div>
+        <div class="col-6">
+            <div class="col-sm-12">
+                <div class="card border border-light ">
+                    <div class="card-body p-2">
+                        <div class="accordion" id="accordionFiltroOV">
+                            <div class="accordion-item border-top border-300 p-0">
+                                <h4 class="accordion-header" id="headingOne">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroOV" aria-expanded="true" aria-controls="collapseFiltroOV">
+                                        Porcentaje de planeaci&oacute;n &nbsp;<span id="Fecha_Grafica"> {{\Carbon\Carbon::parse($FechaFin)->translatedFormat('d \d\e F \d\e Y')}}</span>
+                                    </button>
+                                </h4>
+                                <div class="accordion-collapse collapse show" id="collapseFiltroOV" aria-labelledby="headingOne" data-bs-parent="#accordionFiltroOV">
+                                    <div class="accordion-body pt-0">
+                                        <div class="card-body p-1">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <div class="row">
+                                                        <h6 class="text-700 col-6">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
+                                                        <h6 class="text-700 col-6">Estimado de piezas por d&iacute;a: <span id="Estimadopiezas">0</span></h6>
+                                                        <h6 class="text-700 col-6">Piezas planeadas: <span id="Piezasplaneadas">0</span></h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="pb-1 pt-1 d-flex justify-content-center aling-items-center">
+                                                   <div class="p-0" id="PrcentajePlaneacion" style="width: 10rem;height:10rem"></div>
+                                            </div>
+                                            <div>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <div class="bullet-item bg-primary me-2"></div>
+                                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Planeadas</h6>
+                                                    <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajeplaneada">0</span>%</h6>
+                                                </div>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <div class="bullet-item bg-primary-200 me-2"></div>
+                                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Faltantes</h6>
+                                                    <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajefaltante">0</span>%</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- Contenedor de las tablas -->
     <div class="card p-3">
@@ -473,6 +520,7 @@
                 }
             });
         });
+        PorcentajeLlenadas();
     });
     function loadContent(idcontenedor, docNum, cliente) {
         let elemento = document.getElementById(idcontenedor + "cerrar");
@@ -888,6 +936,80 @@
                 }
             }
         });
+    }
+    function PorcentajeLlenadas(){
+        fecha=$('#FiltroOF_Fecha_table2').val();
+        $.ajax({
+                url: "{{route('PorcentajesPlaneacion')}}", 
+                type: 'GET',
+                data: {
+                    fecha: fecha, 
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+                },
+                success: function(response) {
+                    color="#007BFF";
+                    PorcentajeFaltante=0;
+                    if(response.PorcentajePlaneada>80){
+                        color='#FFFF00';
+                    } 
+                    if(response.PorcentajePlaneada>90){
+                        color='#FFA500';
+                    } 
+                    if(response.PorcentajePlaneada>100){
+                        color='#FF0000';
+                    }
+                    if(response.PorcentajeFaltante>0){
+                        PorcentajeFaltante=response.PorcentajeFaltante;
+                    }
+                    $("#Cantidadpersonas").html(response.NumeroPersonas);
+                    $("#Estimadopiezas").html(response.CantidadEstimadaDia);
+                    $("#Piezasplaneadas").html(response.PlaneadoPorDia);
+                    $("#Porcentajefaltante").html(PorcentajeFaltante);
+                    $("#Porcentajeplaneada").html(response.PorcentajePlaneada);
+                    var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
+                    var option = {
+                    tooltip: {
+                        trigger: 'item'
+                    },
+                    legend: {
+                        show:false,
+                    },
+                    series: [
+                        {
+                        name: 'Planeación',
+                        type: 'pie',
+                        radius: ['60%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: true,
+                            position: 'center',
+                            formatter: response.PorcentajePlaneada+'%',
+                            fontSize: 20,
+                            fontWeight: 'bold'
+                        },
+                        
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            { value: response.PorcentajePlaneada, name: 'Total Planeado', itemStyle: { color: color } },
+                            { value: PorcentajeFaltante, name: 'Total faltante estimado', itemStyle: { color: '#D3D3D3' } }
+                        ]
+                        }
+                    ]
+                    };
+
+                    // 3. Aplicar la configuración al gráfico
+                    myChart.setOption(option);
+                }
+            });
     }
 </script>
 @endsection

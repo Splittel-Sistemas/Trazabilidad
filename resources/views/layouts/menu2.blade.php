@@ -174,12 +174,14 @@
             <nav class="navbar navbar-top fixed-top navbar-expand" id="navbarDefault" style="display:none;">
                 <div class="collapse navbar-collapse justify-content-between">
                 <div class="navbar-logo">
-                    <button class="btn navbar-toggler navbar-toggler-humburger-icon hover-bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
-                    <a class="navbar-brand me-1 me-sm-3" href="index-2.html">
-                    <div class="d-flex align-items-center">
-                        <div class="d-flex align-items-center"><a class="navbar-brand ps-3" href="./"><img src="{{asset('imagenes/splittel.png') }}" alt="Logo" width="100" height="40"></a>
+                    <a class="navbar-brand m-0 ">
+                        <div class="d-flex align-items-start">
+                            <div class="d-flex align-items-center">
+                                <a class="navbar-brand p-0" href="./">
+                                    <img src="{{asset('imagenes/splittel.png') }}" alt="Splittel" width="100" height="40">
+                                </a>
+                            </div>
                         </div>
-                    </div>
                     </a>
                 </div>
                 <div class="search-box navbar-top-search-box d-none d-lg-block" data-list='{"valueNames":["title"]}' style="width:25rem;">

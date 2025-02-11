@@ -58,7 +58,26 @@ class PlaneacionController extends Controller
             return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
         }
     }
-    
+    public function PorcentajesPlaneacion(Request $request){
+        $fecha=$request->fecha;
+        $NumeroPersonas=20;
+        $PiezasPorPersona=50;
+        $PlaneadoPorDia=OrdenFabricacion::where('FechaEntrega',$fecha)->SUM('CantidadTotal');
+        $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
+        if($PlaneadoPorDia<=0){
+
+        }
+        $PorcentajePlaneada=number_format($PlaneadoPorDia/$CantidadEstimadaDia*100,2);
+        $PorcentajeFaltante=100-number_format($PorcentajePlaneada,2);
+        return response()->json([
+                'PorcentajePlaneada' => $PorcentajePlaneada,
+                'PorcentajeFaltante' => $PorcentajeFaltante,
+                'NumeroPersonas' => $NumeroPersonas,
+                'PlaneadoPorDia'=>$PlaneadoPorDia,
+                'CantidadEstimadaDia'=>$CantidadEstimadaDia,
+
+        ]);
+    }
     public function PartidasOF(Request $request){
         //datos para la consulta
         $schema = 'HN_OPTRONICS';

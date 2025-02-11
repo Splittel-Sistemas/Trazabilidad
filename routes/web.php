@@ -35,6 +35,7 @@ Route::delete('/Planeacion/partidas', [PlaneacionController::class,'PartidasOFRe
 Route::post('/Planeacion/partidas/FiltroFechas', [PlaneacionController::class,'PartidasOFFiltroFechas_Tabla'])->name('PartidasOFFiltroFechas_Tabla');
 Route::post('/Planeacion/partidas/EscanerEstatus', [PlaneacionController::class,'CambiarEstatusEscaner'])->name('CambiarEstatusEscaner');
 Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Detalles'])->name('PartidasOF_Detalles');
+Route::get('/Planeacion/PorcentajesPlaneacion', [PlaneacionController::class,'PorcentajesPlaneacion'])->name('PorcentajesPlaneacion');
 
 //Rutas Ares
 //Corte Nuevas
