@@ -78,11 +78,11 @@
                                                         <h6 class="text-700 col-6">Piezas planeadas: <span id="Piezasplaneadas">0</span></h6>
                                                         <h6 class="text-700 col-6">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>  
                                                         <h6 class="text-700 col-6"></h6>
-                                                        <div class="col-12"><button class="btn btn-link mx-4 p-0" type="button" data-bs-toggle="modal" onclick="LlenarModalPorcentajes()" data-bs-target="#ParametrosPorcentaje"><i class="far fa-edit"></i>Capacidad productiva</button></div>  
+                                                        <div class="col-12"><button class="btn btn-link mx-5 p-0" type="button" data-bs-toggle="modal" onclick="LlenarModalPorcentajes()" data-bs-target="#ParametrosPorcentaje"><i class="far fa-edit"></i>Capacidad productiva</button></div>  
                                                     </div>
                                             </div>
                                             <div class="pb-1 pt-1 d-flex justify-content-center aling-items-center">
-                                                   <div class="p-0" id="PrcentajePlaneacion" style="width: 10rem;height:10rem"></div>
+                                                   <div class="p-0" id="PrcentajePlaneacion" style="width: 9rem;height:9rem"></div>
                                             </div>
                                             <div>
                                                 <div class="d-flex align-items-center mb-2">
@@ -309,7 +309,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cerrar</button>
+                    <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -324,7 +324,7 @@
                 <div class="modal-body border" id="ModalOrdenesFabricacionBody">
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cerrar</button>
+                    <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -350,7 +350,7 @@
                       </div>
                 </div>  
             </div>
-            <div class="modal-footer"><button class="btn btn-primary" onclick="GuardarParametrosPorcentajes()">Guardar</button><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancelar</button></div>
+            <div class="modal-footer"><button class="btn btn-primary" onclick="GuardarParametrosPorcentajes()">Guardar</button><button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cancelar</button></div>
           </div>
         </div>
     </div>

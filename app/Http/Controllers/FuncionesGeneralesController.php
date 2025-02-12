@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use app\models\OrdenVenta;
+use App\Models\OrdenVenta;
 use Illuminate\Support\Facades\Crypt;
 
 class FuncionesGeneralesController extends Controller
@@ -95,6 +95,31 @@ class FuncionesGeneralesController extends Controller
                         WHERE T222.\"DocNum\" = ".$OrdenFabricacion."
                         ORDER BY 1";
         return$emisiones=$this->ejecutarConsulta($query_emisiones);
+    }
+    public function OrdenFabricacion($ordenventa){
+        $schema = 'HN_OPTRONICS';
+        //Consulta a SAP para traer las partidas de una OV
+        $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
+                    T1.\"Dscription\" AS \"Descripcion\", 
+                    ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
+                    T2.\"DueDate\" AS \"Fecha entrega OF\", 
+                    T1.\"PoTrgNum\" AS \"Orden de F.\" ,
+                    T1.\"LineNum\" AS \"LineNum\"
+                FROM {$schema}.\"ORDR\" T0
+                INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
+                LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
+                WHERE T0.\"DocNum\" = '{$ordenventa}'
+                ORDER BY T1.\"PoTrgNum\"";  
+                //ORDER BY T1.\"VisOrder\"";
+        //Ejecucion de la consulta
+        $partidas = $this->ejecutarConsulta($sql);
+        $partidasOF=OrdenVenta::where('OrdenVenta','=',$ordenventa)->first();
+        if($partidasOF==null || $partidasOF==""){
+            $countpartidas=0;
+        }else{
+            $countpartidas=$partidasOF->ordenesFabricacions()->get()->count();
+        }
+        return count($partidas)-$countpartidas;
     }
     
 }

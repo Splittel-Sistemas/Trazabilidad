@@ -121,21 +121,20 @@ class CorteController extends Controller
                               <table class="table table-bordered table-sm text-xs"> 
                                 <tbody>
                                     <tr>
-                                        <th class="table-active p-1"  style="width: 30%;" >Artículo</th>
+                                        <th class="table-active p-1"  style="width: 30%;">Artículo</th>
                                         <td class="text-center p-1"  style="width: 20%;">'.$OrdenFabricacion->Articulo.'</td>
-                                        <th class="table-active p-1"  style="width: 30%;" >Fecha Planeación</th>
+                                        <th class="table-active p-1"  style="width: 30%;">Fecha Planeación</th>
                                         <td class="text-center p-1"  style="width: 20%;" >'.$OrdenFabricacion->FechaEntrega.'</td>
                                     </tr>
                                     <tr>
-                                        <th class="table-active p-1"  style="width: 30%;" >Cantidad Total</th>
-                                        <td class="text-center p-1"  style="width: 20%;" >'.$OrdenFabricacion->CantidadTotal.'</td>
-                                        <th class="table-active p-1"  style="width: 30%;" >Piezas cortadas</th>
-                                        <td class="text-center p-1"  style="width: 20%;" >'.$OrdenFabricacion->partidasOF()->get()->sum('cantidad_partida').'</td>
+                                        <th class="table-active p-1"  style="width: 30%;">Cantidad Total</th>
+                                        <td class="text-center p-1"  style="width: 20%;">'.$OrdenFabricacion->CantidadTotal.'</td>
+                                        <th class="table-active p-1"  style="width: 30%;">Piezas cortadas</th>
+                                        <td class="text-center p-1"  style="width: 20%;">'.$OrdenFabricacion->partidasOF()->get()->sum('cantidad_partida').'</td>
                                     </tr>
                                     <tr>
-                                        <th class="table-active p-1"  style="width: 30%;" >Descripción</th>
-                                        <td class="text-center p-1"  style="width: 20%;"  colspan="3">'.$OrdenFabricacion->Descripcion.'</td>
-                                        
+                                        <th class="table-active p-1"  style="width: 30%;">Descripción</th>
+                                        <td class="text-center p-1"  style="width: 20%;" colspan="3">'.$OrdenFabricacion->Descripcion.'</td>
                                     </tr>
                                 </tbody>
                             </table>';
@@ -219,11 +218,16 @@ class CorteController extends Controller
             ], 500);
         }else{
             $opciones='<option selected disabled>Selecciona una Emisión de producción</option>';
-            $Emisiones=$this->Emisiones($OrdenFabricacion->OrdenFabricacion);
+            //Funcion para traer las emisiones esta en el archivo FuncionesGeneralesController
+            $Emisiones=$this->funcionesGenerales->Emisiones($OrdenFabricacion->OrdenFabricacion);
+            $this->funcionesGenerales->OrdenFabricacion($OrdenFabricacion->OrdenFabricacion);
                 foreach ($Emisiones as $Emision){
                     $Emisiondatos=$OrdenFabricacion->Emisions()->where('NumEmision',$Emision['NoEmision'])->first();
                         if($Emisiondatos==""){
-                            $opciones.='<option value="'.$Emision['NoEmision'].'">'.$Emision['NoEmision'].'</option>';
+                            $Cantidad=isset($Emision['Cantidad'])?$Emision['Cantidad']:0;
+                            if($Cantidad!=0){
+                                $opciones.='<option value="'.$Emision['NoEmision'].'" data-cantidad="'.$Cantidad.'">'.$Emision['NoEmision'].'</option>';
+                            }
                         }
                 }
             return response()->json([
@@ -410,20 +414,7 @@ class CorteController extends Controller
         return $opciones;
     }
     //Consultas a SAP
-    public function Emisiones($OrdenFabricacion){
-        $OrdenFabricacion;
-        $schema = 'HN_OPTRONICS';
-        /*$query_emisiones="SELECT T00.\"DocNum\" \"NoEmision\", T00.\"DocDate\" \"FechaEmision\", T111.\"ItemCode\" \"Componente\", T111.\"Dscription\" \"Descripcion\",
-                            T111.\"Quantity\" \"Cantidad\", T111.\"WhsCode\" \"Almacen\"*/
-        $query_emisiones="SELECT DISTINCT T00.\"DocNum\" \"NoEmision\", TO_DATE(T00.\"DocDate\") \"FechaEmision\", T00.\"Ref2\" \"Cantidad\"                       
-                        FROM {$schema}.\"OIGE\" T00
-                        LEFT JOIN {$schema}.\"IGE1\" T111 ON T00.\"DocEntry\" = T111.\"DocEntry\"
-                        LEFT JOIN {$schema}.\"OWOR\" T222 ON T111.\"BaseEntry\" = T222.\"DocEntry\" AND T111.\"BaseType\" = T222.\"ObjType\"
-                        LEFT JOIN {$schema}.\"WOR1\" T333 ON T222.\"DocEntry\" = T333.\"DocEntry\" AND T111.\"BaseLine\" = T333.\"LineNum\"
-                        WHERE T222.\"DocNum\" = ".$OrdenFabricacion."
-                        ORDER BY 1";
-        return$emisiones=$this->funcionesGenerales->ejecutarConsulta($query_emisiones);
-    }
+    
     //Ordenes de Fbaricacion Filtro Fecha, Abierta=0 Cerrada=1
     public function OrdenesFabricacionAbiertas(){
         $OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->orderBy('FechaEntrega', 'asc')->get();
@@ -1267,7 +1258,8 @@ class CorteController extends Controller
             Log::error('Error al generar PDF: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    }*/
+    }
+*/
 }
 
 
