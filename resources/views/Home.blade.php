@@ -380,18 +380,18 @@
     <div style="height: 30px;"></div>
     <!------>
     <div class="card">
-        <h2 style="font-size: 16px;">Progreso por Dia</h2>
+        <h2 style="font-size: 16px;">Progreso del Dia</h2>
 
         <div id="chart-hour" class="chart-container"></div>
     </div>
     <div style="height: 30px;"></div>
     <div class="card">
-        <h2 style="font-size: 16px;">Progreso por Semana</h2>
+        <h2 style="font-size: 16px;">Progreso de la Semana</h2>
         <div id="chart-day" class="chart-container"></div>
     </div>
     <div style="height: 30px;"></div>
     <div class="card">
-        <h2 style="font-size: 16px;">Progreo por Mes</h2>
+        <h2 style="font-size: 16px;">Progreo del Mes</h2>
         <div id="chart-month" class="chart-container"></div>
     </div>
 
@@ -846,21 +846,24 @@ function generarGrafico(url, containerId, itemName) {
                     smooth: true,
                     seriesLayoutBy: 'row',
                     emphasis: { focus: 'series' }
-                })).concat([{
-                    type: 'pie',
-                    id: 'pie',
-                    radius: '35%',
-                    center: containerId === 'chart-day' ? ['80%', '50%'] : ['20%', '50%'],
-                    emphasis: { focus: 'self' },
-                    label: {
-                        formatter: `{b}: {@[${data.labels[0]}]} ({d}%)`
-                    },
-                    encode: {
-                        itemName: itemName,
-                        value: data.labels[0],
-                        tooltip: data.labels[0]
+                })).concat([
+                    // Este es el gráfico de pastel
+                    {
+                        type: 'pie',
+                        id: 'pie',
+                        radius: '35%',
+                        center: containerId === 'chart-day' ? ['80%', '50%'] : ['20%', '50%'],
+                        emphasis: { focus: 'self' },
+                        label: {
+                            formatter: `{b}: {@[${data.labels[0]}]} ({d}%)`
+                        },
+                        encode: {
+                            itemName: itemName,
+                            value: data.labels[0],
+                            tooltip: data.labels[0]
+                        }
                     }
-                }]),
+                ]),
                 toolbox: {
                     feature: {
                         saveAsImage: {}
@@ -891,11 +894,11 @@ function generarGrafico(url, containerId, itemName) {
         });
 }
 
-
 // Llamadas a la función para generar gráficos
 generarGrafico("{{ route('tablas.semana') }}", "chart-day", "Día");
 generarGrafico("{{ route('tablas.mes') }}", "chart-month", "Semana");
-generarGrafico("{{ route('tablas.hora') }}", "chart-hour", "Mes")
+generarGrafico("{{ route('tablas.hora') }}", "chart-hour", "Mes");
+
 </script>
 @endsection
 
