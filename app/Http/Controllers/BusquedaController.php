@@ -332,6 +332,15 @@ class BusquedaController extends Controller
         return response()->json($ordenesFabricacion);
     }
 
+/*
+    #items: array:4 [▼
+    0 => {#483 ▼
+        +"OrdenFabricacion": "132502"
+        +"CantidadTotal": 40
+        +"TotalPartidas": "100"
+        +"Progreso": "275"
+    }*/
+
     //detalles OF
     public function DetallesOF(Request $request)
     {
@@ -404,17 +413,18 @@ class BusquedaController extends Controller
             //estacion eccorte
             if ($tipoOF === 'plemasCorte') {
                 $resultOF = DB::table('ordenfabricacion')
-                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-                
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
                 ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
                 ->select(
                     'ordenfabricacion.OrdenFabricacion',
-                    DB::raw('(ordenfabricacion.CantidadTotal)'),
+                    DB::raw('ordenfabricacion.CantidadTotal'),
                     DB::raw('SUM(partidasof.cantidad_partida) as TotalPartidas'),
-                    DB::raw('ROUND((SUM(partidasof.cantidad_partida) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                    DB::raw('ROUND((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100) as Progreso')
                 )
-                ->groupBy('partidasof.cantidad_partida', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
                 ->get();
+
+                //dd($resultOF);
                 
                     
             //estacion suministros
@@ -432,6 +442,7 @@ class BusquedaController extends Controller
                     )
                     ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
                     ->get();
+
             //estacion preparado
             } elseif ($tipoOF === 'plemasPreparado') {
                 $resultOF = DB::table('ordenfabricacion')
