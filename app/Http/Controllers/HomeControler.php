@@ -72,16 +72,21 @@ class HomeControler extends Controller
         $progreso = [];
     
         // Consulta para el área 2 (Cortes)
+
+
         $cortes = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->select(
-                'partidasof.OrdenFabricacion_id',
-                DB::raw('SUM(partidasof.cantidad_partida) as TotalPartidas'),
-                DB::raw('ROUND((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso')
-            )
-            ->groupBy('partidasof.OrdenFabricacion_id', 'ordenfabricacion.CantidadTotal')
-            ->get();
-        // dd($cortes);
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            DB::raw('ordenfabricacion.CantidadTotal'),
+            DB::raw('SUM(partidasof.cantidad_partida) as TotalPartidas'),
+            DB::raw('ROUND((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100) as Progreso')
+        )
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+        ->get();
+
+       
+        //dd($cortes);
     
 
         $progreso['2'] = $cortes->avg('Progreso');  
@@ -105,7 +110,7 @@ class HomeControler extends Controller
             // Solo guardamos el progreso calculado en la consulta
             $progreso[$area] = $cantidadPorArea->avg('Progreso'); 
         }
-    
+        dd($progreso);
         return response()->json([
             'progreso' => $progreso
         ]);
