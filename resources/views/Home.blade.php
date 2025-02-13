@@ -280,7 +280,51 @@
 
 
 
-        
+
+        .chart-container {
+                width: 90vw;
+                max-width:1400px;
+                height: 400px;
+                margin: 20px auto;
+            }
+
+            /*estilo de boton*/
+            .btn-outline-info {
+        border-radius: 8px;
+        padding: 10px 20px;
+        transition: all 0.3s ease-in-out;
+        }
+
+        .btn-outline-info:hover {
+            background-color: #17a2b8;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Acordeón con bordes suaves */
+        .card {
+            margin-bottom: 1rem;
+        }
+
+        .collapse {
+            transition: all 0.3s ease;
+        }
+
+        .card-body {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Mejorar la apariencia del contenedor del gráfico */
+        .chart-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
         
 
 
@@ -288,7 +332,7 @@
 @endsection
 
 @section('content')
-    <h1 class="progress-title">Indicadores de Producción del Dia</h1>
+    <h1 class="progress-title">Indicadores de Producción del Mes</h1>
     <div class="grid-container">
         <div class="grid-item">
             <h1 class="small-title"></h1>
@@ -331,20 +375,49 @@
             <canvas id="plemasordenes" width="700" height="300"></canvas>
         </div>     
     </div>
+    <!------>
+    <div class="card">
+        <h2>Progreso por Dia</h2>
+        <div id="chart-hour" class="chart-container"></div>
+    </div>
+    <div style="height: 30px;"></div>
+    <div class="card">
+        <h2>Progreso por Semana</h2>
+        <div id="chart-day" class="chart-container"></div>
+    </div>
+    <div style="height: 30px;"></div>
+    <div class="card">
+        <h2>Progreso por Mes</h2>
+        <div id="chart-month" class="chart-container"></div>
+    </div>
+
     <!------------------------>
+    <!----
     <h1 class="progress-title">Tablas de Progresos</h1>
-    <div class="container mt-4">
+    <div class="container mt-4">-->
+        <!--
         <div class="row">
-            <!-- Card para Órdenes Abiertas -->
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="text-danger">
-                            Órdenes Abiertas: <span id="ordenFabricacionNumero" class="ms-3 text-muted"></span>
+                            Órdenes Iniciadas: <span id="ordenFabricacionNumero" class="ms-3 text-muted"></span>
                         </h5>
                         <div id="retrabajo1" class="mb-3"></div>
+                        <div class="card border border-light mx-auto" style="max-width: 420px; border-radius: 40px; box-shadow: 0 1px 1px rgba(23, 60, 182, 0.1); height: 50px; width: 44%;">
+                            <div class="card-body p-1 d-flex align-items-center" style="height: 100%;">
+                                <form id="form-buscar-venta" style="width: 100%;">
+                                    <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
+                                        <input class="form-control search-input search form-control-sm" type="text" name="search" placeholder="Buscar Por Orden De Venta..." style="flex: 1; border-radius: 20px; padding: 10px;">
+                                        <button class="btn btn-outline-primary ml-2" type="button" id="buscarVenta" style="border-radius: 20px;">
+                                            <i class="uil uil-search"></i> Buscar
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <div style="max-height: 300px; overflow-y: auto;">
-                            <table class="table table-striped table-sm fs--1 mb-0">
+                            <table class="table table-striped table-sm mb-0" style="font-size: 12px;">
                                 <thead class="bg-danger text-white">
                                     <tr>
                                         <th class="sort border-top">Orden Fabricación</th>
@@ -352,25 +425,26 @@
                                         <th class="sort border-top">Descripción</th>
                                         <th class="sort border-top">Cantidad Total</th>
                                         <th class="sort border-top">Cortes</th>
-                                        <th class="border-top">Detalles</th>
+                                        
                                     </tr>
                                 </thead>
-                                <tbody id="orden-list"></tbody>
+                                <tbody id="orden-list" style="line-height: 1;">
+
+                                </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
-    
-            <!-- Card para Órdenes Completadas -->
-            <div class="col-md-6">
+             Card para Órdenes Completadas -->
+            <!--<div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="text-success">
                             Órdenes Completadas: <span id="ordenesCompletadasNumero" class="ms-3 text-muted"></span>
                         </h5>
                         <div style="max-height: 300px; overflow-y: auto;">
-                            <table class="table table-striped table-sm fs--1 mb-0">
+                            <table class="table table-striped table-sm mb-0"  style="font-size: 12px;">
                                 <thead class="bg-success text-white">
                                     <tr>
                                         <th class="sort border-top">Orden Fabricación</th>
@@ -381,241 +455,26 @@
                                         <th class="border-top">Detalles</th>
                                     </tr>
                                 </thead>
-                                <tbody id="ordenes-completadas-list"></tbody>
+                                <tbody id="ordenes-completadas-list"  style="line-height: 1;">
+                                    
+                                </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+   </div>-->
     <!----------------------->
-    <br>
-    <div class="progress-box"> 
-        <h2 class="progress-title">Progreso De Producción</h2>
-        <div class="progress-box-container">
-            <div class="progress-item">
-                <span class="progress-label">Cortes</span>
-                <div class="progress">
-                    <div id="progress-2" class="progress-bar text-white fw-bold progress-animated"
-                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                        0%
-                    </div>
-                </div>
-            </div>
-    
-            <div class="progress-item">
-                <span class="progress-label">Suministro</span>
-                <div class="progress">
-                    <div id="progress-3" class="progress-bar text-white fw-bold progress-animated"
-                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                        0%
-                    </div>
-                </div>
-            </div>
-    
-            <div class="progress-item">
-                <span class="progress-label">Preparado</span>
-                <div class="progress">
-                    <div id="progress-4" class="progress-bar text-white fw-bold progress-animated"
-                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                        0%
-                    </div>
-                </div>
-            </div>
-    
-            <div class="progress-item">
-                <span class="progress-label">Ensamble</span>
-                <div class="progress">
-                    <div id="progress-5" class="progress-bar text-white fw-bold progress-animated"
-                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                        0%
-                    </div>
-                </div>
-            </div>
-    
-            <div class="progress-item">
-                <span class="progress-label">Pulido</span>
-                <div class="progress">
-                    <div id="progress-6" class="progress-bar text-white fw-bold progress-animated"
-                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                        0%
-                    </div>
-                </div>
-            </div>
-    
-            <div class="progress-item">
-                <span class="progress-label">Medicion</span>
-                <div class="progress">
-                    <div id="progress-7" class="progress-bar text-white fw-bold progress-animated"
-                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                        0%
-                    </div>
-                </div>
-            </div>
-    
-            <div class="progress-item">
-                <span class="progress-label">Visualizacion</span>
-                <div class="progress">
-                    <div id="progress-8" class="progress-bar text-white fw-bold progress-animated"
-                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                        0%
-                    </div>
-                </div>
-            </div>
-    
-            <div class="progress-item">
-                <span class="progress-label">Empaque</span>
-                <div class="progress">
-                    <div id="progress-9" class="progress-bar text-white fw-bold progress-animated"
-                        role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;"
-                        aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                        0%
-                    </div>
-                </div>
-            </div>
-        </div>   
-    </div>
-    <hr>
-    
 
-
-    
-    
-
-    
-
-    <!----------------------------------------------------------------------------------->
-    <!--
-    <div class="dashboard-container">
-        <div class="chart-container">
-            <canvas id="monthlyChart"></canvas>
-        </div>
-        <div class="chart-container">
-            <canvas id="weeklyChart"></canvas>
-        </div>
-    </div>
-
-    <div class="dashboard-container">
-        <div class="chart-container full-width">
-            <canvas id="dayChart"></canvas>
-        </div>
-    </div>-->
-
-    <!-- Contenedor de las barras de progreso -->
-    
-    <!---
-    <div class="progress-box">
-        <h2 class="progress-title">Progreso De Producción Por Orden Fabricacion</h2>
-        <div class="progress-box-container">
-            <div class="progress-item">
-                <span class="progress-label">Cortes</span>
-                <div class="progress">
-                    <div id="step-Corte" class="progress-bar text-white fw-bold progress-animated"
-                            role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
-                        0%
-                    </div>
-                </div>
-            </div>
-    
-            <div class="progress-item">
-                <span class="progress-label">Suministro</span>
-                <div class="progress">
-                    <div id="step-Suministro"  class="progress-bar text-white fw-bold progress-animated"
-                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
-                    0%
-                    </div>
-                </div>
-            </div>
-    
-            <div class="progress-item">
-                <span class="progress-label">Preparado</span>
-                <div class="progress">
-                    <div id="step-Preparado" class="progress-bar text-white fw-bold progress-animated"
-                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
-                        0%
-                    </div>
-                </div>
-            </div>
-    
-            <div class="progress-item">
-                <span class="progress-label">Ensamble</span>
-                <div class="progress">
-                    <div id="step-Ensamble"  class="progress-bar text-white fw-bold progress-animated"
-                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
-                    0%
-                    </div>
-                </div>
-            </div>
-    
-            <div class="progress-item">
-                <span class="progress-label">Pulido</span>
-                <div class="progress">
-                    <div id="step-Pulido"  class="progress-bar text-white fw-bold progress-animated"
-                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
-                    0%
-                    </div>
-                </div>
-            </div>
-    
-            <div class="progress-item">
-                <span class="progress-label">Medición</span>
-                <div class="progress">
-                    <div id="step-Medicion"  class="progress-bar text-white fw-bold progress-animated"
-                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
-                    0%
-                    </div>
-                </div>
-            </div>
-    
-            <div class="progress-item">
-                <span class="progress-label">Visualización</span>
-                <div class="progress">
-                    <div id="step-Visualizacion" class="progress-bar text-white fw-bold progress-animated"
-                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
-                    0%
-                    </div>
-                </div>
-            </div>
-    
-            <div class="progress-item">
-                <span class="progress-label">Empaque</span>
-                <div class="progress">
-                    <div id="step-Abierto"  class="progress-bar text-white fw-bold progress-animated"
-                    role="progressbar" style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;">
-                    0%
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>-->
-    
-
-    <!--
-        <div class="summary-box closed-orders">
-            <i class="fas fa-check-circle"></i>
-            <h3>Órdenes Fab. Cerradas</h3>
-            <p id="closedOrders">/</p>
-        </div>
-        <div class="summary-box open-orders">
-            <i class="fas fa-exclamation-circle"></i>
-            <h3>Órdenes Fab. Abiertas</h3>
-            <p id="openOrders">/</p>
-        </div>
-    -->
 @endsection
 
 @section('scripts')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ 
 
-    <script>
+
+<script>
 
 // Obtener progreso general del dashboard
 function fetchProgresoDash() {
@@ -796,7 +655,7 @@ fetch("{{ route('orden.cerredas') }}")
         // Renderizar gráfico
         myChart.setOption(option);
     })
-    .catch(error => console.error('Error al cargar los datos:', error));
+.catch(error => console.error('Error al cargar los datos:', error));
 
 function cargarOrdenesCerradas() {
     $.ajax({
@@ -818,7 +677,7 @@ function cargarOrdenesCerradas() {
                     <td>${orden.Descripcion}</td>
                     <td>${orden.CantidadTotal}</td>
                     <td>${orden.SumaTotalcantidad_partida}</td>
-                    <td><button class="btn btn-info">Detalles</button></td>
+                    
                 </tr>`;
                 tabla.append(fila);
             });
@@ -840,17 +699,52 @@ function cargarOrdenesCompletas() {
             var tabla = $('#ordenes-completadas-list');
             tabla.empty(); 
 
-            // Iterar sobre los datos y agregar filas a la tabla
             data.ordenes.forEach(function (orden) {
-                var fila = `<tr>
+                const collapseId = `collapse-${orden.OrdenFabricacion}`;
+
+                // Crear fila principal
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
                     <td>${orden.OrdenFabricacion}</td>
                     <td>${orden.Articulo}</td>
                     <td>${orden.Descripcion}</td>
                     <td>${orden.CantidadTotal}</td>
                     <td>${orden.cantidad_partida}</td>
-                    <td><button class="btn btn-info">Detalles</button></td>
-                </tr>`;
+                    <td>
+                        <button class="btn btn-primary btn-sm btn-ver-mas" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#${collapseId}">
+                            Ver más
+                        </button>
+                    </td>
+                `;
+
+                // Crear fila de detalles con acordeón Bootstrap
+                const detailRow = document.createElement('tr');
+                detailRow.innerHTML = `
+                    <td colspan="6">
+                        <div class="collapse" id="${collapseId}">
+                            <div class="card">
+                                <div class="card-body">
+                                    <strong>Tiempos de Etapas</strong><br>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                                        ${createEstacionCard('Corte', orden.TiempoCorte, orden.FinCorte)}
+                                        ${createEstacionCard('Suministro', orden.TiempoSuministro, orden.FinSuministro)}
+                                        ${createEstacionCard('Preparado', orden.TiempoPreparado, orden.FinPreparado)}
+                                        ${createEstacionCard('Ensamble', orden.TiempoEnsamble, orden.FinEnsamble)}
+                                        ${createEstacionCard('Pulido', orden.TiempoPulido, orden.FinPulido)}
+                                        ${createEstacionCard('Medición', orden.TiempoMedicion, orden.FinMedicion)}
+                                        ${createEstacionCard('Visualización', orden.TiempoVisualizacion, orden.FinVisualizacion)}
+                                        ${createEstacionCard('Empaque', orden.TiempoAbierto, orden.FinAbierto)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                `;
+
+                // Agregar filas a la tabla
                 tabla.append(fila);
+                tabla.append(detailRow);
             });
         },
         error: function (error) {
@@ -858,6 +752,21 @@ function cargarOrdenesCompletas() {
         }
     });
 }
+
+// Función para crear las tarjetas de cada etapa
+function createEstacionCard(estacion, tiempoInicio, tiempoFin) {
+            return `
+                <div style="flex: 1 1 45%; min-width: 200px; background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.3s ease-in-out;">
+                    <strong>Estación de ${estacion}:</strong>
+                    <div style="display: flex; gap: 10px;">
+                        <span style="color: green; font-weight: bold;">Inicio: ${tiempoInicio ?? 'N/A'}</span> 
+                        <span style="color: red; font-weight: bold;">Fin: ${tiempoFin ?? 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+
 // Obtener progreso de órdenes de fabricación
 function fetchProgresoOF() {
     fetch("{{ route('of.progreso') }}")
@@ -908,254 +817,78 @@ $(document).ready(function () {
     cargarOrdenesCerradas();
     cargarOrdenesCompletas();
 });
-        /*
-        document.addEventListener("DOMContentLoaded", async function () {
-            await fetchOrders();
-            await loadCharts();
-        });
+// Gráfico por Semana
+function generarGrafico(url, containerId, itemName) {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const datasetSource = [[itemName, ...data.labels]];
 
-        async function fetchOrders() {
-            try {
-                // Obtener órdenes cerradas
-                const closedResponse = await fetch("{{ route('orden.cerredas') }}");
-                const closedData = await closedResponse.json();
-                console.log("Órdenes Cerradas:", closedData); 
-                const closedValue = closedData.retrabajo ?? "0/0"; // Manejo de casos donde no haya datos
-                document.getElementById('closedOrders').innerText = closedValue;
-
-
-                // Obtener órdenes abiertas
-                const openResponse = await fetch("{{ route('ordenes.abiertas') }}");
-                const openData = await openResponse.json();
-                console.log("Órdenes Abiertas:", openData);
-
-                // Usamos el total de órdenes y las órdenes abiertas para mostrar el formato 1/10
-                const totalOrdenes = openData.totalOrdenes ?? 0;
-                const ordenesAbiertasCount = openData.ordenesAbiertasCount ?? 0;
-                document.getElementById('openOrders').innerText = `${ordenesAbiertasCount}/${totalOrdenes}`;
-
-
-            } catch (error) {
-                console.error('Error obteniendo los datos de órdenes:', error);
-                document.getElementById('closedOrders').innerText = "0%";
-                document.getElementById('openOrders').innerText = "0%";
-            }
-        }
-
-        //modal abiertas
-        document.querySelector('.summary-box.open-orders').addEventListener('click', async () => {
-            const modal = new bootstrap.Modal(document.getElementById('example3Modal'));  
-            modal.show();
-
-            try {
-                const response = await fetch("{{ route('ordenes.abiertas') }}");
-                const data = await response.json();
-
-                console.log("Órdenes abiertas:", data);
-
-                const tableBody = document.getElementById('modalContent');
-                tableBody.innerHTML = '';
-
-                data.ordenes.forEach(orden => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${orden.OrdenFabricacion}</td>
-                        <td>${orden.Articulo}</td>
-                        <td>${orden.Descripcion}</td>
-                        <td>${orden.CantidadTotal}</td>
-                        <td>${orden.cantidad_partida}</td>
-                        
-                    `;
-                    tableBody.appendChild(row);
-                });
-
-                // Mostrar porcentaje de retrabajo si el elemento existe
-                const retrabajoElement = document.getElementById('retrabajo');
-                if (retrabajoElement) {
-                    retrabajoElement.textContent = `Porcentaje de retrabajo: ${data.retrabajo}%`;
-                }
-            } catch (error) {
-                console.error('Error al obtener las órdenes abiertas:', error);
-            }
-        });
-
-
-        //modal cerradas
-        document.querySelector('.summary-box.closed-orders').addEventListener('click', async () => {
-            const modal = new bootstrap.Modal(document.getElementById('example2Modal'));  
-            modal.show();  
-
-            try {
-                const response = await fetch("{{ route('ordenes.cerradas') }}");
-                const data = await response.json();
-
-                console.log("Órdenes cerradas:", data);
-
-                const tableBody = document.getElementById('orden-list');
-                tableBody.innerHTML = ''; // Limpiar la tabla antes de agregar nuevas órdenes
-
-                data.ordenes.forEach((orden, index) => {
-                const collapseId = `collapseOrden${index}`;
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${orden.OrdenFabricacion}</td>
-                    <td>${orden.Articulo}</td>
-                    <td>${orden.Descripcion}</td>
-                    <td>${orden.CantidadTotal}</td>
-                    <td>${orden.cantidad_partida}</td>
-                    
-                    <td>
-                        <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
-                            Ver más
-                        </button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-
-                const detailRow = document.createElement('tr');
-                detailRow.innerHTML = `
-                    <td colspan="6">
-                        <div class="collapse" id="${collapseId}">
-                            <div class="card">
-                                <div class="card-body">
-                                    <strong>Tiempos de Etapas</strong><br>
-                                    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                                        ${createEstacionCard('Corte', orden.TiempoCorte, orden.FinCorte)}
-                                        ${createEstacionCard('Suministro', orden.TiempoSuministro, orden.FinSuministro)}
-                                        ${createEstacionCard('Preparado', orden.TiempoPreparado, orden.FinPreparado)}
-                                        ${createEstacionCard('Ensamble', orden.TiempoEnsamble, orden.FinEnsamble)}
-                                        ${createEstacionCard('Pulido', orden.TiempoPulido, orden.FinPulido)}
-                                        ${createEstacionCard('Medición', orden.TiempoMedicion, orden.FinMedicion)}
-                                        ${createEstacionCard('Visualización', orden.TiempoVisualizacion, orden.FinVisualizacion)}
-                                        ${createEstacionCard('Empaque', orden.TiempoAbierto, orden.FinAbierto)}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                `;
-                tableBody.appendChild(detailRow);
+            data.series.forEach((serie) => {
+                datasetSource.push([serie.name, ...serie.data]);
             });
 
+            const option = {
+                tooltip: { trigger: 'axis' },
+                legend: { left: '5%' },
+                dataset: { source: datasetSource },
+                xAxis: { type: 'category' },
+                yAxis: { gridIndex: 0 },
+                grid: {
+                    left: containerId === 'chart-day' ? '5%' : '50%',
+                    right: containerId === 'chart-day' ? '50%' : '5%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                series: data.series.map(() => ({
+                    type: 'line',
+                    smooth: true,
+                    seriesLayoutBy: 'row',
+                    emphasis: { focus: 'series' }
+                })).concat([{
+                    type: 'pie',
+                    id: 'pie',
+                    radius: '35%',
+                    center: containerId === 'chart-day' ? ['80%', '50%'] : ['20%', '50%'],
+                    emphasis: { focus: 'self' },
+                    label: {
+                        formatter: `{b}: {@[${data.labels[0]}]} ({d}%)`
+                    },
+                    encode: {
+                        itemName: itemName,
+                        value: data.labels[0],
+                        tooltip: data.labels[0]
+                    }
+                }])
+            };
 
-                const retrabajoElement = document.getElementById('retrabajo1');
-                if (retrabajoElement) {
-                    retrabajoElement.textContent = `Porcentaje de retrabajo: ${data.retrabajo}%`;
+            const chart = echarts.init(document.getElementById(containerId));
+
+            chart.on('updateAxisPointer', function (event) {
+                const xAxisInfo = event.axesInfo[0];
+                if (xAxisInfo) {
+                    const dimension = xAxisInfo.value + 1;
+                    chart.setOption({
+                        series: [{
+                            id: 'pie',
+                            label: { formatter: `{b}: {@[${dimension}]} ({d}%)` },
+                            encode: { value: dimension, tooltip: dimension }
+                        }]
+                    });
                 }
+            });
 
-            } catch (error) {
-                console.error('Error al obtener las órdenes:', error);
-            }
+            chart.setOption(option);
+        })
+        .catch(error => {
+            console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
         });
+}
 
-        // Función para crear las tarjetas de las estaciones de trabajo
-        function createEstacionCard(estacion, tiempoInicio, tiempoFin) {
-            return `
-                <div style="flex: 1 1 45%; min-width: 200px; background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.3s ease-in-out;">
-                    <strong>Estación de ${estacion}:</strong>
-                    <div style="display: flex; gap: 10px;">
-                        <span style="color: green; font-weight: bold;">Inicio: ${tiempoInicio ?? 'N/A'}</span> 
-                        <span style="color: red; font-weight: bold;">Fin: ${tiempoFin ?? 'N/A'}</span>
-                    </div>
-                </div>
-            `;
-        }
-        async function loadCharts() 
-        {
-            try {
-                const response = await fetch("{{ route('graficas.dashboard') }}");
-                const data = await response.json();
-
-                // Datos por día
-                const dias = data.ordenesPorDia.map(item => item.dia);
-                const totalesDia = data.ordenesPorDia.map(item => item.total);
-
-                // Datos por semana
-                const semanas = data.ordenesPorSemana.map(item => item.semana);
-                const totalesSemana = data.ordenesPorSemana.map(item => item.total);
-
-                // Datos por mes
-                const meses = data.ordenesPorMes.map(item => item.mes);
-                const totalesMes = data.ordenesPorMes.map(item => item.total);
-
-                // Gráfico de órdenes por día
-                new Chart(document.getElementById("dayChart"), {
-                    type: 'line',
-                    data: {
-                        labels: dias,
-                        datasets: [{
-                            label: 'Órdenes por Día',
-                            data: totalesDia,
-                            borderColor: 'rgba(75, 192, 192, 0.8)',
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            fill: true,
-                            tension: 0.3
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: true }
-                        }
-                    }
-                });
-
-                // Gráfico de órdenes por semana
-                new Chart(document.getElementById("weeklyChart"), {
-                    type: 'bar',
-                    data: {
-                        labels: semanas,
-                        datasets: [{
-                            label: 'Órdenes por Semana',
-                            data: totalesSemana,
-                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                            borderColor: 'rgba(54, 162, 235, 0.8)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: true }
-                        }
-                    }
-                });
-
-                // Gráfico de órdenes por mes
-                new Chart(document.getElementById("monthlyChart"), {
-                    type: 'line',
-                    data: {
-                        labels: meses,
-                        datasets: [{
-                            label: 'Órdenes por Mes',
-                            data: totalesMes,
-                            borderColor: 'rgba(255, 99, 132, 0.8)',
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            fill: true,
-                            tension: 0.3
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: true }
-                        }
-                    }
-                });
-            } catch (error) {
-                console.error("Error obteniendo los datos de los gráficos:", error);
-            }
-        }
-        window.onload = function() {
-            fetchProgresoOF();
-    fetchProgresoDash();
-   
-};
-*/
+// Llamadas a la función para generar gráficos
+generarGrafico("{{ route('tablas.semana') }}", "chart-day", "Día");
+generarGrafico("{{ route('tablas.mes') }}", "chart-month", "Mes");
+generarGrafico("{{ route('tablas.hora') }}", "chart-hour", "Año")
 
 </script>
 

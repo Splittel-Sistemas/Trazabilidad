@@ -194,7 +194,9 @@ Route::get('/progreso-of',[HomeControler::class,'progresoof'])->name('of.progres
 Route::get('/inddicadores-ce',[HomeControler::class,'graficasdia'])->name('indicadores.CE');
 Route::get('/ordenes-abiertas',[HomeControler::class, 'tablasAbiertas'])->name('tabla.abiertas');
 Route::get('/ordenes-completada', [HomeControler::class, 'tablasCompletadas'])->name('tabla.completas');
-
+Route::get('/tabla-semana', [HomeControler::class,'tablasemana'])->name('tablas.semana');
+Route::get('/tabla-mes',[HomeControler::class, 'tablasMes'])->name('tablas.mes');
+Route::get('/tabla-horas',[HomeControler::class, 'tablasHoras'])->name('tablas.hora');
 
 
 
