@@ -1,7 +1,5 @@
 @extends('layouts.menu2')
-
 @section('title', 'Dashboard')
-
 @section('styles')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -330,7 +328,6 @@
 
     </style>
 @endsection
-
 @section('content')
     <h1 class="progress-title">Indicadores de Producción del Mes</h1>
     <div class="grid-container">
@@ -471,9 +468,6 @@
 
 @section('scripts')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
- 
-
-
 <script>
 
 // Obtener progreso general del dashboard
@@ -884,13 +878,12 @@ function generarGrafico(url, containerId, itemName) {
             console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
         });
 }
+
+// Llamadas a la función para generar gráficos
 generarGrafico("{{ route('tablas.semana') }}", "chart-day", "Día");
 generarGrafico("{{ route('tablas.mes') }}", "chart-month", "Mes");
 generarGrafico("{{ route('tablas.hora') }}", "chart-hour", "Año")
-
 </script>
-
-
 @endsection
 
 
