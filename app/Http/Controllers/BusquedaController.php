@@ -74,6 +74,7 @@ class BusquedaController extends Controller
         ]);
     }
 
+    
     //progreso de stage
     public function GraficarOROF(Request $request)
     {
@@ -98,18 +99,22 @@ class BusquedaController extends Controller
 
         // Consulta para los cortes
         $cortes = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
-            ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->select(   'ordenventa.OrdenVenta',
-                'ordenfabricacion.CantidadTotal',
-                'ordenfabricacion.OrdenFabricacion',
-                'partidasof.id as PartidaOF_ID',
-                DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
-                DB::raw('SUM(ordenfabricacion.CantidadTotal) as SumaCantidadTotal'),
-                DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalPartidas'),
-                DB::raw('ROUND((SUM(partidasof.cantidad_partida) / NULLIF(SUM(ordenfabricacion.CantidadTotal), 0)) * 100, 2) as Progreso')
-            )
-            ->groupBy('partidasof.id', 'ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.OrdenFabricacion');
+        ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->select(
+            'ordenventa.OrdenVenta',
+            'ordenfabricacion.CantidadTotal',
+            'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal',
+            DB::raw('ordenfabricacion.OrdenFabricacion as OrdenesFabricacion'),
+            DB::raw('GROUP_CONCAT(DISTINCT partidasof.id ORDER BY partidasof.id ASC SEPARATOR ", ") as PartidaOF_ID'),
+            DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalPartidas'),
+            DB::raw('ROUND((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso')
+          
+        )
+        ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal');
+        //->get();
+    
+            //dd($cortes);
 
         // Aplicación del filtro según la etapa
         if ($stage == 'stage3') {

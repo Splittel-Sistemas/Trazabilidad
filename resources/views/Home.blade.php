@@ -884,8 +884,6 @@ function generarGrafico(url, containerId, itemName) {
             console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
         });
 }
-
-// Llamadas a la función para generar gráficos
 generarGrafico("{{ route('tablas.semana') }}", "chart-day", "Día");
 generarGrafico("{{ route('tablas.mes') }}", "chart-month", "Mes");
 generarGrafico("{{ route('tablas.hora') }}", "chart-hour", "Año")
