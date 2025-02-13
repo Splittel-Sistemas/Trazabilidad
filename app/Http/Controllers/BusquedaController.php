@@ -313,8 +313,6 @@ class BusquedaController extends Controller
     {
         $search = $request->input('search');
         $ordenesFabricacion = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-        ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
         ->select(
             'ordenfabricacion.OrdenFabricacion', 
             'ordenfabricacion.Articulo', 
