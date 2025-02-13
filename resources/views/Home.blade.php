@@ -860,7 +860,12 @@ function generarGrafico(url, containerId, itemName) {
                         value: data.labels[0],
                         tooltip: data.labels[0]
                     }
-                }])
+                }]),
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                }
             };
 
             const chart = echarts.init(document.getElementById(containerId));
@@ -886,10 +891,11 @@ function generarGrafico(url, containerId, itemName) {
         });
 }
 
+
 // Llamadas a la función para generar gráficos
 generarGrafico("{{ route('tablas.semana') }}", "chart-day", "Día");
-generarGrafico("{{ route('tablas.mes') }}", "chart-month", "Mes");
-generarGrafico("{{ route('tablas.hora') }}", "chart-hour", "Año")
+generarGrafico("{{ route('tablas.mes') }}", "chart-month", "Semana");
+generarGrafico("{{ route('tablas.hora') }}", "chart-hour", "Mes")
 </script>
 @endsection
 
