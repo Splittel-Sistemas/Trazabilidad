@@ -251,7 +251,7 @@
             </div>
             <div style="margin-top: 20px;"></div>
             <div class="table-responsive">
-                <div class="card" style="width: 1400px; height: 500px;">
+                <div class="card" >
                     <table class="table table-sm fs--1 mb-0">
                     <thead>
                         <tr class="bg-info text-white">
@@ -282,7 +282,7 @@
             </div>
             
             <div style="margin-top: 20px;"></div>
-            <div class="card" style="width: 1400px; height: 500px;">
+             <div class="card" >
                 <table class="table table-sm fs--1 mb-0">
                     <thead>
                         <tr class="bg-info text-white">

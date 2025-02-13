@@ -216,7 +216,7 @@
             }
 
             .chart-container {
-                width: 100%;
+                width: 10%;
             }
         }
         .progress-item {
@@ -262,7 +262,7 @@
             grid-template-rows: repeat(2, auto);
             gap: 10px;
             padding: 15px;
-            max-width: 5500px;
+            max-width: 4000px;
             margin: auto;
         }
         .grid-item {
@@ -280,7 +280,7 @@
 
 
         .chart-container {
-                width: 90vw;
+                width: 75vw;
                 max-width:1400px;
                 height: 400px;
                 margin: 20px auto;
@@ -329,62 +329,69 @@
     </style>
 @endsection
 @section('content')
-    <h1 class="progress-title">Indicadores de Producción del Mes</h1>
-    <div class="grid-container">
-        <div class="grid-item">
-            <h1 class="small-title"></h1>
-            <canvas id="plemasCorte" width="150" height="150"></canvas>
-        </div>
-        <div class="grid-item">
-            <h1 class="small-title"></h1>
-            <canvas id="plemasSuministro" width="150" height="150"></canvas>
-        </div>
-        <div class="grid-item">
-            <h1 class="small-title"></h1>
-            <canvas id="plemasPreparado" width="150" height="150"></canvas>
-        </div>
-        <div class="grid-item">
-            <h1 class="small-title"></h1>
-            <canvas id="plemasEnsamble" width="150" height="150"></canvas>
-        </div>
-        <div class="grid-item">
-            <h1 class="small-title"></h1>
-            <canvas id="plemasPulido" width="150" height="150"></canvas>
-        </div>
-        <div class="grid-item">
-            <h1 class="small-title"></h1>
-            <canvas id="plemasMedicion" width="150" height="150"></canvas>
-        </div>
-        <div class="grid-item">
-            <h1 class="small-title"></h1>
-            <canvas id="plemasVisualizacion" width="150" height="150"></canvas>
-        </div>
-        <div class="grid-item">
-            <h1 class="small-title"></h1>
-            <canvas id="plemasEmpaque" width="150" height="150"></canvas>
+    <div class ="card">
+        <h1 class="progress-title">Indicadores de Producción del Mes</h1>
+        <div class="grid-container">
+            <div class="grid-item">
+                <h1 class="small-title"></h1>
+                <canvas id="plemasCorte" width="150" height="150"></canvas>
+            </div>
+            <div class="grid-item">
+                <h1 class="small-title"></h1>
+                <canvas id="plemasSuministro" width="150" height="150"></canvas>
+            </div>
+            <div class="grid-item">
+                <h1 class="small-title"></h1>
+                <canvas id="plemasPreparado" width="150" height="150"></canvas>
+            </div>
+            <div class="grid-item">
+                <h1 class="small-title"></h1>
+                <canvas id="plemasEnsamble" width="150" height="150"></canvas>
+            </div>
+            <div class="grid-item">
+                <h1 class="small-title"></h1>
+                <canvas id="plemasPulido" width="150" height="150"></canvas>
+            </div>
+            <div class="grid-item">
+                <h1 class="small-title"></h1>
+                <canvas id="plemasMedicion" width="150" height="150"></canvas>
+            </div>
+            <div class="grid-item">
+                <h1 class="small-title"></h1>
+                <canvas id="plemasVisualizacion" width="150" height="150"></canvas>
+            </div>
+            <div class="grid-item">
+                <h1 class="small-title"></h1>
+                <canvas id="plemasEmpaque" width="150" height="150"></canvas>
+            </div>
         </div>
     </div>
+        <div style="height: 30px;"></div>
     <!------------------------->
-    <h1 class="progress-title">Ordenes Fabricación</h1>
-    <div class="grid-container" style="display: flex; justify-content: center;">
-        <div class="grid-item">
-            <h1 class="small-title"></h1>
-            <canvas id="plemasordenes" width="700" height="300"></canvas>
-        </div>     
+    <div class="card">
+        <h1 class="progress-title">Ordenes Fabricación</h1>
+        <div class="grid-container" style="display: flex; justify-content: center;">
+            <div class="grid-item">
+                <h1 class="small-title"></h1>
+                <canvas id="plemasordenes" width="700" height="300"></canvas>
+            </div>     
+        </div>
     </div>
+    <div style="height: 30px;"></div>
     <!------>
     <div class="card">
-        <h2>Progreso por Dia</h2>
+        <h2 style="font-size: 16px;">Progreso por Dia</h2>
+
         <div id="chart-hour" class="chart-container"></div>
     </div>
     <div style="height: 30px;"></div>
     <div class="card">
-        <h2>Progreso por Semana</h2>
+        <h2 style="font-size: 16px;">Progreso por Semana</h2>
         <div id="chart-day" class="chart-container"></div>
     </div>
     <div style="height: 30px;"></div>
     <div class="card">
-        <h2>Progreso por Mes</h2>
+        <h2 style="font-size: 16px;">Progreo por Mes</h2>
         <div id="chart-month" class="chart-container"></div>
     </div>
 
