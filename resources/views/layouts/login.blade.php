@@ -8,7 +8,6 @@
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <!--<link rel="stylesheet" href="{{ asset('css/login.css') }}">-->
-
     <style>
         @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300);
         * {
@@ -29,11 +28,11 @@
 
         .container {
             background: rgba(255, 255, 255, 0.95);
-            padding: 40px;
+            padding: 80px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             text-align: center;
-            max-width: 400px;
+            max-width: 500px;
             width: 100%;
         }
 
@@ -166,50 +165,38 @@
 <body>
     <div class="wrapper">
         <div class="container">
-            <h1>Bienvenido</h1>
-    
-            <!-- Mostrar errores si existen -->
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                <h1>Bienvenido</h1>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                <div class="text-center mb-4">
+                    <span class="btn btn-outline-primary mx-2 active" id="toggleAdministrativo">Administrativo</span>
+                    <span class="btn btn-outline-primary mx-2" id="toggleOperadores">Operadores</span>
                 </div>
-            @endif
-            <div class="text-center mb-4">
-                <span class="btn btn-outline-primary mx-2 active" id="toggleAdministrativo">Administrativo</span>
-                <span class="btn btn-outline-primary mx-2" id="toggleOperadores">Operadores</span>
-            </div>
 
-            <form method="POST" action="{{ route('login_post') }}" class="form">
-                @csrf
-                
-                <!-- Campos administrativos -->
-                <div id="administrativoFields">
-                    <input name="email" type="text" placeholder="Correo Electrónico" value="{{ old('email') }}" required class="input-field">
-                    <input name="password" type="password" placeholder="Contraseña" required class="input-field">
-                </div>
-                
-                <!-- Campos operadores (ocultos por defecto) -->
-                <div id="operadoresFields" style="display: none;">
-                    <input name="clave" type="text" placeholder="Clave" required class="input-field">
-                </div>
-                
-                <button type="submit" id="login-button">Ingresar</button>
-            </form>
-            
-    
-            <!-- Formulario oculto por defecto -->
-            <!---<form method="POST" action="{{ route('login_post') }}" class="form">
-                @csrf
-                <input name="email" type="text" placeholder="Correo Electrónico" value="{{ old('email') }}" required class="input-field">
-                <input name="password" type="password" placeholder="Contraseña" required class="input-field">
-                <button type="submit" id="login-button">Ingresar</button>
-            </form>
-            <input name="clave" type="clave" placeholder="clave" required class="input-field">
-            <button type="submit" id="login-button">Ingresar</button>-->
+                <form method="POST" action="{{ route('login_post') }}" class="form">
+                    @csrf
+                    
+                    <!-- Campos administrativos -->
+                    <div id="administrativoFields">
+                        <input name="email" type="text" placeholder="Correo Electrónico" value="{{ old('email') }}" required class="input-field">
+                        <input name="password" type="password" placeholder="Contraseña" required class="input-field">
+                    </div>
+                    
+                    <!-- Campos operadores (ocultos por defecto) -->
+                    <div id="operadoresFields" style="display: none;">
+                        <input name="clave" type="text" placeholder="Clave" required class="input-field">
+                    </div>
+                    
+                    <button type="submit" id="login-button">Ingresar</button>
+                </form>
+            </div>
         </div>
     </div>
 
