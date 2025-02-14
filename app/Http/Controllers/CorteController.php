@@ -89,6 +89,7 @@ class CorteController extends Controller
     public function CortesDatosModal(Request $request){
         $id=$this->funcionesGenerales->decrypt($request->id);
         $OrdenFabricacion=OrdenFabricacion::where('id','=',$id)->first();
+        $DetallesCable=$this->funcionesGenerales->DetallesCable($OrdenFabricacion->OrdenFabricacion);
         $Ordenfabricacionpartidas='<table id="TablePartidasModal" class="table table-sm fs--1 mb-0" style="width:100%">
                         <thead>
                             <tr>
@@ -96,7 +97,7 @@ class CorteController extends Controller
                             </tr>
                             <tr>
                                 <th class="text-center">Número Partida</th>
-                                 <th class="text-center">Piezas Cortadas</th>
+                                <th class="text-center">Piezas Cortadas</th>
                                 <th class="text-center">Tipo Partida</th>
                                 <th class="text-center">Rango de etiquetas</th>
                                 <th class="text-center">Estatus</th>
@@ -106,7 +107,7 @@ class CorteController extends Controller
                         </thead>
                         <tbody>';
         $Ordenfabricacioninfo='<table class="table table-sm fs--1 mb-0" style="width:100%">
-                        <thead>
+                        <thead >
                             <tr>
                                 <th class="text-center" colspan="4">Orden de Fabricacion:  '.$OrdenFabricacion->OrdenFabricacion.'</th>
                             </tr>
@@ -121,20 +122,31 @@ class CorteController extends Controller
                               <table class="table table-bordered table-sm text-xs"> 
                                 <tbody>
                                     <tr>
-                                        <th class="table-active p-1"  style="width: 30%;">Artículo</th>
+                                        <th class="bg-light p-1"  style="width: 30%;">Artículo</th>
                                         <td class="text-center p-1"  style="width: 20%;">'.$OrdenFabricacion->Articulo.'</td>
-                                        <th class="table-active p-1"  style="width: 30%;">Fecha Planeación</th>
+                                        <th class="bg-light p-1"  style="width: 30%;">Fecha Planeación</th>
                                         <td class="text-center p-1"  style="width: 20%;" >'.$OrdenFabricacion->FechaEntrega.'</td>
                                     </tr>
                                     <tr>
-                                        <th class="table-active p-1"  style="width: 30%;">Cantidad Total</th>
+                                        <th class="bg-light p-1"  style="width: 30%;">Cantidad Total</th>
                                         <td class="text-center p-1"  style="width: 20%;">'.$OrdenFabricacion->CantidadTotal.'</td>
-                                        <th class="table-active p-1"  style="width: 30%;">Piezas cortadas</th>
+                                        <th class="bg-light p-1"  style="width: 30%;">Piezas cortadas</th>
                                         <td class="text-center p-1"  style="width: 20%;">'.$OrdenFabricacion->partidasOF()->get()->sum('cantidad_partida').'</td>
                                     </tr>
                                     <tr>
-                                        <th class="table-active p-1"  style="width: 30%;">Descripción</th>
+                                        <th class="bg-light p-1"  style="width: 30%;">Descripción</th>
                                         <td class="text-center p-1"  style="width: 20%;" colspan="3">'.$OrdenFabricacion->Descripcion.'</td>
+                                    </tr>
+                                    <tr><th class="text-center" colspan="4">Detalles del Cable</th></tr>
+                                    <tr>
+                                        <th class="bg-light p-1"  style="width: 30%;">Número Parte Cable</th>
+                                        <td class="text-center p-1"  style="width: 20%;">'.$DetallesCable[0]['Hijo'].'</td>
+                                        <th class="bg-light p-1"  style="width: 30%;">Medida del Corte</th>
+                                        <td class="text-center p-1"  style="width: 20%;">'.$DetallesCable[0]['Cantidad Base'].'</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light p-1"  style="width: 30%;">Descripción Cable</th>
+                                        <td class="text-center p-1"  style="width: 20%;" colspan="3">'.$DetallesCable[0]['Nombre Hijo'].'</td>
                                     </tr>
                                 </tbody>
                             </table>';
@@ -184,6 +196,8 @@ class CorteController extends Controller
                             Finalizar
                         </button>
                     </td>';
+                        }else{
+                            $Ordenfabricacionpartidas .= '<td></td><td></td>';
                         }
                         $Ordenfabricacionpartidas .= '</tr>';
                     }
@@ -220,7 +234,6 @@ class CorteController extends Controller
             $opciones='<option selected disabled>Selecciona una Emisión de producción</option>';
             //Funcion para traer las emisiones esta en el archivo FuncionesGeneralesController
             $Emisiones=$this->funcionesGenerales->Emisiones($OrdenFabricacion->OrdenFabricacion);
-            $this->funcionesGenerales->OrdenFabricacion($OrdenFabricacion->OrdenFabricacion);
                 foreach ($Emisiones as $Emision){
                     $Emisiondatos=$OrdenFabricacion->Emisions()->where('NumEmision',$Emision['NoEmision'])->first();
                         if($Emisiondatos==""){
@@ -280,6 +293,19 @@ class CorteController extends Controller
                         return response()->json([
                             'status' => 'errorEmision',
                             'message' =>'Partida no guardada, La orden de Emision es requerida!',
+                        ], 200);
+                    }
+                    $ComprobarOrdenEmicion=$this->funcionesGenerales->EmisioneFiltro($OrdenFabricacion->OrdenFabricacion,$ordenemision);
+                    if(count($ComprobarOrdenEmicion)==0){
+                        return response()->json([
+                            'status' => 'errorEmision',
+                            'message' =>'Partida no guardada, La orden de Emision no coincide con la Orden de Fabricacion!',
+                        ], 200);
+                    }
+                    if($Cantitadpiezas!=$ComprobarOrdenEmicion[0]['Cantidad']){
+                        return response()->json([
+                            'status' => 'errorEmision',
+                            'message' =>'Partida no guardada, La cantidad solicitado no coincide con la cantidad de la Emision de producción!',
                         ], 200);
                     }
                 }elseif($retrabajo=='Normal')

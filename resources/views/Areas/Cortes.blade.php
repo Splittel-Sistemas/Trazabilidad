@@ -42,7 +42,7 @@
                     <!-- Tab Proceso -->
                     <div class="tab-pane fade show active" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab">
                         <div class="table-responsive card">
-                            <table id="procesoTable" class="table table-sm">
+                            <table id="procesoTable" class="table table-sm" style="display: none;">
                                 <thead>
                                     <tr class="bg-light">
                                         <th>Orden Fabricación</th>
@@ -449,6 +449,7 @@
             $('#Cantitadpiezas').val(cantidad);
         });
         setInterval(RecargarTabla, 60000);
+        $('#procesoTable').show();
     });
     function RecargarTabla(){
         $.ajax({
