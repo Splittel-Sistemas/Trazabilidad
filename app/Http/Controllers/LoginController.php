@@ -18,46 +18,37 @@ class LoginController extends Controller
 }
 public function login(Request $request)
 {
-    // Determinar si es administrativo o operador
-    if ($request->has('email') && $request->has('password')) {
-        // Validación para administrativos
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+    // Validación de las credenciales
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+    $remember = $request->has('remember');
+   // $encryptedPassword = bcrypt('12345678');
+    //dd($encryptedPassword);
+  
 
-        $credentials = [
-            'email' => $request->email,
-            'password' => $request->password,
-        ];
+    // Obtener las credenciales
+    $credentials = [
+        'email' => $request->email,
+        'password' => $request->password,
+    ];
+   
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('Home')); // Redirigir si las credenciales son correctas
-        }
+    // Intentar autenticar al usuario
+    if (Auth::attempt($credentials, $remember)) {
+        // Regenerar la sesión
+        $request->session()->regenerate();
 
-        return redirect('login')->withErrors(['email' => 'Correo electrónico o contraseña incorrectos.']);
-    } 
-    elseif ($request->has('clave')) {
-        // Validación para operadores
-        $request->validate([
-            'clave' => 'required|string',
-        ]);
-
-        // Buscar operador por clave en la base de datos
-        $user = User::where('clave', $request->clave)->first();
-
-        if ($user) {
-            Auth::login($user);
-            return redirect()->intended(route('Home'));
-        }
-
-        return redirect('login')->withErrors(['clave' => 'Clave incorrecta.']);
+        // Redirigir al usuario a la página principal
+        return redirect()->intended(route('Home'));
+    } else {
+        // Si las credenciales son incorrectas
+        return redirect('login')
+            ->withInput($request->only('email')) // Retornar el email ingresado
+            ->withErrors(['email' => 'Correo electrónico o contraseña incorrectos.']);
     }
-
-    return redirect('login')->withErrors(['error' => 'Debe ingresar credenciales válidas.']);
 }
-
 
 public function register(Request $request)
 {
@@ -88,6 +79,34 @@ public function logout(Request $request)
     $request->session()->regenerateToken(); // Regenera el token CSRF
     return redirect()->route('login_view'); // Redirige al login o página de inicio
 }
+
+
+public function operador(Request $request)
+{
+    // Validar que la clave sea ingresada
+    $request->validate([
+        'clave' => 'required',
+    ]);
+    //dd($request);
+
+    // Buscar al usuario por la clave
+    $operador = User::where('password', $request->clave)->first(); // Asegúrate de que 'clave' esté bien referenciado
+   // dd($operador);
+
+    // Si existe, iniciar sesión
+    if ($operador) {
+        Auth::login($operador);
+        $request->session()->regenerate();
+        return redirect()->intended(route('Home'));
+    }
+
+    // Si la clave no existe, mostrar error
+    return redirect()->route('login_view')
+        ->withErrors(['clave' => 'Clave incorrecta.']); // Cambié 'password' a 'clave' en el mensaje de error
+}
+
+
+
 
 
 

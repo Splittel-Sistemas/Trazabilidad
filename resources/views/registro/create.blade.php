@@ -19,7 +19,7 @@
     <div class="breadcrumbs mb-4">
         <div class="row gy-3 mb-2 justify-content-between">
             <div class="col-md-9 col-auto">
-            <h4 class="mb-2 text-1100">Registrar Nuevo Usuario</h4>
+            <h4 class="mb-2 text-1100">Registrar </h4>
             </div>
         </div>
         @if ($errors->any())
@@ -31,17 +31,28 @@
                 </ul>
             </div>
         @endif
-        <form action="{{ route('registro.store') }}" method="POST" class="shadow p-4 rounded bg-white">
+        <div class="card">
+            <div class="form-check">
+                <input class="form-check-input" id="administrador" type="radio" name="usuario_tipo" onchange="toggleForm()">
+                <label class="form-check-label" for="administrador">Crear Usuario Administrativo</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" id="operador" type="radio" name="usuario_tipo" checked onchange="toggleForm()">
+                <label class="form-check-label" for="operador">Crear Usuario Operador</label>
+            </div>
+        </div>
+        <div style="height: 30px;"></div>
+        
+        <!-- Formulario Administrativo (oculto por defecto) -->
+        <form action="{{ route('registro.store') }}" method="POST" class="shadow p-4 rounded bg-white" id="form_administrador" style="display:none;">
             @csrf
             <div class="row mb-4">
-                <!-- Apellido -->
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="apellido">Apellido</label>
                         <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Ingrese su apellido" required>
                     </div>
                 </div>
-                <!-- Nombre -->
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="name">Nombre</label>
@@ -49,7 +60,6 @@
                     </div>
                 </div>
             </div>
-            <!-- Correo Electrónico -->
             <div class="row mb-3">
                 <div class="col-md-12">
                     <div class="form-group">
@@ -58,7 +68,6 @@
                     </div>
                 </div>
             </div>
-            <!-- Contraseña y Confirmar Contraseña -->
             <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -73,14 +82,13 @@
                     </div>
                 </div>
             </div>
-            <!-- Roles -->
             <div class="form-group">
                 <label class="font-weight-bold">Roles</label>
                 <small class="form-text text-muted">Seleccione uno o más roles.</small>
                 <div class="roles-container d-flex flex-wrap">
                     @foreach ($roles as $value)
                         <div class="form-check mr-3 mb-2">
-                            <input type="checkbox" name="roles[]" id="role_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
+                            <input type="checkbox" name="roles[]" id="role_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input"
                                 {{ (isset($registro) && $registro->roles->contains($value->id)) ? 'checked' : '' }}>
                             <label for="role_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
                         </div>
@@ -90,15 +98,62 @@
                     <div class="text-danger">{{ $message }}</div> 
                 @enderror
             </div>
-            
-            <!-- Botón de envío -->
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-success btn-lg rounded-pill shadow-lg transition-all hover:bg-success hover:text-white">Registrar</button>
+            </div>   
+        </form>
+        
+        <!-- Formulario Operador (oculto por defecto) -->
+        <form action="{{ route('operador.store') }}" method="POST" class="shadow p-4 rounded bg-white" id="form_operador" style="display:none;">
+            @csrf
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="apellido_operador">Apellido</label>
+                        <input type="text" name="apellido" id="apellido_operador" class="form-control" placeholder="Ingrese su apellido" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="name_operador">Nombre</label>
+                        <input type="text" name="name" id="name_operador" class="form-control" placeholder="Ingrese su nombre" required>
+                    </div>
+                </div>
+
+             
+               
+            </div>
             <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-success btn-lg rounded-pill shadow-lg transition-all hover:bg-success hover:text-white">Registrar</button>
             </div>   
         </form>
         
     </div>
-
+      <script>
+            function toggleForm() {
+                // Ocultar ambos formularios
+                document.getElementById("form_operador").style.display = "none";
+                document.getElementById("form_administrador").style.display = "none";
+        
+                // Mostrar el formulario correspondiente según la selección
+                if (document.getElementById("administrador").checked) {
+                    document.getElementById("form_administrador").style.display = "block";
+                } else {
+                    document.getElementById("form_operador").style.display = "block";
+                }
+            }
+        
+            // Inicializar con el formulario de operador visible
+            window.onload = toggleForm;
+        </script>
+  <!--- <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="clave_operador">clave</label>
+                            <input type="text" name="clave" id="clave_operador" class="form-control" placeholder="Ingrese su nombre" required>
+                        </div>
+                    </div>
+                </div>-->
 
     
 @endsection

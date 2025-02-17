@@ -214,6 +214,7 @@ class BusquedaController extends Controller
                 )
                 ->groupBy('ordenventa.OrdenVenta')
                 ->get();
+                
             //estacion ensamble
             }elseif($tipo === 'ensamble'){ 
                 $result = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
@@ -401,7 +402,7 @@ class BusquedaController extends Controller
                 'progreso' => $progresoValor
             ]);
     }
-        
+   // 132785
     //graficador OF
     public function GraficadorFabricacion(Request $request)
     {
@@ -416,12 +417,12 @@ class BusquedaController extends Controller
                 ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
                 ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
                 ->select(
-                    'ordenfabricacion.OrdenFabricacion',
+                    'ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion',
                     DB::raw('ordenfabricacion.CantidadTotal'),
                     DB::raw('SUM(partidasof.cantidad_partida) as TotalPartidas'),
                     DB::raw('ROUND((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100) as Progreso')
                 )
-                ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+                ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo','partidasof.FechaFinalizacion',)
                 ->get();
 
                 //dd($resultOF);
@@ -436,11 +437,11 @@ class BusquedaController extends Controller
                     ->where('partidasof_areas.Areas_id', 3)
                     ->select(
                         'ordenfabricacion.OrdenFabricacion',
-                        DB::raw('(ordenfabricacion.CantidadTotal)'),
+                        DB::raw('(ordenfabricacion.CantidadTotal)'), 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina',
                         DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
                         DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal','partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')  
                     ->get();
 
             //estacion preparado

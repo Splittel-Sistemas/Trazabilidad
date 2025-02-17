@@ -934,113 +934,116 @@
 
         ];
         endpoints.forEach(endpoint => {
-            $.ajax({
-                url: '{{ route("graficadoOF") }}',
-                type: 'GET',
-                data: { 
-                    id: ordenfabricacion, 
-                    tipo: endpoint.tipo, 
-                },
-                success: function (response) {
-                    if (response.length > 0) {
-                        const firstOrder = response[0];
-                        let cantidadTotal = firstOrder.CantidadTotal;
-                        let totalPartidas = firstOrder.TotalPartidas;
-                        let retrabajo = 0;
-                        let label = '';
+    $.ajax({
+        url: '{{ route("graficadoOF") }}',
+        type: 'GET',
+        data: { 
+            id: ordenfabricacion, 
+            tipo: endpoint.tipo, 
+        },
+        success: function (response) {
+            if (response.length > 0) {
+                const firstOrder = response[0];
+                let cantidadTotal = firstOrder.CantidadTotal;
+                let totalPartidas = firstOrder.TotalPartidas;
+                let retrabajo = 0;
+                let label = '';
+                let fechaComienzo = firstOrder.FechaComienzo || 'N/A';
+                let fechaTermina = firstOrder.FechaTermina || 'N/A';
 
-                        if (totalPartidas > cantidadTotal) {
-                            retrabajo = totalPartidas - cantidadTotal;
-                            totalPartidas = cantidadTotal; 
-                            label = `Retrabajo: ${retrabajo}`;
-                        }
-
-                        let progreso = Math.round((totalPartidas / cantidadTotal) * 100);
-                        drawGauge(endpoint.id, progreso, label);
-                    } else {
-                        console.log('No hay datos para mostrar.');
-                        drawGauge(endpoint.id, 0, 'Sin Datos');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
+                if (totalPartidas > cantidadTotal) {
+                    retrabajo = totalPartidas - cantidadTotal;
+                    totalPartidas = cantidadTotal; 
+                    label = `Retrabajo: ${retrabajo}<br>`; // Agrega <br> para salto de línea en HTML
                 }
-            });
-        });
+
+                // Agregar fechas con <br> para mantener el formato deseado
+                label += `Fecha Inicio: ${fechaComienzo}<br>`;
+                label += `Fecha Final: ${fechaTermina}`;
+
+                let progreso = Math.round((totalPartidas / cantidadTotal) * 100);
+                drawGauge(endpoint.id, progreso, label);
+            } else {
+                console.log('No hay datos para mostrar.');
+                let mensaje = `Sin Datos<br>Fecha Inicio: N/A<br>Fecha Final: N/A`;
+
+                drawGauge(endpoint.id, 0, mensaje);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
+        }
+    });
+});
+
+
+
     });
 
     //funcion para cargar los canvases general para Or-V Y Or-F
     function drawGauge(canvasId, value, label) {
-        const canvas = document.getElementById(canvasId);
-        canvas.style.webkitTapHighlightColor = 'rgba(0, 0, 0, 0)'; // Desactivar el resaltado táctil
+    const canvas = document.getElementById(canvasId);
+    canvas.style.webkitTapHighlightColor = 'rgba(0, 0, 0, 0)'; // Desactivar el resaltado táctil
 
-        const ctx = canvas.getContext('2d');
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const radius = 85;
-        const startAngle = Math.PI;
-        const endAngle = 2 * Math.PI;
+    const ctx = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = 85;
+    const startAngle = Math.PI;
+    const endAngle = 2 * Math.PI;
 
-        // Variables para ajustar manualmente las posiciones de los números
-        const offsetX = 0; // Desplazamiento horizontal de los números (0 = centrado)
-        const offsetY = 30; // Desplazamiento vertical de los números (ajústalo según necesites)
+    // Limpiar el lienzo
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Limpiar el lienzo
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Dibujar el arco de fondo
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+    ctx.lineWidth = 50;
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.lineCap = 'butt';
+    ctx.stroke();
 
-        // Dibujar el arco de fondo con borde más delgado
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-        ctx.lineWidth = 50;  // Ancho de línea ajustado para mejor balance
-        ctx.strokeStyle = '#e0e0e0';  // Gris suave para el fondo
-        ctx.lineCap = 'butt';
-        ctx.stroke();
+    // Determinar color según valor
+    let strokeColor;
+    if (value <= 20) strokeColor = '#e74c3c'; // Rojo
+    else if (value <= 50) strokeColor = '#f39c12'; // Naranja
+    else if (value <= 90) strokeColor = '#f1c40f'; // Amarillo
+    else strokeColor = '#15e631'; // Verde
 
-        // Determinar el color del arco según el valor
-        let strokeColor;
-        if (value <= 20) strokeColor = '#e74c3c'; // Rojo
-        else if (value <= 50) strokeColor = '#f39c12'; // Naranja
-        else if (value <= 90) strokeColor = '#f1c40f'; // Amarillo
-        else strokeColor = '#15e631'; // Verde
+    // Dibujar arco de progreso
+    const valueAngle = startAngle + (value / 100) * (endAngle - startAngle);
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, startAngle, valueAngle);
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 40;
+    ctx.lineCap = 'butt';
+    ctx.stroke();
 
-        // Ajuste para hacer el principio y final del arco un poco cuadrado
-        const valueAngle = startAngle + (value / 100) * (endAngle - startAngle);
+    // Dibujar porcentaje en el centro
+    ctx.font = '30px Arial';
+    ctx.fillStyle = strokeColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${value}%`, centerX, centerY - 10);
 
-        // Dibujar el arco del valor con color dinámico
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, startAngle, valueAngle);
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = 40; // Ancho del arco ajustado para mejor visibilidad
-        ctx.lineCap = 'butt'; // Ajustar el borde a cuadrado en el inicio y final
-        ctx.stroke();
+    // Dibujar etiquetas debajo del valor
+    ctx.font = '16px Arial';
+    ctx.fillStyle = '#000000';
 
-        // Determinar el color del texto del valor
-        let valueTextColor = strokeColor; // Usar el mismo color del arco
-        ctx.font = '30px Arial';  // Fuente más grande para el valor
-        ctx.fillStyle = valueTextColor;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle'; // Asegura que el texto esté alineado verticalmente en el medio
+    // Descomponer label en líneas separadas
+    let labels = label.split('\n'); // Asegurar que se pasan como texto separado por "\n"
 
-        // Ajustar la posición vertical del texto para alinearlo con el arco
-        // Aquí, `centerY` ajustado verticalmente para que esté alineado con el arco
-        ctx.fillText(`${value}%`, centerX, centerY);
+    // Dibujar cada línea de texto
+    labels.forEach((text, index) => {
+        ctx.fillText(text, centerX, centerY + 25 + (index * 20)); // Separación de 20px entre líneas
+    });
 
-        // Etiqueta debajo del valor
-        ctx.font = '18px Arial';
-        ctx.fillStyle = '#17a2b8';  // Color suave para la etiqueta
-        ctx.fillText(label, centerX, centerY + 40);  // Espaciado ajustado
+    // Dibujar marcas de 0 y 100
+    ctx.font = '16px Arial';
+    ctx.fillText('0', centerX - radius, centerY + 20);
+    ctx.fillText('100', centerX + radius, centerY + 20);
+}
 
-        // Dibujar las marcas de 0 y 100 fuera del arco, ajustable manualmente
-        ctx.font = '16px Arial';
-        ctx.fillStyle = '#000000';  // Color para los números de la escala
-
-        // Dibujar el "0" justo debajo del inicio del arco
-        ctx.fillText('0', centerX - radius, centerY+ 20);
-
-        // Dibujar el "100" en el final del arco
-        ctx.fillText('100', centerX + radius, centerY + 20); // Ajusta la posición vertical
-        //la posición
-    }
 
     //para el clic de .stage
     $(document).ready(function() {

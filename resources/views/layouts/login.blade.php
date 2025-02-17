@@ -160,6 +160,25 @@
             border: 3px solid #007bff;
             color: #007bff;
         }
+
+
+
+        #login-operador {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 90px;
+            background-color: #0056b3;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #login-operador:hover {
+            background-color: #003d82;
+        }
+
     </style>
 </head>
 <body>
@@ -179,23 +198,26 @@
                     <span class="btn btn-outline-primary mx-2 active" id="toggleAdministrativo">Administrativo</span>
                     <span class="btn btn-outline-primary mx-2" id="toggleOperadores">Operadores</span>
                 </div>
-
-                <form method="POST" action="{{ route('login_post') }}" class="form">
+                
+                <!-- Formulario para Administrativos -->
+                <form method="POST" action="{{ route('login_post') }}" class="form" id="formAdministrativo">
                     @csrf
-                    
-                    <!-- Campos administrativos -->
                     <div id="administrativoFields">
                         <input name="email" type="text" placeholder="Correo Electrónico" value="{{ old('email') }}" required class="input-field">
                         <input name="password" type="password" placeholder="Contraseña" required class="input-field">
                     </div>
-                    
-                    <!-- Campos operadores (ocultos por defecto) -->
-                    <div id="operadoresFields" style="display: none;">
-                        <input name="clave" type="text" placeholder="Clave" required class="input-field">
-                    </div>
-                    
                     <button type="submit" id="login-button">Ingresar</button>
                 </form>
+                
+                <!-- Formulario para Operadores (Oculto por defecto) -->
+                <form method="POST" action="{{ route('operador.login') }}" class="form" id="formOperador" style="display: none;">
+                    @csrf
+                    <input name="clave" type="text" placeholder="Clave" required class="input-field">
+                    <button type="submit" id="login-operador">Ingresar</button>
+                </form>
+                    
+                    
+                   
             </div>
         </div>
     </div>
@@ -214,19 +236,26 @@
     </ul>
 </body>
 <script>
-     document.getElementById('toggleAdministrativo').addEventListener('click', function() {
-        this.classList.add('active');
-        document.getElementById('toggleOperadores').classList.remove('active');
-        document.getElementById('administrativoFields').style.display = 'block';
-        document.getElementById('operadoresFields').style.display = 'none';
-    });
+document.getElementById('toggleAdministrativo').addEventListener('click', function() {
+    // Activar el botón de Administrativos
+    this.classList.add('active');
+    document.getElementById('toggleOperadores').classList.remove('active');
 
-    document.getElementById('toggleOperadores').addEventListener('click', function() {
-        this.classList.add('active');
-        document.getElementById('toggleAdministrativo').classList.remove('active');
-        document.getElementById('administrativoFields').style.display = 'none';
-        document.getElementById('operadoresFields').style.display = 'block';
-    });
+    // Mostrar solo el formulario de Administrativos
+    document.getElementById('formAdministrativo').style.display = 'block';
+    document.getElementById('formOperador').style.display = 'none';
+});
+
+document.getElementById('toggleOperadores').addEventListener('click', function() {
+    // Activar el botón de Operadores
+    this.classList.add('active');
+    document.getElementById('toggleAdministrativo').classList.remove('active');
+
+    // Mostrar solo el formulario de Operadores
+    document.getElementById('formAdministrativo').style.display = 'none';
+    document.getElementById('formOperador').style.display = 'block';
+});
 
 </script>
+
 </html>
