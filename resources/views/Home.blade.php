@@ -395,82 +395,6 @@
         <div id="chart-month" class="chart-container"></div>
     </div>
 
-    <!------------------------>
-    <!----
-    <h1 class="progress-title">Tablas de Progresos</h1>
-    <div class="container mt-4">-->
-        <!--
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="text-danger">
-                            Órdenes Iniciadas: <span id="ordenFabricacionNumero" class="ms-3 text-muted"></span>
-                        </h5>
-                        <div id="retrabajo1" class="mb-3"></div>
-                        <div class="card border border-light mx-auto" style="max-width: 420px; border-radius: 40px; box-shadow: 0 1px 1px rgba(23, 60, 182, 0.1); height: 50px; width: 44%;">
-                            <div class="card-body p-1 d-flex align-items-center" style="height: 100%;">
-                                <form id="form-buscar-venta" style="width: 100%;">
-                                    <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
-                                        <input class="form-control search-input search form-control-sm" type="text" name="search" placeholder="Buscar Por Orden De Venta..." style="flex: 1; border-radius: 20px; padding: 10px;">
-                                        <button class="btn btn-outline-primary ml-2" type="button" id="buscarVenta" style="border-radius: 20px;">
-                                            <i class="uil uil-search"></i> Buscar
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <div style="max-height: 300px; overflow-y: auto;">
-                            <table class="table table-striped table-sm mb-0" style="font-size: 12px;">
-                                <thead class="bg-danger text-white">
-                                    <tr>
-                                        <th class="sort border-top">Orden Fabricación</th>
-                                        <th class="sort border-top ps-3">Artículo</th>
-                                        <th class="sort border-top">Descripción</th>
-                                        <th class="sort border-top">Cantidad Total</th>
-                                        <th class="sort border-top">Cortes</th>
-                                        
-                                    </tr>
-                                </thead>
-                                <tbody id="orden-list" style="line-height: 1;">
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-             Card para Órdenes Completadas -->
-            <!--<div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="text-success">
-                            Órdenes Completadas: <span id="ordenesCompletadasNumero" class="ms-3 text-muted"></span>
-                        </h5>
-                        <div style="max-height: 300px; overflow-y: auto;">
-                            <table class="table table-striped table-sm mb-0"  style="font-size: 12px;">
-                                <thead class="bg-success text-white">
-                                    <tr>
-                                        <th class="sort border-top">Orden Fabricación</th>
-                                        <th class="sort border-top ps-3">Artículo</th>
-                                        <th class="sort border-top">Descripción</th>
-                                        <th class="sort border-top">Cantidad Total</th>
-                                        <th class="sort border-top">Fecha de Finalización</th>
-                                        <th class="border-top">Detalles</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="ordenes-completadas-list"  style="line-height: 1;">
-                                    
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-   </div>-->
-    <!----------------------->
-
 @endsection
 
 @section('scripts')
@@ -583,9 +507,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             });
         })
-        .catch(error => console.error('Error al cargar los datos:', error));
-        
-});
+        .catch(error => console.error('Error al cargar los datos:', error));    
+    });
 
 fetch("{{ route('orden.cerredas') }}")
     .then(response => response.json())

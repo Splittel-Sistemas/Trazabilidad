@@ -214,6 +214,85 @@
                     background-color: #fff; 
                     display: block; 
         }
+
+
+
+        #collapseContent {
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.toggle-icon {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+
+
+/* Estilo para la tarjeta */
+.estacion-card {
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.estacion-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilo para el contenido de la tarjeta */
+.card-body {
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+/* Estilo para los títulos */
+.card-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Estilo para los textos */
+.card-text {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Estilos para las etiquetas (badge) */
+.badge {
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin-right: 5px;
+}
+
+.badge-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: white;
+}
+
+.badge-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.badge-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+
     </style>
 
 @endsection
@@ -374,8 +453,42 @@
                                 <h1 class="small-title">Estación Empaque</h1>
                                 <canvas id="plemasEmpaque" width="300" height="300"></canvas>
                             </div>
+                        </div><!--
+                        
+                        <div style="height: 30px;"></div>
+                        <div class="text-end">
+                            <button class="btn btn-outline-info VerMas">
+                                Tiempos De Ordenes
+                            </button>
+                        </div>-->
+                        <div style="height: 30px;"></div>
+                        <div class="text-end">
+                            <button class="btn btn-outline-info VerMas">
+                                Tiempos De Ordenes
+                                <span class="toggle-icon">+</span>  <!-- Icono para abrir/cerrar -->
+                            </button>
                         </div>
+                        
+
+
+
+
         
+
+                        
+                        <!-- Contenedor colapsable -->
+                        <div class="collapse mt-3" id="collapseContent">
+                            <div class="card">
+                                <div class="card-body">
+                                    <strong></strong><br>
+                                    <div id="estacionesContainer" data-ordenfabricacion="ordenfabricacion" style="display: flex; flex-wrap: wrap; gap: 20px;">
+                                        
+                                        <!-- Aquí se cargarán los datos dinámicamente -->
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>        
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
@@ -803,7 +916,7 @@
         $.ajax({
             url: '{{ route("Buscar.Fabricacion") }}', 
             method: 'GET',
-            data: { search: search }, 
+            data: { search: search },
             success: function (data) {
                 var tablaFabricacion = $('#tablaFabricacion');
                 var tbody = $('#tabla-resultadosFabricacion');
@@ -817,9 +930,8 @@
                                 <td>${item.Articulo}</td>
                                 <td>${item.Descripcion}</td>
                                 <td>${item.CantidadTotal}</td>
-                                
                                 <td class="text-center align-middle">
-                                    <a href="#" class="btn btn-info btn-sm ver-fabricacion" 
+                                    <a href="#" class="btn btn-info btn-sm ver-fabricacion"
                                     data-id="${item.id}"
                                     data-ordenfabricacion="${item.OrdenFabricacion}"
                                     data-descripcion="${item.Descripcion}"
@@ -844,9 +956,12 @@
         });
     }
 
+
     //detalles de la orden de fabricacion
     $(document).on('click', '.ver-fabricacion', function (e) {
         var ordenfabricacion = $(this).data('ordenfabricacion');
+       
+
         console.log(ordenfabricacion);  // Para depuración
 
         $.ajax({
@@ -1041,7 +1156,6 @@
         ctx.fillText('100', centerX + radius, centerY + 20); // Ajusta la posición vertical
         //la posición
     }
-
     //para el clic de .stage
     $(document).ready(function() {
         $('.stage').on('click', function() {
@@ -1143,7 +1257,80 @@
             }
         });
     }
+    // Cuando se haga clic en una fila para seleccionar la OrdenFabricacion
+    $(document).on('click', '.ver-fabricacion', function () {
+        var ordenfabricacion = $(this).data('ordenfabricacion');  // Obtener el valor de ordenfabricacion desde la fila
+        console.log('Orden de fabricación seleccionada:', ordenfabricacion);  // Verifica que se obtiene el valor
 
+        // Asignar ese valor al botón VerMas
+        $('.VerMas').data('ordenfabricacion', ordenfabricacion);  // Asigna el valor al botón
+        console.log('Valor asignado al botón VerMas:', $('.VerMas').data('ordenfabricacion'));  // Verifica que se asignó correctamente
+
+        // Si deseas que el texto del botón también cambie para indicar la orden seleccionada:
+        $('.VerMas').text(`Tiempos De Ordenes - Orden ${ordenfabricacion}`);
+    });
+
+    // Lógica cuando se hace clic en el botón VerMas
+    $(document).on('click', '.VerMas', function (e) {
+        var ordenfabricacion = $(this).data('ordenfabricacion');  // Obtener el valor del botón dinámicamente
+        console.log('Orden de fabricación en el botón VerMas:', ordenfabricacion);  // Verifica que el valor es correcto
+        
+        if (!ordenfabricacion) {
+            alert("No se ha seleccionado ninguna Orden de Fabricación.");
+            return;
+        }
+
+        let content = $("#collapseContent");
+        let container = $("#estacionesContainer");
+        let icon = $(this).find('.toggle-icon');  // Icono de apertura/cierre
+
+        let isOpen = content.hasClass("show");
+
+        $.ajax({
+            url: '{{ route("tiempo.orden") }}',
+            type: "GET",
+            data: { ordenfabricacion: ordenfabricacion },  // Envía la orden fabricacion al servidor
+            dataType: "json",
+            success: function (response) {
+                console.log('Datos recibidos:', response);
+                container.html("");  // Limpia el contenedor de resultados
+
+                response.forEach(resultado => {
+                    let tiempoDuracion = null;
+                    if (resultado.Tiempoinicio && resultado.Tiempofin) {
+                        let inicio = new Date(resultado.Tiempoinicio);
+                        let fin = new Date(resultado.Tiempofin);
+                        let diferencia = fin - inicio;
+                        let horas = diferencia / (1000 * 60 * 60);  // Calcular la diferencia en horas
+                        tiempoDuracion = `${horas.toFixed(2)} horas`;
+                    }
+
+                    let card = `
+                        <div class="card estacion-card">
+                            <div class="card-body">
+                                <h5 class="card-title">${resultado.fase}</h5>
+                                <p class="card-text">
+                                    <strong>Duración:</strong> <span class="badge ${tiempoDuracion ? 'badge-success' : 'badge-warning'}">${tiempoDuracion ?? 'No registrado'}</span><br>
+                                </p>
+                            </div>
+                        </div>`;
+                    container.append(card);  // Agregar la tarjeta al contenedor
+                });
+
+                // Alternar la visibilidad del contenido
+                if (isOpen) {
+                    content.removeClass("show").slideUp();
+                    icon.text('+');
+                } else {
+                    content.addClass("show").slideDown();
+                    icon.text('−');
+                }
+            },
+            error: function () {
+                alert("Error al cargar los tiempos de las estaciones.");
+            }
+        });
+    });
 </script>
 @endsection
 

@@ -16,6 +16,10 @@ use GuzzleHttp\Promise\Coroutine;
 use Illuminate\Routing\Route as RoutingRoute;
 
 
+
+Route::post('/operador_login', [loginController::class, 'operador'])->name('operador.login');
+
+
 // Ruta para mostrar el formulario de login
 Route::get('/login', [loginController::class, 'login_view'])->name('login_view');
 Route::post('/login', [loginController::class, 'login'])->name('login_post');
@@ -118,12 +122,14 @@ Route::post('/generar-pdf-rangos', [CorteController::class, 'PDFCondicion'])->na
 
 //ruta para el formulario de registro
 Route::get('/registro', [RegistroController::class, 'index'])->name('registro.index');
+Route::get('/tabla/registro',[RegistroController::class, 'tablaPrincipal'])->name('principal.tabla');
 
     Route::post('/users/activar', [RegistroController::class, 'activar'])->name('users.activar');
     Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar');
     
     // Ruta para mostrar el formulario de creación
     Route::get('/registro/create', [RegistroController::class, 'create'])->name('registro.create');
+    Route::post('/operador/store', [RegistroController::class, 'storeoperador'])->name('operador.store');
     
     // Ruta para almacenar un nuevo rol o permiso
     Route::post('/registro/store', [RegistroController::class, 'store'])->name('registro.store');
@@ -179,6 +185,7 @@ Route::get('/graficador', [BusquedaController::class, 'Graficador'])-> name('gra
 Route::get('/detallesOF',[BusquedaController::class, 'DetallesOF'])->name('Detalles.Fabricacion');
 Route::get('/graficadorOF',[BusquedaController::class,'GraficadorFabricacion'])->name('graficadoOF');
 Route::get('/graficasOR/OF',[BusquedaController::class,'GraficarOROF'])->name('graficarOR.OF');
+Route::get('/tiempos/fabricacion',[BusquedaController::class, 'tiemposOrden'])->name('tiempo.orden');
 
 //rutas del dashboard
 
