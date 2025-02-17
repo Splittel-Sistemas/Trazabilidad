@@ -453,22 +453,13 @@
                                 <h1 class="small-title">Estación Empaque</h1>
                                 <canvas id="plemasEmpaque" width="300" height="300"></canvas>
                             </div>
-                        </div><!--
-                        
-                        <div style="height: 30px;"></div>
-                        <div class="text-end">
-                            <button class="btn btn-outline-info VerMas">
-                                Tiempos De Ordenes
-                            </button>
-                        </div>-->
+                        </div>
                         <div style="height: 30px;"></div>
                         <div class="text-end">
                             <button class="btn btn-info VerMas" style="width: 100px; height: 35px; padding: 10px;">
                                 <i class="fa fa-clock"></i> Más <!-- Icono de reloj -->
                             </button>
                         </div>
-                        
-                        
                         <!-- Contenedor colapsable -->
                         <div class="collapse mt-3" id="collapseContent">
                             <div class="card">
@@ -1265,65 +1256,75 @@
 
     // Lógica cuando se hace clic en el botón VerMas
     $(document).on('click', '.VerMas', function (e) {
-        var ordenfabricacion = $(this).data('ordenfabricacion');  // Obtener el valor del botón dinámicamente
-        console.log('Orden de fabricación en el botón VerMas:', ordenfabricacion);  // Verifica que el valor es correcto
-        
-        if (!ordenfabricacion) {
-            alert("No se ha seleccionado ninguna Orden de Fabricación.");
-            return;
-        }
+    var ordenfabricacion = $(this).data('ordenfabricacion');
+    console.log('Orden de fabricación en el botón VerMas:', ordenfabricacion);
 
-        let content = $("#collapseContent");
-        let container = $("#estacionesContainer");
-        let icon = $(this).find('.toggle-icon');  // Icono de apertura/cierre
+    if (!ordenfabricacion) {
+        alert("No se ha seleccionado ninguna Orden de Fabricación.");
+        return;
+    }
 
-        let isOpen = content.hasClass("show");
+    let content = $("#collapseContent");
+    let container = $("#estacionesContainer");
+    let icon = $(this).find('.toggle-icon');
 
-        $.ajax({
-            url: '{{ route("tiempo.orden") }}',
-            type: "GET",
-            data: { ordenfabricacion: ordenfabricacion },  // Envía la orden fabricacion al servidor
-            dataType: "json",
-            success: function (response) {
-                console.log('Datos recibidos:', response);
-                container.html("");  // Limpia el contenedor de resultados
+    let isOpen = content.hasClass("show");
 
-                response.forEach(resultado => {
-                    let tiempoDuracion = null;
-                    if (resultado.Tiempoinicio && resultado.Tiempofin) {
-                        let inicio = new Date(resultado.Tiempoinicio);
-                        let fin = new Date(resultado.Tiempofin);
-                        let diferencia = fin - inicio;
-                        let horas = diferencia / (1000 * 60 * 60);  // Calcular la diferencia en horas
-                        tiempoDuracion = `${horas.toFixed(2)} horas`;
-                    }
+    $.ajax({
+        url: '{{ route("tiempo.orden") }}',
+        type: "GET",
+        data: { ordenfabricacion: ordenfabricacion },
+        dataType: "json",
+        success: function (response) {
+            console.log('Datos recibidos:', response);
+            container.html("");
 
-                    let card = `
-                        <div class="card estacion-card">
-                            <div class="card-body">
-                                <h5 class="card-title">${resultado.fase}</h5>
-                                <p class="card-text">
-                                    <strong>Duración:</strong> <span class="badge ${tiempoDuracion ? 'badge-success' : 'badge-warning'}">${tiempoDuracion ?? 'No registrado'}</span><br>
-                                </p>
-                            </div>
-                        </div>`;
-                    container.append(card);  // Agregar la tarjeta al contenedor
-                });
+            response.forEach(resultado => {
+                let tiempoDuracion = "No registrado";
+                
+                if (resultado.Tiempoinicio && resultado.Tiempofin) {
+                    let inicio = new Date(resultado.Tiempoinicio);
+                    let fin = new Date(resultado.Tiempofin);
+                    let diferencia = fin - inicio; // Diferencia en milisegundos
 
-                // Alternar la visibilidad del contenido
-                if (isOpen) {
-                    content.removeClass("show").slideUp();
-                    icon.text('+');
-                } else {
-                    content.addClass("show").slideDown();
-                    icon.text('−');
+                    let dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+                    let horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    let minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+
+                    let partes = [];
+                    if (dias > 0) partes.push(`${dias} día${dias > 1 ? 's' : ''}`);
+                    if (horas > 0) partes.push(`${horas} hora${horas > 1 ? 's' : ''}`);
+                    if (minutos > 0) partes.push(`${minutos} minuto${minutos > 1 ? 's' : ''}`);
+
+                    tiempoDuracion = partes.join(", ");
                 }
-            },
-            error: function () {
-                alert("Error al cargar los tiempos de las estaciones.");
+
+                let card = `
+                    <div class="card estacion-card">
+                        <div class="card-body">
+                            <h5 class="card-title">${resultado.fase}</h5>
+                            <p class="card-text">
+                                <strong>Duración:</strong> <span class="badge ${tiempoDuracion !== "No registrado" ? 'badge-success' : 'badge-warning'}">${tiempoDuracion}</span><br>
+                            </p>
+                        </div>
+                    </div>`;
+                container.append(card);
+            });
+
+            if (isOpen) {
+                content.removeClass("show").slideUp();
+                icon.text('+');
+            } else {
+                content.addClass("show").slideDown();
+                icon.text('−');
             }
-        });
+        },
+        error: function () {
+            alert("Error al cargar los tiempos de las estaciones.");
+        }
     });
+});
+
 </script>
 @endsection
 
