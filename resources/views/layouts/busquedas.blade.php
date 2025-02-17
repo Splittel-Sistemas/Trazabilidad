@@ -214,6 +214,85 @@
                     background-color: #fff; 
                     display: block; 
         }
+
+
+
+        #collapseContent {
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.toggle-icon {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+
+
+/* Estilo para la tarjeta */
+.estacion-card {
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.estacion-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilo para el contenido de la tarjeta */
+.card-body {
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+/* Estilo para los títulos */
+.card-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Estilo para los textos */
+.card-text {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Estilos para las etiquetas (badge) */
+.badge {
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin-right: 5px;
+}
+
+.badge-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: white;
+}
+
+.badge-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.badge-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+
     </style>
 
 @endsection
@@ -374,8 +453,42 @@
                                 <h1 class="small-title">Estación Empaque</h1>
                                 <canvas id="plemasEmpaque" width="300" height="300"></canvas>
                             </div>
+                        </div><!--
+                        
+                        <div style="height: 30px;"></div>
+                        <div class="text-end">
+                            <button class="btn btn-outline-info VerMas">
+                                Tiempos De Ordenes
+                            </button>
+                        </div>-->
+                        <div style="height: 30px;"></div>
+                        <div class="text-end">
+                            <button class="btn btn-outline-info VerMas">
+                                Tiempos De Ordenes
+                                <span class="toggle-icon">+</span>  <!-- Icono para abrir/cerrar -->
+                            </button>
                         </div>
+                        
+
+
+
+
         
+
+                        
+                        <!-- Contenedor colapsable -->
+                        <div class="collapse mt-3" id="collapseContent">
+                            <div class="card">
+                                <div class="card-body">
+                                    <strong></strong><br>
+                                    <div id="estacionesContainer" data-ordenfabricacion="ordenfabricacion" style="display: flex; flex-wrap: wrap; gap: 20px;">
+                                        
+                                        <!-- Aquí se cargarán los datos dinámicamente -->
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>        
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
@@ -803,7 +916,7 @@
         $.ajax({
             url: '{{ route("Buscar.Fabricacion") }}', 
             method: 'GET',
-            data: { search: search }, 
+            data: { search: search },
             success: function (data) {
                 var tablaFabricacion = $('#tablaFabricacion');
                 var tbody = $('#tabla-resultadosFabricacion');
@@ -817,9 +930,8 @@
                                 <td>${item.Articulo}</td>
                                 <td>${item.Descripcion}</td>
                                 <td>${item.CantidadTotal}</td>
-                                
                                 <td class="text-center align-middle">
-                                    <a href="#" class="btn btn-info btn-sm ver-fabricacion" 
+                                    <a href="#" class="btn btn-info btn-sm ver-fabricacion"
                                     data-id="${item.id}"
                                     data-ordenfabricacion="${item.OrdenFabricacion}"
                                     data-descripcion="${item.Descripcion}"
@@ -844,9 +956,12 @@
         });
     }
 
+
     //detalles de la orden de fabricacion
     $(document).on('click', '.ver-fabricacion', function (e) {
         var ordenfabricacion = $(this).data('ordenfabricacion');
+       
+
         console.log(ordenfabricacion);  // Para depuración
 
         $.ajax({
@@ -934,117 +1049,113 @@
 
         ];
         endpoints.forEach(endpoint => {
-    $.ajax({
-        url: '{{ route("graficadoOF") }}',
-        type: 'GET',
-        data: { 
-            id: ordenfabricacion, 
-            tipo: endpoint.tipo, 
-        },
-        success: function (response) {
-            if (response.length > 0) {
-                const firstOrder = response[0];
-                let cantidadTotal = firstOrder.CantidadTotal;
-                let totalPartidas = firstOrder.TotalPartidas;
-                let retrabajo = 0;
-                let label = '';
-                let fechaComienzo = firstOrder.FechaComienzo || 'N/A';
-                let fechaTermina = firstOrder.FechaTermina || 'N/A';
+            $.ajax({
+                url: '{{ route("graficadoOF") }}',
+                type: 'GET',
+                data: { 
+                    id: ordenfabricacion, 
+                    tipo: endpoint.tipo, 
+                },
+                success: function (response) {
+                    if (response.length > 0) {
+                        const firstOrder = response[0];
+                        let cantidadTotal = firstOrder.CantidadTotal;
+                        let totalPartidas = firstOrder.TotalPartidas;
+                        let retrabajo = 0;
+                        let label = '';
 
-                if (totalPartidas > cantidadTotal) {
-                    retrabajo = totalPartidas - cantidadTotal;
-                    totalPartidas = cantidadTotal; 
-                    label = `Retrabajo: ${retrabajo}<br>`; // Agrega <br> para salto de línea en HTML
+                        if (totalPartidas > cantidadTotal) {
+                            retrabajo = totalPartidas - cantidadTotal;
+                            totalPartidas = cantidadTotal; 
+                            label = `Retrabajo: ${retrabajo}`;
+                        }
+
+                        let progreso = Math.round((totalPartidas / cantidadTotal) * 100);
+                        drawGauge(endpoint.id, progreso, label);
+                    } else {
+                        console.log('No hay datos para mostrar.');
+                        drawGauge(endpoint.id, 0, 'Sin Datos');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
                 }
-
-                // Agregar fechas con <br> para mantener el formato deseado
-                label += `Fecha Inicio: ${fechaComienzo}<br>`;
-                label += `Fecha Final: ${fechaTermina}`;
-
-                let progreso = Math.round((totalPartidas / cantidadTotal) * 100);
-                drawGauge(endpoint.id, progreso, label);
-            } else {
-                console.log('No hay datos para mostrar.');
-                let mensaje = `Sin Datos<br>Fecha Inicio: N/A<br>Fecha Final: N/A`;
-
-                drawGauge(endpoint.id, 0, mensaje);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
-        }
-    });
-});
-
-
-
+            });
+        });
     });
 
     //funcion para cargar los canvases general para Or-V Y Or-F
     function drawGauge(canvasId, value, label) {
-    const canvas = document.getElementById(canvasId);
-    canvas.style.webkitTapHighlightColor = 'rgba(0, 0, 0, 0)'; // Desactivar el resaltado táctil
+        const canvas = document.getElementById(canvasId);
+        canvas.style.webkitTapHighlightColor = 'rgba(0, 0, 0, 0)'; // Desactivar el resaltado táctil
 
-    const ctx = canvas.getContext('2d');
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const radius = 85;
-    const startAngle = Math.PI;
-    const endAngle = 2 * Math.PI;
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = 85;
+        const startAngle = Math.PI;
+        const endAngle = 2 * Math.PI;
 
-    // Limpiar el lienzo
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Variables para ajustar manualmente las posiciones de los números
+        const offsetX = 0; // Desplazamiento horizontal de los números (0 = centrado)
+        const offsetY = 30; // Desplazamiento vertical de los números (ajústalo según necesites)
 
-    // Dibujar el arco de fondo
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-    ctx.lineWidth = 50;
-    ctx.strokeStyle = '#e0e0e0';
-    ctx.lineCap = 'butt';
-    ctx.stroke();
+        // Limpiar el lienzo
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Determinar color según valor
-    let strokeColor;
-    if (value <= 20) strokeColor = '#e74c3c'; // Rojo
-    else if (value <= 50) strokeColor = '#f39c12'; // Naranja
-    else if (value <= 90) strokeColor = '#f1c40f'; // Amarillo
-    else strokeColor = '#15e631'; // Verde
+        // Dibujar el arco de fondo con borde más delgado
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.lineWidth = 50;  // Ancho de línea ajustado para mejor balance
+        ctx.strokeStyle = '#e0e0e0';  // Gris suave para el fondo
+        ctx.lineCap = 'butt';
+        ctx.stroke();
 
-    // Dibujar arco de progreso
-    const valueAngle = startAngle + (value / 100) * (endAngle - startAngle);
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, startAngle, valueAngle);
-    ctx.strokeStyle = strokeColor;
-    ctx.lineWidth = 40;
-    ctx.lineCap = 'butt';
-    ctx.stroke();
+        // Determinar el color del arco según el valor
+        let strokeColor;
+        if (value <= 20) strokeColor = '#e74c3c'; // Rojo
+        else if (value <= 50) strokeColor = '#f39c12'; // Naranja
+        else if (value <= 90) strokeColor = '#f1c40f'; // Amarillo
+        else strokeColor = '#15e631'; // Verde
 
-    // Dibujar porcentaje en el centro
-    ctx.font = '30px Arial';
-    ctx.fillStyle = strokeColor;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(`${value}%`, centerX, centerY - 10);
+        // Ajuste para hacer el principio y final del arco un poco cuadrado
+        const valueAngle = startAngle + (value / 100) * (endAngle - startAngle);
 
-    // Dibujar etiquetas debajo del valor
-    ctx.font = '16px Arial';
-    ctx.fillStyle = '#000000';
+        // Dibujar el arco del valor con color dinámico
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, startAngle, valueAngle);
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 40; // Ancho del arco ajustado para mejor visibilidad
+        ctx.lineCap = 'butt'; // Ajustar el borde a cuadrado en el inicio y final
+        ctx.stroke();
 
-    // Descomponer label en líneas separadas
-    let labels = label.split('\n'); // Asegurar que se pasan como texto separado por "\n"
+        // Determinar el color del texto del valor
+        let valueTextColor = strokeColor; // Usar el mismo color del arco
+        ctx.font = '30px Arial';  // Fuente más grande para el valor
+        ctx.fillStyle = valueTextColor;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle'; // Asegura que el texto esté alineado verticalmente en el medio
 
-    // Dibujar cada línea de texto
-    labels.forEach((text, index) => {
-        ctx.fillText(text, centerX, centerY + 25 + (index * 20)); // Separación de 20px entre líneas
-    });
+        // Ajustar la posición vertical del texto para alinearlo con el arco
+        // Aquí, `centerY` ajustado verticalmente para que esté alineado con el arco
+        ctx.fillText(`${value}%`, centerX, centerY);
 
-    // Dibujar marcas de 0 y 100
-    ctx.font = '16px Arial';
-    ctx.fillText('0', centerX - radius, centerY + 20);
-    ctx.fillText('100', centerX + radius, centerY + 20);
-}
+        // Etiqueta debajo del valor
+        ctx.font = '18px Arial';
+        ctx.fillStyle = '#17a2b8';  // Color suave para la etiqueta
+        ctx.fillText(label, centerX, centerY + 40);  // Espaciado ajustado
 
+        // Dibujar las marcas de 0 y 100 fuera del arco, ajustable manualmente
+        ctx.font = '16px Arial';
+        ctx.fillStyle = '#000000';  // Color para los números de la escala
 
+        // Dibujar el "0" justo debajo del inicio del arco
+        ctx.fillText('0', centerX - radius, centerY+ 20);
+
+        // Dibujar el "100" en el final del arco
+        ctx.fillText('100', centerX + radius, centerY + 20); // Ajusta la posición vertical
+        //la posición
+    }
     //para el clic de .stage
     $(document).ready(function() {
         $('.stage').on('click', function() {
@@ -1146,7 +1257,80 @@
             }
         });
     }
+    // Cuando se haga clic en una fila para seleccionar la OrdenFabricacion
+    $(document).on('click', '.ver-fabricacion', function () {
+        var ordenfabricacion = $(this).data('ordenfabricacion');  // Obtener el valor de ordenfabricacion desde la fila
+        console.log('Orden de fabricación seleccionada:', ordenfabricacion);  // Verifica que se obtiene el valor
 
+        // Asignar ese valor al botón VerMas
+        $('.VerMas').data('ordenfabricacion', ordenfabricacion);  // Asigna el valor al botón
+        console.log('Valor asignado al botón VerMas:', $('.VerMas').data('ordenfabricacion'));  // Verifica que se asignó correctamente
+
+        // Si deseas que el texto del botón también cambie para indicar la orden seleccionada:
+        $('.VerMas').text(`Tiempos De Ordenes - Orden ${ordenfabricacion}`);
+    });
+
+    // Lógica cuando se hace clic en el botón VerMas
+    $(document).on('click', '.VerMas', function (e) {
+        var ordenfabricacion = $(this).data('ordenfabricacion');  // Obtener el valor del botón dinámicamente
+        console.log('Orden de fabricación en el botón VerMas:', ordenfabricacion);  // Verifica que el valor es correcto
+        
+        if (!ordenfabricacion) {
+            alert("No se ha seleccionado ninguna Orden de Fabricación.");
+            return;
+        }
+
+        let content = $("#collapseContent");
+        let container = $("#estacionesContainer");
+        let icon = $(this).find('.toggle-icon');  // Icono de apertura/cierre
+
+        let isOpen = content.hasClass("show");
+
+        $.ajax({
+            url: '{{ route("tiempo.orden") }}',
+            type: "GET",
+            data: { ordenfabricacion: ordenfabricacion },  // Envía la orden fabricacion al servidor
+            dataType: "json",
+            success: function (response) {
+                console.log('Datos recibidos:', response);
+                container.html("");  // Limpia el contenedor de resultados
+
+                response.forEach(resultado => {
+                    let tiempoDuracion = null;
+                    if (resultado.Tiempoinicio && resultado.Tiempofin) {
+                        let inicio = new Date(resultado.Tiempoinicio);
+                        let fin = new Date(resultado.Tiempofin);
+                        let diferencia = fin - inicio;
+                        let horas = diferencia / (1000 * 60 * 60);  // Calcular la diferencia en horas
+                        tiempoDuracion = `${horas.toFixed(2)} horas`;
+                    }
+
+                    let card = `
+                        <div class="card estacion-card">
+                            <div class="card-body">
+                                <h5 class="card-title">${resultado.fase}</h5>
+                                <p class="card-text">
+                                    <strong>Duración:</strong> <span class="badge ${tiempoDuracion ? 'badge-success' : 'badge-warning'}">${tiempoDuracion ?? 'No registrado'}</span><br>
+                                </p>
+                            </div>
+                        </div>`;
+                    container.append(card);  // Agregar la tarjeta al contenedor
+                });
+
+                // Alternar la visibilidad del contenido
+                if (isOpen) {
+                    content.removeClass("show").slideUp();
+                    icon.text('+');
+                } else {
+                    content.addClass("show").slideDown();
+                    icon.text('−');
+                }
+            },
+            error: function () {
+                alert("Error al cargar los tiempos de las estaciones.");
+            }
+        });
+    });
 </script>
 @endsection
 

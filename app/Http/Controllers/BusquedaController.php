@@ -14,6 +14,8 @@ use TCPDF;
 use App\Models\Role;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
+
 
 class BusquedaController extends Controller
 {
@@ -544,6 +546,113 @@ class BusquedaController extends Controller
         }
 
     }
+
+
+   
+    
+
+  
+    
+    public function tiemposOrden(Request $request)
+{
+    $ordenfabricacion = $request->input('ordenfabricacion');
+
+    $tiempos = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->where('ordenfabricacion.OrdenFabricacion', $ordenfabricacion)  // Filtrar por ordenfabricacion
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            DB::raw("MAX(partidasof.FechaComienzo) AS TiempoCorte"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 3 THEN partidasof_areas.FechaComienzo END) as TiempoSuministro"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 4 THEN partidasof_areas.FechaComienzo END) as TiempoPreparado"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 5 THEN partidasof_areas.FechaComienzo END) as TiempoEnsamble"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 6 THEN partidasof_areas.FechaComienzo END) as TiempoPulido"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 7 THEN partidasof_areas.FechaComienzo END) as TiempoMedicion"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 8 THEN partidasof_areas.FechaComienzo END) as TiempoVisualizacion"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 9 THEN partidasof_areas.FechaComienzo END) as TiempoEmpaque"),
+            DB::raw("MAX(partidasof.FechafINALIZACION) AS FinCorte"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 3 THEN partidasof_areas.FechaTermina END) as FinSuministro"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 4 THEN partidasof_areas.FechaTermina END) as FinPreparado"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 5 THEN partidasof_areas.FechaTermina END) as FinEnsamble"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 6 THEN partidasof_areas.FechaTermina END) as FinPulido"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 7 THEN partidasof_areas.FechaTermina END) as FinMedicion"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 8 THEN partidasof_areas.FechaTermina END) as FinVisualizacion"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 9 THEN partidasof_areas.FechaTermina END) as FinEmpaque")
+        )
+        ->groupBy('ordenfabricacion.OrdenFabricacion')
+        ->get();
+
+    // Crear un array separado por cada fase (Corte, Suministro, etc.)
+    $resultados = [];
+
+    // Si hay datos en $tiempos, separarlos por fase
+    foreach ($tiempos as $tiempo) {
+        // Corte
+        $resultados[] = [
+            'fase' => 'Corte',
+            'Tiempoinicio' => $tiempo->TiempoCorte,
+            'Tiempofin' => $tiempo->FinCorte,
+        ];
+
+        // Suministro
+        $resultados[] = [
+            'fase' => 'Suministro',
+            'Tiempoinicio' => $tiempo->TiempoSuministro,
+            'Tiempofin' => $tiempo->FinSuministro,
+        ];
+
+        // Preparado
+        $resultados[] = [
+            'fase' => 'Preparado',
+            'Tiempoinicio' => $tiempo->TiempoPreparado,
+            'Tiempofin' => $tiempo->FinPreparado,
+        ];
+
+        // Ensamble
+        $resultados[] = [
+            'fase' => 'Ensamble',
+            'Tiempoinicio' => $tiempo->TiempoEnsamble,
+            'Tiempofin' => $tiempo->FinEnsamble,
+        ];
+
+        // Pulido
+        $resultados[] = [
+            'fase' => 'Pulido',
+            'Tiempoinicio' => $tiempo->TiempoPulido,
+            'Tiempofin' => $tiempo->FinPulido,
+        ];
+
+        // Medición
+        $resultados[] = [
+            'fase' => 'Medición',
+            'Tiempoinicio' => $tiempo->TiempoMedicion,
+            'Tiempofin' => $tiempo->FinMedicion,
+        ];
+
+        // Visualización
+        $resultados[] = [
+            'fase' => 'Visualización',
+            'Tiempoinicio' => $tiempo->TiempoVisualizacion,
+            'Tiempofin' => $tiempo->FinVisualizacion,
+        ];
+
+        // Empaque
+        $resultados[] = [
+            'fase' => 'Empaque',
+            'Tiempoinicio' => $tiempo->TiempoEmpaque,
+            'Tiempofin' => $tiempo->FinEmpaque,
+        ];
+    }
+
+    return Response::json($resultados);
+}
+
+    
+    
+       
+
+
+    }
 ////
     
-}

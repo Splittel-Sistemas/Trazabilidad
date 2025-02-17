@@ -67,7 +67,7 @@ class HomeControler extends Controller
 
     public function progreso()
     {
-    
+    /*
         $areas = ['3', '4', '5', '6', '7', '8', '9']; // No filtrar por área '2'
         $progreso = [];
     
@@ -108,8 +108,12 @@ class HomeControler extends Controller
     
         return response()->json([
             'progreso' => $progreso
-        ]);
+        ]);*/
+        
     }
+   
+    
+        #escapeWhenCastingToString: false
 
     public function graficasdia()
     {
@@ -126,26 +130,29 @@ class HomeControler extends Controller
                 'partidasof_areas.id',
                 'ordenfabricacion.FechaEntrega',
                 DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalcantidad_partida'),
-                DB::raw('ROUND((SUM(partidasof_areas.cantidad) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso')
+                DB::raw('ROUND(LEAST((SUM(partidasof_areas.cantidad) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso'),  // Limitar Progreso a 100
+                DB::raw('ROUND(SUM(partidasof_areas.cantidad) - ordenfabricacion.CantidadTotal, 0) as retrabajo')  // Calcular retrabajo basado en la diferencia
             )
             ->where('ordenfabricacion.FechaEntrega', '>=', $fechaLimite) 
             ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9]) 
             ->groupBy('partidasof_areas.Areas_id', 'partidasof_areas.id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
             ->get();
-    
-        $cortes = DB::table('ordenfabricacion')
+
+            //dd($areas);
+
+            $cortes = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->select(
                 'ordenfabricacion.OrdenFabricacion',
                 'ordenfabricacion.CantidadTotal', 
                 'ordenfabricacion.FechaEntrega',
                 DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalcantidad_partida'),
-                DB::raw('ROUND((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso')
+                DB::raw('ROUND(LEAST((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso'),  // Limitar a 100
+                DB::raw('ROUND(SUM(partidasof.cantidad_partida) - ordenfabricacion.CantidadTotal, 0) as retrabajo')
             )
             ->where('ordenfabricacion.FechaEntrega', '>=', $fechaLimite) 
             ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
             ->get();
-    
         $totalOrdenes = DB::table('ordenfabricacion')
             ->where('FechaEntrega', '>=', $fechaLimite) 
             ->count();
@@ -201,6 +208,7 @@ class HomeControler extends Controller
         $datos['plemasCorte']['pendiente'] = $pendientesCorte;
     
         return response()->json($datos);
+        
     }
     
 

@@ -185,6 +185,7 @@ Route::get('/graficador', [BusquedaController::class, 'Graficador'])-> name('gra
 Route::get('/detallesOF',[BusquedaController::class, 'DetallesOF'])->name('Detalles.Fabricacion');
 Route::get('/graficadorOF',[BusquedaController::class,'GraficadorFabricacion'])->name('graficadoOF');
 Route::get('/graficasOR/OF',[BusquedaController::class,'GraficarOROF'])->name('graficarOR.OF');
+Route::get('/tiempos/fabricacion',[BusquedaController::class, 'tiemposOrden'])->name('tiempo.orden');
 
 //rutas del dashboard
 
