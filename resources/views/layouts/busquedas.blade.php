@@ -463,18 +463,11 @@
                         </div>-->
                         <div style="height: 30px;"></div>
                         <div class="text-end">
-                            <button class="btn btn-outline-info VerMas">
-                                Tiempos De Ordenes
-                                <span class="toggle-icon">+</span>  <!-- Icono para abrir/cerrar -->
+                            <button class="btn btn-info VerMas" style="width: 100px; height: 35px; padding: 10px;">
+                                <i class="fa fa-clock"></i> Más <!-- Icono de reloj -->
                             </button>
                         </div>
                         
-
-
-
-
-        
-
                         
                         <!-- Contenedor colapsable -->
                         <div class="collapse mt-3" id="collapseContent">
@@ -1267,7 +1260,7 @@
         console.log('Valor asignado al botón VerMas:', $('.VerMas').data('ordenfabricacion'));  // Verifica que se asignó correctamente
 
         // Si deseas que el texto del botón también cambie para indicar la orden seleccionada:
-        $('.VerMas').text(`Tiempos De Ordenes - Orden ${ordenfabricacion}`);
+       // $('.VerMas').text(` Orden ${ordenfabricacion} +`);
     });
 
     // Lógica cuando se hace clic en el botón VerMas
