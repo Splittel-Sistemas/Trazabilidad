@@ -23,20 +23,21 @@ public function login(Request $request)
         'email' => 'required|email',
         'password' => 'required',
     ]);
-    $remember = $request->has('remember');
-   // $encryptedPassword = bcrypt('12345678');
-    //dd($encryptedPassword);
-  
 
-    // Obtener las credenciales
-    $credentials = [
-        'email' => $request->email,
-        'password' => $request->password,
-    ];
-   
+    $remember = $request->has('remember');
+
+    // Obtener el usuario por su email
+    $user = User::where('email', $request->email)->first();
+
+    // Verificar si el usuario existe y si está activo
+    if (!$user || $user->active == 0) {
+        return redirect('login')
+            ->withInput($request->only('email'))
+            ->withErrors(['email' => 'Cuenta inactiva o no encontrada.']);
+    }
 
     // Intentar autenticar al usuario
-    if (Auth::attempt($credentials, $remember)) {
+    if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $remember)) {
         // Regenerar la sesión
         $request->session()->regenerate();
 
@@ -45,10 +46,11 @@ public function login(Request $request)
     } else {
         // Si las credenciales son incorrectas
         return redirect('login')
-            ->withInput($request->only('email')) // Retornar el email ingresado
+            ->withInput($request->only('email'))
             ->withErrors(['email' => 'Correo electrónico o contraseña incorrectos.']);
     }
 }
+
 
 public function register(Request $request)
 {
@@ -87,23 +89,26 @@ public function operador(Request $request)
     $request->validate([
         'clave' => 'required',
     ]);
-    //dd($request);
 
     // Buscar al usuario por la clave
-    $operador = User::where('password', $request->clave)->first(); // Asegúrate de que 'clave' esté bien referenciado
-   // dd($operador);
+    $operador = User::where('password', $request->clave)->first(); 
 
-    // Si existe, iniciar sesión
     if ($operador) {
-        Auth::login($operador);
-        $request->session()->regenerate();
-        return redirect()->intended(route('Home'));
+        // Verificar si el usuario está activo
+        if ($operador->active == 1) {
+            Auth::login($operador);
+            $request->session()->regenerate();
+            return redirect()->intended(route('Home'));
+        } else {
+            return redirect()->route('login_view')
+                ->withErrors(['clave' => 'El acceso ha sido restringido. Contacte al administrador.']);
+        }
     }
 
-    // Si la clave no existe, mostrar error
     return redirect()->route('login_view')
-        ->withErrors(['clave' => 'Clave incorrecta.']); // Cambié 'password' a 'clave' en el mensaje de error
+        ->withErrors(['clave' => 'Clave incorrecta.']);
 }
+
 
 
 
