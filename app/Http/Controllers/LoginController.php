@@ -24,6 +24,8 @@ public function login(Request $request)
         'password' => 'required',
     ]);
     $remember = $request->has('remember');
+   // $encryptedPassword = bcrypt('12345678');
+    //dd($encryptedPassword);
   
 
     // Obtener las credenciales
@@ -77,6 +79,34 @@ public function logout(Request $request)
     $request->session()->regenerateToken(); // Regenera el token CSRF
     return redirect()->route('login_view'); // Redirige al login o página de inicio
 }
+
+
+public function operador(Request $request)
+{
+    // Validar que la clave sea ingresada
+    $request->validate([
+        'clave' => 'required',
+    ]);
+    //dd($request);
+
+    // Buscar al usuario por la clave
+    $operador = User::where('password', $request->clave)->first(); // Asegúrate de que 'clave' esté bien referenciado
+   // dd($operador);
+
+    // Si existe, iniciar sesión
+    if ($operador) {
+        Auth::login($operador);
+        $request->session()->regenerate();
+        return redirect()->intended(route('Home'));
+    }
+
+    // Si la clave no existe, mostrar error
+    return redirect()->route('login_view')
+        ->withErrors(['clave' => 'Clave incorrecta.']); // Cambié 'password' a 'clave' en el mensaje de error
+}
+
+
+
 
 
 

@@ -97,6 +97,7 @@
                             <th class="sort border-top" data-sort="nombre">Nombre</th>
                             <th class="sort border-top ps-3" data-sort="apellido">Apellido</th>
                             <th class="sort border-top" data-sort="email">Correo</th>
+                            <th class="sort border-top" data-sort="password">Contraseña</th>
                             <th class="sort border-top" data-sort="roles">Role</th>
                             <th class="sort border-top" data-sort="estatus">Activo</th>
                             <th class="sort border-top text-center  pe-0">Acciones</th>
@@ -107,7 +108,16 @@
                         <tr>
                             <td class="align-middle nombre">{{ $registro->name }}</td>
                             <td class="align-middle ps-3 apellido">{{ $registro->apellido }}</td>
-                            <td class="align-middle email">{{ $registro->email }}</td>
+                           <td class="align-middle email">
+                                {{ Str::mask($registro->email, '*', 0, strpos($registro->email, '@') - 2) }}
+                            </td>
+                            <td class="align-middle contraseña">
+                                @if (Str::startsWith($registro->password, ['$2y$', '$2b$', '$2a$']) && strlen($registro->password) === 60)
+                                    ********
+                                @else
+                                    {{ $registro->password }}
+                                @endif
+                            </td>
                             <td class="align-middle roles">
                                 @foreach ($registro->roles as $role)
                                     <span class="badge badge-info">{{ $role->name }}</span>

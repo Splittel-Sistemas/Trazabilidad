@@ -14,6 +14,9 @@ use TCPDF;
 use App\Models\Role;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
+use Carbon\Carbon as CarbonClass;
+
 
 class BusquedaController extends Controller
 {
@@ -74,6 +77,7 @@ class BusquedaController extends Controller
         ]);
     }
 
+    
     //progreso de stage
     public function GraficarOROF(Request $request)
     {
@@ -98,18 +102,22 @@ class BusquedaController extends Controller
 
         // Consulta para los cortes
         $cortes = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
-            ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->select(   'ordenventa.OrdenVenta',
-                'ordenfabricacion.CantidadTotal',
-                'ordenfabricacion.OrdenFabricacion',
-                'partidasof.id as PartidaOF_ID',
-                DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
-                DB::raw('SUM(ordenfabricacion.CantidadTotal) as SumaCantidadTotal'),
-                DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalPartidas'),
-                DB::raw('ROUND((SUM(partidasof.cantidad_partida) / NULLIF(SUM(ordenfabricacion.CantidadTotal), 0)) * 100, 2) as Progreso')
-            )
-            ->groupBy('partidasof.id', 'ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.OrdenFabricacion');
+        ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->select(
+            'ordenventa.OrdenVenta',
+            'ordenfabricacion.CantidadTotal',
+            'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal',
+            DB::raw('ordenfabricacion.OrdenFabricacion as OrdenesFabricacion'),
+            DB::raw('GROUP_CONCAT(DISTINCT partidasof.id ORDER BY partidasof.id ASC SEPARATOR ", ") as PartidaOF_ID'),
+            DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalPartidas'),
+            DB::raw('ROUND((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso')
+          
+        )
+        ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal');
+        //->get();
+    
+            //dd($cortes);
 
         // Aplicación del filtro según la etapa
         if ($stage == 'stage3') {
@@ -209,6 +217,7 @@ class BusquedaController extends Controller
                 )
                 ->groupBy('ordenventa.OrdenVenta')
                 ->get();
+                
             //estacion ensamble
             }elseif($tipo === 'ensamble'){ 
                 $result = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
@@ -308,8 +317,6 @@ class BusquedaController extends Controller
     {
         $search = $request->input('search');
         $ordenesFabricacion = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-        ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
         ->select(
             'ordenfabricacion.OrdenFabricacion', 
             'ordenfabricacion.Articulo', 
@@ -389,8 +396,456 @@ class BusquedaController extends Controller
                 'progreso' => $progresoValor
             ]);
     }
-        
     //graficador OF
+
+    public function GraficadorFabricacion(Request $request)
+    {
+        $idFabricacion = $request->input('id');
+        $tipoOF = $request->input('tipo'); 
+        
+        if (!empty($idFabricacion)) {
+            // Definir las consultas para cada tipo (como ya lo tienes en tu código)
+            if ($tipoOF === 'plemasCorte') {
+                $resultOF = DB::table('ordenfabricacion')
+                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+                    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                    ->select(
+                        'ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion',
+                        DB::raw('ordenfabricacion.CantidadTotal'),
+                        DB::raw('SUM(partidasof.cantidad_partida) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100) as Progreso')
+                    )
+                    ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
+                    ->get();
+                
+                // Procesar los resultados
+                $resultOF = $resultOF->map(function ($item) {
+                    $fechaComienzo = Carbon::parse($item->FechaComienzo);
+                    $fechaFin = Carbon::parse($item->FechaFinalizacion);
+                    
+                    // Calcular la diferencia en días, horas y minutos
+                    $diferencia = $fechaComienzo->diff($fechaFin);
+                    $dias = $diferencia->days;
+                    $horas = $diferencia->h;
+                    $minutos = $diferencia->i;
+    
+                    // Crear la cadena de tiempo transcurrido
+                    $item->TiempoTranscurrido = "{$dias} días, {$horas} horas, {$minutos} minutos";
+    
+                    return $item;
+                });
+                
+            } elseif ($tipoOF === 'plemasSuministro') {
+                // Similar a lo anterior
+                $resultOF = DB::table('ordenfabricacion')
+                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                    ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+                    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                    ->where('partidasof_areas.Areas_id', 3)
+                    ->select(
+                        'ordenfabricacion.OrdenFabricacion', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina',
+                        DB::raw('ordenfabricacion.CantidadTotal'),
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                    )
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')
+                    ->get();
+    
+                // Procesar los resultados
+                $resultOF = $resultOF->map(function ($item) {
+                    $fechaComienzo = Carbon::parse($item->FechaComienzo);
+                    $fechaTermina = Carbon::parse($item->FechaTermina);
+                    
+                    // Calcular la diferencia en días, horas y minutos
+                    $diferencia = $fechaComienzo->diff($fechaTermina);
+                    $dias = $diferencia->days;
+                    $horas = $diferencia->h;
+                    $minutos = $diferencia->i;
+    
+                    // Crear la cadena de tiempo transcurrido
+                    $item->TiempoTranscurrido = "{$dias} días, {$horas} horas, {$minutos} minutos";
+    
+                    return $item;
+                });
+    
+            } elseif ($tipoOF === 'plemasPreparado') {
+                // Procesar la estación de preparación
+                $resultOF = DB::table('ordenfabricacion')
+                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                    ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+                    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                    ->where('partidasof_areas.Areas_id', 4)
+                    ->select(
+                        'ordenfabricacion.OrdenFabricacion',
+                        DB::raw('ordenfabricacion.CantidadTotal'),
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                    )
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+                    ->get();
+    
+                // Procesar los resultados
+                $resultOF = $resultOF->map(function ($item) {
+                    $fechaComienzo = Carbon::parse($item->FechaComienzo);
+                    $fechaFin = Carbon::parse($item->FechaFinalizacion);
+                    
+                    // Calcular la diferencia
+                    $diferencia = $fechaComienzo->diff($fechaFin);
+                    $dias = $diferencia->days;
+                    $horas = $diferencia->h;
+                    $minutos = $diferencia->i;
+    
+                    // Agregar el tiempo transcurrido
+                    $item->TiempoTranscurrido = "{$dias} días, {$horas} horas, {$minutos} minutos";
+    
+                    return $item;
+                });
+    
+            }elseif ($tipoOF === 'plemasEnsamble') {
+                // Procesar la estación de preparación
+                $resultOF = DB::table('ordenfabricacion')
+                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                    ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+                    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                    ->where('partidasof_areas.Areas_id', 5)
+                    ->select(
+                        'ordenfabricacion.OrdenFabricacion',
+                        DB::raw('ordenfabricacion.CantidadTotal'),
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                    )
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+                    ->get();
+    
+                // Procesar los resultados
+                $resultOF = $resultOF->map(function ($item) {
+                    $fechaComienzo = Carbon::parse($item->FechaComienzo);
+                    $fechaFin = Carbon::parse($item->FechaFinalizacion);
+                    
+                    // Calcular la diferencia
+                    $diferencia = $fechaComienzo->diff($fechaFin);
+                    $dias = $diferencia->days;
+                    $horas = $diferencia->h;
+                    $minutos = $diferencia->i;
+    
+                    // Agregar el tiempo transcurrido
+                    $item->TiempoTranscurrido = "{$dias} días, {$horas} horas, {$minutos} minutos";
+    
+                    return $item;
+                });
+    
+            }elseif ($tipoOF === 'plemasPulido') {
+                // Procesar la estación de preparación
+                $resultOF = DB::table('ordenfabricacion')
+                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                    ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+                    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                    ->where('partidasof_areas.Areas_id', 6)
+                    ->select(
+                        'ordenfabricacion.OrdenFabricacion',
+                        DB::raw('ordenfabricacion.CantidadTotal'),
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                    )
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+                    ->get();
+    
+                // Procesar los resultados
+                $resultOF = $resultOF->map(function ($item) {
+                    $fechaComienzo = Carbon::parse($item->FechaComienzo);
+                    $fechaFin = Carbon::parse($item->FechaFinalizacion);
+                    
+                    // Calcular la diferencia
+                    $diferencia = $fechaComienzo->diff($fechaFin);
+                    $dias = $diferencia->days;
+                    $horas = $diferencia->h;
+                    $minutos = $diferencia->i;
+    
+                    // Agregar el tiempo transcurrido
+                    $item->TiempoTranscurrido = "{$dias} días, {$horas} horas, {$minutos} minutos";
+    
+                    return $item;
+                });
+    
+            }elseif ($tipoOF === 'plemasMedicion') {
+                // Procesar la estación de preparación
+                $resultOF = DB::table('ordenfabricacion')
+                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                    ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+                    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                    ->where('partidasof_areas.Areas_id', 7)
+                    ->select(
+                        'ordenfabricacion.OrdenFabricacion',
+                        DB::raw('ordenfabricacion.CantidadTotal'),
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                    )
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+                    ->get();
+    
+                // Procesar los resultados
+                $resultOF = $resultOF->map(function ($item) {
+                    $fechaComienzo = Carbon::parse($item->FechaComienzo);
+                    $fechaFin = Carbon::parse($item->FechaFinalizacion);
+                    
+                    // Calcular la diferencia
+                    $diferencia = $fechaComienzo->diff($fechaFin);
+                    $dias = $diferencia->days;
+                    $horas = $diferencia->h;
+                    $minutos = $diferencia->i;
+    
+                    // Agregar el tiempo transcurrido
+                    $item->TiempoTranscurrido = "{$dias} días, {$horas} horas, {$minutos} minutos";
+    
+                    return $item;
+                });
+    
+            }elseif ($tipoOF === 'plemasVisualizacion') {
+                // Procesar la estación de preparación
+                $resultOF = DB::table('ordenfabricacion')
+                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                    ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+                    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                    ->where('partidasof_areas.Areas_id', 8)
+                    ->select(
+                        'ordenfabricacion.OrdenFabricacion',
+                        DB::raw('ordenfabricacion.CantidadTotal'),
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                    )
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+                    ->get();
+    
+                // Procesar los resultados
+                $resultOF = $resultOF->map(function ($item) {
+                    $fechaComienzo = Carbon::parse($item->FechaComienzo);
+                    $fechaFin = Carbon::parse($item->FechaFinalizacion);
+                    
+                    // Calcular la diferencia
+                    $diferencia = $fechaComienzo->diff($fechaFin);
+                    $dias = $diferencia->days;
+                    $horas = $diferencia->h;
+                    $minutos = $diferencia->i;
+    
+                    // Agregar el tiempo transcurrido
+                    $item->TiempoTranscurrido = "{$dias} días, {$horas} horas, {$minutos} minutos";
+    
+                    return $item;
+                });
+    
+            }elseif ($tipoOF === 'plemasEmpaque') {
+                // Procesar la estación de preparación
+                $resultOF = DB::table('ordenfabricacion')
+                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+                    ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
+                    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                    ->where('partidasof_areas.Areas_id', 9)
+                    ->select(
+                        'ordenfabricacion.OrdenFabricacion',
+                        DB::raw('ordenfabricacion.CantidadTotal'),
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                    )
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+                    ->get();
+    
+                // Procesar los resultados
+                $resultOF = $resultOF->map(function ($item) {
+                    $fechaComienzo = Carbon::parse($item->FechaComienzo);
+                    $fechaFin = Carbon::parse($item->FechaFinalizacion);
+                    
+                    // Calcular la diferencia
+                    $diferencia = $fechaComienzo->diff($fechaFin);
+                    $dias = $diferencia->days;
+                    $horas = $diferencia->h;
+                    $minutos = $diferencia->i;
+    
+                    // Agregar el tiempo transcurrido
+                    $item->TiempoTranscurrido = "{$dias} días, {$horas} horas, {$minutos} minutos";
+    
+                    return $item;
+                });
+    
+            }
+    
+            // Aquí continúa con el resto de estaciones, usando la misma lógica.
+    
+            return response()->json($resultOF);
+        } else {
+            return response()->json([], 204); 
+        }
+    }
+    public function tiempoS(Request $request)
+    {
+        $idFabricacion = $request->input('id');
+        dd($idFabricacion);
+        
+        // Tiempo de cortes
+        $tiemposcortes = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                'partidasof.FechaComienzo',
+                'partidasof.FechaFinalizacion'
+            )
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
+            ->get()
+            ->map(function ($item) {
+                $FechaComienzo = Carbon::parse($item->FechaComienzo);
+                $FechaFinalizacion = Carbon::parse($item->FechaFinalizacion);
+                
+                $diffDias = floor($FechaComienzo->diffInHours($FechaFinalizacion) / 24);
+                $diffHoras = $FechaComienzo->diffInHours($FechaFinalizacion) % 24;
+                $diffMinutos = $FechaComienzo->diffInMinutes($FechaFinalizacion) % 60;
+    
+                $item->Duracion = "{$diffDias} días, {$diffHoras} horas, {$diffMinutos} minutos";
+                return $item;
+            });
+    
+        // Tiempo por áreas
+        $tiemposareas = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                'partidasof_areas.PartidasOf_id',
+                'partidasof_areas.Areas_id',
+                DB::raw('GROUP_CONCAT(partidasof_areas.id) as ids'),
+                DB::raw('MIN(partidasof_areas.FechaComienzo) as FechaComienzo'),
+                DB::raw('MAX(partidasof_areas.FechaTermina) as FechaTermina'),
+                DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof_areas.FechaComienzo, partidasof_areas.FechaTermina)) as TotalMinutos')
+            )
+            ->where('ordenfabricacion.id', $idFabricacion)  // Filtrar por id de fabricación
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.PartidasOf_id', 'partidasof_areas.Areas_id')
+            ->get()
+            ->map(function ($item) {
+                // Convertir la duración total de minutos en días, horas y minutos
+                $totalMinutos = $item->TotalMinutos;
+    
+                $dias = floor($totalMinutos / (60 * 24));
+                $horas = floor(($totalMinutos % (60 * 24)) / 60);
+                $minutos = $totalMinutos % 60;
+    
+                // Crear el string de duración total
+                $duracion = [];
+                if ($dias > 0) $duracion[] = "{$dias} días";
+                if ($horas > 0) $duracion[] = "{$horas} horas";
+                if ($minutos > 0) $duracion[] = "{$minutos} minutos";
+                $item->DuracionTotal = implode(", ", $duracion);
+                $item->ids = explode(',', $item->ids); // Convertir los IDs a un array
+                return $item;
+            });
+            dd($tiemposareas);
+    
+        return response()->json([
+            'tiemposcortes' => $tiemposcortes,
+            'tiemposareas' => $tiemposareas
+        ]);
+    }
+    
+}
+
+/* public function tiemposOrden(Request $request)
+{
+    $ordenfabricacion = $request->input('ordenfabricacion');
+
+    $tiempos = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->where('ordenfabricacion.OrdenFabricacion', $ordenfabricacion)  // Filtrar por ordenfabricacion
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            DB::raw("MAX(partidasof.FechaComienzo) AS TiempoCorte"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 3 THEN partidasof_areas.FechaComienzo END) as TiempoSuministro"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 4 THEN partidasof_areas.FechaComienzo END) as TiempoPreparado"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 5 THEN partidasof_areas.FechaComienzo END) as TiempoEnsamble"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 6 THEN partidasof_areas.FechaComienzo END) as TiempoPulido"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 7 THEN partidasof_areas.FechaComienzo END) as TiempoMedicion"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 8 THEN partidasof_areas.FechaComienzo END) as TiempoVisualizacion"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 9 THEN partidasof_areas.FechaComienzo END) as TiempoEmpaque"),
+            DB::raw("MAX(partidasof.FechafINALIZACION) AS FinCorte"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 3 THEN partidasof_areas.FechaTermina END) as FinSuministro"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 4 THEN partidasof_areas.FechaTermina END) as FinPreparado"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 5 THEN partidasof_areas.FechaTermina END) as FinEnsamble"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 6 THEN partidasof_areas.FechaTermina END) as FinPulido"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 7 THEN partidasof_areas.FechaTermina END) as FinMedicion"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 8 THEN partidasof_areas.FechaTermina END) as FinVisualizacion"),
+            DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 9 THEN partidasof_areas.FechaTermina END) as FinEmpaque")
+        )
+        ->groupBy('ordenfabricacion.OrdenFabricacion')
+        ->get();
+
+    // Crear un array separado por cada fase (Corte, Suministro, etc.)
+    $resultados = [];
+
+    // Si hay datos en $tiempos, separarlos por fase
+    foreach ($tiempos as $tiempo) {
+        // Corte
+        $resultados[] = [
+            'fase' => 'Corte',
+            'Tiempoinicio' => $tiempo->TiempoCorte,
+            'Tiempofin' => $tiempo->FinCorte,
+        ];
+
+        // Suministro
+        $resultados[] = [
+            'fase' => 'Suministro',
+            'Tiempoinicio' => $tiempo->TiempoSuministro,
+            'Tiempofin' => $tiempo->FinSuministro,
+        ];
+
+        // Preparado
+        $resultados[] = [
+            'fase' => 'Preparado',
+            'Tiempoinicio' => $tiempo->TiempoPreparado,
+            'Tiempofin' => $tiempo->FinPreparado,
+        ];
+
+        // Ensamble
+        $resultados[] = [
+            'fase' => 'Ensamble',
+            'Tiempoinicio' => $tiempo->TiempoEnsamble,
+            'Tiempofin' => $tiempo->FinEnsamble,
+        ];
+
+        // Pulido
+        $resultados[] = [
+            'fase' => 'Pulido',
+            'Tiempoinicio' => $tiempo->TiempoPulido,
+            'Tiempofin' => $tiempo->FinPulido,
+        ];
+
+        // Medición
+        $resultados[] = [
+            'fase' => 'Medición',
+            'Tiempoinicio' => $tiempo->TiempoMedicion,
+            'Tiempofin' => $tiempo->FinMedicion,
+        ];
+
+        // Visualización
+        $resultados[] = [
+            'fase' => 'Visualización',
+            'Tiempoinicio' => $tiempo->TiempoVisualizacion,
+            'Tiempofin' => $tiempo->FinVisualizacion,
+        ];
+
+        // Empaque
+        $resultados[] = [
+            'fase' => 'Empaque',
+            'Tiempoinicio' => $tiempo->TiempoEmpaque,
+            'Tiempofin' => $tiempo->FinEmpaque,
+        ];
+    }
+
+    return Response::json($resultados);
+}
+
+
+*/
+////
+    
+/*
     public function GraficadorFabricacion(Request $request)
     {
         $idFabricacion = $request->input('id');
@@ -401,17 +856,22 @@ class BusquedaController extends Controller
             //estacion eccorte
             if ($tipoOF === 'plemasCorte') {
                 $resultOF = DB::table('ordenfabricacion')
-                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-                
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
                 ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
                 ->select(
-                    'ordenfabricacion.OrdenFabricacion',
-                    DB::raw('(ordenfabricacion.CantidadTotal)'),
+                    'ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion',
+                    DB::raw('ordenfabricacion.CantidadTotal'),
                     DB::raw('SUM(partidasof.cantidad_partida) as TotalPartidas'),
-                    DB::raw('ROUND((SUM(partidasof.cantidad_partida) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
+                    DB::raw('ROUND((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100) as Progreso')
                 )
-                ->groupBy('partidasof.cantidad_partida', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo','partidasof.FechaFinalizacion',)
                 ->get();
+                foreach ($resultOF as &$item) {
+                    $item->Duracion = "{$item->DiasTranscurridos} días {$item->HorasTranscurridas} horas {$item->MinutosTranscurridos} minutos";
+                }
+                dd($resultOF);
+
+             
                 
                     
             //estacion suministros
@@ -423,12 +883,14 @@ class BusquedaController extends Controller
                     ->where('partidasof_areas.Areas_id', 3)
                     ->select(
                         'ordenfabricacion.OrdenFabricacion',
-                        DB::raw('(ordenfabricacion.CantidadTotal)'),
+                        DB::raw('(ordenfabricacion.CantidadTotal)'), 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina',
                         DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
                         DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal','partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')  
                     ->get();
+                    //dd($resultOF);
+
             //estacion preparado
             } elseif ($tipoOF === 'plemasPreparado') {
                 $resultOF = DB::table('ordenfabricacion')
@@ -453,11 +915,11 @@ class BusquedaController extends Controller
                     ->where('partidasof_areas.Areas_id', 5)
                     ->select(
                         'ordenfabricacion.OrdenFabricacion',
-                        DB::raw('(ordenfabricacion.CantidadTotal)'),
+                        DB::raw('(ordenfabricacion.CantidadTotal)'), 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina',
                         DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
                         DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal','partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')  
                     ->get();
             //estacion pulido
             }elseif($tipoOF === 'plemasPulido'){
@@ -468,11 +930,11 @@ class BusquedaController extends Controller
                     ->where('partidasof_areas.Areas_id', 6)
                     ->select(
                         'ordenfabricacion.OrdenFabricacion',
-                        DB::raw('(ordenfabricacion.CantidadTotal)'),
+                        DB::raw('(ordenfabricacion.CantidadTotal)'), 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina',
                         DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
                         DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal','partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')  
                     ->get();
             //estacion medicion
             }elseif($tipoOF === 'plemasMedicion'){
@@ -483,11 +945,11 @@ class BusquedaController extends Controller
                     ->where('partidasof_areas.Areas_id', 7)
                     ->select(
                         'ordenfabricacion.OrdenFabricacion',
-                        DB::raw('(ordenfabricacion.CantidadTotal)'),
+                        DB::raw('(ordenfabricacion.CantidadTotal)'), 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina',
                         DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
                         DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal','partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')  
                     ->get();
             //estacion visualizacion
             }elseif($tipoOF === 'plemasVisualizacion'){
@@ -498,11 +960,11 @@ class BusquedaController extends Controller
                     ->where('partidasof_areas.Areas_id', 8)
                     ->select(
                         'ordenfabricacion.OrdenFabricacion',
-                        DB::raw('(ordenfabricacion.CantidadTotal)'),
+                        DB::raw('(ordenfabricacion.CantidadTotal)'), 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina',
                         DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
                         DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal','partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')  
                     ->get();
             //estacion empaque
             }elseif($tipoOF=== 'plemasEmpaque'){
@@ -513,22 +975,23 @@ class BusquedaController extends Controller
                     ->where('partidasof_areas.Areas_id', 9)
                     ->select(
                         'ordenfabricacion.OrdenFabricacion',
-                        DB::raw('(ordenfabricacion.CantidadTotal)'),
+                        DB::raw('(ordenfabricacion.CantidadTotal)'), 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina',
                         DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
                         DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal')  
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal','partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')  
                     ->get();
 
             } else {
                 return response()->json([], 400); 
             }
+            //dd($resultOF);
             return response()->json($resultOF);
         } else {
             return response()->json([], 204); 
         }
 
     }
-////
-    
-}
+
+*/
+   
