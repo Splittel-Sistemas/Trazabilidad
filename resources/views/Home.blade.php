@@ -394,6 +394,7 @@
         <h2 style="font-size: 16px;">Progreo del Mes</h2>
         <div id="chart-month" class="chart-container"></div>
     </div>
+    <!---->
 
 @endsection
 

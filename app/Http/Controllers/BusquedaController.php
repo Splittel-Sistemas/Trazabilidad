@@ -678,20 +678,25 @@ class BusquedaController extends Controller
     public function tiempoS(Request $request)
     {
         $idFabricacion = $request->input('id');
-        //dd($idFabricacion);
+      //dd($idFabricacion);
         
         // Tiempo de cortes
         $tiemposcortes = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            
             ->select(
                 'ordenfabricacion.OrdenFabricacion',
                 'partidasof.FechaComienzo',
-                'partidasof.FechaFinalizacion'
+                'partidasof.FechaFinalizacion', 
+                DB::raw('GROUP_CONCAT(partidasof.OrdenFabricacion_id) as ids'),
+                DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'),
+                DB::raw('MAX(partidasof.FechaFinalizacion) as FechaTermina'),
+                DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof.FechaComienzo, partidasof.FechaFinalizacion)) as TotalMinutos')
             )
-            ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion) // Filtrar por id de fabricación
+           ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion) // Filtrar por id de fabricación
             ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
             ->get()
+            
             ->map(function ($item) {
                 $FechaComienzo = Carbon::parse($item->FechaComienzo);
                 $FechaFinalizacion = Carbon::parse($item->FechaFinalizacion);
@@ -703,6 +708,7 @@ class BusquedaController extends Controller
                 $item->Duracion = "{$diffDias} días, {$diffHoras} horas, {$diffMinutos} minutos";
                 return $item;
             });
+            //dd($tiemposcortes);
     
         // Tiempo por áreas
         $tiemposareas = DB::table('ordenfabricacion')
