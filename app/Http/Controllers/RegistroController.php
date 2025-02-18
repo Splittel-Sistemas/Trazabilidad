@@ -164,6 +164,7 @@ class RegistroController extends Controller
     $validatedData = $request->validate([
         'apellido' => 'required|string|max:255',
         'name' => 'required|string|max:255',
+        'roles' => 'required|array', 
     ]);
 
     // Generación de la clave y el correo
@@ -184,6 +185,8 @@ class RegistroController extends Controller
     $user->password = $clave;  // Aquí no se encripta
     $user->role = 'O';
     $user->save();
+
+    $user->roles()->sync($validatedData['roles']); 
 
     return redirect()->route('registro.index')->with('status', 'Usuario creado exitosamente.');
     }
