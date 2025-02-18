@@ -531,7 +531,7 @@
                                 </div>
 
                                 <div class="title-container">
-                                    <h1 class="small-title" id="titulo-visualizaccion"></h1>
+                                    <h1 class="small-title" id="titulo-visualizacion"></h1>
                                 </div>
 
                             </div>
@@ -796,6 +796,7 @@
 
         cargarDatosVenta(search);
     });
+
     //cargar los datode venta
     function cargarDatosVenta(search) {
         
@@ -838,6 +839,7 @@
             }
         });
     }
+    
     //detalles de la orden venta
     $(document).on('click', '.ver-detalles', function (e) {
         var ordenVenta = $(this).data('ordenventa');
@@ -1000,51 +1002,51 @@
 
     //cargar los datos de fabricacion
     function cargarDatosFabricacion(search) {
-        $.ajax({
-            url: '{{ route("Buscar.Fabricacion") }}', 
-            method: 'GET',
-            data: { search: search },
-            success: function (data) {
-                var tablaFabricacion = $('#tablaFabricacion');
-                var tbody = $('#tabla-resultadosFabricacion');
-                tbody.empty();
+            $.ajax({
+                url: '{{ route("Buscar.Fabricacion") }}', 
+                method: 'GET',
+                data: { search: search },
+                success: function (data) {
+                    var tablaFabricacion = $('#tablaFabricacion');
+                    var tbody = $('#tabla-resultadosFabricacion');
+                    tbody.empty();
 
-                if (data.length > 0) {
-                    data.forEach(function (item) {
-                        var row = `
-                            <tr>
-                                <td>${item.OrdenFabricacion}</td>
-                                <td>${item.Articulo}</td>
-                                <td>${item.Descripcion}</td>
-                                <td>${item.CantidadTotal}</td>
-                                <td class="text-center align-middle">
-                                    <a href="#" class="btn btn-info btn-sm ver-fabricacion"
-                                    data-id="${item.id}"
-                                    data-ordenfabricacion="${item.OrdenFabricacion}"
-                                    data-descripcion="${item.Descripcion}"
-                                    data-cantidadtotal="${item.CantidadTotal}"
-                                    style="border-radius: 3px; padding: 4px 8px; font-size: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); transition: background-color 0.3s, transform 0.2s;">
-                                        <i class="bi bi-eye uil-comment-info"></i> Detalles
-                                    </a>
-                                </td>
-                            </tr>`;
-                        tbody.append(row);
-                    });
+                    if (data.length > 0) {
+                        data.forEach(function (item) {
+                            var row = `
+                                <tr>
+                                    <td>${item.OrdenFabricacion}</td>
+                                    <td>${item.Articulo}</td>
+                                    <td>${item.Descripcion}</td>
+                                    <td>${item.CantidadTotal}</td>
+                                    <td class="text-center align-middle">
+                                        <a href="#" class="btn btn-info btn-sm ver-fabricacion"
+                                        data-id="${item.id}"
+                                        data-ordenfabricacion="${item.OrdenFabricacion}"
+                                        data-descripcion="${item.Descripcion}"
+                                        data-cantidadtotal="${item.CantidadTotal}"
+                                        style="border-radius: 3px; padding: 4px 8px; font-size: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); transition: background-color 0.3s, transform 0.2s;">
+                                            <i class="bi bi-eye uil-comment-info"></i> Detalles
+                                        </a>
+                                    </td>
+                                </tr>`;
+                            tbody.append(row);
+                        });
 
-                    tablaFabricacion.show(); // Mostrar la tabla si hay resultados
-                } else {
-                    tbody.append('<tr><td colspan="5" class="text-center">No se encontraron resultados</td></tr>');
-                    tablaFabricacion.show(); // Mostrar la tabla aunque esté vacía con el mensaje
+                        tablaFabricacion.show(); // Mostrar la tabla si hay resultados
+                    } else {
+                        tbody.append('<tr><td colspan="5" class="text-center">No se encontraron resultados</td></tr>');
+                        tablaFabricacion.show(); // Mostrar la tabla aunque esté vacía con el mensaje
+                    }
+                },
+                error: function () {
+                    alert('Error al cargar los datos de la Orden de Fabricación.');
                 }
-            },
-            error: function () {
-                alert('Error al cargar los datos de la Orden de Fabricación.');
-            }
-        });
-    }
+            });
+        }
 
 
-    //detalles de la orden de fabricacion
+        //detalles de la orden de fabricacion
             $(document).on('click', '.ver-fabricacion', function (e) {
                 var ordenfabricacion = $(this).data('ordenfabricacion');
             
@@ -1140,8 +1142,6 @@
                 }
             });
         });
-
-
         $.ajax({
             url: '{{ route("tiempos.hrs") }}',
             method: 'GET',
@@ -1159,17 +1159,26 @@
                             'font-weight': 'bold'
                         });
                 } else {
-                    console.log('No hay tiempos de cortes disponibles');
+                    $('#titulo-cortes')
+                        .text('Sin datos de duración')
+                        .css({
+                            'font-size': '10px',
+                            'color': 'red',
+                            'font-weight': 'bold'
+                        });
                 }
 
                 // Verificar si tiemposareas tiene datos
+                let hasData = false;  // Variable para verificar si hay datos en tiemposareas
+
                 if (response.tiemposareas.length > 0) {
                     // Mostrar el tiempo según el área
                     response.tiemposareas.forEach(function(item) {
+                        hasData = true;
                         switch (item.Areas_id) {
                             case 3:
                                 $('#titulo-suministro')
-                                    .text('Duración: ' + item.DuracionTotal) // Usar DuracionTotal
+                                    .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
                                         'color': 'blue',
@@ -1234,18 +1243,57 @@
                                 console.warn('Área no reconocida:', item.Areas_id);
                         }
                     });
-                } else {
-                    console.log('No se encontraron tiempos por área');
+                } 
+
+                if (!hasData) {
+                    // Si no hay datos de tiemposareas, mostrar mensaje
+                    $('#titulo-suministro').text('Sin datos de duración').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-preparado').text('Sin datos de duración').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-ensamble').text('Sin datos de duración').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-pulido').text('Sin datos de duración').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-medicion').text('Sin datos de duración').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-visualizacion').text('Sin datos de duración').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-empaque').text('Sin datos de duración').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
                 }
             },
             error: function() {
                 console.error('Error al obtener los datos');
             }
         });
-
-
-
-
     });
 
     //funcion para cargar los canvases general para Or-V Y Or-F
@@ -1421,6 +1469,7 @@
             }
         });
     }
+
     // Cuando se haga clic en una fila para seleccionar la OrdenFabricacion
     $(document).on('click', '.ver-fabricacion', function () {
         var ordenfabricacion = $(this).data('ordenfabricacion');  // Obtener el valor de ordenfabricacion desde la fila

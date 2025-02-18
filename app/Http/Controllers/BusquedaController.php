@@ -678,7 +678,7 @@ class BusquedaController extends Controller
     public function tiempoS(Request $request)
     {
         $idFabricacion = $request->input('id');
-        dd($idFabricacion);
+        //dd($idFabricacion);
         
         // Tiempo de cortes
         $tiemposcortes = DB::table('ordenfabricacion')
@@ -689,6 +689,7 @@ class BusquedaController extends Controller
                 'partidasof.FechaComienzo',
                 'partidasof.FechaFinalizacion'
             )
+            ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion) // Filtrar por id de fabricación
             ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
             ->get()
             ->map(function ($item) {
@@ -716,9 +717,10 @@ class BusquedaController extends Controller
                 DB::raw('MAX(partidasof_areas.FechaTermina) as FechaTermina'),
                 DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof_areas.FechaComienzo, partidasof_areas.FechaTermina)) as TotalMinutos')
             )
-            ->where('ordenfabricacion.id', $idFabricacion)  // Filtrar por id de fabricación
+            ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion) // Filtrar por id de fabricación
             ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.PartidasOf_id', 'partidasof_areas.Areas_id')
             ->get()
+           
             ->map(function ($item) {
                 // Convertir la duración total de minutos en días, horas y minutos
                 $totalMinutos = $item->TotalMinutos;
@@ -736,7 +738,7 @@ class BusquedaController extends Controller
                 $item->ids = explode(',', $item->ids); // Convertir los IDs a un array
                 return $item;
             });
-            dd($tiemposareas);
+           // dd($tiemposareas);
     
         return response()->json([
             'tiemposcortes' => $tiemposcortes,
