@@ -188,17 +188,6 @@ class BusquedaController extends Controller
                 )
                     ->groupBy('ordenventa.OrdenVenta')
                     ->get();
-
-                    // Ahora para calcular el porcentaje total ponderado
-                    
-
-
-
-                /* DB::raw('GROUP_CONCAT(DISTINCT ordenfabricacion.OrdenFabricacion ORDER BY ordenfabricacion.OrdenFabricacion ASC SEPARATOR ", ") as OrdenesFabricacion'),
-                    DB::raw('SUM(ordenfabricacion.CantidadTotal) as SumaCantidadTotal'), // Remover DISTINCT en SUM
-                    DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalPartidas'),
-                    DB::raw('ROUND((SUM(partidasof_areas.cantidad) / SUM(ordenfabricacion.CantidadTotal)) * 100) as Progreso') */
-               
                
             //estacion preparado
             } elseif ($tipo === 'preparado') {
@@ -397,7 +386,6 @@ class BusquedaController extends Controller
             ]);
     }
     //graficador OF
-
     public function GraficadorFabricacion(Request $request)
     {
         $idFabricacion = $request->input('id');
@@ -675,23 +663,29 @@ class BusquedaController extends Controller
             return response()->json([], 204); 
         }
     }
+    //tiempos de orden de fabricacion
     public function tiempoS(Request $request)
     {
         $idFabricacion = $request->input('id');
-        //dd($idFabricacion);
+      //dd($idFabricacion);
         
         // Tiempo de cortes
         $tiemposcortes = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            
             ->select(
                 'ordenfabricacion.OrdenFabricacion',
                 'partidasof.FechaComienzo',
-                'partidasof.FechaFinalizacion'
+                'partidasof.FechaFinalizacion', 
+                DB::raw('GROUP_CONCAT(partidasof.OrdenFabricacion_id) as ids'),
+                DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'),
+                DB::raw('MAX(partidasof.FechaFinalizacion) as FechaTermina'),
+                DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof.FechaComienzo, partidasof.FechaFinalizacion)) as TotalMinutos')
             )
-            ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion) // Filtrar por id de fabricación
+           ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion) // Filtrar por id de fabricación
             ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
             ->get()
+            
             ->map(function ($item) {
                 $FechaComienzo = Carbon::parse($item->FechaComienzo);
                 $FechaFinalizacion = Carbon::parse($item->FechaFinalizacion);
@@ -703,6 +697,7 @@ class BusquedaController extends Controller
                 $item->Duracion = "{$diffDias} días, {$diffHoras} horas, {$diffMinutos} minutos";
                 return $item;
             });
+            //dd($tiemposcortes);
     
         // Tiempo por áreas
         $tiemposareas = DB::table('ordenfabricacion')
@@ -717,25 +712,23 @@ class BusquedaController extends Controller
                 DB::raw('MAX(partidasof_areas.FechaTermina) as FechaTermina'),
                 DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof_areas.FechaComienzo, partidasof_areas.FechaTermina)) as TotalMinutos')
             )
-            ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion) // Filtrar por id de fabricación
+            ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion) 
             ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.PartidasOf_id', 'partidasof_areas.Areas_id')
             ->get()
            
             ->map(function ($item) {
                 // Convertir la duración total de minutos en días, horas y minutos
                 $totalMinutos = $item->TotalMinutos;
-    
                 $dias = floor($totalMinutos / (60 * 24));
                 $horas = floor(($totalMinutos % (60 * 24)) / 60);
                 $minutos = $totalMinutos % 60;
-    
-                // Crear el string de duración total
+
                 $duracion = [];
                 if ($dias > 0) $duracion[] = "{$dias} días";
                 if ($horas > 0) $duracion[] = "{$horas} horas";
                 if ($minutos > 0) $duracion[] = "{$minutos} minutos";
                 $item->DuracionTotal = implode(", ", $duracion);
-                $item->ids = explode(',', $item->ids); // Convertir los IDs a un array
+                $item->ids = explode(',', $item->ids); 
                 return $item;
             });
            // dd($tiemposareas);
@@ -747,6 +740,21 @@ class BusquedaController extends Controller
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* public function tiemposOrden(Request $request)
 {
