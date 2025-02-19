@@ -42,7 +42,7 @@
                     <!-- Tab Proceso -->
                     <div class="tab-pane fade show active" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab">
                         <div class="table-responsive card">
-                            <table id="procesoTable" class="table table-sm">
+                            <table id="procesoTable" class="table table-sm" style="display: none;">
                                 <thead>
                                     <tr class="bg-light">
                                         <th>Orden Fabricación</th>
@@ -162,8 +162,8 @@
                 <div class="" id="ModalSuministroBodyInfoOF">
                 </div>
                 <div class="row">
-                    <form id="CortesForm" class="row g-3 needs-validation" novalidate="">
-                        <div class="col-6">
+                    <form id="CortesForm" class="row needs-validation" novalidate="">
+                        <div id="InputNormal" class="col-6">
                             <label class="form-label" for="Cantitadpiezas">Ingresa n&uacute;mero de piezas a cortar </label>
                             <div class="input-group">
                                 <input class="form-control form-control-sm has-validation" id="Cantitadpiezas" type="number" oninput="RegexNumeros(this)" placeholder="Ingresa una cantidad" />
@@ -174,17 +174,17 @@
                                 <input class="form-check-input" id="Retrabajo" type="checkbox" />
                                 <label class="form-check-label" for="Retrabajo">Retrabajo</label>
                                 <div class="invalid-feedback" id="error_retrabajo"></div>
-                                <button id="btnGrupoPiezasCorte1" class="btn btn-success btn-sm float-end" style="display: none">Guardar</button>
                             </div>
                             <input type="hidden" id="CantitadpiezasIdOF">
                         </div>
-                        <div class="col-6 mt-2">
-                            <div id="Emisiones" class="mt-2 mb-2" style="display:none;">
+                        <div id="InputEmision" class="col-6">
+                            <div id="Emisiones" class="mb-2" style="display:none;">
                                 <label class="form-label" for="Cantitadpiezas">Selecciona una Orden de Producci&oacute;n </label>
                                 <select id="EmisionesOpciones" class="form-select form-select-sm" aria-label=".form-select-sm">
                                 </select>
                                 <div class="invalid-feedback" id="error_emision"></div>
                             </div>
+                            <button id="btnGrupoPiezasCorte1" class="btn btn-success btn-sm float-end" style="display: none">Guardar</button>
                         </div>
                     </form>
                 </div>
@@ -269,11 +269,15 @@
                 $('#Emisiones').fadeIn(600);
                 $('#btnGrupoPiezasCorte1').fadeIn();
                 $('#btnGrupoPiezasCorte').fadeOut();
+                $('#Cantitadpiezas').prop('disabled', true);
+                $('#Cantitadpiezas').val(0);
             }else{
                 $('#EmisionesOpciones').html('');
                 $('#Emisiones').fadeOut(600);
                 $('#btnGrupoPiezasCorte').fadeIn();
                 $('#btnGrupoPiezasCorte1').fadeOut();
+                $('#Cantitadpiezas').prop('disabled', false);
+                $('#Cantitadpiezas').val('');
             }
         });
         $('#btnGrupoPiezasCorte').click(function() {
@@ -339,7 +343,7 @@
             }
             if(Cantitadpiezas.val()=="" || Cantitadpiezas.val()==null || Cantitadpiezas.val()==0){
                 Cantitadpiezas.addClass('is-invalid');
-                errorCantidad.text('Por favor, ingresa un número valido, mayor a 0.');
+                errorCantidad.text('Por favor, selecciona una Orden de fabricación valida.');
                 errorCantidad.show();
                 return 0; 
             }else{
@@ -437,7 +441,15 @@
                 errorinputFechaInicio.hide(); 
             }
         });
-        setInterval(RecargarTabla, 300000);
+        $('#EmisionesOpciones').on('change', function() {
+            var selectedOption = $(this).find('option:selected');
+            // Obtener el valor de data-cantidad
+            var cantidad = selectedOption.data('cantidad');
+            // Mostrarlo en la consola o hacer algo con el valor
+            $('#Cantitadpiezas').val(cantidad);
+        });
+        setInterval(RecargarTabla, 60000);
+        $('#procesoTable').show();
     });
     function RecargarTabla(){
         $.ajax({
@@ -462,6 +474,7 @@
     function Planear(OrdenFabricacion){
         $('#Retrabajo').prop('checked', false);
         $('#Retrabajo').prop('disabled', false);
+        $('#Cantitadpiezas').prop('disabled', false);
         $('#Cantitadpiezas').val('');
         $('#Emisiones').fadeOut(100);
         $('#ModalSuministro').modal('show');
