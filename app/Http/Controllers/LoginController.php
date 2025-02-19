@@ -12,12 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
 {
-    public function login_view()
-    {
+    public function login_view(){
         return view('layouts.login');  
     }
-    public function login(Request $request)
-    {
+    public function login(Request $request){
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -40,8 +38,7 @@ class LoginController extends Controller
                 ->withErrors(['email' => 'Correo electrónico o contraseña incorrectos.']);
         }
     }
-    public function register(Request $request)
-    {
+    public function register(Request $request){
         
         $request->validate([
             'name' => 'required|string|max:255',
@@ -56,34 +53,32 @@ class LoginController extends Controller
         Auth::login($user);
         return redirect(route('Home'));
     }
-    public function logout(Request $request)
-    {
-        Auth::logout(); 
-        $request->session()->invalidate(); 
-        $request->session()->regenerateToken(); 
-        return redirect()->route('login_view');
-    }
-    public function operador(Request $request)
-    {
+    public function operador(Request $request){
         $request->validate([
             'clave' => 'required',
         ]);
-
         $operador = User::where('password', $request->clave)->first(); 
-
         if ($operador) {
             if ($operador->active == 1) {
                 Auth::login($operador);
                 $request->session()->regenerate();
                 return redirect()->intended(route('Home'));
             } else {
-                return redirect()->route('login_view')
+                return redirect()->route('login')
                     ->withErrors(['clave' => 'El acceso ha sido restringido. Contacte al administrador.']);
             }
         }
 
-        return redirect()->route('login_view')
+        return redirect()->route('login')
             ->withErrors(['clave' => 'Clave incorrecta.']);
+    }
+    public function logout(){
+        if (Auth::check()) {
+            Auth::logout();
+            return redirect()->route('login');
+        } else {
+            return redirect()->route('login');
+        }
     }
 
 }
