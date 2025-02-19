@@ -242,7 +242,7 @@
                                             </a>
                                         </li>
                                         <li class="nav-item"><a class="nav-link {{ Route::is('Medicion') ? 'nav-tabs active' : '' }}" href="{{route('Medicion')}}" data-bs-toggle="" aria-expanded="false">
-                                            <div class="d-flex align-items-center"><span class="nav-link-text">Medicion</span></div>
+                                            <div class="d-flex align-items-center"><span class="nav-link-text">Medici&oacute;n</span></div>
                                             </a>
                                         </li>
                                         <li class="nav-item"><a class="nav-link {{ Route::is('Visualizacion') ? 'nav-tabs active' : '' }}" href="{{route('Visualizacion')}}" data-bs-toggle="" aria-expanded="false">
@@ -250,7 +250,7 @@
                                             </a>
                                         </li>
                                         <li class="nav-item"><a class="nav-link {{ Route::is('Visualizacion') ? 'nav-tabs active' : '' }}" href="{{route('Visualizacion')}}" data-bs-toggle="" aria-expanded="false">
-                                            <div class="d-flex align-items-center"><span class="nav-link-text">Enpaquetado</span></div>
+                                            <div class="d-flex align-items-center"><span class="nav-link-text">Empaquetado</span></div>
                                             </a>
                                         </li>
                                     </ul>
