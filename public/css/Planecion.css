@@ -22,7 +22,7 @@
 .table-partidas th , .table-partidas td {
     font-size: 10px; /* Establece el tamaño de la letra lo más pequeño posible */
     border-collapse: collapse; /* Opcional: Asegura que las celdas se colapsen */
-    background: white;
+    /*background: white;*/
 }
 #table_OF_migrados td, #table_OF_migrados_vencidos td {
     font-size: 12px;
