@@ -258,7 +258,7 @@
        
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, 0fr);
             grid-template-rows: repeat(2, auto);
             gap: 1px;
             padding: 1px;
@@ -445,11 +445,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 let container = canvas.parentElement;
                 container.style.display = "flex";
                 container.style.alignItems = "center";
-                container.style.gap = "10px"; 
+                container.style.gap = "1px"; 
 
                 let ctx = canvas.getContext("2d");
-                canvas.style.width = "150px";
-                canvas.style.height = "150px";
+                canvas.style.width = "100px";
+                canvas.style.height = "100px";
 
                 let completado = data[id] ? data[id].completado : 0;
                 let pendiente = data[id] ? data[id].pendiente : 0;
