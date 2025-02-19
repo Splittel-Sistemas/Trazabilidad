@@ -323,6 +323,12 @@
             border: 1px solid #ddd;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        #chart-day, #chart-month, #chart-hour {
+        width: 900px;
+        height: 400px;
+        }
+
         
 
 
@@ -381,7 +387,6 @@
     <!------>
     <div class="card">
         <h2 style="font-size: 16px;">Progreso del Dia</h2>
-
         <div id="chart-hour" class="chart-container"></div>
     </div>
     <div style="height: 30px;"></div>
@@ -777,7 +782,7 @@ function generarGrafico(url, containerId, itemName) {
                         type: 'pie',
                         id: 'pie',
                         radius: '35%',
-                        center: containerId === 'chart-day' ? ['80%', '50%'] : ['20%', '50%'],
+                        center: containerId === 'chart-day' ? ['75%', '50%'] : ['20%', '50%'],
                         emphasis: { focus: 'self' },
                         label: {
                             formatter: `{b}: {@[${data.labels[0]}]} ({d}%)`
