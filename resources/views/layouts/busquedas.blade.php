@@ -1,7 +1,5 @@
 @extends('layouts.menu2')
-
 @section('title', 'Progreso')
-
 @section('styles')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!--estilos-->
@@ -326,7 +324,6 @@
 
 
     </style>
-
 @endsection
 @section('content')
     <!-- Breadcrumbs -->
@@ -1548,14 +1545,6 @@
             }
         });
     });
-
-
-
-
-
-
-
-
 </script>
 @endsection
 

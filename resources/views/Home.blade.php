@@ -394,7 +394,6 @@
         <h2 style="font-size: 16px;">Progreo del Mes</h2>
         <div id="chart-month" class="chart-container"></div>
     </div>
-    <!---->
 
 @endsection
 
@@ -458,7 +457,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 let porcentajeCompletado = totalOrdenes > 0 ? ((completado / totalOrdenes) * 100).toFixed(2) : 0;
-                let porcentajePendiente = totalOrdenes > 0 ? ((pendiente / totalOrdenes) * 100).toFixed(2) : 0;
+                let porcentajePendiente = totalOrdenes > 0 ? (((totalOrdenes - completado) / totalOrdenes) * 100).toFixed(2) : 0;
 
                 let infoDiv = container.querySelector(".info-grafico");
                 if (!infoDiv) {
@@ -470,8 +469,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 infoDiv.innerHTML = `
                     <strong>${id.replace("plemas", "")}</strong><br>
                     Completado: <span style="color: #28a745;">${completado}/${totalOrdenes} (${porcentajeCompletado}%)</span><br>
-                    Pendiente: <span style="color: #FFC107;">${pendiente}/${totalOrdenes} (${porcentajePendiente}%)</span>
+                    Pendiente: <span style="color: #FFC107;">${totalOrdenes - completado}/${totalOrdenes} (${porcentajePendiente}%)</span>
                 `;
+
                 infoDiv.style.fontSize = "14px";
 
                 new Chart(ctx, {
@@ -479,7 +479,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     data: {
                         labels: ["Completado", "Pendiente"],
                         datasets: [{
-                            data: [completado, pendiente],
+                            data: [completado, totalOrdenes],
                             backgroundColor: ["#28a745", "#FFC107"],
                             cutout: "70%"
                         }]
@@ -612,6 +612,7 @@ function cargarOrdenesCerradas() {
         }
     });
 }
+
 function cargarOrdenesCompletas() {
     $.ajax({
         url: "{{ route('tabla.completas') }}",

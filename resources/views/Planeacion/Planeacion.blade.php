@@ -78,11 +78,11 @@
                                                         <h6 class="text-700 col-6">Piezas planeadas: <span id="Piezasplaneadas">0</span></h6>
                                                         <h6 class="text-700 col-6">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>  
                                                         <h6 class="text-700 col-6"></h6>
-                                                        <div class="col-12"><button class="btn btn-link mx-4 p-0" type="button" data-bs-toggle="modal" onclick="LlenarModalPorcentajes()" data-bs-target="#ParametrosPorcentaje"><i class="far fa-edit"></i>Capacidad productiva</button></div>  
+                                                        <div class="col-12"><button class="btn btn-link mx-5 p-0" type="button" data-bs-toggle="modal" onclick="LlenarModalPorcentajes()" data-bs-target="#ParametrosPorcentaje"><i class="far fa-edit"></i>Capacidad productiva</button></div>  
                                                     </div>
                                             </div>
                                             <div class="pb-1 pt-1 d-flex justify-content-center aling-items-center">
-                                                   <div class="p-0" id="PrcentajePlaneacion" style="width: 10rem;height:10rem"></div>
+                                                   <div class="p-0" id="PrcentajePlaneacion" style="width: 9rem;height:9rem"></div>
                                             </div>
                                             <div>
                                                 <div class="d-flex align-items-center mb-2">
@@ -309,7 +309,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cerrar</button>
+                    <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -324,7 +324,7 @@
                 <div class="modal-body border" id="ModalOrdenesFabricacionBody">
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cerrar</button>
+                    <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -350,7 +350,7 @@
                       </div>
                 </div>  
             </div>
-            <div class="modal-footer"><button class="btn btn-primary" onclick="GuardarParametrosPorcentajes()">Guardar</button><button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancelar</button></div>
+            <div class="modal-footer"><button class="btn btn-primary" onclick="GuardarParametrosPorcentajes()">Guardar</button><button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cancelar</button></div>
           </div>
         </div>
     </div>
@@ -388,8 +388,7 @@
                     _token: '{{ csrf_token() }}'  
                 },
                 beforeSend: function() {
-                    $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
-                    // You can display a loading spinner here
+                    $('#table_OV_body').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>")
                 },
                 success: function(response) {
                     if (response.status == 'success') {
@@ -425,7 +424,7 @@
                     _token: '{{ csrf_token() }}'  
                 },
                 beforeSend: function() {
-                    $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                    $('#table_OV_body').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>")
                     // You can display a loading spinner here
                 },
                 success: function(response) {
@@ -462,7 +461,7 @@
                     _token: '{{ csrf_token() }}'  
                 },
                 beforeSend: function() {
-                    $('#table-2-content').html("<tr><td colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></td></tr>")
+                    $('#table-2-content').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>")
                 },
                 success: function(response) {
                 if (response.status === 'success') {
@@ -495,7 +494,7 @@
                     _token: '{{ csrf_token() }}'  
                 },
                 beforeSend: function() {
-                    $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                    $('#table_OV_body').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>")
                     // You can display a loading spinner here
                 },
                 success: function(response) {
@@ -534,7 +533,7 @@
                     _token: '{{ csrf_token() }}'  
                 },
                 beforeSend: function() {
-                    $('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                    $('#table_OV_body').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>")
                     // You can display a loading spinner here
                 },
                 success: function(response) {
@@ -557,6 +556,9 @@
                 }
             });
         });
+        @if($VerificarSAP==0)
+            error("Error SAP", "El servidor SAP no esta disponible en este momento, estamos trabajando en ello.");
+        @endif
         PorcentajeLlenadas();
     });
     function loadContent(idcontenedor, docNum, cliente) {
@@ -571,7 +573,7 @@
                     _token: '{{ csrf_token() }}'
                 },
                 beforeSend: function () {
-                    $('#' + idcontenedor + "llenar").html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>");
+                    $('#' + idcontenedor + "llenar").html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>");
                 },
                 success: function (response) {
                     if (response.status === 'success') {
@@ -601,7 +603,7 @@
                     _token: '{{ csrf_token() }}'
                 },
                 beforeSend: function () {
-                    $('#' + idcontenedor + "llenar").html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>");
+                    $('#' + idcontenedor + "llenar").html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>");
                 },
                 success: function (response) {
                     if (response.status === 'success') {
@@ -764,11 +766,11 @@
                 if (modal.is(':visible')) {
                     fecha2=$('#FiltroOF_Fecha_table2').val();
                     if(fecha==fecha2){
-                        $('#table-2-content').html("<tr><td colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></td></tr>");
+                        $('#table-2-content').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>");
                     }
-                        $('#table-2-content_vencidos').html("<tr><td colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></td></tr>");
+                        $('#table-2-content_vencidos').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>");
                     }else{
-                        $('#table-2-content').html("<tr><td colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></td></tr>");
+                        $('#table-2-content').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>");
                     }
                 // You can display a loading spinner here
             },
@@ -807,7 +809,7 @@
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
-                Cuerpo.html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                Cuerpo.html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>")
                 // You can display a loading spinner here
             },
             success: function(response) {
@@ -904,7 +906,7 @@
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
-                Cuerpo.html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
+                Cuerpo.html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>")
             },
             success: function(response) {
                 //DetallesOrdenFabricacion(id);
