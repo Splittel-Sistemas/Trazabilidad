@@ -80,7 +80,7 @@
             background: white;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
             width: 100%; /* Ensures full width */
             max-width: 1200px; /* Increases max width */
             display: flex;
@@ -260,20 +260,20 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(2, auto);
-            gap: 10px;
-            padding: 15px;
-            max-width: 4000px;
+            gap: 1px;
+            padding: 1px;
+            max-width: 2000px;
             margin: auto;
         }
         .grid-item {
             background: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .small-title {
-            font-size: 5px;
-            margin-bottom: 10px;
+            font-size: 14px;
+            margin-bottom: 5px;
         }
 
 
