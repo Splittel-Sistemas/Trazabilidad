@@ -536,7 +536,8 @@ class PlaneacionController extends Controller
         try {
             $datos = $this->funcionesGenerales->ejecutarConsulta($sql);
         } catch (\Exception $e) {
-            return $datos=0;
+            //return $datos=0;
+            return $e;
         }
         for($i=0;$i<count($datos);$i++){
             $num_partidas=$this->OrdenFabricacion($datos[$i]['OV']);
