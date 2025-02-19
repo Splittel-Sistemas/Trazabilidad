@@ -99,7 +99,7 @@
                             <th class="sort border-top" data-sort="email">Correo</th>
                             <th class="sort border-top" data-sort="password">Contraseña</th>
                             <th class="sort border-top" data-sort="roles">Role</th>
-                            <th class="sort border-top" data-sort="estatus">Activo</th>
+                            <th class="sort border-top" data-sort="estatus">Desactivo/Activo</th>
                             <th class="sort border-top text-center  pe-0">Acciones</th>
                         </tr>
                     </thead>
@@ -123,11 +123,14 @@
                                     <span class="badge badge-info">{{ $role->name }}</span>
                                 @endforeach
                             </td>
-                            <td class="align-middle estatus">
-                                <button class="btn toggle-status {{ $registro->active ? 'active' : 'inactive' }}" data-id="{{ $registro->id }}" data-active="{{ $registro->active ? '1' : '0' }}">
+                            <td class="align-middle estatus text-center">
+                                <button class="btn toggle-status d-flex justify-content-center {{ $registro->active ? 'active' : 'inactive' }}" 
+                                    data-id="{{ $registro->id }}" 
+                                    data-active="{{ $registro->active ? '1' : '0' }}">
                                     <i class="fa {{ $registro->active ? 'fa-toggle-on' : 'fa-toggle-off' }}" aria-hidden="true"></i>
                                 </button>
                             </td>
+                            
                           
                             <td class=" text-center pe-0">
                                     <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#userModal" data-id="{{ $registro->id }}"><i class="fas fa-edit"></i> Editar</button>
@@ -224,7 +227,7 @@
 </div>
 
 @section('scripts')
-    <script>
+<script>
   $(document).ready(function() {
     // Cargar datos del modal
     $('button[data-bs-toggle="modal"]').on('click', function() {
@@ -331,8 +334,7 @@
         });
 
     });
-
-    </script>
+</script>
 @endsection
 
 

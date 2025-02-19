@@ -87,29 +87,120 @@
                                 </a>
                             </div>
                         </li>
-                        <li class="nav-item"><!-- usuarios-->
-                            <p class="navbar-vertical-label">Usuarios</p>
-                            <hr class="navbar-vertical-line" /><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link label-1 {{ Route::is('registro.index') ? 'active' : '' }}" href="{{route('registro.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
-                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="user"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Usuarios</span></span></div>
-                                </a>
-                            </div>
-                        </li>
-                        <li class="nav-item"><!-- Roles y permisos-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link label-1 {{ Route::is('RolesPermisos.index') ? 'active' : '' }}" href="{{route('RolesPermisos.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
-                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="key"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Roles y permisos</span></span></div>
-                                </a>
-                            </div>
-                        </li>
-                        <li class="nav-item"><!-- usuarios-->
+                        <li class="nav-item"><!-- Progreso-->
                             <p class="navbar-vertical-label">Progreso</p>
                             <hr class="navbar-vertical-line" /><!-- parent pages-->
                             <div class="nav-item-wrapper">
                                 <a class="nav-link label-1 {{ Route::is('Busquedas.OV') ? 'active' : '' }}" href="{{ route('Busquedas.OV') }}" role="button" data-bs-toggle="" aria-expanded="false">
                                     <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="bar-chart-2"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Progreso</span></span></div>
                                 </a>
+                            </div>
+                        </li>
+                        <li class="nav-item"><!-- reportes-->
+                            <p class="navbar-vertical-label">Reportes</p>
+                            <hr class="navbar-vertical-line">
+                            <div class="nav-item-wrapper">
+                                <a class="nav-link dropdown-indicator label-1 collapsed" href="#nv-e-reportes" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-e-reportes">
+                                    <div class="d-flex align-items-center">
+                                        <div class="dropdown-indicator-icon">
+                                            <svg class="svg-inline--fa fa-caret-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
+                                                <path fill="currentColor" d="M118.6 105.4l128 127.1C252.9 239.6 256 247.8 256 255.1s-3.125 16.38-9.375 22.63l-128 127.1c-9.156 9.156-22.91 11.9-34.88 6.943S64 396.9 64 383.1V128c0-12.94 7.781-24.62 19.75-29.58S109.5 96.23 118.6 105.4z"></path>
+                                            </svg>
+                                        </div>
+                                        <span class="nav-link-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text text-900 fs-3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                        </span><span class="nav-link-text">Reportes</span>
+                                    </div>
+                                </a>
+                                <div class="parent-wrapper label-1">
+                                    <ul class="nav parent collapse" data-bs-parent="#navbarVerticalCollapse" id="nv-e-reportes" style="">
+                                        <li class="collapsed-nav-item-title d-none">Reportes</li>
+                                        <li class="nav-item">
+                                            <a class="nav-link dropdown-indicator collapsed" href="#nv-splittel" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-splittel">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="dropdown-indicator-icon">
+                                                        <svg class="svg-inline--fa fa-caret-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="clipb" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
+                                                            <path fill="currentColor" d="M118.6 105.4l128 127.1C252.9 239.6 256 247.8 256 255.1s-3.125 16.38-9.375 22.63l-128 127.1c-9.156 9.156-22.91 11.9-34.88 6.943S64 396.9 64 383.1V128c0-12.94 7.781-24.62 19.75-29.58S109.5 96.23 118.6 105.4z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <span class="nav-link-text">SPLITTEL</span>
+                                                </div>
+                                            </a>
+                                            <div class="parent-wrapper">
+                                                <ul class="nav parent collapse" data-bs-parent="#e-commerce" id="nv-splittel" style="">
+                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 1</span></div>
+                                                    </a><!-- more inner pages-->
+                                                    </li>
+                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 2</span></div>
+                                                    </a><!-- more inner pages-->
+                                                    </li>
+                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 3</span></div>
+                                                    </a><!-- more inner pages-->
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link dropdown-indicator collapsed" href="#nv-maquila" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-maquila">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="dropdown-indicator-icon">
+                                                        <svg class="svg-inline--fa fa-caret-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="clipb" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
+                                                            <path fill="currentColor" d="M118.6 105.4l128 127.1C252.9 239.6 256 247.8 256 255.1s-3.125 16.38-9.375 22.63l-128 127.1c-9.156 9.156-22.91 11.9-34.88 6.943S64 396.9 64 383.1V128c0-12.94 7.781-24.62 19.75-29.58S109.5 96.23 118.6 105.4z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <span class="nav-link-text">MAQUILA</span>
+                                                </div>
+                                            </a>
+                                            <div class="parent-wrapper">
+                                                <ul class="nav parent collapse" data-bs-parent="#e-commerce" id="nv-maquila" style="">
+                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 1</span></div>
+                                                    </a><!-- more inner pages-->
+                                                    </li>
+                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 2</span></div>
+                                                    </a><!-- more inner pages-->
+                                                    </li>
+                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 3</span></div>
+                                                    </a><!-- more inner pages-->
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link dropdown-indicator collapsed" href="#nv-imex" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-imex">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="dropdown-indicator-icon">
+                                                        <svg class="svg-inline--fa fa-caret-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="clipb" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
+                                                            <path fill="currentColor" d="M118.6 105.4l128 127.1C252.9 239.6 256 247.8 256 255.1s-3.125 16.38-9.375 22.63l-128 127.1c-9.156 9.156-22.91 11.9-34.88 6.943S64 396.9 64 383.1V128c0-12.94 7.781-24.62 19.75-29.58S109.5 96.23 118.6 105.4z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <span class="nav-link-text">IMEX</span>
+                                                </div>
+                                            </a>
+                                            <div class="parent-wrapper">
+                                                <ul class="nav parent collapse" data-bs-parent="#e-commerce" id="nv-imex" style="">
+                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 1</span></div>
+                                                    </a><!-- more inner pages-->
+                                                    </li>
+                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 2</span></div>
+                                                    </a><!-- more inner pages-->
+                                                    </li>
+                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 3</span></div>
+                                                    </a><!-- more inner pages-->
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </li>
                         <li class="nav-item"><!-- Areas-->
@@ -166,10 +257,32 @@
                                 </div>
                             </div>
                         </li>
+                        <li class="nav-item"><!-- usuarios-->
+                            <p class="navbar-vertical-label">Usuarios</p>
+                            <hr class="navbar-vertical-line" /><!-- parent pages-->
+                            <div class="nav-item-wrapper">
+                                <a class="nav-link label-1 {{ Route::is('registro.index') ? 'active' : '' }}" href="{{route('registro.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
+                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="user"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Usuarios</span></span></div>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item"><!-- Roles y permisos-->
+                            <div class="nav-item-wrapper">
+                                <a class="nav-link label-1 {{ Route::is('RolesPermisos.index') ? 'active' : '' }}" href="{{route('RolesPermisos.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
+                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="key"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Roles y permisos</span></span></div>
+                                </a>
+                            </div>
+                        </li>
                     </ul>
                 </div>
                 </div>
-                <div class="navbar-vertical-footer"><button class="btn navbar-vertical-toggle border-0 fw-semi-bold w-100 white-space-nowrap d-flex align-items-center"><span class="uil uil-left-arrow-to-left fs-0"></span><span class="uil uil-arrow-from-right fs-0"></span><span class="navbar-vertical-footer-text ms-2">Cerrar Men&uacute;</span></button></div>
+                <div class="navbar-vertical-footer" style=" background:white;">
+                    <button class="btn navbar-vertical-toggle border-0 fw-semi-bold w-100 white-space-nowrap d-flex align-items-center">
+                        <span class="uil uil-left-arrow-to-left fs-0"></span>
+                        <span class="uil uil-arrow-from-right fs-0"></span>
+                        <span class="navbar-vertical-footer-text ms-2">Cerrar Men&uacute;</span>
+                    </button>
+                </div>
             </nav>
             <nav class="navbar navbar-top fixed-top navbar-expand" id="navbarDefault" style="display:none;">
                 <div class="collapse navbar-collapse justify-content-between">
@@ -359,7 +472,7 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/57.webp" alt="" /></div>
+                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="{{asset('imagenes/user.png') }}" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Kiera Anderson</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -412,7 +525,7 @@
                     </li>
                     <li class="nav-item dropdown"><a class="nav-link lh-1 pe-0" id="navbarDropdownUser" href="#!" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                         <div class="avatar avatar-l ">
-                        <img class="rounded-circle " src="assets/img/team/40x40/57.webp" alt="" />
+                        <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
                         </div>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border border-300" aria-labelledby="navbarDropdownUser">
@@ -420,29 +533,22 @@
                         <div class="card-body p-0">
                             <div class="text-center pt-4 pb-3">
                             <div class="avatar avatar-xl ">
-                                <img class="rounded-circle " src="assets/img/team/72x72/57.webp" alt="" />
+                                <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
                             </div>
-                            <h6 class="mt-2 text-black">Jerry Seinfield</h6>
+                            @if (Auth::check())
+                            <h6 class="mt-2 text-black">{{ Auth::user()->name }}</h6>
+                            @endif
                             </div>
-                            <div class="mb-3 mx-3"><input class="form-control form-control-sm" id="statusUpdateInput" type="text" placeholder="Update your status" /></div>
-                        </div>
-                        <div class="overflow-auto scrollbar" style="height: 10rem;">
+                            
+                        <div class="overflow-auto scrollbar" style="height: 5rem;">
                             <ul class="nav d-flex flex-column mb-2 pb-1">
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Profile</span></a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="lock"></span>Posts &amp; Activity</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="settings"></span>Settings &amp; Privacy </a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="help-circle"></span>Help Center</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="globe"></span>Language</a></li>
+                                <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Perfil</span></a></li>
+                                <li class="nav-item"><a class="nav-link px-3" href="{{route('Home')}}"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
                             </ul>
                         </div>
                         <div class="card-footer p-0 border-top">
-                            <ul class="nav d-flex flex-column my-3">
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user-plus"></span>Add another account</a></li>
-                            </ul>
-                            <hr />
-                            <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="#!"> <span class="me-2" data-feather="log-out"> </span>Sign out</a></div>
-                            <div class="my-2 text-center fw-bold fs--2 text-600"><a class="text-600 me-1" href="#!">Privacy policy</a>&bull;<a class="text-600 mx-1" href="#!">Terms</a>&bull;<a class="text-600 ms-1" href="#!">Cookies</a></div>
+                            <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="{{route('logout')}}"> <span class="me-2" data-feather="log-out"> </span>Cerrar sesi&oacute;n</a></div>
+                            
                         </div>
                         </div>
                     </div>
@@ -525,7 +631,7 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/57.webp" alt="" /></div>
+                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="{{asset('imagenes/user.png') }}" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Kiera Anderson</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -645,29 +751,23 @@
                         <div class="card-body p-0">
                             <div class="text-center pt-4 pb-3">
                             <div class="avatar avatar-xl ">
-                                <img class="rounded-circle " src="assets/img/team/72x72/57.webp" alt="" />
+                                <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
                             </div>
-                            <h6 class="mt-2 text-black">Jerry Seinfield</h6>
+                            @if (Auth::check())
+                            <h6 class="mt-2 text-black">{{ Auth::user()->name }}</h6>
+                            @endif
                             </div>
-                            <div class="mb-3 mx-3"><input class="form-control form-control-sm" id="statusUpdateInput" type="text" placeholder="Update your status" /></div>
-                        </div>
-                        <div class="overflow-auto scrollbar" style="height: 10rem;">
+                            
+                        <div class="overflow-auto scrollbar" style="height: 5rem;">
                             <ul class="nav d-flex flex-column mb-2 pb-1">
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Profile</span></a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="lock"></span>Posts &amp; Activity</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="settings"></span>Settings &amp; Privacy </a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="help-circle"></span>Help Center</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="globe"></span>Language</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Perfil</span></a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="{{route('Home')}}"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
                             </ul>
                         </div>
                         <div class="card-footer p-0 border-top">
-                            <ul class="nav d-flex flex-column my-3">
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user-plus"></span>Add another account</a></li>
-                            </ul>
-                            <hr />
-                            <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="#!"> <span class="me-2" data-feather="log-out"> </span>salir</a></div>
-                            <div class="my-2 text-center fw-bold fs--2 text-600"><a class="text-600 me-1" href="#!">Privacy policy</a>&bull;<a class="text-600 mx-1" href="#!">Terms</a>&bull;<a class="text-600 ms-1" href="#!">Cookies</a></div>
+                            
+                            <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="{{route('logout')}}"> <span class="me-2" data-feather="log-out"> </span>Cerrar sesi&oacute;n</a></div>
+                            
                         </div>
                         </div>
                     </div>
@@ -1247,7 +1347,7 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/57.webp" alt="" /></div>
+                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="{{asset('imagenes/user.png') }}" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Kiera Anderson</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -1363,7 +1463,7 @@
                 </li>
                 <li class="nav-item dropdown"><a class="nav-link lh-1 pe-0" id="navbarDropdownUser" href="#!" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                     <div class="avatar avatar-l ">
-                        <img class="rounded-circle " src="assets/img/team/40x40/57.webp" alt="" />
+                        <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
                     </div>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border border-300" aria-labelledby="navbarDropdownUser">
@@ -1371,29 +1471,22 @@
                         <div class="card-body p-0">
                         <div class="text-center pt-4 pb-3">
                             <div class="avatar avatar-xl ">
-                            <img class="rounded-circle " src="assets/img/team/72x72/57.webp" alt="" />
+                            <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
                             </div>
-                            <h6 class="mt-2 text-black">Jerry Seinfield</h6>
+                            @if (Auth::check())
+                            <h6 class="mt-2 text-black">{{ Auth::user()->name }}</h6>
+                            @endif
                         </div>
-                        <div class="mb-3 mx-3"><input class="form-control form-control-sm" id="statusUpdateInput" type="text" placeholder="Update your status" /></div>
-                        </div>
-                        <div class="overflow-auto scrollbar" style="height: 10rem;">
+                        
+                        <div class="overflow-auto scrollbar" style="height: 5rem;">
                         <ul class="nav d-flex flex-column mb-2 pb-1">
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Profile</span></a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="lock"></span>Posts &amp; Activity</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="settings"></span>Settings &amp; Privacy </a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="help-circle"></span>Help Center</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="globe"></span>Language</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Perfil</span></a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="{{route('Home')}}"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
                         </ul>
                         </div>
                         <div class="card-footer p-0 border-top">
-                        <ul class="nav d-flex flex-column my-3">
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user-plus"></span>Add another account</a></li>
-                        </ul>
-                        <hr />
-                        <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="#!"> <span class="me-2" data-feather="log-out"> </span>salir</a></div>
-                        <div class="my-2 text-center fw-bold fs--2 text-600"><a class="text-600 me-1" href="#!">Privacy policy</a>&bull;<a class="text-600 mx-1" href="#!">Terms</a>&bull;<a class="text-600 ms-1" href="#!">Cookies</a></div>
+                        <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="{{route('logout')}}"> <span class="me-2" data-feather="log-out"> </span>Cerrar sesi&oacute;n</a></div>
+                        
                         </div>
                     </div>
                     </div>
@@ -1967,7 +2060,7 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/57.webp" alt="" /></div>
+                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="{{asset('imagenes/user.png') }}" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Kiera Anderson</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -2087,29 +2180,22 @@
                         <div class="card-body p-0">
                         <div class="text-center pt-4 pb-3">
                             <div class="avatar avatar-xl ">
-                            <img class="rounded-circle " src="assets/img/team/72x72/57.webp" alt="" />
+                            <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
                             </div>
-                            <h6 class="mt-2 text-black">Jerry Seinfield</h6>
+                            @if (Auth::check())
+                            <h6 class="mt-2 text-black">{{ Auth::user()->name }}</h6>
+                            @endif
                         </div>
-                        <div class="mb-3 mx-3"><input class="form-control form-control-sm" id="statusUpdateInput" type="text" placeholder="Update your status" /></div>
-                        </div>
-                        <div class="overflow-auto scrollbar" style="height: 10rem;">
+                        
+                        <div class="overflow-auto scrollbar" style="height: 5rem;">
                         <ul class="nav d-flex flex-column mb-2 pb-1">
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Profile</span></a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="lock"></span>Posts &amp; Activity</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="settings"></span>Settings &amp; Privacy </a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="help-circle"></span>Help Center</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="globe"></span>Language</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Perfil</span></a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="{{route('Home')}}"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
                         </ul>
                         </div>
                         <div class="card-footer p-0 border-top">
-                        <ul class="nav d-flex flex-column my-3">
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user-plus"></span>Add another account</a></li>
-                        </ul>
-                        <hr />
-                        <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="#!"> <span class="me-2" data-feather="log-out"> </span>salir</a></div>
-                        <div class="my-2 text-center fw-bold fs--2 text-600"><a class="text-600 me-1" href="#!">Privacy policy</a>&bull;<a class="text-600 mx-1" href="#!">Terms</a>&bull;<a class="text-600 ms-1" href="#!">Cookies</a></div>
+                        <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="{{route('logout')}}"> <span class="me-2" data-feather="log-out"> </span>Cerrar sesi&oacute;n</a></div>
+                        
                         </div>
                     </div>
                     </div>
@@ -2688,7 +2774,7 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/57.webp" alt="" /></div>
+                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="{{asset('imagenes/user.png') }}" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Kiera Anderson</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -2804,7 +2890,7 @@
                 </li>
                 <li class="nav-item dropdown"><a class="nav-link lh-1 pe-0" id="navbarDropdownUser" href="#!" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                     <div class="avatar avatar-l ">
-                        <img class="rounded-circle " src="assets/img/team/40x40/57.webp" alt="" />
+                        <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
                     </div>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border border-300" aria-labelledby="navbarDropdownUser">
@@ -2812,27 +2898,20 @@
                         <div class="card-body p-0">
                         <div class="text-center pt-4 pb-3">
                             <div class="avatar avatar-xl ">
-                            <img class="rounded-circle " src="assets/img/team/72x72/57.webp" alt="" />
+                            <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
                             </div>
-                            <h6 class="mt-2 text-black">Jerry Seinfield</h6>
+                            @if (Auth::check())
+                            <h6 class="mt-2 text-black">{{ Auth::user()->name }}</h6>
+                            @endif
                         </div>
-                        <div class="mb-3 mx-3"><input class="form-control form-control-sm" id="statusUpdateInput" type="text" placeholder="Update your status" /></div>
-                        </div>
-                        <div class="overflow-auto scrollbar" style="height: 10rem;">
+                        
+                        <div class="overflow-auto scrollbar" style="height: 5rem;">
                         <ul class="nav d-flex flex-column mb-2 pb-1">
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Profile</span></a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="lock"></span>Posts &amp; Activity</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="settings"></span>Settings &amp; Privacy </a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="help-circle"></span>Help Center</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="globe"></span>Language</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Perfil</span></a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="{{route('Home')}}"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
                         </ul>
                         </div>
                         <div class="card-footer p-0 border-top">
-                        <ul class="nav d-flex flex-column my-3">
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user-plus"></span>Add another account</a></li>
-                        </ul>
-                        <hr />
                         <!---------------------------------------------------------------------------------------->
                         <div class="px-3"> 
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -2840,10 +2919,10 @@
                             </form>
                             <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <span class="nav-link-icon"> <span data-feather="log-out"></span></span>
-                                <span class="nav-link-text-wrapper"> <span class="nav-link-text">Salir</span> </span>
+                                <span class="nav-link-text-wrapper"> <span class="nav-link-text">Cerrar sesi&oacute;n</span> </span>
                             </a>
                         </div>
-                        <div class="my-2 text-center fw-bold fs--2 text-600"><a class="text-600 me-1" href="#!">Privacy policy</a>&bull;<a class="text-600 mx-1" href="#!">Terms</a>&bull;<a class="text-600 ms-1" href="#!">Cookies</a></div>
+                        
                         </div>
                     </div>
                     </div>
@@ -3417,7 +3496,7 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/57.webp" alt="" /></div>
+                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="{{asset('imagenes/user.png') }}" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Kiera Anderson</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -3537,29 +3616,22 @@
                         <div class="card-body p-0">
                         <div class="text-center pt-4 pb-3">
                             <div class="avatar avatar-xl ">
-                            <img class="rounded-circle " src="assets/img/team/72x72/57.webp" alt="" />
-                            </div>
-                            <h6 class="mt-2 text-black">Jerry Seinfield</h6>
+                            <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
+                            </div> 
+                            @if (Auth::check())
+                            <h6 class="mt-2 text-black">{{ Auth::user()->name }}</h6>
+                            @endif
                         </div>
-                        <div class="mb-3 mx-3"><input class="form-control form-control-sm" id="statusUpdateInput" type="text" placeholder="Update your status" /></div>
-                        </div>
-                        <div class="overflow-auto scrollbar" style="height: 10rem;">
+                        
+                        <div class="overflow-auto scrollbar" style="height: 5rem;">
                         <ul class="nav d-flex flex-column mb-2 pb-1">
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Profile</span></a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="lock"></span>Posts &amp; Activity</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="settings"></span>Settings &amp; Privacy </a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="help-circle"></span>Help Center</a></li>
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="globe"></span>Language</a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Perfil</span></a></li>
+                            <li class="nav-item"><a class="nav-link px-3" href="{{route('Home')}}"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
                         </ul>
                         </div>
                         <div class="card-footer p-0 border-top">
-                        <ul class="nav d-flex flex-column my-3">
-                            <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user-plus"></span>Add another account</a></li>
-                        </ul>
-                        <hr />
-                        <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="#!"> <span class="me-2" data-feather="log-out"> </span>Sign out</a></div>
-                        <div class="my-2 text-center fw-bold fs--2 text-600"><a class="text-600 me-1" href="#!">Privacy policy</a>&bull;<a class="text-600 mx-1" href="#!">Terms</a>&bull;<a class="text-600 ms-1" href="#!">Cookies</a></div>
+                        <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="{{route('logout')}}"> <span class="me-2" data-feather="log-out"> </span>Cerrar sesi&oacute;n</a></div>
+                        
                         </div>
                     </div>
                     </div>
@@ -3753,7 +3825,7 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                     <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                        <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/57.webp" alt="" /></div>
+                                        <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="{{asset('imagenes/user.png') }}" alt="" /></div>
                                         <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Kiera Anderson</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -3869,7 +3941,7 @@
                     </li>
                     <li class="nav-item dropdown"><a class="nav-link lh-1 pe-0" id="navbarDropdownUser" href="#!" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                         <div class="avatar avatar-l ">
-                            <img class="rounded-circle " src="assets/img/team/40x40/57.webp" alt="" />
+                            <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
                         </div>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border border-300" aria-labelledby="navbarDropdownUser">
@@ -3877,29 +3949,23 @@
                             <div class="card-body p-0">
                             <div class="text-center pt-4 pb-3">
                                 <div class="avatar avatar-xl ">
-                                <img class="rounded-circle " src="assets/img/team/72x72/57.webp" alt="" />
+                                <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
                                 </div>
-                                <h6 class="mt-2 text-black">Jerry Seinfield</h6>
+                                @if (Auth::check())
+                                <h6 class="mt-2 text-black">{{ Auth::user()->name }}</h6>
+                                @endif
                             </div>
                             <div class="mb-3 mx-3"><input class="form-control form-control-sm" id="statusUpdateInput" type="text" placeholder="Update your status" /></div>
                             </div>
-                            <div class="overflow-auto scrollbar" style="height: 10rem;">
+                            <div class="overflow-auto scrollbar" style="height: 5rem;">
                             <ul class="nav d-flex flex-column mb-2 pb-1">
-                                <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Profile</span></a></li>
-                                <li class="nav-item"><a class="nav-link px-3" href="#!"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
-                                <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="lock"></span>Posts &amp; Activity</a></li>
-                                <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="settings"></span>Settings &amp; Privacy </a></li>
-                                <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="help-circle"></span>Help Center</a></li>
-                                <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="globe"></span>Language</a></li>
+                                <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Perfil</span></a></li>
+                                <li class="nav-item"><a class="nav-link px-3" href="{{route('Home')}}"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
                             </ul>
                             </div>
                             <div class="card-footer p-0 border-top">
-                            <ul class="nav d-flex flex-column my-3">
-                                <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user-plus"></span>Add another account</a></li>
-                            </ul>
-                            <hr />
-                            <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="#!"> <span class="me-2" data-feather="log-out"> </span>Sign out</a></div>
-                            <div class="my-2 text-center fw-bold fs--2 text-600"><a class="text-600 me-1" href="#!">Privacy policy</a>&bull;<a class="text-600 mx-1" href="#!">Terms</a>&bull;<a class="text-600 ms-1" href="#!">Cookies</a></div>
+                            <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="{{route('logout')}}"> <span class="me-2" data-feather="log-out"> </span>Cerrar sesi&oacute;n</a></div>
+                            
                             </div>
                         </div>
                         </div>

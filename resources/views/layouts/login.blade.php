@@ -221,7 +221,6 @@
             </div>
         </div>
     </div>
-
     <ul class="bg-bubbles">
         <li></li>
         <li></li>
@@ -245,12 +244,10 @@ document.getElementById('toggleAdministrativo').addEventListener('click', functi
     document.getElementById('formAdministrativo').style.display = 'block';
     document.getElementById('formOperador').style.display = 'none';
 });
-
 document.getElementById('toggleOperadores').addEventListener('click', function() {
     // Activar el botón de Operadores
     this.classList.add('active');
     document.getElementById('toggleAdministrativo').classList.remove('active');
-
     // Mostrar solo el formulario de Operadores
     document.getElementById('formAdministrativo').style.display = 'none';
     document.getElementById('formOperador').style.display = 'block';
