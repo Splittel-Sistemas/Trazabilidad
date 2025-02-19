@@ -612,6 +612,7 @@ function cargarOrdenesCerradas() {
         }
     });
 }
+
 function cargarOrdenesCompletas() {
     $.ajax({
         url: "{{ route('tabla.completas') }}",
