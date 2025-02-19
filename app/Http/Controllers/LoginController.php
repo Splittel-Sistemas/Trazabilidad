@@ -13,73 +13,77 @@ use Illuminate\Support\Facades\DB;
 class LoginController extends Controller
 {
     public function login_view()
-{
-    return view('layouts.login');  
-}
-public function login(Request $request)
-{
-    // Validación de las credenciales
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
-    $remember = $request->has('remember');
-  
-
-    // Obtener las credenciales
-    $credentials = [
-        'email' => $request->email,
-        'password' => $request->password,
-    ];
-   
-
-    // Intentar autenticar al usuario
-    if (Auth::attempt($credentials, $remember)) {
-        // Regenerar la sesión
-        $request->session()->regenerate();
-
-        // Redirigir al usuario a la página principal
-        return redirect()->intended(route('Home'));
-    } else {
-        // Si las credenciales son incorrectas
-        return redirect('login')
-            ->withInput($request->only('email')) // Retornar el email ingresado
-            ->withErrors(['email' => 'Correo electrónico o contraseña incorrectos.']);
+    {
+        return view('layouts.login');  
     }
-}
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+        $remember = $request->has('remember');
+        $user = User::where('email', $request->email)->first();
+        if (!$user || $user->active == 0) {
+            return redirect('login')
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'Cuenta inactiva o no encontrada.']);
+        }
 
-public function register(Request $request)
-{
-    // Validación de los datos de registro
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|string|min:8|confirmed',
-    ]);
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $remember)) {
+            $request->session()->regenerate();
+            return redirect()->intended(route('Home'));
+        } else {
 
-    // Crear el nuevo usuario
-    $user = new User();
-    $user->name = $request->name;
-    $user->email = $request->email;
-    $user->password = Hash::make($request->password);
-    $user->save();
+            return redirect('login')
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'Correo electrónico o contraseña incorrectos.']);
+        }
+    }
+    public function register(Request $request)
+    {
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->save();
+        Auth::login($user);
+        return redirect(route('Home'));
+    }
+    public function logout(Request $request)
+    {
+        Auth::logout(); 
+        $request->session()->invalidate(); 
+        $request->session()->regenerateToken(); 
+        return redirect()->route('login_view');
+    }
+    public function operador(Request $request)
+    {
+        $request->validate([
+            'clave' => 'required',
+        ]);
 
-    // Autenticar al usuario recién registrado
-    Auth::login($user);
+        $operador = User::where('password', $request->clave)->first(); 
 
-    // Redirigir al usuario a la página principal
-    return redirect(route('Home'));
-}
-public function logout(Request $request)
-{
-    Auth::logout(); // Cierra la sesión del usuario
-    $request->session()->invalidate(); // Invalida la sesión para evitar problemas de sesión
-    $request->session()->regenerateToken(); // Regenera el token CSRF
-    return redirect()->route('login_view'); // Redirige al login o página de inicio
-}
+        if ($operador) {
+            if ($operador->active == 1) {
+                Auth::login($operador);
+                $request->session()->regenerate();
+                return redirect()->intended(route('Home'));
+            } else {
+                return redirect()->route('login_view')
+                    ->withErrors(['clave' => 'El acceso ha sido restringido. Contacte al administrador.']);
+            }
+        }
 
-
-
-
+        return redirect()->route('login_view')
+            ->withErrors(['clave' => 'Clave incorrecta.']);
+    }
 
 }

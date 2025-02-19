@@ -1,6 +1,6 @@
 @extends('layouts.menu2')
 
-@section('title', 'Busquedas')
+@section('title', 'Progreso')
 
 @section('styles')
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -170,7 +170,7 @@
         .grid-container {
                     display: grid;
                     grid-template-columns: repeat(4, 1fr); 
-                    gap: 0px; 
+                    gap: 20px; 
                     width: 100%;
                     max-width: 100%;
                     margin: 0 auto; 
@@ -214,6 +214,117 @@
                     background-color: #fff; 
                     display: block; 
         }
+
+
+
+                    #collapseContent {
+                display: none;
+                transition: all 0.3s ease;
+            }
+
+            .toggle-icon {
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            #estacionesContainer {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Se ajusta automáticamente */
+                grid-template-rows: repeat(4, auto); /* 4 filas */
+                gap: 1px; /* Espacio entre tarjetas */
+                padding: 10px;
+                justify-content: center;
+            }
+
+            .estacion-card {
+                border: 1px solid #ddd;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+                padding: 15px;
+                text-align: center;
+                background: white;
+            }
+
+            .estacion-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            /* Estilos para los títulos y texto */
+            .card-title {
+                font-size: 18px;
+                font-weight: bold;
+                color: #333;
+            }
+
+            .card-text {
+                font-size: 14px;
+                color: #666;
+            }
+
+            /* Estilos para las etiquetas (badge) */
+            .badge {
+                font-size: 14px;
+                padding: 6px 12px;
+                border-radius: 20px;
+                margin-right: 5px;
+            }
+
+            .badge-success {
+                background-color: #1a662c;
+                color: white;
+            }
+
+            .badge-warning {
+                background-color: #881410;
+                color: white;
+            }
+
+
+
+            .btn-custom {
+                width: 120px;
+                height: 40px;
+                font-size: 16px;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px; /* Espacio entre el icono y el texto */
+                border-radius: 8px; /* Bordes redondeados */
+                background-color: #17a2b8; /* Color info mejorado */
+                color: white;
+                border: none;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .btn-custom:hover {
+                background-color: #138496; /* Color más oscuro en hover */
+                transform: translateY(-2px); /* Efecto al pasar el mouse */
+                box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+            }
+
+            .btn-custom i {
+                font-size: 18px; /* Tamaño del icono */
+            }
+
+
+
+            .canvas-container {
+                margin-bottom: -30px; 
+            }
+
+
+
+
+
+
+
+
+
+
     </style>
 
 @endsection
@@ -251,7 +362,7 @@
             </div>
             <div style="margin-top: 20px;"></div>
             <div class="table-responsive">
-                <div class="card" style="width: 1400px; height: 500px;">
+                <div class="card" >
                     <table class="table table-sm fs--1 mb-0">
                     <thead>
                         <tr class="bg-info text-white">
@@ -282,7 +393,7 @@
             </div>
             
             <div style="margin-top: 20px;"></div>
-            <div class="card" style="width: 1400px; height: 500px;">
+             <div class="card" >
                 <table class="table table-sm fs--1 mb-0">
                     <thead>
                         <tr class="bg-info text-white">
@@ -330,52 +441,136 @@
                             <!-- Estación Cortes -->
                             <div class="grid-item">
                                 <h1 class="small-title">Estación Cortes</h1>
-                                <canvas id="plemasCorte" width="300" height="300"></canvas>
+
+                                <div class="canvas-container">
+                                    <canvas id="plemasCorte" width="300" height="300"></canvas> 
+                                </div>
+                                
+                                <div class="title-container">
+                                    <h1 class="small-title" id="titulo-cortes"></h1>
+                                </div>
                             </div>
-        
+                            
+                
                             <!-- Estación Suministros -->
                             <div class="grid-item">
                                 <h1 class="small-title">Estación Suministros</h1>
-                                <canvas id="plemasSuministro" width="300" height="300"></canvas>
+
+                                <div class="canvas-container">
+                                    <canvas id="plemasSuministro" width="300" height="300"></canvas>
+                                </div>
+
+                                <div class="title-container">
+                                    <h1 class="small-title" id="titulo-suministro"></h1>
+                                </div>
                             </div>
         
                             <!-- Estación Preparado -->
                             <div class="grid-item">
                                 <h1 class="small-title">Estación Preparado</h1>
-                                <canvas id="plemasPreparado" width="300" height="300"></canvas>
+
+                                <div class="canvas-container">
+                                    <canvas id="plemasPreparado" width="300" height="300"></canvas>
+                                </div>
+
+                                <div class="title-container">
+                                    <h1 class="small-title" id="titulo-preparado"></h1>
+                                </div>
                             </div>
         
                             <!-- Estación Ensamble -->
                             <div class="grid-item">
                                 <h1 class="small-title">Estación Ensamble</h1>
-                                <canvas id="plemasEnsamble" width="300" height="300"></canvas>
+
+                                <div class="canvas-container">
+                                    <canvas id="plemasEnsamble" width="300" height="300"></canvas>
+                                </div>
+
+                                <div class="title-container">
+                                    <h1 class="small-title" id="titulo-ensamble"></h1>
+                                </div>
                             </div>
         
                             <!-- Estación Pulido -->
                             <div class="grid-item">
                                 <h1 class="small-title">Estación Pulido</h1>
-                                <canvas id="plemasPulido" width="300" height="300"></canvas>
+                                
+                                <div class="canvas-container">
+                                    <canvas id="plemasPulido" width="300" height="300"></canvas>
+                                </div>
+
+                                <div class="title-container">
+                                    <h1 class="small-title" id="titulo-pulido"></h1>
+                                </div>
                             </div>
         
                             <!-- Estación Medición -->
                             <div class="grid-item">
                                 <h1 class="small-title">Estación Medición</h1>
-                                <canvas id="plemasMedicion" width="300" height="300"></canvas>
+
+                                <div class="canvas-container">
+                                    <canvas id="plemasMedicion" width="300" height="300"></canvas>
+                                </div>
+
+                                <div class="title-container">
+                                    <h1 class="small-title" id="titulo-medicion"></h1>
+                                </div>
                             </div>
         
                             <!-- Estación Visualización -->
                             <div class="grid-item">
                                 <h1 class="small-title">Estación Visualización</h1>
-                                <canvas id="plemasVisualizacion" width="300" height="300"></canvas>
+                            
+                                <div class="canvas-container">
+                                    <canvas id="plemasVisualizacion" width="300" height="300"></canvas>
+                                </div>
+
+                                <div class="title-container">
+                                    <h1 class="small-title" id="titulo-visualizacion"></h1>
+                                </div>
+
                             </div>
         
                             <!-- Estación Empaque -->
                             <div class="grid-item">
                                 <h1 class="small-title">Estación Empaque</h1>
-                                <canvas id="plemasEmpaque" width="300" height="300"></canvas>
+
+                                <div class="canvas-container">
+                                    <canvas id="plemasEmpaque" width="300" height="300"></canvas>
+                                </div>
+
+                                <div class="title-container">
+                                    <h1 class="small-title" id="titulo-empaque"></h1>
+                                </div>
+
                             </div>
                         </div>
-        
+
+                        <!--
+                        <div style="height: 30px;"></div>
+                        <div class="text-end">
+                            <button class="btn btn-info VerMas btn-custom">
+                                <i class="fa fa-clock"></i> Más
+                            </button>
+                        </div>--->
+
+
+
+                        
+                        
+                        <!-- Contenedor colapsable -->
+                        <div class="collapse mt-3" id="collapseContent">
+                            <div class="card">
+                                <div class="card-body">
+                                    <strong></strong><br>
+                                    <div id="estacionesContainer" data-ordenfabricacion="ordenfabricacion" style="display: flex; flex-wrap: wrap; gap: 20px;">
+                                        
+                                        <!-- Aquí se cargarán los datos dinámicamente -->
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>        
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
@@ -596,6 +791,7 @@
 
         cargarDatosVenta(search);
     });
+
     //cargar los datode venta
     function cargarDatosVenta(search) {
         
@@ -638,6 +834,7 @@
             }
         });
     }
+    
     //detalles de la orden venta
     $(document).on('click', '.ver-detalles', function (e) {
         var ordenVenta = $(this).data('ordenventa');
@@ -800,148 +997,122 @@
 
     //cargar los datos de fabricacion
     function cargarDatosFabricacion(search) {
-        $.ajax({
-            url: '{{ route("Buscar.Fabricacion") }}', 
-            method: 'GET',
-            data: { search: search }, 
-            success: function (data) {
-                var tablaFabricacion = $('#tablaFabricacion');
-                var tbody = $('#tabla-resultadosFabricacion');
-                tbody.empty();
+            $.ajax({
+                url: '{{ route("Buscar.Fabricacion") }}', 
+                method: 'GET',
+                data: { search: search },
+                success: function (data) {
+                    var tablaFabricacion = $('#tablaFabricacion');
+                    var tbody = $('#tabla-resultadosFabricacion');
+                    tbody.empty();
 
-                if (data.length > 0) {
-                    data.forEach(function (item) {
-                        var row = `
-                            <tr>
-                                <td>${item.OrdenFabricacion}</td>
-                                <td>${item.Articulo}</td>
-                                <td>${item.Descripcion}</td>
-                                <td>${item.CantidadTotal}</td>
-                                
-                                <td class="text-center align-middle">
-                                    <a href="#" class="btn btn-info btn-sm ver-fabricacion" 
-                                    data-id="${item.id}"
-                                    data-ordenfabricacion="${item.OrdenFabricacion}"
-                                    data-descripcion="${item.Descripcion}"
-                                    data-cantidadtotal="${item.CantidadTotal}"
-                                    style="border-radius: 3px; padding: 4px 8px; font-size: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); transition: background-color 0.3s, transform 0.2s;">
-                                        <i class="bi bi-eye uil-comment-info"></i> Detalles
-                                    </a>
-                                </td>
-                            </tr>`;
-                        tbody.append(row);
-                    });
+                    if (data.length > 0) {
+                        data.forEach(function (item) {
+                            var row = `
+                                <tr>
+                                    <td>${item.OrdenFabricacion}</td>
+                                    <td>${item.Articulo}</td>
+                                    <td>${item.Descripcion}</td>
+                                    <td>${item.CantidadTotal}</td>
+                                    <td class="text-center align-middle">
+                                        <a href="#" class="btn btn-info btn-sm ver-fabricacion"
+                                        data-id="${item.id}"
+                                        data-ordenfabricacion="${item.OrdenFabricacion}"
+                                        data-descripcion="${item.Descripcion}"
+                                        data-cantidadtotal="${item.CantidadTotal}"
+                                        style="border-radius: 3px; padding: 4px 8px; font-size: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); transition: background-color 0.3s, transform 0.2s;">
+                                            <i class="bi bi-eye uil-comment-info"></i> Detalles
+                                        </a>
+                                    </td>
+                                </tr>`;
+                            tbody.append(row);
+                        });
 
-                    tablaFabricacion.show(); // Mostrar la tabla si hay resultados
-                } else {
-                    tbody.append('<tr><td colspan="5" class="text-center">No se encontraron resultados</td></tr>');
-                    tablaFabricacion.show(); // Mostrar la tabla aunque esté vacía con el mensaje
-                }
-            },
-            error: function () {
-                alert('Error al cargar los datos de la Orden de Fabricación.');
-            }
-        });
-    }
-
-    //detalles de la orden de fabricacion
-    $(document).on('click', '.ver-fabricacion', function (e) {
-        var ordenfabricacion = $(this).data('ordenfabricacion');
-        console.log(ordenfabricacion);  // Para depuración
-
-        $.ajax({
-            url: '{{ route("Detalles.Fabricacion") }}',
-            type: 'GET',
-            data: { id: ordenfabricacion },
-            success: function (response) {
-                var progressBar = $('#plemasProgressBar');
-
-                if (response.progreso !== undefined) {
-                    var progreso = response.progreso;
-
-                    // Actualizar la barra de progreso con animación
-                    progressBar.css('width', progreso + '%').text(progreso + '%');
-
-                    // Quitar clases de color antes de agregar la nueva
-                    progressBar.removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
-
-                    // Asignar color según el porcentaje
-                    if (progreso >= 0 && progreso < 20) {
-                        progressBar.addClass('bg-danger');  // Rojo
-                    } else if (progreso >= 20 && progreso < 40) {
-                        progressBar.addClass('bg-warning');  // Naranja
-                    } else if (progreso >= 40 && progreso < 70) {
-                        progressBar.addClass('bg-primary');  // Azul para una transición más agradable
-                    } else if (progreso >= 70 && progreso < 90) {
-                        progressBar.addClass('bg-info');  // Celeste/Azul claro
+                        tablaFabricacion.show(); // Mostrar la tabla si hay resultados
                     } else {
-                        progressBar.addClass('bg-success');  // Verde
+                        tbody.append('<tr><td colspan="5" class="text-center">No se encontraron resultados</td></tr>');
+                        tablaFabricacion.show(); // Mostrar la tabla aunque esté vacía con el mensaje
                     }
-
-                    // Actualizar el número de orden de fabricación
-                    $('#ordenFabricacionNumero').removeClass('text-muted').addClass('text-info').text(ordenfabricacion);
-                } else {
-                    // Reiniciar la barra si no hay datos
-                    progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
-
-                    // Actualizar el número de orden de fabricación con la clase 'text-muted'
-                    $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
+                },
+                error: function () {
+                    alert('Error al cargar los datos de la Orden de Fabricación.');
                 }
-
-                // Mostrar el modal
-                $('#example2Modal').modal('show');
-            },
-            error: function () {
-                alert('Error al obtener los datos de la fabricación.');
-            }
-        });
+            });
+        }
 
 
-        const endpoints = [
-            {
-                tipo: 'plemasCorte',
-                id: 'plemasCorte',
-            },
-            {
-                tipo: 'plemasSuministro',
-                id: 'plemasSuministro',
-            },
-            {
-                tipo: 'plemasPreparado',
-                id: 'plemasPreparado',
-            },
-            {
-                tipo: 'plemasEnsamble',
-                id: 'plemasEnsamble',
+        //detalles de la orden de fabricacion
+            $(document).on('click', '.ver-fabricacion', function (e) {
+                var ordenfabricacion = $(this).data('ordenfabricacion');
+            
 
-            },
-            {
-                tipo: 'plemasPulido',
-                id: 'plemasPulido',
-            },
-            {
-                tipo:'plemasMedicion',
-                id: 'plemasMedicion',
-            },
-            {
-                tipo: 'plemasVisualizacion',
-                id: 'plemasVisualizacion',
-            },
-            {
-                tipo: 'plemasEmpaque',
-                id: 'plemasEmpaque',
-            },
+                console.log(ordenfabricacion);  // Para depuración
 
+                $.ajax({
+                    url: '{{ route("Detalles.Fabricacion") }}',
+                    type: 'GET',
+                    data: { id: ordenfabricacion },
+                    success: function (response) {
+                        var progressBar = $('#plemasProgressBar');
+
+                        if (response.progreso !== undefined) {
+                            var progreso = response.progreso;
+
+                            // Actualizar la barra de progreso con animación
+                            progressBar.css('width', progreso + '%').text(progreso + '%');
+
+                            // Quitar clases de color antes de agregar la nueva
+                            progressBar.removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
+
+                            // Asignar color según el porcentaje
+                            if (progreso >= 0 && progreso < 20) {
+                                progressBar.addClass('bg-danger');  // Rojo
+                            } else if (progreso >= 20 && progreso < 40) {
+                                progressBar.addClass('bg-warning');  // Naranja
+                            } else if (progreso >= 40 && progreso < 70) {
+                                progressBar.addClass('bg-primary');  // Azul para una transición más agradable
+                            } else if (progreso >= 70 && progreso < 90) {
+                                progressBar.addClass('bg-info');  // Celeste/Azul claro
+                            } else {
+                                progressBar.addClass('bg-success');  // Verde
+                            }
+
+                            // Actualizar el número de orden de fabricación
+                            $('#ordenFabricacionNumero').removeClass('text-muted').addClass('text-info').text(ordenfabricacion);
+                        } else {
+                            // Reiniciar la barra si no hay datos
+                            progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
+
+                            // Actualizar el número de orden de fabricación con la clase 'text-muted'
+                            $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
+                        }
+
+                        // Mostrar el modal
+                        $('#example2Modal').modal('show');
+                    },
+                    error: function () {
+                        alert('Error al obtener los datos de la fabricación.');
+                    }
+                });
+                const endpoints = [
+            { tipo: 'plemasCorte', id: 'plemasCorte' },
+            { tipo: 'plemasSuministro', id: 'plemasSuministro' },
+            { tipo: 'plemasPreparado', id: 'plemasPreparado' },
+            { tipo: 'plemasEnsamble', id: 'plemasEnsamble' },
+            { tipo: 'plemasPulido', id: 'plemasPulido' },
+            { tipo: 'plemasMedicion', id: 'plemasMedicion' },
+            { tipo: 'plemasVisualizacion', id: 'plemasVisualizacion' },
+            { tipo: 'plemasEmpaque', id: 'plemasEmpaque' },
         ];
         endpoints.forEach(endpoint => {
             $.ajax({
-                url: '{{ route("graficadoOF") }}',
+                url: '{{ route("graficadoOF") }}',  // Ruta que hace referencia al controlador
                 type: 'GET',
                 data: { 
-                    id: ordenfabricacion, 
-                    tipo: endpoint.tipo, 
+                    id: ordenfabricacion,  // Asumiendo que 'ordenfabricacion' está disponible
+                    tipo: endpoint.tipo,   // Enviar tipo dinámico
                 },
-                success: function (response) {
+                success: function(response) {
                     if (response.length > 0) {
                         const firstOrder = response[0];
                         let cantidadTotal = firstOrder.CantidadTotal;
@@ -952,11 +1123,10 @@
                         if (totalPartidas > cantidadTotal) {
                             retrabajo = totalPartidas - cantidadTotal;
                             totalPartidas = cantidadTotal; 
-                            label = `Retrabajo: ${retrabajo}`;
+                            label += `Retrabajo: ${retrabajo}  `;
                         }
-
                         let progreso = Math.round((totalPartidas / cantidadTotal) * 100);
-                        drawGauge(endpoint.id, progreso, label);
+                        drawGauge(endpoint.id, progreso, label);  // Llamada a la función con su respectiva etiqueta
                     } else {
                         console.log('No hay datos para mostrar.');
                         drawGauge(endpoint.id, 0, 'Sin Datos');
@@ -966,6 +1136,158 @@
                     console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
                 }
             });
+        });
+        $.ajax({
+            url: '{{ route("tiempos.hrs") }}',
+            method: 'GET',
+            data: { 
+                id: ordenfabricacion, // Verifica que esta variable esté definida
+            },
+            success: function(response) {
+                // Verificar si la respuesta tiene tiempos de cortes
+                if (response.tiemposcortes.length > 0) {
+                    $('#titulo-cortes')
+                        .text('Duración: ' + response.tiemposcortes[0].Duracion)
+                        .css({
+                            'font-size': '10px',
+                            'color': 'blue',
+                            'font-weight': 'bold'
+                        });
+                } else {
+                    $('#titulo-cortes')
+                        .text('Sin datos de duración')
+                        .css({
+                            'font-size': '10px',
+                            'color': 'red',
+                            'font-weight': 'bold'
+                        });
+                }
+
+                // Verificar si tiemposareas tiene datos
+                let hasData = false;  // Variable para verificar si hay datos en tiemposareas
+
+                if (response.tiemposareas.length > 0) {
+                    // Mostrar el tiempo según el área
+                    response.tiemposareas.forEach(function(item) {
+                        hasData = true;
+                        switch (item.Areas_id) {
+                            case 3:
+                                $('#titulo-suministro')
+                                    .text('Duración: ' + item.DuracionTotal)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'blue',
+                                        'font-weight': 'bold'
+                                    });
+                                break;
+                            case 4:
+                                $('#titulo-preparado')
+                                    .text('Duración: ' + item.DuracionTotal)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'green',
+                                        'font-weight': 'bold'
+                                    });
+                                break;
+                            case 5:
+                                $('#titulo-ensamble')
+                                    .text('Duración: ' + item.DuracionTotal)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'red',
+                                        'font-weight': 'bold'
+                                    });
+                                break;
+                            case 6:
+                                $('#titulo-pulido')
+                                    .text('Duración: ' + item.DuracionTotal)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'purple',
+                                        'font-weight': 'bold'
+                                    });
+                                break;
+                            case 7:
+                                $('#titulo-medicion')
+                                    .text('Duración: ' + item.DuracionTotal)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'orange',
+                                        'font-weight': 'bold'
+                                    });
+                                break;
+                            case 8:
+                                $('#titulo-visualizacion')
+                                    .text('Duración: ' + item.DuracionTotal)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'pink',
+                                        'font-weight': 'bold'
+                                    });
+                                break;
+                            case 9:
+                                $('#titulo-empaque')
+                                    .text('Duración: ' + item.DuracionTotal)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'brown',
+                                        'font-weight': 'bold'
+                                    });
+                                break;
+                            default:
+                                console.warn('Área no reconocida:', item.Areas_id);
+                        }
+                    });
+                } 
+
+                if (!hasData) {
+                    // Si no hay datos de tiemposareas, mostrar mensaje
+                    $('#titulo-suministro').text('Sin datos de duración').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-preparado').text('Sin datos de duración').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-ensamble').text('Sin datos de duración').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-pulido').text('Sin datos de duración').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-medicion').text('Sin datos de duración').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-visualizacion').text('Sin datos de duración').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-empaque').text('Sin datos de duración').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+                }
+            },
+            error: function() {
+                console.error('Error al obtener los datos');
+            }
         });
     });
 
@@ -1041,7 +1363,6 @@
         ctx.fillText('100', centerX + radius, centerY + 20); // Ajusta la posición vertical
         //la posición
     }
-
     //para el clic de .stage
     $(document).ready(function() {
         $('.stage').on('click', function() {
@@ -1143,6 +1464,97 @@
             }
         });
     }
+
+    // Cuando se haga clic en una fila para seleccionar la OrdenFabricacion
+    $(document).on('click', '.ver-fabricacion', function () {
+        var ordenfabricacion = $(this).data('ordenfabricacion');  // Obtener el valor de ordenfabricacion desde la fila
+        console.log('Orden de fabricación seleccionada:', ordenfabricacion);  // Verifica que se obtiene el valor
+
+        // Asignar ese valor al botón VerMas
+        $('.VerMas').data('ordenfabricacion', ordenfabricacion);  // Asigna el valor al botón
+        console.log('Valor asignado al botón VerMas:', $('.VerMas').data('ordenfabricacion'));  // Verifica que se asignó correctamente
+
+        // Si deseas que el texto del botón también cambie para indicar la orden seleccionada:
+       // $('.VerMas').text(` Orden ${ordenfabricacion} +`);
+    });
+
+    // Lógica cuando se hace clic en el botón VerMas
+    $(document).on('click', '.VerMas', function (e) {
+    var ordenfabricacion = $(this).data('ordenfabricacion');
+    console.log('Orden de fabricación en el botón VerMas:', ordenfabricacion);
+
+    if (!ordenfabricacion) {
+        alert("No se ha seleccionado ninguna Orden de Fabricación.");
+        return;
+    }
+
+    let content = $("#collapseContent");
+    let container = $("#estacionesContainer");
+    let icon = $(this).find('.toggle-icon');
+
+    let isOpen = content.hasClass("show");
+
+    $.ajax({
+            url: '{{ route("tiempo.orden") }}',
+            type: "GET",
+            data: { ordenfabricacion: ordenfabricacion },
+            dataType: "json",
+            success: function (response) {
+                console.log('Datos recibidos:', response);
+                container.html("");
+
+                response.forEach(resultado => {
+                    let tiempoDuracion = "No registrado";
+                    
+                    if (resultado.Tiempoinicio && resultado.Tiempofin) {
+                        let inicio = new Date(resultado.Tiempoinicio);
+                        let fin = new Date(resultado.Tiempofin);
+                        let diferencia = fin - inicio; // Diferencia en milisegundos
+
+                        let dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+                        let horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        let minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+
+                        let partes = [];
+                        if (dias > 0) partes.push(`${dias} día${dias > 1 ? 's' : ''}`);
+                        if (horas > 0) partes.push(`${horas} hora${horas > 1 ? 's' : ''}`);
+                        if (minutos > 0) partes.push(`${minutos} minuto${minutos > 1 ? 's' : ''}`);
+
+                        tiempoDuracion = partes.join(", ");
+                    }
+
+                    let card = `
+                        <div class="card estacion-card">
+                            <div class="card-body">
+                                <h5 class="card-title">${resultado.fase}</h5>
+                                <p class="card-text">
+                                    <strong>Duración:</strong> <span class="badge ${tiempoDuracion !== "No registrado" ? 'badge-success' : 'badge-warning'}">${tiempoDuracion}</span><br>
+                                </p>
+                            </div>
+                        </div>`;
+                    container.append(card);
+                });
+
+                if (isOpen) {
+                    content.removeClass("show").slideUp();
+                    icon.text('+');
+                } else {
+                    content.addClass("show").slideDown();
+                    icon.text('−');
+                }
+            },
+            error: function () {
+                alert("Error al cargar los tiempos de las estaciones.");
+            }
+        });
+    });
+
+
+
+
+
+
+
 
 </script>
 @endsection
