@@ -573,7 +573,7 @@
                     _token: '{{ csrf_token() }}'
                 },
                 beforeSend: function () {
-                    $('#' + idcontenedor + "llenar").html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>");
+                    $('#' + idcontenedor + "llenar").html("<div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div>");
                 },
                 success: function (response) {
                     if (response.status === 'success') {
@@ -809,7 +809,7 @@
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
-                Cuerpo.html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>")
+                Cuerpo.html("<div class='d-flex justify-content-center align-items-center' style='width:100%;'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div>")
                 // You can display a loading spinner here
             },
             success: function(response) {
