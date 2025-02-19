@@ -38,32 +38,21 @@ class RegistroController extends Controller
         }
     }
 
-         
-
     public function tablaPrincipal()
     {
         $tabla = DB::table('users')
             ->select('users.apellido', 'users.name', 'users.email', 'users.password', 'users.role', 'users.active')
             ->get();
-    
-        // Aquí puedes realizar la comparación si necesitas verificar alguna contraseña
-        // Pero recuerda, la contraseña no se puede desencriptar, solo comparar.
         foreach ($tabla as $user) {
-            // Si quisieras verificar una contraseña en particular, podrías hacerlo así:
             $passwordCorrecta = Hash::check('contraseñaIntentada', $user->password);
-            
-            // Esto devolverá un valor booleano dependiendo de si la contraseña coincide
             if ($passwordCorrecta) {
-                // Hacer algo si las contraseñas coinciden
             }
         }
     
         return response()->json($tabla);
     }
     
-    
-    
-  // RegistroController.php
+    // RegistroController.php
     public function edit(User $registro)
     {
         //$role = Role::with('permissions')->findOrFail($id); 
@@ -73,20 +62,14 @@ class RegistroController extends Controller
     }
     public function show(User $request, $registro)
     {
-        // Obtener el registro de usuario
         $registro = User::findOrFail($registro);
-
-        // Cargar la relación 'roles'
         $registro->load('roles');
-
-        // Obtener los roles asignados al usuario
         $roles = $registro->roles->pluck('id')->toArray();
-
         return response()->json([
             'apellido' => $registro->apellido,
             'name' => $registro->name,
             'email' => $registro->email,
-            'roles' => $roles // Enviar los roles asignados en la respuesta
+            'roles' => $roles 
         ]);
     }
     // Método para actualizar un usuario
@@ -94,38 +77,32 @@ class RegistroController extends Controller
     {
         $user = User::findOrFail($id);
     
-        // Validaciones
         $validatedData = $request->validate([
             'apellido' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8|confirmed',
         ]);
-    
-        // Actualizar datos del usuario
         $user->update([
             'apellido' => $validatedData['apellido'],
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'password' => $validatedData['password'] ? Hash::make($validatedData['password']) : $user->password,
         ]);
-    
-        // Actualizar roles
         $user->roles()->sync($request->roles);
-    
-        // Retornar respuesta en formato JSON para AJAX
         return response()->json([
             'success' => true,
             'message' => 'Usuario actualizado exitosamente.'
         ]);
     }
+
      // Método para mostrar el formulario de creación de un nuevo usuario
-     public function create()
-     {
-         $roles = Role::all(); // Obtiene todos los roles
-         $permissions = Permission::all(); // Obtiene todos los permisos
-         return view('registro.create', compact('roles', 'permissions')); // Pasa los datos a la vista
-     }
+    public function create()
+    {
+         $roles = Role::all(); 
+         $permissions = Permission::all(); 
+         return view('registro.create', compact('roles', 'permissions')); 
+    }
      
     public function destroy($id)
     {
@@ -160,57 +137,60 @@ class RegistroController extends Controller
     }
 
     public function storeoperador(Request $request)
-    {// Validación de los datos del formulario
-    $validatedData = $request->validate([
+    {
+        $validatedData = $request->validate([
         'apellido' => 'required|string|max:255',
         'name' => 'required|string|max:255',
-    ]);
+        'roles' => 'required|array', 
+        ]);
 
-    // Generación de la clave y el correo
-    $clave = str_pad(rand(10000, 99999), 5, '0', STR_PAD_LEFT); 
-    $email = $clave . '@splitel.com'; 
+        // Generación de la clave y el correo
+        $clave = str_pad(rand(10000, 99999), 5, '0', STR_PAD_LEFT); 
+        $email = $clave . '@splitel.com'; 
 
-    // Verificación de que el correo no exista
-    while (User::where('email', $email)->exists()) {
-        $clave = str_pad(rand(10000, 99999), 5, '0', STR_PAD_LEFT);
-        $email = $clave . '@splitel.com';
+        // Verificación de que el correo no exista
+        while (User::where('email', $email)->exists()) {
+            $clave = str_pad(rand(10000, 99999), 5, '0', STR_PAD_LEFT);
+            $email = $clave . '@splitel.com';
+        }
+
+        // Creación del usuario
+        $user = new User();
+        $user->name = $validatedData['name'];
+        $user->apellido = $validatedData['apellido'];
+        $user->email = $email;
+        $user->password = $clave;  
+        $user->role = 'O';
+        $user->save();
+
+        $user->roles()->sync($validatedData['roles']); 
+
+        return redirect()->route('registro.index')->with('status', 'Usuario creado exitosamente.');
     }
-
-    // Creación del usuario
-    $user = new User();
-    $user->name = $validatedData['name'];
-    $user->apellido = $validatedData['apellido'];
-    $user->email = $email;
-    $user->password = $clave;  // Aquí no se encripta
-    $user->role = 'O';
-    $user->save();
-
-    return redirect()->route('registro.index')->with('status', 'Usuario creado exitosamente.');
-    }
-         // Validaciones y crear usuario
-         public function store(Request $request)
-         {
-             $validatedData = $request->validate([
-                 'apellido' => 'required|string|max:255',
-                 'name' => 'required|string|max:255',
-                 'email' => 'required|email|unique:users,email',
-                 'password' => 'required|string|min:8|confirmed',
-                 'roles' => 'required|array', 
-             ]);
-             $user = User::create([
-                 'name' => $validatedData['name'],
-                 'apellido' => $validatedData['apellido'],
-                 'email' => $validatedData['email'],
-                 'password' => Hash::make($validatedData['password']),
-                 'role' => 'A', 
-             ]);
+    // Validaciones y crear usuario
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'apellido' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+            'roles' => 'required|array', 
+        ]);
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'apellido' => $validatedData['apellido'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
+            'role' => 'A', 
+        ]);
          
       
-             $user->roles()->sync($validatedData['roles']); 
+        $user->roles()->sync($validatedData['roles']); 
          
 
-             return redirect()->route('registro.index')->with('status', 'Usuario creado exitosamente.');
-         }
+        return redirect()->route('registro.index')->with('status', 'Usuario creado exitosamente.');
+}
     
     
 

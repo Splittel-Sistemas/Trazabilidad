@@ -1,6 +1,6 @@
 @extends('layouts.menu2')
 
-@section('title', 'Busquedas')
+@section('title', 'Progreso')
 
 @section('styles')
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -217,109 +217,104 @@
 
 
 
-        #collapseContent {
-    display: none;
-    transition: all 0.3s ease;
-}
+                    #collapseContent {
+                display: none;
+                transition: all 0.3s ease;
+            }
 
-.toggle-icon {
-    font-size: 18px;
-    font-weight: bold;
-}
+            .toggle-icon {
+                font-size: 18px;
+                font-weight: bold;
+            }
 
-#estacionesContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Se ajusta automáticamente */
-    grid-template-rows: repeat(4, auto); /* 4 filas */
-    gap: 1px; /* Espacio entre tarjetas */
-    padding: 10px;
-    justify-content: center;
-}
+            #estacionesContainer {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Se ajusta automáticamente */
+                grid-template-rows: repeat(4, auto); /* 4 filas */
+                gap: 1px; /* Espacio entre tarjetas */
+                padding: 10px;
+                justify-content: center;
+            }
 
-.estacion-card {
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    padding: 15px;
-    text-align: center;
-    background: white;
-}
+            .estacion-card {
+                border: 1px solid #ddd;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+                padding: 15px;
+                text-align: center;
+                background: white;
+            }
 
-.estacion-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-}
+            .estacion-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+            }
 
-/* Estilos para los títulos y texto */
-.card-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-}
+            /* Estilos para los títulos y texto */
+            .card-title {
+                font-size: 18px;
+                font-weight: bold;
+                color: #333;
+            }
 
-.card-text {
-    font-size: 14px;
-    color: #666;
-}
+            .card-text {
+                font-size: 14px;
+                color: #666;
+            }
 
-/* Estilos para las etiquetas (badge) */
-.badge {
-    font-size: 14px;
-    padding: 6px 12px;
-    border-radius: 20px;
-    margin-right: 5px;
-}
+            /* Estilos para las etiquetas (badge) */
+            .badge {
+                font-size: 14px;
+                padding: 6px 12px;
+                border-radius: 20px;
+                margin-right: 5px;
+            }
 
-.badge-success {
-    background-color: #1a662c;
-    color: white;
-}
+            .badge-success {
+                background-color: #1a662c;
+                color: white;
+            }
 
-.badge-warning {
-    background-color: #881410;
-    color: white;
-}
-
-
-
-.btn-custom {
-    width: 120px;
-    height: 40px;
-    font-size: 16px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px; /* Espacio entre el icono y el texto */
-    border-radius: 8px; /* Bordes redondeados */
-    background-color: #17a2b8; /* Color info mejorado */
-    color: white;
-    border: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.btn-custom:hover {
-    background-color: #138496; /* Color más oscuro en hover */
-    transform: translateY(-2px); /* Efecto al pasar el mouse */
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-}
-
-.btn-custom i {
-    font-size: 18px; /* Tamaño del icono */
-}
+            .badge-warning {
+                background-color: #881410;
+                color: white;
+            }
 
 
 
-.canvas-container {
-    margin-bottom: -30px; 
-}
-/*
+            .btn-custom {
+                width: 120px;
+                height: 40px;
+                font-size: 16px;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px; /* Espacio entre el icono y el texto */
+                border-radius: 8px; /* Bordes redondeados */
+                background-color: #17a2b8; /* Color info mejorado */
+                color: white;
+                border: none;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
 
-.title-container {
-    text-align: center; canvas
-}*/
+            .btn-custom:hover {
+                background-color: #138496; /* Color más oscuro en hover */
+                transform: translateY(-2px); /* Efecto al pasar el mouse */
+                box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+            }
+
+            .btn-custom i {
+                font-size: 18px; /* Tamaño del icono */
+            }
+
+
+
+            .canvas-container {
+                margin-bottom: -30px; 
+            }
 
 
 
@@ -1500,59 +1495,59 @@
     let isOpen = content.hasClass("show");
 
     $.ajax({
-        url: '{{ route("tiempo.orden") }}',
-        type: "GET",
-        data: { ordenfabricacion: ordenfabricacion },
-        dataType: "json",
-        success: function (response) {
-            console.log('Datos recibidos:', response);
-            container.html("");
+            url: '{{ route("tiempo.orden") }}',
+            type: "GET",
+            data: { ordenfabricacion: ordenfabricacion },
+            dataType: "json",
+            success: function (response) {
+                console.log('Datos recibidos:', response);
+                container.html("");
 
-            response.forEach(resultado => {
-                let tiempoDuracion = "No registrado";
-                
-                if (resultado.Tiempoinicio && resultado.Tiempofin) {
-                    let inicio = new Date(resultado.Tiempoinicio);
-                    let fin = new Date(resultado.Tiempofin);
-                    let diferencia = fin - inicio; // Diferencia en milisegundos
+                response.forEach(resultado => {
+                    let tiempoDuracion = "No registrado";
+                    
+                    if (resultado.Tiempoinicio && resultado.Tiempofin) {
+                        let inicio = new Date(resultado.Tiempoinicio);
+                        let fin = new Date(resultado.Tiempofin);
+                        let diferencia = fin - inicio; // Diferencia en milisegundos
 
-                    let dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
-                    let horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    let minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+                        let dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+                        let horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        let minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
 
-                    let partes = [];
-                    if (dias > 0) partes.push(`${dias} día${dias > 1 ? 's' : ''}`);
-                    if (horas > 0) partes.push(`${horas} hora${horas > 1 ? 's' : ''}`);
-                    if (minutos > 0) partes.push(`${minutos} minuto${minutos > 1 ? 's' : ''}`);
+                        let partes = [];
+                        if (dias > 0) partes.push(`${dias} día${dias > 1 ? 's' : ''}`);
+                        if (horas > 0) partes.push(`${horas} hora${horas > 1 ? 's' : ''}`);
+                        if (minutos > 0) partes.push(`${minutos} minuto${minutos > 1 ? 's' : ''}`);
 
-                    tiempoDuracion = partes.join(", ");
+                        tiempoDuracion = partes.join(", ");
+                    }
+
+                    let card = `
+                        <div class="card estacion-card">
+                            <div class="card-body">
+                                <h5 class="card-title">${resultado.fase}</h5>
+                                <p class="card-text">
+                                    <strong>Duración:</strong> <span class="badge ${tiempoDuracion !== "No registrado" ? 'badge-success' : 'badge-warning'}">${tiempoDuracion}</span><br>
+                                </p>
+                            </div>
+                        </div>`;
+                    container.append(card);
+                });
+
+                if (isOpen) {
+                    content.removeClass("show").slideUp();
+                    icon.text('+');
+                } else {
+                    content.addClass("show").slideDown();
+                    icon.text('−');
                 }
-
-                let card = `
-                    <div class="card estacion-card">
-                        <div class="card-body">
-                            <h5 class="card-title">${resultado.fase}</h5>
-                            <p class="card-text">
-                                <strong>Duración:</strong> <span class="badge ${tiempoDuracion !== "No registrado" ? 'badge-success' : 'badge-warning'}">${tiempoDuracion}</span><br>
-                            </p>
-                        </div>
-                    </div>`;
-                container.append(card);
-            });
-
-            if (isOpen) {
-                content.removeClass("show").slideUp();
-                icon.text('+');
-            } else {
-                content.addClass("show").slideDown();
-                icon.text('−');
+            },
+            error: function () {
+                alert("Error al cargar los tiempos de las estaciones.");
             }
-        },
-        error: function () {
-            alert("Error al cargar los tiempos de las estaciones.");
-        }
+        });
     });
-});
 
 
 
