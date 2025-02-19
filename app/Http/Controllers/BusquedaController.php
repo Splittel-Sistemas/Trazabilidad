@@ -464,26 +464,26 @@ class BusquedaController extends Controller
                     ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
                     ->where('partidasof_areas.Areas_id', 4)
                     ->select(
-                        'ordenfabricacion.OrdenFabricacion',
+                        'ordenfabricacion.OrdenFabricacion', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina',
                         DB::raw('ordenfabricacion.CantidadTotal'),
                         DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
                         DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')
                     ->get();
     
                 // Procesar los resultados
                 $resultOF = $resultOF->map(function ($item) {
                     $fechaComienzo = Carbon::parse($item->FechaComienzo);
-                    $fechaFin = Carbon::parse($item->FechaFinalizacion);
+                    $fechaTermina = Carbon::parse($item->FechaTermina);
                     
-                    // Calcular la diferencia
-                    $diferencia = $fechaComienzo->diff($fechaFin);
+                    // Calcular la diferencia en días, horas y minutos
+                    $diferencia = $fechaComienzo->diff($fechaTermina);
                     $dias = $diferencia->days;
                     $horas = $diferencia->h;
                     $minutos = $diferencia->i;
     
-                    // Agregar el tiempo transcurrido
+                    // Crear la cadena de tiempo transcurrido
                     $item->TiempoTranscurrido = "{$dias} días, {$horas} horas, {$minutos} minutos";
     
                     return $item;
@@ -497,26 +497,26 @@ class BusquedaController extends Controller
                     ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
                     ->where('partidasof_areas.Areas_id', 5)
                     ->select(
-                        'ordenfabricacion.OrdenFabricacion',
+                        'ordenfabricacion.OrdenFabricacion', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina',
                         DB::raw('ordenfabricacion.CantidadTotal'),
                         DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
                         DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')
                     ->get();
     
                 // Procesar los resultados
                 $resultOF = $resultOF->map(function ($item) {
                     $fechaComienzo = Carbon::parse($item->FechaComienzo);
-                    $fechaFin = Carbon::parse($item->FechaFinalizacion);
+                    $fechaTermina = Carbon::parse($item->FechaTermina);
                     
-                    // Calcular la diferencia
-                    $diferencia = $fechaComienzo->diff($fechaFin);
+                    // Calcular la diferencia en días, horas y minutos
+                    $diferencia = $fechaComienzo->diff($fechaTermina);
                     $dias = $diferencia->days;
                     $horas = $diferencia->h;
                     $minutos = $diferencia->i;
     
-                    // Agregar el tiempo transcurrido
+                    // Crear la cadena de tiempo transcurrido
                     $item->TiempoTranscurrido = "{$dias} días, {$horas} horas, {$minutos} minutos";
     
                     return $item;
@@ -530,26 +530,26 @@ class BusquedaController extends Controller
                     ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
                     ->where('partidasof_areas.Areas_id', 6)
                     ->select(
-                        'ordenfabricacion.OrdenFabricacion',
+                        'ordenfabricacion.OrdenFabricacion', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina',
                         DB::raw('ordenfabricacion.CantidadTotal'),
                         DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
                         DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')
                     ->get();
     
                 // Procesar los resultados
                 $resultOF = $resultOF->map(function ($item) {
                     $fechaComienzo = Carbon::parse($item->FechaComienzo);
-                    $fechaFin = Carbon::parse($item->FechaFinalizacion);
+                    $fechaTermina = Carbon::parse($item->FechaTermina);
                     
-                    // Calcular la diferencia
-                    $diferencia = $fechaComienzo->diff($fechaFin);
+                    // Calcular la diferencia en días, horas y minutos
+                    $diferencia = $fechaComienzo->diff($fechaTermina);
                     $dias = $diferencia->days;
                     $horas = $diferencia->h;
                     $minutos = $diferencia->i;
     
-                    // Agregar el tiempo transcurrido
+                    // Crear la cadena de tiempo transcurrido
                     $item->TiempoTranscurrido = "{$dias} días, {$horas} horas, {$minutos} minutos";
     
                     return $item;
@@ -563,26 +563,26 @@ class BusquedaController extends Controller
                     ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
                     ->where('partidasof_areas.Areas_id', 7)
                     ->select(
-                        'ordenfabricacion.OrdenFabricacion',
+                        'ordenfabricacion.OrdenFabricacion', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina',
                         DB::raw('ordenfabricacion.CantidadTotal'),
                         DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
                         DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')
                     ->get();
     
                 // Procesar los resultados
                 $resultOF = $resultOF->map(function ($item) {
                     $fechaComienzo = Carbon::parse($item->FechaComienzo);
-                    $fechaFin = Carbon::parse($item->FechaFinalizacion);
+                    $fechaTermina = Carbon::parse($item->FechaTermina);
                     
-                    // Calcular la diferencia
-                    $diferencia = $fechaComienzo->diff($fechaFin);
+                    // Calcular la diferencia en días, horas y minutos
+                    $diferencia = $fechaComienzo->diff($fechaTermina);
                     $dias = $diferencia->days;
                     $horas = $diferencia->h;
                     $minutos = $diferencia->i;
     
-                    // Agregar el tiempo transcurrido
+                    // Crear la cadena de tiempo transcurrido
                     $item->TiempoTranscurrido = "{$dias} días, {$horas} horas, {$minutos} minutos";
     
                     return $item;
@@ -596,26 +596,26 @@ class BusquedaController extends Controller
                     ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
                     ->where('partidasof_areas.Areas_id', 8)
                     ->select(
-                        'ordenfabricacion.OrdenFabricacion',
+                        'ordenfabricacion.OrdenFabricacion', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina',
                         DB::raw('ordenfabricacion.CantidadTotal'),
                         DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
                         DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')
                     ->get();
     
                 // Procesar los resultados
                 $resultOF = $resultOF->map(function ($item) {
                     $fechaComienzo = Carbon::parse($item->FechaComienzo);
-                    $fechaFin = Carbon::parse($item->FechaFinalizacion);
+                    $fechaTermina = Carbon::parse($item->FechaTermina);
                     
-                    // Calcular la diferencia
-                    $diferencia = $fechaComienzo->diff($fechaFin);
+                    // Calcular la diferencia en días, horas y minutos
+                    $diferencia = $fechaComienzo->diff($fechaTermina);
                     $dias = $diferencia->days;
                     $horas = $diferencia->h;
                     $minutos = $diferencia->i;
     
-                    // Agregar el tiempo transcurrido
+                    // Crear la cadena de tiempo transcurrido
                     $item->TiempoTranscurrido = "{$dias} días, {$horas} horas, {$minutos} minutos";
     
                     return $item;
@@ -629,26 +629,26 @@ class BusquedaController extends Controller
                     ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
                     ->where('partidasof_areas.Areas_id', 9)
                     ->select(
-                        'ordenfabricacion.OrdenFabricacion',
+                        'ordenfabricacion.OrdenFabricacion', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina',
                         DB::raw('ordenfabricacion.CantidadTotal'),
                         DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
                         DB::raw('ROUND((SUM(partidasof_areas.cantidad) /(ordenfabricacion.CantidadTotal)) * 100 ) as Progreso')
                     )
-                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+                    ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')
                     ->get();
     
                 // Procesar los resultados
                 $resultOF = $resultOF->map(function ($item) {
                     $fechaComienzo = Carbon::parse($item->FechaComienzo);
-                    $fechaFin = Carbon::parse($item->FechaFinalizacion);
+                    $fechaTermina = Carbon::parse($item->FechaTermina);
                     
-                    // Calcular la diferencia
-                    $diferencia = $fechaComienzo->diff($fechaFin);
+                    // Calcular la diferencia en días, horas y minutos
+                    $diferencia = $fechaComienzo->diff($fechaTermina);
                     $dias = $diferencia->days;
                     $horas = $diferencia->h;
                     $minutos = $diferencia->i;
     
-                    // Agregar el tiempo transcurrido
+                    // Crear la cadena de tiempo transcurrido
                     $item->TiempoTranscurrido = "{$dias} días, {$horas} horas, {$minutos} minutos";
     
                     return $item;

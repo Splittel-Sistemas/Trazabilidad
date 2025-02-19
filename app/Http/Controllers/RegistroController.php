@@ -23,7 +23,7 @@ class RegistroController extends Controller
        
         
        
-        if ($user->hasPermission('Vistas Editar')) {
+        //if ($user->hasPermission('Vistas Editar')) {
             
             $roles = Role::with('permissions')->get();
             $personal = User::all();
@@ -32,10 +32,10 @@ class RegistroController extends Controller
             
            
             return view('registro.index', compact('personal', 'roles', 'permissions'));
-        } else {
+        //} else {
             
             return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
-        }
+        //}
     }
 
     public function tablaPrincipal()

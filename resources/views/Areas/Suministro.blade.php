@@ -94,9 +94,10 @@
                                     <thead>
                                         <tr class="bg-light">
                                             <th>Orden Fabricación</th>
-                                            <th>N&uacute;mero Partida</th>
                                             <th>Artículo</th>
                                             <th>Descripción</th>
+                                            <th>Suministro Normal</th>
+                                            <th>Suministro Retrabajo</th>
                                             <th>Cantidad Partida</th>
                                             <th>Estatus</th>
                                             <th>Acciones</th>
@@ -106,9 +107,10 @@
                                         @foreach($PartidasOFA as $partida)
                                         <tr>
                                             <td class="text-center">{{$partida->OrdenFabricacion }}</td>
-                                            <td class="text-center">{{$partida->NumeroPartida }}</td>
                                             <td>{{$partida->Articulo }}</td>
                                             <td>{{$partida->Descripcion }}</td>
+                                            <td>{{$partida->Normal }}</td>
+                                            <td>{{$partida->Retrabajo }}</td>
                                             <td class="text-center">{{$partida->cantidad_partida }}</td>
                                             <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
                                             <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Planear('{{$partida->idEncript}}')">Detalles</button></td>
@@ -229,13 +231,12 @@
                     <form id="CortesForm" class="row g-3 needs-validation" novalidate="">
                         <div class="col-6">
                             <label class="form-label" for="Cantitadpiezas">Ingresa n&uacute;mero de Unidades a Suministrar </label>
-                                <input class="form-control form-control-sm has-validation" id="Cantitadpiezas" type="number" oninput="RegexNumeros(this)" placeholder="Ingresa una cantidad" />
+                                <input class="form-control form-control-sm has-validation" id="Cantitadpiezas" type="number" oninput="RegexNumeros(this)" placeholder="Ingresa una cantidad" disabled />
                             <div class="invalid-feedback" id="error_cantidad"></div>
                             <div class="form-check mt-2 mb-2">
                                 <input class="form-check-input" id="Retrabajo" type="checkbox" />
                                 <label class="form-check-label" for="Retrabajo">Retrabajo</label>
                                 <div class="invalid-feedback" id="error_retrabajo"></div>
-                                <button id="btnGrupoUnidadaesSuministro" class="btn btn-success btn-sm float-end">Guardar</button>
                             </div>
                             <input type="hidden" id="CantitadpiezasIdPartidasOF">
                         </div>
@@ -246,6 +247,7 @@
                                 </select>
                                 <div class="invalid-feedback" id="error_emision"></div>
                             </div>
+                            <button id="btnGrupoUnidadaesSuministro" class="btn btn-success btn-sm float-end">Guardar</button>
                         </div>
                     </form>
                 </div>
@@ -391,7 +393,13 @@
                 errorinputFechaInicio.hide(); 
             }
         });
-        setInterval(RecargarTabla, 300000);
+        $('#EmisionesOpciones').on('change', function() {
+            var selectedOption = $(this).find('option:selected');
+            // Obtener el valor de data-cantidad
+            var cantidad = selectedOption.data('cantidad');
+            $('#Cantitadpiezas').val(cantidad);
+        });
+        setInterval(RecargarTabla, 60000);
     });
     function Detalles(id){
         $('#ModalDetalle').modal('show');
@@ -632,7 +640,17 @@
             }
         });
     }
-
+    function RetrabajoMostrarOFBuscarModal(id){
+        $('#ModalRetrabajo').modal('hide');
+        $('#RetrabajoOFOpciones').html('');
+        Planear(id);
+        $('#Retrabajo').prop('checked', true);
+        $('#Retrabajo').prop('disabled', true);
+        $('#Emisiones').fadeIn(100);
+        $('#btnGrupoPiezasCorte').fadeOut(100);
+        $('#btnGrupoPiezasCorte1').fadeIn(100);
+        $('#CantitadpiezasIdOF').val(id)
+    }
 
 
 

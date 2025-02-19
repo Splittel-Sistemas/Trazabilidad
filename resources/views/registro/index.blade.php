@@ -64,9 +64,9 @@
 <!-- Contenido principal -->
 <div class="container my-4">
 
-    @if(Auth::user()->hasPermission("UsuriosEdit"))
+   
         <a href="{{ route('registro.create') }}" class="btn btn-outline-info mb-3">Agregar Usuario</a>
-   @endif
+
     @if (session('status'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('status') }}
@@ -133,9 +133,8 @@
                             
                           
                             <td class=" text-center pe-0">
-                                @if(Auth::user()->hasPermission("UsuriosEdit"))
                                     <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#userModal" data-id="{{ $registro->id }}"><i class="fas fa-edit"></i> Editar</button>
-                                @endif
+                               
                             </td>
                            
                         </tr>

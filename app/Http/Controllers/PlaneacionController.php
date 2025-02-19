@@ -36,12 +36,12 @@ class PlaneacionController extends Controller
     
             // Obtener los datos de las órdenes de venta
             $datos = $this->OrdenesVenta($FechaFin, $FechaInicio, $NumOV);
-    
             // Determinar el estado según los datos
             if ($datos != 0) {
                 $status = empty($datos) ? "empty" : "success";
             } else {
-                $status = "error";
+                $datos=[];
+                $status = "empty";
             }
     
             // Ajustar formato de las fechas para la vista
