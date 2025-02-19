@@ -276,7 +276,7 @@
                     </ul>
                 </div>
                 </div>
-                <div class="navbar-vertical-footer" style=" background:white;">
+                <div class="navbar-vertical-footer">
                     <button class="btn navbar-vertical-toggle border-0 fw-semi-bold w-100 white-space-nowrap d-flex align-items-center">
                         <span class="uil uil-left-arrow-to-left fs-0"></span>
                         <span class="uil uil-arrow-from-right fs-0"></span>
