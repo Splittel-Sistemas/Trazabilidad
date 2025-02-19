@@ -326,7 +326,7 @@
 
         #chart-day, #chart-month, #chart-hour {
         width: 900px;
-        height: 400px;
+        height: 350px;
         }
 
         
