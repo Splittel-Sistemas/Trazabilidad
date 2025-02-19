@@ -220,7 +220,7 @@ class PlaneacionController extends Controller
         $FechaFin_consulta=str_replace("-","",$FechaFin);
         $NumOV="";
         $tablaOrdenes="";
-            return$datos=$this->OrdenesVenta($FechaFin_consulta,$FechaInicio_consulta,$NumOV);
+            $datos=$this->OrdenesVenta($FechaFin_consulta,$FechaInicio_consulta,$NumOV);
             if($datos!=0){
                 if(empty($datos)){
                     $status="empty";
@@ -536,8 +536,7 @@ class PlaneacionController extends Controller
         try {
             $datos = $this->funcionesGenerales->ejecutarConsulta($sql);
         } catch (\Exception $e) {
-            //return $datos=0;
-            return $e;
+            return $datos=0;
         }
         for($i=0;$i<count($datos);$i++){
             $num_partidas=$this->OrdenFabricacion($datos[$i]['OV']);
