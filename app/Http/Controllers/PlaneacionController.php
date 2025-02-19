@@ -220,7 +220,7 @@ class PlaneacionController extends Controller
         $FechaFin_consulta=str_replace("-","",$FechaFin);
         $NumOV="";
         $tablaOrdenes="";
-            $datos=$this->OrdenesVenta($FechaFin_consulta,$FechaInicio_consulta,$NumOV);
+            return$datos=$this->OrdenesVenta($FechaFin_consulta,$FechaInicio_consulta,$NumOV);
             if($datos!=0){
                 if(empty($datos)){
                     $status="empty";
