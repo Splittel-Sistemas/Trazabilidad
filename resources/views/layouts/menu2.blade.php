@@ -2914,7 +2914,7 @@
                         <div class="card-footer p-0 border-top">
                         <!---------------------------------------------------------------------------------------->
                         <div class="px-3"> 
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            <form id="logout-form" action="{{ route('logout') }}" method="get" style="display: none;">
                                  @csrf
                             </form>
                             <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
