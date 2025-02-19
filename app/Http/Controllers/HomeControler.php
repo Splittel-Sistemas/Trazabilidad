@@ -483,71 +483,85 @@ class HomeControler extends Controller
     
 
     public function tablasMes()
-    {
-        $mesActual = Carbon::now()->month;
-        $anioActual = Carbon::now()->year;
-        $diasEnMes = Carbon::now()->daysInMonth;
-    
-        // Obtener datos de todas las áreas dentro del mes actual
-        $datos = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-            ->select(
-                DB::raw('COALESCE(partidasof_areas.Areas_id, 2) as Areas_id'),
-                DB::raw('COALESCE(partidasof_areas.FechaComienzo, partidasof.FechaComienzo) as FechaComienzo'),
-                DB::raw('SUM(COALESCE(partidasof_areas.Cantidad, partidasof.Cantidad_partida)) as SumaTotalcantidad_partida')
-            )
-            ->whereMonth(DB::raw('COALESCE(partidasof_areas.FechaComienzo, partidasof.FechaComienzo)'), $mesActual)
-            ->whereYear(DB::raw('COALESCE(partidasof_areas.FechaComienzo, partidasof.FechaComienzo)'), $anioActual)
-            ->groupBy('Areas_id', 'FechaComienzo')
-            ->get();
-    
-        // Mapeo de áreas
-        $areasMap = [
-            2 => 'Cortes',
-            3 => 'Suministro',
-            4 => 'Preparado',
-            5 => 'Ensamble',
-            6 => 'Pulido',
-            7 => 'Medicion',
-            8 => 'Visualizacion',
-            9 => 'Empacado'
-        ];
-    
-        // Etiquetas de días del mes
-        $labels = range(1, $diasEnMes);
-    
-        // Inicializar series de datos
-        $seriesdias = [];
-        foreach ($areasMap as $area) {
-            $seriesdias[$area] = array_fill(0, $diasEnMes, 0); // Inicializar cada día con 0
+{
+    $mesActual = Carbon::now()->month;
+    $anioActual = Carbon::now()->year;
+    $diasEnMes = Carbon::now()->daysInMonth;
+
+    // Obtener datos de todas las áreas dentro del mes actual
+    $datos = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->select(
+            DB::raw('COALESCE(NULLIF(partidasof_areas.Areas_id, ""), 2) as Areas_id'),
+            DB::raw('COALESCE(NULLIF(partidasof_areas.FechaComienzo, ""), partidasof.FechaComienzo) as FechaComienzo'),
+            DB::raw('SUM(COALESCE(partidasof_areas.Cantidad, 0)) as SumaTotalcantidad_partida')
+        )
+        ->whereMonth(DB::raw('COALESCE(partidasof_areas.FechaComienzo, partidasof.FechaComienzo)'), $mesActual)
+        ->whereYear(DB::raw('COALESCE(partidasof_areas.FechaComienzo, partidasof.FechaComienzo)'), $anioActual)
+        ->groupBy('Areas_id', 'FechaComienzo')
+        ->get();
+       // dd($datos);
+
+    // Mapeo de áreas
+    $areasMap = [
+        2 => 'Cortes',
+        3 => 'Suministro',
+        4 => 'Preparado',
+        5 => 'Ensamble',
+        6 => 'Pulido',
+        7 => 'Medicion',
+        8 => 'Visualizacion',
+        9 => 'Empacado'
+    ];
+
+    // Inicializar las series con 0 para cada día del mes
+    $series = [
+        ['name' => 'Cortes', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+        ['name' => 'Suministro', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+        ['name' => 'Preparado', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+        ['name' => 'Ensamble', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+        ['name' => 'Pulido', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+        ['name' => 'Medicion', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+        ['name' => 'Visualizacion', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+        ['name' => 'Empacado', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)]
+    ];
+    //dd($series);
+
+    // Procesar datos y asignarlos a las series
+    foreach ($datos as $dato) {
+        if (!$dato->FechaComienzo) {
+            continue; // Evitar errores si la fecha es NULL
         }
-    
-        // Procesar datos y asignarlos a los días correspondientes
-        foreach ($datos as $dato) {
-            $dia = Carbon::parse($dato->FechaComienzo)->day - 1; // Convertir a índice de día
-            $areaName = $areasMap[$dato->Areas_id] ?? null;
-    
-            if ($areaName && isset($seriesdias[$areaName])) {
-                $seriesdias[$areaName][$dia] += $dato->SumaTotalcantidad_partida; // Sumar cantidad por día
+
+        try {
+            $dia = Carbon::parse($dato->FechaComienzo)->day - 1; // Indice de día
+        } catch (\Exception $e) {
+            continue; // Saltar valores inválidos
+        }
+
+        $areaName = $areasMap[$dato->Areas_id] ?? null;
+       // dd($areaName);
+
+        if ($areaName) {
+            // Asignar el valor de la cantidad al día correspondiente de la serie de la área
+            foreach ($series as &$serie) {
+                if ($serie['name'] === $areaName) {
+                    $serie['data'][$dia] += $dato->SumaTotalcantidad_partida;
+                }
             }
         }
-    
-        // Convertir series a formato requerido
-        $series = [];
-        foreach ($seriesdias as $nombreArea => $data) {
-            $series[] = [
-                'name' => $nombreArea,
-                'data' => array_values($data) // Asegurar estructura de datos
-            ];
-        }
-    
-        // Devolver JSON compatible con `generarGrafico()`
-        return response()->json([
-            'labels' => $labels, // Días del mes
-            'series' => $series  // Datos agrupados por área y día
-        ]);
     }
+    //dd($series);
+    //dd($diasEnMes);
+
+    // Devolver el JSON con las series y etiquetas para graficar
+    return response()->json([
+        'labels' => range(1, $diasEnMes),
+        'series' => $series
+    ]);
+}
+
     
     
 
@@ -644,6 +658,8 @@ class HomeControler extends Controller
                 }
             }
         }
+       //dd($series);
+        //dd($labels);
     
         // Devuelve los datos para el gráfico
         return response()->json([
