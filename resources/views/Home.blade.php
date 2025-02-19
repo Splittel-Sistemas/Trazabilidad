@@ -448,8 +448,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 container.style.gap = "1px"; 
 
                 let ctx = canvas.getContext("2d");
-                canvas.style.width = "100px";
-                canvas.style.height = "100px";
+                canvas.style.width = "110px";
+                canvas.style.height = "110px";
 
                 let completado = data[id] ? data[id].completado : 0;
                 let pendiente = data[id] ? data[id].pendiente : 0;
