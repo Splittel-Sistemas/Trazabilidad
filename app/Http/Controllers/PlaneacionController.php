@@ -37,10 +37,12 @@ class PlaneacionController extends Controller
             // Obtener los datos de las órdenes de venta
             $datos = $this->OrdenesVenta($FechaFin, $FechaInicio, $NumOV);
             // Determinar el estado según los datos
+            $VerificarSAP=1;
             if ($datos != 0) {
                 $status = empty($datos) ? "empty" : "success";
             } else {
                 $datos=[];
+                $VerificarSAP=0;
                 $status = "empty";
             }
     
@@ -49,7 +51,7 @@ class PlaneacionController extends Controller
             $FechaFin = date('Y-m-d');
     
             // Retornar la vista con los datos
-            return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status'));
+            return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status','VerificarSAP'));
     
         } else {
     
