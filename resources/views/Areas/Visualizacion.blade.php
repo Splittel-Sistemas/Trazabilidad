@@ -190,10 +190,10 @@
                                     $('#CantidadPartidasOF').html('');
                                     break;
                                 case 6:
-                                    Mensaje='Codigo <strong>'+Codigo+'</strong> Ya se encuentra iniciada en el Area posterios!';
+                                    Mensaje='Codigo <strong>'+Codigo+'</strong> Ya se encuentra iniciada en una Estación posterior!';
                                     Color='bg-danger';
-                                    $('#ContentTabla').hide();
-                                    $('#CantidadPartidasOF').html('');
+                                    //$('#ContentTabla').hide();
+                                    //$('#CantidadPartidasOF').html('');
                                     break;
                                 default:
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> Ocurrio un error!';
@@ -243,16 +243,14 @@
                             $('#ToastGuardado').fadeOut();
                         }, 2000);
                     //}
+                }else if(response.status=="NoExiste"){
+                        $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                        $('#ToastGuardadoBody').html('El codigo No existe!  ');
+                        $('#ToastGuardado').fadeIn();
+                        setTimeout(function(){
+                            $('#ToastGuardado').fadeOut();
+                        }, 2000);
                 }
-                /*document.getElementById('CodigoEscanerSuministro').style.display = "";
-                if(response.Escaner==1){
-                    $('#CantidadDiv').hide();
-                    $('#IniciarBtn').hide();
-                }else if(response.Escaner==0){
-                    $('#CantidadDiv').show();
-                    $('#IniciarBtn').show();
-                    $('#CodigoEscanerSuministro').html(response.menu);
-                }*/
             },
             error: function(xhr, status, error) {
                 $('#CantidadDiv').hide();
