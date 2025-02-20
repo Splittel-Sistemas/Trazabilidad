@@ -386,19 +386,28 @@
     <div style="height: 30px;"></div>
     <!------>
     <div class="card">
-        <h2 style="font-size: 16px;">Progreso del Dia</h2>
+        <h2 style="font-size: 16px;">Progreso del Día</h2>
+        <p id="chart-hour-fecha" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
         <div id="chart-hour" class="chart-container"></div>
     </div>
+    
     <div style="height: 30px;"></div>
+    
     <div class="card">
         <h2 style="font-size: 16px;">Progreso de la Semana</h2>
+        <p id="chart-day-rango" style="font-size: 14px; color: gray;"></p>  
         <div id="chart-day" class="chart-container"></div>
     </div>
+    
+    
     <div style="height: 30px;"></div>
+    
     <div class="card">
-        <h2 style="font-size: 16px;">Progreo del Mes</h2>
+        <h2 style="font-size: 16px;">Progreso del Mes</h2>
+        <p id="chart-month-mes" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
         <div id="chart-month" class="chart-container"></div>
     </div>
+    
 
 @endsection
 
@@ -748,7 +757,6 @@ $(document).ready(function () {
     cargarOrdenesCerradas();
     cargarOrdenesCompletas();
 });
-// Gráfico por Semana
 function generarGrafico(url, containerId, itemName) {
     fetch(url)
         .then(response => response.json())
@@ -759,47 +767,63 @@ function generarGrafico(url, containerId, itemName) {
                 datasetSource.push([serie.name, ...serie.data]);
             });
 
+            // Asignar valores a los elementos del HTML
+            const fechaContainer = document.getElementById(`${containerId}-fecha`);
+            const rangoContainer = document.getElementById(`${containerId}-rango`);
+            const mesContainer = document.getElementById(`${containerId}-mes`);
+            if(mesContainer){
+                mesContainer.textContent = ` ${data.mes}`;
+            }
+
+            if (fechaContainer) {
+                fechaContainer.textContent = ` ${data.fecha}`;
+            }
+
+            if (rangoContainer) {
+                rangoContainer.textContent = ` ${data.rangoSemana}`;
+            }
             const option = {
-                tooltip: { trigger: 'axis' },
-                legend: { left: '5%' },
-                dataset: { source: datasetSource },
-                xAxis: { type: 'category' },
-                yAxis: { gridIndex: 0 },
-                grid: {
-                    left: containerId === 'chart-month"' ? '5%' : '50%',
-                    right: containerId === 'chart-month"' ? '50%' : '5%',
-                    bottom: '10%',
-                    containLabel: true
-                },
-                series: data.series.map(() => ({
-                    type: 'line',
-                    smooth: true,
-                    seriesLayoutBy: 'row',
-                    emphasis: { focus: 'series' }
-                })).concat([
-                    // Este es el gráfico de pastel
-                    {
-                        type: 'pie',
-                        id: 'pie',
-                        radius: '35%',
-                        center: containerId === 'chart-month"' ? ['75%', '50%'] : ['20%', '50%'],
-                        emphasis: { focus: 'self' },
-                        label: {
-                            formatter: `{b}: {@[${data.labels[0]}]} ({d}%)`
-                        },
-                        encode: {
-                            itemName: itemName,
-                            value: data.labels[0],
-                            tooltip: data.labels[0]
-                        }
-                    }
-                ]),
-                toolbox: {
-                    feature: {
-                        saveAsImage: {}
+            tooltip: { trigger: 'axis' },
+            legend: { left: '5%' },
+            dataset: { source: datasetSource },
+            xAxis: { type: 'category' },
+            yAxis: { gridIndex: 0 },
+            grid: {
+                left: containerId === 'chart-month' ? '5%' : '50%',
+                right: containerId === 'chart-month' ? '50%' : '5%',
+                bottom: '10%',
+                containLabel: true
+            },
+            series: data.series.map(() => ({
+                type: 'line',
+                smooth: true,
+                seriesLayoutBy: 'row',
+                emphasis: { focus: 'series' }
+            })).concat([
+                {
+                    type: 'pie',
+                    id: 'pie',
+                    radius: '35%',
+                    center: containerId === 'chart-month' ? ['75%', '50%'] : ['20%', '50%'],
+                    emphasis: { focus: 'self' },
+                    label: {
+                        formatter: `{b}: {@[${data.labels[0]}]} ({d}%)`
+                    },
+                    encode: {
+                        itemName: itemName,
+                        value: data.labels[0],
+                        tooltip: data.labels[0]
                     }
                 }
-            };
+            ]),
+            toolbox: {
+                feature: {
+                    saveAsImage: {
+                        name: `${data.fecha || ''}${data.rangoSemana || ''}${data.mes || ''}` // Verifica que los valores no sean undefined
+                    }
+                }
+            }
+};
 
             const chart = echarts.init(document.getElementById(containerId));
 
