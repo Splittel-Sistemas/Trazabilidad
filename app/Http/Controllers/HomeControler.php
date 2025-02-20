@@ -143,7 +143,7 @@ class HomeControler extends Controller
             ->groupBy('partidasof_areas.Areas_id', 'partidasof_areas.id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
             ->get();
 
-            dd($areas);
+           // dd($areas);
 
             $cortes = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
@@ -215,38 +215,68 @@ class HomeControler extends Controller
         return response()->json($datos);
         
     }
-    
-
-    public function cerradas()
-    {
-        $fechaLimite = now()->subMonth(); // Fecha actual menos un mes
-    
-        // Contar todas las órdenes en la tabla con la restricción de fecha
-        $totalOrdenes = DB::table('ordenfabricacion')
-            ->where('FechaEntrega', '>=', $fechaLimite)
-            ->count();
-    
-        // Contar órdenes completadas (las que llegaron al Área 9) dentro del rango de fecha
-        $ordenesCompletadas = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-            ->where('partidasof_areas.Areas_id', 9) // Solo cerradas
-            ->where('ordenfabricacion.FechaEntrega', '>=', $fechaLimite) // Filtrar por la fecha
-            ->distinct('ordenfabricacion.id')
-            ->count();
-           // dd($totalOrdenes);
-    
-        // Contar órdenes abiertas (sin contar las completadas)
-        $ordenesAbiertas = $totalOrdenes - $ordenesCompletadas;
-
-      
-    
-        return response()->json([
-            'ordenesCompletadas' => $ordenesCompletadas,
-            'ordenesAbiertas' => $ordenesAbiertas,
-            'totalOrdenes' => $totalOrdenes,
-        ]);
-    }
+    /*
+    Illuminate\Support\Collection {#1320 ▼ // app\Http\Controllers\HomeControler.php:234
+        #items: array:2 [▼
+          0 => {#1252 ▼
+           +"CantidadTotal": 3
+            +"Cantidad": 3
+            +"PartidasOF_id": 1
+            +"id": 10, 9
+          }
+          1 => {#1470 ▼
+            +"CantidadTotal": 3
+            +"Cantidad": 1
+            +"PartidasOF_id": 1
+          }
+        ]*/
+        public function cerradas()
+        {
+            $fechaLimite = now()->subMonth(); // Fecha actual menos un mes
+        
+            // Ordenes Completadas (Cerradas)
+            $ordenesCompletadas = DB::table('ordenfabricacion')
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+                ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+                ->where('partidasof_areas.Areas_id', 9) // Solo cerradas
+                ->where('ordenfabricacion.FechaEntrega', '>=', $fechaLimite)
+                ->select(
+                    'ordenfabricacion.CantidadTotal',
+                    DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),
+                    'partidasof_areas.PartidasOF_id',
+                    DB::raw('GROUP_CONCAT(partidasof_areas.id) as ids')
+                )
+                ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.CantidadTotal')
+                ->havingRaw('SUM(partidasof_areas.Cantidad) = ordenfabricacion.CantidadTotal')
+                ->get();
+        
+            // Ordenes Abiertas
+            $ordenesAbiertas = DB::table('ordenfabricacion')
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+                ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+                ->where('partidasof_areas.Areas_id', 9) // Solo abiertas
+                ->where('ordenfabricacion.FechaEntrega', '>=', $fechaLimite)
+                ->select(
+                    'ordenfabricacion.CantidadTotal',
+                    DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),
+                    'partidasof_areas.PartidasOF_id',
+                    DB::raw('GROUP_CONCAT(partidasof_areas.id) as ids')
+                )
+                ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.CantidadTotal')
+                ->havingRaw('SUM(partidasof_areas.Cantidad) < ordenfabricacion.CantidadTotal')
+                ->get();
+        
+            // Total de Ordenes
+            $totalOrdenes = DB::table('ordenfabricacion')
+                ->count();
+        
+            return response()->json([
+                'ordenesCompletadas' => $ordenesCompletadas,
+                'ordenesAbiertas' => $ordenesAbiertas,
+                'totalOrdenes' => $totalOrdenes,
+            ]);
+        }
+        
     
 
     public function tablasAbiertas()
