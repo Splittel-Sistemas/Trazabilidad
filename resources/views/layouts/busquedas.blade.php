@@ -697,7 +697,6 @@
                         
                         <br> 
                         <div class="grid-container" id="canvases">
-                        
                             <!-- Estación Cortes -->
                             <div class="grid-item">
                               <h1 class="small-title">Estación Cortes</h1>

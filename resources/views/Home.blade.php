@@ -266,11 +266,18 @@
             margin: auto;
         }
         .grid-item {
-           
-            padding: 15px;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+  border: 2px solid #ddd;  /* Borde alrededor del contenedor */
+  padding: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;  /* Efecto suave en la transformación */
+  border-radius: 10px;
+  text-align: center;
+}
+
+.grid-item:hover {
+  transform: translateY(-10px);  /* Movimiento hacia arriba cuando se pasa el cursor */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);  /* Sombra para resaltar el contenedor */
+}
+
         .small-title {
             font-size: 14px;
             margin-bottom: 5px;
@@ -337,58 +344,84 @@
 @section('content')
     <div class ="card">
         <h1 class="progress-title">Indicadores de Producción del Mes</h1>
-        <div class="grid-container">
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasCorte" width="150" height="150"></canvas>
+        <div class="container">
+            <div class="row mb-4">
+              <div class="col-6 col-md-3 col-lg-3">
+                <div class="grid-item">
+                  <h1 class="small-title"></h1>
+                  <canvas id="plemasCorte" width="150" height="150"></canvas>
+                </div>
+              </div>
+              <div class="col-6 col-md-3 col-lg-3">
+                <div class="grid-item">
+                  <h1 class="small-title"></h1>
+                  <canvas id="plemasSuministro" width="150" height="150"></canvas>
+                </div>
+              </div>
+              <div class="col-6 col-md-3 col-lg-3">
+                <div class="grid-item">
+                  <h1 class="small-title"></h1>
+                  <canvas id="plemasPreparado" width="150" height="150"></canvas>
+                </div>
+              </div>
+              <div class="col-6 col-md-3 col-lg-3">
+                <div class="grid-item">
+                  <h1 class="small-title"></h1>
+                  <canvas id="plemasEnsamble" width="150" height="150"></canvas>
+                </div>
+              </div>
             </div>
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasSuministro" width="150" height="150"></canvas>
+            
+            <div class="row">
+              <div class="col-6 col-md-3 col-lg-3">
+                <div class="grid-item">
+                  <h1 class="small-title"></h1>
+                  <canvas id="plemasPulido" width="150" height="150"></canvas>
+                </div>
+              </div>
+              <div class="col-6 col-md-3 col-lg-3">
+                <div class="grid-item">
+                  <h1 class="small-title"></h1>
+                  <canvas id="plemasMedicion" width="150" height="150"></canvas>
+                </div>
+              </div>
+              <div class="col-6 col-md-3 col-lg-3">
+                <div class="grid-item">
+                  <h1 class="small-title"></h1>
+                  <canvas id="plemasVisualizacion" width="150" height="150"></canvas>
+                </div>
+              </div>
+              <div class="col-6 col-md-3 col-lg-3">
+                <div class="grid-item">
+                  <h1 class="small-title"></h1>
+                  <canvas id="plemasEmpaque" width="150" height="150"></canvas>
+                </div>
+              </div>
             </div>
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasPreparado" width="150" height="150"></canvas>
-            </div>
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasEnsamble" width="150" height="150"></canvas>
-            </div>
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasPulido" width="150" height="150"></canvas>
-            </div>
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasMedicion" width="150" height="150"></canvas>
-            </div>
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasVisualizacion" width="150" height="150"></canvas>
-            </div>
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasEmpaque" width="150" height="150"></canvas>
-            </div>
-        </div>
+        </div> 
     </div>
         <div style="height: 30px;"></div>
     <!------------------------->
     <div class="card">
-        <h1 class="progress-title">Ordenes Fabricación</h1>
-        <div class="grid-container" style="display: flex; justify-content: center;">
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasordenes" width="700" height="300"></canvas>
-            </div>     
+            <h1 class="progress-title">Ordenes Fabricación</h1>
+            <div class="grid-container" style="display: flex; justify-content: center;">
+                <div class="grid-item">
+                    <h1 class="small-title"></h1>
+                    <canvas id="plemasordenes" width="700" height="300"></canvas>
+                </div>     
+            </div>
         </div>
-    </div>
+    
     <div style="height: 30px;"></div>
     <!------>
     <div class="card">
-        <h2 style="font-size: 16px;">Progreso del Día</h2>
-        <p id="chart-hour-fecha" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
-        <div id="chart-hour" class="chart-container"></div>
+        <div class="col-10 col-md-18 col-lg-12 mx-auto">
+        
+            <h2 style="font-size: 16px;">Progreso del Día</h2>
+            <p id="chart-hour-fecha" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
+            <div id="chart-hour" class="chart-container"></div>
+        </div>
+        
     </div>
     
     <div style="height: 30px;"></div>
@@ -559,7 +592,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <strong>Órdenes</strong><br>
             Cerradas: <span style="color: #28a745;">${completadas}/${totalOrdenes} (${porcentajeCompletadas}%)</span><br>
             Abiertas: <span style="color: #ffc107;">${totalOrdenes - completadas}/${totalOrdenes} (${porcentajeAbiertas}%)</span><br>
-            Órdenes fabr: <span style="color: #dc3545; white-space: nowrap;">${totalOrdenes}</span>
+            Órdenes de Fabricacion: <span style="color: #dc3545; white-space: nowrap;">${totalOrdenes}</span>
 
         `;
 
