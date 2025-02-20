@@ -186,7 +186,7 @@
         .chart-container {
             width: 100%;
             max-width: 800px;
-            background: white;
+           
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -266,7 +266,7 @@
             margin: auto;
         }
         .grid-item {
-            background: white;
+           
             padding: 15px;
             border-radius: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -317,7 +317,7 @@
 
         /* Mejorar la apariencia del contenedor del gráfico */
         .chart-container {
-            background-color: #ffffff;
+           
             padding: 20px;
             border-radius: 8px;
             border: 1px solid #ddd;
@@ -766,8 +766,8 @@ function generarGrafico(url, containerId, itemName) {
                 xAxis: { type: 'category' },
                 yAxis: { gridIndex: 0 },
                 grid: {
-                    left: containerId === 'chart-day' ? '5%' : '50%',
-                    right: containerId === 'chart-day' ? '50%' : '5%',
+                    left: containerId === 'chart-month"' ? '5%' : '50%',
+                    right: containerId === 'chart-month"' ? '50%' : '5%',
                     bottom: '10%',
                     containLabel: true
                 },
@@ -782,7 +782,7 @@ function generarGrafico(url, containerId, itemName) {
                         type: 'pie',
                         id: 'pie',
                         radius: '35%',
-                        center: containerId === 'chart-day' ? ['75%', '50%'] : ['20%', '50%'],
+                        center: containerId === 'chart-month"' ? ['75%', '50%'] : ['20%', '50%'],
                         emphasis: { focus: 'self' },
                         label: {
                             formatter: `{b}: {@[${data.labels[0]}]} ({d}%)`
