@@ -530,7 +530,7 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border border-300" aria-labelledby="navbarDropdownUser">
                         <div class="card position-relative border-0">
-                        <div class="card-body p-0">
+                        <div class="card-body bg-white p-0">
                             <div class="text-center pt-4 pb-3">
                             <div class="avatar avatar-xl ">
                                 <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
@@ -748,7 +748,7 @@
                     <li class="nav-item dropdown"><a class="nav-link lh-1 pe-0 white-space-nowrap" id="navbarDropdownUser" href="#!" role="button" data-bs-toggle="dropdown" aria-haspopup="true" data-bs-auto-close="outside" aria-expanded="false">Olivia <span class="fa-solid fa-chevron-down fs--2"></span></a>
                     <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border border-300" aria-labelledby="navbarDropdownUser">
                         <div class="card position-relative border-0">
-                        <div class="card-body p-0">
+                        <div class="card-body bg-white bg-white p-0">
                             <div class="text-center pt-4 pb-3">
                             <div class="avatar avatar-xl ">
                                 <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
@@ -1468,7 +1468,7 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border border-300" aria-labelledby="navbarDropdownUser">
                     <div class="card position-relative border-0">
-                        <div class="card-body p-0">
+                        <div class="card-body bg-white p-0">
                         <div class="text-center pt-4 pb-3">
                             <div class="avatar avatar-xl ">
                             <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
@@ -2177,7 +2177,7 @@
                 <li class="nav-item dropdown"><a class="nav-link lh-1 pe-0 white-space-nowrap" id="navbarDropdownUser" href="#!" role="button" data-bs-toggle="dropdown" aria-haspopup="true" data-bs-auto-close="outside" aria-expanded="false">Olivia <span class="fa-solid fa-chevron-down fs--2"></span></a>
                     <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border border-300" aria-labelledby="navbarDropdownUser">
                     <div class="card position-relative border-0">
-                        <div class="card-body p-0">
+                        <div class="card-body bg-white p-0">
                         <div class="text-center pt-4 pb-3">
                             <div class="avatar avatar-xl ">
                             <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
@@ -2895,7 +2895,7 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border border-300" aria-labelledby="navbarDropdownUser">
                     <div class="card position-relative border-0">
-                        <div class="card-body p-0">
+                        <div class="card-body bg-white p-0">
                         <div class="text-center pt-4 pb-3">
                             <div class="avatar avatar-xl ">
                             <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
@@ -3613,7 +3613,7 @@
                 <li class="nav-item dropdown"><a class="nav-link lh-1 pe-0 white-space-nowrap" id="navbarDropdownUser" href="#!" role="button" data-bs-toggle="dropdown" aria-haspopup="true" data-bs-auto-close="outside" aria-expanded="false">Olivia <span class="fa-solid fa-chevron-down fs--2"></span></a>
                     <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border border-300" aria-labelledby="navbarDropdownUser">
                     <div class="card position-relative border-0">
-                        <div class="card-body p-0">
+                        <div class="card-body bg-white p-0">
                         <div class="text-center pt-4 pb-3">
                             <div class="avatar avatar-xl ">
                             <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
@@ -3946,7 +3946,7 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border border-300" aria-labelledby="navbarDropdownUser">
                         <div class="card position-relative border-0">
-                            <div class="card-body p-0">
+                            <div class="card-body bg-white p-0">
                             <div class="text-center pt-4 pb-3">
                                 <div class="avatar avatar-xl ">
                                 <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
