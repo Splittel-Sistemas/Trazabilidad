@@ -90,6 +90,13 @@ class CorteController extends Controller
         $id=$this->funcionesGenerales->decrypt($request->id);
         $OrdenFabricacion=OrdenFabricacion::where('id','=',$id)->first();
         $DetallesCable=$this->funcionesGenerales->DetallesCable($OrdenFabricacion->OrdenFabricacion);
+        if(count($DetallesCable)==0){
+            return response()->json([
+                'status' => 'successnotcable',
+                'Ordenfabricacioninfo' => '<p class="text-center">La Orden de Fabricacion no contiene cable para cortar.<p>',
+                'id' => $id
+            ], 200);
+        }
         $Ordenfabricacionpartidas='<table id="TablePartidasModal" class="table table-sm fs--1 mb-0" style="width:100%">
                         <thead>
                             <tr>

@@ -98,7 +98,7 @@
                                             <th>Descripción</th>
                                             <th>Suministro Normal</th>
                                             <th>Suministro Retrabajo</th>
-                                            <th>Cantidad Partida</th>
+                                            <th>Cantidad Cortes</th>
                                             <th>Estatus</th>
                                             <th>Acciones</th>
                                         </tr>
@@ -111,7 +111,7 @@
                                             <td>{{$partida->Descripcion }}</td>
                                             <td>{{$partida->Normal }}</td>
                                             <td>{{$partida->Retrabajo }}</td>
-                                            <td class="text-center">{{$partida->cantidad_partida }}</td>
+                                            <td class="text-center">{{$partida->TotalPartida }}</td>
                                             <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
                                             <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Planear('{{$partida->idEncript}}')">Detalles</button></td>
                                         </tr>
@@ -170,7 +170,7 @@
                                             <th>N&uacute;mero Partida</th>
                                             <th>Artículo</th>
                                             <th>Descripción</th>
-                                            <th>Cantidad Partida</th>
+                                            <th>Cantidad Cortes</th>
                                             <th>Fecha Finalizacion</th>
                                             <th>Estatus</th>
                                             <th>Acciones</th>
@@ -185,7 +185,7 @@
                                             <td>{{$partida->Descripcion }}</td>
                                             <td class="text-center">{{$partida->cantidad_partida }}</td>
                                             <td class="text-center">{{$partida->FechaFinalizacion }}</td>
-                                            <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                                            <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Cerrada</span></div></td>
                                             <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Detalles('{{$partida->idEncript}}')">Detalles</button></td>
                                         </tr>
                                     @endforeach

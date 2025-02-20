@@ -482,6 +482,7 @@
         $('#ModalSuministroBodyPartidasOF').html('');
         $('#CantitadpiezasIdOF').val('');
         $('#btnGrupoPiezasCorte').fadeIn();
+        $('#InputNormal').fadeOut();
         $('#btnGrupoPiezasCorte1').fadeOut();
         document.getElementById("Retrabajo").checked=false;
         $.ajax({
@@ -500,8 +501,11 @@
                     $('#CantitadpiezasIdOF').val(response.id);
                     $('#ModalSuministroBodyInfoOF').html(response.Ordenfabricacioninfo);
                     $('#ModalSuministroBodyPartidasOF').html(response.Ordenfabricacionpartidas);
+                    $('#InputNormal').fadeIn();
                     //$('#TablePartidasModal').DataTable().destroy();
                     //DataTable('TablePartidasModal',false);
+                }else if(response.status=='successnotcable'){
+                    $('#ModalSuministroBodyInfoOF').html(response.Ordenfabricacioninfo);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {

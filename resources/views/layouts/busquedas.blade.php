@@ -45,7 +45,7 @@
 
             #progress-wrapper {
                 padding: 10px;
-                background-color: #f4f4f4;
+               
                 border-radius: 8px;
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             }
@@ -53,7 +53,7 @@
             .task-progress-bar {
                 margin-bottom: 15px;
                 padding: 5px;
-                background-color: #fff;
+               
                 border-radius: 5px;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
@@ -68,9 +68,9 @@
             .task-progress {
                 height: 20px;
                 border-radius: 5px;
-                background-color: #dfe4ea;
+               
                 text-align: center;
-                color: white;
+                color: rgba(255, 255, 255, 0.493);
                 line-height: 20px;
                 font-weight: bold;
                 transition: width 2s ease-in-out;
@@ -89,12 +89,12 @@
 
             .btn-secondary {
                 background-color: #6c757d;
-                color: white;
+                color: rgba(255, 255, 255, 0.596);
             }
 
             .btn-primary {
                 background-color: #007bff;
-                color: white;
+                color: rgba(255, 255, 255, 0.459);
         }
         /* Estilos de los botones */
         .btn-primary, .btn-secondary {
@@ -157,30 +157,23 @@
                 color: white; 
             }
 
-            
-            .selected-stage .stage-circle,
-            .selected-stage span {
-                background-color: #299ae6; 
-                color: white;
-        }
-
         /* Estilos generales */
         .grid-container {
                     display: grid;
                     grid-template-columns: repeat(4, 1fr); 
-                    gap: 20px; 
-                    width: 100%;
-                    max-width: 100%;
+                    gap: 10px; 
+                    width: 90%;
+                    max-width: 120%;
                     margin: 0 auto; 
                     padding: 0; 
                 }
 
                 .grid-item {
                     text-align: center;
-                    padding: 10px;
-                    border-radius: 8px; 
-                    background-color: #f9f9f9; 
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+                    padding: 0px;
+                    border-radius: 20px; 
+                    background-color: #f9f9f9a4; 
+                    box-shadow: 0 4px 5px rgba(0, 0, 0, 0.1); 
                     transition: transform 0.3s ease, box-shadow 0.3s ease;
                     margin-bottom: 0; 
                 }
@@ -200,8 +193,8 @@
 
                 canvas {
                     user-select: none;
-                    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-                    border: 2px solid #17a2b8; 
+                   /* -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+                    border: 2px solid #17a2b8; */
                     border-radius: 8px; 
                     width: 100%;
                     max-width: 250px;
@@ -209,7 +202,7 @@
                     margin: 0 auto; 
                     padding: 0;
                     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-                    background-color: #fff; 
+                    
                     display: block; 
         }
 
@@ -235,13 +228,13 @@
             }
 
             .estacion-card {
-                border: 1px solid #ddd;
+                border: 1px solid #dddddda9;
                 border-radius: 10px;
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                 transition: all 0.3s ease;
                 padding: 15px;
                 text-align: center;
-                background: white;
+               
             }
 
             .estacion-card:hover {
@@ -271,12 +264,12 @@
 
             .badge-success {
                 background-color: #1a662c;
-                color: white;
+               
             }
 
             .badge-warning {
                 background-color: #881410;
-                color: white;
+               
             }
 
 
@@ -292,7 +285,7 @@
                 gap: 8px; /* Espacio entre el icono y el texto */
                 border-radius: 8px; /* Bordes redondeados */
                 background-color: #17a2b8; /* Color info mejorado */
-                color: white;
+              
                 border: none;
                 transition: all 0.3s ease;
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -311,8 +304,13 @@
 
 
             .canvas-container {
-                margin-bottom: -30px; 
+                margin-bottom: -20px; 
             }
+            .title-container {
+    font-size: 1px; /* Ajusta el tamaño del texto */
+    padding: -100px; /* Ajusta el espacio alrededor */
+}
+
 
 
 
@@ -390,7 +388,7 @@
             </div>
             
             <div style="margin-top: 20px;"></div>
-             <div class="card" >
+             <div class="card">
                 <table class="table table-sm fs--1 mb-0">
                     <thead>
                         <tr class="bg-info text-white">
@@ -434,112 +432,116 @@
                             </div>
                         </div>
                         <br>
-                        <div class="grid-container" id="plemasCanvases">
-                            <!-- Estación Cortes -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Estación Cortes</h1>
+                         <div class="card">
+                            <div class="grid-container" id="plemasCanvases">
+                                <!-- Estación Cortes -->
+                                <div class="card">
+                                    <div class="grid-item">
+                                        <h1 class="small-title">Estación Cortes</h1>
 
-                                <div class="canvas-container">
-                                    <canvas id="plemasCorte" width="300" height="300"></canvas> 
+                                        <div class="canvas-container">
+                                            <canvas id="plemasCorte" width="300" height="300"></canvas> 
+                                        </div>
+                                        
+                                        <div class="title-container">
+                                            <h1 class="small-title" id="titulo-cortes"></h1>
+                                        </div>
+                                    </div>
                                 </div>
                                 
-                                <div class="title-container">
-                                    <h1 class="small-title" id="titulo-cortes"></h1>
-                                </div>
-                            </div>
-                            
-                
-                            <!-- Estación Suministros -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Estación Suministros</h1>
+                    
+                                <!-- Estación Suministros -->
+                                <div class="grid-item">
+                                    <h1 class="small-title">Estación Suministros</h1>
 
-                                <div class="canvas-container">
-                                    <canvas id="plemasSuministro" width="300" height="300"></canvas>
-                                </div>
+                                    <div class="canvas-container">
+                                        <canvas id="plemasSuministro" width="300" height="300"></canvas>
+                                    </div>
 
-                                <div class="title-container">
-                                    <h1 class="small-title" id="titulo-suministro"></h1>
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-suministro"></h1>
+                                    </div>
                                 </div>
-                            </div>
-        
-                            <!-- Estación Preparado -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Estación Preparado</h1>
+            
+                                <!-- Estación Preparado -->
+                                <div class="grid-item">
+                                    <h1 class="small-title">Estación Preparado</h1>
 
-                                <div class="canvas-container">
-                                    <canvas id="plemasPreparado" width="300" height="300"></canvas>
-                                </div>
+                                    <div class="canvas-container">
+                                        <canvas id="plemasPreparado" width="300" height="300"></canvas>
+                                    </div>
 
-                                <div class="title-container">
-                                    <h1 class="small-title" id="titulo-preparado"></h1>
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-preparado"></h1>
+                                    </div>
                                 </div>
-                            </div>
-        
-                            <!-- Estación Ensamble -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Estación Ensamble</h1>
+            
+                                <!-- Estación Ensamble -->
+                                <div class="grid-item">
+                                    <h1 class="small-title">Estación Ensamble</h1>
 
-                                <div class="canvas-container">
-                                    <canvas id="plemasEnsamble" width="300" height="300"></canvas>
-                                </div>
+                                    <div class="canvas-container">
+                                        <canvas id="plemasEnsamble" width="300" height="300"></canvas>
+                                    </div>
 
-                                <div class="title-container">
-                                    <h1 class="small-title" id="titulo-ensamble"></h1>
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-ensamble"></h1>
+                                    </div>
                                 </div>
-                            </div>
-        
-                            <!-- Estación Pulido -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Estación Pulido</h1>
+            
+                                <!-- Estación Pulido -->
+                                <div class="grid-item">
+                                    <h1 class="small-title">Estación Pulido</h1>
+                                    
+                                    <div class="canvas-container">
+                                        <canvas id="plemasPulido" width="300" height="300"></canvas>
+                                    </div>
+
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-pulido"></h1>
+                                    </div>
+                                </div>
+            
+                                <!-- Estación Medición -->
+                                <div class="grid-item">
+                                    <h1 class="small-title">Estación Medición</h1>
+
+                                    <div class="canvas-container">
+                                        <canvas id="plemasMedicion" width="300" height="300"></canvas>
+                                    </div>
+
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-medicion"></h1>
+                                    </div>
+                                </div>
+            
+                                <!-- Estación Visualización -->
+                                <div class="grid-item">
+                                    <h1 class="small-title">Estación Visualización</h1>
                                 
-                                <div class="canvas-container">
-                                    <canvas id="plemasPulido" width="300" height="300"></canvas>
-                                </div>
+                                    <div class="canvas-container">
+                                        <canvas id="plemasVisualizacion" width="300" height="300"></canvas>
+                                    </div>
 
-                                <div class="title-container">
-                                    <h1 class="small-title" id="titulo-pulido"></h1>
-                                </div>
-                            </div>
-        
-                            <!-- Estación Medición -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Estación Medición</h1>
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-visualizacion"></h1>
+                                    </div>
 
-                                <div class="canvas-container">
-                                    <canvas id="plemasMedicion" width="300" height="300"></canvas>
                                 </div>
+            
+                                <!-- Estación Empaque -->
+                                <div class="grid-item">
+                                    <h1 class="small-title">Estación Empaque</h1>
 
-                                <div class="title-container">
-                                    <h1 class="small-title" id="titulo-medicion"></h1>
+                                    <div class="canvas-container">
+                                        <canvas id="plemasEmpaque" width="300" height="300"></canvas>
+                                    </div>
+
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-empaque"></h1>
+                                    </div>
+
                                 </div>
-                            </div>
-        
-                            <!-- Estación Visualización -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Estación Visualización</h1>
-                            
-                                <div class="canvas-container">
-                                    <canvas id="plemasVisualizacion" width="300" height="300"></canvas>
-                                </div>
-
-                                <div class="title-container">
-                                    <h1 class="small-title" id="titulo-visualizacion"></h1>
-                                </div>
-
-                            </div>
-        
-                            <!-- Estación Empaque -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Estación Empaque</h1>
-
-                                <div class="canvas-container">
-                                    <canvas id="plemasEmpaque" width="300" height="300"></canvas>
-                                </div>
-
-                                <div class="title-container">
-                                    <h1 class="small-title" id="titulo-empaque"></h1>
-                                </div>
-
                             </div>
                         </div>
 
@@ -1147,7 +1149,7 @@
                         .text('Duración: ' + response.tiemposcortes[0].Duracion)
                         .css({
                             'font-size': '10px',
-                            'color': 'blue',
+                            'color': 'black',
                             'font-weight': 'bold'
                         });
                 } else {
@@ -1155,7 +1157,7 @@
                         .text('Sin datos de duración')
                         .css({
                             'font-size': '10px',
-                            'color': 'red',
+                            'color': 'black',
                             'font-weight': 'bold'
                         });
                 }
@@ -1173,7 +1175,7 @@
                                     .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
-                                        'color': 'blue',
+                                        'color': 'black',
                                         'font-weight': 'bold'
                                     });
                                 break;
@@ -1182,7 +1184,7 @@
                                     .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
-                                        'color': 'green',
+                                        'color': 'black',
                                         'font-weight': 'bold'
                                     });
                                 break;
@@ -1191,7 +1193,7 @@
                                     .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
-                                        'color': 'red',
+                                        'color': 'black',
                                         'font-weight': 'bold'
                                     });
                                 break;
@@ -1200,7 +1202,7 @@
                                     .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
-                                        'color': 'purple',
+                                        'color': 'black',
                                         'font-weight': 'bold'
                                     });
                                 break;
@@ -1209,7 +1211,7 @@
                                     .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
-                                        'color': 'orange',
+                                        'color': 'black',
                                         'font-weight': 'bold'
                                     });
                                 break;
@@ -1218,7 +1220,7 @@
                                     .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
-                                        'color': 'pink',
+                                        'color': 'black',
                                         'font-weight': 'bold'
                                     });
                                 break;
@@ -1227,7 +1229,7 @@
                                     .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
-                                        'color': 'brown',
+                                        'color': 'black',
                                         'font-weight': 'bold'
                                     });
                                 break;
@@ -1296,13 +1298,13 @@
         const ctx = canvas.getContext('2d');
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
-        const radius = 85;
+        const radius = 100;
         const startAngle = Math.PI;
         const endAngle = 2 * Math.PI;
 
         // Variables para ajustar manualmente las posiciones de los números
         const offsetX = 0; // Desplazamiento horizontal de los números (0 = centrado)
-        const offsetY = 30; // Desplazamiento vertical de los números (ajústalo según necesites)
+        const offsetY = 10; // Desplazamiento vertical de los números (ajústalo según necesites)
 
         // Limpiar el lienzo
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1310,7 +1312,7 @@
         // Dibujar el arco de fondo con borde más delgado
         ctx.beginPath();
         ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-        ctx.lineWidth = 50;  // Ancho de línea ajustado para mejor balance
+        ctx.lineWidth = 20;  // Ancho de línea ajustado para mejor balance
         ctx.strokeStyle = '#e0e0e0';  // Gris suave para el fondo
         ctx.lineCap = 'butt';
         ctx.stroke();
@@ -1320,7 +1322,7 @@
         if (value <= 20) strokeColor = '#e74c3c'; // Rojo
         else if (value <= 50) strokeColor = '#f39c12'; // Naranja
         else if (value <= 90) strokeColor = '#f1c40f'; // Amarillo
-        else strokeColor = '#15e631'; // Verde
+        else strokeColor = '#1a662c'; // Verde
 
         // Ajuste para hacer el principio y final del arco un poco cuadrado
         const valueAngle = startAngle + (value / 100) * (endAngle - startAngle);
@@ -1407,7 +1409,7 @@
                     } else if (displayProgress > 50 && displayProgress <= 90) {
                         progressColor = 'yellow'; // Amarillo
                     } else if (displayProgress > 90 && displayProgress <= 100) {
-                        progressColor = '#05610a'; // Verde
+                        progressColor = '#1a662c'; // Verde
 
                     }
 
