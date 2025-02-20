@@ -524,8 +524,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch(error => console.error('Error al cargar los datos:', error));    
     });
-
-fetch("{{ route('orden.cerredas') }}")
+    fetch("{{ route('orden.cerredas') }}")
     .then(response => response.json())
     .then(data => {
         const id = "plemasordenes"; 
@@ -540,13 +539,13 @@ fetch("{{ route('orden.cerredas') }}")
         let myChart = echarts.init(canvas);
 
         // Obtener datos del backend
-        let completadas = data.ordenesCompletadas ?? 0;
-        let abiertas = data.ordenesAbiertas ?? 0;
+        let completadas = data.ordenesCompletadas.length > 0 ? data.ordenesCompletadas.length : 0;
+        let abiertas = data.ordenesAbiertas.length > 0 ? data.ordenesAbiertas.length : 0;
         let totalOrdenes = data.totalOrdenes > 0 ? data.totalOrdenes : (completadas + abiertas);
 
         // Calcular porcentajes
         let porcentajeCompletadas = totalOrdenes > 0 ? ((completadas / totalOrdenes) * 100).toFixed(2) : 0;
-        let porcentajeAbiertas = totalOrdenes > 0 ? ((abiertas / totalOrdenes) * 100).toFixed(2) : 0;
+        let porcentajeAbiertas = totalOrdenes > 0 ? (((totalOrdenes - completadas) / totalOrdenes) * 100).toFixed(2) : 0;
 
         // Mostrar los datos en el indicador
         let infoDiv = container.querySelector(".info-grafico");
@@ -558,9 +557,11 @@ fetch("{{ route('orden.cerredas') }}")
 
         infoDiv.innerHTML = `
             <strong>Órdenes</strong><br>
-            Completadas: <span style="color: #28a745;">${completadas}/${totalOrdenes} (${porcentajeCompletadas}%)</span><br>
-            Abiertas: <span style="color: #dc3545;">${abiertas}/${totalOrdenes} (${porcentajeAbiertas}%)</span><br>
+            Cerradas: <span style="color: #28a745;">${completadas}/${totalOrdenes} (${porcentajeCompletadas}%)</span><br>
+            Abiertas: <span style="color: #ffc107;">${totalOrdenes - completadas}/${totalOrdenes} (${porcentajeAbiertas}%)</span><br>
+            Cantidad Total <span style="color: #dc3545;">${totalOrdenes} </span><br>
         `;
+
 
         // Definir opciones del gráfico
         let option = {
@@ -577,8 +578,9 @@ fetch("{{ route('orden.cerredas') }}")
                     type: 'pie',
                     radius: '80%',
                     data: [
-                        { value: completadas, name: 'Completadas', itemStyle: { color: '#28a745' } },
-                        { value: abiertas, name: 'Abiertas', itemStyle: { color: '#dc3545' } }
+                        { value: completadas, name: 'Cerradas', itemStyle: { color: '#28a745' } }, // Verde para Completadas
+                        { value: abiertas, name: 'Abiertas', itemStyle: { color: '#ffc107' } },  // Amarillo para Abiertas
+                        { value: totalOrdenes, name: 'Cantidad Total', itemStyle: { color: '#dc3545' } } // Rojo para CantidadTotal
                     ],
                     emphasis: {
                         itemStyle: {
@@ -594,7 +596,7 @@ fetch("{{ route('orden.cerredas') }}")
         // Renderizar gráfico
         myChart.setOption(option);
     })
-.catch(error => console.error('Error al cargar los datos:', error));
+    .catch(error => console.error('Error al cargar los datos:', error));
 
 function cargarOrdenesCerradas() {
     $.ajax({

@@ -116,7 +116,8 @@ class HomeControler extends Controller
         ]);*/
         
     }
-   
+
+
     
         #escapeWhenCastingToString: false
 
@@ -126,24 +127,24 @@ class HomeControler extends Controller
         
     
         $areas = DB::table('partidasof_areas')
-            ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-            ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
-            ->select(
-                'ordenfabricacion.OrdenFabricacion',
-                'ordenfabricacion.CantidadTotal',
-                'partidasof_areas.Areas_id',
-                'partidasof_areas.id',
-                'ordenfabricacion.FechaEntrega',
-                DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalcantidad_partida'),
-                DB::raw('ROUND(LEAST((SUM(partidasof_areas.cantidad) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso'),  // Limitar Progreso a 100
-                DB::raw('ROUND(SUM(partidasof_areas.cantidad) - ordenfabricacion.CantidadTotal, 0) as retrabajo')  // Calcular retrabajo basado en la diferencia
-            )
-            ->where('ordenfabricacion.FechaEntrega', '>=', $fechaLimite) 
-            ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9]) 
-            ->groupBy('partidasof_areas.Areas_id', 'partidasof_areas.id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
-            ->get();
+        ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
+        ->where('ordenfabricacion.FechaEntrega', '>=', $fechaLimite) 
+        ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9])
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            'ordenfabricacion.CantidadTotal',
+            'partidasof_areas.Areas_id',
+            DB::raw('GROUP_CONCAT(partidasof_areas.id) as id'),  // Concatenar los IDs
+            'ordenfabricacion.FechaEntrega',
+            DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),  // Sumar las cantidades
+            DB::raw('ROUND(LEAST((SUM(partidasof_areas.Cantidad) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso')  // Calcular progreso
+        )
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
+        ->get();
 
-           // dd($areas);
+
+           
 
             $cortes = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
@@ -211,25 +212,11 @@ class HomeControler extends Controller
     
         $datos['plemasCorte']['completado'] = $completadosCorte;
         $datos['plemasCorte']['pendiente'] = $pendientesCorte;
-    dd($datos);
+    //dd($datos);
         return response()->json($datos);
         
     }
-    /*
-    Illuminate\Support\Collection {#1320 ▼ // app\Http\Controllers\HomeControler.php:234
-        #items: array:2 [▼
-          0 => {#1252 ▼
-           +"CantidadTotal": 3
-            +"Cantidad": 3
-            +"PartidasOF_id": 1
-            +"id": 10, 9
-          }
-          1 => {#1470 ▼
-            +"CantidadTotal": 3
-            +"Cantidad": 1
-            +"PartidasOF_id": 1
-          }
-        ]*/
+   
         public function cerradas()
         {
             $fechaLimite = now()->subMonth(); // Fecha actual menos un mes
@@ -253,17 +240,10 @@ class HomeControler extends Controller
             // Ordenes Abiertas
             $ordenesAbiertas = DB::table('ordenfabricacion')
                 ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-                ->where('partidasof_areas.Areas_id', 9) // Solo abiertas
-                ->where('ordenfabricacion.FechaEntrega', '>=', $fechaLimite)
                 ->select(
-                    'ordenfabricacion.CantidadTotal',
-                    DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),
-                    'partidasof_areas.PartidasOF_id',
-                    DB::raw('GROUP_CONCAT(partidasof_areas.id) as ids')
+                    'partidasof.OrdenFabricacion_id', 'partidasof.cantidad_partida'
                 )
-                ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.CantidadTotal')
-                ->havingRaw('SUM(partidasof_areas.Cantidad) < ordenfabricacion.CantidadTotal')
+              
                 ->get();
         
             // Total de Ordenes
