@@ -260,9 +260,9 @@
             display: grid;
             grid-template-columns: repeat(4, 0fr);
             grid-template-rows: repeat(2, auto);
-            gap: 1px;
+            gap: 30px;
             padding: 1px;
-            max-width: 2000px;
+            max-width: 4500px;
             margin: auto;
         }
         .grid-item {
@@ -462,8 +462,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 container.style.gap = "1px"; 
 
                 let ctx = canvas.getContext("2d");
-                canvas.style.width = "110px";
-                canvas.style.height = "110px";
+                canvas.style.width = "95px";
+                canvas.style.height = "100px";
 
                 let completado = data[id] ? data[id].completado : 0;
                 let pendiente = data[id] ? data[id].pendiente : 0;
@@ -823,7 +823,7 @@ function generarGrafico(url, containerId, itemName) {
                     }
                 }
             }
-};
+        };
 
             const chart = echarts.init(document.getElementById(containerId));
 
