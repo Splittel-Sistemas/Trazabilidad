@@ -143,7 +143,7 @@ class HomeControler extends Controller
             ->groupBy('partidasof_areas.Areas_id', 'partidasof_areas.id', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
             ->get();
 
-            //dd($areas);
+            dd($areas);
 
             $cortes = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
@@ -211,7 +211,7 @@ class HomeControler extends Controller
     
         $datos['plemasCorte']['completado'] = $completadosCorte;
         $datos['plemasCorte']['pendiente'] = $pendientesCorte;
-    
+    dd($datos);
         return response()->json($datos);
         
     }
@@ -234,9 +234,12 @@ class HomeControler extends Controller
             ->where('ordenfabricacion.FechaEntrega', '>=', $fechaLimite) // Filtrar por la fecha
             ->distinct('ordenfabricacion.id')
             ->count();
+           // dd($totalOrdenes);
     
         // Contar órdenes abiertas (sin contar las completadas)
         $ordenesAbiertas = $totalOrdenes - $ordenesCompletadas;
+
+      
     
         return response()->json([
             'ordenesCompletadas' => $ordenesCompletadas,
