@@ -137,16 +137,16 @@
         }
 
         /* Posiciones y tamaños de las burbujas */
-        .bg-bubbles li:nth-child(1) { left: 10%; }
-        .bg-bubbles li:nth-child(2) { left: 20%; width: 80px; height: 80px; animation-delay: 2s; animation-duration: 17s; }
-        .bg-bubbles li:nth-child(3) { left: 25%; animation-delay: 4s; }
-        .bg-bubbles li:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-duration: 22s; background-color: rgba(255, 255, 255, 0.25); }
-        .bg-bubbles li:nth-child(5) { left: 70%; }
-        .bg-bubbles li:nth-child(6) { left: 80%; width: 120px; height: 120px; animation-delay: 3s; background-color: rgba(255, 255, 255, 0.2); }
-        .bg-bubbles li:nth-child(7) { left: 32%; width: 160px; height: 160px; animation-delay: 7s; }
-        .bg-bubbles li:nth-child(8) { left: 55%; width: 20px; height: 20px; animation-delay: 15s; animation-duration: 40s; }
-        .bg-bubbles li:nth-child(9) { left: 25%; width: 10px; height: 10px; animation-delay: 2s; animation-duration: 40s; background-color: rgba(255, 255, 255, 0.3); }
-        .bg-bubbles li:nth-child(10) { left: 90%; width: 160px; height: 160px; animation-delay: 11s; }
+        .bg-bubbles li:nth-child(1) { top: 10%; left: 10%; }
+        .bg-bubbles li:nth-child(2) { top: 20%; left: 40%; width: 80px; height: 80px; }
+        .bg-bubbles li:nth-child(3) { top: 30%; left: 70%; }
+        .bg-bubbles li:nth-child(4) { top: 50%; left: 20%; width: 60px; height: 60px; }
+        .bg-bubbles li:nth-child(5) { top: 60%; left: 80%; }
+        .bg-bubbles li:nth-child(6) { top: 70%; left: 50%; width: 120px; height: 120px; }
+        .bg-bubbles li:nth-child(7) { top: 80%; left: 30%; width: 160px; height: 160px; }
+        .bg-bubbles li:nth-child(8) { top: 90%; left: 60%; width: 20px; height: 20px; }
+        .bg-bubbles li:nth-child(9) { top: 15%; left: 90%; width: 10px; height: 10px; }
+        .bg-bubbles li:nth-child(10) { top: 40%; left: 10%; width: 160px; height: 160px; }
 
 
         .active {

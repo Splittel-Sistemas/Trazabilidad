@@ -365,191 +365,192 @@ class HomeControler extends Controller
     }
   
     public function tablasemana()
-    {
-        $SumaCantidadTotalGeneral = DB::table('ordenfabricacion')->sum('CantidadTotal');
-        
-        // Obtener la fecha de inicio y fin de la semana actual
-        $inicioSemana = Carbon::now()->startOfWeek(); // Lunes de la semana actual
-        $finSemana = Carbon::now()->endOfWeek(); // Domingo de la semana actual
-        
-        // Obtener datos de áreas (para todos los procesos excepto Cortes)
-        $DiazAreas = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-            ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9]) // Excluimos el área de Cortes (ID 2)
-            ->whereBetween('partidasof_areas.FechaComienzo', [$inicioSemana, $finSemana]) // Filtramos por semana
-            ->select(
-                'ordenfabricacion.OrdenFabricacion',
-                'partidasof_areas.Areas_id',
-                'ordenfabricacion.CantidadTotal', 'partidasof_areas.FechaComienzo',
-                DB::raw('SUM(partidasof_areas.Cantidad) as SumaTotalcantidad_partida')
-            )
-            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.Areas_id', 'partidasof_areas.FechaComienzo')
-            ->get();
-        
-        // Obtener los datos de Cortes (Área ID 2)
-        $DiasCortes = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->whereBetween('partidasof.FechaComienzo', [$inicioSemana, $finSemana]) // Filtramos por semana
-            ->select(
-                'ordenfabricacion.OrdenFabricacion',
-                'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo',
-                DB::raw('SUM(partidasof.Cantidad_partida) as SumaTotalcantidad_partida'),
-                DB::raw($SumaCantidadTotalGeneral . ' as SumaCantidadTotalGeneral')
-            )
-            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo')
-            ->get();
-        
-        // Mapeo de las áreas a los nombres de los procesos
-        $areasMap = [
-            2 => 'Cortes',
-            3 => 'Suministro',
-            4 => 'Preparado',
-            5 => 'Ensamble',
-            6 => 'Pulido',
-            7 => 'Medicion',
-            8 => 'Visualizacion',
-            9 => 'Empacado'
-        ];
-        
-        // Inicializamos los datos para el gráfico con días de la semana en español
-        $labels = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-        $series = [
-            ['name' => 'Cortes', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => [0,0,0,0,0,0,0]],
-            ['name' => 'Suministro', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => [0,0,0,0,0,0,0]],
-            ['name' => 'Preparado', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => [0,0,0,0,0,0,0]],
-            ['name' => 'Ensamble', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => [0,0,0,0,0,0,0]],
-            ['name' => 'Pulido', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => [0,0,0,0,0,0,0]],
-            ['name' => 'Medicion', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => [0,0,0,0,0,0,0]],
-            ['name' => 'Visualizacion', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => [0,0,0,0,0,0,0]],
-            ['name' => 'Empacado', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => [0,0,0,0,0,0,0]]
-        ];
-        
-        // Mapeo de días en inglés a español
-        $dayMap = [
-            'Monday' => 'Lunes',
-            'Tuesday' => 'Martes',
-            'Wednesday' => 'Miércoles',
-            'Thursday' => 'Jueves',
-            'Friday' => 'Viernes',
-            'Saturday' => 'Sábado',
-            'Sunday' => 'Domingo'
-        ];
-        
-        // Para los cortes (Área ID 2)
-        foreach ($DiasCortes as $corte) {
-            $dayOfWeek = Carbon::parse($corte->FechaComienzo)->dayOfWeek;
-            $dayName = Carbon::parse($corte->FechaComienzo)->format('l');
-            $dayNameInSpanish = $dayMap[$dayName] ?? null;
-            
-            if ($dayNameInSpanish) {
-                $index = array_search($dayNameInSpanish, $labels);
-    
-                // Solo asignar datos para el área 'Cortes'
-                if ($index !== false) {
-                    $serieIndex = array_search('Cortes', array_column($series, 'name'));
-                    $series[$serieIndex]['data'][$index] += $corte->SumaTotalcantidad_partida;
-                }
+{
+    $SumaCantidadTotalGeneral = DB::table('ordenfabricacion')->sum('CantidadTotal');
+
+    // Obtener la fecha de inicio y fin de la semana actual
+    $inicioSemana = Carbon::now()->startOfWeek(); // Lunes de la semana actual
+    $finSemana = Carbon::now()->endOfWeek(); // Domingo de la semana actual
+
+    // Formatear el rango de la semana en español
+    $rangoSemana = $inicioSemana->format('d') . ' al ' . $finSemana->format('d') . ' de ' . $finSemana->translatedFormat('F');
+
+    // Obtener datos de áreas (para todos los procesos excepto Cortes)
+    $DiazAreas = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9]) // Excluimos el área de Cortes (ID 2)
+        ->whereBetween('partidasof_areas.FechaComienzo', [$inicioSemana, $finSemana])
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            'partidasof_areas.Areas_id',
+            'ordenfabricacion.CantidadTotal',
+            'partidasof_areas.FechaComienzo',
+            DB::raw('SUM(partidasof_areas.Cantidad) as SumaTotalcantidad_partida')
+        )
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.Areas_id', 'partidasof_areas.FechaComienzo')
+        ->get();
+
+    // Obtener los datos de Cortes (Área ID 2)
+    $DiasCortes = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->whereBetween('partidasof.FechaComienzo', [$inicioSemana, $finSemana])
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            'ordenfabricacion.CantidadTotal',
+            'partidasof.FechaComienzo',
+            DB::raw('SUM(partidasof.Cantidad_partida) as SumaTotalcantidad_partida'),
+            DB::raw($SumaCantidadTotalGeneral . ' as SumaCantidadTotalGeneral')
+        )
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo')
+        ->get();
+
+    // Mapeo de las áreas a los nombres de los procesos
+    $areasMap = [
+        2 => 'Cortes',
+        3 => 'Suministro',
+        4 => 'Preparado',
+        5 => 'Ensamble',
+        6 => 'Pulido',
+        7 => 'Medicion',
+        8 => 'Visualizacion',
+        9 => 'Empacado'
+    ];
+
+    // Inicializamos los datos para el gráfico con días de la semana en español
+    $labels = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    $series = array_map(function ($name) {
+        return ['name' => $name, 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => [0, 0, 0, 0, 0, 0, 0]];
+    }, array_values($areasMap));
+
+    // Mapeo de días en inglés a español
+    $dayMap = [
+        'Monday' => 'Lunes',
+        'Tuesday' => 'Martes',
+        'Wednesday' => 'Miércoles',
+        'Thursday' => 'Jueves',
+        'Friday' => 'Viernes',
+        'Saturday' => 'Sábado',
+        'Sunday' => 'Domingo'
+    ];
+
+    // Procesar datos de Cortes
+    foreach ($DiasCortes as $corte) {
+        $dayNameInSpanish = $dayMap[Carbon::parse($corte->FechaComienzo)->format('l')] ?? null;
+        if ($dayNameInSpanish) {
+            $index = array_search($dayNameInSpanish, $labels);
+            if ($index !== false) {
+                $serieIndex = array_search('Cortes', array_column($series, 'name'));
+                $series[$serieIndex]['data'][$index] += $corte->SumaTotalcantidad_partida;
             }
         }
-        
-        // Para otras áreas (3-9)
-        foreach ($DiazAreas as $area) {
-            $dayOfWeek = Carbon::parse($area->FechaComienzo)->dayOfWeek;
-            $dayName = Carbon::parse($area->FechaComienzo)->format('l');
-            $dayNameInSpanish = $dayMap[$dayName] ?? null;
-            
-            if ($dayNameInSpanish) {
-                $index = array_search($dayNameInSpanish, $labels);
-                $areaName = $areasMap[$area->Areas_id] ?? null;
-                
-                if ($areaName && $index !== false) {
-                    // Encontramos el índice de la serie correspondiente y sumamos la cantidad
-                    foreach ($series as &$serie) {
-                        if ($serie['name'] == $areaName) {
-                            $serie['data'][$index] += $area->SumaTotalcantidad_partida;
-                        }
+    }
+
+    // Procesar datos de otras áreas
+    foreach ($DiazAreas as $area) {
+        $dayNameInSpanish = $dayMap[Carbon::parse($area->FechaComienzo)->format('l')] ?? null;
+        if ($dayNameInSpanish) {
+            $index = array_search($dayNameInSpanish, $labels);
+            $areaName = $areasMap[$area->Areas_id] ?? null;
+            if ($areaName && $index !== false) {
+                foreach ($series as &$serie) {
+                    if ($serie['name'] == $areaName) {
+                        $serie['data'][$index] += $area->SumaTotalcantidad_partida;
                     }
                 }
             }
         }
-        
-        // Devolver los datos para el gráfico
-        return response()->json([
-            'labels' => $labels,  // Días de la semana
-            'series' => $series   // Datos de las series agrupados por día
-        ]);
     }
+
+    // Devolver los datos incluyendo el rango de la semana
+    return response()->json([
+        'labels' => $labels,
+        'series' => $series,
+        'rangoSemana' => 'Semana del ' . $rangoSemana
+    ]);
+}
+
     
 
-    public function tablasMes()
-    {
-        $mesActual = Carbon::now()->month;
-        $anioActual = Carbon::now()->year;
-        $diasEnMes = Carbon::now()->daysInMonth;
-    
-        // Obtener datos de todas las áreas dentro del mes actual
-        $datos = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-            ->select(
-                DB::raw('COALESCE(partidasof_areas.Areas_id, 2) as Areas_id'),
-                DB::raw('COALESCE(partidasof_areas.FechaComienzo, partidasof.FechaComienzo) as FechaComienzo'),
-                DB::raw('SUM(COALESCE(partidasof_areas.Cantidad, partidasof.Cantidad_partida)) as SumaTotalcantidad_partida')
-            )
-            ->whereMonth(DB::raw('COALESCE(partidasof_areas.FechaComienzo, partidasof.FechaComienzo)'), $mesActual)
-            ->whereYear(DB::raw('COALESCE(partidasof_areas.FechaComienzo, partidasof.FechaComienzo)'), $anioActual)
-            ->groupBy('Areas_id', 'FechaComienzo')
-            ->get();
-    
-        // Mapeo de áreas
-        $areasMap = [
-            2 => 'Cortes',
-            3 => 'Suministro',
-            4 => 'Preparado',
-            5 => 'Ensamble',
-            6 => 'Pulido',
-            7 => 'Medicion',
-            8 => 'Visualizacion',
-            9 => 'Empacado'
-        ];
-    
-        // Etiquetas de días del mes
-        $labels = range(1, $diasEnMes);
-    
-        // Inicializar series de datos
-        $seriesdias = [];
-        foreach ($areasMap as $area) {
-            $seriesdias[$area] = array_fill(0, $diasEnMes, 0); // Inicializar cada día con 0
-        }
-    
-        // Procesar datos y asignarlos a los días correspondientes
-        foreach ($datos as $dato) {
-            $dia = Carbon::parse($dato->FechaComienzo)->day - 1; // Convertir a índice de día
-            $areaName = $areasMap[$dato->Areas_id] ?? null;
-    
-            if ($areaName && isset($seriesdias[$areaName])) {
-                $seriesdias[$areaName][$dia] += $dato->SumaTotalcantidad_partida; // Sumar cantidad por día
+public function tablasMes()
+{
+    $carbon = Carbon::now()->locale('es');
+    $mesActual = ucfirst($carbon->monthName); // Nombre del mes con la primera letra en mayúscula
+    $anioActual = $carbon->year; // Año actual
+    $diasEnMes = $carbon->daysInMonth;
+
+    // Definir el mapeo de áreas
+    $areasMap = [
+        2 => 'Cortes', 3 => 'Suministro', 4 => 'Preparado', 5 => 'Ensamble',
+        6 => 'Pulido', 7 => 'Medicion', 8 => 'Visualizacion', 9 => 'Empacado'
+    ];
+
+    // Obtener datos de áreas excepto Cortes
+    $MesAreas = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->whereIn('partidasof_areas.Areas_id', array_keys($areasMap))
+        ->whereMonth('partidasof_areas.FechaComienzo', $carbon->month)
+        ->whereYear('partidasof_areas.FechaComienzo', $anioActual)
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.Areas_id', 'partidasof_areas.FechaComienzo')
+        ->select(
+            'ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id',
+            'ordenfabricacion.CantidadTotal', 'partidasof_areas.FechaComienzo',
+            DB::raw('SUM(partidasof_areas.Cantidad) as SumaTotalcantidad_partida')
+        )
+        ->get();
+
+    // Obtener datos para el área de Cortes (Área 2)
+    $MesCortes = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->whereMonth('partidasof.FechaComienzo', $carbon->month)
+        ->whereYear('partidasof.FechaComienzo', $anioActual)
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo')
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            DB::raw('2 as Areas_id'), // ID fijo para Cortes
+            'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo',
+            DB::raw('SUM(partidasof.Cantidad_partida) as SumaTotalcantidad_partida')
+        )
+        ->get();
+
+    // Unir los datos de ambas consultas
+    $datos = $MesAreas->merge($MesCortes);
+
+    // Inicializar las series manualmente
+    $series = [
+        ['name' => 'Cortes', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+        ['name' => 'Suministro', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+        ['name' => 'Preparado', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+        ['name' => 'Ensamble', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+        ['name' => 'Pulido', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+        ['name' => 'Medicion', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+        ['name' => 'Visualizacion', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+        ['name' => 'Empacado', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)]
+    ];
+
+    // Procesar los datos
+    foreach ($datos as $dato) {
+        if (!empty($dato->FechaComienzo)) {
+            try {
+                $dia = Carbon::parse($dato->FechaComienzo)->day - 1; // Índice del día
+                foreach ($series as &$serie) {
+                    if ($serie['name'] === ($areasMap[$dato->Areas_id] ?? '')) {
+                        $serie['data'][$dia] += $dato->SumaTotalcantidad_partida;
+                    }
+                }
+            } catch (\Exception $e) {
+                continue; // Saltar valores inválidos
             }
         }
-    
-        // Convertir series a formato requerido
-        $series = [];
-        foreach ($seriesdias as $nombreArea => $data) {
-            $series[] = [
-                'name' => $nombreArea,
-                'data' => array_values($data) // Asegurar estructura de datos
-            ];
-        }
-    
-        // Devolver JSON compatible con `generarGrafico()`
-        return response()->json([
-            'labels' => $labels, // Días del mes
-            'series' => $series  // Datos agrupados por área y día
-        ]);
     }
-    
-    
+
+    return response()->json([
+        'labels' => range(1, $diasEnMes), // Generar los días del mes como etiquetas
+        'series' => $series, // Devolver series indexadas
+        'mes' => "Mes $mesActual $anioActual" // Formato corregido
+    ]);
+}
 
     public function tablasHoras()
     {
@@ -562,7 +563,7 @@ class HomeControler extends Controller
             ->sum('CantidadTotal');
     
         // Obtener datos de áreas (para todos los procesos excepto Cortes) de las últimas 24 horas
-        $DiazAreas = DB::table('ordenfabricacion')
+        $DiasAreas = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
             ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9]) // Excluimos el área de Cortes (ID 2)
@@ -631,7 +632,7 @@ class HomeControler extends Controller
         }
     
         // Para otras áreas (3-9)
-        foreach ($DiazAreas as $area) {
+        foreach ($DiasAreas as $area) {
             $hour = Carbon::parse($area->FechaComienzo)->hour; 
             $areaName = $areasMap[$area->Areas_id] ?? null;
     
@@ -644,12 +645,16 @@ class HomeControler extends Controller
                 }
             }
         }
+       //dd($series);
+        //dd($labels);
     
         // Devuelve los datos para el gráfico
         return response()->json([
             'labels' => $labels,  // Las horas del día (0:00, 1:00, etc.)
-            'series' => $series   // Los datos de las series agrupados por hora
+            'series' => $series,  // Los datos de las series agrupados por hora
+            'fecha' => Carbon::now()->translatedFormat('d \d\e F \d\e\l Y') // Formato en español
         ]);
+        
     }
     
     

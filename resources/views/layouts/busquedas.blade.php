@@ -45,7 +45,7 @@
 
             #progress-wrapper {
                 padding: 10px;
-                background-color: #f4f4f4;
+               
                 border-radius: 8px;
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             }
@@ -53,7 +53,7 @@
             .task-progress-bar {
                 margin-bottom: 15px;
                 padding: 5px;
-                background-color: #fff;
+               
                 border-radius: 5px;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
@@ -68,9 +68,9 @@
             .task-progress {
                 height: 20px;
                 border-radius: 5px;
-                background-color: #dfe4ea;
+               
                 text-align: center;
-                color: white;
+                color: rgba(255, 255, 255, 0.493);
                 line-height: 20px;
                 font-weight: bold;
                 transition: width 2s ease-in-out;
@@ -89,12 +89,12 @@
 
             .btn-secondary {
                 background-color: #6c757d;
-                color: white;
+                color: rgba(255, 255, 255, 0.596);
             }
 
             .btn-primary {
                 background-color: #007bff;
-                color: white;
+                color: rgba(255, 255, 255, 0.459);
         }
         /* Estilos de los botones */
         .btn-primary, .btn-secondary {
@@ -157,13 +157,6 @@
                 color: white; 
             }
 
-            
-            .selected-stage .stage-circle,
-            .selected-stage span {
-                background-color: #299ae6; 
-                color: white;
-        }
-
         /* Estilos generales */
         .grid-container {
                     display: grid;
@@ -179,7 +172,7 @@
                     text-align: center;
                     padding: 10px;
                     border-radius: 8px; 
-                    background-color: #f9f9f9; 
+                    background-color: #f9f9f9a4; 
                     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
                     transition: transform 0.3s ease, box-shadow 0.3s ease;
                     margin-bottom: 0; 
@@ -209,7 +202,7 @@
                     margin: 0 auto; 
                     padding: 0;
                     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-                    background-color: #fff; 
+                    
                     display: block; 
         }
 
@@ -235,13 +228,13 @@
             }
 
             .estacion-card {
-                border: 1px solid #ddd;
+                border: 1px solid #dddddda9;
                 border-radius: 10px;
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                 transition: all 0.3s ease;
                 padding: 15px;
                 text-align: center;
-                background: white;
+               
             }
 
             .estacion-card:hover {
@@ -271,12 +264,12 @@
 
             .badge-success {
                 background-color: #1a662c;
-                color: white;
+               
             }
 
             .badge-warning {
                 background-color: #881410;
-                color: white;
+               
             }
 
 
@@ -292,7 +285,7 @@
                 gap: 8px; /* Espacio entre el icono y el texto */
                 border-radius: 8px; /* Bordes redondeados */
                 background-color: #17a2b8; /* Color info mejorado */
-                color: white;
+              
                 border: none;
                 transition: all 0.3s ease;
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -1147,7 +1140,7 @@
                         .text('Duración: ' + response.tiemposcortes[0].Duracion)
                         .css({
                             'font-size': '10px',
-                            'color': 'blue',
+                            'color': 'black',
                             'font-weight': 'bold'
                         });
                 } else {
@@ -1155,7 +1148,7 @@
                         .text('Sin datos de duración')
                         .css({
                             'font-size': '10px',
-                            'color': 'red',
+                            'color': 'black',
                             'font-weight': 'bold'
                         });
                 }
@@ -1173,7 +1166,7 @@
                                     .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
-                                        'color': 'blue',
+                                        'color': 'black',
                                         'font-weight': 'bold'
                                     });
                                 break;
@@ -1182,7 +1175,7 @@
                                     .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
-                                        'color': 'green',
+                                        'color': 'black',
                                         'font-weight': 'bold'
                                     });
                                 break;
@@ -1191,7 +1184,7 @@
                                     .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
-                                        'color': 'red',
+                                        'color': 'black',
                                         'font-weight': 'bold'
                                     });
                                 break;
@@ -1200,7 +1193,7 @@
                                     .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
-                                        'color': 'purple',
+                                        'color': 'black',
                                         'font-weight': 'bold'
                                     });
                                 break;
@@ -1209,7 +1202,7 @@
                                     .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
-                                        'color': 'orange',
+                                        'color': 'black',
                                         'font-weight': 'bold'
                                     });
                                 break;
@@ -1218,7 +1211,7 @@
                                     .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
-                                        'color': 'pink',
+                                        'color': 'black',
                                         'font-weight': 'bold'
                                     });
                                 break;
@@ -1227,7 +1220,7 @@
                                     .text('Duración: ' + item.DuracionTotal)
                                     .css({
                                         'font-size': '10px',
-                                        'color': 'brown',
+                                        'color': 'black',
                                         'font-weight': 'bold'
                                     });
                                 break;
@@ -1320,7 +1313,7 @@
         if (value <= 20) strokeColor = '#e74c3c'; // Rojo
         else if (value <= 50) strokeColor = '#f39c12'; // Naranja
         else if (value <= 90) strokeColor = '#f1c40f'; // Amarillo
-        else strokeColor = '#15e631'; // Verde
+        else strokeColor = '#1a662c'; // Verde
 
         // Ajuste para hacer el principio y final del arco un poco cuadrado
         const valueAngle = startAngle + (value / 100) * (endAngle - startAngle);
@@ -1407,7 +1400,7 @@
                     } else if (displayProgress > 50 && displayProgress <= 90) {
                         progressColor = 'yellow'; // Amarillo
                     } else if (displayProgress > 90 && displayProgress <= 100) {
-                        progressColor = '#05610a'; // Verde
+                        progressColor = '#1a662c'; // Verde
 
                     }
 

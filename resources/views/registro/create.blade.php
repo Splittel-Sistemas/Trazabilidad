@@ -31,7 +31,7 @@
                 </ul>
             </div>
         @endif
-        <div class="card">
+        <div class="card" style="width: 210px; height: 50px;">
             <div class="form-check">
                 <input class="form-check-input" id="administrador" type="radio" name="usuario_tipo" checked onchange="toggleForm()">
                 <label class="form-check-label" for="administrador">Crear Usuario Administrativo</label>
