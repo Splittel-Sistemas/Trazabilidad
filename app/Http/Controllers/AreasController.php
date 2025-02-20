@@ -38,6 +38,7 @@ class AreasController extends Controller
             $ordenFabri=$orden->ordenFabricacion;
             $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
             $orden['OrdenFabricacion']=$ordenFabri->OrdenFabricacion;
+            $orden['TotalPartida']=$ordenFabri->PartidasOF->SUM('cantidad_partida');
             $Normal=0;
             $Retrabajo=0;
             $ordenFabri->PartidasOF;
@@ -173,6 +174,7 @@ class AreasController extends Controller
             $tabla="";
             foreach($PartidasOF as $orden) {
                 $ordenFabri=$orden->ordenFabricacion;
+                $TotalPartida=$ordenFabri->PartidasOF->SUM('cantidad_partida');
                 $tabla.='<tr>
                         <td>'. $ordenFabri->OrdenFabricacion .'</td>
                         <td>'. $ordenFabri->Articulo .'</td>
@@ -186,7 +188,7 @@ class AreasController extends Controller
                         
                 $tabla.='<td>'. $Normal.'</td>
                         <td>'. $Retrabajo.'</td>
-                        <td>'. $orden->cantidad_partida .'</td>
+                        <td>'. $TotalPartida .'</td>
                         <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
                         <td><button class="btn btn-sm btn-outline-primary" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Detalles</button></td>
                     </tr>';
@@ -224,7 +226,7 @@ class AreasController extends Controller
                         <td>'. $ordenFabri->Descripcion.'</td>
                         <td>'. $orden->cantidad_partida .'</td>
                         <td>'. $orden->FechaFinalizacion.'</td>
-                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Cerrada</span></div></td>
                         <td><button class="btn btn-sm btn-outline-primary" onclick="Detalles(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Detalles</button></td>
                     </tr>';
             }
