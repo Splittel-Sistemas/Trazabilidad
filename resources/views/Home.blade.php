@@ -482,8 +482,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 infoDiv.innerHTML = `
                     <strong>${id.replace("plemas", "")}</strong><br>
-                    Completado: <span style="color: #28a745;">${completado}/${totalOrdenes} (${porcentajeCompletado}%)</span><br>
-                    Pendiente: <span style="color: #FFC107;">${totalOrdenes - completado}/${totalOrdenes} (${porcentajePendiente}%)</span>
+                    Cerradas: <span style="color: #28a745;">${completado}/${totalOrdenes} (${porcentajeCompletado}%)</span><br>
+                    Abiertas: <span style="color: #FFC107;">${totalOrdenes - completado}/${totalOrdenes} (${porcentajePendiente}%)</span>
                 `;
 
                 infoDiv.style.fontSize = "14px";
@@ -491,7 +491,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 new Chart(ctx, {
                     type: "doughnut",
                     data: {
-                        labels: ["Completado", "Pendiente"],
+                        labels: ["Cerradas", "Abiertas"],
                         datasets: [{
                             data: [completado, totalOrdenes],
                             backgroundColor: ["#28a745", "#FFC107"],
@@ -559,7 +559,8 @@ document.addEventListener("DOMContentLoaded", function () {
             <strong>Órdenes</strong><br>
             Cerradas: <span style="color: #28a745;">${completadas}/${totalOrdenes} (${porcentajeCompletadas}%)</span><br>
             Abiertas: <span style="color: #ffc107;">${totalOrdenes - completadas}/${totalOrdenes} (${porcentajeAbiertas}%)</span><br>
-            Cantidad Total <span style="color: #dc3545;">${totalOrdenes} </span><br>
+            Órdenes fabr: <span style="color: #dc3545; white-space: nowrap;">${totalOrdenes}</span>
+
         `;
 
 
@@ -580,7 +581,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     data: [
                         { value: completadas, name: 'Cerradas', itemStyle: { color: '#28a745' } }, // Verde para Completadas
                         { value: abiertas, name: 'Abiertas', itemStyle: { color: '#ffc107' } },  // Amarillo para Abiertas
-                        { value: totalOrdenes, name: 'Cantidad Total', itemStyle: { color: '#dc3545' } } // Rojo para CantidadTotal
+                        
                     ],
                     emphasis: {
                         itemStyle: {
