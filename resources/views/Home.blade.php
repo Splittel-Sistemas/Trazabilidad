@@ -407,6 +407,7 @@
         <p id="chart-month-mes" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
         <div id="chart-month" class="chart-container"></div>
     </div>
+    <hr style="border-top: 9px solid red; width: 100%; margin: 1px auto;">
 @endsection
 
 @section('scripts')
