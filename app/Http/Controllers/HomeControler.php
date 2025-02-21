@@ -655,4 +655,44 @@ class HomeControler extends Controller
         ]);
         
     } 
+
+    public function wizarp()
+    {
+        $fechaLimite = now()->subMonth();
+        
+        // Ordenes Completadas (cerradas)
+        $ordenesCompletadas = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->where('partidasof_areas.Areas_id', 9) // Solo cerradas
+            ->where('ordenfabricacion.FechaEntrega', '>=', $fechaLimite)
+            ->select(
+                'ordenfabricacion.CantidadTotal',
+                DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),
+                'partidasof_areas.PartidasOF_id',
+                DB::raw('GROUP_CONCAT(partidasof_areas.id) as ids')
+            )
+            ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.CantidadTotal')
+            ->havingRaw('SUM(partidasof_areas.Cantidad) = ordenfabricacion.CantidadTotal')
+            ->get();
+        
+        // Ordenes Abiertas
+        $ordenesAbiertas = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->select('partidasof.OrdenFabricacion_id', 'partidasof.cantidad_partida')
+            ->get();
+        
+        // Total de Ordenes
+        $totalOrdenes = DB::table('ordenfabricacion')->count();
+        
+        // Calcular las órdenes abiertas (restar las cerradas del total)
+        $ordenesAbiertasCount = $totalOrdenes - $ordenesCompletadas->count();
+
+        return response()->json([
+            'ordenesCompletadas' => $ordenesCompletadas->count(),
+            'ordenesAbiertas' => $ordenesAbiertasCount,
+            'totalOrdenes' => $totalOrdenes
+        ]);
+    }
+
 }    

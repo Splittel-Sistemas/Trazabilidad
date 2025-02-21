@@ -206,6 +206,7 @@ Route::get('/tabla-mes',[HomeControler::class, 'tablasMes'])->name('tablas.mes')
 Route::get('/tabla-horas',[HomeControler::class, 'tablasHoras'])->name('tablas.hora')->middleware('auth');
 
 Route::get('/tiempos',[BusquedaController::class, 'tiempoS'])->name('tiempos.hrs')->middleware('auth');
+Route::get('/wizarp', [HomeControler::class, 'wizarp'])->name('wizarp.dashboard');
 
 
 
