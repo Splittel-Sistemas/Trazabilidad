@@ -198,7 +198,7 @@ Route::get('/detalles-oc', [HomeControler::class, 'detallesOC'])->name('ordenes.
 Route::get('/tiempo', [HomeControler::class, 'tiempoOC'])->name('ordenes.tiempo')->middleware('auth');
 Route::get('/progreso-das',[HomeControler::class, 'progreso'])->name('progreso.dash')->middleware('auth');
 Route::get('/progreso-of',[HomeControler::class,'progresoof'])->name('of.progreso')->middleware('auth');
-Route::get('/inddicadores-ce',[HomeControler::class,'graficasdia'])->name('indicadores.CE')->middleware('auth');
+Route::get('/indicadores-ce',[HomeControler::class,'graficasdia'])->name('indicadores.CE')->middleware('auth');
 Route::get('/ordenes-abiertas',[HomeControler::class, 'tablasAbiertas'])->name('tabla.abiertas')->middleware('auth');
 Route::get('/ordenes-completada', [HomeControler::class, 'tablasCompletadas'])->name('tabla.completas')->middleware('auth');
 Route::get('/tabla-semana', [HomeControler::class,'tablasemana'])->name('tablas.semana')->middleware('auth');

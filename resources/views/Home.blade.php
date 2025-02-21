@@ -4,7 +4,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    
     <style>
+        
         /* General Styles */
   
 
@@ -266,17 +269,17 @@
             margin: auto;
         }
         .grid-item {
-  border: 2px solid #ddd;  /* Borde alrededor del contenedor */
-  padding: 10px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;  /* Efecto suave en la transformación */
-  border-radius: 10px;
-  text-align: center;
-}
+        border: 2px solid #ddd;  /* Borde alrededor del contenedor */
+        padding: 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;  /* Efecto suave en la transformación */
+        border-radius: 10px;
+        text-align: center;
+        }
 
-.grid-item:hover {
-  transform: translateY(-10px);  /* Movimiento hacia arriba cuando se pasa el cursor */
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);  /* Sombra para resaltar el contenedor */
-}
+        .grid-item:hover {
+        transform: translateY(-10px);  /* Movimiento hacia arriba cuando se pasa el cursor */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);  /* Sombra para resaltar el contenedor */
+        }
 
         .small-title {
             font-size: 14px;
@@ -335,6 +338,12 @@
         width: 900px;
         height: 350px;
         }
+        
+
+
+       
+
+
 
         
 
@@ -417,7 +426,7 @@
     <div class="card">
         <div class="col-10 col-md-18 col-lg-12 mx-auto">
         
-            <h2 style="font-size: 16px;">Progreso del Día</h2>
+            <h1 class="progress-title">Progreso del Día</h1>
             <p id="chart-hour-fecha" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
             <div id="chart-hour" class="chart-container"></div>
         </div>
@@ -427,7 +436,7 @@
     <div style="height: 30px;"></div>
     
     <div class="card">
-        <h2 style="font-size: 16px;">Progreso de la Semana</h2>
+        <h1 class="progress-title">Progreso de la Semana</h1>
         <p id="chart-day-rango" style="font-size: 14px; color: gray;"></p>  
         <div id="chart-day" class="chart-container"></div>
     </div>
@@ -436,7 +445,7 @@
     <div style="height: 30px;"></div>
     
     <div class="card">
-        <h2 style="font-size: 16px;">Progreso del Mes</h2>
+        <h1 class="progress-title">Progreso del Mes</h1>
         <p id="chart-month-mes" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
         <div id="chart-month" class="chart-container"></div>
     </div>
@@ -526,8 +535,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     data: {
                         labels: ["Cerradas", "Abiertas"],
                         datasets: [{
-                            data: [completado, totalOrdenes],
-                            backgroundColor: ["#28a745", "#FFC107"],
+                            data: (totalOrdenes === completado) ? [completado, 0] : [completado, totalOrdenes - completado],
+                            backgroundColor: (totalOrdenes === completado) ? ["#28a745"] : ["#28a745", "#FFC107"],
                             cutout: "70%"
                         }]
                     },
@@ -553,6 +562,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
                 });
+
             });
         })
         .catch(error => console.error('Error al cargar los datos:', error));    
@@ -807,6 +817,7 @@ function generarGrafico(url, containerId, itemName) {
             const fechaContainer = document.getElementById(`${containerId}-fecha`);
             const rangoContainer = document.getElementById(`${containerId}-rango`);
             const mesContainer = document.getElementById(`${containerId}-mes`);
+            
             if(mesContainer){
                 mesContainer.textContent = ` ${data.mes}`;
             }
