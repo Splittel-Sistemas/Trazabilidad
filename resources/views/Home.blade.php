@@ -267,7 +267,7 @@
     </style>
 @endsection
 @section('content')
-
+    <hr style="border-top: 9px solid red; width: 100%; margin: 1px auto;">
     <div class="card text-center">
         <h1 class="progress-title mt-3 mb-4">Indicadores de Producción del Mes</h1>
         <div class="row justify-content-center">
@@ -369,8 +369,9 @@
             </div>
         </div>
     </div>
-    <div style="height: 30px;"></div>
-    
+
+    <hr style="border-top: 9px solid red; width: 100%; margin: 1px auto;">
+    <div style="height: 10px;"></div>
     <div class="card">
         <h1 class="progress-title">Ordenes Fabricación</h1>
         <div class="grid-container" style="display: flex; justify-content: center;">
@@ -380,8 +381,9 @@
             </div>     
         </div>
     </div>
-    <div style="height: 30px;"></div>
-    
+
+    <hr style="border-top: 9px solid red; width: 100%; margin: 1px auto;">
+    <div style="height: 10px;"></div>
     <div class="card">
         <div class="col-10 col-md-18 col-lg-12 mx-auto">
             <h1 class="progress-title">Progreso del Día</h1>
@@ -389,15 +391,17 @@
             <div id="chart-hour" class="chart-container"></div>
         </div>
     </div>
-    <div style="height: 30px;"></div>
 
+    <hr style="border-top: 9px solid red; width: 100%; margin: 1px auto;">
+    <div style="height: 10px;"></div>
     <div class="card">
         <h1 class="progress-title">Progreso de la Semana</h1>
         <p id="chart-day-rango" style="font-size: 14px; color: gray;"></p>  
         <div id="chart-day" class="chart-container"></div>
     </div>
-    <div style="height: 30px;"></div>
-    
+
+    <hr style="border-top: 9px solid red; width: 100%; margin: 1px auto;">
+    <div style="height: 10px;"></div>
     <div class="card">
         <h1 class="progress-title">Progreso del Mes</h1>
         <p id="chart-month-mes" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->

@@ -664,7 +664,7 @@ class HomeControler extends Controller
         $ordenesCompletadas = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-            ->where('partidasof_areas.Areas_id', 9) // Solo cerradas
+            ->where('partidasof_areas.Areas_id', 9) 
             ->where('ordenfabricacion.FechaEntrega', '>=', $fechaLimite)
             ->select(
                 'ordenfabricacion.CantidadTotal',
@@ -685,7 +685,6 @@ class HomeControler extends Controller
         // Total de Ordenes
         $totalOrdenes = DB::table('ordenfabricacion')->count();
         
-        // Calcular las órdenes abiertas (restar las cerradas del total)
         $ordenesAbiertasCount = $totalOrdenes - $ordenesCompletadas->count();
 
         return response()->json([
