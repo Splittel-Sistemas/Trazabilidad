@@ -697,6 +697,7 @@
                         
                         <br> 
                         <div class="grid-container" id="canvases">
+
                             <!-- Estación Cortes -->
                             <div class="grid-item">
                               <h1 class="small-title">Estación Cortes</h1>
@@ -917,68 +918,47 @@
                 alert('Error al obtener los datos de la venta.');
             }
         });
-
-
-
         const endpoints = [
-            {
-                tipo: 'cortes',
-                id: 'corte',
-            },
-            {
-                tipo: 'suministros',
-                id: 'suministro',
-            },
-            {
-                tipo: 'preparado',
-                id: 'preparado',
-            },
-            {
-                tipo: 'ensamble',
-                id: 'ensamble',
+    { tipo: 'cortes', id: 'corte' },
+    { tipo: 'suministros', id: 'suministro' },
+    { tipo: 'preparado', id: 'preparado' },
+    { tipo: 'ensamble', id: 'ensamble' },
+    { tipo: 'pulido', id: 'pulido' },
+    { tipo: 'medicion', id: 'medicion' },
+    { tipo: 'visualizacion', id: 'visualizacion' },
+    { tipo: 'empaque', id: 'empaque' },
+];
 
+// Verifica si la variable ordenVenta está definida
+if (typeof ordenVenta === "undefined" || ordenVenta === null) {
+    console.error("Error: ordenVenta no está definida.");
+} else {
+    endpoints.forEach(endpoint => {
+        $.ajax({
+            url: @json(route("graficador")), // Corrige la forma de obtener la URL en Blade
+            type: 'GET',
+            data: { 
+                id: ordenVenta,  
+                tipo: endpoint.tipo
             },
-            {
-                tipo: 'pulido',
-                id: 'pulido',
-            },
-            {
-                tipo:'medicion',
-                id: 'medicion',
-            },
-            {
-                tipo: 'visualizacion',
-                id: 'visualizacion',
-            },
-            {
-                tipo: 'empaque',
-                id: 'empaque',
-            },
-
-        ];
-        endpoints.forEach(endpoint => {
-            $.ajax({
-                url: '{{ route("graficador") }}',
-                type: 'GET',
-                data: { 
-                    id: ordenVenta, 
-                    tipo: endpoint.tipo, 
-                },
-                success: function (response) {
-                    if (response.length > 0) {
-                        const firstOrder = response[0];
-                        const progreso = Math.min(firstOrder.Progreso, 100); // Limita a 100%
-                        drawGauge(endpoint.id, progreso, '');
-                    } else {
-                        console.log('No hay datos para mostrar.');
-                        drawGauge(endpoint.id, 0, 'Sin Datos');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
+            success: function(response) {
+                console.log(`Respuesta de ${endpoint.tipo}:`, response); // Depuración
+                
+                if (response.result && response.result.length > 0) {
+                    const progreso = Math.min(response.Progreso.Progreso, 100); // Acceder correctamente
+                    drawGauge(endpoint.id, progreso, ''); 
+                } else {
+                    console.log(`No hay datos para ${endpoint.tipo}`);
+                    drawGauge(endpoint.id, 0, 'Sin Datos'); 
                 }
-            });
+            },
+            error: function(xhr, status, error) {
+                console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
+                drawGauge(endpoint.id, 0, 'Error'); 
+            }
         });
+    });
+}
 
     });
 
