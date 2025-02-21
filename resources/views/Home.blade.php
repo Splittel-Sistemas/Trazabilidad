@@ -4,13 +4,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    
     <style>
-        
-        /* General Styles */
-  
-
         /* Dashboard Layout */
         .dashboard-container {
             display: grid;
@@ -113,71 +107,6 @@
             border-radius: 5px;
             transition: width 0.5s ease;
         }
-
-        #progress-2 {
-            background-color: #28a745;
-        }
-
-        #progress-3 {
-            background-color: #007bff;
-        }
-
-        #progress-4 {
-            background-color: #ff9800;
-        }
-
-        #progress-5 {
-            background-color: #dc3545;
-        }
-
-        #progress-6 {
-            background-color: #9c27b0;
-        }
-
-        #progress-7 {
-            background-color: #3f51b5;
-        }
-
-        #progress-8 {
-            background-color: #009688;
-        }
-
-        #progress-9 {
-            background-color: #ff5722;
-        }
-
-        #step-Corte {
-            background-color: #28a745;
-        }
-
-        #step-Suministro {
-            background-color: #007bff;
-        }
-
-        #step-Preparado {
-            background-color: #ff9800;
-        }
-
-        #step-Ensamble {
-            background-color: #dc3545;
-        }
-
-        #step-Pulido {
-            background-color: #9c27b0;
-        }
-
-        #step-Medicion{
-            background-color: #3f51b5;
-        }
-
-        #step-Visualizacion {
-            background-color: #009688;
-        }
-
-        #step-Abierto{
-            background-color: #ff5722;
-        }
-
 
         /* Hover effect for progress bars */
         .progress-bar-container:hover {
@@ -286,9 +215,6 @@
             margin-bottom: 5px;
         }
 
-
-
-
         .chart-container {
                 width: 75vw;
                 max-width:1400px;
@@ -338,16 +264,6 @@
         width: 900px;
         height: 350px;
         }
-        
-
-
-       
-
-
-
-        
-
-
     </style>
 @endsection
 @section('content')
@@ -409,39 +325,33 @@
             </div>
         </div> 
     </div>
-        <div style="height: 30px;"></div>
-    <!------------------------->
-    <div class="card">
-            <h1 class="progress-title">Ordenes Fabricación</h1>
-            <div class="grid-container" style="display: flex; justify-content: center;">
-                <div class="grid-item">
-                    <h1 class="small-title"></h1>
-                    <canvas id="plemasordenes" width="700" height="300"></canvas>
-                </div>     
-            </div>
-        </div>
-    
     <div style="height: 30px;"></div>
-    <!------>
+    
+    <div class="card">
+        <h1 class="progress-title">Ordenes Fabricación</h1>
+        <div class="grid-container" style="display: flex; justify-content: center;">
+            <div class="grid-item">
+                <h1 class="small-title"></h1>
+                <canvas id="plemasordenes" width="700" height="300"></canvas>
+            </div>     
+        </div>
+    </div>
+    <div style="height: 30px;"></div>
+    
     <div class="card">
         <div class="col-10 col-md-18 col-lg-12 mx-auto">
-        
             <h1 class="progress-title">Progreso del Día</h1>
-            <p id="chart-hour-fecha" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
+            <p id="chart-hour-fecha" style="font-size: 14px; color: gray;"></p> 
             <div id="chart-hour" class="chart-container"></div>
         </div>
-        
     </div>
-    
     <div style="height: 30px;"></div>
-    
+
     <div class="card">
         <h1 class="progress-title">Progreso de la Semana</h1>
         <p id="chart-day-rango" style="font-size: 14px; color: gray;"></p>  
         <div id="chart-day" class="chart-container"></div>
     </div>
-    
-    
     <div style="height: 30px;"></div>
     
     <div class="card">
@@ -449,8 +359,6 @@
         <p id="chart-month-mes" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
         <div id="chart-month" class="chart-container"></div>
     </div>
-    
-
 @endsection
 
 @section('scripts')
@@ -739,20 +647,6 @@ function cargarOrdenesCompletas() {
     });
 }
 
-// Función para crear las tarjetas de cada etapa
-function createEstacionCard(estacion, tiempoInicio, tiempoFin) {
-            return `
-                <div style="flex: 1 1 45%; min-width: 200px; background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.3s ease-in-out;">
-                    <strong>Estación de ${estacion}:</strong>
-                    <div style="display: flex; gap: 10px;">
-                        <span style="color: green; font-weight: bold;">Inicio: ${tiempoInicio ?? 'N/A'}</span> 
-                        <span style="color: red; font-weight: bold;">Fin: ${tiempoFin ?? 'N/A'}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-
 // Obtener progreso de órdenes de fabricación
 function fetchProgresoOF() {
     fetch("{{ route('of.progreso') }}")
@@ -894,7 +788,6 @@ function generarGrafico(url, containerId, itemName) {
             console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
         });
 }
-
 // Llamadas a la función para generar gráficos
 generarGrafico("{{ route('tablas.semana') }}", "chart-day", "Día");
 generarGrafico("{{ route('tablas.mes') }}", "chart-month", "Semana");

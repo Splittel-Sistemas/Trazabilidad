@@ -116,11 +116,6 @@ class HomeControler extends Controller
         ]);*/
         
     }
-
-
-    
-        #escapeWhenCastingToString: false
-
     public function graficasdia()
     {
         $fechaLimite = now()->subMonth(); // Obtiene la fecha de hace un mes desde hoy
@@ -142,10 +137,6 @@ class HomeControler extends Controller
         )
         ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
         ->get();
-
-
-           
-
             $cortes = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->select(
@@ -212,13 +203,12 @@ class HomeControler extends Controller
     
         $datos['plemasCorte']['completado'] = $completadosCorte;
         $datos['plemasCorte']['pendiente'] = $pendientesCorte;
-    //dd($datos);
+   
         return response()->json($datos);
         
     }
-   
-        public function cerradas()
-        {
+    public function cerradas()
+    {
             $fechaLimite = now()->subMonth(); // Fecha actual menos un mes
         
             // Ordenes Completadas (Cerradas)
@@ -255,10 +245,8 @@ class HomeControler extends Controller
                 'ordenesAbiertas' => $ordenesAbiertas,
                 'totalOrdenes' => $totalOrdenes,
             ]);
-        }
-        
+    }
     
-
     public function tablasAbiertas()
     {
         $ordenesAbiertas = DB::table('ordenfabricacion')
@@ -378,192 +366,190 @@ class HomeControler extends Controller
     }
   
     public function tablasemana()
-{
-    $SumaCantidadTotalGeneral = DB::table('ordenfabricacion')->sum('CantidadTotal');
+    {
+        $SumaCantidadTotalGeneral = DB::table('ordenfabricacion')->sum('CantidadTotal');
 
-    // Obtener la fecha de inicio y fin de la semana actual
-    $inicioSemana = Carbon::now()->startOfWeek(); // Lunes de la semana actual
-    $finSemana = Carbon::now()->endOfWeek(); // Domingo de la semana actual
+        // Obtener la fecha de inicio y fin de la semana actual
+        $inicioSemana = Carbon::now()->startOfWeek(); // Lunes de la semana actual
+        $finSemana = Carbon::now()->endOfWeek(); // Domingo de la semana actual
 
-    // Formatear el rango de la semana en español
-    $rangoSemana = $inicioSemana->format('d') . ' al ' . $finSemana->format('d') . ' de ' . $finSemana->translatedFormat('F');
+        // Formatear el rango de la semana en español
+        $rangoSemana = $inicioSemana->format('d') . ' al ' . $finSemana->format('d') . ' de ' . $finSemana->translatedFormat('F');
 
-    // Obtener datos de áreas (para todos los procesos excepto Cortes)
-    $DiazAreas = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-        ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9]) // Excluimos el área de Cortes (ID 2)
-        ->whereBetween('partidasof_areas.FechaComienzo', [$inicioSemana, $finSemana])
-        ->select(
-            'ordenfabricacion.OrdenFabricacion',
-            'partidasof_areas.Areas_id',
-            'ordenfabricacion.CantidadTotal',
-            'partidasof_areas.FechaComienzo',
-            DB::raw('SUM(partidasof_areas.Cantidad) as SumaTotalcantidad_partida')
-        )
-        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.Areas_id', 'partidasof_areas.FechaComienzo')
-        ->get();
+        // Obtener datos de áreas (para todos los procesos excepto Cortes)
+        $DiazAreas = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9]) // Excluimos el área de Cortes (ID 2)
+            ->whereBetween('partidasof_areas.FechaComienzo', [$inicioSemana, $finSemana])
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                'partidasof_areas.Areas_id',
+                'ordenfabricacion.CantidadTotal',
+                'partidasof_areas.FechaComienzo',
+                DB::raw('SUM(partidasof_areas.Cantidad) as SumaTotalcantidad_partida')
+            )
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.Areas_id', 'partidasof_areas.FechaComienzo')
+            ->get();
 
-    // Obtener los datos de Cortes (Área ID 2)
-    $DiasCortes = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->whereBetween('partidasof.FechaComienzo', [$inicioSemana, $finSemana])
-        ->select(
-            'ordenfabricacion.OrdenFabricacion',
-            'ordenfabricacion.CantidadTotal',
-            'partidasof.FechaComienzo',
-            DB::raw('SUM(partidasof.Cantidad_partida) as SumaTotalcantidad_partida'),
-            DB::raw($SumaCantidadTotalGeneral . ' as SumaCantidadTotalGeneral')
-        )
-        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo')
-        ->get();
+        // Obtener los datos de Cortes (Área ID 2)
+        $DiasCortes = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->whereBetween('partidasof.FechaComienzo', [$inicioSemana, $finSemana])
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal',
+                'partidasof.FechaComienzo',
+                DB::raw('SUM(partidasof.Cantidad_partida) as SumaTotalcantidad_partida'),
+                DB::raw($SumaCantidadTotalGeneral . ' as SumaCantidadTotalGeneral')
+            )
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo')
+            ->get();
 
-    // Mapeo de las áreas a los nombres de los procesos
-    $areasMap = [
-        2 => 'Cortes',
-        3 => 'Suministro',
-        4 => 'Preparado',
-        5 => 'Ensamble',
-        6 => 'Pulido',
-        7 => 'Medicion',
-        8 => 'Visualizacion',
-        9 => 'Empacado'
-    ];
+        // Mapeo de las áreas a los nombres de los procesos
+        $areasMap = [
+            2 => 'Cortes',
+            3 => 'Suministro',
+            4 => 'Preparado',
+            5 => 'Ensamble',
+            6 => 'Pulido',
+            7 => 'Medicion',
+            8 => 'Visualizacion',
+            9 => 'Empacado'
+        ];
 
-    // Inicializamos los datos para el gráfico con días de la semana en español
-    $labels = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-    $series = array_map(function ($name) {
-        return ['name' => $name, 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => [0, 0, 0, 0, 0, 0, 0]];
-    }, array_values($areasMap));
+        // Inicializamos los datos para el gráfico con días de la semana en español
+        $labels = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+        $series = array_map(function ($name) {
+            return ['name' => $name, 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => [0, 0, 0, 0, 0, 0, 0]];
+        }, array_values($areasMap));
 
-    // Mapeo de días en inglés a español
-    $dayMap = [
-        'Monday' => 'Lunes',
-        'Tuesday' => 'Martes',
-        'Wednesday' => 'Miércoles',
-        'Thursday' => 'Jueves',
-        'Friday' => 'Viernes',
-        'Saturday' => 'Sábado',
-        'Sunday' => 'Domingo'
-    ];
+        // Mapeo de días en inglés a español
+        $dayMap = [
+            'Monday' => 'Lunes',
+            'Tuesday' => 'Martes',
+            'Wednesday' => 'Miércoles',
+            'Thursday' => 'Jueves',
+            'Friday' => 'Viernes',
+            'Saturday' => 'Sábado',
+            'Sunday' => 'Domingo'
+        ];
 
-    // Procesar datos de Cortes
-    foreach ($DiasCortes as $corte) {
-        $dayNameInSpanish = $dayMap[Carbon::parse($corte->FechaComienzo)->format('l')] ?? null;
-        if ($dayNameInSpanish) {
-            $index = array_search($dayNameInSpanish, $labels);
-            if ($index !== false) {
-                $serieIndex = array_search('Cortes', array_column($series, 'name'));
-                $series[$serieIndex]['data'][$index] += $corte->SumaTotalcantidad_partida;
+        // Procesar datos de Cortes
+        foreach ($DiasCortes as $corte) {
+            $dayNameInSpanish = $dayMap[Carbon::parse($corte->FechaComienzo)->format('l')] ?? null;
+            if ($dayNameInSpanish) {
+                $index = array_search($dayNameInSpanish, $labels);
+                if ($index !== false) {
+                    $serieIndex = array_search('Cortes', array_column($series, 'name'));
+                    $series[$serieIndex]['data'][$index] += $corte->SumaTotalcantidad_partida;
+                }
             }
         }
-    }
 
-    // Procesar datos de otras áreas
-    foreach ($DiazAreas as $area) {
-        $dayNameInSpanish = $dayMap[Carbon::parse($area->FechaComienzo)->format('l')] ?? null;
-        if ($dayNameInSpanish) {
-            $index = array_search($dayNameInSpanish, $labels);
-            $areaName = $areasMap[$area->Areas_id] ?? null;
-            if ($areaName && $index !== false) {
-                foreach ($series as &$serie) {
-                    if ($serie['name'] == $areaName) {
-                        $serie['data'][$index] += $area->SumaTotalcantidad_partida;
+        // Procesar datos de otras áreas
+        foreach ($DiazAreas as $area) {
+            $dayNameInSpanish = $dayMap[Carbon::parse($area->FechaComienzo)->format('l')] ?? null;
+            if ($dayNameInSpanish) {
+                $index = array_search($dayNameInSpanish, $labels);
+                $areaName = $areasMap[$area->Areas_id] ?? null;
+                if ($areaName && $index !== false) {
+                    foreach ($series as &$serie) {
+                        if ($serie['name'] == $areaName) {
+                            $serie['data'][$index] += $area->SumaTotalcantidad_partida;
+                        }
                     }
                 }
             }
         }
+
+        // Devolver los datos incluyendo el rango de la semana
+        return response()->json([
+            'labels' => $labels,
+            'series' => $series,
+            'rangoSemana' => 'Semana del ' . $rangoSemana
+        ]);
     }
 
-    // Devolver los datos incluyendo el rango de la semana
-    return response()->json([
-        'labels' => $labels,
-        'series' => $series,
-        'rangoSemana' => 'Semana del ' . $rangoSemana
-    ]);
-}
+    public function tablasMes()
+    {
+        $carbon = Carbon::now()->locale('es');
+        $mesActual = ucfirst($carbon->monthName); // Nombre del mes con la primera letra en mayúscula
+        $anioActual = $carbon->year; // Año actual
+        $diasEnMes = $carbon->daysInMonth;
 
-    
+        // Definir el mapeo de áreas
+        $areasMap = [
+            2 => 'Cortes', 3 => 'Suministro', 4 => 'Preparado', 5 => 'Ensamble',
+            6 => 'Pulido', 7 => 'Medicion', 8 => 'Visualizacion', 9 => 'Empacado'
+        ];
 
-public function tablasMes()
-{
-    $carbon = Carbon::now()->locale('es');
-    $mesActual = ucfirst($carbon->monthName); // Nombre del mes con la primera letra en mayúscula
-    $anioActual = $carbon->year; // Año actual
-    $diasEnMes = $carbon->daysInMonth;
+        // Obtener datos de áreas excepto Cortes
+        $MesAreas = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->whereIn('partidasof_areas.Areas_id', array_keys($areasMap))
+            ->whereMonth('partidasof_areas.FechaComienzo', $carbon->month)
+            ->whereYear('partidasof_areas.FechaComienzo', $anioActual)
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.Areas_id', 'partidasof_areas.FechaComienzo')
+            ->select(
+                'ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id',
+                'ordenfabricacion.CantidadTotal', 'partidasof_areas.FechaComienzo',
+                DB::raw('SUM(partidasof_areas.Cantidad) as SumaTotalcantidad_partida')
+            )
+            ->get();
 
-    // Definir el mapeo de áreas
-    $areasMap = [
-        2 => 'Cortes', 3 => 'Suministro', 4 => 'Preparado', 5 => 'Ensamble',
-        6 => 'Pulido', 7 => 'Medicion', 8 => 'Visualizacion', 9 => 'Empacado'
-    ];
+        // Obtener datos para el área de Cortes (Área 2)
+        $MesCortes = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->whereMonth('partidasof.FechaComienzo', $carbon->month)
+            ->whereYear('partidasof.FechaComienzo', $anioActual)
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo')
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                DB::raw('2 as Areas_id'), // ID fijo para Cortes
+                'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo',
+                DB::raw('SUM(partidasof.Cantidad_partida) as SumaTotalcantidad_partida')
+            )
+            ->get();
 
-    // Obtener datos de áreas excepto Cortes
-    $MesAreas = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-        ->whereIn('partidasof_areas.Areas_id', array_keys($areasMap))
-        ->whereMonth('partidasof_areas.FechaComienzo', $carbon->month)
-        ->whereYear('partidasof_areas.FechaComienzo', $anioActual)
-        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.Areas_id', 'partidasof_areas.FechaComienzo')
-        ->select(
-            'ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id',
-            'ordenfabricacion.CantidadTotal', 'partidasof_areas.FechaComienzo',
-            DB::raw('SUM(partidasof_areas.Cantidad) as SumaTotalcantidad_partida')
-        )
-        ->get();
+        // Unir los datos de ambas consultas
+        $datos = $MesAreas->merge($MesCortes);
 
-    // Obtener datos para el área de Cortes (Área 2)
-    $MesCortes = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->whereMonth('partidasof.FechaComienzo', $carbon->month)
-        ->whereYear('partidasof.FechaComienzo', $anioActual)
-        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo')
-        ->select(
-            'ordenfabricacion.OrdenFabricacion',
-            DB::raw('2 as Areas_id'), // ID fijo para Cortes
-            'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo',
-            DB::raw('SUM(partidasof.Cantidad_partida) as SumaTotalcantidad_partida')
-        )
-        ->get();
+        // Inicializar las series manualmente
+        $series = [
+            ['name' => 'Cortes', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+            ['name' => 'Suministro', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+            ['name' => 'Preparado', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+            ['name' => 'Ensamble', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+            ['name' => 'Pulido', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+            ['name' => 'Medicion', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+            ['name' => 'Visualizacion', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
+            ['name' => 'Empacado', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)]
+        ];
 
-    // Unir los datos de ambas consultas
-    $datos = $MesAreas->merge($MesCortes);
-
-    // Inicializar las series manualmente
-    $series = [
-        ['name' => 'Cortes', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
-        ['name' => 'Suministro', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
-        ['name' => 'Preparado', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
-        ['name' => 'Ensamble', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
-        ['name' => 'Pulido', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
-        ['name' => 'Medicion', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
-        ['name' => 'Visualizacion', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)],
-        ['name' => 'Empacado', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, $diasEnMes, 0)]
-    ];
-
-    // Procesar los datos
-    foreach ($datos as $dato) {
-        if (!empty($dato->FechaComienzo)) {
-            try {
-                $dia = Carbon::parse($dato->FechaComienzo)->day - 1; // Índice del día
-                foreach ($series as &$serie) {
-                    if ($serie['name'] === ($areasMap[$dato->Areas_id] ?? '')) {
-                        $serie['data'][$dia] += $dato->SumaTotalcantidad_partida;
+        // Procesar los datos
+        foreach ($datos as $dato) {
+            if (!empty($dato->FechaComienzo)) {
+                try {
+                    $dia = Carbon::parse($dato->FechaComienzo)->day - 1; // Índice del día
+                    foreach ($series as &$serie) {
+                        if ($serie['name'] === ($areasMap[$dato->Areas_id] ?? '')) {
+                            $serie['data'][$dia] += $dato->SumaTotalcantidad_partida;
+                        }
                     }
+                } catch (\Exception $e) {
+                    continue; // Saltar valores inválidos
                 }
-            } catch (\Exception $e) {
-                continue; // Saltar valores inválidos
             }
         }
-    }
 
-    return response()->json([
-        'labels' => range(1, $diasEnMes), // Generar los días del mes como etiquetas
-        'series' => $series, // Devolver series indexadas
-        'mes' => "Mes $mesActual $anioActual" // Formato corregido
-    ]);
-}
+        return response()->json([
+            'labels' => range(1, $diasEnMes), // Generar los días del mes como etiquetas
+            'series' => $series, // Devolver series indexadas
+            'mes' => "Mes $mesActual $anioActual" // Formato corregido
+        ]);
+    }
 
     public function tablasHoras()
     {
@@ -668,197 +654,5 @@ public function tablasMes()
             'fecha' => Carbon::now()->translatedFormat('d \d\e F \d\e\l Y') // Formato en español
         ]);
         
-    }
-    
-    
-    
-    
+    } 
 }    
-/* // Obtener datos de cortes
-    $DiasCortes = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-        ->select(
-            'ordenfabricacion.OrdenFabricacion',
-            'ordenfabricacion.CantidadTotal',
-            DB::raw('SUM(partidasof.Cantidad_partida) as SumaTotalcantidad_partida'),
-            DB::raw($SumaCantidadTotalGeneral . ' as SumaCantidadTotalGeneral')
-        )
-        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
-        ->get();*/
-    
- /*public function cerradas()
-    {
-        // Definir correctamente la variable $totalOrdenes
-        $totalOrdenes = DB::table('ordenfabricacion')->count();
-    
-        // Obtener las órdenes cerradas
-        $ordenes = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
-            ->where('partidasof_areas.Areas_id', 9)
-            ->select(
-                'ordenfabricacion.OrdenFabricacion',
-                'ordenfabricacion.Articulo',
-                'ordenfabricacion.Descripcion',
-                'ordenfabricacion.CantidadTotal',
-                'partidasof.cantidad_partida'
-            )
-            ->distinct()
-            ->get();
-    
-        // Obtener los tiempos de las etapas
-        $tiempos = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
-            ->select(
-                'ordenfabricacion.OrdenFabricacion',
-                DB::raw("MAX(partidasof.FechaComienzo) AS TiempoCorte"),
-                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 3 THEN partidasof_areas.FechaComienzo END) as TiempoSuministro"),
-                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 4 THEN partidasof_areas.FechaComienzo END) as TiempoPreparado"),
-                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 5 THEN partidasof_areas.FechaComienzo END) as TiempoEnsamble"),
-                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 6 THEN partidasof_areas.FechaComienzo END) as TiempoPulido"),
-                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 7 THEN partidasof_areas.FechaComienzo END) as TiempoMedicion"),
-                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 8 THEN partidasof_areas.FechaComienzo END) as TiempoVisualizacion"),
-                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 9 THEN partidasof_areas.FechaComienzo END) as TiempoAbierto"),
-                DB::raw("MAX(partidasof.FechafINALIZACION) AS FinCorte"),
-                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 3 THEN partidasof_areas.FechaTermina END) as FinSuministro"),
-                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 4 THEN partidasof_areas.FechaTermina END) as FinPreparado"),
-                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 5 THEN partidasof_areas.FechaTermina END) as FinEnsamble"),
-                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 6 THEN partidasof_areas.FechaTermina END) as FinPulido"),
-                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 7 THEN partidasof_areas.FechaTermina END) as FinMedicion"),
-                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 8 THEN partidasof_areas.FechaTermina END) as FinVisualizacion"),
-                DB::raw("MAX(CASE WHEN partidasof_areas.Areas_id = 9 THEN partidasof_areas.FechaTermina END) as FinAbierto")
-            )
-            ->groupBy('ordenfabricacion.OrdenFabricacion')
-            ->get();
-    
-        // Combina los resultados de las órdenes con los tiempos
-        $ordenesConTiempos = $ordenes->map(function($orden) use ($tiempos) {
-            $tiempo = $tiempos->firstWhere('OrdenFabricacion', $orden->OrdenFabricacion);
-            $orden->TiempoCorte = $tiempo ? $tiempo->TiempoCorte : "";
-            $orden->TiempoSuministro = $tiempo ? $tiempo->TiempoSuministro : "";
-            $orden->TiempoPreparado = $tiempo ? $tiempo->TiempoPreparado : "";
-            $orden->TiempoEnsamble = $tiempo ? $tiempo->TiempoEnsamble : "";
-            $orden->TiempoPulido = $tiempo ? $tiempo->TiempoPulido : "";
-            $orden->TiempoMedicion = $tiempo ? $tiempo->TiempoMedicion : "";
-            $orden->TiempoVisualizacion = $tiempo ? $tiempo->TiempoVisualizacion : "";
-            $orden->TiempoAbierto = $tiempo ? $tiempo->TiempoAbierto : "";
-            $orden->FinCorte = $tiempo ? $tiempo->FinCorte : "";
-            $orden->FinSuministro = $tiempo ? $tiempo->FinSuministro : "";
-            $orden->FinPreparado = $tiempo ? $tiempo->FinPreparado : "";
-            $orden->FinEnsamble = $tiempo ? $tiempo->FinEnsamble : "";
-            $orden->FinPulido = $tiempo ? $tiempo->FinPulido : "";
-            $orden->FinMedicion = $tiempo ? $tiempo->FinMedicion : "";
-            $orden->FinVisualizacion = $tiempo ? $tiempo->FinVisualizacion : "";
-            $orden->FinAbierto = $tiempo ? $tiempo->FinAbierto : "";
-            return $orden;
-        });
-    
-        // Calcular la fracción de órdenes cerradas
-        $ordenesCerradasCount = $ordenesConTiempos->count();
-        $fraccionCerradas = $totalOrdenes > 0 ? "$ordenesCerradasCount/$totalOrdenes" : "0/$totalOrdenes";
-    
-        // Retornar los datos en formato JSON
-        return response()->json([
-            'retrabajo' => $fraccionCerradas,
-            'ordenes' => $ordenesConTiempos
-        ]);
-    }
-    
-    public function abiertas()
-    {
-        $totalOrdenes = DB::table('ordenfabricacion')->count();
-    
-        $ordenesAbiertas = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
-            ->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('partidasof_areas')
-                    ->whereRaw('partidasof_areas.PartidasOF_id = partidasof.id')
-                    ->where('partidasof_areas.Areas_id', 9);
-            })
-            ->select('partidasof.cantidad_partida', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.Articulo', 'ordenfabricacion.Descripcion', 'ordenfabricacion.CantidadTotal', 'partidasof.cantidad_partida')
-            ->distinct()
-            ->get();
-    
-        $ordenesAbiertasCount = $ordenesAbiertas->count();
-    
-        // Calculamos el porcentaje de ordenes abiertas
-        $porcentajeAbiertas = $totalOrdenes > 0 ? ($ordenesAbiertasCount / $totalOrdenes) * 100 : 0;
-    
-        return response()->json([
-            'retrabajo' => round($porcentajeAbiertas, 2),
-            'ordenes' => $ordenesAbiertas,
-            'totalOrdenes' => $totalOrdenes,
-            'ordenesAbiertasCount' => $ordenesAbiertasCount,
-        ]);
-    }
-*/
-    
-    
-
-    
-
-
-
-        /*
-        $totalOrdenes = DB::table('ordenfabricacion')->count();
-        
-        // Obtener las órdenes cerradas (completadas)
-        $ordenesCompletadas = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
-            ->where('partidasof_areas.Areas_id', 9)  // Solo las cerradas
-            ->count();
-    
-        // Obtener las órdenes en proceso (en progreso pero no cerradas)
-        $ordenesEnProceso = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id')
-            ->whereNull('partidasof_areas.Areas_id')  // Áreas que no han llegado a 9
-            ->count();
-    
-        // Obtener las órdenes abiertas
-        $ordenesAbiertas = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
-            ->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('partidasof_areas')
-                    ->whereRaw('partidasof_areas.PartidasOF_id = partidasof.id')
-                    ->where('partidasof_areas.Areas_id', 9);  // No se ha cerrado
-            })
-            ->count();
-        
-        // Calcular el porcentaje de cada tipo de orden
-        $porcentajeCompletadas = ($ordenesCompletadas / $totalOrdenes) * 100;
-        $porcentajeEnProceso = ($ordenesEnProceso / $totalOrdenes) * 100;
-        $porcentajeAbiertas = 100 - ($porcentajeCompletadas + $porcentajeEnProceso);  // El resto son abiertas
-    
-        return response()->json([
-            'completadas' => $ordenesCompletadas,
-            'enProceso' => $ordenesEnProceso,
-            'abiertas' => $ordenesAbiertas,
-            'porcentajes' => [
-                'completadas' => $porcentajeCompletadas,
-                'enProceso' => $porcentajeEnProceso,
-                'abiertas' => $porcentajeAbiertas
-            ],
-            'totalOrdenes' => $totalOrdenes,
-            'ordenes' => [
-                'completadas' => $ordenesCompletadas,
-                'enProceso' => $ordenesEnProceso,
-                'abiertas' => $ordenesAbiertas
-            ]
-        ]);
-        */
-    
-    
-    
-
-      
-    
-        
-
