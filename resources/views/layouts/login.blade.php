@@ -25,11 +25,11 @@
             justify-content: center;
             color: #333;
         }
-
+        
         .container {
             background: rgba(255, 255, 255, 0.95);
-            padding: 80px;
-            border-radius: 15px;
+            padding: 12px;
+            border-radius: 55px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             text-align: center;
             max-width: 500px;
@@ -98,7 +98,7 @@
         #login-button:hover {
             background-color: #003d82;
         }
-
+        
         .alert {
             background: #f8d7da;
             color: #721c24;
@@ -178,6 +178,17 @@
         #login-operador:hover {
             background-color: #003d82;
         }
+
+
+
+
+
+
+
+
+
+
+    
 
     </style>
 </head>

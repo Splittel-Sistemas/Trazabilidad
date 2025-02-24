@@ -279,7 +279,7 @@
 @endsection
 @section('content')
 
-    <div class="card text-center" style="background-color: #f7f7f7;">
+    <div class="card text-center">
         <hr class="hr2">
             <h1 class="progress-title mt-3 mb-4"></h1>
             <div class="row justify-content-center">
@@ -324,6 +324,8 @@
             </div>
         <hr class="hr2">
     </div>
+  
+
 
 <!--Ordenes Fabricación-->
     <hr class="hr">
