@@ -228,6 +228,7 @@ Route::get('/wizarp', [HomeControler::class, 'wizarp'])->name('wizarp.dashboard'
 
 
 
+
 //registro 
 //Route::view('/registro', "usuarios.registro")->name('register')->middleware('auth');
 
