@@ -278,28 +278,28 @@
 
 
 
-/* Estilo base para los divs */
-.col-12.col-md-3 {
-    transition: all 0.3s ease; /* Para una transición suave */
-    position: relative; /* Necesario para aplicar el efecto de sombra */
-    border-radius: 90px; /* Bordes redondeados */
-    overflow: hidden; /* Para evitar que el borde sobresalga en los bordes redondeados */
-    box-sizing: border-box; /* Incluir el borde en el tamaño total */
-    padding: 5px; /* Espacio interno dentro del card */
-    border: 2px solid transparent; /* Borde transparente inicialmente */
-}
+        /* Estilo base para los divs */
+        .col-12.col-md-3 {
+            transition: all 0.3s ease; 
+            position: relative; 
+            border-radius: 90px; 
+            overflow: hidden; 
+            box-sizing: border-box; 
+            padding: 5px; 
+            border: 2px solid transparent; 
+        }
 
-/* Efecto de hover */
-.col-12.col-md-3:hover {
-    border: 3px solid #007bff; /* Borde azul más grueso */
-    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2); /* Sombra suave */
-    transform: translateY(-5px); /* Efecto de elevación al pasar el cursor */
-}
+        /* Efecto de hover */
+        .col-12.col-md-3:hover {
+            border: 3px solid #007bff; 
+            box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2); 
+            transform: translateY(-5px); 
+        }
 
-/* Opcional: Efecto de hover en el ícono */
-.col-12.col-md-3:hover .fa-stack i {
-    color: #007bff; /* Cambia el color del ícono al pasar el cursor */
-}
+        /* Opcional: Efecto de hover en el ícono */
+        .col-12.col-md-3:hover .fa-stack i {
+            color: #007bff; 
+        }
 
 
     </style>
