@@ -1000,11 +1000,11 @@ class HomeControler extends Controller
                 'OrdenFabricacion', 
                 'OrdenVenta_id', 
                 'partidasof_areas.Cantidad', 
-                'Cerrada', 
+                'ordenfabricacion.Cerrada', 
                 'partidasof_areas.Areas_id',
                 DB::raw('SUM(partidasof_areas.Cantidad) as SumaCantidad')
             )
-            ->groupBy('OrdenFabricacion', 'OrdenVenta_id', 'partidasof_areas.Cantidad', 'Cerrada', 'partidasof_areas.Areas_id')
+            ->groupBy('OrdenFabricacion', 'OrdenVenta_id', 'partidasof_areas.Cantidad', 'ordenfabricacion.Cerrada', 'partidasof_areas.Areas_id')
             ->get();
     
         $totalOFcompletadas = $indicador->where('Cerrada', 1)->sum('Cantidad');

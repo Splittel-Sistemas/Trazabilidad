@@ -356,6 +356,7 @@ class PlaneacionController extends Controller
                     $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
                     $respuestaOF->EstatusEntrega=0;
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
+                    $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
                     $respuestaOF->save();
                 }
             }

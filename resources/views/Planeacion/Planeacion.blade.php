@@ -674,7 +674,6 @@
             cells = IdRow.getElementsByTagName("td");
             var checkbox = cells[8].querySelector('input[type="checkbox"]');
             let isChecked = checkbox.checked;
-            console.log(isChecked);
             if(CadenaVacia(cells[1].innerHTML)){
                 error("Ocurrio un error!","Orden de fabricación no valida");
                 return 0;
