@@ -317,7 +317,7 @@
                         </span>
                         <div class="ms-3">
                             <h4 id="click-dia" class="mb-0" style="cursor: pointer;">Órdenes por Día</h4>
-                            <p class="text-muted fs--1 mb-0">click</p>
+                            <p class="text-muted fs--1 mb-0"></p>
                         </div>
                     </div>
                 </div>
@@ -329,7 +329,7 @@
                         </span>
                         <div class="ms-3">
                             <h4 id="click-semana" class="mb-0" style="cursor: pointer;">Órdenes por Semana</h4>
-                            <p class="text-muted fs--1 mb-0">click</p>
+                            <p class="text-muted fs--1 mb-0"></p>
                         </div>
                     </div>
                 </div>
@@ -342,7 +342,7 @@
                         </span>
                         <div class="ms-3">
                             <h4 id="click-mes" class="mb-0" style="cursor: pointer;">Órdenes por Mes</h4>
-                            <p class="text-muted fs--1 mb-0">click</p>
+                            <p class="text-muted fs--1 mb-0"></p>
                         </div>
                     </div>
                 </div>
