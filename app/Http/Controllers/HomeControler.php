@@ -982,13 +982,13 @@ class HomeControler extends Controller
     }
     public function Dasboardindicadordia()
     {
-         $personal = DB::table('porcentajeplaneacion')
-            ->select('porcentajeplaneacion.NumeroPersonas', 'porcentajeplaneacion.CantidadPlaneada')
-            ->whereDate('porcentajeplaneacion.created_at', now()->toDateString())
-            ->get();
+        $personal = DB::table('porcentajeplaneacion')
+            ->select('NumeroPersonas', 'CantidadPlaneada')
+            ->whereDate('created_at', now()->toDateString())
+            ->first(); 
     
         $TotarOfTotal = DB::table('ordenfabricacion')
-            ->whereDate('ordenfabricacion.FechaEntrega', today())
+            ->whereDate('FechaEntrega', today())
             ->sum('CantidadTotal');
     
         $indicador = DB::table('ordenfabricacion')
@@ -996,14 +996,15 @@ class HomeControler extends Controller
             ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
             ->whereDate('ordenfabricacion.FechaEntrega', today()) 
             ->where('partidasof_areas.Areas_id', 9)  
-            ->select('OrdenFabricacion', 'OrdenVenta_id', 'partidasof_areas.Cantidad', 'Cerrada', 'partidasof_areas.Areas_id',
-            DB::raw('SUM(partidasof_areas.Cantidad) as SumaCantidad'),
-
-            
+            ->select(
+                'OrdenFabricacion', 
+                'OrdenVenta_id', 
+                'partidasof_areas.Cantidad', 
+                'Cerrada', 
+                'partidasof_areas.Areas_id',
+                DB::raw('SUM(partidasof_areas.Cantidad) as SumaCantidad')
             )
-            ->groupBy('OrdenFabricacion', 'OrdenVenta_id', 'partidasof_areas.Cantidad', 'Cerrada', 'partidasof_areas.Areas_id'
-
-            )
+            ->groupBy('OrdenFabricacion', 'OrdenVenta_id', 'partidasof_areas.Cantidad', 'Cerrada', 'partidasof_areas.Areas_id')
             ->get();
     
         $totalOFcompletadas = $indicador->where('Cerrada', 1)->sum('Cantidad');
@@ -1011,8 +1012,8 @@ class HomeControler extends Controller
         $faltanteTotal = $TotarOfTotal - $totalOFcompletadas;
     
         return response()->json([
-            'Cantidadpersonas' => $personal->sum('NumeroPersonas'),
-            'Estimadopiezas' => $personal->sum('CantidadPlaneada'),
+            'Cantidadpersonas' => $personal ? $personal->NumeroPersonas : 0, 
+            'Estimadopiezas' => $personal ? $personal->CantidadPlaneada : 0, 
             'indicador' => $indicador,
             'TotalOFcompletadas' => $totalOFcompletadas,
             'TotalOfTotal' => (int) $TotarOfTotal,
@@ -1020,6 +1021,7 @@ class HomeControler extends Controller
             'PorcentajeCompletadas' => round($porcentajeCompletadas, 2),
         ]);
     }
+    
     
     public function obtenerPorcentajes(Request $request)
     {
