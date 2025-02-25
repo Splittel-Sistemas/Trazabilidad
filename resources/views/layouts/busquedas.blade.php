@@ -1125,136 +1125,134 @@
 
 
             $.ajax({
-                url: '{{ route("tiempos.hrs") }}',
-                method: 'GET',
-                data: { 
-                    id: ordenfabricacion, // Verifica que esta variable esté definida
-                },
-                success: function(response) {
-                    // Verificar si la respuesta tiene tiempos de cortes
-                    if (response.tiemposcortes.length > 0) {
-                        $('#titulo-cortes')
-                            .text('Duración: ' + response.tiemposcortes[0].Duracion)
-                            .css({
-                                'font-size': '10px',
-                                'color': 'black',
-                                'font-weight': 'bold'
-                            });
-                    } else {
-                        $('#titulo-cortes')
-                            .text('Sin datos de duración')
-                            .css({
-                                'font-size': '10px',
-                                'color': 'black',
-                                'font-weight': 'bold'
-                            });
-                    }
-
-                    // Verificar si tiemposareas tiene datos
-                    let hasData = false;  // Variable para verificar si hay datos en tiemposareas
-
-                    if (response.tiemposareas.length > 0) {
-                        // Mostrar el tiempo según el área
-                        response.tiemposareas.forEach(function(item) {
-                            hasData = true;
-                            switch (item.Areas_id) {
-                                case 3:
-                                    $('#titulo-suministro')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                case 4:
-                                    $('#titulo-preparado')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                case 5:
-                                    $('#titulo-ensamble')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                case 6:
-                                    $('#titulo-pulido')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                case 7:
-                                    $('#titulo-medicion')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                case 8:
-                                    $('#titulo-visualizacion')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                case 9:
-                                    $('#titulo-empaque')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                default:
-                                    console.warn('Área no reconocida:', item.Areas_id);
-                            }
+            url: '{{ route("tiempos.hrs") }}',
+            method: 'GET',
+            data: { 
+                id: ordenfabricacion,
+            },
+            success: function(response) {
+                // Verificar si la respuesta tiene tiempos de cortes
+                if (response.tiemposcortes.length > 0) {
+                    $('#titulo-cortes')
+                        .text('Duración: ' + response.tiemposcortes[0].Duracion)
+                        .css({
+                            'font-size': '10px',
+                            'color': 'black',
+                            'font-weight': 'bold'
                         });
-                    } 
-
-                    if (!hasData) {
-                        // Si no hay datos de tiemposareas, mostrar mensaje
-                        $('#titulo-suministro').text('Sin datos de duración').css({
+                } else {
+                    $('#titulo-cortes')
+                        .text('Duración: 0 días, 0 horas, 0 minutos')
+                        .css({
                             'font-size': '10px',
                             'color': 'red',
                             'font-weight': 'bold'
                         });
+                }
 
-                        $('#titulo-preparado').text('Sin datos de duración').css({
-                            'font-size': '10px',
-                            'color': 'red',
-                            'font-weight': 'bold'
-                        });
+                // Verificar si tiemposareas tiene datos
+                let hasData = false;
 
-                        $('#titulo-ensamble').text('Sin datos de duración').css({
-                            'font-size': '10px',
-                            'color': 'red',
-                            'font-weight': 'bold'
-                        });
+                if (response.tiemposareas.length > 0) {
+                    response.tiemposareas.forEach(function(item) {
+                        hasData = true;
+                        switch (item.Areas_id) {
+                            case 3:
+                                $('#titulo-suministro')
+                                    .text('Duración: ' + item.DuracionTotal)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'black',
+                                        'font-weight': 'bold'
+                                    });
+                                break;
+                            case 4:
+                                $('#titulo-preparado')
+                                    .text('Duración: ' + item.DuracionTotal)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'black',
+                                        'font-weight': 'bold'
+                                    });
+                                break;
+                            case 5:
+                                $('#titulo-ensamble')
+                                    .text('Duración: ' + item.DuracionTotal)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'black',
+                                        'font-weight': 'bold'
+                                    });
+                                break;
+                            case 6:
+                                $('#titulo-pulido')
+                                    .text('Duración: ' + item.DuracionTotal)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'black',
+                                        'font-weight': 'bold'
+                                    });
+                                break;
+                            case 7:
+                                $('#titulo-medicion')
+                                    .text('Duración: ' + item.DuracionTotal)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'black',
+                                        'font-weight': 'bold'
+                                    });
+                                break;
+                            case 8:
+                                $('#titulo-visualizacion')
+                                    .text('Duración: ' + item.DuracionTotal)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'black',
+                                        'font-weight': 'bold'
+                                    });
+                                break;
+                            case 9:
+                                $('#titulo-empaque')
+                                    .text('Duración: ' + item.DuracionTotal)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'black',
+                                        'font-weight': 'bold'
+                                    });
+                                break;
+                            default:
+                                console.warn('Área no reconocida:', item.Areas_id);
+                        }
+                    });
+                }
 
-                        $('#titulo-pulido').text('Sin datos de duración').css({
-                            'font-size': '10px',
-                            'color': 'red',
-                            'font-weight': 'bold'
-                        });
+                if (!hasData) {
+                    $('#titulo-suministro').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
 
-                        $('#titulo-medicion').text('Sin datos de duración').css({
-                            'font-size': '10px',
+                    $('#titulo-preparado').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-ensamble').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-pulido').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                        'font-size': '10px',
+                        'color': 'red',
+                        'font-weight': 'bold'
+                    });
+
+                    $('#titulo-medicion').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                        'font-size': '10px',
                             'color': 'red',
                             'font-weight': 'bold'
                         });
