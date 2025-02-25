@@ -1010,6 +1010,8 @@ class HomeControler extends Controller
         $totalOFcompletadas = $indicador->where('Cerrada', 1)->sum('Cantidad');
         $porcentajeCompletadas = $TotarOfTotal > 0 ? ($totalOFcompletadas / $TotarOfTotal) * 100 : 0;
         $faltanteTotal = $TotarOfTotal - $totalOFcompletadas;
+        $porcentajeCerradas = $TotarOfTotal > 0 ? ($faltanteTotal / $TotarOfTotal) * 100 : 0;
+
     
         return response()->json([
             'Cantidadpersonas' => $personal ? $personal->NumeroPersonas : 0, 
@@ -1019,7 +1021,9 @@ class HomeControler extends Controller
             'TotalOfTotal' => (int) $TotarOfTotal,
             'faltanteTotal' => $faltanteTotal,
             'PorcentajeCompletadas' => round($porcentajeCompletadas, 2),
+            'porcentajeCerradas' => round($porcentajeCerradas, 2), // Nuevo porcentaje agregado
         ]);
+        
     }
     
     

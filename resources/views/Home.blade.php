@@ -358,12 +358,12 @@
             <div>
                 <div class="d-flex align-items-center mb-2">
                     <div class="bullet-item bg-primary me-2"></div>
-                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Planeadas</h6>
+                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Completadas</h6>
                     <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajeplaneada">0</span>%</h6>
                 </div>
                 <div class="d-flex align-items-center mb-2">
                     <div class="bullet-item bg-primary-200 me-2"></div>
-                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Completadas</h6>
+                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Faltantes</h6>
                     <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajefaltante">0</span>%</h6>
                 </div>
             </div>
@@ -1096,21 +1096,26 @@ fetch("{{ route('orden.cerredas') }}")
 fetch("{{ route('dashboard.indicador') }}")
     .then(response => response.json())
     .then(data => {
-        const porcentajeCerradas = parseFloat(data.PorcentajeCompletadas) || 0;
-        const totalOfTotal = parseInt(data.TotalOfTotal) || 0;
-        const totalCompletadas = parseInt(data.TotalOFcompletadas) || 0;
-        const faltanteTotal = parseInt(data.faltanteTotal) || 0;
-        const Estimadopiezas = parseFloat(data.Estimadopiezas) || 0;
-        const Cantidadpersonas = parseInt(data.Cantidadpersonas) || 0;
+        const porcentajeCerradas = parseFloat(data.PorcentajeCompletadas) || 0;  // Este es el porcentaje de cerradas (98.42%)
+const porcentajeCompletadas = parseFloat(data.porcentajeCerradas) || 0;  // Este es el porcentaje de completadas (1.58%)
+const totalOfTotal = parseInt(data.TotalOfTotal) || 0;
+const totalCompletadas = parseInt(data.TotalOFcompletadas) || 0;
+const faltanteTotal = parseInt(data.faltanteTotal) || 0;
+const Estimadopiezas = parseFloat(data.Estimadopiezas) || 0;
+const Cantidadpersonas = parseInt(data.Cantidadpersonas) || 0;
 
-        // Mostrar los valores sin modificar
-        document.getElementById("Estimadopiezas").textContent = Estimadopiezas.toFixed();
-        document.getElementById("Cantidadpersonas").textContent = Cantidadpersonas;
-        document.getElementById("Porcentajeplaneada").textContent = (1 - porcentajeCerradas).toFixed(2); 
-        document.getElementById("Porcentajefaltante").textContent = porcentajeCerradas.toFixed(2); 
-        document.getElementById("Piezasdia").textContent = totalOfTotal;
-        document.getElementById("Piezasplaneadas").textContent = totalCompletadas;
-        document.getElementById("Piezasfaltantes").textContent = faltanteTotal;
+// Mostrar los valores sin modificar
+document.getElementById("Estimadopiezas").textContent = Estimadopiezas.toFixed();
+document.getElementById("Cantidadpersonas").textContent = Cantidadpersonas;
+
+// Porcentaje planeada es el porcentaje que falta para completar, es decir, el porcentaje de completadas.
+document.getElementById("Porcentajeplaneada").textContent = porcentajeCerradas.toFixed(2);  // Mostrará 1.58% (completadas)
+document.getElementById("Porcentajefaltante").textContent = porcentajeCompletadas.toFixed(2);  // Mostrará 98.42% (faltantes)
+
+document.getElementById("Piezasdia").textContent = totalOfTotal;
+document.getElementById("Piezasplaneadas").textContent = totalCompletadas;
+document.getElementById("Piezasfaltantes").textContent = faltanteTotal;
+
 
         let color = "#007BFF"; // Color predeterminado
 
