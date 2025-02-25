@@ -278,7 +278,6 @@
     </style>
 @endsection
 @section('content')
-
     <div class="card text-center">
         <hr class="hr2">
             <h1 class="progress-title mt-3 mb-4"></h1>
@@ -343,6 +342,32 @@
 <!--Indicadores de Producción por Dia-->
     <hr class="hr">
     <div id="indicadores-dia">
+         <div class="card">
+            <div class="d-flex justify-content">
+                <div class="row">
+                    <h6 class="text-700 col-6">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
+                    <h6 class="text-700 col-6">Estimado de piezas por día: <span id="Estimadopiezas">0</span></h6>
+                    <h6 class="text-700 col-6">Piezas completadas: <span id="Piezasplaneadas">0</span></h6>
+                    <h6 class="text-700 col-6">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>
+                    <h6 class="text-700 col-12">Total de piezas del día: <span id="Piezasdia">0</span></h6>
+                </div>
+            </div>
+            <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
+                <div class="p-0" id="PrcentajePlaneacion" style="width: 9rem; height:9rem"></div>
+            </div>
+            <div>
+                <div class="d-flex align-items-center mb-2">
+                    <div class="bullet-item bg-primary me-2"></div>
+                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Planeadas</h6>
+                    <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajeplaneada">0</span>%</h6>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    <div class="bullet-item bg-primary-200 me-2"></div>
+                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Completadas</h6>
+                    <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajefaltante">0</span>%</h6>
+                </div>
+            </div>
+        </div>
         <div class="card text-center">
             <h1 class="progress-title mt-3 mb-4">Indicadores de Producción por Dia</h1>
             <div class="row justify-content-center">
@@ -679,6 +704,43 @@
         </div>
     </div>
     <hr class="hr">
+
+
+    <div class="modal fade" id="ParametrosPorcentaje" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ParametrosPorcentajeLabel">Modificar Parámetros</h5>
+                    <button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <span class="fas fa-times fs--1"></span>
+                    </button>
+                </div>
+                <form id="formParametros" method="POST">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="mb-1 col-6">
+                                <label class="form-label" for="CantidadPersona">Cantidad de personas:</label>
+                                <input class="form-control" id="CantidadPersona" name="NumeroPersonas" oninput="RegexNumeros(this)" type="text" placeholder="Ingresa una cantidad" />
+                                <div class="invalid-feedback" id="error_CantidadPersona"></div>
+                            </div>
+                            <div class="mb-1 col-6">
+                                <label class="form-label" for="Piezaspersona">Piezas por persona:</label>
+                                <input class="form-control" id="Piezaspersona" name="FechaPlaneacion" oninput="RegexNumeros(this)" type="text" placeholder="Ingresa una cantidad" />
+                                <div class="invalid-feedback" id="error_Piezaspersona"></div>
+                            </div>
+                        </div>  
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="GuardarParametrosPorcentajes()">Guardar</button>
+
+                        <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    </div>
 @endsection
 
 @section('scripts')
@@ -1031,7 +1093,82 @@ fetch("{{ route('orden.cerredas') }}")
         // Renderizar gráfico
         myChart.setOption(option);
 })
-  
+fetch("{{ route('dashboard.indicador') }}")
+    .then(response => response.json())
+    .then(data => {
+        const porcentajeCerradas = parseFloat(data.PorcentajeCompletadas) || 0;
+        const totalOfTotal = parseInt(data.TotalOfTotal) || 0;
+        const totalCompletadas = parseInt(data.TotalOFcompletadas) || 0;
+        const faltanteTotal = parseInt(data.faltanteTotal) || 0;
+        const Estimadopiezas = parseFloat(data.Estimadopiezas) || 0;
+        const Cantidadpersonas = parseInt(data.Cantidadpersonas) || 0;
+
+        // Mostrar los valores sin modificar
+        document.getElementById("Estimadopiezas").textContent = Estimadopiezas.toFixed();
+        document.getElementById("Cantidadpersonas").textContent = Cantidadpersonas;
+        document.getElementById("Porcentajeplaneada").textContent = (1 - porcentajeCerradas).toFixed(2); 
+        document.getElementById("Porcentajefaltante").textContent = porcentajeCerradas.toFixed(2); 
+        document.getElementById("Piezasdia").textContent = totalOfTotal;
+        document.getElementById("Piezasplaneadas").textContent = totalCompletadas;
+        document.getElementById("Piezasfaltantes").textContent = faltanteTotal;
+
+        let color = "#007BFF"; // Color predeterminado
+
+        if (totalCompletadas === 0 && faltanteTotal === 0) {
+            // No hay datos, el indicador será 0 y sin color
+            color = "#D3D3D3"; // Gris neutro
+        } else if (porcentajeCerradas > 1) {
+            color = "#FF0000";
+        } else if (porcentajeCerradas > 0.9) {
+            color = "#FFA500";
+        } else if (porcentajeCerradas > 0.8) {
+            color = "#FFFF00";
+        }
+
+        // Configuración del gráfico
+        var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
+        var option = {
+            tooltip: { trigger: 'item' },
+            legend: { show: false },
+            series: [
+                {
+                    name: 'Planeación',
+                    type: 'pie',
+                    radius: ['60%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        position: 'center',
+                        formatter: totalCompletadas === 0 && faltanteTotal === 0 ? '0.00' : `${porcentajeCerradas.toFixed(2)}`,
+                        fontSize: 20,
+                        fontWeight: 'bold'
+                    },
+                    labelLine: { show: false },
+                    data: totalCompletadas === 0 && faltanteTotal === 0
+                        ? [{ value: 1, name: 'Sin datos', itemStyle: { color: "#D3D3D3" } }] // Solo un gris neutro
+                        : [
+                            { value: totalCompletadas, name: 'Total Cerrado', itemStyle: { color: color } },
+                            { value: faltanteTotal, name: 'Total Faltante', itemStyle: { color: '#D3D3D3' } }
+                        ]
+                }
+            ]
+        };
+
+        myChart.setOption(option);
+    })
+.catch(error => console.error('Error al obtener los datos:', error));
+
+/*
+
+
+
+
+  /////////////////////////
 
 
 
