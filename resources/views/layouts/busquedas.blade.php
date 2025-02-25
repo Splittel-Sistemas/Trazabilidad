@@ -1090,20 +1090,27 @@
                         tipo: endpoint.tipo,   // Enviar tipo dinámico
                     },
                     success: function(response) {
-                        if (response && response.CantidadTotal !== undefined) {  // Verificar si la respuesta es válida
+                        if (response && response.CantidadTotal !== undefined) {  
                             let cantidadTotal = response.CantidadTotal;
                             let totalPartidas = response.TotalPartidas;
                             let retrabajo = 0;
+                            let progreso = 0;
                             let label = '';
 
                             if (totalPartidas > cantidadTotal) {
+                                // Si hay más partidas que la cantidad total, el exceso es retrabajo
                                 retrabajo = totalPartidas - cantidadTotal;
-                                totalPartidas = cantidadTotal;  // Evitar que el total supere la cantidad total real
-                                label += `Retrabajo: ${retrabajo}  `;
+                                totalPartidas = cantidadTotal; // Solo consideramos las primeras unidades
                             }
 
-                            let progreso = response.Progreso;  // Ahora el backend ya lo calcula correctamente
-                            drawGauge(endpoint.id, progreso, label);  // Llamada a la función con su respectiva etiqueta
+                            // Calcular el porcentaje con las unidades dentro del límite de cantidad total
+                            progreso = (totalPartidas / cantidadTotal) * 100;
+                            
+                            if (retrabajo > 0) {
+                                label = `Retrabajo: ${retrabajo}`;
+                            }
+
+                            drawGauge(endpoint.id, progreso, label);
                         } else {
                             console.log('No hay datos para mostrar.');
                             drawGauge(endpoint.id, 0, 'Sin Datos');
@@ -1115,6 +1122,7 @@
                     }
                 });
             });
+
 
             $.ajax({
                 url: '{{ route("tiempos.hrs") }}',
