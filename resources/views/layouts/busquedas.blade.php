@@ -918,48 +918,47 @@
                 alert('Error al obtener los datos de la venta.');
             }
         });
-        const endpoints = [
-    { tipo: 'cortes', id: 'corte' },
-    { tipo: 'suministros', id: 'suministro' },
-    { tipo: 'preparado', id: 'preparado' },
-    { tipo: 'ensamble', id: 'ensamble' },
-    { tipo: 'pulido', id: 'pulido' },
-    { tipo: 'medicion', id: 'medicion' },
-    { tipo: 'visualizacion', id: 'visualizacion' },
-    { tipo: 'empaque', id: 'empaque' },
-];
+            const endpoints = [
+            { tipo: 'cortes', id: 'corte' },
+            { tipo: 'suministros', id: 'suministro' },
+            { tipo: 'preparado', id: 'preparado' },
+            { tipo: 'ensamble', id: 'ensamble' },
+            { tipo: 'pulido', id: 'pulido' },
+            { tipo: 'medicion', id: 'medicion' },
+            { tipo: 'visualizacion', id: 'visualizacion' },
+            { tipo: 'empaque', id: 'empaque' },
+        ];
 
-// Verifica si la variable ordenVenta está definida
-if (typeof ordenVenta === "undefined" || ordenVenta === null) {
-    console.error("Error: ordenVenta no está definida.");
-} else {
-    endpoints.forEach(endpoint => {
-        $.ajax({
-            url: @json(route("graficador")), // Corrige la forma de obtener la URL en Blade
-            type: 'GET',
-            data: { 
-                id: ordenVenta,  
-                tipo: endpoint.tipo
-            },
-            success: function(response) {
-                console.log(`Respuesta de ${endpoint.tipo}:`, response); // Depuración
-                
-                if (response.result && response.result.length > 0) {
-                    const progreso = Math.min(response.Progreso.Progreso, 100); // Acceder correctamente
-                    drawGauge(endpoint.id, progreso, ''); 
-                } else {
-                    console.log(`No hay datos para ${endpoint.tipo}`);
-                    drawGauge(endpoint.id, 0, 'Sin Datos'); 
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
-                drawGauge(endpoint.id, 0, 'Error'); 
-            }
-        });
-    });
-}
-
+        // Verifica si la variable ordenVenta está definida
+        if (typeof ordenVenta === "undefined" || ordenVenta === null) {
+            console.error("Error: ordenVenta no está definida.");
+        } else {
+            endpoints.forEach(endpoint => {
+                $.ajax({
+                    url: @json(route("graficador")), // Corrige la forma de obtener la URL en Blade
+                    type: 'GET',
+                    data: { 
+                        id: ordenVenta,  
+                        tipo: endpoint.tipo
+                    },
+                    success: function(response) {
+                        console.log(`Respuesta de ${endpoint.tipo}:`, response); // Depuración
+                        
+                        if (response.result && response.result.length > 0) {
+                            const progreso = Math.min(response.Progreso.Progreso, 100); // Acceder correctamente
+                            drawGauge(endpoint.id, progreso, ''); 
+                        } else {
+                            console.log(`No hay datos para ${endpoint.tipo}`);
+                            drawGauge(endpoint.id, 0, 'Sin Datos'); 
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
+                        drawGauge(endpoint.id, 0, 'Error'); 
+                    }
+                });
+            });
+        }
     });
 
     // Cargar datos de la tabla de orden de fabricación
@@ -1073,200 +1072,202 @@ if (typeof ordenVenta === "undefined" || ordenVenta === null) {
                     }
                 });
                 const endpoints = [
-            { tipo: 'plemasCorte', id: 'plemasCorte' },
-            { tipo: 'plemasSuministro', id: 'plemasSuministro' },
-            { tipo: 'plemasPreparado', id: 'plemasPreparado' },
-            { tipo: 'plemasEnsamble', id: 'plemasEnsamble' },
-            { tipo: 'plemasPulido', id: 'plemasPulido' },
-            { tipo: 'plemasMedicion', id: 'plemasMedicion' },
-            { tipo: 'plemasVisualizacion', id: 'plemasVisualizacion' },
-            { tipo: 'plemasEmpaque', id: 'plemasEmpaque' },
-        ];
-        endpoints.forEach(endpoint => {
+                { tipo: 'plemasCorte', id: 'plemasCorte' },
+                { tipo: 'plemasSuministro', id: 'plemasSuministro' },
+                { tipo: 'plemasPreparado', id: 'plemasPreparado' },
+                { tipo: 'plemasEnsamble', id: 'plemasEnsamble' },
+                { tipo: 'plemasPulido', id: 'plemasPulido' },
+                { tipo: 'plemasMedicion', id: 'plemasMedicion' },
+                { tipo: 'plemasVisualizacion', id: 'plemasVisualizacion' },
+                { tipo: 'plemasEmpaque', id: 'plemasEmpaque' },
+            ];
+            endpoints.forEach(endpoint => {
+                $.ajax({
+                    url: '{{ route("graficadoOF") }}',  // Ruta del controlador
+                    type: 'GET',
+                    data: { 
+                        id: ordenfabricacion,  // Asumiendo que 'ordenfabricacion' está disponible
+                        tipo: endpoint.tipo,   // Enviar tipo dinámico
+                    },
+                    success: function(response) {
+                        if (response && response.CantidadTotal !== undefined) {  // Verificar si la respuesta es válida
+                            let cantidadTotal = response.CantidadTotal;
+                            let totalPartidas = response.TotalPartidas;
+                            let retrabajo = 0;
+                            let label = '';
+
+                            if (totalPartidas > cantidadTotal) {
+                                retrabajo = totalPartidas - cantidadTotal;
+                                totalPartidas = cantidadTotal;  // Evitar que el total supere la cantidad total real
+                                label += `Retrabajo: ${retrabajo}  `;
+                            }
+
+                            let progreso = response.Progreso;  // Ahora el backend ya lo calcula correctamente
+                            drawGauge(endpoint.id, progreso, label);  // Llamada a la función con su respectiva etiqueta
+                        } else {
+                            console.log('No hay datos para mostrar.');
+                            drawGauge(endpoint.id, 0, 'Sin Datos');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
+                        drawGauge(endpoint.id, 0, 'Error');
+                    }
+                });
+            });
+
             $.ajax({
-                url: '{{ route("graficadoOF") }}',  // Ruta que hace referencia al controlador
-                type: 'GET',
+                url: '{{ route("tiempos.hrs") }}',
+                method: 'GET',
                 data: { 
-                    id: ordenfabricacion,  // Asumiendo que 'ordenfabricacion' está disponible
-                    tipo: endpoint.tipo,   // Enviar tipo dinámico
+                    id: ordenfabricacion, // Verifica que esta variable esté definida
                 },
                 success: function(response) {
-                    if (response.length > 0) {
-                        const firstOrder = response[0];
-                        let cantidadTotal = firstOrder.CantidadTotal;
-                        let totalPartidas = firstOrder.TotalPartidas;
-                        let retrabajo = 0;
-                        let label = '';
-
-                        if (totalPartidas > cantidadTotal) {
-                            retrabajo = totalPartidas - cantidadTotal;
-                            totalPartidas = cantidadTotal; 
-                            label += `Retrabajo: ${retrabajo}  `;
-                        }
-                        let progreso = Math.round((totalPartidas / cantidadTotal) * 100);
-                        drawGauge(endpoint.id, progreso, label);  // Llamada a la función con su respectiva etiqueta
+                    // Verificar si la respuesta tiene tiempos de cortes
+                    if (response.tiemposcortes.length > 0) {
+                        $('#titulo-cortes')
+                            .text('Duración: ' + response.tiemposcortes[0].Duracion)
+                            .css({
+                                'font-size': '10px',
+                                'color': 'black',
+                                'font-weight': 'bold'
+                            });
                     } else {
-                        console.log('No hay datos para mostrar.');
-                        drawGauge(endpoint.id, 0, 'Sin Datos');
+                        $('#titulo-cortes')
+                            .text('Sin datos de duración')
+                            .css({
+                                'font-size': '10px',
+                                'color': 'black',
+                                'font-weight': 'bold'
+                            });
+                    }
+
+                    // Verificar si tiemposareas tiene datos
+                    let hasData = false;  // Variable para verificar si hay datos en tiemposareas
+
+                    if (response.tiemposareas.length > 0) {
+                        // Mostrar el tiempo según el área
+                        response.tiemposareas.forEach(function(item) {
+                            hasData = true;
+                            switch (item.Areas_id) {
+                                case 3:
+                                    $('#titulo-suministro')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 4:
+                                    $('#titulo-preparado')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 5:
+                                    $('#titulo-ensamble')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 6:
+                                    $('#titulo-pulido')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 7:
+                                    $('#titulo-medicion')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 8:
+                                    $('#titulo-visualizacion')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 9:
+                                    $('#titulo-empaque')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                default:
+                                    console.warn('Área no reconocida:', item.Areas_id);
+                            }
+                        });
+                    } 
+
+                    if (!hasData) {
+                        // Si no hay datos de tiemposareas, mostrar mensaje
+                        $('#titulo-suministro').text('Sin datos de duración').css({
+                            'font-size': '10px',
+                            'color': 'red',
+                            'font-weight': 'bold'
+                        });
+
+                        $('#titulo-preparado').text('Sin datos de duración').css({
+                            'font-size': '10px',
+                            'color': 'red',
+                            'font-weight': 'bold'
+                        });
+
+                        $('#titulo-ensamble').text('Sin datos de duración').css({
+                            'font-size': '10px',
+                            'color': 'red',
+                            'font-weight': 'bold'
+                        });
+
+                        $('#titulo-pulido').text('Sin datos de duración').css({
+                            'font-size': '10px',
+                            'color': 'red',
+                            'font-weight': 'bold'
+                        });
+
+                        $('#titulo-medicion').text('Sin datos de duración').css({
+                            'font-size': '10px',
+                            'color': 'red',
+                            'font-weight': 'bold'
+                        });
+
+                        $('#titulo-visualizacion').text('Sin datos de duración').css({
+                            'font-size': '10px',
+                            'color': 'red',
+                            'font-weight': 'bold'
+                        });
+
+                        $('#titulo-empaque').text('Sin datos de duración').css({
+                            'font-size': '10px',
+                            'color': 'red',
+                            'font-weight': 'bold'
+                        });
                     }
                 },
-                error: function(xhr, status, error) {
-                    console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
+                error: function() {
+                    console.error('Error al obtener los datos');
                 }
             });
-        });
-        $.ajax({
-            url: '{{ route("tiempos.hrs") }}',
-            method: 'GET',
-            data: { 
-                id: ordenfabricacion, // Verifica que esta variable esté definida
-            },
-            success: function(response) {
-                // Verificar si la respuesta tiene tiempos de cortes
-                if (response.tiemposcortes.length > 0) {
-                    $('#titulo-cortes')
-                        .text('Duración: ' + response.tiemposcortes[0].Duracion)
-                        .css({
-                            'font-size': '10px',
-                            'color': 'black',
-                            'font-weight': 'bold'
-                        });
-                } else {
-                    $('#titulo-cortes')
-                        .text('Sin datos de duración')
-                        .css({
-                            'font-size': '10px',
-                            'color': 'black',
-                            'font-weight': 'bold'
-                        });
-                }
-
-                // Verificar si tiemposareas tiene datos
-                let hasData = false;  // Variable para verificar si hay datos en tiemposareas
-
-                if (response.tiemposareas.length > 0) {
-                    // Mostrar el tiempo según el área
-                    response.tiemposareas.forEach(function(item) {
-                        hasData = true;
-                        switch (item.Areas_id) {
-                            case 3:
-                                $('#titulo-suministro')
-                                    .text('Duración: ' + item.DuracionTotal)
-                                    .css({
-                                        'font-size': '10px',
-                                        'color': 'black',
-                                        'font-weight': 'bold'
-                                    });
-                                break;
-                            case 4:
-                                $('#titulo-preparado')
-                                    .text('Duración: ' + item.DuracionTotal)
-                                    .css({
-                                        'font-size': '10px',
-                                        'color': 'black',
-                                        'font-weight': 'bold'
-                                    });
-                                break;
-                            case 5:
-                                $('#titulo-ensamble')
-                                    .text('Duración: ' + item.DuracionTotal)
-                                    .css({
-                                        'font-size': '10px',
-                                        'color': 'black',
-                                        'font-weight': 'bold'
-                                    });
-                                break;
-                            case 6:
-                                $('#titulo-pulido')
-                                    .text('Duración: ' + item.DuracionTotal)
-                                    .css({
-                                        'font-size': '10px',
-                                        'color': 'black',
-                                        'font-weight': 'bold'
-                                    });
-                                break;
-                            case 7:
-                                $('#titulo-medicion')
-                                    .text('Duración: ' + item.DuracionTotal)
-                                    .css({
-                                        'font-size': '10px',
-                                        'color': 'black',
-                                        'font-weight': 'bold'
-                                    });
-                                break;
-                            case 8:
-                                $('#titulo-visualizacion')
-                                    .text('Duración: ' + item.DuracionTotal)
-                                    .css({
-                                        'font-size': '10px',
-                                        'color': 'black',
-                                        'font-weight': 'bold'
-                                    });
-                                break;
-                            case 9:
-                                $('#titulo-empaque')
-                                    .text('Duración: ' + item.DuracionTotal)
-                                    .css({
-                                        'font-size': '10px',
-                                        'color': 'black',
-                                        'font-weight': 'bold'
-                                    });
-                                break;
-                            default:
-                                console.warn('Área no reconocida:', item.Areas_id);
-                        }
-                    });
-                } 
-
-                if (!hasData) {
-                    // Si no hay datos de tiemposareas, mostrar mensaje
-                    $('#titulo-suministro').text('Sin datos de duración').css({
-                        'font-size': '10px',
-                        'color': 'red',
-                        'font-weight': 'bold'
-                    });
-
-                    $('#titulo-preparado').text('Sin datos de duración').css({
-                        'font-size': '10px',
-                        'color': 'red',
-                        'font-weight': 'bold'
-                    });
-
-                    $('#titulo-ensamble').text('Sin datos de duración').css({
-                        'font-size': '10px',
-                        'color': 'red',
-                        'font-weight': 'bold'
-                    });
-
-                    $('#titulo-pulido').text('Sin datos de duración').css({
-                        'font-size': '10px',
-                        'color': 'red',
-                        'font-weight': 'bold'
-                    });
-
-                    $('#titulo-medicion').text('Sin datos de duración').css({
-                        'font-size': '10px',
-                        'color': 'red',
-                        'font-weight': 'bold'
-                    });
-
-                    $('#titulo-visualizacion').text('Sin datos de duración').css({
-                        'font-size': '10px',
-                        'color': 'red',
-                        'font-weight': 'bold'
-                    });
-
-                    $('#titulo-empaque').text('Sin datos de duración').css({
-                        'font-size': '10px',
-                        'color': 'red',
-                        'font-weight': 'bold'
-                    });
-                }
-            },
-            error: function() {
-                console.error('Error al obtener los datos');
-            }
-        });
     });
 
     //funcion para cargar los canvases general para Or-V Y Or-F
