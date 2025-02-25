@@ -629,75 +629,75 @@ class BusquedaController extends Controller
       //dd($idFabricacion);
         
      // Tiempo de cortes
-$tiemposcortes = DB::table('ordenfabricacion')
-->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-->select(
-    'ordenfabricacion.OrdenFabricacion',
-    'partidasof.FechaComienzo',
-    'partidasof.FechaFinalizacion', 
-    DB::raw('GROUP_CONCAT(partidasof.OrdenFabricacion_id) as ids'),
-    DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'),
-    DB::raw('MAX(partidasof.FechaFinalizacion) as FechaTermina'),
-    DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof.FechaComienzo, partidasof.FechaFinalizacion)) as TotalMinutos')
-)
-->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
-->get()
-->map(function ($item) {
-    if ($item->TotalMinutos == 0) {
-        $item->Duracion = "0 días, 0 horas, 0 minutos";
-    } else {
-        $FechaComienzo = Carbon::parse($item->FechaComienzo);
-        $FechaFinalizacion = Carbon::parse($item->FechaFinalizacion);
-        
-        $diffDias = floor($FechaComienzo->diffInHours($FechaFinalizacion) / 24);
-        $diffHoras = $FechaComienzo->diffInHours($FechaFinalizacion) % 24;
-        $diffMinutos = $FechaComienzo->diffInMinutes($FechaFinalizacion) % 60;
+        $tiemposcortes = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            'partidasof.FechaComienzo',
+            'partidasof.FechaFinalizacion', 
+            DB::raw('GROUP_CONCAT(partidasof.OrdenFabricacion_id) as ids'),
+            DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'),
+            DB::raw('MAX(partidasof.FechaFinalizacion) as FechaTermina'),
+            DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof.FechaComienzo, partidasof.FechaFinalizacion)) as TotalMinutos')
+        )
+        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
+        ->get()
+        ->map(function ($item) {
+            if ($item->TotalMinutos == 0) {
+                $item->Duracion = "0 días, 0 horas, 0 minutos";
+            } else {
+                $FechaComienzo = Carbon::parse($item->FechaComienzo);
+                $FechaFinalizacion = Carbon::parse($item->FechaFinalizacion);
+                
+                $diffDias = floor($FechaComienzo->diffInHours($FechaFinalizacion) / 24);
+                $diffHoras = $FechaComienzo->diffInHours($FechaFinalizacion) % 24;
+                $diffMinutos = $FechaComienzo->diffInMinutes($FechaFinalizacion) % 60;
 
-        $item->Duracion = "{$diffDias} días, {$diffHoras} horas, {$diffMinutos} minutos";
-    }
-    return $item;
-});
+                $item->Duracion = "{$diffDias} días, {$diffHoras} horas, {$diffMinutos} minutos";
+            }
+            return $item;
+        });
 
-// Tiempo por áreas
-$tiemposareas = DB::table('ordenfabricacion')
-->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-->select(
-    'ordenfabricacion.OrdenFabricacion',
-    'partidasof_areas.PartidasOf_id',
-    'partidasof_areas.Areas_id',
-    DB::raw('GROUP_CONCAT(partidasof_areas.id) as ids'),
-    DB::raw('MIN(partidasof_areas.FechaComienzo) as FechaComienzo'),
-    DB::raw('MAX(partidasof_areas.FechaTermina) as FechaTermina'),
-    DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof_areas.FechaComienzo, partidasof_areas.FechaTermina)) as TotalMinutos')
-)
-->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.PartidasOf_id', 'partidasof_areas.Areas_id')
-->get()
-->map(function ($item) {
-    if ($item->TotalMinutos == 0) {
-        $item->DuracionTotal = "0 días, 0 horas, 0 minutos";
-    } else {
-        $totalMinutos = $item->TotalMinutos;
-        $dias = floor($totalMinutos / (60 * 24));
-        $horas = floor(($totalMinutos % (60 * 24)) / 60);
-        $minutos = $totalMinutos % 60;
+        // Tiempo por áreas
+        $tiemposareas = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            'partidasof_areas.PartidasOf_id',
+            'partidasof_areas.Areas_id',
+            DB::raw('GROUP_CONCAT(partidasof_areas.id) as ids'),
+            DB::raw('MIN(partidasof_areas.FechaComienzo) as FechaComienzo'),
+            DB::raw('MAX(partidasof_areas.FechaTermina) as FechaTermina'),
+            DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof_areas.FechaComienzo, partidasof_areas.FechaTermina)) as TotalMinutos')
+        )
+        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.PartidasOf_id', 'partidasof_areas.Areas_id')
+        ->get()
+        ->map(function ($item) {
+            if ($item->TotalMinutos == 0) {
+                $item->DuracionTotal = "0 días, 0 horas, 0 minutos";
+            } else {
+                $totalMinutos = $item->TotalMinutos;
+                $dias = floor($totalMinutos / (60 * 24));
+                $horas = floor(($totalMinutos % (60 * 24)) / 60);
+                $minutos = $totalMinutos % 60;
 
-        $duracion = [];
-        if ($dias > 0) $duracion[] = "{$dias} días";
-        if ($horas > 0) $duracion[] = "{$horas} horas";
-        if ($minutos > 0) $duracion[] = "{$minutos} minutos";
-        $item->DuracionTotal = implode(", ", $duracion);
-    }
-    $item->ids = explode(',', $item->ids);
-    return $item;
-});
+                $duracion = [];
+                if ($dias > 0) $duracion[] = "{$dias} días";
+                if ($horas > 0) $duracion[] = "{$horas} horas";
+                if ($minutos > 0) $duracion[] = "{$minutos} minutos";
+                $item->DuracionTotal = implode(", ", $duracion);
+            }
+            $item->ids = explode(',', $item->ids);
+            return $item;
+        });
 
-return response()->json([
-'tiemposcortes' => $tiemposcortes,
-'tiemposareas' => $tiemposareas
-]);
+        return response()->json([
+        'tiemposcortes' => $tiemposcortes,
+        'tiemposareas' => $tiemposareas
+        ]);
 
     }
     
