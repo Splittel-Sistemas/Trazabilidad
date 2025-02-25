@@ -1157,7 +1157,7 @@ document.getElementById("Piezasfaltantes").textContent = faltanteTotal;
                     data: totalCompletadas === 0 && faltanteTotal === 0
                         ? [{ value: 1, name: 'Sin datos', itemStyle: { color: "#D3D3D3" } }] // Solo un gris neutro
                         : [
-                            { value: totalCompletadas, name: 'Total Cerrado', itemStyle: { color: color } },
+                            { value: totalCompletadas, name: 'Total Completados', itemStyle: { color: color } },
                             { value: faltanteTotal, name: 'Total Faltante', itemStyle: { color: '#D3D3D3' } }
                         ]
                 }
