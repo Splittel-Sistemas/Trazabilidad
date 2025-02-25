@@ -695,7 +695,7 @@ class HomeControler extends Controller
         $areas = DB::table('partidasof_areas')
         ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
         ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
-        ->where('ordenfabricacion.FechaEntrega', '>=', $fechaLimite) 
+        ->where('partidasof_areas.FechaComienzo', '>=', $fechaLimite) 
         ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9])
         ->select(
             'ordenfabricacion.OrdenFabricacion',
@@ -719,14 +719,16 @@ class HomeControler extends Controller
                 DB::raw('ROUND(LEAST((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso'),  // Limitar a 100
                 DB::raw('ROUND(SUM(partidasof.cantidad_partida) - ordenfabricacion.CantidadTotal, 0) as retrabajo')
             )
-            ->where('ordenfabricacion.FechaEntrega', '>=', $fechaLimite) 
+            ->where('partidasof.FechaComienzo', '>=', $fechaLimite) 
             ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
             ->get();
+            //dd($cortes);
 
             $totalOrdenes = DB::table('ordenfabricacion')
             ->whereDate('FechaEntrega', '=', $fechaLimite)
             ->select('ordenfabricacion.Ordenfabricacion') // Filtra por la fecha exacta
             ->count();
+           
     
         $estacionesAreas = [
             3 => 'plemasSuministrodia',
@@ -775,8 +777,8 @@ class HomeControler extends Controller
             }
         }
     
-        $datos['plemasCorte']['completado'] = $completadosCorte;
-        $datos['plemasCorte']['pendiente'] = $pendientesCorte;
+        $datos['plemasCortedia']['completado'] = $completadosCorte;
+        $datos['plemasCortedia']['pendiente'] = $pendientesCorte;
 
    
         return response()->json($datos);
@@ -1021,7 +1023,7 @@ class HomeControler extends Controller
             'TotalOfTotal' => (int) $TotarOfTotal,
             'faltanteTotal' => $faltanteTotal,
             'PorcentajeCompletadas' => round($porcentajeCompletadas, 2),
-            'porcentajeCerradas' => round($porcentajeCerradas, 2), // Nuevo porcentaje agregado
+            'porcentajeCerradas' => round($porcentajeCerradas, 2), 
         ]);
         
     }
