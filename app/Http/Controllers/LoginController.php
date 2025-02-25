@@ -20,6 +20,8 @@ class LoginController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
+        /*$encryptedPassword = bcrypt('12345678');
+        dd($encryptedPassword);*/
         $remember = $request->has('remember');
         $user = User::where('email', $request->email)->first();
         if (!$user || $user->active == 0) {

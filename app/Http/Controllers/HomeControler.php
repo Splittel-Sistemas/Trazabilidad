@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Models\PorcentajePlaneacion;
+use Illuminate\Support\Facades\Log;
+
 
 class HomeControler extends Controller
 {
@@ -550,7 +553,6 @@ class HomeControler extends Controller
         
     } 
 
-
     public function wizarpdia()
     {
         $fechaLimite = now()->setTimezone('America/Mexico_City'); // Cambiar la zona horaria
@@ -684,10 +686,6 @@ class HomeControler extends Controller
         ]);
     }
     
-    
-
-
-
     public function graficasdia()
     {
         $fechaLimite =  now()->setTimezone('America/Mexico_City');
@@ -982,5 +980,81 @@ class HomeControler extends Controller
             'rangoSemana' => 'Semana del ' . $rangoSemana
         ]);
     }
+    public function Dasboardindicadordia()
+    {
+         $personal = DB::table('porcentajeplaneacion')
+            ->select('porcentajeplaneacion.NumeroPersonas', 'porcentajeplaneacion.CantidadPlaneada')
+            ->whereDate('porcentajeplaneacion.created_at', now()->toDateString())
+            ->get();
+    
+        $TotarOfTotal = DB::table('ordenfabricacion')
+            ->whereDate('ordenfabricacion.FechaEntrega', today())
+            ->sum('CantidadTotal');
+    
+        $indicador = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->whereDate('ordenfabricacion.FechaEntrega', today()) 
+            ->where('partidasof_areas.Areas_id', 9)  
+            ->select('OrdenFabricacion', 'OrdenVenta_id', 'partidasof_areas.Cantidad', 'Cerrada', 'partidasof_areas.Areas_id',
+            DB::raw('SUM(partidasof_areas.Cantidad) as SumaCantidad'),
+
+            
+            )
+            ->groupBy('OrdenFabricacion', 'OrdenVenta_id', 'partidasof_areas.Cantidad', 'Cerrada', 'partidasof_areas.Areas_id'
+
+            )
+            ->get();
+    
+        $totalOFcompletadas = $indicador->where('Cerrada', 1)->sum('Cantidad');
+        $porcentajeCompletadas = $TotarOfTotal > 0 ? ($totalOFcompletadas / $TotarOfTotal) * 100 : 0;
+        $faltanteTotal = $TotarOfTotal - $totalOFcompletadas;
+    
+        return response()->json([
+            'Cantidadpersonas' => $personal->sum('NumeroPersonas'),
+            'Estimadopiezas' => $personal->sum('CantidadPlaneada'),
+            'indicador' => $indicador,
+            'TotalOFcompletadas' => $totalOFcompletadas,
+            'TotalOfTotal' => (int) $TotarOfTotal,
+            'faltanteTotal' => $faltanteTotal,
+            'PorcentajeCompletadas' => round($porcentajeCompletadas, 2),
+        ]);
+    }
+    
+    public function obtenerPorcentajes(Request $request)
+    {
+        // Simulación de datos para la prueba (reemplaza con datos de la BD)
+        $datos = [
+            'NumeroPersonas' => 10,
+            'CantidadEstimadaDia' => 100,
+            'PlaneadoPorDia' => 80,
+            'Piezasfaltantes' => 20,
+            'PorcentajePlaneada' => 80,
+            'PorcentajeFaltante' => 20,
+            'Fecha_Grafica' => now()->format('Y-m-d')
+        ];
+        //dd($datos);
+
+        return response()->json($datos);
+    }
+
+    public function guardarDasboard(Request $request)
+    {
+        try {
+            Log::info('Datos recibidos:', $request->all());
+
+            // Aquí puedes guardar los datos en la base de datos si es necesario
+
+            return response()->json(['success' => true, 'message' => 'Datos guardados correctamente.']);
+        } catch (\Exception $e) {
+            Log::error('Error al guardar datos: ' . $e->getMessage());
+
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    
+    
 
 }    
