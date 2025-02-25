@@ -323,9 +323,6 @@
             </div>
         <hr class="hr2">
     </div>
-  
-
-
 <!--Ordenes Fabricación-->
     <hr class="hr">
     <div style="height: 10px;"></div>
@@ -482,7 +479,7 @@
 
 <!--Progreso de semana-->
     
-     <div id="indicadores-semana">
+    <div id="indicadores-semana">
         <div class="card text-center">
             <h1 class="progress-title mt-3 mb-4">Indicadores de Producción de la semana</h1>
             <div class="row justify-content-center">
@@ -589,7 +586,7 @@
             <p id="chart-day-rango" style="font-size: 14px; color: gray;"></p>  
             <div id="chart-day" class="chart-container"></div>
         </div>
-     </div>
+    </div>
 
 <!--progreso de la mes-->
     
@@ -704,41 +701,6 @@
         </div>
     </div>
     <hr class="hr">
-
-
-    <div class="modal fade" id="ParametrosPorcentaje" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="ParametrosPorcentajeLabel">Modificar Parámetros</h5>
-                    <button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close">
-                        <span class="fas fa-times fs--1"></span>
-                    </button>
-                </div>
-                <form id="formParametros" method="POST">
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="mb-1 col-6">
-                                <label class="form-label" for="CantidadPersona">Cantidad de personas:</label>
-                                <input class="form-control" id="CantidadPersona" name="NumeroPersonas" oninput="RegexNumeros(this)" type="text" placeholder="Ingresa una cantidad" />
-                                <div class="invalid-feedback" id="error_CantidadPersona"></div>
-                            </div>
-                            <div class="mb-1 col-6">
-                                <label class="form-label" for="Piezaspersona">Piezas por persona:</label>
-                                <input class="form-control" id="Piezaspersona" name="FechaPlaneacion" oninput="RegexNumeros(this)" type="text" placeholder="Ingresa una cantidad" />
-                                <div class="invalid-feedback" id="error_Piezaspersona"></div>
-                            </div>
-                        </div>  
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="GuardarParametrosPorcentajes()">Guardar</button>
-
-                        <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
     
     </div>
 @endsection
@@ -746,6 +708,8 @@
 @section('scripts')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+
+    
 function setupClickListener(clickId, indicadoresId, hideIds) {
     document.getElementById(clickId).addEventListener('click', function() {
         console.log('¡Se hizo clic!');
@@ -1177,504 +1141,501 @@ fetch("{{ route('dashboard.indicador') }}")
 
 
 
-/*
-// Obtener progreso general del dashboard
-function fetchProgresoDash() {
-    fetch("{{ route('progreso.dash') }}")
-        .then(response => response.json())
-        .then(data => {
-            console.log("Progreso General:", data.progreso);
-            if (data && data.progreso) {
-                updateProgressBars(data.progreso); // Actualizar las barras con los datos generales
-            } else {
-                console.error("No se recibieron datos de progreso válidos.");
-            }
-        })
-        .catch(error => {
-            console.error('Error obteniendo datos de progreso:', error);
-        });
-}
-// Actualizar las barras de progreso del dashboard
-function updateProgressBars(progreso) {
-    Object.keys(progreso).forEach(area => {
-        const porcentaje = progreso[area];
-        let progressBarGeneral = document.getElementById(`progress-${area}`);
-        if (progressBarGeneral) {
-            animateProgressBar(progressBarGeneral, porcentaje);
-        }
-    });
-}
-
-    fetch("{{ route('orden.cerredas') }}")
-    .then(response => response.json())
-    .then(data => {
-        const id = "plemasordenes"; 
-        let canvas = document.getElementById(id);
-        if (!canvas) return;
-
-        let container = canvas.parentElement;
-        container.style.display = "flex";
-        container.style.alignItems = "center";
-        container.style.gap = "10px";
-
-        let myChart = echarts.init(canvas);
-
-        // Obtener datos del backend
-        let completadas = data.ordenesCompletadas.length > 0 ? data.ordenesCompletadas.length : 0;
-        let abiertas = data.ordenesAbiertas.length > 0 ? data.ordenesAbiertas.length : 0;
-        let totalOrdenes = data.totalOrdenes > 0 ? data.totalOrdenes : (completadas + abiertas);
-
-        // Calcular porcentajes
-        let porcentajeCompletadas = totalOrdenes > 0 ? ((completadas / totalOrdenes) * 100).toFixed(2) : 0;
-        let porcentajeAbiertas = totalOrdenes > 0 ? (((totalOrdenes - completadas) / totalOrdenes) * 100).toFixed(2) : 0;
-
-        // Mostrar los datos en el indicador
-        let infoDiv = container.querySelector(".info-grafico");
-        if (!infoDiv) {
-            infoDiv = document.createElement("div");
-            infoDiv.classList.add("info-grafico");
-            container.appendChild(infoDiv);
-        }
-
-        infoDiv.innerHTML = `
-            <strong>Órdenes</strong><br>
-            Cerradas: <span style="color: #28a745;">${completadas}/${totalOrdenes} (${porcentajeCompletadas}%)</span><br>
-            Abiertas: <span style="color: #ffc107;">${totalOrdenes - completadas}/${totalOrdenes} (${porcentajeAbiertas}%)</span><br>
-            Órdenes de Fabricacion: <span style="color: #dc3545; white-space: nowrap;">${totalOrdenes}</span>
-
-        `;
-
-
-        // Definir opciones del gráfico
-        let option = {
-            tooltip: {
-                trigger: 'item'
-            },
-            legend: {
-                orient: 'vertical',
-                left: 'left'
-            },
-            series: [
-                {
-                    name: 'Órdenes',
-                    type: 'pie',
-                    radius: '80%',
-                    data: [
-                        { value: completadas, name: 'Cerradas', itemStyle: { color: '#28a745' } }, // Verde para Completadas
-                        { value: abiertas, name: 'Abiertas', itemStyle: { color: '#ffc107' } },  // Amarillo para Abiertas
-                        
-                    ],
-                    emphasis: {
-                        itemStyle: {
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)'
-                        }
-                    }
+    /*
+    // Obtener progreso general del dashboard
+    function fetchProgresoDash() {
+        fetch("{{ route('progreso.dash') }}")
+            .then(response => response.json())
+            .then(data => {
+                console.log("Progreso General:", data.progreso);
+                if (data && data.progreso) {
+                    updateProgressBars(data.progreso); // Actualizar las barras con los datos generales
+                } else {
+                    console.error("No se recibieron datos de progreso válidos.");
                 }
-            ]
-        };
-
-        // Renderizar gráfico
-        myChart.setOption(option);
-    })
-    .catch(error => console.error('Error al cargar los datos:', error));*/
-/*
-function cargarOrdenesCerradas() {
-    $.ajax({
-        url: "{{ route('tabla.abiertas') }}",
-        method: 'GET',
-        success: function (data) {
-            // Mostrar el porcentaje de órdenes cerradas
-            $('#ordenFabricacionNumero').text(data.ordenesAbiertasCount); 
-
-            // Llenar la tabla con los datos
-            var tabla = $('#orden-list');
-            tabla.empty(); 
-
-            // Iterar sobre los datos y agregar filas a la tabla
-            data.ordenes.forEach(function (orden) {
-                var fila = `<tr>
-                    <td>${orden.OrdenFabricacion}</td>
-                    <td>${orden.Articulo}</td>
-                    <td>${orden.Descripcion}</td>
-                    <td>${orden.CantidadTotal}</td>
-                    <td>${orden.SumaTotalcantidad_partida}</td>
-                    
-                </tr>`;
-                tabla.append(fila);
+            })
+            .catch(error => {
+                console.error('Error obteniendo datos de progreso:', error);
             });
-        },
-        error: function (error) {
-            console.log("Error al cargar los datos: ", error);
-        }
-    });
-}
-
-function cargarOrdenesCompletas() {
-    $.ajax({
-        url: "{{ route('tabla.completas') }}",
-        method: 'GET',
-        success: function (data) {
-            // Mostrar el porcentaje de órdenes cerradas
-            $('#ordenesCompletadasNumero').text(data.retrabajo); 
-
-            // Llenar la tabla con los datos
-            var tabla = $('#ordenes-completadas-list');
-            tabla.empty(); 
-
-            data.ordenes.forEach(function (orden) {
-                const collapseId = `collapse-${orden.OrdenFabricacion}`;
-
-                // Crear fila principal
-                const fila = document.createElement('tr');
-                fila.innerHTML = `
-                    <td>${orden.OrdenFabricacion}</td>
-                    <td>${orden.Articulo}</td>
-                    <td>${orden.Descripcion}</td>
-                    <td>${orden.CantidadTotal}</td>
-                    <td>${orden.cantidad_partida}</td>
-                    <td>
-                        <button class="btn btn-primary btn-sm btn-ver-mas" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#${collapseId}">
-                            Ver más
-                        </button>
-                    </td>
-                `;
-
-                // Crear fila de detalles con acordeón Bootstrap
-                const detailRow = document.createElement('tr');
-                detailRow.innerHTML = `
-                    <td colspan="6">
-                        <div class="collapse" id="${collapseId}">
-                            <div class="card">
-                                <div class="card-body">
-                                    <strong>Tiempos de Etapas</strong><br>
-                                    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                                        ${createEstacionCard('Corte', orden.TiempoCorte, orden.FinCorte)}
-                                        ${createEstacionCard('Suministro', orden.TiempoSuministro, orden.FinSuministro)}
-                                        ${createEstacionCard('Preparado', orden.TiempoPreparado, orden.FinPreparado)}
-                                        ${createEstacionCard('Ensamble', orden.TiempoEnsamble, orden.FinEnsamble)}
-                                        ${createEstacionCard('Pulido', orden.TiempoPulido, orden.FinPulido)}
-                                        ${createEstacionCard('Medición', orden.TiempoMedicion, orden.FinMedicion)}
-                                        ${createEstacionCard('Visualización', orden.TiempoVisualizacion, orden.FinVisualizacion)}
-                                        ${createEstacionCard('Empaque', orden.TiempoAbierto, orden.FinAbierto)}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                `;
-
-                // Agregar filas a la tabla
-                tabla.append(fila);
-                tabla.append(detailRow);
-            });
-        },
-        error: function (error) {
-            console.log("Error al cargar los datos: ", error);
-        }
-    });
-}
-
-// Obtener progreso de órdenes de fabricación
-function fetchProgresoOF() {
-    fetch("{{ route('of.progreso') }}")
-        .then(response => response.json())
-        .then(data => {
-            console.log("Progreso Órdenes de Fabricación:", data.progreso);
-            if (data.progreso) {
-                updateOFProgressBars(data.progreso); 
-            } else {
-                console.error("No se recibieron datos de progreso de orden de fabricación.");
-            }
-        })
-        .catch(error => {
-            console.error('Error obteniendo datos de progreso de orden de fabricación:', error);
-        });
-}
-
-function updateOFProgressBars(progreso) {
-    Object.keys(progreso).forEach(orden => {
-        const progresoOrden = progreso[orden].detalle;
-        Object.keys(progresoOrden).forEach(areaName => {
-            const porcentaje = progresoOrden[areaName];
-            let progressBarGeneral = document.getElementById(`step-${areaName}`);
+    }
+    // Actualizar las barras de progreso del dashboard
+    function updateProgressBars(progreso) {
+        Object.keys(progreso).forEach(area => {
+            const porcentaje = progreso[area];
+            let progressBarGeneral = document.getElementById(`progress-${area}`);
             if (progressBarGeneral) {
                 animateProgressBar(progressBarGeneral, porcentaje);
             }
         });
-    });
-}
+    }
 
-function animateProgressBar(bar, porcentaje) {
-    bar.style.width = `${porcentaje}%`;
-    bar.innerHTML = `${porcentaje}%`;
-}
-
-// Animar las barras de progreso
-function animateProgressBar(progressBar, percentage) {
-    progressBar.style.width = `${percentage}%`;
-    progressBar.setAttribute('aria-valuenow', percentage);
-    progressBar.textContent = `${percentage}%`;
-}
-
-
-// Llamadas iniciales a las funciones de progreso
-fetchProgresoDash(); 
-fetchProgresoOF(); 
-$(document).ready(function () {
-    cargarOrdenesCerradas();
-    cargarOrdenesCompletas();
-});
-function generarGrafico(url, containerId, itemName) {
-    fetch(url)
+        fetch("{{ route('orden.cerredas') }}")
         .then(response => response.json())
         .then(data => {
-            const datasetSource = [[itemName, ...data.labels]];
+            const id = "plemasordenes"; 
+            let canvas = document.getElementById(id);
+            if (!canvas) return;
 
-            data.series.forEach((serie) => {
-                datasetSource.push([serie.name, ...serie.data]);
-            });
+            let container = canvas.parentElement;
+            container.style.display = "flex";
+            container.style.alignItems = "center";
+            container.style.gap = "10px";
 
-            // Asignar valores a los elementos del HTML
-            const fechaContainer = document.getElementById(`${containerId}-fecha`);
-            const rangoContainer = document.getElementById(`${containerId}-rango`);
-            const mesContainer = document.getElementById(`${containerId}-mes`);
-            
-            if(mesContainer){
-                mesContainer.textContent = ` ${data.mes}`;
+            let myChart = echarts.init(canvas);
+
+            // Obtener datos del backend
+            let completadas = data.ordenesCompletadas.length > 0 ? data.ordenesCompletadas.length : 0;
+            let abiertas = data.ordenesAbiertas.length > 0 ? data.ordenesAbiertas.length : 0;
+            let totalOrdenes = data.totalOrdenes > 0 ? data.totalOrdenes : (completadas + abiertas);
+
+            // Calcular porcentajes
+            let porcentajeCompletadas = totalOrdenes > 0 ? ((completadas / totalOrdenes) * 100).toFixed(2) : 0;
+            let porcentajeAbiertas = totalOrdenes > 0 ? (((totalOrdenes - completadas) / totalOrdenes) * 100).toFixed(2) : 0;
+
+            // Mostrar los datos en el indicador
+            let infoDiv = container.querySelector(".info-grafico");
+            if (!infoDiv) {
+                infoDiv = document.createElement("div");
+                infoDiv.classList.add("info-grafico");
+                container.appendChild(infoDiv);
             }
 
-            if (fechaContainer) {
-                fechaContainer.textContent = ` ${data.fecha}`;
-            }
+            infoDiv.innerHTML = `
+                <strong>Órdenes</strong><br>
+                Cerradas: <span style="color: #28a745;">${completadas}/${totalOrdenes} (${porcentajeCompletadas}%)</span><br>
+                Abiertas: <span style="color: #ffc107;">${totalOrdenes - completadas}/${totalOrdenes} (${porcentajeAbiertas}%)</span><br>
+                Órdenes de Fabricacion: <span style="color: #dc3545; white-space: nowrap;">${totalOrdenes}</span>
 
-            if (rangoContainer) {
-                rangoContainer.textContent = ` ${data.rangoSemana}`;
-            }
-            const option = {
-            tooltip: { trigger: 'axis' },
-            legend: { left: '5%' },
-            dataset: { source: datasetSource },
-            xAxis: { type: 'category' },
-            yAxis: { gridIndex: 0 },
-            grid: {
-                left: containerId === 'chart-month' ? '5%' : '50%',
-                right: containerId === 'chart-month' ? '50%' : '5%',
-                bottom: '10%',
-                containLabel: true
-            },
-            series: data.series.map(() => ({
-                type: 'line',
-                smooth: true,
-                seriesLayoutBy: 'row',
-                emphasis: { focus: 'series' }
-            })).concat([
-                {
-                    type: 'pie',
-                    id: 'pie',
-                    radius: '35%',
-                    center: containerId === 'chart-month' ? ['75%', '50%'] : ['20%', '50%'],
-                    emphasis: { focus: 'self' },
-                    label: {
-                        formatter: `{b}: {@[${data.labels[0]}]} ({d}%)`
-                    },
-                    encode: {
-                        itemName: itemName,
-                        value: data.labels[0],
-                        tooltip: data.labels[0]
-                    }
-                }
-            ]),
-            toolbox: {
-                feature: {
-                    saveAsImage: {
-                        name: `${data.fecha || ''}${data.rangoSemana || ''}${data.mes || ''}` // Verifica que los valores no sean undefined
-                    }
-                }
-            }
-        };
-
-            const chart = echarts.init(document.getElementById(containerId));
-
-            chart.on('updateAxisPointer', function (event) {
-                const xAxisInfo = event.axesInfo[0];
-                if (xAxisInfo) {
-                    const dimension = xAxisInfo.value + 1;
-                    chart.setOption({
-                        series: [{
-                            id: 'pie',
-                            label: { formatter: `{b}: {@[${dimension}]} ({d}%)` },
-                            encode: { value: dimension, tooltip: dimension }
-                        }]
-                    });
-                }
-            });
-
-            chart.setOption(option);
-        })
-        .catch(error => {
-            console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
-        });
-}
-// Llamadas a la función para generar gráficos
-generarGrafico("{{ route('tablas.semana') }}", "chart-day", "Día");
-generarGrafico("{{ route('tablas.mes') }}", "chart-month", "Semana");
-generarGrafico("{{ route('tablas.hora') }}", "chart-hour", "Mes");
-
-$(document).ready(function() {
-    // Petición para el primer endpoint
-    $.ajax({
-        url: "{{ route('wizarp.dashboard') }}", 
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            $('#ordenesCompletadas').text('Órdenes Cerradas: ' + data.ordenesCompletadas);
-            $('#ordenesAbiertas').text('Órdenes Abiertas: ' + data.ordenesAbiertas);
-            $('#totalOrdenes').text('Total de Órdenes: ' + data.totalOrdenes);
-        },
-        error: function(xhr, status, error) {
-            console.log('Error: ' + error);
-        }
-    });
-
-    // Petición para el segundo endpoint
-    $.ajax({
-        url: "{{ route('wizarpdia.dashboard') }}", 
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            $('#ordenesCompletadasDia').text('Órdenes Cerradas: ' + data.ordenesCompletadas);
-            $('#ordenesAbiertasDia').text('Órdenes Abiertas: ' + data.ordenesAbiertas);
-            $('#totalOrdenesDia').text('Total de Órdenes: ' + data.totalOrdenes);
-        },
-        error: function(xhr, status, error) {
-            console.log('Error: ' + error);
-        }
-    });
-
-    // Petición para el tercer endpoint
-    $.ajax({
-        url: "{{ route('wizarpmes.dashboard') }}", 
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            $('#ordenesCompletadasemana').text('Órdenes Cerradas: ' + data.ordenesCompletadas);
-            $('#ordenesAbiertasemana').text('Órdenes Abiertas: ' + data.ordenesAbiertas);
-            $('#totalOrdenesemana').text('Total de Órdenes: ' + data.totalOrdenes);
-        },
-        error: function(xhr, status, error) {
-            console.log('Error: ' + error);
-        }
-    });
-});
+            `;
 
 
-
-
-
-document.addEventListener("DOMContentLoaded", function () {
-    cargarIndicadores("{{ route('indicadores-cedia') }}", [
-        "plemasCortedia", "plemasSuministrodia", "plemasPreparadodia", "plemasEnsambledia",
-        "plemasPulidodia", "plemasMediciondia", "plemasVisualizaciondia", "plemasEmpaquedia"
-    ]);
-
-    cargarIndicadores("{{ route('indicadores.CE') }}", [
-        "plemasCorte", "plemasSuministro", "plemasPreparado", "plemasEnsamble",
-        "plemasPulido", "plemasMedicion", "plemasVisualizacion", "plemasEmpaque"
-    ]);
-    cargarIndicadores("{{ route('indicadores.CEsemana') }}", [
-        "plemasCortesemana", "plemasSuministrosemana", "plemasPreparadosemana", "plemasEnsamblesemana",
-        "plemasPulidosemana", "plemasMedicionsemana", "plemasVisualizacionsemana", "plemasEmpaquesemana"
-    ]);
-});
-
-function cargarIndicadores(ruta, estaciones) {
-    fetch(ruta)
-        .then(response => response.json())
-        .then(data => {
-            estaciones.forEach(id => {
-                let canvas = document.getElementById(id);
-                if (!canvas) return;
-
-               
-                let container = canvas.parentElement;
-                container.style.display = "flex";
-                container.style.alignItems = "center";
-                container.style.gap = "1px"; 
-
-                let ctx = canvas.getContext("2d");
-                canvas.style.width = "95px";
-                canvas.style.height = "97px";
-
-                let completado = data[id] ? data[id].completado : 0;
-                let pendiente = data[id] ? data[id].pendiente : 0;
-                let totalOrdenes = data[id] ? data[id].totalOrdenes : 0; 
-
-                let porcentajeCompletado = totalOrdenes > 0 ? ((completado / totalOrdenes) * 100).toFixed(2) : 0;
-                let porcentajePendiente = totalOrdenes > 0 ? (((totalOrdenes - completado) / totalOrdenes) * 100).toFixed(2) : 0;
-
-                let infoDiv = container.querySelector(".info-grafico");
-                if (!infoDiv) {
-                    infoDiv = document.createElement("div");
-                    infoDiv.classList.add("info-grafico");
-                    container.appendChild(infoDiv);
-                }
-
-                let nombreEstacion = id.replace("plemas", "").replace("semana", "").replace("dia", "");
-
-                infoDiv.innerHTML = ` 
-                    <strong>${nombreEstacion}</strong><br>
-                    Cerradas: <span style="color: #28a745;">${completado}/${totalOrdenes} (${porcentajeCompletado}%)</span><br>
-                    Abiertas: <span style="color: #FFC107;">${totalOrdenes - completado}/${totalOrdenes} (${porcentajePendiente}%)</span>
-                `;
-
-                infoDiv.style.fontSize = "14px";
-
-                new Chart(ctx, {
-                    type: "doughnut",
-                    data: {
-                        labels: ["Cerradas", "Abiertas"],
-                        datasets: [{
-                            data: (totalOrdenes === completado) ? [completado, 0] : [completado, totalOrdenes - completado],
-                            backgroundColor: (totalOrdenes === completado) ? ["#28a745"] : ["#28a745", "#FFC107"],
-                            cutout: "70%"
-                        }]
-                    },
-                    options: {
-                        responsive: false,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top',
-                                align: 'center'
-                            },
-                            tooltip: {
-                                enabled: true,
-                                mode: 'index',
-                                intersect: false
-                            }
-                        },
-                        elements: {
-                            arc: {
-                                borderWidth: 0
+            // Definir opciones del gráfico
+            let option = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left'
+                },
+                series: [
+                    {
+                        name: 'Órdenes',
+                        type: 'pie',
+                        radius: '80%',
+                        data: [
+                            { value: completadas, name: 'Cerradas', itemStyle: { color: '#28a745' } }, // Verde para Completadas
+                            { value: abiertas, name: 'Abiertas', itemStyle: { color: '#ffc107' } },  // Amarillo para Abiertas
+                            
+                        ],
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
                             }
                         }
                     }
+                ]
+            };
+
+            // Renderizar gráfico
+            myChart.setOption(option);
+        })
+        .catch(error => console.error('Error al cargar los datos:', error));*/
+    /*
+    function cargarOrdenesCerradas() {
+        $.ajax({
+            url: "{{ route('tabla.abiertas') }}",
+            method: 'GET',
+            success: function (data) {
+                // Mostrar el porcentaje de órdenes cerradas
+                $('#ordenFabricacionNumero').text(data.ordenesAbiertasCount); 
+
+                // Llenar la tabla con los datos
+                var tabla = $('#orden-list');
+                tabla.empty(); 
+
+                // Iterar sobre los datos y agregar filas a la tabla
+                data.ordenes.forEach(function (orden) {
+                    var fila = `<tr>
+                        <td>${orden.OrdenFabricacion}</td>
+                        <td>${orden.Articulo}</td>
+                        <td>${orden.Descripcion}</td>
+                        <td>${orden.CantidadTotal}</td>
+                        <td>${orden.SumaTotalcantidad_partida}</td>
+                        
+                    </tr>`;
+                    tabla.append(fila);
+                });
+            },
+            error: function (error) {
+                console.log("Error al cargar los datos: ", error);
+            }
+        });
+    }
+
+    function cargarOrdenesCompletas() {
+        $.ajax({
+            url: "{{ route('tabla.completas') }}",
+            method: 'GET',
+            success: function (data) {
+                // Mostrar el porcentaje de órdenes cerradas
+                $('#ordenesCompletadasNumero').text(data.retrabajo); 
+
+                // Llenar la tabla con los datos
+                var tabla = $('#ordenes-completadas-list');
+                tabla.empty(); 
+
+                data.ordenes.forEach(function (orden) {
+                    const collapseId = `collapse-${orden.OrdenFabricacion}`;
+
+                    // Crear fila principal
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = `
+                        <td>${orden.OrdenFabricacion}</td>
+                        <td>${orden.Articulo}</td>
+                        <td>${orden.Descripcion}</td>
+                        <td>${orden.CantidadTotal}</td>
+                        <td>${orden.cantidad_partida}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm btn-ver-mas" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#${collapseId}">
+                                Ver más
+                            </button>
+                        </td>
+                    `;
+
+                    // Crear fila de detalles con acordeón Bootstrap
+                    const detailRow = document.createElement('tr');
+                    detailRow.innerHTML = `
+                        <td colspan="6">
+                            <div class="collapse" id="${collapseId}">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <strong>Tiempos de Etapas</strong><br>
+                                        <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                                            ${createEstacionCard('Corte', orden.TiempoCorte, orden.FinCorte)}
+                                            ${createEstacionCard('Suministro', orden.TiempoSuministro, orden.FinSuministro)}
+                                            ${createEstacionCard('Preparado', orden.TiempoPreparado, orden.FinPreparado)}
+                                            ${createEstacionCard('Ensamble', orden.TiempoEnsamble, orden.FinEnsamble)}
+                                            ${createEstacionCard('Pulido', orden.TiempoPulido, orden.FinPulido)}
+                                            ${createEstacionCard('Medición', orden.TiempoMedicion, orden.FinMedicion)}
+                                            ${createEstacionCard('Visualización', orden.TiempoVisualizacion, orden.FinVisualizacion)}
+                                            ${createEstacionCard('Empaque', orden.TiempoAbierto, orden.FinAbierto)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    `;
+
+                    // Agregar filas a la tabla
+                    tabla.append(fila);
+                    tabla.append(detailRow);
+                });
+            },
+            error: function (error) {
+                console.log("Error al cargar los datos: ", error);
+            }
+        });
+    }
+
+    // Obtener progreso de órdenes de fabricación
+    function fetchProgresoOF() {
+        fetch("{{ route('of.progreso') }}")
+            .then(response => response.json())
+            .then(data => {
+                console.log("Progreso Órdenes de Fabricación:", data.progreso);
+                if (data.progreso) {
+                    updateOFProgressBars(data.progreso); 
+                } else {
+                    console.error("No se recibieron datos de progreso de orden de fabricación.");
+                }
+            })
+            .catch(error => {
+                console.error('Error obteniendo datos de progreso de orden de fabricación:', error);
+            });
+    }
+
+    function updateOFProgressBars(progreso) {
+        Object.keys(progreso).forEach(orden => {
+            const progresoOrden = progreso[orden].detalle;
+            Object.keys(progresoOrden).forEach(areaName => {
+                const porcentaje = progresoOrden[areaName];
+                let progressBarGeneral = document.getElementById(`step-${areaName}`);
+                if (progressBarGeneral) {
+                    animateProgressBar(progressBarGeneral, porcentaje);
+                }
+            });
+        });
+    }
+
+    function animateProgressBar(bar, porcentaje) {
+        bar.style.width = `${porcentaje}%`;
+        bar.innerHTML = `${porcentaje}%`;
+    }
+
+    // Animar las barras de progreso
+    function animateProgressBar(progressBar, percentage) {
+        progressBar.style.width = `${percentage}%`;
+        progressBar.setAttribute('aria-valuenow', percentage);
+        progressBar.textContent = `${percentage}%`;
+    }
+
+
+    // Llamadas iniciales a las funciones de progreso
+    fetchProgresoDash(); 
+    fetchProgresoOF(); 
+    $(document).ready(function () {
+        cargarOrdenesCerradas();
+        cargarOrdenesCompletas();
+    });
+    function generarGrafico(url, containerId, itemName) {
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const datasetSource = [[itemName, ...data.labels]];
+
+                data.series.forEach((serie) => {
+                    datasetSource.push([serie.name, ...serie.data]);
                 });
 
+                // Asignar valores a los elementos del HTML
+                const fechaContainer = document.getElementById(`${containerId}-fecha`);
+                const rangoContainer = document.getElementById(`${containerId}-rango`);
+                const mesContainer = document.getElementById(`${containerId}-mes`);
+                
+                if(mesContainer){
+                    mesContainer.textContent = ` ${data.mes}`;
+                }
+
+                if (fechaContainer) {
+                    fechaContainer.textContent = ` ${data.fecha}`;
+                }
+
+                if (rangoContainer) {
+                    rangoContainer.textContent = ` ${data.rangoSemana}`;
+                }
+                const option = {
+                tooltip: { trigger: 'axis' },
+                legend: { left: '5%' },
+                dataset: { source: datasetSource },
+                xAxis: { type: 'category' },
+                yAxis: { gridIndex: 0 },
+                grid: {
+                    left: containerId === 'chart-month' ? '5%' : '50%',
+                    right: containerId === 'chart-month' ? '50%' : '5%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                series: data.series.map(() => ({
+                    type: 'line',
+                    smooth: true,
+                    seriesLayoutBy: 'row',
+                    emphasis: { focus: 'series' }
+                })).concat([
+                    {
+                        type: 'pie',
+                        id: 'pie',
+                        radius: '35%',
+                        center: containerId === 'chart-month' ? ['75%', '50%'] : ['20%', '50%'],
+                        emphasis: { focus: 'self' },
+                        label: {
+                            formatter: `{b}: {@[${data.labels[0]}]} ({d}%)`
+                        },
+                        encode: {
+                            itemName: itemName,
+                            value: data.labels[0],
+                            tooltip: data.labels[0]
+                        }
+                    }
+                ]),
+                toolbox: {
+                    feature: {
+                        saveAsImage: {
+                            name: `${data.fecha || ''}${data.rangoSemana || ''}${data.mes || ''}` // Verifica que los valores no sean undefined
+                        }
+                    }
+                }
+            };
+
+                const chart = echarts.init(document.getElementById(containerId));
+
+                chart.on('updateAxisPointer', function (event) {
+                    const xAxisInfo = event.axesInfo[0];
+                    if (xAxisInfo) {
+                        const dimension = xAxisInfo.value + 1;
+                        chart.setOption({
+                            series: [{
+                                id: 'pie',
+                                label: { formatter: `{b}: {@[${dimension}]} ({d}%)` },
+                                encode: { value: dimension, tooltip: dimension }
+                            }]
+                        });
+                    }
+                });
+
+                chart.setOption(option);
+            })
+            .catch(error => {
+                console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
             });
-        })
-        .catch(error => console.error('Error al cargar los datos:', error));
-}
+    }
+    // Llamadas a la función para generar gráficos
+    generarGrafico("{{ route('tablas.semana') }}", "chart-day", "Día");
+    generarGrafico("{{ route('tablas.mes') }}", "chart-month", "Semana");
+    generarGrafico("{{ route('tablas.hora') }}", "chart-hour", "Mes");
+
+    $(document).ready(function() {
+        // Petición para el primer endpoint
+        $.ajax({
+            url: "{{ route('wizarp.dashboard') }}", 
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                $('#ordenesCompletadas').text('Órdenes Cerradas: ' + data.ordenesCompletadas);
+                $('#ordenesAbiertas').text('Órdenes Abiertas: ' + data.ordenesAbiertas);
+                $('#totalOrdenes').text('Total de Órdenes: ' + data.totalOrdenes);
+            },
+            error: function(xhr, status, error) {
+                console.log('Error: ' + error);
+            }
+        });
+
+        // Petición para el segundo endpoint
+        $.ajax({
+            url: "{{ route('wizarpdia.dashboard') }}", 
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                $('#ordenesCompletadasDia').text('Órdenes Cerradas: ' + data.ordenesCompletadas);
+                $('#ordenesAbiertasDia').text('Órdenes Abiertas: ' + data.ordenesAbiertas);
+                $('#totalOrdenesDia').text('Total de Órdenes: ' + data.totalOrdenes);
+            },
+            error: function(xhr, status, error) {
+                console.log('Error: ' + error);
+            }
+        });
+
+        // Petición para el tercer endpoint
+        $.ajax({
+            url: "{{ route('wizarpmes.dashboard') }}", 
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                $('#ordenesCompletadasemana').text('Órdenes Cerradas: ' + data.ordenesCompletadas);
+                $('#ordenesAbiertasemana').text('Órdenes Abiertas: ' + data.ordenesAbiertas);
+                $('#totalOrdenesemana').text('Total de Órdenes: ' + data.totalOrdenes);
+            },
+            error: function(xhr, status, error) {
+                console.log('Error: ' + error);
+            }
+        });
+    });
+
+
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        cargarIndicadores("{{ route('indicadores-cedia') }}", [
+            "plemasCortedia", "plemasSuministrodia", "plemasPreparadodia", "plemasEnsambledia",
+            "plemasPulidodia", "plemasMediciondia", "plemasVisualizaciondia", "plemasEmpaquedia"
+        ]);
+
+        cargarIndicadores("{{ route('indicadores.CE') }}", [
+            "plemasCorte", "plemasSuministro", "plemasPreparado", "plemasEnsamble",
+            "plemasPulido", "plemasMedicion", "plemasVisualizacion", "plemasEmpaque"
+        ]);
+        cargarIndicadores("{{ route('indicadores.CEsemana') }}", [
+            "plemasCortesemana", "plemasSuministrosemana", "plemasPreparadosemana", "plemasEnsamblesemana",
+            "plemasPulidosemana", "plemasMedicionsemana", "plemasVisualizacionsemana", "plemasEmpaquesemana"
+        ]);
+    });
+
+    function cargarIndicadores(ruta, estaciones) {
+        fetch(ruta)
+            .then(response => response.json())
+            .then(data => {
+                estaciones.forEach(id => {
+                    let canvas = document.getElementById(id);
+                    if (!canvas) return;
+
+                
+                    let container = canvas.parentElement;
+                    container.style.display = "flex";
+                    container.style.alignItems = "center";
+                    container.style.gap = "1px"; 
+
+                    let ctx = canvas.getContext("2d");
+                    canvas.style.width = "95px";
+                    canvas.style.height = "97px";
+
+                    let completado = data[id] ? data[id].completado : 0;
+                    let pendiente = data[id] ? data[id].pendiente : 0;
+                    let totalOrdenes = data[id] ? data[id].totalOrdenes : 0; 
+
+                    let porcentajeCompletado = totalOrdenes > 0 ? ((completado / totalOrdenes) * 100).toFixed(2) : 0;
+                    let porcentajePendiente = totalOrdenes > 0 ? (((totalOrdenes - completado) / totalOrdenes) * 100).toFixed(2) : 0;
+
+                    let infoDiv = container.querySelector(".info-grafico");
+                    if (!infoDiv) {
+                        infoDiv = document.createElement("div");
+                        infoDiv.classList.add("info-grafico");
+                        container.appendChild(infoDiv);
+                    }
+
+                    let nombreEstacion = id.replace("plemas", "").replace("semana", "").replace("dia", "");
+
+                    infoDiv.innerHTML = ` 
+                        <strong>${nombreEstacion}</strong><br>
+                        Cerradas: <span style="color: #28a745;">${completado}/${totalOrdenes} (${porcentajeCompletado}%)</span><br>
+                        Abiertas: <span style="color: #FFC107;">${totalOrdenes - completado}/${totalOrdenes} (${porcentajePendiente}%)</span>
+                    `;
+
+                    infoDiv.style.fontSize = "14px";
+
+                    new Chart(ctx, {
+                        type: "doughnut",
+                        data: {
+                            labels: ["Cerradas", "Abiertas"],
+                            datasets: [{
+                                data: (totalOrdenes === completado) ? [completado, 0] : [completado, totalOrdenes - completado],
+                                backgroundColor: (totalOrdenes === completado) ? ["#28a745"] : ["#28a745", "#FFC107"],
+                                cutout: "70%"
+                            }]
+                        },
+                        options: {
+                            responsive: false,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top',
+                                    align: 'center'
+                                },
+                                tooltip: {
+                                    enabled: true,
+                                    mode: 'index',
+                                    intersect: false
+                                }
+                            },
+                            elements: {
+                                arc: {
+                                    borderWidth: 0
+                                }
+                            }
+                        }
+                    });
+
+                });
+            })
+            .catch(error => console.error('Error al cargar los datos:', error));
+    }
 
 
 
 */
-
-
-
 </script>
 @endsection
