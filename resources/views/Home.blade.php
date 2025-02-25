@@ -5,9 +5,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* General Styles */
-  
-
         /* Dashboard Layout */
         .dashboard-container {
             display: grid;
@@ -111,71 +108,6 @@
             transition: width 0.5s ease;
         }
 
-        #progress-2 {
-            background-color: #28a745;
-        }
-
-        #progress-3 {
-            background-color: #007bff;
-        }
-
-        #progress-4 {
-            background-color: #ff9800;
-        }
-
-        #progress-5 {
-            background-color: #dc3545;
-        }
-
-        #progress-6 {
-            background-color: #9c27b0;
-        }
-
-        #progress-7 {
-            background-color: #3f51b5;
-        }
-
-        #progress-8 {
-            background-color: #009688;
-        }
-
-        #progress-9 {
-            background-color: #ff5722;
-        }
-
-        #step-Corte {
-            background-color: #28a745;
-        }
-
-        #step-Suministro {
-            background-color: #007bff;
-        }
-
-        #step-Preparado {
-            background-color: #ff9800;
-        }
-
-        #step-Ensamble {
-            background-color: #dc3545;
-        }
-
-        #step-Pulido {
-            background-color: #9c27b0;
-        }
-
-        #step-Medicion{
-            background-color: #3f51b5;
-        }
-
-        #step-Visualizacion {
-            background-color: #009688;
-        }
-
-        #step-Abierto{
-            background-color: #ff5722;
-        }
-
-
         /* Hover effect for progress bars */
         .progress-bar-container:hover {
             transform: translateY(-3px);
@@ -266,18 +198,22 @@
             margin: auto;
         }
         .grid-item {
-           
-            padding: 15px;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 2px solid #ddd;  /* Borde alrededor del contenedor */
+        padding: 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;  /* Efecto suave en la transformación */
+        border-radius: 10px;
+        text-align: center;
         }
+
+        .grid-item:hover {
+        transform: translateY(-10px);  /* Movimiento hacia arriba cuando se pasa el cursor */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);  /* Sombra para resaltar el contenedor */
+        }
+
         .small-title {
             font-size: 14px;
             margin-bottom: 5px;
         }
-
-
-
 
         .chart-container {
                 width: 75vw;
@@ -328,52 +264,71 @@
         width: 900px;
         height: 350px;
         }
-
-        
-
-
+        /*linea roja*/
+        .hr{
+            border-top: 10px solid rgb(189, 42, 42); 
+            width: 100%; 
+            margin: 1px auto;
+        }
+        .hr2{
+            border-top: 4px solid rgb(22, 95, 163);
+            width: 100%;
+            margin: 1px auto;
+        }
     </style>
 @endsection
 @section('content')
-    <div class ="card">
-        <h1 class="progress-title">Indicadores de Producción del Mes</h1>
-        <div class="grid-container">
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasCorte" width="150" height="150"></canvas>
+    <div class="card text-center">
+        <hr class="hr2">
+            <h1 class="progress-title mt-3 mb-4"></h1>
+            <div class="row justify-content-center">
+                <!-- Órdenes Cerradas (Completadas) -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-calendar-day" style="font-size: 30px; color: #007bff;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="click-dia" class="mb-0" style="cursor: pointer;">Órdenes por Día</h4>
+                            <p class="text-muted fs--1 mb-0">click</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Órdenes Abiertas (En Proceso) -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-calendar-week" style="font-size: 30px; color: #ffc107;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="click-semana" class="mb-0" style="cursor: pointer;">Órdenes por Semana</h4>
+                            <p class="text-muted fs--1 mb-0">click</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total de Órdenes -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-calendar-alt" style="font-size: 30px; color: #28a745;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="click-mes" class="mb-0" style="cursor: pointer;">Órdenes por Mes</h4>
+                            <p class="text-muted fs--1 mb-0">click</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasSuministro" width="150" height="150"></canvas>
-            </div>
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasPreparado" width="150" height="150"></canvas>
-            </div>
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasEnsamble" width="150" height="150"></canvas>
-            </div>
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasPulido" width="150" height="150"></canvas>
-            </div>
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasMedicion" width="150" height="150"></canvas>
-            </div>
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasVisualizacion" width="150" height="150"></canvas>
-            </div>
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasEmpaque" width="150" height="150"></canvas>
-            </div>
-        </div>
+        <hr class="hr2">
     </div>
-        <div style="height: 30px;"></div>
-    <!------------------------->
+  
+
+
+<!--Ordenes Fabricación-->
+    <hr class="hr">
+    <div style="height: 10px;"></div>
     <div class="card">
         <h1 class="progress-title">Ordenes Fabricación</h1>
         <div class="grid-container" style="display: flex; justify-content: center;">
@@ -383,38 +338,846 @@
             </div>     
         </div>
     </div>
-    <div style="height: 30px;"></div>
-    <!------>
-    <div class="card">
-        <h2 style="font-size: 16px;">Progreso del Día</h2>
-        <p id="chart-hour-fecha" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
-        <div id="chart-hour" class="chart-container"></div>
-    </div>
-    
-    <div style="height: 30px;"></div>
-    
-    <div class="card">
-        <h2 style="font-size: 16px;">Progreso de la Semana</h2>
-        <p id="chart-day-rango" style="font-size: 14px; color: gray;"></p>  
-        <div id="chart-day" class="chart-container"></div>
-    </div>
-    
-    
-    <div style="height: 30px;"></div>
-    
-    <div class="card">
-        <h2 style="font-size: 16px;">Progreso del Mes</h2>
-        <p id="chart-month-mes" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
-        <div id="chart-month" class="chart-container"></div>
-    </div>
-    
 
+<!--Indicadores de Producción por Dia-->
+    <hr class="hr">
+    <div id="indicadores-dia">
+         <div class="card">
+            <div class="d-flex justify-content">
+                <div class="row">
+                    <h6 class="text-700 col-6">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
+                    <h6 class="text-700 col-6">Estimado de piezas por día: <span id="Estimadopiezas">0</span></h6>
+                    <h6 class="text-700 col-6">Piezas completadas: <span id="Piezasplaneadas">0</span></h6>
+                    <h6 class="text-700 col-6">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>
+                    <h6 class="text-700 col-12">Total de piezas del día: <span id="Piezasdia">0</span></h6>
+                </div>
+            </div>
+            <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
+                <div class="p-0" id="PrcentajePlaneacion" style="width: 9rem; height:9rem"></div>
+            </div>
+            <div>
+                <div class="d-flex align-items-center mb-2">
+                    <div class="bullet-item bg-primary me-2"></div>
+                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Completadas</h6>
+                    <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajeplaneada">0</span>%</h6>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    <div class="bullet-item bg-primary-200 me-2"></div>
+                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Faltantes</h6>
+                    <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajefaltante">0</span>%</h6>
+                </div>
+            </div>
+        </div>
+        <div class="card text-center">
+            <h1 class="progress-title mt-3 mb-4">Indicadores de Producción por Dia</h1>
+            <div class="row justify-content-center">
+                <!-- Órdenes Cerradas (Completadas) -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-check-circle" style="font-size: 30px; color: #28a745;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="ordenesCompletadasDia" class="mb-0">Órdenes Cerradas</h4>
+                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del dia cerradas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Órdenes Abiertas (En Proceso) -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-sync-alt" style="font-size: 30px; color: #ffc107;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="ordenesAbiertasDia" class="mb-0">Órdenes Abiertas</h4>
+                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del dia abiertas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total de Órdenes -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-boxes" style="font-size: 30px; color: #007bff;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="totalOrdenesDia" class="mb-0">Total De Órdenes</h4>
+                            <p class="text-muted fs--1 mb-0">Total de todas las órdenes del dia</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="height: 10px;"></div>
+
+            <div class="container">
+                <div class="row mb-4">
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasCortedia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasSuministrodia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasPreparadodia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasEnsambledia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasPulidodia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasMediciondia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasVisualizaciondia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasEmpaquedia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="height: 10px;"></div>
+        <div class="card">
+            <div class="col-10 col-md-18 col-lg-12 mx-auto">
+                <h1 class="progress-title">Progreso del Día</h1>
+                <p id="chart-hour-fecha" style="font-size: 14px; color: gray;"></p> 
+                <div id="chart-hour" class="chart-container"></div>
+            </div>
+        </div>
+    </div>
+
+<!--Progreso de semana-->
+    
+     <div id="indicadores-semana">
+        <div class="card text-center">
+            <h1 class="progress-title mt-3 mb-4">Indicadores de Producción de la semana</h1>
+            <div class="row justify-content-center">
+                <!-- Órdenes Cerradas (Completadas) -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-check-circle" style="font-size: 30px; color: #28a745;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="ordenesCompletadasemana" class="mb-0">Órdenes Cerradas</h4>
+                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del la semana cerradas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Órdenes Abiertas (En Proceso) -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-sync-alt" style="font-size: 30px; color: #ffc107;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="ordenesAbiertasemana" class="mb-0">Órdenes Abiertas</h4>
+                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del la semana abiertas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total de Órdenes -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-boxes" style="font-size: 30px; color: #007bff;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="totalOrdenesemana" class="mb-0">Total De Órdenes</h4>
+                            <p class="text-muted fs--1 mb-0">Total de todas las órdenes del la semana</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="height: 10px;"></div>
+            <div class="container">
+                <div class="row mb-4">
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasCortesemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasSuministrosemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasPreparadosemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasEnsamblesemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasPulidosemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasMedicionsemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasVisualizacionsemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasEmpaquesemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="height: 10px;"></div>
+        <div class="card">
+            <h1 class="progress-title">Progreso de la Semana</h1>
+            <p id="chart-day-rango" style="font-size: 14px; color: gray;"></p>  
+            <div id="chart-day" class="chart-container"></div>
+        </div>
+     </div>
+
+<!--progreso de la mes-->
+    
+    <div id="indicadores-mes">
+        <div class="card text-center">
+            <h1 class="progress-title mt-3 mb-4">Indicadores de Producción del Mes</h1>
+            <div class="row justify-content-center">
+                <!-- Órdenes Cerradas (Completadas) -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-check-circle" style="font-size: 30px; color: #28a745;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="ordenesCompletadas" class="mb-0">Órdenes Cerradas</h4>
+                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del mes cerradas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Órdenes Abiertas (En Proceso) -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-sync-alt" style="font-size: 30px; color: #ffc107;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="ordenesAbiertas" class="mb-0">Órdenes Abiertas</h4>
+                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del mes abiertas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total de Órdenes -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-boxes" style="font-size: 30px; color: #007bff;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="totalOrdenes" class="mb-0">Total De Órdenes</h4>
+                            <p class="text-muted fs--1 mb-0">Total de todas las órdenes del mes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="height: 10px;"></div>
+
+            <div class="container">
+                <div class="row mb-4">
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasCorte" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasSuministro" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasPreparado" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasEnsamble" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasPulido" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasMedicion" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasVisualizacion" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasEmpaque" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="height: 10px;"></div>
+        <div class="card">
+            <h1 class="progress-title">Progreso del Mes</h1>
+            <p id="chart-month-mes" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
+            <div id="chart-month" class="chart-container"></div>
+        </div>
+    </div>
+    <hr class="hr">
+
+
+    <div class="modal fade" id="ParametrosPorcentaje" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ParametrosPorcentajeLabel">Modificar Parámetros</h5>
+                    <button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <span class="fas fa-times fs--1"></span>
+                    </button>
+                </div>
+                <form id="formParametros" method="POST">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="mb-1 col-6">
+                                <label class="form-label" for="CantidadPersona">Cantidad de personas:</label>
+                                <input class="form-control" id="CantidadPersona" name="NumeroPersonas" oninput="RegexNumeros(this)" type="text" placeholder="Ingresa una cantidad" />
+                                <div class="invalid-feedback" id="error_CantidadPersona"></div>
+                            </div>
+                            <div class="mb-1 col-6">
+                                <label class="form-label" for="Piezaspersona">Piezas por persona:</label>
+                                <input class="form-control" id="Piezaspersona" name="FechaPlaneacion" oninput="RegexNumeros(this)" type="text" placeholder="Ingresa una cantidad" />
+                                <div class="invalid-feedback" id="error_Piezaspersona"></div>
+                            </div>
+                        </div>  
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="GuardarParametrosPorcentajes()">Guardar</button>
+
+                        <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    </div>
 @endsection
 
 @section('scripts')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+function setupClickListener(clickId, indicadoresId, hideIds) {
+    document.getElementById(clickId).addEventListener('click', function() {
+        console.log('¡Se hizo clic!');
 
+        // Ocultar todas las secciones
+        hideIds.forEach(id => {
+            document.getElementById(id).style.display = 'none';
+        });
+
+        // Mostrar la sección correspondiente
+        let indicadores = document.getElementById(indicadoresId);
+        indicadores.style.display = 'block';
+
+        // Desplazar hacia la sección
+        indicadores.scrollIntoView({ behavior: 'smooth' });
+    });
+}
+
+// Función para inicializar el comportamiento de las secciones
+function init() {
+    // Al cargar la página, mostrar solo la sección de 'por día' y ocultar las demás
+    document.getElementById('indicadores-dia').style.display = 'block'; // Mostrar 'por día'
+    document.getElementById('indicadores-semana').style.display = 'none'; // Ocultar 'por semana'
+    document.getElementById('indicadores-mes').style.display = 'none'; // Ocultar 'por mes'
+
+    // Configuración de los listeners para cada clic
+    setupClickListener('click-dia', 'indicadores-dia', ['indicadores-semana', 'indicadores-mes']);
+    setupClickListener('click-semana', 'indicadores-semana', ['indicadores-dia', 'indicadores-mes']);
+    setupClickListener('click-mes', 'indicadores-mes', ['indicadores-dia', 'indicadores-semana']);
+}
+// Llamamos a la función de inicialización cuando la página cargue
+window.onload = init;
+
+document.addEventListener("DOMContentLoaded", function () {
+    cargarIndicadores("{{ route('indicadores-cedia') }}", [
+        "plemasCortedia", "plemasSuministrodia", "plemasPreparadodia", "plemasEnsambledia",
+        "plemasPulidodia", "plemasMediciondia", "plemasVisualizaciondia", "plemasEmpaquedia"
+    ]);
+
+    cargarIndicadores("{{ route('indicadores.CE') }}", [
+        "plemasCorte", "plemasSuministro", "plemasPreparado", "plemasEnsamble",
+        "plemasPulido", "plemasMedicion", "plemasVisualizacion", "plemasEmpaque"
+    ]);
+    cargarIndicadores("{{ route('indicadores.CEsemana') }}", [
+        "plemasCortesemana", "plemasSuministrosemana", "plemasPreparadosemana", "plemasEnsamblesemana",
+        "plemasPulidosemana", "plemasMedicionsemana", "plemasVisualizacionsemana", "plemasEmpaquesemana"
+    ]);
+});
+
+function cargarIndicadores(ruta, estaciones) {
+    fetch(ruta)
+        .then(response => response.json())
+        .then(data => {
+            estaciones.forEach(id => {
+                let canvas = document.getElementById(id);
+                if (!canvas) return;
+
+               
+                let container = canvas.parentElement;
+                container.style.display = "flex";
+                container.style.alignItems = "center";
+                container.style.gap = "1px"; 
+
+                let ctx = canvas.getContext("2d");
+                canvas.style.width = "95px";
+                canvas.style.height = "97px";
+
+                let completado = data[id] ? data[id].completado : 0;
+                let pendiente = data[id] ? data[id].pendiente : 0;
+                let totalOrdenes = data[id] ? data[id].totalOrdenes : 0; 
+
+                let porcentajeCompletado = totalOrdenes > 0 ? ((completado / totalOrdenes) * 100).toFixed(2) : 0;
+                let porcentajePendiente = totalOrdenes > 0 ? (((totalOrdenes - completado) / totalOrdenes) * 100).toFixed(2) : 0;
+
+                let infoDiv = container.querySelector(".info-grafico");
+                if (!infoDiv) {
+                    infoDiv = document.createElement("div");
+                    infoDiv.classList.add("info-grafico");
+                    container.appendChild(infoDiv);
+                }
+
+                let nombreEstacion = id.replace("plemas", "").replace("semana", "").replace("dia", "");
+
+                infoDiv.innerHTML = ` 
+                    <strong>${nombreEstacion}</strong><br>
+                    Cerradas: <span style="color: #28a745;">${completado}/${totalOrdenes} (${porcentajeCompletado}%)</span><br>
+                    Abiertas: <span style="color: #FFC107;">${totalOrdenes - completado}/${totalOrdenes} (${porcentajePendiente}%)</span>
+                `;
+
+                infoDiv.style.fontSize = "14px";
+
+                new Chart(ctx, {
+                    type: "doughnut",
+                    data: {
+                        labels: ["Cerradas", "Abiertas"],
+                        datasets: [{
+                            data: (totalOrdenes === completado) ? [completado, 0] : [completado, totalOrdenes - completado],
+                            backgroundColor: (totalOrdenes === completado) ? ["#28a745"] : ["#28a745", "#FFC107"],
+                            cutout: "70%"
+                        }]
+                    },
+                    options: {
+                        responsive: false,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                align: 'center'
+                            },
+                            tooltip: {
+                                enabled: true,
+                                mode: 'index',
+                                intersect: false
+                            }
+                        },
+                        elements: {
+                            arc: {
+                                borderWidth: 0
+                            }
+                        }
+                    }
+                });
+
+            });
+        })
+        .catch(error => console.error('Error al cargar los datos:', error));
+}
+$(document).ready(function () {
+    cargarOrdenesCerradas();
+    cargarOrdenesCompletas();
+});
+function generarGrafico(url, containerId, itemName) {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const datasetSource = [[itemName, ...data.labels]];
+
+            data.series.forEach((serie) => {
+                datasetSource.push([serie.name, ...serie.data]);
+            });
+
+            // Asignar valores a los elementos del HTML
+            const fechaContainer = document.getElementById(`${containerId}-fecha`);
+            const rangoContainer = document.getElementById(`${containerId}-rango`);
+            const mesContainer = document.getElementById(`${containerId}-mes`);
+            
+            if(mesContainer){
+                mesContainer.textContent = ` ${data.mes}`;
+            }
+
+            if (fechaContainer) {
+                fechaContainer.textContent = ` ${data.fecha}`;
+            }
+
+            if (rangoContainer) {
+                rangoContainer.textContent = ` ${data.rangoSemana}`;
+            }
+            const option = {
+            tooltip: { trigger: 'axis' },
+            legend: { left: '5%' },
+            dataset: { source: datasetSource },
+            xAxis: { type: 'category' },
+            yAxis: { gridIndex: 0 },
+            grid: {
+                left: containerId === 'chart-month' ? '5%' : '50%',
+                right: containerId === 'chart-month' ? '50%' : '5%',
+                bottom: '10%',
+                containLabel: true
+            },
+            series: data.series.map(() => ({
+                type: 'line',
+                smooth: true,
+                seriesLayoutBy: 'row',
+                emphasis: { focus: 'series' }
+            })).concat([
+                {
+                    type: 'pie',
+                    id: 'pie',
+                    radius: '35%',
+                    center: containerId === 'chart-month' ? ['75%', '50%'] : ['20%', '50%'],
+                    emphasis: { focus: 'self' },
+                    label: {
+                        formatter: `{b}: {@[${data.labels[0]}]} ({d}%)`
+                    },
+                    encode: {
+                        itemName: itemName,
+                        value: data.labels[0],
+                        tooltip: data.labels[0]
+                    }
+                }
+            ]),
+            toolbox: {
+                feature: {
+                    saveAsImage: {
+                        name: `${data.fecha || ''}${data.rangoSemana || ''}${data.mes || ''}` // Verifica que los valores no sean undefined
+                    }
+                }
+            }
+        };
+
+            const chart = echarts.init(document.getElementById(containerId));
+
+            chart.on('updateAxisPointer', function (event) {
+                const xAxisInfo = event.axesInfo[0];
+                if (xAxisInfo) {
+                    const dimension = xAxisInfo.value + 1;
+                    chart.setOption({
+                        series: [{
+                            id: 'pie',
+                            label: { formatter: `{b}: {@[${dimension}]} ({d}%)` },
+                            encode: { value: dimension, tooltip: dimension }
+                        }]
+                    });
+                }
+            });
+
+            chart.setOption(option);
+        })
+        .catch(error => {
+            console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
+        });
+}
+// Llamadas a la función para generar gráficos
+generarGrafico("{{ route('tablas.semana') }}", "chart-day", "Día");
+generarGrafico("{{ route('tablas.mes') }}", "chart-month", "Semana");
+generarGrafico("{{ route('tablas.hora') }}", "chart-hour", "Mes");
+//peticiones de wizarp
+$(document).ready(function() {
+    // Petición para el primer endpoint
+    $.ajax({
+        url: "{{ route('wizarp.dashboard') }}", 
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            $('#ordenesCompletadas').text('Órdenes Cerradas: ' + data.ordenesCompletadas);
+            $('#ordenesAbiertas').text('Órdenes Abiertas: ' + data.ordenesAbiertas);
+            $('#totalOrdenes').text('Total de Órdenes: ' + data.totalOrdenes);
+        },
+        error: function(xhr, status, error) {
+            console.log('Error: ' + error);
+        }
+    });
+
+    // Petición para el segundo endpoint
+    $.ajax({
+        url: "{{ route('wizarpdia.dashboard') }}", 
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            $('#ordenesCompletadasDia').text('Órdenes Cerradas: ' + data.ordenesCompletadas);
+            $('#ordenesAbiertasDia').text('Órdenes Abiertas: ' + data.ordenesAbiertas);
+            $('#totalOrdenesDia').text('Total de Órdenes: ' + data.totalOrdenes);
+        },
+        error: function(xhr, status, error) {
+            console.log('Error: ' + error);
+        }
+    });
+
+    // Petición para el tercer endpoint
+    $.ajax({
+        url: "{{ route('wizarpmes.dashboard') }}", 
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            $('#ordenesCompletadasemana').text('Órdenes Cerradas: ' + data.ordenesCompletadas);
+            $('#ordenesAbiertasemana').text('Órdenes Abiertas: ' + data.ordenesAbiertas);
+            $('#totalOrdenesemana').text('Total de Órdenes: ' + data.totalOrdenes);
+        },
+        error: function(xhr, status, error) {
+            console.log('Error: ' + error);
+        }
+    });
+});
+fetch("{{ route('orden.cerredas') }}")
+    .then(response => response.json())
+    .then(data => {
+        const id = "plemasordenes"; 
+        let canvas = document.getElementById(id);
+        if (!canvas) return;
+
+        let container = canvas.parentElement;
+        container.style.display = "flex";
+        container.style.alignItems = "center";
+        container.style.gap = "10px";
+
+        let myChart = echarts.init(canvas);
+
+        // Obtener datos del backend
+        let completadas = data.ordenesCompletadas.length > 0 ? data.ordenesCompletadas.length : 0;
+        let abiertas = data.ordenesAbiertas.length > 0 ? data.ordenesAbiertas.length : 0;
+        let totalOrdenes = data.totalOrdenes > 0 ? data.totalOrdenes : (completadas + abiertas);
+
+        // Calcular porcentajes
+        let porcentajeCompletadas = totalOrdenes > 0 ? ((completadas / totalOrdenes) * 100).toFixed(2) : 0;
+        let porcentajeAbiertas = totalOrdenes > 0 ? (((totalOrdenes - completadas) / totalOrdenes) * 100).toFixed(2) : 0;
+
+        // Mostrar los datos en el indicador
+        let infoDiv = container.querySelector(".info-grafico");
+        if (!infoDiv) {
+            infoDiv = document.createElement("div");
+            infoDiv.classList.add("info-grafico");
+            container.appendChild(infoDiv);
+        }
+
+        infoDiv.innerHTML = `
+            <strong>Órdenes</strong><br>
+            Cerradas: <span style="color: #28a745;">${completadas}/${totalOrdenes} (${porcentajeCompletadas}%)</span><br>
+            Abiertas: <span style="color: #ffc107;">${totalOrdenes - completadas}/${totalOrdenes} (${porcentajeAbiertas}%)</span><br>
+            Órdenes de Fabricacion: <span style="color: #dc3545; white-space: nowrap;">${totalOrdenes}</span>
+
+        `;
+
+
+        // Definir opciones del gráfico
+        let option = {
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left'
+            },
+            series: [
+                {
+                    name: 'Órdenes',
+                    type: 'pie',
+                    radius: '80%',
+                    data: [
+                        { value: completadas, name: 'Cerradas', itemStyle: { color: '#28a745' } }, // Verde para Completadas
+                        { value: abiertas, name: 'Abiertas', itemStyle: { color: '#ffc107' } },  // Amarillo para Abiertas
+                        
+                    ],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+
+        // Renderizar gráfico
+        myChart.setOption(option);
+})
+fetch("{{ route('dashboard.indicador') }}")
+    .then(response => response.json())
+    .then(data => {
+        const porcentajeCerradas = parseFloat(data.PorcentajeCompletadas) || 0;  
+        const porcentajeCompletadas = parseFloat(data.porcentajeCerradas) || 0;  
+        const totalOfTotal = parseInt(data.TotalOfTotal) || 0;
+        const totalCompletadas = parseInt(data.TotalOFcompletadas) || 0;
+        const faltanteTotal = parseInt(data.faltanteTotal) || 0;
+        const Estimadopiezas = parseFloat(data.Estimadopiezas) || 0;
+        const Cantidadpersonas = parseInt(data.Cantidadpersonas) || 0;
+
+        // Mostrar los valores sin modificar
+        document.getElementById("Estimadopiezas").textContent = Estimadopiezas.toFixed();
+        document.getElementById("Cantidadpersonas").textContent = Cantidadpersonas;
+
+        // Porcentaje planeada es el porcentaje que falta para completar, es decir, el porcentaje de completadas.
+        document.getElementById("Porcentajeplaneada").textContent = porcentajeCerradas.toFixed(2);  
+        document.getElementById("Porcentajefaltante").textContent = porcentajeCompletadas.toFixed(2);  
+
+        document.getElementById("Piezasdia").textContent = totalOfTotal;
+        document.getElementById("Piezasplaneadas").textContent = totalCompletadas;
+        document.getElementById("Piezasfaltantes").textContent = faltanteTotal;
+
+
+        let color = "#007BFF"; // Color predeterminado
+
+        if (totalCompletadas === 0 && faltanteTotal === 0) {
+            // No hay datos, el indicador será 0 y sin color
+            color = "#D3D3D3"; // Gris neutro
+        } else if (porcentajeCerradas > 1) {
+            color = "#FF0000";
+        } else if (porcentajeCerradas > 0.9) {
+            color = "#FFA500";
+        } else if (porcentajeCerradas > 0.8) {
+            color = "#FFFF00";
+        }
+
+        // Configuración del gráfico
+        var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
+        var option = {
+            tooltip: { trigger: 'item' },
+            legend: { show: false },
+            series: [
+                {
+                    name: 'Planeación',
+                    type: 'pie',
+                    radius: ['60%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        position: 'center',
+                        formatter: totalCompletadas === 0 && faltanteTotal === 0 ? '0.00' : `${porcentajeCerradas.toFixed(2)}`,
+                        fontSize: 20,
+                        fontWeight: 'bold'
+                    },
+                    labelLine: { show: false },
+                    data: totalCompletadas === 0 && faltanteTotal === 0
+                        ? [{ value: 1, name: 'Sin datos', itemStyle: { color: "#D3D3D3" } }] // Solo un gris neutro
+                        : [
+                            { value: totalCompletadas, name: 'Total Completados', itemStyle: { color: color } },
+                            { value: faltanteTotal, name: 'Total Faltante', itemStyle: { color: '#D3D3D3' } }
+                        ]
+                }
+            ]
+        };
+
+        myChart.setOption(option);
+    })
+.catch(error => console.error('Error al obtener los datos:', error));
+
+/*
+
+
+
+
+  /////////////////////////
+
+
+
+/*
 // Obtener progreso general del dashboard
 function fetchProgresoDash() {
     fetch("{{ route('progreso.dash') }}")
@@ -442,90 +1205,7 @@ function updateProgressBars(progreso) {
     });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    fetch("{{ route('indicadores.CE') }}")
-        .then(response => response.json())
-        .then(data => {
-            const estaciones = [
-                "plemasCorte", "plemasSuministro", "plemasPreparado", "plemasEnsamble",
-                "plemasPulido", "plemasMedicion", "plemasVisualizacion", "plemasEmpaque"
-            ];
-
-            estaciones.forEach(id => {
-                let canvas = document.getElementById(id);
-                if (!canvas) return;
-
-                // Obtener el contenedor del canvas
-                let container = canvas.parentElement;
-                container.style.display = "flex";
-                container.style.alignItems = "center";
-                container.style.gap = "1px"; 
-
-                let ctx = canvas.getContext("2d");
-                canvas.style.width = "95px";
-                canvas.style.height = "97px";
-
-                let completado = data[id] ? data[id].completado : 0;
-                let pendiente = data[id] ? data[id].pendiente : 0;
-                let totalOrdenes = data[id] ? data[id].totalOrdenes : 0; 
-
-
-                let porcentajeCompletado = totalOrdenes > 0 ? ((completado / totalOrdenes) * 100).toFixed(2) : 0;
-                let porcentajePendiente = totalOrdenes > 0 ? (((totalOrdenes - completado) / totalOrdenes) * 100).toFixed(2) : 0;
-
-                let infoDiv = container.querySelector(".info-grafico");
-                if (!infoDiv) {
-                    infoDiv = document.createElement("div");
-                    infoDiv.classList.add("info-grafico");
-                    container.appendChild(infoDiv);
-                }
-
-                infoDiv.innerHTML = `
-                    <strong>${id.replace("plemas", "")}</strong><br>
-                    Completado: <span style="color: #28a745;">${completado}/${totalOrdenes} (${porcentajeCompletado}%)</span><br>
-                    Pendiente: <span style="color: #FFC107;">${totalOrdenes - completado}/${totalOrdenes} (${porcentajePendiente}%)</span>
-                `;
-
-                infoDiv.style.fontSize = "14px";
-
-                new Chart(ctx, {
-                    type: "doughnut",
-                    data: {
-                        labels: ["Completado", "Pendiente"],
-                        datasets: [{
-                            data: [completado, totalOrdenes],
-                            backgroundColor: ["#28a745", "#FFC107"],
-                            cutout: "70%"
-                        }]
-                    },
-                    options: {
-                        responsive: false,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top',
-                                align: 'center'
-                            },
-                            tooltip: {
-                                enabled: true,
-                                mode: 'index',
-                                intersect: false
-                            }
-                        },
-                        elements: {
-                            arc: {
-                                borderWidth: 0
-                            }
-                        }
-                    }
-                });
-            });
-        })
-        .catch(error => console.error('Error al cargar los datos:', error));    
-    });
-
-fetch("{{ route('orden.cerredas') }}")
+    fetch("{{ route('orden.cerredas') }}")
     .then(response => response.json())
     .then(data => {
         const id = "plemasordenes"; 
@@ -540,13 +1220,13 @@ fetch("{{ route('orden.cerredas') }}")
         let myChart = echarts.init(canvas);
 
         // Obtener datos del backend
-        let completadas = data.ordenesCompletadas ?? 0;
-        let abiertas = data.ordenesAbiertas ?? 0;
+        let completadas = data.ordenesCompletadas.length > 0 ? data.ordenesCompletadas.length : 0;
+        let abiertas = data.ordenesAbiertas.length > 0 ? data.ordenesAbiertas.length : 0;
         let totalOrdenes = data.totalOrdenes > 0 ? data.totalOrdenes : (completadas + abiertas);
 
         // Calcular porcentajes
         let porcentajeCompletadas = totalOrdenes > 0 ? ((completadas / totalOrdenes) * 100).toFixed(2) : 0;
-        let porcentajeAbiertas = totalOrdenes > 0 ? ((abiertas / totalOrdenes) * 100).toFixed(2) : 0;
+        let porcentajeAbiertas = totalOrdenes > 0 ? (((totalOrdenes - completadas) / totalOrdenes) * 100).toFixed(2) : 0;
 
         // Mostrar los datos en el indicador
         let infoDiv = container.querySelector(".info-grafico");
@@ -558,9 +1238,12 @@ fetch("{{ route('orden.cerredas') }}")
 
         infoDiv.innerHTML = `
             <strong>Órdenes</strong><br>
-            Completadas: <span style="color: #28a745;">${completadas}/${totalOrdenes} (${porcentajeCompletadas}%)</span><br>
-            Abiertas: <span style="color: #dc3545;">${abiertas}/${totalOrdenes} (${porcentajeAbiertas}%)</span><br>
+            Cerradas: <span style="color: #28a745;">${completadas}/${totalOrdenes} (${porcentajeCompletadas}%)</span><br>
+            Abiertas: <span style="color: #ffc107;">${totalOrdenes - completadas}/${totalOrdenes} (${porcentajeAbiertas}%)</span><br>
+            Órdenes de Fabricacion: <span style="color: #dc3545; white-space: nowrap;">${totalOrdenes}</span>
+
         `;
+
 
         // Definir opciones del gráfico
         let option = {
@@ -577,8 +1260,9 @@ fetch("{{ route('orden.cerredas') }}")
                     type: 'pie',
                     radius: '80%',
                     data: [
-                        { value: completadas, name: 'Completadas', itemStyle: { color: '#28a745' } },
-                        { value: abiertas, name: 'Abiertas', itemStyle: { color: '#dc3545' } }
+                        { value: completadas, name: 'Cerradas', itemStyle: { color: '#28a745' } }, // Verde para Completadas
+                        { value: abiertas, name: 'Abiertas', itemStyle: { color: '#ffc107' } },  // Amarillo para Abiertas
+                        
                     ],
                     emphasis: {
                         itemStyle: {
@@ -594,8 +1278,8 @@ fetch("{{ route('orden.cerredas') }}")
         // Renderizar gráfico
         myChart.setOption(option);
     })
-.catch(error => console.error('Error al cargar los datos:', error));
-
+    .catch(error => console.error('Error al cargar los datos:', error));*/
+/*
 function cargarOrdenesCerradas() {
     $.ajax({
         url: "{{ route('tabla.abiertas') }}",
@@ -693,20 +1377,6 @@ function cargarOrdenesCompletas() {
     });
 }
 
-// Función para crear las tarjetas de cada etapa
-function createEstacionCard(estacion, tiempoInicio, tiempoFin) {
-            return `
-                <div style="flex: 1 1 45%; min-width: 200px; background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.3s ease-in-out;">
-                    <strong>Estación de ${estacion}:</strong>
-                    <div style="display: flex; gap: 10px;">
-                        <span style="color: green; font-weight: bold;">Inicio: ${tiempoInicio ?? 'N/A'}</span> 
-                        <span style="color: red; font-weight: bold;">Fin: ${tiempoFin ?? 'N/A'}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-
 // Obtener progreso de órdenes de fabricación
 function fetchProgresoOF() {
     fetch("{{ route('of.progreso') }}")
@@ -771,6 +1441,7 @@ function generarGrafico(url, containerId, itemName) {
             const fechaContainer = document.getElementById(`${containerId}-fecha`);
             const rangoContainer = document.getElementById(`${containerId}-rango`);
             const mesContainer = document.getElementById(`${containerId}-mes`);
+            
             if(mesContainer){
                 mesContainer.textContent = ` ${data.mes}`;
             }
@@ -847,13 +1518,163 @@ function generarGrafico(url, containerId, itemName) {
             console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
         });
 }
-
 // Llamadas a la función para generar gráficos
 generarGrafico("{{ route('tablas.semana') }}", "chart-day", "Día");
 generarGrafico("{{ route('tablas.mes') }}", "chart-month", "Semana");
 generarGrafico("{{ route('tablas.hora') }}", "chart-hour", "Mes");
 
+$(document).ready(function() {
+    // Petición para el primer endpoint
+    $.ajax({
+        url: "{{ route('wizarp.dashboard') }}", 
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            $('#ordenesCompletadas').text('Órdenes Cerradas: ' + data.ordenesCompletadas);
+            $('#ordenesAbiertas').text('Órdenes Abiertas: ' + data.ordenesAbiertas);
+            $('#totalOrdenes').text('Total de Órdenes: ' + data.totalOrdenes);
+        },
+        error: function(xhr, status, error) {
+            console.log('Error: ' + error);
+        }
+    });
+
+    // Petición para el segundo endpoint
+    $.ajax({
+        url: "{{ route('wizarpdia.dashboard') }}", 
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            $('#ordenesCompletadasDia').text('Órdenes Cerradas: ' + data.ordenesCompletadas);
+            $('#ordenesAbiertasDia').text('Órdenes Abiertas: ' + data.ordenesAbiertas);
+            $('#totalOrdenesDia').text('Total de Órdenes: ' + data.totalOrdenes);
+        },
+        error: function(xhr, status, error) {
+            console.log('Error: ' + error);
+        }
+    });
+
+    // Petición para el tercer endpoint
+    $.ajax({
+        url: "{{ route('wizarpmes.dashboard') }}", 
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            $('#ordenesCompletadasemana').text('Órdenes Cerradas: ' + data.ordenesCompletadas);
+            $('#ordenesAbiertasemana').text('Órdenes Abiertas: ' + data.ordenesAbiertas);
+            $('#totalOrdenesemana').text('Total de Órdenes: ' + data.totalOrdenes);
+        },
+        error: function(xhr, status, error) {
+            console.log('Error: ' + error);
+        }
+    });
+});
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    cargarIndicadores("{{ route('indicadores-cedia') }}", [
+        "plemasCortedia", "plemasSuministrodia", "plemasPreparadodia", "plemasEnsambledia",
+        "plemasPulidodia", "plemasMediciondia", "plemasVisualizaciondia", "plemasEmpaquedia"
+    ]);
+
+    cargarIndicadores("{{ route('indicadores.CE') }}", [
+        "plemasCorte", "plemasSuministro", "plemasPreparado", "plemasEnsamble",
+        "plemasPulido", "plemasMedicion", "plemasVisualizacion", "plemasEmpaque"
+    ]);
+    cargarIndicadores("{{ route('indicadores.CEsemana') }}", [
+        "plemasCortesemana", "plemasSuministrosemana", "plemasPreparadosemana", "plemasEnsamblesemana",
+        "plemasPulidosemana", "plemasMedicionsemana", "plemasVisualizacionsemana", "plemasEmpaquesemana"
+    ]);
+});
+
+function cargarIndicadores(ruta, estaciones) {
+    fetch(ruta)
+        .then(response => response.json())
+        .then(data => {
+            estaciones.forEach(id => {
+                let canvas = document.getElementById(id);
+                if (!canvas) return;
+
+               
+                let container = canvas.parentElement;
+                container.style.display = "flex";
+                container.style.alignItems = "center";
+                container.style.gap = "1px"; 
+
+                let ctx = canvas.getContext("2d");
+                canvas.style.width = "95px";
+                canvas.style.height = "97px";
+
+                let completado = data[id] ? data[id].completado : 0;
+                let pendiente = data[id] ? data[id].pendiente : 0;
+                let totalOrdenes = data[id] ? data[id].totalOrdenes : 0; 
+
+                let porcentajeCompletado = totalOrdenes > 0 ? ((completado / totalOrdenes) * 100).toFixed(2) : 0;
+                let porcentajePendiente = totalOrdenes > 0 ? (((totalOrdenes - completado) / totalOrdenes) * 100).toFixed(2) : 0;
+
+                let infoDiv = container.querySelector(".info-grafico");
+                if (!infoDiv) {
+                    infoDiv = document.createElement("div");
+                    infoDiv.classList.add("info-grafico");
+                    container.appendChild(infoDiv);
+                }
+
+                let nombreEstacion = id.replace("plemas", "").replace("semana", "").replace("dia", "");
+
+                infoDiv.innerHTML = ` 
+                    <strong>${nombreEstacion}</strong><br>
+                    Cerradas: <span style="color: #28a745;">${completado}/${totalOrdenes} (${porcentajeCompletado}%)</span><br>
+                    Abiertas: <span style="color: #FFC107;">${totalOrdenes - completado}/${totalOrdenes} (${porcentajePendiente}%)</span>
+                `;
+
+                infoDiv.style.fontSize = "14px";
+
+                new Chart(ctx, {
+                    type: "doughnut",
+                    data: {
+                        labels: ["Cerradas", "Abiertas"],
+                        datasets: [{
+                            data: (totalOrdenes === completado) ? [completado, 0] : [completado, totalOrdenes - completado],
+                            backgroundColor: (totalOrdenes === completado) ? ["#28a745"] : ["#28a745", "#FFC107"],
+                            cutout: "70%"
+                        }]
+                    },
+                    options: {
+                        responsive: false,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                align: 'center'
+                            },
+                            tooltip: {
+                                enabled: true,
+                                mode: 'index',
+                                intersect: false
+                            }
+                        },
+                        elements: {
+                            arc: {
+                                borderWidth: 0
+                            }
+                        }
+                    }
+                });
+
+            });
+        })
+        .catch(error => console.error('Error al cargar los datos:', error));
+}
+
+
+
+*/
+
+
+
 </script>
 @endsection
-
-
