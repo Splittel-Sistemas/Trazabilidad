@@ -271,9 +271,9 @@
             margin: 1px auto;
         }
         .hr2{
-            border-top: 4px solid rgb(22, 95, 163);
+            border-top: 5px solid rgb(22, 95, 163);
             width: 100%;
-            margin: 1px auto;
+            margin: 2px auto;
         }
 
 
@@ -285,15 +285,15 @@
             border-radius: 90px; 
             overflow: hidden; 
             box-sizing: border-box; 
-            padding: 5px; 
-            border: 2px solid transparent; 
+            padding: 1px; 
+            border: 4x solid transparent; 
         }
 
         /* Efecto de hover */
         .col-12.col-md-3:hover {
-            border: 3px solid #007bff; 
-            box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2); 
-            transform: translateY(-5px); 
+            border: 1px solid #007bff; 
+            box-shadow: 0 3px 5px rgba(0, 123, 255, 0.2); 
+            transform: translateY(-1px); 
         }
 
         /* Opcional: Efecto de hover en el ícono */
@@ -317,7 +317,7 @@
                         </span>
                         <div class="ms-3">
                             <h4 id="click-dia" class="mb-0" style="cursor: pointer;">Órdenes por Día</h4>
-                            <p class="text-muted fs--1 mb-0">click</p>
+                            <p class="text-muted fs--1 mb-0"></p>
                         </div>
                     </div>
                 </div>
@@ -329,7 +329,7 @@
                         </span>
                         <div class="ms-3">
                             <h4 id="click-semana" class="mb-0" style="cursor: pointer;">Órdenes por Semana</h4>
-                            <p class="text-muted fs--1 mb-0">click</p>
+                            <p class="text-muted fs--1 mb-0"></p>
                         </div>
                     </div>
                 </div>
@@ -342,7 +342,7 @@
                         </span>
                         <div class="ms-3">
                             <h4 id="click-mes" class="mb-0" style="cursor: pointer;">Órdenes por Mes</h4>
-                            <p class="text-muted fs--1 mb-0">click</p>
+                            <p class="text-muted fs--1 mb-0"></p>
                         </div>
                     </div>
                 </div>
