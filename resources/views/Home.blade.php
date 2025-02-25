@@ -338,6 +338,7 @@
 
 <!--Indicadores de Producción por Dia-->
     <hr class="hr">
+    <div style="height: 10px;"></div>
     <div id="indicadores-dia">
          <div class="card">
             <div class="d-flex justify-content">
