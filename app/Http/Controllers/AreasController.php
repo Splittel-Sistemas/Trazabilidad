@@ -22,6 +22,7 @@ class AreasController extends Controller
     public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
     }
+    
     //Area 3 Suministro
     public function Suministro(){
         //EstatusEntrega==0 aun no iniciado; 1 igual a terminado
@@ -507,6 +508,7 @@ class AreasController extends Controller
         }
         return $opciones;
     }
+    
     //Area 4 Preparado
     public function Preparado(){
         $Area=$this->funcionesGenerales->encrypt(4);
@@ -697,9 +699,6 @@ class AreasController extends Controller
             ]);
         }
     }
-
-
-
     public function CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
         $PartidasOF=$OrdenFabricacion->PartidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
@@ -1012,13 +1011,6 @@ class AreasController extends Controller
             return 0;
         }
     }
-
-
-
-
-
-
-
 
     //Estaciones metodos generales
     public function SuministroBuscar(Request $request){
