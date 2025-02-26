@@ -70,7 +70,7 @@ class HomeControler extends Controller
 
     public function progreso()
     {
-    /*
+        /*
         $areas = ['3', '4', '5', '6', '7', '8', '9']; // No filtrar por área '2'
         $progreso = [];
     
@@ -686,9 +686,6 @@ class HomeControler extends Controller
         ]);
     }
 
-
-    
-    
     public function graficasdia()
     {
         $fechaLimite = now()->setTimezone('America/Mexico_City')->toDateString();
@@ -788,6 +785,7 @@ class HomeControler extends Controller
         return response()->json($datos);
         
     }
+
     public function graficasemana()
     {
         $fechaInicioSemana = now()->startOfWeek()->toDateString();
@@ -986,6 +984,7 @@ class HomeControler extends Controller
             'rangoSemana' => 'Semana del ' . $rangoSemana
         ]);
     }
+
     public function Dasboardindicadordia()
     {
         $personal = DB::table('porcentajeplaneacion')
@@ -1032,7 +1031,6 @@ class HomeControler extends Controller
         
     }
     
-    
     public function obtenerPorcentajes(Request $request)
     {
         // Simulación de datos para la prueba (reemplaza con datos de la BD)
@@ -1064,9 +1062,4 @@ class HomeControler extends Controller
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
-
-
-    
-    
-
 }    

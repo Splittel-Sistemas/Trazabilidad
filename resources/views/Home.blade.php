@@ -301,10 +301,20 @@
             color: #007bff; 
         }
 
+        .center-text {
+            display: flex;
+            justify-content: center;  /* Centra horizontalmente */
+            align-items: center;  /* Centra verticalmente */
+            text-align: center;  /* Asegura que el texto esté centrado */
+            width: 100%;
+        }
+
+
 
     </style>
 @endsection
 @section('content')
+<!--botones principales Dia,Semana,mes-->
     <div class="card text-center">
         <hr class="hr2">
             <h1 class="progress-title mt-3 mb-4"></h1>
@@ -348,18 +358,7 @@
             </div>
         <hr class="hr2">
     </div>
-<!--Ordenes Fabricación-->
-    <hr class="hr">
-    <div style="height: 10px;"></div>
-    <div class="card">
-        <h1 class="progress-title">Ordenes Fabricación</h1>
-        <div class="grid-container" style="display: flex; justify-content: center;">
-            <div class="grid-item">
-                <h1 class="small-title"></h1>
-                <canvas id="plemasordenes" width="700" height="300"></canvas>
-            </div>     
-        </div>
-    </div>
+
 
 <!--Indicadores de Producción por Dia-->
     <hr class="hr">
@@ -617,6 +616,16 @@
 <!--progreso de la mes-->
     
     <div id="indicadores-mes">
+        <div style="height: 10px;"></div>
+        <div class="card">
+            <h1 class="progress-title">Ordenes Fabricación</h1>
+            <div class="grid-container" style="display: flex; justify-content: center;">
+                <div class="grid-item">
+                    <h1 class="small-title"></h1>
+                    <canvas id="plemasordenes" width="700" height="300"></canvas>
+                </div>     
+            </div>
+        </div>
         <div class="card text-center">
             <h1 class="progress-title mt-3 mb-4">Indicadores de Producción del Mes</h1>
             <div class="row justify-content-center">
@@ -887,17 +896,21 @@ function generarGrafico(url, containerId, itemName) {
             const rangoContainer = document.getElementById(`${containerId}-rango`);
             const mesContainer = document.getElementById(`${containerId}-mes`);
             
-            if(mesContainer){
+            if (mesContainer) {
+                mesContainer.classList.add('center-text'); 
                 mesContainer.textContent = ` ${data.mes}`;
             }
 
             if (fechaContainer) {
-                fechaContainer.textContent = ` ${data.fecha}`;
+                fechaContainer.classList.add('center-text'); 
+                fechaContainer.textContent = `${data.fecha}`;
             }
 
             if (rangoContainer) {
+                rangoContainer.classList.add('center-text'); 
                 rangoContainer.textContent = ` ${data.rangoSemana}`;
             }
+
             const option = {
             tooltip: { trigger: 'axis' },
             legend: { left: '5%' },
