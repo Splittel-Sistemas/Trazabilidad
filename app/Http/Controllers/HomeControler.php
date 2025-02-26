@@ -619,6 +619,7 @@ class HomeControler extends Controller
             ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.CantidadTotal')
             ->havingRaw('SUM(partidasof_areas.Cantidad) = ordenfabricacion.CantidadTotal')
             ->get();
+            
     
         // Ordenes Abiertas en la semana
         $ordenesAbiertas = DB::table('ordenfabricacion')
@@ -628,9 +629,13 @@ class HomeControler extends Controller
             ->get();
     
         // Total de Ordenes
-        $totalOrdenes = DB::table('ordenfabricacion')->count();
+        $totalOrdenes = DB::table('ordenfabricacion')
+        ->whereBetween('ordenfabricacion.FechaEntrega', [$inicioSemana, $finSemana])
+        ->count();
+     
         
         $ordenesAbiertasCount = $totalOrdenes - $ordenesCompletadas->count();
+     
     
         return response()->json([
             'ordenesCompletadas' => $ordenesCompletadas->count(),
