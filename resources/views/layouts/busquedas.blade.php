@@ -83,7 +83,7 @@
 
             .btn {
                 padding: 10px 20px;
-                border: none;
+                /*border: none;*/
                 cursor: pointer;
             }
 
@@ -92,10 +92,10 @@
                 color: rgba(255, 255, 255, 0.596);
             }
 
-            .btn-primary {
+            /*.btn-primary {
                 background-color: #007bff;
                 color: rgba(255, 255, 255, 0.459);
-        }
+            }*/
         /* Estilos de los botones */
         .btn-primary, .btn-secondary {
             padding: 10px 20px;
@@ -331,78 +331,84 @@
         </div>
     </div>
     <div class="container my-4">
-        <div class="card" style="width: 200px; height: 65px;">
-            <div class="form-check">
-                <input class="form-check-input" id="flexRadioDefault1" type="radio" name="flexRadioDefault" checked onclick="toggleTable()">
-                <label class="form-check-label text-black" for="flexRadioDefault1">Orden De Venta</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" id="flexRadioDefault2" type="radio" name="flexRadioDefault" onclick="toggleTable()">
-                <label class="form-check-label text-black" for="flexRadioDefault2">Orden De Fabricación</label>
-            </div>
-        </div>
-        <!-- Tabla 1: Orden de Venta -->
-        <div id="tablaVenta" style="display:block;">
-            <div class="card border border-light mx-auto" style="max-width: 420px; border-radius: 40px; box-shadow: 0 1px 1px rgba(23, 60, 182, 0.1); height: 50px; width: 44%;">
-                <div class="card-body p-1 d-flex align-items-center" style="height: 100%;">
-                    <form id="form-buscar-venta" style="width: 100%;">
-                        <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
-                            <input class="form-control search-input search form-control-sm" type="text" name="search" placeholder="Buscar Por Orden De Venta..." style="flex: 1; border-radius: 20px; padding: 10px;">
-                            <button class="btn btn-outline-primary ml-2" type="button" id="buscarVenta" style="border-radius: 20px;">
-                                <i class="uil uil-search"></i> Buscar
-                            </button>
-                        </div>
-                    </form>
+        <div class="row">
+            <div class="card shadow-sm border-light col-4 p-3 mb-3">
+                <div class="card-header m-0 p-0">
+                </div>
+                <div class="card-body">
+                    <div class="form-check">
+                        <input class="form-check-input" id="flexRadioDefault1" type="radio" name="flexRadioDefault" checked onclick="toggleTable()">
+                        <label class="form-check-label text-black" for="flexRadioDefault1">Orden de venta</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" id="flexRadioDefault2" type="radio" name="flexRadioDefault" onclick="toggleTable()">
+                        <label class="form-check-label text-black" for="flexRadioDefault2">Orden de fabricaci&oacute;n</label>
+                    </div>
                 </div>
             </div>
-            <div style="margin-top: 20px;"></div>
-            <div class="table-responsive">
-                <div class="card" >
+            <!-- Tabla 1: Orden de Venta -->
+            <div id="tablaVenta" class="card p-4" style="display:block;">
+                <div class="card border border-light mx-auto" style="max-width: 420px; border-radius: 40px; height: 50px; width: 44%;">
+                    <div class="card-body p-0 d-flex align-items-center" style="height: 100%;">
+                        <form id="form-buscar-venta" style="width: 100%;">
+                            <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
+                                <input class="form-control search-input search form-control-sm" type="text" name="search" placeholder="Buscar Por Orden De Venta..." style="flex: 1;border-radius: 20px; padding: 10px;">
+                                <button class="btn btn-outline-primary ml-2" type="button" id="buscarVenta" style="border-radius: 20px;">
+                                    <i class="uil uil-search"></i> Buscar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;"></div>
+                <div class="table-responsive">
+                    <div class="card" >
+                        <table class="table table-sm fs--1 mb-0">
+                        <thead>
+                            <tr class="bg-info text-white">
+                                <th class="sort border-top ps-3" data-sort="venta">Orden De Venta</th>
+                                <th class="sort border-top" data-sort="fabricacion">Nombre Cliente</th>
+                                <th class="sort border-top text-center pe-3" data-sort="total">Detalles</th>
+                            </tr>
+                            </thead>
+                            <tbody class="list" id="tabla-resultadosVenta">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Tabla 2: Orden de Fabricación -->
+            <div id="tablaFabricacion" class="card p-4" style="display:none;">
+                <div class="card border border-light mx-auto" style="max-width: 420px; border-radius: 40px; height: 50px; width: 44%;">
+                    <div class="card-body p-0 d-flex align-items-center" style="height: 100%;">
+                        <form id="form-buscar-fabricacion" style="width: 100%;">
+                            <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
+                                <input class="form-control search-input search form-control-sm" type="text" id="inputBusquedaFabricacion" name="search" placeholder="Buscar Por Orden De Fabricación..." style="flex: 1; border-radius: 20px; padding: 10px;">
+                                <button class="btn btn-outline-primary ml-2" type="button" id="buscarFabricacion" style="border-radius: 20px;">
+                                    <i class="uil uil-search"></i> Buscar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;"></div>
+                <div class="card">
                     <table class="table table-sm fs--1 mb-0">
-                    <thead>
-                        <tr class="bg-info text-white">
-                            <th class="sort border-top ps-3" data-sort="venta">Orden De Venta</th>
-                            <th class="sort border-top" data-sort="fabricacion">Nombre Cliente</th>
-                            <th class="sort border-top text-center pe-3" data-sort="total">Detalles</th>
-                        </tr>
+                        <thead>
+                            <tr class="bg-info text-white">
+                                <th class="sort border-top" data-sort="fabricacion">Orden De Fabricación</th>
+                                <th class="sort border-top" data-sort="partidas">Artículo</th>
+                                <th class="sort border-top" data-sort="partidas">Descripción</th>
+                                <th class="sort border-top" data-sort="partidas">Cantidad Total</th>
+                                
+                                <th class="sort border-top" data-sort="estatus">Detalles</th>
+                            </tr>
                         </thead>
-                        <tbody class="list" id="tabla-resultadosVenta">
+                        <tbody id="tabla-resultadosFabricacion">
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-        <!-- Tabla 2: Orden de Fabricación -->
-        <div id="tablaFabricacion" style="display:none;">
-            <div class="card border border-light mx-auto" style="max-width: 420px; border-radius: 40px; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); height: 50px; width: 44%;">
-                <div class="card-body p-3 d-flex align-items-center" style="height: 100%;">
-                    <form id="form-buscar-fabricacion" style="width: 100%;">
-                        <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
-                            <input class="form-control search-input search form-control-sm" type="text" id="inputBusquedaFabricacion" name="search" placeholder="Buscar Por Orden De Fabricación..." style="flex: 1; border-radius: 20px; padding: 10px;">
-                            <button class="btn btn-outline-primary ml-2" type="button" id="buscarFabricacion" style="border-radius: 20px;">
-                                <i class="uil uil-search"></i> Buscar
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
-            <div style="margin-top: 20px;"></div>
-             <div class="card">
-                <table class="table table-sm fs--1 mb-0">
-                    <thead>
-                        <tr class="bg-info text-white">
-                            <th class="sort border-top" data-sort="fabricacion">Orden De Fabricación</th>
-                            <th class="sort border-top" data-sort="partidas">Artículo</th>
-                            <th class="sort border-top" data-sort="partidas">Descripción</th>
-                            <th class="sort border-top" data-sort="partidas">Cantidad Total</th>
-                            
-                            <th class="sort border-top" data-sort="estatus">Detalles</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-resultadosFabricacion">
-                    </tbody>
-                </table>
             </div>
         </div>
         <!--modal fabricacion-->
@@ -809,7 +815,7 @@
                         console.log(item);
                         var row = `
                             <tr>
-                                <td>${item.OrdenVenta}</td>
+                                <td >${item.OrdenVenta}</td>
                                 <td>${item.NombreCliente}</td>
                                 <td class="text-center align-middle">
                                     <a href="#" class="btn btn-info btn-sm ver-detalles" 
