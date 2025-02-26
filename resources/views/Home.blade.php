@@ -333,7 +333,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Total de Órdenes -->
                 <div class="col-12 col-md-3 mb-4">
                     <div class="d-flex align-items-center justify-content-center" id="click-mes" style="cursor: pointer;">
@@ -735,6 +734,10 @@
 @section('scripts')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    setInterval(function() {
+    location.reload();
+}, 60000);                                                                                                                                                                                                                                                                                                           
+
 
     
 function setupClickListener(clickId, indicadoresId, hideIds) {

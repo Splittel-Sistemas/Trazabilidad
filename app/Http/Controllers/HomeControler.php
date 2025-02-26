@@ -685,17 +685,20 @@ class HomeControler extends Controller
             'totalOrdenes' => $totalOrdenes
         ]);
     }
+
+
+    
     
     public function graficasdia()
     {
-        $fechaLimite =  now()->setTimezone('America/Mexico_City');
+        $fechaLimite = now()->setTimezone('America/Mexico_City')->toDateString();
 
         //dd( $fechaLimite);
     
         $areas = DB::table('partidasof_areas')
         ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
         ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
-        ->where('partidasof_areas.FechaComienzo', '>=', $fechaLimite) 
+        ->whereDate('partidasof_areas.FechaComienzo', '>=', $fechaLimite) 
         ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9])
         ->select(
             'ordenfabricacion.OrdenFabricacion',
@@ -710,18 +713,19 @@ class HomeControler extends Controller
         ->get();
 
         $cortes = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->select(
-                'ordenfabricacion.OrdenFabricacion',
-                'ordenfabricacion.CantidadTotal', 
-                'ordenfabricacion.FechaEntrega',
-                DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalcantidad_partida'),
-                DB::raw('ROUND(LEAST((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso'),  // Limitar a 100
-                DB::raw('ROUND(SUM(partidasof.cantidad_partida) - ordenfabricacion.CantidadTotal, 0) as retrabajo')
-            )
-            ->where('partidasof.FechaComienzo', '>=', $fechaLimite) 
-            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
-            ->get();
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->select(
+            DB::raw('GROUP_CONCAT(partidasof.id) as id'), // Agrupar los IDs en una lista
+            'ordenfabricacion.OrdenFabricacion',
+            'ordenfabricacion.CantidadTotal',
+            DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'), // Usar la fecha más antigua
+            DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalcantidad_partida'),
+            DB::raw('ROUND(LEAST((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso')
+        )
+        ->whereDate('ordenfabricacion.FechaEntrega', '=', $fechaLimite)
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+        ->get();
+    
             //dd($cortes);
 
             $totalOrdenes = DB::table('ordenfabricacion')
