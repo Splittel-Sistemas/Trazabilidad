@@ -249,7 +249,7 @@
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Visualizaci&oacute;n</span></div>
                                             </a>
                                         </li>
-                                        <li class="nav-item"><a class="nav-link {{ Route::is('Visualizacion') ? 'nav-tabs active' : '' }}" href="{{route('Visualizacion')}}" data-bs-toggle="" aria-expanded="false">
+                                        <li class="nav-item"><a class="nav-link {{ Route::is('Empacado') ? 'nav-tabs active' : '' }}" href="{{route('Empacado')}}" data-bs-toggle="" aria-expanded="false">
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Empaquetado</span></div>
                                             </a>
                                         </li>
