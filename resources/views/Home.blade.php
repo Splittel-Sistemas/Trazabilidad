@@ -271,10 +271,37 @@
             margin: 1px auto;
         }
         .hr2{
-            border-top: 4px solid rgb(22, 95, 163);
+            border-top: 5px solid rgb(22, 95, 163);
             width: 100%;
-            margin: 1px auto;
+            margin: 2px auto;
         }
+
+
+
+        /* Estilo base para los divs */
+        .col-12.col-md-3 {
+            transition: all 0.3s ease; 
+            position: relative; 
+            border-radius: 90px; 
+            overflow: hidden; 
+            box-sizing: border-box; 
+            padding: 1px; 
+            border: 4x solid transparent; 
+        }
+
+        /* Efecto de hover */
+        .col-12.col-md-3:hover {
+            border: 1px solid #007bff; 
+            box-shadow: 0 3px 5px rgba(0, 123, 255, 0.2); 
+            transform: translateY(-1px); 
+        }
+
+        /* Opcional: Efecto de hover en el ícono */
+        .col-12.col-md-3:hover .fa-stack i {
+            color: #007bff; 
+        }
+
+
     </style>
 @endsection
 @section('content')
@@ -283,40 +310,39 @@
             <h1 class="progress-title mt-3 mb-4"></h1>
             <div class="row justify-content-center">
                 <!-- Órdenes Cerradas (Completadas) -->
-                <div class="col-12 col-md-4 mb-4">
+                <div class="col-12 col-md-3 mb-4">
                     <div class="d-flex align-items-center justify-content-center">
                         <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
                             <i class="fas fa-calendar-day" style="font-size: 30px; color: #007bff;"></i>
                         </span>
                         <div class="ms-3">
                             <h4 id="click-dia" class="mb-0" style="cursor: pointer;">Órdenes por Día</h4>
-                            <p class="text-muted fs--1 mb-0">click</p>
+                            <p class="text-muted fs--1 mb-0"></p>
                         </div>
                     </div>
                 </div>
-
                 <!-- Órdenes Abiertas (En Proceso) -->
-                <div class="col-12 col-md-4 mb-4">
+                <div class="col-12 col-md-3 mb-4">
                     <div class="d-flex align-items-center justify-content-center">
                         <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
                             <i class="fas fa-calendar-week" style="font-size: 30px; color: #ffc107;"></i>
                         </span>
                         <div class="ms-3">
                             <h4 id="click-semana" class="mb-0" style="cursor: pointer;">Órdenes por Semana</h4>
-                            <p class="text-muted fs--1 mb-0">click</p>
+                            <p class="text-muted fs--1 mb-0"></p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Total de Órdenes -->
-                <div class="col-12 col-md-4 mb-4">
+                <div class="col-12 col-md-3 mb-4">
                     <div class="d-flex align-items-center justify-content-center">
                         <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
                             <i class="fas fa-calendar-alt" style="font-size: 30px; color: #28a745;"></i>
                         </span>
                         <div class="ms-3">
                             <h4 id="click-mes" class="mb-0" style="cursor: pointer;">Órdenes por Mes</h4>
-                            <p class="text-muted fs--1 mb-0">click</p>
+                            <p class="text-muted fs--1 mb-0"></p>
                         </div>
                     </div>
                 </div>
