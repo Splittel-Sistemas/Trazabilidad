@@ -311,24 +311,24 @@
             <div class="row justify-content-center">
                 <!-- Órdenes Cerradas (Completadas) -->
                 <div class="col-12 col-md-3 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
+                    <div class="d-flex align-items-center justify-content-center" id="click-dia" style="cursor: pointer;">
                         <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
                             <i class="fas fa-calendar-day" style="font-size: 30px; color: #007bff;"></i>
                         </span>
                         <div class="ms-3">
-                            <h4 id="click-dia" class="mb-0" style="cursor: pointer;">Órdenes por Día</h4>
+                            <h4  class="mb-0" >Órdenes por Día</h4>
                             <p class="text-muted fs--1 mb-0"></p>
                         </div>
                     </div>
                 </div>
                 <!-- Órdenes Abiertas (En Proceso) -->
                 <div class="col-12 col-md-3 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
+                    <div class="d-flex align-items-center justify-content-center" id="click-semana" style="cursor: pointer;">
                         <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
                             <i class="fas fa-calendar-week" style="font-size: 30px; color: #ffc107;"></i>
                         </span>
                         <div class="ms-3">
-                            <h4 id="click-semana" class="mb-0" style="cursor: pointer;">Órdenes por Semana</h4>
+                            <h4  class="mb-0" >Órdenes por Semana</h4>
                             <p class="text-muted fs--1 mb-0"></p>
                         </div>
                     </div>
@@ -336,13 +336,13 @@
 
                 <!-- Total de Órdenes -->
                 <div class="col-12 col-md-3 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
+                    <div class="d-flex align-items-center justify-content-center" id="click-mes" style="cursor: pointer;">
                         <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
                             <i class="fas fa-calendar-alt" style="font-size: 30px; color: #28a745;"></i>
                         </span>
                         <div class="ms-3">
-                            <h4 id="click-mes" class="mb-0" style="cursor: pointer;">Órdenes por Mes</h4>
-                            <p class="text-muted fs--1 mb-0"></p>
+                            <h4  class="mb-0" >Órdenes por Mes</h4>
+                            <p class="text-muted fs--1 mb-0"></p>  
                         </div>
                     </div>
                 </div>
