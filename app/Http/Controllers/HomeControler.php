@@ -70,7 +70,7 @@ class HomeControler extends Controller
 
     public function progreso()
     {
-    /*
+        /*
         $areas = ['3', '4', '5', '6', '7', '8', '9']; // No filtrar por área '2'
         $progreso = [];
     
@@ -619,6 +619,7 @@ class HomeControler extends Controller
             ->groupBy('partidasof_areas.PartidasOF_id', 'ordenfabricacion.CantidadTotal')
             ->havingRaw('SUM(partidasof_areas.Cantidad) = ordenfabricacion.CantidadTotal')
             ->get();
+            
     
         // Ordenes Abiertas en la semana
         $ordenesAbiertas = DB::table('ordenfabricacion')
@@ -628,9 +629,13 @@ class HomeControler extends Controller
             ->get();
     
         // Total de Ordenes
-        $totalOrdenes = DB::table('ordenfabricacion')->count();
+        $totalOrdenes = DB::table('ordenfabricacion')
+        ->whereBetween('ordenfabricacion.FechaEntrega', [$inicioSemana, $finSemana])
+        ->count();
+     
         
         $ordenesAbiertasCount = $totalOrdenes - $ordenesCompletadas->count();
+     
     
         return response()->json([
             'ordenesCompletadas' => $ordenesCompletadas->count(),
@@ -685,17 +690,17 @@ class HomeControler extends Controller
             'totalOrdenes' => $totalOrdenes
         ]);
     }
-    
+
     public function graficasdia()
     {
-        $fechaLimite =  now()->setTimezone('America/Mexico_City');
+        $fechaLimite = now()->setTimezone('America/Mexico_City')->toDateString();
 
         //dd( $fechaLimite);
     
         $areas = DB::table('partidasof_areas')
         ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
         ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
-        ->where('partidasof_areas.FechaComienzo', '>=', $fechaLimite) 
+        ->whereDate('partidasof_areas.FechaComienzo', '>=', $fechaLimite) 
         ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9])
         ->select(
             'ordenfabricacion.OrdenFabricacion',
@@ -710,18 +715,19 @@ class HomeControler extends Controller
         ->get();
 
         $cortes = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->select(
-                'ordenfabricacion.OrdenFabricacion',
-                'ordenfabricacion.CantidadTotal', 
-                'ordenfabricacion.FechaEntrega',
-                DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalcantidad_partida'),
-                DB::raw('ROUND(LEAST((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso'),  // Limitar a 100
-                DB::raw('ROUND(SUM(partidasof.cantidad_partida) - ordenfabricacion.CantidadTotal, 0) as retrabajo')
-            )
-            ->where('partidasof.FechaComienzo', '>=', $fechaLimite) 
-            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
-            ->get();
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->select(
+            DB::raw('GROUP_CONCAT(partidasof.id) as id'), // Agrupar los IDs en una lista
+            'ordenfabricacion.OrdenFabricacion',
+            'ordenfabricacion.CantidadTotal',
+            DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'), // Usar la fecha más antigua
+            DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalcantidad_partida'),
+            DB::raw('ROUND(LEAST((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso')
+        )
+        ->whereDate('ordenfabricacion.FechaEntrega', '=', $fechaLimite)
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+        ->get();
+    
             //dd($cortes);
 
             $totalOrdenes = DB::table('ordenfabricacion')
@@ -784,6 +790,7 @@ class HomeControler extends Controller
         return response()->json($datos);
         
     }
+
     public function graficasemana()
     {
         $fechaInicioSemana = now()->startOfWeek()->toDateString();
@@ -982,6 +989,7 @@ class HomeControler extends Controller
             'rangoSemana' => 'Semana del ' . $rangoSemana
         ]);
     }
+
     public function Dasboardindicadordia()
     {
         $personal = DB::table('porcentajeplaneacion')
@@ -1028,7 +1036,6 @@ class HomeControler extends Controller
         
     }
     
-    
     public function obtenerPorcentajes(Request $request)
     {
         // Simulación de datos para la prueba (reemplaza con datos de la BD)
@@ -1060,9 +1067,4 @@ class HomeControler extends Controller
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
-
-
-    
-    
-
 }    

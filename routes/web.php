@@ -10,6 +10,7 @@ use App\Http\Controllers\AreasController;
 use App\Http\Controllers\RolesPermisoController;
 use App\Http\Controllers\PreparadoController;
 use App\Http\Controllers\BusquedaController;
+use App\Http\Controllers\EmpacadoController;
 
 use App\Http\Controllers\DashboardControlle;
 use GuzzleHttp\Promise\Coroutine;
@@ -223,6 +224,11 @@ Route::get('/indicadores-cesemana',[HomeControler::class,'graficasemana'])->name
 
 Route::get('/Dasboard/indicador/dia',[HomeControler::class, 'Dasboardindicadordia'])->name('dashboard.indicador')->middleware('auth');
 Route::post('/guardar-dashboard', [HomeControler::class, 'guardarDasboard'])->name('guardar.Dasboard')->middleware('auth');
+
+
+Route::get('/Area/Empacado',[EmpacadoController::class,'index'])->name('Empacado');
+Route::get('/Tabla/principal',[EmpacadoController::class,'tabla'])->name('tabla.principal');
+Route::post('/Empacado/Finalizar',[EmpacadoController::class,'guardarDB'])->name('finalizar.Empacado');
 
 
 

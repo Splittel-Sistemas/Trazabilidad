@@ -53,7 +53,7 @@
                                         <th>Cantidad Total</th>
                                         <th>Fecha Planeada</th>
                                         <th>Estatus</th>
-                                        <th>Acciones</th>
+                                        <th>Accion</th>
                                     </tr>
                                 </thead>
                                 <tbody id="procesoTableBody" class="list">

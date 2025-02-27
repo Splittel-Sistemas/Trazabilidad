@@ -307,20 +307,9 @@
                 margin-bottom: -20px; 
             }
             .title-container {
-    font-size: 1px; /* Ajusta el tamaño del texto */
-    padding: -100px; /* Ajusta el espacio alrededor */
-}
-
-
-
-
-
-
-
-
-
-
-
+                font-size: 1px; /* Ajusta el tamaño del texto */
+                padding: -100px; /* Ajusta el espacio alrededor */
+            }
     </style>
 @endsection
 @section('content')
@@ -756,7 +745,6 @@
         <input type="hidden" id="idFabricacion" value="">     
     </div>
 @endsection
-
 @section('scripts')
     <!-- Scripts -->
     <script src="vendors/echarts/echarts.min.js"></script>
@@ -1541,4 +1529,3 @@
     });
 </script>
 @endsection
-
