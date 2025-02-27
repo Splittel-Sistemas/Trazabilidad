@@ -1,6 +1,6 @@
 @extends('layouts.menu2')
 
-@section('title', 'Empacado')
+@section('title', 'Empaquetado')
 
 @section('styles')
 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -12,7 +12,7 @@
 <div class="breadcrumbs mb-3">
     <div class="row gy-3 mb-2 justify-content-between">
         <div class="col-md-9 col-auto">
-            <h4 class="mb-2 text-1100">Empacado</h4>
+            <h4 class="mb-2 text-1100">Empaquetado</h4>
         </div>
     </div>
 </div>

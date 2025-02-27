@@ -1136,7 +1136,7 @@
                         });
                 } else {
                     $('#titulo-cortes')
-                        .text('Duración: 0 días, 0 horas, 0 minutos')
+                        .text('Sin datos de duración')
                         .css({
                             'font-size': '10px',
                             'color': 'red',
@@ -1221,31 +1221,31 @@
                 }
 
                 if (!hasData) {
-                    $('#titulo-suministro').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                    $('#titulo-suministro').text('Sin datos de duración').css({
                         'font-size': '10px',
                         'color': 'red',
                         'font-weight': 'bold'
                     });
 
-                    $('#titulo-preparado').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                    $('#titulo-preparado').text('Sin datos de duración').css({
                         'font-size': '10px',
                         'color': 'red',
                         'font-weight': 'bold'
                     });
 
-                    $('#titulo-ensamble').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                    $('#titulo-ensamble').text('Sin datos de duración').css({
                         'font-size': '10px',
                         'color': 'red',
                         'font-weight': 'bold'
                     });
 
-                    $('#titulo-pulido').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                    $('#titulo-pulido').text('Sin datos de duración').css({
                         'font-size': '10px',
                         'color': 'red',
                         'font-weight': 'bold'
                     });
 
-                    $('#titulo-medicion').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                    $('#titulo-medicion').text('Sin datos de duración').css({
                         'font-size': '10px',
                             'color': 'red',
                             'font-weight': 'bold'
