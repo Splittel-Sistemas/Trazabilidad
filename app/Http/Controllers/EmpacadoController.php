@@ -32,8 +32,9 @@ class EmpacadoController extends Controller
 }
 public function guardarDB()
 {
-   
-
 }
+
+
+
 
 }
