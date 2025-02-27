@@ -63,6 +63,13 @@
     }
 
 
+
+    .search-input {
+    border-radius: 10px; /* Ajusta según necesidad */
+}
+
+
+
        
 
     </style>
@@ -95,11 +102,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-        <div id="roles-table" data-list='{"valueNames":["nombreRol","permisos"],"page":5,"pagination":true}'>
+        <div class="card p-4" style="display:block;" id="roles-table" data-list='{"valueNames":["nombreRol","permisos"],"page":5,"pagination":true}'>
             <div class="search-box mb-3 mx-auto">
                 <form class="position-relative" data-bs-toggle="search" data-bs-display="static">
-                    <input class="form-control search-input search form-control-sm" type="search" placeholder="Buscar" aria-label="Buscar">
+                    <input class="form-control search-input search form-control-sm rounded-pill" type="search" placeholder="Buscar" aria-label="Buscar">
                 </form>
+                
+                
             </div>
             <div class="table-responsive">
                 <div class="card shadow-sm">
