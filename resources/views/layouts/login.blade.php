@@ -65,45 +65,6 @@
         .img{
             margin-top: 1rem;
         }
-        
-        /*.button-group {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .button-group button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 90px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-            background-color: #faf8f8;
-            border: 3px solid #007bff;
-            color: #007bff;
-        }
-        .button-group button.active {
-            background-color: #007bff;
-            color: white;
-        }
-        .button-group button:hover {
-            opacity: 0.8;
-        }*/
-        /*.active {
-            background: #003d82;
-            color: white;
-            font-size: 1.5rem;
-            /*padding: 10px 20px;
-            border: none;
-            border-radius: 90px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-            background-color: #faf8f8;
-            border: 3px solid #007bff;
-            color: #007bff;
-        }*/
         .input-field {
             transition: border-color 0.3s, outline 0.3s;
             width: 90%;
@@ -206,7 +167,7 @@
                 <form method="POST" action="{{ route('login_post') }}" class="form" id="formAdministrativo">
                     @csrf
                     <div id="administrativoFields">
-                        <input name="email" type="text" placeholder="Correo Electrónico" value="{{ old('email') }}" required class="input-field">
+                        <input name="email" type="email" placeholder="Correo Electrónico" value="{{ old('email') }}" required class="input-field">
                         <input name="password" type="password" placeholder="Contraseña" required class="input-field">
                     </div>
                     <button type="submit" id="login-button">Ingresar</button>
