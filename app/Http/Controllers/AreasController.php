@@ -602,12 +602,9 @@ class AreasController extends Controller
                 }
                 if($Escaner==1){
                     //Opciones de la tabla
-                    if($Area!=9)
-                    {
-                        $Opciones='<option selected="" value="">Todos</option>
+                    $Opciones='<option selected="" value="">Todos</option>
                         <option value="Abierta">Abiertas</option>
                         <option value="Cerrada">Cerradas</option>';
-                    }else{$Opciones="";}
                     //Mostrar las partidas    
                     $partidas = $datos->partidasOF;
                             foreach( $partidas as $PartidasordenFabricacion){
@@ -631,12 +628,10 @@ class AreasController extends Controller
                                 }
                         }
                 }else{
-                    if($Area!=9){
-                        $Opciones='<option selected="" value="">Todos</option>
-                            <option value="Iniciado">Iniciado</option>
-                            <option value="Retrabajo">Retrabajo</option>
-                            <option value="Finalizado">Finalizado</option>';
-                        }else{ $Opciones="";}
+                    $Opciones='<option selected="" value="">Todos</option>
+                        <option value="Iniciado">Iniciado</option>
+                        <option value="Retrabajo">Retrabajo</option>
+                        <option value="Finalizado">Finalizado</option>';
                 }
                 $menu='<div class="card-body">
                     <div id="ContainerTableSuministros" class="table-list">
@@ -646,16 +641,16 @@ class AreasController extends Controller
                             <div class="badge badge-phoenix fs--4 badge-phoenix-secondary"><span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span></div>
                             </div>
                         </div>';
-                        if($Area!=9){
-                            $menu.='<div class="row justify-content-end g-0">
-                                <div class="col-auto px-3">
-                                <select class="form-select form-select-sm mb-3" data-list-filter="data-list-filter">
-                                '.$Opciones.'
-                                </select>
-                                </div>
-                            </div>';
-                        }
-                    $menu.='<div class="table-responsive scrollbar mb-3">
+                if($Area!=9){
+                    $menu.='<div class="row justify-content-end g-0">
+                    <div class="col-auto px-3">
+                    <select class="form-select form-select-sm mb-3" data-list-filter="data-list-filter">
+                    '.$Opciones.'
+                    </select>
+                    </div>
+                    </div>';
+                }
+                $menu.='<div class="table-responsive scrollbar mb-3">
                         <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
                             <thead>
                                 <tr class="bg-primary text-white">
@@ -2201,8 +2196,8 @@ class AreasController extends Controller
                             $PartdaArea = $PartidasordenFabricacion->Areas()->where('Areas_id', $Area)->get();
                             foreach ($PartdaArea as $PartdaAr) {
                                 $menu .= '<tr>
-                                            <td class="align-middle ps-3 NumParte">' . $datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '</td>
-                                            <td class="align-middle text-center Cantidad">' . $PartdaAr['pivot']->Cantidad . '</td>
+                                            <td class=" ps-3 NumParte">' . $datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '</td>
+                                            <td class="ps-3   Cantidad">' . $PartdaAr['pivot']->Cantidad . '</td>
                                         </tr>';
                                 }
                         }
@@ -2215,15 +2210,17 @@ class AreasController extends Controller
                 $menu='<div class="card-body">
                     <div id="ContainerTableSuministros" class="table-list">
                         <div class="row justify-content-start g-0">
-                            <div class="col-auto px-3">
-                            <h6 class="text-center">Orden de Fabricación '.$datos->OrdenFabricacion.'</h6>
-                            <div class="badge badge-phoenix fs--4 badge-phoenix-secondary"><span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span></div>
+                            <div class="col-auto px-0">
+                                <h6 class="">Orden de Fabricación <stron>'.$datos->OrdenFabricacion.'</strong></h6>
+                                <div class="badge badge-phoenix fs--4 badge-phoenix-secondary">
+                                    <span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span>
+                                </div>
                             </div>
                         </div>
                         <div class="table-responsive scrollbar mb-3">
                         <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
                             <thead>
-                                <tr class="bg-primary text-white">
+                                <tr class="bg-light">
                                 <th class="sort border-top ps-3" data-sort="NumParte">Codigo</th>
                                     <th class="sort border-top" data-sort="Cantidad">Cantidad</th>
                                 
@@ -2233,11 +2230,6 @@ class AreasController extends Controller
                                 '.$menu.'
                             </tbody>
                         </table>
-                        </div>
-                        <div class="d-flex justify-content-center mt-3">
-                            <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
-                            <ul class="mb-0 pagination"></ul>
-                            <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
                         </div>
                     </div>';
                 return response()->json([
