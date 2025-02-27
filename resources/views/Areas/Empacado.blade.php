@@ -16,51 +16,73 @@
         </div>
     </div>
 </div>
-<div class="col-6">
-    <div class="card shadow-sm">
-        <div class="card-body row" id="filtro">
-            <label for="CodigoEscaner" class="col-form-label col-sm-12 pt-0">Proceso <span class="text-muted"></span></label>
-            <div class="col-8">
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body row" id="filtro">
+                <label for="CodigoEscaner" class="col-form-label col-sm-12 pt-0">Proceso <span class="text-muted"></span></label>
+                <div class="col-8">
                     <div class="form-check form-check-inline ">
-                        <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" >
+                        <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar">
                         <label class="form-check-label" for="Iniciar">
-                        Entrada
+                            Entrada
                         </label>
                     </div>
+                </div>
+                <hr>
+                <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
+                    <div class="col-8" id="CodigoDiv">
+                        <div class="">
+                            <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
+                            <div class="input-group">
+                                <input type="text" class="form-control form-control-sm" id="CodigoEscaner" aria-describedby="CodigoEscanerHelp" placeholder="Escanea o ingresa manualmente.">
+                                <div class="invalid-feedback" id="error_CodigoEscaner"></div>
+                            </div>
+                            <div class="mt-1 list-group-sm" id="CodigoEscanerSuministro">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4" id="CantidadDiv" style="display: none">
+                        <div class="form-group">
+                            <label for="Cantidad">Cantidad</label>
+                            <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
+                            <div class="invalid-feedback" id="error_Cantidad"></div>
+                        </div>
+                    </div>
+                    <div class="col-6 mt-2" id="RetrabajoDiv" style="display: none">
+                        <div class="form-check">
+                            <input class="form-check-input" id="Retrabajo" type="checkbox" />
+                            <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
+                        </div>
+                    </div>
+                    <div class="col-6 mt-2" id="IniciarBtn" style="display: none">
+                        <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i> Iniciar</button>
+                    </div>
+                </form>
             </div>
-            <hr>
-            <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
-                <div class="col-8" id="CodigoDiv">
-                    <div class="">
-                        <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
-                        <div class="input-group">
-                            <input type="text" class="form-control form-control-sm"  id="CodigoEscaner" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
-                            <div class="invalid-feedback" id="error_CodigoEscaner"></div>
-                        </div>
-                        <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
-                        </div>
-                    </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive card">
+                    <table id="escaneadoEmpaque" class="table table-sm">
+                        <thead>
+                            <tr class="br-light">
+                                <th class="text-center">Código</th>
+                                <th class="text-center">Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody id="escaneadoEmpaqueTableBody"></tbody>
+                    </table>
                 </div>
-                <div class="col-4" id="CantidadDiv" style="display: none">
-                    <div class="form-group">
-                        <label for="Cantidad">Cantidad</label>
-                        <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
-                        <div class="invalid-feedback" id="error_Cantidad"></div>
-                    </div>
-                </div>
-                <div class="col-6 mt-2" id="RetrabajoDiv" style="display: none">
-                    <div class="form-check">
-                        <input class="form-check-input" id="Retrabajo" type="checkbox" />
-                        <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
-                    </div>
-                </div>
-                <div class="col-6 mt-2" id="IniciarBtn" style="display: none">
-                    <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i> Iniciar</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
+
 
 <div style="height: 30px;"></div>
 <div class="card">
@@ -110,14 +132,14 @@ $(document).ready(function () {
 
                 data.forEach((item) => {
                     let fila = `
-                         <tr>
+                        <tr>
                             <td class="text-center">${item.OrdenVenta}</td>
                             <td class="text-center">${item.OrdenFabricacion}</td>
                             <td class="text-center">${item.CantidadTotal}</td>
                             <td class="text-center">${item.Cantidad}</td>
                             <td class="text-center">${item.FechaEntrega}</td>
                             <td class="text-center">
-                                <button class="btn btn-sm btn-danger">Finalizar</button>
+                                <button class="btn btn-sm btn-danger finalizar-btn" data-id="${item.id}">Finalizar</button>
                             </td>
                         </tr>
                     `;
@@ -125,12 +147,23 @@ $(document).ready(function () {
                 });
 
                 DataTable('EmpacadoTable', true);
+
+                // Agregar evento click a los botones "Finalizar"
+                $(".finalizar-btn").off("click").on("click", function () {
+                    let id = $(this).data("id");
+
+                    // Aquí podrías hacer una petición AJAX para finalizar en la base de datos si lo deseas
+
+                    alert("El proceso con ID " + id + " se ha finalizado.");
+                });
             },
             error: function () {
                 console.log("Error al cargar los datos de la tabla.");
             },
         });
     }
+
+
 
     function DataTable(tabla, busqueda) {
         $('#' + tabla).DataTable({
@@ -151,6 +184,7 @@ $(document).ready(function () {
         });
     }
 });
+
 
 </script>
 @endsection
