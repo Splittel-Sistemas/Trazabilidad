@@ -2014,8 +2014,6 @@ class AreasController extends Controller
         $Area=$this->funcionesGenerales->encrypt(9);
         return view('Areas.Empacado',compact('Area')); 
     }
-
-
     public function tablaEmpacado()
     {
         $areas = DB::table('partidasof_areas')
