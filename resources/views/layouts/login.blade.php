@@ -34,11 +34,12 @@
             width: 40rem;
         }
         .container h1 {
-            color: #42688a;
-            font-family:Verdana, Geneva, Tahoma, sans-serif;
+            color: #003d82;
+            font-family:Arial, Helvetica, sans-serif;
+            font:800;
             margin-bottom: 2rem;
             margin-top: 0.5;
-            font-size: 2.5rem;
+            font-size: large;
         }
         .btn-select{
             margin: 0;
@@ -68,7 +69,7 @@
         .input-field {
             transition: border-color 0.3s, outline 0.3s;
             width: 90%;
-            padding:0.8rem;
+            padding:0.7rem;
             margin: 1rem 0;
             border: 2px solid #7e0404;
             border-radius: 90px;
@@ -121,6 +122,9 @@
             bottom: -160px;
             animation: square 25s infinite linear; /* Animación de las burbujas */
         }
+        .li-errores{
+            
+        }
         @keyframes square {
             0% {
                 transform: translateY(0);
@@ -140,15 +144,13 @@
         .bg-bubbles li:nth-child(8) { top: 80%; left: 60%; width: 20px; height: 20px; }
         .bg-bubbles li:nth-child(9) { top: 15%; left: 90%; width: 10px; height: 10px; }
         .bg-bubbles li:nth-child(10) { top: 40%; left: 10%; width: 160px; height: 160px; }
-    
-
     </style>
 </head>
 <body>
     <div class="wrapper">
         <div class="container">
                 <img class="img" src="{{asset('imagenes/splittel.png') }}" alt="Splittel" width="100" height="40">
-                <h1>Trazabilidad</h1>
+                <h1 class="m-0 p-0">Trazabilidad</h1>
                 <div class="text-center mb-4 bg-select">
                     <button class="btn-select active" id="toggleAdministrativo">Administrativo</button>
                     <button class="btn-select " id="toggleOperadores">Operadores</button>
@@ -158,7 +160,7 @@
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">x</button>
                         <ul>
                             @foreach ($errors->all() as $error)
-                                {{ $error }}
+                                <li class="li-errores">{{ $error }}</li>
                             @endforeach
                         </ul>
                     </div>
