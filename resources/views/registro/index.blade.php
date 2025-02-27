@@ -50,6 +50,13 @@
     margin-right: 1rem; /* Espaciado entre roles */
     margin-bottom: 0.5rem; /* Espaciado vertical para nuevas filas */
 }
+.search-box-icon {
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888; /* Color del icono */
+    pointer-events: none; /* Evita que el icono sea clickeable */
+}
+
 
     </style>
 @endsection
@@ -80,14 +87,18 @@
         </div>
     @endif
 
-    <div id="tableExample3" data-list="{&quot;valueNames&quot;:[&quot;apellido&quot;,&quot;nombre&quot;,&quot;email&quot;,&quot;roles&quot;,&quot;estatus&quot;],&quot;page&quot;:5,&quot;pagination&quot;:true}">
+    <div class="card p-4" style="display:block;" id="tableExample3" data-list="{&quot;valueNames&quot;:[&quot;apellido&quot;,&quot;nombre&quot;,&quot;email&quot;,&quot;roles&quot;,&quot;estatus&quot;],&quot;page&quot;:5,&quot;pagination&quot;:true}">
         <div class="search-box mb-3 mx-auto">
-            <form class="position-relative" data-bs-toggle="search" data-bs-display="static">
-                <input class="form-control search-input search form-control-sm" type="search" placeholder="Buscar" aria-label="Buscar">
-                <svg class="svg-inline--fa fa-magnifying-glass search-box-icon" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+            <form class="position-relative d-flex align-items-center" data-bs-toggle="search" data-bs-display="static">
+                <input class="form-control search-input search form-control-sm rounded-pill pe-5" 
+                       type="search" 
+                       placeholder="Buscar" 
+                       aria-label="Buscar">
+                <svg class="position-absolute end-0 me-3 search-box-icon" width="16" height="16" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
                     <path fill="currentColor" d="M500.3 443.7..."></path>
                 </svg>
             </form>
+            
         </div>
         <div class="table-responsive">
             <div class="card shadow-sm">
@@ -100,7 +111,7 @@
                             <th class="sort border-top" data-sort="password">Contraseña</th>
                             <th class="sort border-top" data-sort="roles">Role</th>
                             <th class="sort border-top" data-sort="estatus">Desactivo/Activo</th>
-                            <th class="sort border-top text-center  pe-0">Acciones</th>
+                            <th class="sort border-top text-center  pe-0">Accion</th>
                         </tr>
                     </thead>
                     <tbody class="list">

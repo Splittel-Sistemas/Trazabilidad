@@ -357,7 +357,7 @@
                             <tr class="bg-info text-white">
                                 <th class="sort border-top ps-3" data-sort="venta">Orden De Venta</th>
                                 <th class="sort border-top" data-sort="fabricacion">Nombre Cliente</th>
-                                <th class="sort border-top text-center pe-3" data-sort="total">Detalles</th>
+                                <th class="sort border-top text-center pe-3" data-sort="total">Accion</th>
                             </tr>
                             </thead>
                             <tbody class="list" id="tabla-resultadosVenta">
@@ -391,7 +391,7 @@
                                 <th class="sort border-top" data-sort="partidas">Descripción</th>
                                 <th class="sort border-top" data-sort="partidas">Cantidad Total</th>
                                 
-                                <th class="sort border-top" data-sort="estatus">Detalles</th>
+                                <th class="sort border-top" data-sort="estatus">Accion</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-resultadosFabricacion">
@@ -598,12 +598,13 @@
                         <br>
                         <!-- Lista de etapas -->
                         <ul class="progress-bar-stages">
+                            <!--
                             <li class="stage" id="stage1">
                                 <div class="stage-circle">
                                     <i class="fas fa-cogs"></i>
                                 </div>
                                 <span>1. Planeación</span>
-                            </li>
+                            </li>-->
                         
                             <li class="stage" id="stage2" >
                                 <div class="stage-circle">
@@ -1136,7 +1137,7 @@
                         });
                 } else {
                     $('#titulo-cortes')
-                        .text('Duración: 0 días, 0 horas, 0 minutos')
+                        .text('Sin datos de duración')
                         .css({
                             'font-size': '10px',
                             'color': 'red',
@@ -1221,31 +1222,31 @@
                 }
 
                 if (!hasData) {
-                    $('#titulo-suministro').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                    $('#titulo-suministro').text('Sin datos de duración').css({
                         'font-size': '10px',
                         'color': 'red',
                         'font-weight': 'bold'
                     });
 
-                    $('#titulo-preparado').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                    $('#titulo-preparado').text('Sin datos de duración').css({
                         'font-size': '10px',
                         'color': 'red',
                         'font-weight': 'bold'
                     });
 
-                    $('#titulo-ensamble').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                    $('#titulo-ensamble').text('Sin datos de duración').css({
                         'font-size': '10px',
                         'color': 'red',
                         'font-weight': 'bold'
                     });
 
-                    $('#titulo-pulido').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                    $('#titulo-pulido').text('Sin datos de duración').css({
                         'font-size': '10px',
                         'color': 'red',
                         'font-weight': 'bold'
                     });
 
-                    $('#titulo-medicion').text('Duración: 0 días, 0 horas, 0 minutos').css({
+                    $('#titulo-medicion').text('Sin datos de duración').css({
                         'font-size': '10px',
                             'color': 'red',
                             'font-weight': 'bold'

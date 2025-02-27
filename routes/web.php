@@ -226,9 +226,9 @@ Route::get('/Dasboard/indicador/dia',[HomeControler::class, 'Dasboardindicadordi
 Route::post('/guardar-dashboard', [HomeControler::class, 'guardarDasboard'])->name('guardar.Dasboard')->middleware('auth');
 
 
-Route::get('/Area/Empacado',[EmpacadoController::class,'index'])->name('Empacado');
-Route::get('/Tabla/principal',[EmpacadoController::class,'tabla'])->name('tabla.principal');
-Route::post('/Empacado/Finalizar',[EmpacadoController::class,'guardarDB'])->name('finalizar.Empacado');
+Route::get('/Area/Empacado',[AreasController::class,'Empaquetado'])->name('Empacado');
+Route::get('/Tabla/principal',[AreasController::class,'tablaEmpacado'])->name('tabla.principal');
+Route::post('/Area/Empaquetado/buscar', [AreasController::class,'EmpaquetadoBuscar'])->name('EmpaquetadoBuscar')->middleware('auth');
 
 
 
