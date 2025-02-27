@@ -188,8 +188,13 @@
         <div class="container">
                 <img class="img" src="{{asset('imagenes/splittel.png') }}" alt="Splittel" width="100" height="40">
                 <h1>Trazabilidad</h1>
+                <div class="text-center mb-4 bg-select">
+                    <button class="btn-select active" id="toggleAdministrativo">Administrativo</button>
+                    <button class="btn-select " id="toggleOperadores">Operadores</button>
+                </div>
                 @if ($errors->any())
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger p-0 mb-0">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">x</button>
                         <ul>
                             @foreach ($errors->all() as $error)
                                 {{ $error }}
@@ -197,11 +202,6 @@
                         </ul>
                     </div>
                 @endif
-                <div class="text-center mb-4 bg-select">
-                    <button class="btn-select active" id="toggleAdministrativo">Administrativo</button>
-                    <button class="btn-select " id="toggleOperadores">Operadores</button>
-                </div>
-                
                 <!-- Formulario para Administrativos -->
                 <form method="POST" action="{{ route('login_post') }}" class="form" id="formAdministrativo">
                     @csrf
