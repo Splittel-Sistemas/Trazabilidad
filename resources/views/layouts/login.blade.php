@@ -16,7 +16,6 @@
             padding: 0;
             font-family: 'Source Sans Pro', sans-serif;
         }
-
         body {
             background: linear-gradient(to right, #42688a, #851400);
             height: 100vh;
@@ -25,29 +24,48 @@
             justify-content: center;
             color: #333;
         }
-        
         .container {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 255);
             padding: 12px;
-            border-radius: 55px;
+            border-radius: 3rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             text-align: center;
-            max-width: 500px;
-            width: 100%;
+            max-width: 40rem;
+            width: 40rem;
         }
-
         .container h1 {
             color: #42688a;
-            margin-bottom: 20px;
+            font-family:Verdana, Geneva, Tahoma, sans-serif;
+            margin-bottom: 2rem;
+            margin-top: 0.5;
+            font-size: 2.5rem;
         }
-
-        .button-group {
+        .btn-select{
+            margin: 0;
+            padding: 0.5rem;
+            border-radius: 1rem;
+            width: 12rem;
+            border: #007bff;
+            border-width: 2px;
+        }
+        .bg-select{
+            width: 90%;
+            margin: 0 auto;
+            padding-bottom: 2rem;
+        }
+        .active{
+            background: #003d82;
+            color: white;
+        }
+        .img{
+            margin-top: 1rem;
+        }
+        /*.button-group {
             display: flex;
             justify-content: center;
             gap: 10px;
             margin-bottom: 15px;
         }
-
         .button-group button {
             padding: 10px 20px;
             border: none;
@@ -59,32 +77,41 @@
             border: 3px solid #007bff;
             color: #007bff;
         }
-
         .button-group button.active {
             background-color: #007bff;
             color: white;
         }
-
         .button-group button:hover {
             opacity: 0.8;
-        }
-
+        }*/
+        /*.active {
+            background: #003d82;
+            color: white;
+            font-size: 1.5rem;
+            /*padding: 10px 20px;
+            border: none;
+            border-radius: 90px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            background-color: #faf8f8;
+            border: 3px solid #007bff;
+            color: #007bff;
+        }*/
         .input-field {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
+            width: 90%;
+            padding:0.8rem;
+            margin: 1rem 0;
             border: 2px solid #7e0404;
             border-radius: 90px;
             font-size: 16px;
         }
-
         .input-field:focus {
             border-color: #007bff;
             outline: none;
         }
-
         #login-button {
-            width: 100%;
+            width: 90%;
             padding: 10px;
             border: none;
             border-radius: 90px;
@@ -94,29 +121,25 @@
             cursor: pointer;
             transition: 0.3s;
         }
-
         #login-button:hover {
             background-color: #003d82;
+            transform: scale(1.1);
         }
-        
-        .alert {
-            background: #f8d7da;
-            color: #721c24;
+        #login-operador {
+            width: 90%;
             padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
+            border: none;
+            border-radius: 90px;
+            background-color: #0056b3;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
         }
-
-
-
-
-
-        
-       
-
-        /* Burbujas de fondo */
-       
-
+        #login-operador:hover {
+            background-color: #003d82;
+            transform: scale(1.1);
+        }
         .bg-bubbles li {
             position: absolute;
             list-style: none;
@@ -126,7 +149,6 @@
             bottom: -160px;
             animation: square 25s infinite linear; /* Animación de las burbujas */
         }
-
         @keyframes square {
             0% {
                 transform: translateY(0);
@@ -135,59 +157,17 @@
                 transform: translateY(-700px) rotate(600deg);
             }
         }
-
         /* Posiciones y tamaños de las burbujas */
         .bg-bubbles li:nth-child(1) { top: 10%; left: 10%; }
         .bg-bubbles li:nth-child(2) { top: 20%; left: 40%; width: 80px; height: 80px; }
         .bg-bubbles li:nth-child(3) { top: 30%; left: 70%; }
-        .bg-bubbles li:nth-child(4) { top: 50%; left: 20%; width: 60px; height: 60px; }
-        .bg-bubbles li:nth-child(5) { top: 60%; left: 80%; }
-        .bg-bubbles li:nth-child(6) { top: 70%; left: 50%; width: 120px; height: 120px; }
-        .bg-bubbles li:nth-child(7) { top: 80%; left: 30%; width: 160px; height: 160px; }
-        .bg-bubbles li:nth-child(8) { top: 90%; left: 60%; width: 20px; height: 20px; }
+        .bg-bubbles li:nth-child(4) { top: 40%; left: 20%; width: 60px; height: 60px; }
+        .bg-bubbles li:nth-child(5) { top: 50%; left: 80%; }
+        .bg-bubbles li:nth-child(6) { top: 60%; left: 50%; width: 120px; height: 120px; }
+        .bg-bubbles li:nth-child(7) { top: 70%; left: 30%; width: 160px; height: 160px; }
+        .bg-bubbles li:nth-child(8) { top: 80%; left: 60%; width: 20px; height: 20px; }
         .bg-bubbles li:nth-child(9) { top: 15%; left: 90%; width: 10px; height: 10px; }
         .bg-bubbles li:nth-child(10) { top: 40%; left: 10%; width: 160px; height: 160px; }
-
-
-        .active {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 90px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-            background-color: #faf8f8;
-            border: 3px solid #007bff;
-            color: #007bff;
-        }
-
-
-
-        #login-operador {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 90px;
-            background-color: #0056b3;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        #login-operador:hover {
-            background-color: #003d82;
-        }
-
-
-
-
-
-
-
-
-
-
     
 
     </style>
@@ -195,19 +175,20 @@
 <body>
     <div class="wrapper">
         <div class="container">
-                <h1>Bienvenido</h1>
+                <img class="img" src="{{asset('imagenes/splittel.png') }}" alt="Splittel" width="100" height="40">
+                <h1>Trazabilidad</h1>
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
                             @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
+                                {{ $error }}
                             @endforeach
                         </ul>
                     </div>
                 @endif
-                <div class="text-center mb-4">
-                    <span class="btn btn-outline-primary mx-2 active" id="toggleAdministrativo">Administrativo</span>
-                    <span class="btn btn-outline-primary mx-2" id="toggleOperadores">Operadores</span>
+                <div class="text-center mb-4 bg-select">
+                    <button class="btn-select active" id="toggleAdministrativo">Administrativo</button>
+                    <button class="btn-select " id="toggleOperadores">Operadores</button>
                 </div>
                 
                 <!-- Formulario para Administrativos -->
@@ -226,13 +207,9 @@
                     <input name="clave" type="text" placeholder="Clave" required class="input-field">
                     <button type="submit" id="login-operador">Ingresar</button>
                 </form>
-                    
-                    
-                   
             </div>
         </div>
-    </div>
-    <ul class="bg-bubbles">
+         <ul class="bg-bubbles">
         <li></li>
         <li></li>
         <li></li>
@@ -244,6 +221,7 @@
         <li></li>
         <li></li>
     </ul>
+    </div>
 </body>
 <script>
 document.getElementById('toggleAdministrativo').addEventListener('click', function() {
