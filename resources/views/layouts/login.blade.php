@@ -47,6 +47,11 @@
             width: 12rem;
             border: #007bff;
             border-width: 2px;
+            transition: background 0.4s, color 0.3s;
+        }
+        .btn-select:hover{
+            background:#0056b3;
+            color: #fff;
         }
         .bg-select{
             width: 90%;
@@ -60,6 +65,7 @@
         .img{
             margin-top: 1rem;
         }
+        
         /*.button-group {
             display: flex;
             justify-content: center;
@@ -99,6 +105,7 @@
             color: #007bff;
         }*/
         .input-field {
+            transition: border-color 0.3s, outline 0.3s;
             width: 90%;
             padding:0.8rem;
             margin: 1rem 0;
@@ -127,6 +134,7 @@
         }
         #login-operador {
             width: 90%;
+            margin-top: 1rem;
             padding: 10px;
             border: none;
             border-radius: 90px;
@@ -139,6 +147,9 @@
         #login-operador:hover {
             background-color: #003d82;
             transform: scale(1.1);
+        }
+        .bg-bubbles{
+            z-index: -1;
         }
         .bg-bubbles li {
             position: absolute;
@@ -204,8 +215,10 @@
                 <!-- Formulario para Operadores (Oculto por defecto) -->
                 <form method="POST" action="{{ route('operador.login') }}" class="form" id="formOperador" style="display: none;">
                     @csrf
-                    <input name="clave" type="text" placeholder="Clave" required class="input-field">
-                    <button type="submit" id="login-operador">Ingresar</button>
+                    <div id="administrativoFields mt-4">
+                        <input name="clave" type="text" placeholder="Clave" required class="input-field">
+                        <button type="submit" class="mt-4" id="login-operador">Ingresar</button>
+                    </div>
                 </form>
             </div>
         </div>
