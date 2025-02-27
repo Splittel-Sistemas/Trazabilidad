@@ -628,7 +628,7 @@ class AreasController extends Controller
                                 }
                         }
                 }else{
-                    $Opciones='<option selected="" value="">Todos</option>
+                $Opciones='<option selected="" value="">Todos</option>
                         <option value="Iniciado">Iniciado</option>
                         <option value="Retrabajo">Retrabajo</option>
                         <option value="Finalizado">Finalizado</option>';
@@ -640,17 +640,15 @@ class AreasController extends Controller
                             <h6 class="text-center">Orden de Fabricación '.$datos->OrdenFabricacion.'</h6>
                             <div class="badge badge-phoenix fs--4 badge-phoenix-secondary"><span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span></div>
                             </div>
-                        </div>';
-                if($Area!=9){
-                    $menu.='<div class="row justify-content-end g-0">
+                        </div>
+                    <div class="row justify-content-end g-0">
                     <div class="col-auto px-3">
                     <select class="form-select form-select-sm mb-3" data-list-filter="data-list-filter">
                     '.$Opciones.'
                     </select>
                     </div>
-                    </div>';
-                }
-                $menu.='<div class="table-responsive scrollbar mb-3">
+                    </div>
+                    <div class="table-responsive scrollbar mb-3">
                         <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
                             <thead>
                                 <tr class="bg-primary text-white">
