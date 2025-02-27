@@ -106,9 +106,7 @@
             <div class="search-box mb-3 mx-auto">
                 <form class="position-relative" data-bs-toggle="search" data-bs-display="static">
                     <input class="form-control search-input search form-control-sm rounded-pill" type="search" placeholder="Buscar" aria-label="Buscar">
-                </form>
-                
-                
+                </form>   
             </div>
             <div class="table-responsive">
                 <div class="card shadow-sm">

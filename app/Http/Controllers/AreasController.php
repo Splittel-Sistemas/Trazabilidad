@@ -2007,6 +2007,34 @@ class AreasController extends Controller
         }
         return $TipoEscanerrespuesta;
     }
+    //area 9 Empaquetado
+
+    public function Empaquetado()
+    {
+        $Area=$this->funcionesGenerales->encrypt(9);
+        return view('Areas.Empacado',compact('Area')); 
+    }
+    public function tablaEmpacado()
+    {
+        $areas = DB::table('partidasof_areas')
+            ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
+            ->join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
+            ->whereIn('partidasof_areas.Areas_id', [8])
+            ->select(
+                'ordenventa.OrdenVenta',
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal',
+                'ordenfabricacion.FechaEntrega',
+                'partidasof_areas.Cantidad',   
+            )
+            ->get();
+    
+        return response()->json($areas);
+    }
+
+
+
     /*public function CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
         $partidas = $datos->partidasOF()
                         ->join('partidas', 'partidasOF.id', '=', 'partidas.PartidasOF_id')  // JOIN entre PartidasOF y Partidas
