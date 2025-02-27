@@ -124,7 +124,7 @@
             Finalizar=1;
         }
         $.ajax({
-            url: "{{route('PreparadoBuscar')}}", 
+            url: "{{route('EmpaquetadoBuscar')}}", 
             type: 'POST',
             data: {
                 Codigo: Codigo,
@@ -288,7 +288,7 @@
     }
     function Retrabajo(Codigo){
         $.ajax({
-            url: "{{route('PreparadoBuscar')}}", 
+            url: "{{route('EmpaquetadoBuscar')}}", 
             type: 'POST',
             data: {
                 Codigo: Codigo,
@@ -562,7 +562,7 @@ $(document).ready(function () {
                         <td class="text-center">${cantidad}</td>
                         <td class="text-center">${item.FechaEntrega}</td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-danger finalizar-btn" data-id="${item.id}">Finalizar</button>
+                            <button class="btn btn-sm btn-danger finalizar-btn" data-id="${item.OrdenFabricacion}">Finalizar</button>
                         </td>
                     </tr>
                 `;

@@ -111,7 +111,7 @@
                             <th class="sort border-top" data-sort="password">Contraseña</th>
                             <th class="sort border-top" data-sort="roles">Role</th>
                             <th class="sort border-top" data-sort="estatus">Desactivo/Activo</th>
-                            <th class="sort border-top text-center  pe-0">Acciones</th>
+                            <th class="sort border-top text-center  pe-0">Accion</th>
                         </tr>
                     </thead>
                     <tbody class="list">

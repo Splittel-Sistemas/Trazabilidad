@@ -115,7 +115,7 @@
                             <tr>
                                 <th class="sort border-top ps-3" data-sort="nombreRol">Nombre del Rol</th>
                                 <th class="sort border-top" data-sort="permisos">Permisos</th>
-                                <th class="sort text-end align-middle pe-0 border-top">Acciones</th>
+                                <th class="sort text-end align-middle pe-0 border-top">Accion</th>
                             </tr>
                         </thead>
                         <tbody class="list">
