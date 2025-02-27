@@ -228,6 +228,7 @@ Route::post('/guardar-dashboard', [HomeControler::class, 'guardarDasboard'])->na
 
 Route::get('/Area/Empacado',[AreasController::class,'Empaquetado'])->name('Empacado');
 Route::get('/Tabla/principal',[AreasController::class,'tablaEmpacado'])->name('tabla.principal');
+Route::post('/Area/Empaquetado/buscar', [AreasController::class,'EmpaquetadoBuscar'])->name('EmpaquetadoBuscar')->middleware('auth');
 
 
 
