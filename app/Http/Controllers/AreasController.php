@@ -15,8 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
-use function PHPUnit\Framework\returnValue;
-
+//use function PHPUnit\Framework\returnValue;
 class AreasController extends Controller
 {
     protected $funcionesGenerales;
@@ -513,6 +512,7 @@ class AreasController extends Controller
     //Area 4 Preparado
     public function Preparado(){
         $Area=$this->funcionesGenerales->encrypt(4);
+        return $this->TablaOrdenesActivasEstacion(4);
         return view('Areas.Preparado',compact('Area'));
     }
     public function PreparadoBuscar(Request $request){
@@ -1290,6 +1290,23 @@ class AreasController extends Controller
 
             ]);
         }
+    }
+    public function TablaOrdenesActivasEstacion($Area){
+        if($Area==4){
+            $NumeroArea4=0;
+            $ordenes4 = OrdenFabricacion::with('PartidasOF')
+                            ->where('OrdenFabricacion.Cerrada','1')
+                            ->whereHas('PartidasOF') 
+                            ->get();
+            foreach($ordenes4 as $ordenes){
+                foreach($ordenes->partidasOF as $areas){
+                    return$NumeroArea4=$areas;//->Areas->where('Areas_id',$Area);//->SUM('Cantidad');
+                }
+            }
+            return $NumeroArea4;
+        }
+       //return$PartidasArea=Partidasof::get();
+        //$Area=((int)$Area)-1;
     }
     //Area 5 Ensamble
     public function Ensamble(){
