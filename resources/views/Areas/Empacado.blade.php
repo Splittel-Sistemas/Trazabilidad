@@ -225,7 +225,7 @@
                                     //$('#CantidadPartidasOF').html('');
                                     break;
                                 case 7:
-                                    Mensaje='Codigo <strong>'+Codigo+'</strong> elimino!';
+                                    Mensaje='Codigo <strong>'+Codigo+'</strong> ultima partida!';
                                     Color='bg-danger';
                                     $('#ContentTabla').hide();
                                     $('#CantidadPartidasOF').html('');
@@ -286,7 +286,7 @@
                             $('#ToastGuardado').fadeOut();
                         }, 2000);
                 }
-                //cargarTablaEmpacado();
+                cargarTablaEmpacado();
             },
             error: function(xhr, status, error) {
                 $('#CantidadDiv').hide();
@@ -334,7 +334,7 @@
                         $('#ToastGuardado').fadeOut();
                     }, 2500);
                 }
-                //cargarTablaEmpacado();
+                cargarTablaEmpacado();
             }
         });
     }
@@ -517,6 +517,7 @@
                 }
                 
                 ListaCodigo(CodigoEscaner,'CodigoEscanerSuministro')
+                cargarTablaEmpacado();
             },
             error: function(xhr, status, error) {
                 $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
@@ -544,7 +545,7 @@
     $(document).ready(function () {
         cargarTablaEmpacado();
 
-        setInterval(cargarTablaEmpacado, 1000);
+        setInterval(cargarTablaEmpacado, 10000);
 
         function cargarTablaEmpacado() {
             $.ajax({
@@ -582,6 +583,7 @@
                     });
 
                     DataTable('EmpacadoTable', true);
+                
 
 
                     $(".finalizar-btn").off("click").on("click", function () {
