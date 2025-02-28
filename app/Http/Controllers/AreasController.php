@@ -13,6 +13,7 @@ use App\Models\Emision;
 use App\Models\Partidasof_Areas;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 use function PHPUnit\Framework\returnValue;
 
@@ -2276,22 +2277,68 @@ class AreasController extends Controller
         }
     }
 
+
     public function finProcesoEmpaque(Request $request)
-{
-    $idFabricacion = $request->input('id');  
-    $orden = ordenfabricacion::find($idFabricacion);  
-
-    dd($orden);  
-
-    if ($orden) {
-        $orden->cerradas = 0; 
+    {   
+        $idFabricacion = $request->input('id');  
+    
+        Log::info('ID recibido: ', ['id' => $idFabricacion]);
+        
+        $query = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
+            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id') 
+            ->join('areas', 'partidasof_areas.Areas_id', '=', 'areas.id') 
+            ->where('partidasof_areas.Areas_id', 9)
+            ->select(
+                'partidasof_areas.PartidasOF_id', 
+                'areas.nombre as Estado',   
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal',
+                DB::raw('SUM(partidasof_areas.Cantidad) as cantidad_total')
+            )
+            ->groupBy(
+                'partidasof_areas.PartidasOF_id',
+                'areas.nombre',   
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal'
+            );
+    
+        if (is_array($idFabricacion)) {
+            $query->whereIn('ordenfabricacion.OrdenFabricacion', $idFabricacion);
+        } else {
+            $query->where('ordenfabricacion.OrdenFabricacion', $idFabricacion);
+        }
+        
+        $ordenfabricacion = $query->first(); 
+    
+        if (!$ordenfabricacion) {
+            Log::error('Orden no encontrada en la base de datos con ID: ' . $idFabricacion);
+            return response()->json(['error' => 'Orden no encontrada'], 404);
+        }
+    
+       
+        if ($ordenfabricacion->cantidad_total != $ordenfabricacion->CantidadTotal) {
+            return response()->json([
+                'error' => 'No se puede cerrar la orden porque no se ha completado.',
+                'cantidad_total' => $ordenfabricacion->cantidad_total,
+                'CantidadTotal' => $ordenfabricacion->CantidadTotal
+            ], 400);
+        }
+    
+        
+        $orden = ordenfabricacion::where('OrdenFabricacion', $idFabricacion)->first();
+    
+        if (!$orden) {
+            Log::error('Orden no encontrada en la base de datos con ID: ' . $idFabricacion);
+            return response()->json(['error' => 'Orden no encontrada'], 4);
+        }
+    
+        $orden->Cerrada = 0; 
         $orden->save();
-
+    
         return response()->json(['message' => 'Orden cerrada correctamente'], 200);
-    } else {
-        return response()->json(['error' => 'Orden no encontrada'], 404);
     }
-}
+    
 
     
 
