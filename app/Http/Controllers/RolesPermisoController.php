@@ -66,7 +66,7 @@ class RolesPermisoController extends Controller
      */
     public function edit($id)
     {
-        $role = Role::with('permissions')->findOrFail($id); 
+        $role = Role::with('permissions')->find($id); 
         $allPermissions = Permission::all(); 
 
         return response()->json([
@@ -84,7 +84,9 @@ class RolesPermisoController extends Controller
     {
         // Buscar el rol a actualizar
         $role = Role::findOrFail($id);
-
+        if($id==1){
+            return redirect()->route('RolesPermisos.index')->with('error', 'Los roles del Administrador No pueden ser Modificados.');
+        }
         // Validar y actualizar el nombre del rol
         $request->validate([
             'name' => 'required|string|unique:roles,name,' . $role->id, // Asegurarse de no violar la unicidad
@@ -99,7 +101,7 @@ class RolesPermisoController extends Controller
         // Guardar el rol actualizado
         $role->save();
 
-        return redirect()->route('RolesPermisos.index')->with('success', 'Rol actualizado con éxito.');
+        return redirect()->route('RolesPermisos.index')->with('status', 'Rol actualizado con éxito.');
     }
 
     /**
