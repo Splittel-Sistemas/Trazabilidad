@@ -34,7 +34,7 @@
         .permisos ul {
         display: flex;
         flex-wrap: wrap; /* Ajusta los elementos a la siguiente línea */
-        max-height: 80px; /* Limita la altura para filas más pequeñas */
+        max-height: 3rem; /* Limita la altura para filas más pequeñas */
         overflow-y: auto; /* Agrega scrollbar si hay demasiados elementos */
         padding: 0;
         margin: 0;
@@ -110,12 +110,12 @@
             </div>
             <div class="table-responsive">
                 <div class="card shadow-sm">
-                    <table class="table table-bordered table-striped table-sm fs--1">
+                    <table class="table table-bordered table-striped table-sm fs--1" data-list='{"page":5,"pagination":{"innerWindow":2,"left":1,"right":1}}'>
                         <thead class="bg-primary text-white">
                             <tr>
-                                <th class="sort border-top ps-3" data-sort="nombreRol">Nombre del Rol</th>
-                                <th class="sort border-top" data-sort="permisos">Permisos</th>
-                                <th class="sort text-end align-middle pe-0 border-top">Accion</th>
+                                <th class="sort border-top ps-3" data-sort="nombreRol" style="width: 15%">Nombre del Rol</th>
+                                <th class="sort border-top" data-sort="permisos" style="width: 70%">Permisos</th>
+                                <th class="sort ps-3 border-top" style="width: 15%">Accion</th>
                             </tr>
                         </thead>
                         <tbody class="list">
@@ -147,6 +147,9 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="d-flex justify-content-center mt-3"><button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                    <ul class="mb-0 pagination"></ul><button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
+                </div>
             </div>
         </div>
     </div>
@@ -163,14 +166,20 @@
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
-                        <div class="form-group">
+                        <div class="form-group mb-2">
                             <label for="roleName">Nombre del Rol</label>
                             <input type="text" class="form-control" id="roleName" name="name" required>
                         </div>
                         <div class="form-group">
-                            <label for="rolePermissions">Permisos</label>
-                            <div id="rolePermissions"  class="permissions-container d-flex flex-wrap">
-                                <!-- Los checkboxes se generarán aquí dinámicamente -->
+                            <label for="rolePermissions" class="mb-1">Permisos</label>
+                            <div class="form-check mr-3 mb-2 col-6 mb-2">
+                                <input type="checkbox" id="MarcarTodoCheck" class="form-check-input">
+                                <label for="MarcarTodo" class="form-check-label">Marcar todo</label>
+                            </div>
+                            <div class="container">
+                                <div id="rolePermissions"  class="row">
+                                    <!-- Los checkboxes se generarán aquí dinámicamente -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -190,33 +199,26 @@
 
     <script>
         $(document).ready(function () {
-            // Configuración global de CSRF para solicitudes AJAX
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
         });
-
-        // Mostrar el modal de edición con los datos correctos
         $('.btn-edit').on('click', function() {
             var roleId = $(this).data('id');
             var formAction = "{{ route('RolesPermisos.update', '__roleId__') }}".replace('__roleId__', roleId);
             $('#roleEditForm').attr('action', formAction);
-
-            // Realizar una solicitud AJAX para obtener los datos del rol
             $.ajax({
                 url: "{{ route('RolesPermisos.edit', '__roleId__') }}".replace('__roleId__', roleId),
                 method: 'GET',
                 success: function(data) {
                     $('#roleName').val(data.name);
                     var permissionsContainer = $('#rolePermissions');
-                    permissionsContainer.empty(); // Limpiar permisos existentes
-
-                    // Agregar los checkboxes de permisos disponibles
+                    permissionsContainer.empty();
                     data.available_permissions.forEach(function(permission) {
                         permissionsContainer.append(`
-                            <div class="form-check">
+                            <div class="form-check col-4">
                                 <input type="checkbox" class="form-check-input" id="permission-${permission.id}" name="permissions[]" value="${permission.id}" ${data.permissions.includes(permission.id) ? 'checked' : ''}>
                                 <label class="form-check-label" for="permission-${permission.id}">${permission.name}</label>
                             </div>
@@ -225,6 +227,21 @@
                 },
                 error: function(xhr, status, error) {
                     Swal.fire('Error', 'Hubo un error al cargar los datos del rol.', 'error');
+                }
+            });
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('MarcarTodoCheck').addEventListener('change', function(){
+                var estaMarcado = $('#MarcarTodoCheck').prop('checked');
+                var permisos = document.querySelectorAll('#rolePermissions .form-check-input');
+                if (estaMarcado) {
+                    permisos.forEach(checkbox => {
+                        checkbox.checked=true;
+                    });
+                }else{
+                    permisos.forEach(checkbox => {
+                        checkbox.checked=false;
+                    });
                 }
             });
         });
