@@ -123,7 +123,7 @@
             animation: square 25s infinite linear; /* Animación de las burbujas */
         }
         .li-errores{
-            
+                list-style-type: none;
         }
         @keyframes square {
             0% {
