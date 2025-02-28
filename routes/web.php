@@ -230,6 +230,8 @@ Route::get('/Area/Empacado',[AreasController::class,'Empaquetado'])->name('Empac
 Route::get('/Tabla/principal',[AreasController::class,'tablaEmpacado'])->name('tabla.principal');
 Route::post('/Area/Empaquetado/buscar', [AreasController::class,'EmpaquetadoBuscar'])->name('EmpaquetadoBuscar')->middleware('auth');
 Route::get('/fin/Proceso',[AreasController::class,'finProcesoEmpaque'])->name('finProceso.empacado')->middleware('auth');
+Route::post('/regresar-proceso', [AreasController::class, 'RegresarProceso'])->name('regresar.proceso');
+
 
 
 
