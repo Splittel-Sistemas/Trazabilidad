@@ -2360,9 +2360,14 @@ class AreasController extends Controller
     
         return response()->json(['message' => 'Orden cerrada correctamente'], 200);
     }
-
     public function RegresarProceso(Request $request)
 {
+    // Validar que el ID fue enviado correctamente
+    $request->validate([
+        'id' => 'required|integer|exists:partidasof_areas,id',
+    ]);
+
+    // Obtener el ID de la partida
     $partidaOfAreaId = $request->input('id'); 
 
     // Intentamos eliminar la partida
@@ -2378,9 +2383,10 @@ class AreasController extends Controller
             'OF' => $partidaOfAreaId, // O cualquier dato adicional que necesites
         ]);
     } else {
+        // Si no se eliminó ninguna fila, puede indicar que no existía la partida
         return response()->json([
             'status' => 'error',
-            'message' => 'No se pudo eliminar la partida.',
+            'message' => 'No se pudo eliminar la partida. Verifique que existe.',
         ]);
     }
 }
