@@ -1,5 +1,5 @@
 @extends('layouts.menu2')
-@section('title', 'Visualización')
+@section('title', 'Empaquetado')
 @section('styles')
 <link rel="stylesheet" href="{{asset('css/Suministro.css')}}">
 <style>
@@ -15,7 +15,7 @@
 @section('content')
     <div class="row gy-3 mb-2 justify-content-between">
         <div class="col-md-9 col-auto">
-        <h4 class="mb-2 text-1100">Visualizaci&oacute;n</h4>
+        <h4 class="mb-2 text-1100">Empaquetad&oacute;</h4>
         </div>
     </div>
     <div class="row">
@@ -192,7 +192,7 @@
                                     Color='bg-success';
                                     break;
                                 case 2:
-                                    Mensaje='Codigo <strong>'+Codigo+'</strong> Ya se encuentra iniciado!';
+                                    Mensaje='Codigo <strong>'+Codigo+'</strong> Ya Registrado!';
                                     Color='bg-warning';
                                     break;
                                 case 3:
@@ -571,11 +571,29 @@ $(document).ready(function () {
 
             DataTable('EmpacadoTable', true);
 
-            // Agregar evento click a los botones "Finalizar"
             $(".finalizar-btn").off("click").on("click", function () {
                 let id = $(this).data("id");
-                alert("El proceso con ID " + id + " se ha finalizado.");
+
+                console.log("ID de la orden a finalizar:", id);
+
+                $.ajax({
+                    url: '{{ route("finProceso.empacado") }}',
+                    type: "GET",
+                    data: {
+                        id: id,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        alert(response.message); 
+                        location.reload(); 
+                    },
+                    error: function (xhr) {
+                        alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
+                    }
+                });
             });
+
+
         },
         error: function () {
             console.log("Error al cargar los datos de la tabla.");
