@@ -728,24 +728,14 @@ class AreasController extends Controller
         if($PartidasOFAreasAbierto!=""){
             return 2;
         }
+
         $PartidasOFAreasCerrada=$PartidasOF->Areas()->where('Areas_id',$Area)->whereNotNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->first();
         //Verifica si ya existe
-        if($PartidasOFAreasCerrada==""){
-            $data = [
-                'Cantidad' => 1,
-                'TipoPartida' => 'N', // N = Normal
-                'FechaComienzo' => now(),
-                'NumeroEtiqueta' =>$CodigoPartes[2],
-                'Linea_id' => $this->funcionesGenerales->Linea(),
-                'Users_id' => $this->funcionesGenerales->InfoUsuario(),
-            ];
-            $PartidasOF->Areas()->attach($Area, $data);
-            return 1;
-        }else{
-            if($retrabajo=="si"){
+        if($Area!=9){
+            if($PartidasOFAreasCerrada==""){
                 $data = [
                     'Cantidad' => 1,
-                    'TipoPartida' => 'R', // R = Retrabajo
+                    'TipoPartida' => 'N', // N = Normal
                     'FechaComienzo' => now(),
                     'NumeroEtiqueta' =>$CodigoPartes[2],
                     'Linea_id' => $this->funcionesGenerales->Linea(),
@@ -753,8 +743,37 @@ class AreasController extends Controller
                 ];
                 $PartidasOF->Areas()->attach($Area, $data);
                 return 1;
+            }else{
+                if($retrabajo=="si"){
+                    $data = [
+                        'Cantidad' => 1,
+                        'TipoPartida' => 'R', // R = Retrabajo
+                        'FechaComienzo' => now(),
+                        'NumeroEtiqueta' =>$CodigoPartes[2],
+                        'Linea_id' => $this->funcionesGenerales->Linea(),
+                        'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                    ];
+                    $PartidasOF->Areas()->attach($Area, $data);
+                    return 1;
+                }
+                return 3;
             }
-            return 3;
+        }else{
+            if (!$PartidasOFAreasCerrada) {
+                $data = [
+                    'Cantidad' => 1,
+                    'TipoPartida' => 'N', // N = Normal
+                    'FechaComienzo' => now(),
+                    'FechaTermina' => now(), // Guardamos la fecha de finalización
+                    'NumeroEtiqueta' => $CodigoPartes[2],
+                    'Linea_id' => $this->funcionesGenerales->Linea(),
+                    'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                ];
+                $PartidasOF->Areas()->attach($Area, $data);
+                return 1;
+            } else{
+                return 2;
+            }
         }
     }
     public function FinalizarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
@@ -2256,4 +2275,26 @@ class AreasController extends Controller
             ]);
         }
     }
+
+    public function finProcesoEmpaque(Request $request)
+{
+    $idFabricacion = $request->input('id');  
+    $orden = ordenfabricacion::find($idFabricacion);  
+
+    dd($orden);  
+
+    if ($orden) {
+        $orden->cerradas = 0; 
+        $orden->save();
+
+        return response()->json(['message' => 'Orden cerrada correctamente'], 200);
+    } else {
+        return response()->json(['error' => 'Orden no encontrada'], 404);
+    }
+}
+
+    
+
+
+
 }
