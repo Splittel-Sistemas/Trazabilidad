@@ -2,6 +2,8 @@
 @section('title', 'Empaquetado')
 @section('styles')
 <link rel="stylesheet" href="{{asset('css/Suministro.css')}}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
+
 <style>
     /* Positioning the toast in the top-right corner */
     #ToastGuardado {
@@ -103,6 +105,8 @@
     <div  id="ContainerToastGuardado"></div>
 @endsection
 @section('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
 <script>
     var puedeFinalizar = @json(Auth::user()->hasPermission("Finalizar Trazabilidad"));
 </script>
@@ -220,6 +224,12 @@
                                     Color='bg-danger';
                                     //$('#ContentTabla').hide();
                                     //$('#CantidadPartidasOF').html('');
+                                    break;
+                                case 7:
+                                    Mensaje='Codigo <strong>'+Codigo+'</strong> elimino!';
+                                    Color='bg-danger';
+                                    $('#ContentTabla').hide();
+                                    $('#CantidadPartidasOF').html('');
                                     break;
                                 default:
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> Ocurrio un error!';
@@ -632,7 +642,44 @@ $(document).ready(function () {
 });
 
 
+
+
+
 </script>
+<script>
+function CancelarPartida(id) {
+    $.ajax({
+        url: '{{ route("regresar.proceso") }}',
+        method: 'POST',
+        data: {
+            id: id,
+            _token: '{{ csrf_token() }}'  
+        },
+        success: function(response) {
+            if (response.status == "success") {
+                toastr.success(response.message, 'Éxito');
+                
+                $('#registro-' + id).remove(); 
+                ListaCodigo();
+            } else if (response.status == "error") {
+                toastr.error(response.message, 'Error');
+            } else if (response.status == "errorCantidada") {
+                toastr.error(response.message, 'Cantidad no disponible');
+            }
+            ListaCodigo();
+        },
+        error: function(xhr, status, error) {
+            toastr.error('Hubo un error al cancelar la partida.', 'Error');
+        }
+    });
+}
+
+
+
+
+   
+</script>
+
 @endsection
 
 
