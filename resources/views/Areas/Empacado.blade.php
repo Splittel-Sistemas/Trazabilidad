@@ -89,6 +89,7 @@
                                     <th  class="text-center">Cantidad Registrada</th>
                                     <th  class="text-center">Fecha Entrega</th>
                                     <th  class="text-center">Acción</th>
+
                                 </tr>
                             </thead>
                             <tbody id="EmpacadoTableBody"></tbody>
@@ -102,6 +103,9 @@
     <div  id="ContainerToastGuardado"></div>
 @endsection
 @section('scripts')
+<script>
+    var puedeFinalizar = @json(Auth::user()->hasPermission("Finalizar Trazabilidad"));
+</script>
 <script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
     function ListaCodigo(Codigo,Contenedor){
@@ -530,76 +534,79 @@
 
 
 <script>
+
 $(document).ready(function () {
     cargarTablaEmpacado();
 
     setInterval(cargarTablaEmpacado, 30000);
 
     function cargarTablaEmpacado() {
-    $.ajax({
-        url: '{{ route("tabla.principal") }}',
-        type: "GET",
-        dataType: "json",
-        success: function (data) {
-            let tabla = $('#EmpacadoTable');
+        $.ajax({
+            url: '{{ route("tabla.principal") }}',
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                let tabla = $('#EmpacadoTable');
 
-            if ($.fn.DataTable.isDataTable(tabla)) {
-                tabla.DataTable().destroy();
-            }
+                if ($.fn.DataTable.isDataTable(tabla)) {
+                    tabla.DataTable().destroy();
+                }
 
-            let tbody = $("#EmpacadoTableBody");
-            tbody.empty();
+                let tbody = $("#EmpacadoTableBody");
+                tbody.empty();
 
-            data.forEach((item) => {
-                // Mostrar cantidad solo si Areas_id es 9
-                let cantidad = item.Areas_id == 9 ? item.Cantidad : "0";
+                data.forEach((item) => {
+                    let cantidad = item.Areas_id == 9 ? item.Cantidad : "0";
 
-                let fila = `
-                    <tr>
-                        <td class="text-center">${item.OrdenVenta}</td>
-                        <td class="text-center">${item.OrdenFabricacion}</td>
-                        <td class="text-center">${item.CantidadTotal}</td>
-                        <td class="text-center">${cantidad}</td>
-                        <td class="text-center">${item.FechaEntrega}</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-danger finalizar-btn" data-id="${item.OrdenFabricacion}">Finalizar</button>
-                        </td>
-                    </tr>
-                `;
-                tbody.append(fila);
-            });
+                    let botonFinalizar = (puedeFinalizar) 
+                        ? `<button class="btn btn-sm btn-danger finalizar-btn" data-id="${item.OrdenFabricacion}">Finalizar</button>`
+                        : '';
 
-            DataTable('EmpacadoTable', true);
-
-            $(".finalizar-btn").off("click").on("click", function () {
-                let id = $(this).data("id");
-
-                console.log("ID de la orden a finalizar:", id);
-
-                $.ajax({
-                    url: '{{ route("finProceso.empacado") }}',
-                    type: "GET",
-                    data: {
-                        id: id,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function (response) {
-                        alert(response.message); 
-                        location.reload(); 
-                    },
-                    error: function (xhr) {
-                        alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
-                    }
+                    let fila = `
+                        <tr>
+                            <td class="text-center">${item.OrdenVenta}</td>
+                            <td class="text-center">${item.OrdenFabricacion}</td>
+                            <td class="text-center">${item.CantidadTotal}</td>
+                            <td class="text-center">${cantidad}</td>
+                            <td class="text-center">${item.FechaEntrega}</td>
+                            <td class="text-center">${botonFinalizar}</td>
+                        </tr>
+                    `;
+                    tbody.append(fila);
                 });
-            });
+
+                DataTable('EmpacadoTable', true);
 
 
-        },
-        error: function () {
-            console.log("Error al cargar los datos de la tabla.");
-        },
-    });
-}
+                $(".finalizar-btn").off("click").on("click", function () {
+                    let id = $(this).data("id");
+
+                    console.log("ID de la orden a finalizar:", id);
+
+                    $.ajax({
+                        url: '{{ route("finProceso.empacado") }}',
+                        type: "GET",
+                        data: {
+                            id: id,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (response) {
+                            alert(response.message); 
+                            location.reload(); 
+                        },
+                        error: function (xhr) {
+                            alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
+                        }
+                    });
+                });
+            },
+            error: function () {
+                console.log("Error al cargar los datos de la tabla.");
+            },
+        });
+    }
+
+
 
 
 
