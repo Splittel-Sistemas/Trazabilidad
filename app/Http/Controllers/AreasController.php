@@ -512,7 +512,7 @@ class AreasController extends Controller
     //Area 4 Preparado
     public function Preparado(){
         $Area=$this->funcionesGenerales->encrypt(4);
-        return $this->TablaOrdenesActivasEstacion(4);
+        //return $this->TablaOrdenesActivasEstacion(4);
         return view('Areas.Preparado',compact('Area'));
     }
     public function PreparadoBuscar(Request $request){
