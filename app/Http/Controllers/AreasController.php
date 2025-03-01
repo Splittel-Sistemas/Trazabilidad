@@ -1329,13 +1329,11 @@ class AreasController extends Controller
         return view('Areas.Visualizacion',compact('Area'));
     }
     //Area 9 Empaquetado
-    public function Empaquetado()
-    {
+    public function Empaquetado(){
           $Area=$this->funcionesGenerales->encrypt(9);
           return view('Areas.Empacado',compact('Area')); 
     }
-    public function tablaEmpacado()
-    {
+    public function tablaEmpacado(){
         $areas = DB::table('partidasof_areas')
             ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
             ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
