@@ -26,7 +26,7 @@ class RegistroController extends Controller
         //if ($user->hasPermission('Vistas Editar')) {
             
             $roles = Role::with('permissions')->get();
-            $personal = User::all();
+            $personal = User::orderBy('name', 'asc')->get();
             $roles = Role::all(); 
             $permissions = Permission::all();
             
