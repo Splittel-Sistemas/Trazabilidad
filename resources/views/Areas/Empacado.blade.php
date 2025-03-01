@@ -106,7 +106,6 @@
 @endsection
 @section('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-
 <script>
     var puedeFinalizar = @json(Auth::user()->hasPermission("Finalizar Trazabilidad"));
 </script>
@@ -226,7 +225,7 @@
                                     //$('#CantidadPartidasOF').html('');
                                     break;
                                 case 7:
-                                    Mensaje='Codigo <strong>'+Codigo+'</strong> elimino!';
+                                    Mensaje='Codigo <strong>'+Codigo+'</strong> ultima partida!';
                                     Color='bg-danger';
                                     $('#ContentTabla').hide();
                                     $('#CantidadPartidasOF').html('');
@@ -287,7 +286,7 @@
                             $('#ToastGuardado').fadeOut();
                         }, 2000);
                 }
-                //cargarTablaEmpacado();
+                cargarTablaEmpacado();
             },
             error: function(xhr, status, error) {
                 $('#CantidadDiv').hide();
@@ -335,7 +334,7 @@
                         $('#ToastGuardado').fadeOut();
                     }, 2500);
                 }
-                //cargarTablaEmpacado();
+                cargarTablaEmpacado();
             }
         });
     }
@@ -518,6 +517,7 @@
                 }
                 
                 ListaCodigo(CodigoEscaner,'CodigoEscanerSuministro')
+                cargarTablaEmpacado();
             },
             error: function(xhr, status, error) {
                 $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
@@ -541,153 +541,170 @@
         }
     }
 </script>
-
-
 <script>
+    $(document).ready(function () {
+        cargarTablaEmpacado();
 
-$(document).ready(function () {
-    cargarTablaEmpacado();
+        setInterval(cargarTablaEmpacado, 10000);
 
-    setInterval(cargarTablaEmpacado, 30000);
+        function cargarTablaEmpacado() {
+            $.ajax({
+                url: '{{ route("tabla.principal") }}',
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    let tabla = $('#EmpacadoTable');
 
-    function cargarTablaEmpacado() {
-        $.ajax({
-            url: '{{ route("tabla.principal") }}',
-            type: "GET",
-            dataType: "json",
-            success: function (data) {
-                let tabla = $('#EmpacadoTable');
+                    if ($.fn.DataTable.isDataTable(tabla)) {
+                        tabla.DataTable().destroy();
+                    }
 
-                if ($.fn.DataTable.isDataTable(tabla)) {
-                    tabla.DataTable().destroy();
-                }
+                    let tbody = $("#EmpacadoTableBody");
+                    tbody.empty();
 
-                let tbody = $("#EmpacadoTableBody");
-                tbody.empty();
+                    data.forEach((item) => {
+                        let cantidad = item.Areas_id == 9 ? item.Cantidad : "0";
 
-                data.forEach((item) => {
-                    let cantidad = item.Areas_id == 9 ? item.Cantidad : "0";
+                        let botonFinalizar = (puedeFinalizar) 
+                            ? `<button class="btn btn-sm btn-danger finalizar-btn" data-id="${item.OrdenFabricacion}">Finalizar</button>`
+                            : '';
 
-                    let botonFinalizar = (puedeFinalizar) 
-                        ? `<button class="btn btn-sm btn-danger finalizar-btn" data-id="${item.OrdenFabricacion}">Finalizar</button>`
-                        : '';
-
-                    let fila = `
-                        <tr>
-                            <td class="text-center">${item.OrdenVenta}</td>
-                            <td class="text-center">${item.OrdenFabricacion}</td>
-                            <td class="text-center">${item.CantidadTotal}</td>
-                            <td class="text-center">${cantidad}</td>
-                            <td class="text-center">${item.FechaEntrega}</td>
-                            <td class="text-center">${botonFinalizar}</td>
-                        </tr>
-                    `;
-                    tbody.append(fila);
-                });
-
-                DataTable('EmpacadoTable', true);
-
-
-                $(".finalizar-btn").off("click").on("click", function () {
-                    let id = $(this).data("id");
-
-                    console.log("ID de la orden a finalizar:", id);
-
-                    $.ajax({
-                        url: '{{ route("finProceso.empacado") }}',
-                        type: "GET",
-                        data: {
-                            id: id,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function (response) {
-                            alert(response.message); 
-                            location.reload(); 
-                        },
-                        error: function (xhr) {
-                            alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
-                        }
+                        let fila = `
+                            <tr>
+                                <td class="text-center">${item.OrdenVenta}</td>
+                                <td class="text-center">${item.OrdenFabricacion}</td>
+                                <td class="text-center">${item.CantidadTotal}</td>
+                                <td class="text-center">${cantidad}</td>
+                                <td class="text-center">${item.FechaEntrega}</td>
+                                <td class="text-center">${botonFinalizar}</td>
+                            </tr>
+                        `;
+                        tbody.append(fila);
                     });
-                });
-            },
-            error: function () {
-                console.log("Error al cargar los datos de la tabla.");
-            },
-        });
-    }
 
-
-
-
-
-
-    function DataTable(tabla, busqueda) {
-        $('#' + tabla).DataTable({
-            "pageLength": 10,
-            "lengthChange": false,
-            "paging": true,
-            "searching": busqueda,
-            "ordering": true,
-            "info": true,
-            "language": {
-                "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
-                "search": "Buscar",
+                    DataTable('EmpacadoTable', true);
                 
-            },
-            "initComplete": function(settings, json) {
-                $('#' + tabla).css('font-size', '0.7rem');
-            }
-        });
-    }
-});
 
 
+                    $(".finalizar-btn").off("click").on("click", function () {
+                        let id = $(this).data("id");
 
+                        console.log("ID de la orden a finalizar:", id);
 
+                        // Mostrar confirmación antes de ejecutar el AJAX
+                        confirmacionesss(
+                            "¿Estás seguro de que deseas finalizar esta orden?", 
+                            "", 
+                            "Confirmar", 
+                            function () {
+                                // Solo se ejecuta si el usuario confirma
+                                $.ajax({
+                                    url: '{{ route("finProceso.empacado") }}',
+                                    type: "GET",
+                                    data: {
+                                        id: id,
+                                        _token: '{{ csrf_token() }}'
+                                    },
+                                    success: function (response) {
+                                        alert(response.message); 
+                                        location.reload(); // Recarga la página para reflejar los cambios
+                                    },
+                                    error: function (xhr) {
+                                        alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
+                                    }
+                                });
+                            }
+                        );
+                    });
 
-</script>
-<script>
-function CancelarPartida(id) {
-    $.ajax({
-        url: '{{ route("regresar.proceso") }}',
-        method: 'POST',
-        data: {
-            id: id,
-            _token: '{{ csrf_token() }}'  
-        },
-        success: function(response) {
-            if (response.status == "success") {
-                toastr.success(response.message, 'Éxito');
-                
-                $('#registro-' + id).remove(); 
-                ListaCodigo();
-            } else if (response.status == "error") {
-                toastr.error(response.message, 'Error');
-            } else if (response.status == "errorCantidada") {
-                toastr.error(response.message, 'Cantidad no disponible');
-            }
-            ListaCodigo();
-        },
-        error: function(xhr, status, error) {
-            toastr.error('Hubo un error al cancelar la partida.', 'Error');
+                },
+                error: function () {
+                    console.log("Error al cargar los datos de la tabla.");
+                },
+            });
+        }
+        function DataTable(tabla, busqueda) {
+            $('#' + tabla).DataTable({
+                "pageLength": 10,
+                "lengthChange": false,
+                "paging": true,
+                "searching": busqueda,
+                "ordering": true,
+                "info": true,
+                "language": {
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
+                    "search": "Buscar",
+                    
+                },
+                "initComplete": function(settings, json) {
+                    $('#' + tabla).css('font-size', '0.7rem');
+                }
+            });
         }
     });
-}
-
-
-
-
-   
 </script>
+<script>
+    function confirmacionesss(titulo, mensaje, confirmButtonText, funcion) {
+        return Swal.fire({
+            title: titulo,
+            text: mensaje,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            cancelButtonText: "Cancelar",
+            confirmButtonText: confirmButtonText,
+        }).then((result) => {
+            console.log("Resultado de confirmación: ", result); // Verifica el resultado
+            if (result.isConfirmed) {
+                console.log("Usuario ha confirmado");
+                funcion();  // Ejecuta la función pasada como argumento
+                return true;
+            } else {
+                console.log("Usuario ha cancelado");
+                return false;
+            }
+        });
+    }
 
+    async function CancelarPartida(id) {
+        // Usamos confirmacion y esperamos la respuesta
+        const confirmacionRespuesta = await confirmacionesss(
+            "¿Estás seguro de que deseas cancelar esta partida?", 
+            "", 
+            "Confirmar", 
+            function() {
+                // Esta función se ejecuta si el usuario confirma la acción
+                $.ajax({
+                    url: '{{ route("regresar.proceso") }}',
+                    method: 'POST',
+                    data: {
+                        id: id,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.status == "success") {
+                            toastr.success(response.message, 'Éxito');
+                            $('#registro-' + id).remove(); 
+                            ListaCodigo(); // Actualizamos la lista después de eliminar el registro
+                            cargarTablaEmpacado();
+                        } else if (response.status == "error") {
+                            toastr.error(response.message, 'Error');
+                        } else if (response.status == "errorCantidada") {
+                            toastr.error(response.message, 'Cantidad no disponible');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        toastr.error('Hubo un error al cancelar la partida.', 'Error');
+                    }
+                });
+            }
+        );
+
+        // Si no se confirma, mostramos un mensaje informativo
+        if (!confirmacionRespuesta) {
+            toastr.info('La acción fue cancelada', 'Información');
+        }
+    }
+</script>
 @endsection
-
-
-
-
-
-
-
-
-
-

@@ -25,6 +25,8 @@ function confirmacion(titulo,mensaje,confirmButtonText,funcion){
         }
       });
 }
+
+
 function error(titulo,mensaje){
     Swal.fire({
         icon: "error",
