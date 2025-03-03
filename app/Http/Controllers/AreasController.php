@@ -1353,7 +1353,7 @@ class AreasController extends Controller
                 'ordenfabricacion.CantidadTotal',
                 'ordenfabricacion.FechaEntrega',
                 'partidasof_areas.Areas_id',
-                DB::raw('SUM(partidasof_areas.Cantidad) as CantidadTotalArea') // SUMA de Cantidad
+                DB::raw('SUM(partidasof_areas.Cantidad) as CantidadTotalArea') 
             )
             ->groupBy(
                 'ordenfabricacion.Cerrada',
@@ -1377,7 +1377,7 @@ class AreasController extends Controller
                         'OrdenFabricacion' => $base->OrdenFabricacion,
                         'CantidadTotal' => $base->CantidadTotal,
                         'FechaEntrega' => $base->FechaEntrega,
-                        'CantidadTotalArea' => 0, // Si no hay registros en área 9, Cantidad será 0
+                        'CantidadTotalArea' => 0, 
                         'Cerrada' => $base->Cerrada
                     ];
                 }
