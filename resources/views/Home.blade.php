@@ -367,9 +367,11 @@
                 <div class="d-flex justify-content">
                     <div class="row">
                         <h6 class="text-700 col-6">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
-                        <h6 class="text-700 col-6">Estimado de piezas por día: <span id="Estimadopiezas">0</span></h6>
                         <h6 class="text-700 col-6">Piezas completadas: <span id="Piezasplaneadas">0</span></h6>
+                        <h6 class="text-700 col-6">Estimado de piezas por día: <span id="Estimadopiezas">0</span></h6>
+
                         <h6 class="text-700 col-6">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>
+
                         <h6 class="text-700 col-12">Total de piezas del día: <span id="Piezasdia">0</span></h6>
                     </div>
                 </div>
@@ -1097,81 +1099,80 @@
         // Renderizar gráfico
         myChart.setOption(option);
     });
-
     fetch("{{ route('dashboard.indicador') }}")
-        .then(response => response.json())
-        .then(data => {
-            const porcentajeCerradas = parseFloat(data.PorcentajeCompletadas) || 0;  
-            const porcentajeCompletadas = parseFloat(data.porcentajeCerradas) || 0;  
-            const totalOfTotal = parseInt(data.TotalOfTotal) || 0;
-            const totalCompletadas = parseInt(data.TotalOFcompletadas) || 0;
-            const faltanteTotal = parseInt(data.faltanteTotal) || 0;
-            const Estimadopiezas = parseFloat(data.Estimadopiezas) || 0;
-            const Cantidadpersonas = parseInt(data.Cantidadpersonas) || 0;
+    .then(response => response.json())
+    .then(data => {
+        const porcentajeCerradas = parseFloat(data.PorcentajeCompletadas) || 0;  
+        const porcentajeCompletadas = parseFloat(data.porcentajeCerradas) || 0;  
+        const totalOfTotal = parseInt(data.TotalOfTotal) || 0;
+        const totalCompletadas = parseInt(data.indicador[0].SumaCantidad) || 0;  // Cambiar aquí
+        const faltanteTotal = parseInt(data.faltanteTotal) || 0;
+        const Estimadopiezas = parseFloat(data.Estimadopiezas) || 0;
+        const Cantidadpersonas = parseInt(data.Cantidadpersonas) || 0;
 
-            // Mostrar los valores sin modificar
-            document.getElementById("Estimadopiezas").textContent = Estimadopiezas.toFixed();
-            document.getElementById("Cantidadpersonas").textContent = Cantidadpersonas;
+        // Mostrar los valores sin modificar
+        document.getElementById("Estimadopiezas").textContent = Estimadopiezas.toFixed();
+        document.getElementById("Cantidadpersonas").textContent = Cantidadpersonas;
 
-            // Porcentaje planeada es el porcentaje que falta para completar, es decir, el porcentaje de completadas.
-            document.getElementById("Porcentajeplaneada").textContent = porcentajeCerradas.toFixed(2);  
-            document.getElementById("Porcentajefaltante").textContent = porcentajeCompletadas.toFixed(2);  
+        // Porcentaje planeada es el porcentaje que falta para completar, es decir, el porcentaje de completadas.
+        document.getElementById("Porcentajeplaneada").textContent = porcentajeCerradas.toFixed(2);  
+        document.getElementById("Porcentajefaltante").textContent = porcentajeCompletadas.toFixed(2);  
 
-            document.getElementById("Piezasdia").textContent = totalOfTotal;
-            document.getElementById("Piezasplaneadas").textContent = totalCompletadas;
-            document.getElementById("Piezasfaltantes").textContent = faltanteTotal;
+        document.getElementById("Piezasdia").textContent = totalOfTotal;
+        document.getElementById("Piezasplaneadas").textContent = totalCompletadas;
+        document.getElementById("Piezasfaltantes").textContent = faltanteTotal;
 
+        let color = "#007BFF"; // Color predeterminado
 
-            let color = "#007BFF"; // Color predeterminado
+        if (totalCompletadas === 0 && faltanteTotal === 0) {
+            // No hay datos, el indicador será 0 y sin color
+            color = "#D3D3D3"; // Gris neutro
+        } else if (porcentajeCerradas > 1) {
+            color = "#FF0000";
+        } else if (porcentajeCerradas > 0.9) {
+            color = "#FFA500";
+        } else if (porcentajeCerradas > 0.8) {
+            color = "#FFFF00";
+        }
 
-            if (totalCompletadas === 0 && faltanteTotal === 0) {
-                // No hay datos, el indicador será 0 y sin color
-                color = "#D3D3D3"; // Gris neutro
-            } else if (porcentajeCerradas > 1) {
-                color = "#FF0000";
-            } else if (porcentajeCerradas > 0.9) {
-                color = "#FFA500";
-            } else if (porcentajeCerradas > 0.8) {
-                color = "#FFFF00";
-            }
+        // Configuración del gráfico
+        var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
+        var option = {
+            tooltip: { trigger: 'item' },
+            legend: { show: false },
+            series: [
+                {
+                    name: 'Planeación',
+                    type: 'pie',
+                    radius: ['60%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        position: 'center',
+                        formatter: totalCompletadas === 0 && faltanteTotal === 0 ? '0.00' : `${porcentajeCerradas.toFixed(2)}`,
+                        fontSize: 20,
+                        fontWeight: 'bold'
+                    },
+                    labelLine: { show: false },
+                    data: totalCompletadas === 0 && faltanteTotal === 0
+                        ? [{ value: 1, name: 'Sin datos', itemStyle: { color: "#D3D3D3" } }] // Solo un gris neutro
+                        : [
+                            { value: totalCompletadas, name: 'Total Completados', itemStyle: { color: color } },
+                            { value: faltanteTotal, name: 'Total Faltante', itemStyle: { color: '#D3D3D3' } }
+                        ]
+                }
+            ]
+        };
 
-            // Configuración del gráfico
-            var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
-            var option = {
-                tooltip: { trigger: 'item' },
-                legend: { show: false },
-                series: [
-                    {
-                        name: 'Planeación',
-                        type: 'pie',
-                        radius: ['60%', '70%'],
-                        avoidLabelOverlap: false,
-                        itemStyle: {
-                            borderRadius: 10,
-                            borderColor: '#fff',
-                            borderWidth: 2
-                        },
-                        label: {
-                            show: true,
-                            position: 'center',
-                            formatter: totalCompletadas === 0 && faltanteTotal === 0 ? '0.00' : `${porcentajeCerradas.toFixed(2)}`,
-                            fontSize: 20,
-                            fontWeight: 'bold'
-                        },
-                        labelLine: { show: false },
-                        data: totalCompletadas === 0 && faltanteTotal === 0
-                            ? [{ value: 1, name: 'Sin datos', itemStyle: { color: "#D3D3D3" } }] // Solo un gris neutro
-                            : [
-                                { value: totalCompletadas, name: 'Total Completados', itemStyle: { color: color } },
-                                { value: faltanteTotal, name: 'Total Faltante', itemStyle: { color: '#D3D3D3' } }
-                            ]
-                    }
-                ]
-            };
-
-            myChart.setOption(option);
-        })
+        myChart.setOption(option);
+    })
     .catch(error => console.error('Error al obtener los datos:', error));
+
 
     /*
 

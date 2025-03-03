@@ -611,13 +611,25 @@
                                         _token: '{{ csrf_token() }}'
                                     },
                                     success: function (response) {
-                                        alert(response.message); 
-                                        location.reload(); 
+                                        console.log("Respuesta del servidor:", response);
+                                        
+                                        // Si la respuesta tiene el mensaje esperado
+                                        if (response && response.message) {
+                                            alert(response.message);
+                                        }
+
+                                        // Intentar cargar la tabla de nuevo
+                                        setTimeout(function() {
+                                            console.log("Recargando la tabla...");
+                                            cargarTablaEmpacado();  // Verifica que esta función esté actualizando correctamente el DOM
+                                        }, 500);
                                     },
                                     error: function (xhr) {
+                                        console.error("Error:", xhr);
                                         alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
                                     }
                                 });
+
                             }
                         );
                     });
