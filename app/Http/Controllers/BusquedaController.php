@@ -112,8 +112,7 @@ class BusquedaController extends Controller
             DB::raw('ordenfabricacion.OrdenFabricacion as OrdenesFabricacion'),
             DB::raw('GROUP_CONCAT(DISTINCT partidasof.id ORDER BY partidasof.id ASC SEPARATOR ", ") as PartidaOF_ID'),
             DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalPartidas'),
-            DB::raw('ROUND((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 2) as Progreso')
-          
+            DB::raw('ROUND(((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100), 2) as Progreso')
         )
         ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal');
         //->get();

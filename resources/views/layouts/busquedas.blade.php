@@ -1029,7 +1029,6 @@
                         var progressBar = $('#plemasProgressBar');
                         if (response.progreso !== undefined) {
                             var progreso = response.progreso;
-                                progreso = progreso.toFixed(2);
                             // Actualizar la barra de progreso con animación
                             progressBar.css('width', progreso + '%').text(progreso + '%');
 
