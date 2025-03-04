@@ -145,6 +145,7 @@
         .bg-bubbles li:nth-child(9) { top: 15%; left: 90%; width: 10px; height: 10px; }
         .bg-bubbles li:nth-child(10) { top: 40%; left: 10%; width: 160px; height: 160px; }
     </style>
+    
 </head>
 <body>
     <div class="wrapper">

@@ -941,6 +941,7 @@
                         
                         if (response.result && response.result.length > 0) {
                             const progreso = Math.min(response.Progreso.Progreso, 100); // Acceder correctamente
+                            
                             drawGauge(endpoint.id, progreso, ''); 
                         } else {
                             console.log(`No hay datos para ${endpoint.tipo}`);
@@ -1026,10 +1027,9 @@
                     data: { id: ordenfabricacion },
                     success: function (response) {
                         var progressBar = $('#plemasProgressBar');
-
                         if (response.progreso !== undefined) {
                             var progreso = response.progreso;
-
+                                progreso = progreso.toFixed(2);
                             // Actualizar la barra de progreso con animación
                             progressBar.css('width', progreso + '%').text(progreso + '%');
 

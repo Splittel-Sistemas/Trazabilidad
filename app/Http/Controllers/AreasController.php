@@ -512,7 +512,7 @@ class AreasController extends Controller
     //Area 4 Preparado
     public function Preparado(){
         $Area=$this->funcionesGenerales->encrypt(4);
-        $this->TablaOrdenesActivasEstacion(4);
+        //return $this->TablaOrdenesActivasEstacion(4);
         return view('Areas.Preparado',compact('Area'));
     }
     public function PreparadoBuscar(Request $request){
@@ -725,9 +725,6 @@ class AreasController extends Controller
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
         $PartidasOF=$OrdenFabricacion->PartidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
         $PartidasOFAreasAbierto=$PartidasOF->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->first();
-        
-      
-        
         //Verifica si ya esta iniciado
         if($PartidasOFAreasAbierto!=""){
             return 2;
@@ -764,7 +761,6 @@ class AreasController extends Controller
             }
         }else{
             if (!$PartidasOFAreasCerrada) {
-                
                 $data = [
                     'Cantidad' => 1,
                     'TipoPartida' => 'N', // N = Normal
@@ -1333,8 +1329,7 @@ class AreasController extends Controller
         return view('Areas.Visualizacion',compact('Area'));
     }
     //Area 9 Empaquetado
-    public function Empaquetado()
-    {
+    public function Empaquetado(){
           $Area=$this->funcionesGenerales->encrypt(9);
           return view('Areas.Empacado',compact('Area')); 
     }
@@ -1386,8 +1381,6 @@ class AreasController extends Controller
     
         return response()->json($areas);
     }
-    
-    
 
     
   
@@ -2107,6 +2100,48 @@ class AreasController extends Controller
         }
         return $TipoEscanerrespuesta;
     }
+  
+
+
+    /*public function CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
+        $partidas = $datos->partidasOF()
+                        ->join('partidas', 'partidasOF.id', '=', 'partidas.PartidasOF_id')  // JOIN entre PartidasOF y Partidas
+                        ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')  // JOIN con la tabla pivote (ajustar nombre de la tabla)
+                        ->join('areas', 'partidas_areas.Areas_id', '=', 'areas.id')  // JOIN con Areas a través de la tabla pivote
+                        ->where('partidas_areas.FechaTermina', '=', null)  // Filtro por un área específica
+                        ->where('areas.id', '==', $Area-1)  // Filtro por un área específica
+                        ->select('partidasOF.*', 'partidas.*', 'areas.*','partidas_areas.*')  // Seleccionar todas las columnas de las tres tablas
+                        ->get()->count();
+        if($partidas>0){
+            return 5;
+        }
+    }
+    public function CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
+        $partidas = $datos->partidasOF()
+                        ->join('partidas', 'partidasOF.id', '=', 'partidas.PartidasOF_id')  // JOIN entre PartidasOF y Partidas
+                        ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')  // JOIN con la tabla pivote (ajustar nombre de la tabla)
+                        ->join('areas', 'partidas_areas.Areas_id', '=', 'areas.id')  // JOIN con Areas a través de la tabla pivote
+                        ->where('partidas_areas.FechaTermina', '=', null)  // Filtro por un área específica
+                        ->where('areas.id', '!=', $Area)  // Filtro por un área específica
+                        ->select('partidasOF.*', 'partidas.*', 'areas.*','partidas_areas.*')  // Seleccionar todas las columnas de las tres tablas
+                        ->get()->count();
+        if($partidas>0){
+            return 6;
+        }
+    }*/
+    public function ContarPartidasSuma($Area){
+    }
+    //Consultas a SAP
+
+
+
+
+
+
+
+
+
+
     public function EmpaquetadoBuscar(Request $request){
         if ($request->has('Confirmacion')) {
             $confirmacion=1;
@@ -2206,9 +2241,6 @@ class AreasController extends Controller
                                 $menu .= '<tr>
                                             <td class=" ps-3 NumParte">' . $datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '</td>
                                             <td class="ps-3   Cantidad">' . $PartdaAr['pivot']->Cantidad . '</td>
-                                           <td class="ps-3 Regresar">
-                                                <button class="btn btn-primary btn-sm " onclick="CancelarPartida('.$PartdaAr['pivot']->id.')">Cancelar</button>
-                                            </td>
                                         </tr>';
                                 }
                         }
@@ -2218,32 +2250,31 @@ class AreasController extends Controller
                         <option value="Retrabajo">Retrabajo</option>
                         <option value="Finalizado">Finalizado</option>';
                 }
-                $menu = '<div class="card-body">
+                $menu='<div class="card-body">
                     <div id="ContainerTableSuministros" class="table-list">
                         <div class="row justify-content-start g-0">
                             <div class="col-auto px-0">
-                                <h6 class="">Orden de Fabricación <strong>' . $datos->OrdenFabricacion . '</strong></h6>
+                                <h6 class="">Orden de Fabricación <stron>'.$datos->OrdenFabricacion.'</strong></h6>
                                 <div class="badge badge-phoenix fs--4 badge-phoenix-secondary">
-                                    <span class="fw-bold">Piezas Completadas </span>' . $CantidadCompletada . '/' . $CantidadTotal . '<span class="ms-1 fas fa-stream"></span>
+                                    <span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span>
                                 </div>
                             </div>
                         </div>
-                        <div class="table-responsive scrollbar mb-3" style="max-height: 300px; overflow-y: auto;">
-                            <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
-                                <thead>
-                                    <tr class="bg-light">
-                                        <th class="sort border-top ps-3" data-sort="NumParte">Codigo</th>
-                                        <th class="sort border-top" data-sort="Cantidad">Cantidad</th>
-                                        <th class="sort border-top" data-sort="Regresar">Accion</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="list" id="TablaBody">
-                                    '.$menu.'
-                                </tbody>
-                            </table>
+                        <div class="table-responsive scrollbar mb-3">
+                        <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
+                            <thead>
+                                <tr class="bg-light">
+                                <th class="sort border-top ps-3" data-sort="NumParte">Codigo</th>
+                                    <th class="sort border-top" data-sort="Cantidad">Cantidad</th>
+                                
+                                </tr>
+                            </thead>
+                            <tbody class="list" id="TablaBody">
+                                '.$menu.'
+                            </tbody>
+                        </table>
                         </div>
-                    </div>
-                </div>';
+                    </div>';
                 return response()->json([
                     'tabla' => $menu,
                     'Escaner' => $Escaner,
@@ -2266,14 +2297,18 @@ class AreasController extends Controller
                 'CantidadTotal' => "",
                 'CantidadCompletada' => 4,
                 'OF' => $CodigoPartes[0]
+
             ]);
         }
     }
+
+
     public function finProcesoEmpaque(Request $request)
     {   
         $idFabricacion = $request->input('id');  
+    
         Log::info('ID recibido: ', ['id' => $idFabricacion]);
-
+        
         $query = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
             ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id') 
@@ -2292,20 +2327,21 @@ class AreasController extends Controller
                 'ordenfabricacion.OrdenFabricacion',
                 'ordenfabricacion.CantidadTotal'
             );
-
+    
         if (is_array($idFabricacion)) {
             $query->whereIn('ordenfabricacion.OrdenFabricacion', $idFabricacion);
         } else {
             $query->where('ordenfabricacion.OrdenFabricacion', $idFabricacion);
         }
-
+        
         $ordenfabricacion = $query->first(); 
-
+    
         if (!$ordenfabricacion) {
             Log::error('Orden no encontrada en la base de datos con ID: ' . $idFabricacion);
             return response()->json(['error' => 'Orden no encontrada'], 404);
         }
-
+    
+       
         if ($ordenfabricacion->cantidad_total != $ordenfabricacion->CantidadTotal) {
             return response()->json([
                 'error' => 'No se puede cerrar la orden porque no se ha completado.',
@@ -2313,88 +2349,24 @@ class AreasController extends Controller
                 'CantidadTotal' => $ordenfabricacion->CantidadTotal
             ], 400);
         }
-
+    
+        
         $orden = ordenfabricacion::where('OrdenFabricacion', $idFabricacion)->first();
-
+    
         if (!$orden) {
             Log::error('Orden no encontrada en la base de datos con ID: ' . $idFabricacion);
-            return response()->json(['error' => 'Orden no encontrada'], 404);
+            return response()->json(['error' => 'Orden no encontrada'], 4);
         }
-
+    
         $orden->Cerrada = 0; 
         $orden->save();
-
-        return response(null, 204); 
-    }
-
-    public function RegresarProceso(Request $request)
-    {
-        $request->validate([
-            'id' => 'required|integer|exists:partidasof_areas,id',
-        ]);
-        $partidaOfAreaId = $request->input('id');
-        $ordenFabricacion = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-            ->where('partidasof_areas.id', $partidaOfAreaId)
-            ->select('ordenfabricacion.Cerrada')
-            ->first();
-        if (!$ordenFabricacion) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Orden de fabricación no encontrada.',
-            ], 404);
-        }
-        if ($ordenFabricacion->Cerrada == 0) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No se puede eliminar la partida porque la orden de fabricación está cerrada.',
-            ], 403);
-        }
-        $deleted = DB::table('partidasof_areas')
-            ->where('id', $partidaOfAreaId)
-            ->delete();
-        if ($deleted) {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Partida eliminada exitosamente.',
-                'OF' => $partidaOfAreaId,
-            ]);
-        } else {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No se pudo eliminar la partida. Verifique que existe.',
-            ], 500);
-        }
+    
+        return response()->json(['message' => 'Orden cerrada correctamente'], 200);
     }
     
-  
+
+    
 
 
-    /*public function CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
-        $partidas = $datos->partidasOF()
-                        ->join('partidas', 'partidasOF.id', '=', 'partidas.PartidasOF_id')  // JOIN entre PartidasOF y Partidas
-                        ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')  // JOIN con la tabla pivote (ajustar nombre de la tabla)
-                        ->join('areas', 'partidas_areas.Areas_id', '=', 'areas.id')  // JOIN con Areas a través de la tabla pivote
-                        ->where('partidas_areas.FechaTermina', '=', null)  // Filtro por un área específica
-                        ->where('areas.id', '==', $Area-1)  // Filtro por un área específica
-                        ->select('partidasOF.*', 'partidas.*', 'areas.*','partidas_areas.*')  // Seleccionar todas las columnas de las tres tablas
-                        ->get()->count();
-        if($partidas>0){
-            return 5;
-        }
-    }
-    public function CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
-        $partidas = $datos->partidasOF()
-                        ->join('partidas', 'partidasOF.id', '=', 'partidas.PartidasOF_id')  // JOIN entre PartidasOF y Partidas
-                        ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')  // JOIN con la tabla pivote (ajustar nombre de la tabla)
-                        ->join('areas', 'partidas_areas.Areas_id', '=', 'areas.id')  // JOIN con Areas a través de la tabla pivote
-                        ->where('partidas_areas.FechaTermina', '=', null)  // Filtro por un área específica
-                        ->where('areas.id', '!=', $Area)  // Filtro por un área específica
-                        ->select('partidasOF.*', 'partidas.*', 'areas.*','partidas_areas.*')  // Seleccionar todas las columnas de las tres tablas
-                        ->get()->count();
-        if($partidas>0){
-            return 6;
-        }
-    }*/
+
 }

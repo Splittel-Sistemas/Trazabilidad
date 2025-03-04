@@ -14,13 +14,13 @@
 
 </style>
 @section('content')
-<div class="breadcrumbs mb-2">
+<div class="row gy-3 mb-2 justify-content-between">
+    <div class="col-md-9 col-auto">
+    <h4 class="mb-2 text-1100">Nuevo Rol</h4>
+    </div>
+</div>
+<div class="breadcrumbs m-2">
     <div class="row g-0">
-            <div class="row gy-3 mb-2 justify-content-between">
-                <div class="col-md-9 col-auto">
-                <h4 class="mb-2 text-1100">Crear Nuevo Rol</h4>
-                </div>
-            </div>
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0">
@@ -71,7 +71,9 @@
                         
                     </div>
                 </div>
-                <button type="submit" class="btn btn-success btn-md btn-block rounded-pill float-end">Guardar</button>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary btn-lg btn-block rounded-pill">Guardar</button>
+                </div>
             </form>
         </div>
     </div>
