@@ -1102,10 +1102,10 @@
     fetch("{{ route('dashboard.indicador') }}")
     .then(response => response.json())
     .then(data => {
-        const porcentajeCerradas = parseFloat(data.PorcentajeCompletadas) || 0;  
-        const porcentajeCompletadas = parseFloat(data.porcentajeCerradas) || 0;  
+        const porcentajeCerradas = parseFloat(data.porcentajeCerradas) || 0;  
+        const porcentajeCompletadas = parseFloat(data.PorcentajeCompletadas) || 0;  
         const totalOfTotal = parseInt(data.TotalOfTotal) || 0;
-        const totalCompletadas = parseInt(data.indicador[0].SumaCantidad) || 0;  // Cambiar aquí
+        const totalCompletadas = parseInt(data.TotalOFcompletadas) || 0;  
         const faltanteTotal = parseInt(data.faltanteTotal) || 0;
         const Estimadopiezas = parseFloat(data.Estimadopiezas) || 0;
         const Cantidadpersonas = parseInt(data.Cantidadpersonas) || 0;
@@ -1114,9 +1114,9 @@
         document.getElementById("Estimadopiezas").textContent = Estimadopiezas.toFixed();
         document.getElementById("Cantidadpersonas").textContent = Cantidadpersonas;
 
-        // Porcentaje planeada es el porcentaje que falta para completar, es decir, el porcentaje de completadas.
-        document.getElementById("Porcentajeplaneada").textContent = porcentajeCerradas.toFixed(2);  
-        document.getElementById("Porcentajefaltante").textContent = porcentajeCompletadas.toFixed(2);  
+        // Ajuste de los porcentajes mostrados
+        document.getElementById("Porcentajeplaneada").textContent = porcentajeCompletadas.toFixed(2);  
+        document.getElementById("Porcentajefaltante").textContent = porcentajeCerradas.toFixed(2);  
 
         document.getElementById("Piezasdia").textContent = totalOfTotal;
         document.getElementById("Piezasplaneadas").textContent = totalCompletadas;
@@ -1125,13 +1125,12 @@
         let color = "#007BFF"; // Color predeterminado
 
         if (totalCompletadas === 0 && faltanteTotal === 0) {
-            // No hay datos, el indicador será 0 y sin color
             color = "#D3D3D3"; // Gris neutro
-        } else if (porcentajeCerradas > 1) {
+        } else if (porcentajeCompletadas > 1) {
             color = "#FF0000";
-        } else if (porcentajeCerradas > 0.9) {
+        } else if (porcentajeCompletadas > 0.9) {
             color = "#FFA500";
-        } else if (porcentajeCerradas > 0.8) {
+        } else if (porcentajeCompletadas > 0.8) {
             color = "#FFFF00";
         }
 
@@ -1154,13 +1153,13 @@
                     label: {
                         show: true,
                         position: 'center',
-                        formatter: totalCompletadas === 0 && faltanteTotal === 0 ? '0.00' : `${porcentajeCerradas.toFixed(2)}`,
+                        formatter: totalCompletadas === 0 && faltanteTotal === 0 ? '0.00' : `${porcentajeCompletadas.toFixed(2)}`,
                         fontSize: 20,
                         fontWeight: 'bold'
                     },
                     labelLine: { show: false },
                     data: totalCompletadas === 0 && faltanteTotal === 0
-                        ? [{ value: 1, name: 'Sin datos', itemStyle: { color: "#D3D3D3" } }] // Solo un gris neutro
+                        ? [{ value: 1, name: 'Sin datos', itemStyle: { color: "#D3D3D3" } }]
                         : [
                             { value: totalCompletadas, name: 'Total Completados', itemStyle: { color: color } },
                             { value: faltanteTotal, name: 'Total Faltante', itemStyle: { color: '#D3D3D3' } }
@@ -1172,6 +1171,8 @@
         myChart.setOption(option);
     })
     .catch(error => console.error('Error al obtener los datos:', error));
+
+  
 
 
     /*

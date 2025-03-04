@@ -449,12 +449,12 @@ class HomeControler extends Controller
     {
         // Obtener la fecha y hora actuales y la fecha y hora de hace 24 horas
         $hace24Horas = Carbon::now()->subDay();
-    
+
         // Suma de la cantidad total general solo para los registros de las últimas 24 horas
         $SumaCantidadTotalGeneral = DB::table('ordenfabricacion')
             ->where('created_at', '>=', $hace24Horas)  // Filtrar por fecha
             ->sum('CantidadTotal');
-    
+
         // Obtener datos de áreas (para todos los procesos excepto Cortes) de las últimas 24 horas
         $DiasAreas = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
@@ -464,27 +464,28 @@ class HomeControler extends Controller
             ->select(
                 'ordenfabricacion.OrdenFabricacion',
                 'partidasof_areas.Areas_id',
-                'ordenfabricacion.CantidadTotal', 
+                'ordenfabricacion.CantidadTotal',
                 'partidasof_areas.FechaComienzo',
+                'partidasof_areas.FechaTermina',
                 DB::raw('SUM(partidasof_areas.Cantidad) as SumaTotalcantidad_partida')
             )
-            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.Areas_id', 'partidasof_areas.FechaComienzo')
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.Areas_id', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')
             ->get();
-    
+
         // Obtener los datos de Cortes (Área ID 2) de las últimas 24 horas
         $DiasCortes = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->where('partidasof.FechaComienzo', '>=', $hace24Horas)  // Filtrar por fecha
             ->select(
                 'ordenfabricacion.OrdenFabricacion',
-                'ordenfabricacion.CantidadTotal', 
+                'ordenfabricacion.CantidadTotal',
                 'partidasof.FechaComienzo',
-                DB::raw('SUM(partidasof.Cantidad_partida) as SumaTotalcantidad_partida'),
-                DB::raw($SumaCantidadTotalGeneral . ' as SumaCantidadTotalGeneral')
+                'partidasof.FechaFinalizacion',
+                DB::raw('SUM(partidasof.Cantidad_partida) as SumaTotalcantidad_partida')
             )
-            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo')
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
             ->get();
-    
+
         // Mapeo de las áreas a los nombres de los procesos
         $areasMap = [
             2 => 'Cortes',
@@ -496,13 +497,13 @@ class HomeControler extends Controller
             8 => 'Visualizacion',
             9 => 'Empacado'
         ];
-    
-        // Inicializamos los datos para el gráfico con las horas
+
+        // Inicializamos los datos para el gráfico con los segundos
         $labels = [];
         for ($i = 0; $i < 24; $i++) {
             $labels[] = $i . ':00';
         }
-    
+
         $series = [
             ['name' => 'Cortes', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, 24, 0)],
             ['name' => 'Suministro', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, 24, 0)],
@@ -513,24 +514,24 @@ class HomeControler extends Controller
             ['name' => 'Visualizacion', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, 24, 0)],
             ['name' => 'Empacado', 'type' => 'line', 'stack' => 'Total', 'areaStyle' => [], 'data' => array_fill(0, 24, 0)]
         ];
-    
+
         // Para los cortes (Área ID 2)
         foreach ($DiasCortes as $corte) {
+            $start = Carbon::parse($corte->FechaComienzo);
+            $end = Carbon::parse($corte->FechaFinalizacion);
+            $durationInSeconds = $start->diffInSeconds($end); // Diferencia en segundos
+
             $hour = Carbon::parse($corte->FechaComienzo)->hour; 
-            if ($hour !== null) {
-                // Asignar datos para el área 'Cortes'
-                $serieIndex = array_search('Cortes', array_column($series, 'name'));
-                $series[$serieIndex]['data'][$hour] += $corte->SumaTotalcantidad_partida;
-            }
+            $serieIndex = array_search('Cortes', array_column($series, 'name'));
+            $series[$serieIndex]['data'][$hour] += $durationInSeconds;
         }
-    
+
         // Para otras áreas (3-9)
         foreach ($DiasAreas as $area) {
-            $hour = Carbon::parse($area->FechaComienzo)->hour; 
+            $hour = Carbon::parse($area->FechaComienzo)->hour;
             $areaName = $areasMap[$area->Areas_id] ?? null;
-    
+
             if ($areaName && $hour !== null) {
-                // Encontramos el índice de la serie correspondiente y sumamos la cantidad
                 foreach ($series as &$serie) {
                     if ($serie['name'] == $areaName) {
                         $serie['data'][$hour] += $area->SumaTotalcantidad_partida;
@@ -538,17 +539,15 @@ class HomeControler extends Controller
                 }
             }
         }
-       //dd($series);
-        //dd($labels);
-    
+
         // Devuelve los datos para el gráfico
         return response()->json([
             'labels' => $labels,  // Las horas del día (0:00, 1:00, etc.)
             'series' => $series,  // Los datos de las series agrupados por hora
             'fecha' => Carbon::now()->translatedFormat('d \d\e F \d\e\l Y') // Formato en español
         ]);
-        
-    } 
+    }  
+    
     public function wizarpdia()
     {
         $fechaLimite = now()->setTimezone('America/Mexico_City'); // Cambiar la zona horaria
@@ -699,6 +698,7 @@ class HomeControler extends Controller
             'ordenfabricacion.OrdenFabricacion',
             'ordenfabricacion.CantidadTotal',
             'partidasof_areas.Areas_id',
+           
             DB::raw('GROUP_CONCAT(partidasof_areas.id) as id'),  // Concatenar los IDs
             'ordenfabricacion.FechaEntrega',
             DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),  // Sumar las cantidades
@@ -986,11 +986,11 @@ class HomeControler extends Controller
             ->select('NumeroPersonas', 'CantidadPlaneada')
             ->whereDate('created_at', now()->toDateString())
             ->first(); 
-    
+
         $TotarOfTotal = DB::table('ordenfabricacion')
             ->whereDate('FechaEntrega', today())
             ->sum('CantidadTotal');
-    
+
         $indicador = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
@@ -1006,14 +1006,14 @@ class HomeControler extends Controller
             )
             ->groupBy('OrdenFabricacion', 'OrdenVenta_id', 'partidasof_areas.Cantidad', 'ordenfabricacion.Cerrada', 'partidasof_areas.Areas_id')
             ->get();
-    
+
         $totalOFcompletadas = $indicador->where('Cerrada', 1)->sum('Cantidad');
         $totalSumaCantidad = $indicador->sum('SumaCantidad'); // Sumar todas las cantidades de SumaCantidad
-    
+
         $porcentajeCompletadas = $TotarOfTotal > 0 ? ($totalOFcompletadas / $TotarOfTotal) * 100 : 0;
         $faltanteTotal = $TotarOfTotal - $totalSumaCantidad; // Usar la suma total de SumaCantidad para el faltante
         $porcentajeCerradas = $TotarOfTotal > 0 ? ($faltanteTotal / $TotarOfTotal) * 100 : 0;
-    
+
         return response()->json([
             'Cantidadpersonas' => $personal ? $personal->NumeroPersonas : 0, 
             'Estimadopiezas' => $personal ? $personal->CantidadPlaneada : 0, 
@@ -1025,7 +1025,7 @@ class HomeControler extends Controller
             'porcentajeCerradas' => round($porcentajeCerradas, 2), 
         ]);
     }
-    
+
 
     public function obtenerPorcentajes(Request $request)
     {
@@ -1057,4 +1057,118 @@ class HomeControler extends Controller
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function graficastiempo(Request $request)
+    {
+        $fechaLimite = now()->setTimezone('America/Mexico_City')->toDateString();
+
+        // Consultas a la base de datos para obtener los datos de áreas y cortes
+        $DiasAreas = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9]) // Excluimos el área de Cortes (ID 2)
+            ->where('partidasof_areas.FechaComienzo', '>=', $fechaLimite)  // Filtrar por fecha
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                'partidasof_areas.Areas_id',
+                'ordenfabricacion.CantidadTotal',
+                'partidasof_areas.FechaComienzo',
+                'partidasof_areas.FechaTermina',
+                DB::raw('SUM(partidasof_areas.Cantidad) as SumaTotalcantidad_partida')
+            )
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.Areas_id', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')
+            ->get();
+    
+        // Obtener los datos de Cortes (Área ID 2) de las últimas 24 horas
+        $DiasCortes = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->where('partidasof.FechaComienzo', '>=', $fechaLimite)  // Filtrar por fecha
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal',
+                'partidasof.FechaComienzo',
+                'partidasof.FechaFinalizacion',
+                DB::raw('SUM(partidasof.Cantidad_partida) as SumaTotalcantidad_partida')
+            )
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
+            ->get();
+    
+        $estacionesAreas = [
+            3 => 'plemasSuministrodia',
+            4 => 'plemasPreparadodia',
+            5 => 'plemasEnsambledia',
+            6 => 'plemasPulidodia',
+            7 => 'plemasMediciondia',
+            8 => 'plemasVisualizaciondia',
+            9 => 'plemasEmpaquedia'
+        ];
+    
+        $estacionesCortes = [
+            2 => 'plemasCortedia'
+        ];
+    
+        // Inicializar datos
+        $datos = [];
+    
+        // Llenado de datos para las estaciones
+        foreach (array_merge($estacionesAreas, $estacionesCortes) as $estacion) {
+            $datos[$estacion] = [
+                'completado' => 0,
+                'pendiente' => 0,
+                'totalOrdenes' => 0
+            ];
+        }
+    
+        // Llenado de datos para áreas
+        foreach ($DiasAreas as $area) {
+            if (isset($estacionesAreas[$area->Areas_id])) {
+                $nombreEstacion = $estacionesAreas[$area->Areas_id];
+                if ((float)$area->SumaTotalcantidad_partida == (float)$area->CantidadTotal) {
+                    $datos[$nombreEstacion]['completado']++;
+                } else {
+                    $datos[$nombreEstacion]['pendiente']++;
+                }
+            }
+        }
+    
+        // Llenado de datos para cortes
+        $completadosCorte = 0;
+        $pendientesCorte = 0;
+    
+        foreach ($DiasCortes as $corte) {
+            if ((float)$corte->SumaTotalcantidad_partida == (float)$corte->CantidadTotal) {
+                $completadosCorte++;
+            } else {
+                $pendientesCorte++;
+            }
+        }
+    
+        // Asignar los valores de cortes
+        $datos['plemasCortedia']['completado'] = $completadosCorte;
+        $datos['plemasCortedia']['pendiente'] = $pendientesCorte;
+    
+        // Crear labels y series para la gráfica
+        $labels = array_keys($estacionesAreas + $estacionesCortes);
+    
+        $series = [
+            [
+                'name' => 'Completado',
+                'data' => array_map(fn($estacion) => isset($datos[$estacion]) ? $datos[$estacion]['completado'] : 0, $labels)
+            ],
+            [
+                'name' => 'Pendiente',
+                'data' => array_map(fn($estacion) => isset($datos[$estacion]) ? $datos[$estacion]['pendiente'] : 0, $labels)
+            ]
+        ];
+    
+        // Respuesta JSON con el formato requerido para la gráfica
+        return response()->json([
+            'labels' => $labels,
+            'series' => $series,
+            'fecha' => $fechaLimite,
+            'rangoSemana' => 'Semana 1-7',  // Ejemplo, ajusta según lo que necesites
+            'mes' => now()->format('F Y')
+        ]);
+    }
+    
 }    
