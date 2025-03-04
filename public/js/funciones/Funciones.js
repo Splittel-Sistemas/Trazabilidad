@@ -1,12 +1,13 @@
 function success(titulo,mensaje){
     Swal.fire({
-        position: "top-center",
-        icon: "success",
-        title: titulo,
-        text:mensaje,
-        showConfirmButton: false,
-        timer: 2500
-      });
+      icon: "success",
+      title: titulo,
+      text: mensaje,
+      showConfirmButton: false,
+      showCancelButton: true, 
+      cancelButtonText: 'Cerrar',
+      timer: 0
+    });
 }
 function confirmacion(titulo,mensaje,confirmButtonText,funcion){
     Swal.fire({
@@ -26,23 +27,25 @@ function confirmacion(titulo,mensaje,confirmButtonText,funcion){
 }
 function error(titulo,mensaje){
     Swal.fire({
-        position: "top-center",
         icon: "error",
         title: titulo,
         text:mensaje,
+        showCancelButton: true,
+        cancelButtonText: 'Cerrar',
         showConfirmButton: false,
-        timer: 2500
+        timer: 5000
       });
 }
 function errorBD(){
     Swal.fire({
-        position: "top-center",
-        icon: "error",
-        title: "Ocurrio un Error",
-        text:"Ocurrio un error!, reviza tu conexión.",
-        showConfirmButton: false,
-        timer: 3000
-      });
+      icon: 'error',
+      title: 'Ocurrio un Error',
+      text: 'Ocurrio un error!, reviza tu conexión.',
+      showCancelButton: true,
+      cancelButtonText: 'Cancelar',
+      showConfirmButton: false,
+      timer: 10000
+    });
 }
 function CadenaVacia(cadena) {
     return /^\s*$/.test(cadena);
@@ -66,7 +69,7 @@ function SumarDia(fecha){
 }
 function FormatoFecha(Fecha){
   const fechaObjeto = new Date(Fecha);
-  const dia = String(fechaObjeto.getDate()+1).padStart(2, '0');
+  const dia = String(fechaObjeto.getDate()).padStart(2, '0');
   const mes = String(fechaObjeto.getMonth() + 1).padStart(2, '0'); // Los meses comienzan en 0
   const año = fechaObjeto.getFullYear();
   return dia+"/"+mes+"/"+año;

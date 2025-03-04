@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\OrdenVenta;
 use App\Models\PartidasOF;
 use App\Models\OrdenFabricacion;
+use App\Models\PorcentajePlaneacion;
 use App\Models\FechasBuffer;
 use App\Models\RegistrosBuffer;
 use Illuminate\Support\Facades\Auth;
@@ -17,12 +18,10 @@ class PlaneacionController extends Controller
 {
     protected $funcionesGenerales;
 
-    public function __construct(FuncionesGeneralesController $funcionesGenerales)
-    {
+    public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
     }
-    public function index()
-    {
+    public function index(){
         // Obtener el usuario autenticado
         $user = Auth::user();
     
@@ -37,12 +36,14 @@ class PlaneacionController extends Controller
     
             // Obtener los datos de las órdenes de venta
             $datos = $this->OrdenesVenta($FechaFin, $FechaInicio, $NumOV);
-    
             // Determinar el estado según los datos
+            $VerificarSAP=1;
             if ($datos != 0) {
                 $status = empty($datos) ? "empty" : "success";
             } else {
-                $status = "error";
+                $datos=[];
+                $VerificarSAP=0;
+                $status = "empty";
             }
     
             // Ajustar formato de las fechas para la vista
@@ -50,7 +51,7 @@ class PlaneacionController extends Controller
             $FechaFin = date('Y-m-d');
     
             // Retornar la vista con los datos
-            return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status'));
+            return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status','VerificarSAP'));
     
         } else {
     
@@ -58,7 +59,57 @@ class PlaneacionController extends Controller
             return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
         }
     }
-    
+    public function PorcentajesPlaneacion(Request $request){
+        $fecha=$request->fecha;
+        $PorcentajePlaneacion=PorcentajePlaneacion::where('FechaPlaneacion',$fecha)->first();
+        if($PorcentajePlaneacion==""){
+            $NumeroPersonas=20;
+            $PiezasPorPersona=50;
+            $PlaneadoPorDia=OrdenFabricacion::where('FechaEntrega',$fecha)->SUM('CantidadTotal');
+            $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
+            $PorcentajePlaneada=number_format($PlaneadoPorDia/$CantidadEstimadaDia*100,2);
+            $PorcentajeFaltante=number_format(100-$PorcentajePlaneada,2);
+        }else{
+            $NumeroPersonas=$PorcentajePlaneacion->NumeroPersonas;
+            $PiezasPorPersona=$PorcentajePlaneacion->CantidadPlaneada/$PorcentajePlaneacion->NumeroPersonas;
+            $PlaneadoPorDia=OrdenFabricacion::where('FechaEntrega',$fecha)->SUM('CantidadTotal');
+            $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
+            $PorcentajePlaneada=str_replace(',','',number_format($PlaneadoPorDia/$CantidadEstimadaDia*100,2));
+            $PorcentajeFaltante=number_format(100-$PorcentajePlaneada,2);
+        }
+        return response()->json([
+                'PorcentajePlaneada' => $PorcentajePlaneada,
+                'PorcentajeFaltante' => $PorcentajeFaltante,
+                'NumeroPersonas' => $NumeroPersonas,
+                'PlaneadoPorDia'=>$PlaneadoPorDia,
+                'CantidadEstimadaDia'=>$CantidadEstimadaDia,
+                'Piezasfaltantes'=>($CantidadEstimadaDia-$PlaneadoPorDia),
+                'Fecha_Grafica'=>Carbon::parse($fecha)->translatedFormat('d \d\e F \d\e Y'),
+
+        ]);
+    }
+    public function GuardarParametrosPorcentajes(Request $request){
+        $CantidadPersona=$request->CantidadPersona;
+        $Piezaspersona=$request->Piezaspersona;
+        $Fecha=$request->Fecha;
+        $registro=PorcentajePlaneacion::where('FechaPlaneacion',$Fecha)->first();
+        if($registro=="" OR $registro==null){
+            $NumeroPersonas=20;
+            $PiezasPorPersona=50;
+            $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
+            $PorcentajePlaneacion = new PorcentajePlaneacion();
+            $PorcentajePlaneacion->FechaPlaneacion = $Fecha;
+            $PorcentajePlaneacion->CantidadPlaneada = $CantidadEstimadaDia; 
+            $PorcentajePlaneacion->NumeroPersonas = $NumeroPersonas;
+            $PorcentajePlaneacion->save();
+        }else{
+            $registro->FechaPlaneacion=$Fecha;
+            $registro->NumeroPersonas=$CantidadPersona;
+            $registro->CantidadPlaneada=$Piezaspersona*$CantidadPersona;
+            $registro->save();
+        }
+        return Carbon::parse($Fecha)->translatedFormat('d \d\e F \d\e Y');
+    }
     public function PartidasOF(Request $request){
         //datos para la consulta
         $schema = 'HN_OPTRONICS';
@@ -240,6 +291,13 @@ class PlaneacionController extends Controller
     }
     public function PartidasOFGuardar(Request $request){
         $DatosPlaneacion=json_decode($request->input('DatosPlaneacion'));
+        $FechaHoy=date('Y-m-d');
+        $Fechaplaneada=$DatosPlaneacion[0]->Fecha_planeada;
+        if($Fechaplaneada<$FechaHoy){
+            return response()->json([
+                'status' => "errordate",
+            ]);
+        }
         $bandera="";
         $NumOV="";
         $NumOF=[];
@@ -298,6 +356,7 @@ class PlaneacionController extends Controller
                     $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
                     $respuestaOF->EstatusEntrega=0;
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
+                    $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
                     $respuestaOF->save();
                 }
             }
@@ -321,6 +380,7 @@ class PlaneacionController extends Controller
         $datos=$this->PartidasOFFiltroFechas($Fecha);
         //return $datos;
         $tabla="";
+        
         if(count($datos)>0){
             for ($i=0; $i < count($datos); $i++) {
                 $countdatosOrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion','=',$datos[$i]['OrdenFabricacion'])->first();
@@ -329,8 +389,15 @@ class PlaneacionController extends Controller
                     $tabla.='<tr>
                             <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
                             <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
-                            <td class="text-center">'.'<button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-link"><i class="fa fa-arrow-left"></i> Regresar</button>'.'</td>
-                            <td class="text-center">'.'<button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary "><i class="fa fa-eye"></i> Ver</button>'.'</td>
+                            <td class="text-center">'.'<button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" <a class="btn btn-sm btn-danger"><i class="fa fa-arrow-left"></i> Cancelar</button>
+                             <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary "><i class="fa fa-eye"></i> Detalles</button>'.'
+                             </td>
+                        </tr>';
+                }else{
+                    $tabla.='<tr>
+                            <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
+                            <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
+                            <td class="text-center"></td>
                         </tr>';
                 }
             }
@@ -597,8 +664,9 @@ class PlaneacionController extends Controller
                             </tr>
                             <tr>
                                 <th class="table-active">Descripción</th>
-                                <td>'.$datos->Descripcion.'</td>
+                                <td class="text-center">'.$datos->Descripcion.'</td>
                             </tr>
+
                             <tr>
                                 <th class="table-active">Cantidad Total</th>
                                 <td class="text-center">'.$datos->CantidadTotal.'</td>
@@ -647,8 +715,9 @@ class PlaneacionController extends Controller
                 $tabla.='<tr>
                             <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
                             <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
-                            <td class="text-center">'.'<button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-link"><i class="fa fa-arrow-left"></i> Regresar</button>'.'</td>
-                            <td class="text-center">'.'<button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary "><i class="fa fa-eye"></i> Ver</button>'.'</td>
+                            <td class="text-center">'.'<button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" <a class="btn btn-sm btn-danger"><i class="fa fa-arrow-left"></i>Cancelar</button>
+                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary "><i class="fa fa-eye"></i> Detalles</button>'.'
+                             </td>
                         </tr>';
             }
             return response()->json([
@@ -716,5 +785,21 @@ class PlaneacionController extends Controller
         //Ejecucion de la consulta
         $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
         return $partidas;
+    }
+    //Llenar la fecha Planeacion
+    public function PlaneacionDiaPorcentajePlaneacion(){
+        $fecha=date('Y-m-d');
+        $registro=PorcentajePlaneacion::where('FechaPlaneacion',$fecha)->first();
+        if($registro=="" OR $registro==null){
+            $NumeroPersonas=20;
+            $PiezasPorPersona=50;
+            $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
+            $PorcentajePlaneacion = new PorcentajePlaneacion();
+            $PorcentajePlaneacion->FechaPlaneacion = $fecha;
+            $PorcentajePlaneacion->CantidadPlaneada = $CantidadEstimadaDia; 
+            $PorcentajePlaneacion->NumeroPersonas = $NumeroPersonas;
+            $PorcentajePlaneacion->save();
+        }
+        return "Datos guardados correctamente::".$fecha;
     }
 }    

@@ -10,10 +10,7 @@
         </div>
         
         <!-- Selección de número de orden -->
-        <div class="form-group">
-            <label for="orderNumber">Número de Orden:</label>
-            <input type="number" id="orderNumber" class="form-control" placeholder="Ingrese el número de orden">
-        </div>
+        
 
         <!-- Lista de etapas -->
         <ul class="progress-bar-stages">
