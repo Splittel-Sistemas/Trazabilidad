@@ -160,14 +160,20 @@ class DashboardControlle extends Controller
     public function graficas()
     {
         // Órdenes por día
+
+        /*
         $ordenesPorDia = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
             ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
             ->where('partidasOF_areas.Areas_id', 9)
-            ->selectRaw('DATE_FORMAT(ordenfabricacion.created_at, "%Y-%m-%d") as dia, COUNT(DISTINCT ordenfabricacion.id) as total')
+            ->selectRaw(
+
+                'DATE_FORMAT(ordenfabricacion.created_at, "%Y-%m-%d") as dia, COUNT(DISTINCT ordenfabricacion.id) as total')
             ->groupBy('dia')
             ->orderBy('dia', 'asc')
             ->get();
+
+            dd($ordenesPorDia);
     
         // Órdenes por semana
         $ordenesPorSemana = DB::table('ordenfabricacion')
@@ -193,7 +199,7 @@ class DashboardControlle extends Controller
             'ordenesPorDia' => $ordenesPorDia,
             'ordenesPorSemana' => $ordenesPorSemana,
             'ordenesPorMes' => $ordenesPorMes,
-        ]);
+        ]);*/
     }
 
 

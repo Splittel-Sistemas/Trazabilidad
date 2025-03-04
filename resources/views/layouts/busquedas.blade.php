@@ -1029,7 +1029,6 @@
                         var progressBar = $('#plemasProgressBar');
                         if (response.progreso !== undefined) {
                             var progreso = response.progreso;
-                                progreso = progreso.toFixed(2);
                             // Actualizar la barra de progreso con animación
                             progressBar.css('width', progreso + '%').text(progreso + '%');
 
@@ -1067,56 +1066,61 @@
                     }
                 });
                 const endpoints = [
-                { tipo: 'plemasCorte', id: 'plemasCorte' },
-                { tipo: 'plemasSuministro', id: 'plemasSuministro' },
-                { tipo: 'plemasPreparado', id: 'plemasPreparado' },
-                { tipo: 'plemasEnsamble', id: 'plemasEnsamble' },
-                { tipo: 'plemasPulido', id: 'plemasPulido' },
-                { tipo: 'plemasMedicion', id: 'plemasMedicion' },
-                { tipo: 'plemasVisualizacion', id: 'plemasVisualizacion' },
-                { tipo: 'plemasEmpaque', id: 'plemasEmpaque' },
-            ];
-            endpoints.forEach(endpoint => {
-                $.ajax({
-                    url: '{{ route("graficadoOF") }}',  // Ruta del controlador
-                    type: 'GET',
-                    data: { 
-                        id: ordenfabricacion,  // Asumiendo que 'ordenfabricacion' está disponible
-                        tipo: endpoint.tipo,   // Enviar tipo dinámico
-                    },
-                    success: function(response) {
-                        if (response && response.CantidadTotal !== undefined) {  
-                            let cantidadTotal = response.CantidadTotal;
-                            let totalPartidas = response.TotalPartidas;
-                            let retrabajo = 0;
-                            let progreso = 0;
-                            let label = '';
+                    { tipo: 'plemasCorte', id: 'plemasCorte' },
+                    { tipo: 'plemasSuministro', id: 'plemasSuministro' },
+                    { tipo: 'plemasPreparado', id: 'plemasPreparado' },
+                    { tipo: 'plemasEnsamble', id: 'plemasEnsamble' },
+                    { tipo: 'plemasPulido', id: 'plemasPulido' },
+                    { tipo: 'plemasMedicion', id: 'plemasMedicion' },
+                    { tipo: 'plemasVisualizacion', id: 'plemasVisualizacion' },
+                    { tipo: 'plemasEmpaque', id: 'plemasEmpaque' },
+                ];
 
-                            if (totalPartidas > cantidadTotal) {
-                                // Si hay más partidas que la cantidad total, el exceso es retrabajo
-                                retrabajo = totalPartidas - cantidadTotal;
-                                totalPartidas = cantidadTotal; // Solo consideramos las primeras unidades
+                endpoints.forEach(endpoint => {
+                    $.ajax({
+                        url: '{{ route("graficadoOF") }}',  // Ruta del controlador
+                        type: 'GET',
+                        data: { 
+                            id: ordenfabricacion,  // Asumiendo que 'ordenfabricacion' está disponible
+                            tipo: endpoint.tipo,   // Enviar tipo dinámico
+                        },
+                        success: function(response) {
+                            if (response && response.CantidadTotal !== undefined) {  
+                                let cantidadTotal = response.CantidadTotal;
+                                let totalPartidas = response.TotalPartidas;
+                                let retrabajo = 0;
+                                let progreso = 0;
+                                let label = '';
+
+                                if (totalPartidas > cantidadTotal) {
+                                    // Si hay más partidas que la cantidad total, el exceso es retrabajo
+                                    retrabajo = totalPartidas - cantidadTotal;
+                                    totalPartidas = cantidadTotal; // Solo consideramos las primeras unidades
+                                }
+
+                                // Calcular el porcentaje con las unidades dentro del límite de cantidad total
+                                progreso = (totalPartidas / cantidadTotal) * 100;
+                                
+                                // Redondear el porcentaje a un valor entero
+                                progreso = Math.round(progreso); // O usar Math.floor() si prefieres redondear hacia abajo
+                                
+                                if (retrabajo > 0) {
+                                    label = `Retrabajo: ${retrabajo}`;
+                                }
+
+                                drawGauge(endpoint.id, progreso, label);
+                            } else {
+                                console.log('No hay datos para mostrar.');
+                                drawGauge(endpoint.id, 0, 'Sin Datos');
                             }
-
-                            // Calcular el porcentaje con las unidades dentro del límite de cantidad total
-                            progreso = (totalPartidas / cantidadTotal) * 100;
-                            
-                            if (retrabajo > 0) {
-                                label = `Retrabajo: ${retrabajo}`;
-                            }
-
-                            drawGauge(endpoint.id, progreso, label);
-                        } else {
-                            console.log('No hay datos para mostrar.');
-                            drawGauge(endpoint.id, 0, 'Sin Datos');
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
+                            drawGauge(endpoint.id, 0, 'Error');
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
-                        drawGauge(endpoint.id, 0, 'Error');
-                    }
+                    });
                 });
-            });
+
 
 
             $.ajax({

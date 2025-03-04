@@ -148,6 +148,12 @@
                 $('#CantidadDiv').hide();
                 $('#IniciarBtn').hide();
                 $('#RetrabajoDiv').hide();
+                setTimeout(function() {
+                            console.log("Recargando la tabla...");
+                            cargarTablaEmpacado();  
+                        }, 500);  
+                
+
                 document.getElementById('Retrabajo').checked = false;
                 if(response.status=="success"){
                     $('#DivCointainerTableSuministro').html(response.tabla);
@@ -198,6 +204,8 @@
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> guardado correctamente!';
                                     Color='bg-success';
                                     break;
+                                   
+                                    
                                 case 2:
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> Ya Registrado!';
                                     Color='bg-warning';
@@ -286,7 +294,6 @@
                             $('#ToastGuardado').fadeOut();
                         }, 2000);
                 }
-                cargarTablaEmpacado();
             },
             error: function(xhr, status, error) {
                 $('#CantidadDiv').hide();
@@ -298,6 +305,7 @@
     function TraerDatos(id,OF){
         $('#CodigoEscaner').val(OF+"-"+id);
         $('#CodigoEscanerSuministro').html('');
+        cargarTablaEmpacado();
     }
     function Retrabajo(Codigo){
         $.ajax({
@@ -334,7 +342,7 @@
                         $('#ToastGuardado').fadeOut();
                     }, 2500);
                 }
-                cargarTablaEmpacado();
+               
             }
         });
     }
@@ -360,6 +368,7 @@
         });
     }*/
     $(document).ready(function() {
+        cargarTablaEmpacado();
         $('#Cantidad').on('input', function() {
             RegexNumeros(document.getElementById('Cantidad'));
         });
@@ -516,8 +525,9 @@
                     }, 2000);
                 }
                 
-                ListaCodigo(CodigoEscaner,'CodigoEscanerSuministro')
                 cargarTablaEmpacado();
+                ListaCodigo(CodigoEscaner,'CodigoEscanerSuministro')
+              
             },
             error: function(xhr, status, error) {
                 $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
@@ -542,10 +552,8 @@
     }
 </script>
 <script>
-    $(document).ready(function () {
-        cargarTablaEmpacado();
 
-        setInterval(cargarTablaEmpacado, 10000);
+        /*setInterval(cargarTablaEmpacado, 10000);*/
 
         function cargarTablaEmpacado() {
             $.ajax({
@@ -563,7 +571,8 @@
                     tbody.empty();
 
                     data.forEach((item) => {
-                        let cantidad = item.Areas_id == 9 ? item.Cantidad : "0";
+                        // Usamos la cantidad sumada correctamente desde la consulta SQL
+                        let cantidad = item.Areas_id == 9 ? item.CantidadTotalArea : "0";
 
                         let botonFinalizar = (puedeFinalizar) 
                             ? `<button class="btn btn-sm btn-danger finalizar-btn" data-id="${item.OrdenFabricacion}">Finalizar</button>`
@@ -583,21 +592,17 @@
                     });
 
                     DataTable('EmpacadoTable', true);
-                
-
 
                     $(".finalizar-btn").off("click").on("click", function () {
                         let id = $(this).data("id");
 
                         console.log("ID de la orden a finalizar:", id);
 
-                        // Mostrar confirmación antes de ejecutar el AJAX
                         confirmacionesss(
                             "¿Estás seguro de que deseas finalizar esta orden?", 
                             "", 
                             "Confirmar", 
                             function () {
-                                // Solo se ejecuta si el usuario confirma
                                 $.ajax({
                                     url: '{{ route("finProceso.empacado") }}',
                                     type: "GET",
@@ -606,13 +611,25 @@
                                         _token: '{{ csrf_token() }}'
                                     },
                                     success: function (response) {
-                                        alert(response.message); 
-                                        location.reload(); // Recarga la página para reflejar los cambios
+                                        console.log("Respuesta del servidor:", response);
+                                        
+                                        // Si la respuesta tiene el mensaje esperado
+                                        if (response && response.message) {
+                                            alert(response.message);
+                                        }
+
+                                        // Intentar cargar la tabla de nuevo
+                                        setTimeout(function() {
+                                            console.log("Recargando la tabla...");
+                                            cargarTablaEmpacado();  // Verifica que esta función esté actualizando correctamente el DOM
+                                        }, 500);
                                     },
                                     error: function (xhr) {
+                                        console.error("Error:", xhr);
                                         alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
                                     }
                                 });
+
                             }
                         );
                     });
@@ -622,6 +639,7 @@
                     console.log("Error al cargar los datos de la tabla.");
                 },
             });
+
         }
         function DataTable(tabla, busqueda) {
             $('#' + tabla).DataTable({
@@ -641,7 +659,7 @@
                 }
             });
         }
-    });
+    
 </script>
 <script>
     function confirmacionesss(titulo, mensaje, confirmButtonText, funcion) {
@@ -666,45 +684,48 @@
             }
         });
     }
-
     async function CancelarPartida(id) {
-        // Usamos confirmacion y esperamos la respuesta
-        const confirmacionRespuesta = await confirmacionesss(
-            "¿Estás seguro de que deseas cancelar esta partida?", 
-            "", 
-            "Confirmar", 
-            function() {
-                // Esta función se ejecuta si el usuario confirma la acción
-                $.ajax({
-                    url: '{{ route("regresar.proceso") }}',
-                    method: 'POST',
-                    data: {
-                        id: id,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.status == "success") {
-                            toastr.success(response.message, 'Éxito');
-                            $('#registro-' + id).remove(); 
-                            ListaCodigo(); // Actualizamos la lista después de eliminar el registro
-                            cargarTablaEmpacado();
-                        } else if (response.status == "error") {
-                            toastr.error(response.message, 'Error');
-                        } else if (response.status == "errorCantidada") {
-                            toastr.error(response.message, 'Cantidad no disponible');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        toastr.error('Hubo un error al cancelar la partida.', 'Error');
-                    }
-                });
-            }
-        );
+    const confirmacionRespuesta = await confirmacionesss(
+        "¿Estás seguro de que deseas cancelar esta partida?", 
+        "", 
+        "Confirmar", 
+        function() {
+            $.ajax({
+                url: '{{ route("regresar.proceso") }}',
+                method: 'POST',
+                data: {
+                    id: id,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    console.log("Respuesta del servidor:", response); 
 
-        // Si no se confirma, mostramos un mensaje informativo
-        if (!confirmacionRespuesta) {
-            toastr.info('La acción fue cancelada', 'Información');
+                    if (response.status == "success") {
+                        toastr.success(response.message, 'Éxito');
+                        $('#registro-' + id).remove();  
+                        ListaCodigo(response);  
+
+
+                        setTimeout(function() {
+                            console.log("Recargando la tabla...");
+                            cargarTablaEmpacado();  
+                        }, 500);  
+                    } else {
+                        toastr.error(response.message, 'Error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    toastr.error('Hubo un error al cancelar la partida.', 'Error');
+                }
+            });
         }
+    );
+    if (!confirmacionRespuesta) {
+        toastr.info('La acción fue cancelada', 'Información');
     }
+}
+
+
+
 </script>
 @endsection
