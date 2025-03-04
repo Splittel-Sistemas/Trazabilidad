@@ -2241,6 +2241,9 @@ class AreasController extends Controller
                                 $menu .= '<tr>
                                             <td class=" ps-3 NumParte">' . $datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '</td>
                                             <td class="ps-3   Cantidad">' . $PartdaAr['pivot']->Cantidad . '</td>
+                                             <td class="ps-3 Regresar">
+                                                <button class="btn btn-primary btn-sm " onclick="CancelarPartida('.$PartdaAr['pivot']->id.')">Cancelar</button>
+                                            </td>
                                         </tr>';
                                 }
                         }
