@@ -28,7 +28,6 @@ class HomeControler extends Controller
         // Si el usuario está activo, continua con la carga de la página
         return view('home');  // Ajusta esto al nombre de tu vista Home
     }
-   
     public function graficas()
     {
         // Órdenes por día
@@ -67,7 +66,6 @@ class HomeControler extends Controller
             'ordenesPorMes' => $ordenesPorMes,
         ]);
     }
-
     public function progreso()
     {
         /*
@@ -211,7 +209,6 @@ class HomeControler extends Controller
 
         return response()->json($datos);
     }
-
     public function cerradas()
     {
         $fechaInicio = now()->startOfMonth(); // Primer día del mes actual
@@ -253,8 +250,6 @@ class HomeControler extends Controller
             'totalOrdenes' => $totalOrdenes,
         ]);
     }
-    
-    
     public function tablasAbiertas()
     {
         $ordenesAbiertas = DB::table('ordenfabricacion')
@@ -293,7 +288,6 @@ class HomeControler extends Controller
             'ordenesAbiertasCount' => $ordenesAbiertasCount,
         ]);
     }
-
     public function tablasCompletadas()
     {
         // Definir correctamente la variable $totalOrdenes
@@ -372,7 +366,6 @@ class HomeControler extends Controller
             'ordenes' => $ordenesConTiempos
         ]);
     }
-
     public function tablasMes()
     {
         $carbon = Carbon::now()->locale('es');
@@ -452,7 +445,6 @@ class HomeControler extends Controller
             'mes' => "Mes $mesActual $anioActual" // Formato corregido
         ]);
     }
-
     public function tablasHoras()
     {
         // Obtener la fecha y hora actuales y la fecha y hora de hace 24 horas
@@ -557,7 +549,6 @@ class HomeControler extends Controller
         ]);
         
     } 
-
     public function wizarpdia()
     {
         $fechaLimite = now()->setTimezone('America/Mexico_City'); // Cambiar la zona horaria
@@ -602,7 +593,6 @@ class HomeControler extends Controller
             'totalOrdenes' => $totalOrdenes
         ]);
     } 
-
     public function wizarp()
     {
         // Calculando las fechas de inicio y fin de la semana actual
@@ -648,7 +638,6 @@ class HomeControler extends Controller
             'totalOrdenes' => $totalOrdenes
         ]);
     }
-
     public function wizarpmes()
     {
         $fechaActual = now(); // Obtiene la fecha actual
@@ -695,7 +684,6 @@ class HomeControler extends Controller
             'totalOrdenes' => $totalOrdenes
         ]);
     }
-
     public function graficasdia()
     {
         $fechaLimite = now()->setTimezone('America/Mexico_City')->toDateString();
@@ -795,7 +783,6 @@ class HomeControler extends Controller
         return response()->json($datos);
         
     }
-
     public function graficasemana()
     {
         $fechaInicioSemana = now()->startOfWeek()->toDateString();
@@ -888,7 +875,6 @@ class HomeControler extends Controller
         
         return response()->json($datos);
     }     
-    
     public function tablasemana()
     {
         $SumaCantidadTotalGeneral = DB::table('ordenfabricacion')->sum('CantidadTotal');
@@ -994,7 +980,6 @@ class HomeControler extends Controller
             'rangoSemana' => 'Semana del ' . $rangoSemana
         ]);
     }
-
     public function Dasboardindicadordia()
     {
         $personal = DB::table('porcentajeplaneacion')
@@ -1023,10 +1008,11 @@ class HomeControler extends Controller
             ->get();
     
         $totalOFcompletadas = $indicador->where('Cerrada', 1)->sum('Cantidad');
+        $totalSumaCantidad = $indicador->sum('SumaCantidad'); // Sumar todas las cantidades de SumaCantidad
+    
         $porcentajeCompletadas = $TotarOfTotal > 0 ? ($totalOFcompletadas / $TotarOfTotal) * 100 : 0;
-        $faltanteTotal = $TotarOfTotal - $totalOFcompletadas;
+        $faltanteTotal = $TotarOfTotal - $totalSumaCantidad; // Usar la suma total de SumaCantidad para el faltante
         $porcentajeCerradas = $TotarOfTotal > 0 ? ($faltanteTotal / $TotarOfTotal) * 100 : 0;
-
     
         return response()->json([
             'Cantidadpersonas' => $personal ? $personal->NumeroPersonas : 0, 
@@ -1034,13 +1020,13 @@ class HomeControler extends Controller
             'indicador' => $indicador,
             'TotalOFcompletadas' => $totalOFcompletadas,
             'TotalOfTotal' => (int) $TotarOfTotal,
-            'faltanteTotal' => $faltanteTotal,
+            'faltanteTotal' => $faltanteTotal, // Ahora el faltante es correcto
             'PorcentajeCompletadas' => round($porcentajeCompletadas, 2),
             'porcentajeCerradas' => round($porcentajeCerradas, 2), 
         ]);
-        
     }
     
+
     public function obtenerPorcentajes(Request $request)
     {
         // Simulación de datos para la prueba (reemplaza con datos de la BD)
@@ -1057,7 +1043,6 @@ class HomeControler extends Controller
 
         return response()->json($datos);
     }
-
     public function guardarDasboard(Request $request)
     {
         try {
