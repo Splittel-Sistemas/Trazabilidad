@@ -13,7 +13,7 @@ use App\Http\Controllers\BusquedaController;
 use App\Http\Controllers\EmpacadoController;
 
 use App\Http\Controllers\DashboardControlle;
-use GuzzleHttp\Promise\Coroutine;
+//use GuzzleHttp\Promise\Coroutine;
 use Illuminate\Routing\Route as RoutingRoute;
 
 
