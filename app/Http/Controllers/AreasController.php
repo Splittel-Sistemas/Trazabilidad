@@ -2366,7 +2366,7 @@ class AreasController extends Controller
         $orden->Cerrada = 0; 
         $orden->save();
     
-        return response()->json(['message' => 'Orden cerrada correctamente'], 200);
+        //return response()->json(['message' => 'Orden cerrada correctamente'], 200);
     }
 
     public function RegresarProceso(Request $request)
