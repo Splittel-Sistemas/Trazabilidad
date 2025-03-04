@@ -1333,29 +1333,38 @@ class AreasController extends Controller
           $Area=$this->funcionesGenerales->encrypt(9);
           return view('Areas.Empacado',compact('Area')); 
     }
-    public function tablaEmpacado(){
+    public function tablaEmpacado()
+    {
         $areas = DB::table('partidasof_areas')
             ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
             ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
             ->join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
-            ->whereIn('partidasof_areas.Areas_id', [8, 9]) // Filtrar por 8 y 9
+            ->whereIn('partidasof_areas.Areas_id', [8, 9]) 
+            ->where('ordenfabricacion.Cerrada', '!=', 0)
             ->select(
+                'ordenfabricacion.Cerrada',
                 'ordenventa.OrdenVenta',
                 'ordenfabricacion.OrdenFabricacion',
                 'ordenfabricacion.CantidadTotal',
                 'ordenfabricacion.FechaEntrega',
-                'partidasof_areas.Cantidad',
+                'partidasof_areas.Areas_id',
+                DB::raw('SUM(partidasof_areas.Cantidad) as CantidadTotalArea') 
+            )
+            ->groupBy(
+                'ordenfabricacion.Cerrada',
+                'ordenventa.OrdenVenta',
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal',
+                'ordenfabricacion.FechaEntrega',
                 'partidasof_areas.Areas_id'
             )
             ->get()
-            ->groupBy(function ($item) {
-                return $item->OrdenVenta . '-' . $item->OrdenFabricacion; 
-            })
+            ->groupBy(fn($item) => $item->OrdenVenta . '-' . $item->OrdenFabricacion)
             ->map(function ($items) {
                 $area9 = $items->firstWhere('Areas_id', 9);
-
+    
                 if ($area9) {
-                    return $area9; 
+                    return $area9;
                 } else {
                     $base = $items->first();
                     return (object) [
@@ -1363,12 +1372,13 @@ class AreasController extends Controller
                         'OrdenFabricacion' => $base->OrdenFabricacion,
                         'CantidadTotal' => $base->CantidadTotal,
                         'FechaEntrega' => $base->FechaEntrega,
-                        'Cantidad' => 0, 
+                        'CantidadTotalArea' => 0, 
+                        'Cerrada' => $base->Cerrada
                     ];
                 }
             })
-            ->values(); 
-
+            ->values();
+    
         return response()->json($areas);
     }
 
