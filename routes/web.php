@@ -13,14 +13,12 @@ use App\Http\Controllers\BusquedaController;
 use App\Http\Controllers\EmpacadoController;
 
 use App\Http\Controllers\DashboardControlle;
-//use GuzzleHttp\Promise\Coroutine;
+use GuzzleHttp\Promise\Coroutine;
 use Illuminate\Routing\Route as RoutingRoute;
 
 
 
 Route::post('/operador_login', [loginController::class, 'operador'])->name('operador.login');
-
-
 // Ruta para mostrar el formulario de login
 Route::get('/login', [loginController::class, 'login_view'])->name('login');
 Route::post('/login', [loginController::class, 'login'])->name('login_post');
