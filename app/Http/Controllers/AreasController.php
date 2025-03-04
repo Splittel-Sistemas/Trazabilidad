@@ -2241,6 +2241,9 @@ class AreasController extends Controller
                                 $menu .= '<tr>
                                             <td class=" ps-3 NumParte">' . $datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '</td>
                                             <td class="ps-3   Cantidad">' . $PartdaAr['pivot']->Cantidad . '</td>
+                                           <td class="ps-3 Regresar">
+                                                <button class="btn btn-primary btn-sm " onclick="CancelarPartida('.$PartdaAr['pivot']->id.')">Cancelar</button>
+                                            </td>
                                         </tr>';
                                 }
                         }
@@ -2250,31 +2253,33 @@ class AreasController extends Controller
                         <option value="Retrabajo">Retrabajo</option>
                         <option value="Finalizado">Finalizado</option>';
                 }
-                $menu='<div class="card-body">
+                $menu = '<div class="card-body">
                     <div id="ContainerTableSuministros" class="table-list">
                         <div class="row justify-content-start g-0">
                             <div class="col-auto px-0">
-                                <h6 class="">Orden de Fabricación <stron>'.$datos->OrdenFabricacion.'</strong></h6>
+                                <h6 class="">Orden de Fabricación <strong>' . $datos->OrdenFabricacion . '</strong></h6>
                                 <div class="badge badge-phoenix fs--4 badge-phoenix-secondary">
-                                    <span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span>
+                                    <span class="fw-bold">Piezas Completadas </span>' . $CantidadCompletada . '/' . $CantidadTotal . '<span class="ms-1 fas fa-stream"></span>
                                 </div>
                             </div>
                         </div>
-                        <div class="table-responsive scrollbar mb-3">
-                        <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
-                            <thead>
-                                <tr class="bg-light">
-                                <th class="sort border-top ps-3" data-sort="NumParte">Codigo</th>
-                                    <th class="sort border-top" data-sort="Cantidad">Cantidad</th>
-                                
-                                </tr>
-                            </thead>
-                            <tbody class="list" id="TablaBody">
-                                '.$menu.'
-                            </tbody>
-                        </table>
+                        <div class="table-responsive scrollbar mb-3" style="max-height: 300px; overflow-y: auto;">
+                            <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
+                                <thead>
+                                    <tr class="bg-light">
+                                        <th class="sort border-top ps-3" data-sort="NumParte">Codigo</th>
+                                        <th class="sort border-top" data-sort="Cantidad">Cantidad</th>
+                                        <th class="sort border-top" data-sort="Regresar">Accion</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="list" id="TablaBody">
+                                    '.$menu.'
+                                </tbody>
+                            </table>
                         </div>
-                    </div>';
+                    </div>
+                </div>';
+    
                 return response()->json([
                     'tabla' => $menu,
                     'Escaner' => $Escaner,
@@ -2363,6 +2368,31 @@ class AreasController extends Controller
     
         return response()->json(['message' => 'Orden cerrada correctamente'], 200);
     }
+
+    public function RegresarProceso(Request $request)
+{
+    $partidaOfAreaId = $request->input('id'); 
+
+    // Intentamos eliminar la partida
+    $deleted = DB::table('partidasof_areas')
+        ->where('id', $partidaOfAreaId)
+        ->delete();
+
+    // Devolvemos una respuesta JSON según el resultado de la eliminación
+    if ($deleted) {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Partida eliminada exitosamente.',
+            'OF' => $partidaOfAreaId, // O cualquier dato adicional que necesites
+        ]);
+    } else {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'No se pudo eliminar la partida.',
+        ]);
+    }
+}
+
     
 
     
