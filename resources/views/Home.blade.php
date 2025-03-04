@@ -875,42 +875,49 @@
         cargarOrdenesCerradas();
         cargarOrdenesCompletas();
     });
+
+
     function generarGrafico(url, containerId, itemName) {
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                const datasetSource = [[itemName, ...data.labels]];
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const datasetSource = [[itemName, ...data.labels]];
 
-                data.series.forEach((serie) => {
-                    datasetSource.push([serie.name, ...serie.data]);
-                });
+            data.series.forEach((serie) => {
+                datasetSource.push([serie.name, ...serie.data]);
+            });
 
-                // Asignar valores a los elementos del HTML
-                const fechaContainer = document.getElementById(`${containerId}-fecha`);
-                const rangoContainer = document.getElementById(`${containerId}-rango`);
-                const mesContainer = document.getElementById(`${containerId}-mes`);
-                
-                if (mesContainer) {
-                    mesContainer.classList.add('center-text'); 
-                    mesContainer.textContent = ` ${data.mes}`;
-                }
+            // Asignar valores a los elementos del HTML
+            const fechaContainer = document.getElementById(`${containerId}-fecha`);
+            const rangoContainer = document.getElementById(`${containerId}-rango`);
+            const mesContainer = document.getElementById(`${containerId}-mes`);
+            
+            if (mesContainer) {
+                mesContainer.classList.add('center-text'); 
+                mesContainer.textContent = ` ${data.mes}`;
+            }
 
-                if (fechaContainer) {
-                    fechaContainer.classList.add('center-text'); 
-                    fechaContainer.textContent = `${data.fecha}`;
-                }
+            if (fechaContainer) {
+                fechaContainer.classList.add('center-text'); 
+                fechaContainer.textContent = `${data.fecha}`;
+            }
 
-                if (rangoContainer) {
-                    rangoContainer.classList.add('center-text'); 
-                    rangoContainer.textContent = ` ${data.rangoSemana}`;
-                }
+            if (rangoContainer) {
+                rangoContainer.classList.add('center-text'); 
+                rangoContainer.textContent = ` ${data.rangoSemana}`;
+            }
 
-                const option = {
+            const option = {
                 tooltip: { trigger: 'axis' },
                 legend: { left: '5%' },
                 dataset: { source: datasetSource },
-                xAxis: { type: 'category' },
-                yAxis: { gridIndex: 0 },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false // Asegura que la línea no tenga espacio al principio
+                },
+                yAxis: {
+                    gridIndex: 0
+                },
                 grid: {
                     left: containerId === 'chart-month' ? '5%' : '50%',
                     right: containerId === 'chart-month' ? '50%' : '5%',
@@ -921,24 +928,13 @@
                     type: 'line',
                     smooth: true,
                     seriesLayoutBy: 'row',
-                    emphasis: { focus: 'series' }
-                })).concat([
-                    {
-                        type: 'pie',
-                        id: 'pie',
-                        radius: '35%',
-                        center: containerId === 'chart-month' ? ['75%', '50%'] : ['20%', '50%'],
-                        emphasis: { focus: 'self' },
-                        label: {
-                            formatter: `{b}: {@[${data.labels[0]}]} ({d}%)`
-                        },
-                        encode: {
-                            itemName: itemName,
-                            value: data.labels[0],
-                            tooltip: data.labels[0]
-                        }
+                    emphasis: { focus: 'series' },
+                    symbol: 'circle',  // Muestra los puntos en el gráfico
+                    symbolSize: 8,     // Tamaño de los puntos
+                    lineStyle: {
+                        width: 2 // Establece el grosor de la línea
                     }
-                ]),
+                })),
                 toolbox: {
                     feature: {
                         saveAsImage: {
@@ -948,28 +944,29 @@
                 }
             };
 
-                const chart = echarts.init(document.getElementById(containerId));
+            const chart = echarts.init(document.getElementById(containerId));
 
-                chart.on('updateAxisPointer', function (event) {
-                    const xAxisInfo = event.axesInfo[0];
-                    if (xAxisInfo) {
-                        const dimension = xAxisInfo.value + 1;
-                        chart.setOption({
-                            series: [{
-                                id: 'pie',
-                                label: { formatter: `{b}: {@[${dimension}]} ({d}%)` },
-                                encode: { value: dimension, tooltip: dimension }
-                            }]
-                        });
-                    }
-                });
-
-                chart.setOption(option);
-            })
-            .catch(error => {
-                console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
+            chart.on('updateAxisPointer', function (event) {
+                const xAxisInfo = event.axesInfo[0];
+                if (xAxisInfo) {
+                    const dimension = xAxisInfo.value + 1;
+                    chart.setOption({
+                        series: [{
+                            id: 'pie',
+                            label: { formatter: `{b}: {@[${dimension}]} ({d}%)` },
+                            encode: { value: dimension, tooltip: dimension }
+                        }]
+                    });
+                }
             });
-    }
+
+            chart.setOption(option);
+        })
+        .catch(error => {
+            console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
+        });
+}
+
     // Llamadas a la función para generar gráficos
     generarGrafico("{{ route('tablas.semana') }}", "chart-day", "Día");
     generarGrafico("{{ route('tablas.mes') }}", "chart-month", "Semana");
@@ -1173,6 +1170,98 @@
     })
     .catch(error => console.error('Error al obtener los datos:', error));
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+    function graficastiempo(url, containerId, itemName) {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // Crear el datasetSource con los datos de las etiquetas y series
+            const datasetSource = [[itemName, ...data.labels]];
+
+            // Llenar el dataset con los datos de las series
+            data.series.forEach((serie) => {
+                datasetSource.push([serie.name, ...serie.data]);
+            });
+
+            // Asignar valores a los elementos del HTML (fecha, rango, mes)
+            const fechaContainer = document.getElementById(`${containerId}-fecha`);
+            const rangoContainer = document.getElementById(`${containerId}-rango`);
+            const mesContainer = document.getElementById(`${containerId}-mes`);
+            
+            if (mesContainer) {
+                mesContainer.classList.add('center-text'); 
+                mesContainer.textContent = ` ${data.mes}`;
+            }
+
+            if (fechaContainer) {
+                fechaContainer.classList.add('center-text'); 
+                fechaContainer.textContent = `${data.fecha}`;
+            }
+
+            if (rangoContainer) {
+                rangoContainer.classList.add('center-text'); 
+                rangoContainer.textContent = ` ${data.rangoSemana}`;
+            }
+
+            // Configuración de opciones para ECharts
+            const option = {
+                tooltip: { trigger: 'axis' },
+                legend: { left: '5%' },
+                dataset: { source: datasetSource },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false
+                },
+                yAxis: {
+                    gridIndex: 0
+                },
+                grid: {
+                    left: containerId === 'chart-month' ? '5%' : '50%',
+                    right: containerId === 'chart-month' ? '50%' : '5%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                series: data.series.map(() => ({
+                    type: 'line',
+                    smooth: true,
+                    seriesLayoutBy: 'row',
+                    emphasis: { focus: 'series' },
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    lineStyle: { width: 2 }
+                })),
+                toolbox: {
+                    feature: {
+                        saveAsImage: {
+                            name: `${data.fecha || ''}${data.rangoSemana || ''}${data.mes || ''}`
+                        }
+                    }
+                }
+            };
+
+            // Inicializar el gráfico con las opciones definidas
+            const chart = echarts.init(document.getElementById(containerId));
+            chart.setOption(option);
+        })
+        .catch(error => {
+            console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
+        });
+}
+*/
 
     /*
 
