@@ -222,7 +222,8 @@ Route::get('/indicadores-cesemana',[HomeControler::class,'graficasemana'])->name
 
 
 
-Route::get('/Dasboard/indicador/dia',[HomeControler::class, 'Dasboardindicadordia'])->name('dashboard.indicador')->middleware('auth');
+Route::get('/dashboard/indicadorDIA',[HomeControler::class, 'Dasboardindicadordia'])->name('dashboard.indicador')->middleware('auth');
+
 Route::post('/guardar-dashboard', [HomeControler::class, 'guardarDasboard'])->name('guardar.Dasboard')->middleware('auth');
 
 

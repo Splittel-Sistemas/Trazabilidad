@@ -546,9 +546,7 @@ class HomeControler extends Controller
             'series' => $series,  // Los datos de las series agrupados por hora
             'fecha' => Carbon::now()->translatedFormat('d \d\e F \d\e\l Y') // Formato en español
         ]);
-    }
-
-        
+    }  
     
     public function wizarpdia()
     {
