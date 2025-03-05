@@ -5,13 +5,32 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
 
 <style>
-    /* Positioning the toast in the top-right corner */
     #ToastGuardado {
-        position: fixed; /* Fixed position */
-        top: 5rem; /* Distance from the top */
-        right: 20px; /* Distance from the right */
-        z-index: 1050; /* Ensure it's above other content */
+        position: fixed; 
+        top: 5rem;
+        right: 20px; 
+        z-index: 1050; 
     }
+    #DivCointainerTableSuministro {
+        width: 100%;
+        display: block;
+        height: 11.5rem;
+        overflow-y: scroll;
+    }
+    #DivCointainerTableSuministro::-webkit-scrollbar {
+        width: 8px; 
+    }
+    #DivCointainerTableSuministro::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+    }
+    #DivCointainerTableSuministro::-webkit-scrollbar-thumb {
+        background-color: #888; 
+        border-radius: 10px; 
+    }
+    #DivCointainerTableSuministro::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+    }
+
 </style>
 @endsection
 @section('content')
@@ -73,7 +92,7 @@
                 </div>
             </div>
         </div>
-        <div id="ContentTabla" class="col-6 mt-2" style="display: none">
+        <div id="ContentTabla" class="col-6" style="display: none">
             <div class="card" id="DivCointainerTableSuministro">
             </div>
         </div>

@@ -19,8 +19,6 @@ use Illuminate\Routing\Route as RoutingRoute;
 
 
 Route::post('/operador_login', [loginController::class, 'operador'])->name('operador.login');
-
-
 // Ruta para mostrar el formulario de login
 Route::get('/login', [loginController::class, 'login_view'])->name('login');
 Route::post('/login', [loginController::class, 'login'])->name('login_post');
