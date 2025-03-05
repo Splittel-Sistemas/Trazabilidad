@@ -39,6 +39,18 @@
         padding: 0;
         margin: 0;
     }
+    .permisos ul::-webkit-scrollbar {
+        width: 6px; /* Ancho del scrollbar */
+    }
+
+    .permisos ul::-webkit-scrollbar-thumb {
+        background-color: #c2c2c2; /* Color claro de Bootstrap (ejemplo: bg-light) */
+        border-radius: 10px; /* Bordes redondeados del thumb */
+    }
+
+    .permisos ul::-webkit-scrollbar-track {
+        background-color: #f8f9fa; 
+    }
 
     .permisos li {
         flex: 1 1 calc(20% - 0.4rem); /* Hasta 5 elementos por fila */
@@ -86,9 +98,7 @@
     <!-- Contenido principal -->
     <div class="container my-4">
         @if(Auth::user()->hasPermission("RolesEdit"))
-
-        <a href="{{ route('RolesPermisos.create') }}" class="btn btn-outline-info mb-3">Agregar Rol</a>
-       
+            <a href="{{ route('RolesPermisos.create') }}" class="btn btn-outline-info mb-3">Agregar Rol</a>
         @endif
         @if (session('status'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">

@@ -20,23 +20,75 @@
     </div>
     <div class="row">
         <div class="col-6">
-              <div class="card shadow-sm">
+            <div class="card shadow-sm">
+              <div class="card-body row" id="filtro">
+                  <h3 for="CodigoEscaner" class=" col-sm-12 pt-0 text-success">Entrada</h3>
+                  <!---<div class="col-8">
+                          <div class="form-check form-check-inline ">
+                              <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked onclick="MostrarRetrabajo('Entrada')">
+                              <label class="form-check-label" for="Iniciar">
+                                Entrada
+                              </label>
+                          </div>
+                          <div class="form-check form-check-inline ">
+                              <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar" onclick="MostrarRetrabajo('Salida')">
+                              <label class="form-check-label" for="Finalizar">
+                                Salida
+                              </label>
+                          </div>
+                  </div>-->
+                  <hr>
+                  <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
+                      <div class="col-8" id="CodigoDiv">
+                          <div class="">
+                              <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
+                              <!--<a href=""><i class="fa fa-toggle-on"></i></a>-->
+                              <div class="input-group">
+                                  <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro','Entrada')" id="CodigoEscanerEntrada" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
+                                  <div class="invalid-feedback" id="error_CodigoEscaner"></div>
+                              </div>
+                              <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-4" id="CantidadDiv" style="display: none">
+                          <div class="form-group">
+                              <label for="Cantidad">Cantidad</label>
+                              <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
+                              <div class="invalid-feedback" id="error_Cantidad"></div>
+                          </div>
+                      </div>
+                      <div class="col-6 mt-2" id="RetrabajoDiv" style="display: none">
+                          <div class="form-check">
+                              <input class="form-check-input" id="Retrabajo" type="checkbox" />
+                              <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
+                          </div>
+                      </div>
+                      <div class="col-6 mt-2" id="IniciarBtn" style="display: none">
+                          <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i> Iniciar</button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+        </div>
+        <div class="col-6">
+                <div class="card shadow-sm">
                 <div class="card-body row" id="filtro">
-                    <label for="CodigoEscaner" class="col-form-label col-sm-12 pt-0">Proceso <span class="text-muted"></span></label>
-                    <div class="col-8">
+                    <h3 for="CodigoEscaner" class=" col-sm-12 pt-0 text-danger">Salida</h3>
+                    <!--<div class="col-8">
                             <div class="form-check form-check-inline ">
                                 <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked onclick="MostrarRetrabajo('Entrada')">
                                 <label class="form-check-label" for="Iniciar">
-                                  Entrada
+                                    Entrada
                                 </label>
                             </div>
                             <div class="form-check form-check-inline ">
                                 <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar" onclick="MostrarRetrabajo('Salida')">
                                 <label class="form-check-label" for="Finalizar">
-                                  Salida
+                                    Salida
                                 </label>
                             </div>
-                    </div>
+                    </div>-->
                     <hr>
                     <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
                         <div class="col-8" id="CodigoDiv">
@@ -44,7 +96,7 @@
                                 <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
                                 <!--<a href=""><i class="fa fa-toggle-on"></i></a>-->
                                 <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro')" id="CodigoEscaner" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
+                                    <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro','Salida')" id="CodigoEscanerSalida" aria-describedby="CodigoEscanerSalida" placeholder="Escánea o ingresa manualmente.">
                                     <div class="invalid-feedback" id="error_CodigoEscaner"></div>
                                 </div>
                                 <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
@@ -75,14 +127,13 @@
             <div class="card" id="DivCointainerTableSuministro">
             </div>
         </div>
-        </div>
     </div>
     <div  id="ContainerToastGuardado"></div>
 @endsection
 @section('scripts')
 <script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
-    function ListaCodigo(Codigo,Contenedor){
+    function ListaCodigo(Codigo,Contenedor,TipoEntrada){
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
         if (CadenaVacia(Codigo)) {
             return 0;
@@ -91,15 +142,19 @@
         if(Codigo.length<6){
             return 0;
         }
-        InicioInput=document.getElementById('Iniciar');
-        if(InicioInput.checked){
+        //InicioInput=document.getElementById('Iniciar');
+        if(TipoEntrada=="Entrada"){
             Inicio=1;
             Finalizar=0;
         }
-        FinalizarInput=document.getElementById('Finalizar');
-        if(FinalizarInput.checked){
+        //FinalizarInput=document.getElementById('Finalizar');
+        if(TipoEntrada=="Salida"){
             Inicio=0;
             Finalizar=1;
+        }
+        regexCodigo = /^\d+-\d+-\d+$/;
+        if(!regexCodigo.test(Codigo)) {
+            return 0;
         }
         $.ajax({
             url: "{{route('PreparadoBuscar')}}", 
@@ -251,6 +306,8 @@
                             $('#ToastGuardado').fadeOut();
                         }, 2000);
                 }
+                $('#CodigoEscanerSalida').val('');
+                $('#CodigoEscanerEntrada').val('');
             },
             error: function(xhr, status, error) {
                 $('#CantidadDiv').hide();
@@ -258,7 +315,6 @@
             }
         }); 
     }
-  
     function TraerDatos(id,OF){
         $('#CodigoEscaner').val(OF+"-"+id);
         $('#CodigoEscanerSuministro').html('');
@@ -304,6 +360,8 @@
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
                     }, 2500);
+                    $('#CodigoEscanerSalida').val('');
+                    $('#CodigoEscanerEntrada').val('');
                 }
             }
         });

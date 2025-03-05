@@ -5,59 +5,43 @@
 @section('styles')
     <!-- Meta CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <!-- Estilos específicos para los botones de cambio de estado -->
     <style>
-    
-        /* Estilo para los íconos de los botones */
-    .btn.toggle-status i {
-        font-size: 1.5rem; /* Tamaño del ícono */
-    }
-    .badge-info {
-        background-color: #17a2b8 !important; /* Color de fondo info */
-        color: white !important; /* Color del texto */
-    }
-   
-
-
-        /* Estilos para los botones toggle */
-    .btn.toggle-status {
-        border: none; /* Sin borde */
-        background-color: transparent; /* Fondo transparente */
-        padding: 10px;
-        cursor: pointer;
-        transform: scale(2);
-        transition: transform 0.3s ease; /* Para la animación de escala */
-    }
-
-    /* Estilo cuando el estado está activo (verde) */
-    .btn.toggle-status.active {
-        color: #28a745; /* Verde para activo */
-    }
-
-    /* Estilo cuando el estado está inactivo (rojo) */
-    .btn.toggle-status.inactive {
-        color: #dc3545; /* Rojo para inactivo */
-    }
-
-    /* Hover sobre los botones */
-    .btn.toggle-status:hover {
-        transform: scale(2.2); /* Aumenta el tamaño al pasar el cursor */
-    }
-    #roles .form-check {
-    display: flex;
-    align-items: center;
-    margin-right: 1rem; /* Espaciado entre roles */
-    margin-bottom: 0.5rem; /* Espaciado vertical para nuevas filas */
-}
-.search-box-icon {
-    top: 50%;
-    transform: translateY(-50%);
-    color: #888; /* Color del icono */
-    pointer-events: none; /* Evita que el icono sea clickeable */
-}
-
-
+        .btn.toggle-status i {
+            font-size: 1.5rem;
+        }
+        .badge-info {
+            background-color: #17a2b8 !important;
+            color: white !important;
+        }
+        .btn.toggle-status {
+            border: none;
+            background-color: transparent;
+            padding: 10px;
+            cursor: pointer;
+            transform: scale(2);
+            transition: transform 0.3s ease; 
+        }
+        .btn.toggle-status.active {
+            color: #28a745; /* Verde para activo */
+        }
+        .btn.toggle-status.inactive {
+            color: #dc3545; /* Rojo para inactivo */
+        }
+        .btn.toggle-status:hover {
+            transform: scale(2.2); /* Aumenta el tamaño al pasar el cursor */
+        }
+        #roles .form-check {
+            display: flex;
+            align-items: center;
+            margin-right: 1rem; /* Espaciado entre roles */
+            margin-bottom: 0.5rem; /* Espaciado vertical para nuevas filas */
+        }
+        .search-box-icon {
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888; /* Color del icono */
+            pointer-events: none; /* Evita que el icono sea clickeable */
+        }
     </style>
 @endsection
 
@@ -100,59 +84,51 @@
             </form>
             
         </div>
-        <div class="table-responsive">
-            <div class="card shadow-sm">
+        <div class=" table-responsive">
                 <table class="table table-striped table-sm fs--1 mb-0">
                     <thead class="bg-primary text-white">
                         <tr>
-                            <th class="sort border-top" data-sort="nombre">Nombre</th>
-                            <th class="sort border-top ps-3" data-sort="apellido">Apellido</th>
-                            <th class="sort border-top" data-sort="email">Correo</th>
-                            <th class="sort border-top" data-sort="password">Contraseña</th>
-                            <th class="sort border-top" data-sort="roles">Role</th>
-                            <th class="sort border-top" data-sort="estatus">Desactivo/Activo</th>
-                            <th class="sort border-top text-center  pe-0">Accion</th>
+                            <th class="sort border-top ps-3" data-sort="nombre">Nombre</th>
+                            <th class="sort border-top ps-3" data-sort="apellido">Apellido (s)</th>
+                            <th class="sort border-top ps-3" data-sort="email">Correo</th>
+                            <th class="sort border-top ps-3" data-sort="password">Contraseña</th>
+                            <th class="sort border-top ps-3" data-sort="roles">Role</th>
+                            <th class="sort border-top ps-3" data-sort="estatus">Desactivo/Activo</th>
+                            <th class="sort border-top text-center  ps-3">Accion</th>
                         </tr>
                     </thead>
                     <tbody class="list">
                         @foreach ($personal as $registro)
                         <tr>
-                            <td class="align-middle nombre">{{ $registro->name }}</td>
-                            <td class="align-middle ps-3 apellido">{{ $registro->apellido }}</td>
-                           <td class="align-middle email">
+                            <td class="align-middle nombre ps-3">{{ $registro->name }}</td>
+                            <td class="align-middle apellido ps-3">{{ $registro->apellido }}</td>
+                           <td class="align-middle email ps-3">
                                 {{ Str::mask($registro->email, '*', 0, strpos($registro->email, '@') - 2) }}
                             </td>
-                            <td class="align-middle contraseña">
+                            <td class="align-middle contraseña ps-3">
                                 @if (Str::startsWith($registro->password, ['$2y$', '$2b$', '$2a$']) && strlen($registro->password) === 60)
                                     ********
                                 @else
                                     {{ $registro->password }}
                                 @endif
                             </td>
-                            <td class="align-middle roles">
+                            <td class="align-middle roles ps-3">
                                 @foreach ($registro->roles as $role)
                                     <span class="badge badge-info">{{ $role->name }}</span>
                                 @endforeach
                             </td>
-                            <td class="align-middle estatus text-center">
-                                <button class="btn toggle-status d-flex justify-content-center {{ $registro->active ? 'active' : 'inactive' }}" 
-                                    data-id="{{ $registro->id }}" 
-                                    data-active="{{ $registro->active ? '1' : '0' }}">
-                                    <i class="fa {{ $registro->active ? 'fa-toggle-on' : 'fa-toggle-off' }}" aria-hidden="true"></i>
-                                </button>
+                            <td class="align-center estatus ps-8">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input toggle-status" style="transform:scale(1.5);" onclick="DesactivarUsuario(this);" type="checkbox" id="ActivarUsuario{{ $registro->id }}" onclick="ActivarUsuario(this)" data-id="{{ $registro->id }}" data-active="{{ $registro->active ? '1' : '0' }}" {{ $registro->active ? 'checked' : '' }}>
+                                </div>
                             </td>
-                            
-                          
                             <td class=" text-center pe-0">
-                                    <button type="button" class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#userModal" data-id="{{ $registro->id }}"><i class="fas fa-edit"></i> Editar</button>
-                               
+                                    <button type="button" class="btn btn-outline-warning btn-sm" onclick="EditarUsuario(this);" data-bs-toggle="modal" data-bs-target="#userModal" data-id="{{ $registro->id }}"><i class="fas fa-edit"></i> Editar</button>
                             </td>
-                           
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
-            </div>
         </div>
         <div class="d-flex justify-content-between mt-3">
             <span class="d-none d-sm-inline-block" data-list-info="data-list-info">1 a 5 artículos de 43</span>
@@ -186,14 +162,14 @@
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="apellido">Apellido</label>
-                                <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Ingrese su apellido" required>
+                                <label for="name">Nombre</label>
+                                <input type="text" name="name" id="name" class="form-control" placeholder="Ingrese su nombre" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="name">Nombre</label>
-                                <input type="text" name="name" id="name" class="form-control" placeholder="Ingrese su nombre" required>
+                                <label for="apellido">Apellido (s)</label>
+                                <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Ingrese su apellido" required>
                             </div>
                         </div>
                     </div>
@@ -236,15 +212,16 @@
         </div>
     </div>
 </div>
-
+@endsection
 @section('scripts')
 <script>
   $(document).ready(function() {
     // Cargar datos del modal
-    $('button[data-bs-toggle="modal"]').on('click', function() {
+    /*$('button[data-bs-toggle="modal"]').on('click', function() {
+        alert();
+        return 0;
         var userId = $(this).data('id');  
         var url = "{{ route('registro.show', ['id' => '__userId__']) }}".replace('__userId__', userId);
-        
         $.ajax({
             url: url,
             method: 'GET',
@@ -270,7 +247,7 @@
                     var isChecked = roles.includes({{ $role->id }}) ? 'checked' : '';
                     rolesContainer.append(
                         '<div class="form-check">' +
-                            '<input type="checkbox" class="form-check-input" id="role-{{ $role->id }}" name="roles[]" value="{{ $role->id }}" ' + isChecked + '>' +
+                            '<input type="radio" class="form-check-input" id="role-{{ $role->id }}" name="roles[]" value="{{ $role->id }}" ' + isChecked + '>' +
                             '<label class="form-check-label" for="role-{{ $role->id }}">{{ $role->name }}</label>' +
                         '</div>'
                     );
@@ -280,39 +257,35 @@
                 $('#userModal').modal('show');
             }
         });
-    });
+    });*/
 
-    // Manejar el envío del formulario a través de AJAX
-    $(document).on('submit', '#userEditForm', function(event) {
-        event.preventDefault();  // Prevenir el envío tradicional del formulario
-
-        var form = $(this);
-        var formData = form.serialize();  // Serializar los datos del formulario
-
-        $.ajax({
-            url: form.attr('action'),  // Usa la acción actualizada del formulario
-            method: 'POST',  // Siempre usa POST en AJAX
-            data: formData + '&_method=PUT',  // Simula el PUT pasando el campo _method
-            success: function(response) {
-                console.log(response);
-                if (response.success) {
-                    Swal.fire('Éxito', response.message, 'success').then(() => {
-                        $('#userModal').modal('hide');
-                        location.reload();  // Recarga la página para reflejar los cambios
-                    });
-                } else {
-                    Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
+        // Manejar el envío del formulario a través de AJAX
+        $(document).on('submit', '#userEditForm', function(event) {
+            event.preventDefault();
+            var form = $(this);
+            var formData = form.serialize();
+            $.ajax({
+                url: form.attr('action'),
+                method: 'POST', 
+                data: formData + '&_method=PUT', 
+                success: function(response) {
+                    console.log(response);
+                    if (response.success) {
+                        Swal.fire('Éxito', response.message, 'success').then(() => {
+                            $('#userModal').modal('hide');
+                            location.reload(); 
+                        });
+                    } else {
+                        Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Error', 'Hubo un problema en el servidor.', 'error');
                 }
-            },
-            error: function() {
-                Swal.fire('Error', 'Hubo un problema en el servidor.', 'error');
-            }
+            });
         });
-    });
-
-    // Cambio de estado de usuario (activar/desactivar)
-    
-        $('.toggle-status').on('click', function () {
+        // Cambio de estado de usuario (activar/desactivar)
+        /*$('.toggle-status').on('click', function () {
             var button = $(this); 
             var userId = button.data('id'); 
             var isActive = button.data('active') == '1'; 
@@ -342,61 +315,35 @@
                     alert('Hubo un error al cambiar el estado.');
                 }
             });
-        });
-
+        });*/
     });
-</script>
-@endsection
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <script>
-/*
-$(document).ready(function() {
-    // Cargar datos del modal
-    $('button[data-bs-toggle="modal"]').on('click', function() {
-        var userId = $(this).data('id');  
+    function EditarUsuario(registro){
+        var userId = $(registro).data('id');  
         var url = "{{ route('registro.show', ['id' => '__userId__']) }}".replace('__userId__', userId);
-        
+        $('#apellido').val('');
+        $('#email').val('');  
+        $('#name').val('');
+        $('#password').val('');
+        $('#password_confirmation').val('');
         $.ajax({
             url: url,
             method: 'GET',
             success: function(response) {
-                console.log(response);  // Verifica la respuesta en la consola
+                console.log(response);
                 $('#apellido').val(response.apellido);
                 $('#email').val(response.email);  
                 $('#name').val(response.name);
-                $('#password').val('');  // Reseteamos el campo de contraseña
-                $('#password_confirmation').val('');  // Reseteamos el campo de confirmación de contraseña
-                
-                // Actualiza la acción del formulario
+                $('#password').val('');
+                $('#password_confirmation').val('');
                 $('#userEditForm').attr('action', '{{ route('registro.update', '__userId__') }}'.replace('__userId__', userId));
-
-
-                // Agregar los roles
                 var roles = response.roles;
                 var rolesContainer = $('#roles');
-                rolesContainer.empty();  // Limpiar cualquier rol previamente cargado
-
+                rolesContainer.empty();
                 @foreach ($roles as $role)
                     var isChecked = roles.includes({{ $role->id }}) ? 'checked' : '';
                     rolesContainer.append(
                         '<div class="form-check">' +
-                            '<input type="checkbox" class="form-check-input" id="role-{{ $role->id }}" name="roles[]" value="{{ $role->id }}" ' + isChecked + '>' +
+                            '<input type="radio" class="form-check-input" id="role-{{ $role->id }}" name="roles[]" value="{{ $role->id }}" ' + isChecked + '>' +
                             '<label class="form-check-label" for="role-{{ $role->id }}">{{ $role->name }}</label>' +
                         '</div>'
                     );
@@ -406,67 +353,27 @@ $(document).ready(function() {
                 $('#userModal').modal('show');
             }
         });
-    });
-
-    // Manejar el envío del formulario a través de AJAX
-    $(document).on('submit', '#userEditForm', function(event) {
-        event.preventDefault();  // Prevenir el envío tradicional del formulario
-
-        var form = $(this);
-        var formData = form.serialize();
-
-        $.ajax({
-            url: "{{ route('registro.update', ['id' => $registro->id]) }}",
-            method: 'PUT',  // Método de actualización
-            data: formData,
-            success: function(response) {
-    console.log(response); // Verifica la respuesta completa del servidor
-    if (response.success) {
-        Swal.fire('Éxito', response.message, 'success').then(() => {
-            $('#userModal').modal('hide');
-            location.reload();
-        });
-    } else {
-        Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
     }
-}
-
+    function DesactivarUsuario(registro){
+        var button = $(registro); 
+        var userId = button.data('id'); 
+        var isActive = button.data('active') == '1'; 
+        var url = isActive ? "{{ route('users.desactivar') }}" : "{{ route('users.activar') }}";
+        var newState = isActive ? 0 : 1;
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: {
+                user_id: userId,
+                _token: $('meta[name="csrf-token"]').attr('content'),
+            },
+            success: function (response) {
+            },
+            error: function () {
+                button.prop('checked', false);
+                alert('Hubo un error al cambiar el estado.');
+            }
         });
-    });
-
-
-
-        // Cambio de estado
-        $('.toggle-status').on('click', function () {
-            var button = $(this); 
-            var userId = button.data('id'); 
-            var isActive = button.data('active') == '1'; 
-            var url = isActive ? '/users/desactivar' : '/users/activar';
-            var newState = isActive ? 0 : 1;
-
-            $.ajax({
-                url: url,
-                method: 'POST',
-                data: {
-                    user_id: userId,
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                },
-                success: function (response) {
-                    button.data('active', newState);
-                    if (newState) {
-                        button.removeClass('inactive').addClass('active');
-                        button.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
-                    } else {
-                        button.removeClass('active').addClass('inactive');
-                        button.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
-                    }
-                },
-                error: function () {
-                    alert('Hubo un error al cambiar el estado.');
-                }
-            });
-        });
-    });*/
-    
-    </script>
+    }
+</script>
 @endsection

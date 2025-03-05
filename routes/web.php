@@ -19,8 +19,6 @@ use Illuminate\Routing\Route as RoutingRoute;
 
 
 Route::post('/operador_login', [loginController::class, 'operador'])->name('operador.login');
-
-
 // Ruta para mostrar el formulario de login
 Route::get('/login', [loginController::class, 'login_view'])->name('login');
 Route::post('/login', [loginController::class, 'login'])->name('login_post');
@@ -222,7 +220,8 @@ Route::get('/indicadores-cesemana',[HomeControler::class,'graficasemana'])->name
 
 
 
-Route::get('/Dasboard/indicador/dia',[HomeControler::class, 'Dasboardindicadordia'])->name('dashboard.indicador')->middleware('auth');
+Route::get('/dashboard/indicadorDIA',[HomeControler::class, 'Dasboardindicadordia'])->name('dashboard.indicador')->middleware('auth');
+
 Route::post('/guardar-dashboard', [HomeControler::class, 'guardarDasboard'])->name('guardar.Dasboard')->middleware('auth');
 
 

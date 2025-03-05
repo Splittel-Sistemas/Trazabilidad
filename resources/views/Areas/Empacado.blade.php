@@ -5,13 +5,32 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
 
 <style>
-    /* Positioning the toast in the top-right corner */
     #ToastGuardado {
-        position: fixed; /* Fixed position */
-        top: 5rem; /* Distance from the top */
-        right: 20px; /* Distance from the right */
-        z-index: 1050; /* Ensure it's above other content */
+        position: fixed; 
+        top: 5rem;
+        right: 20px; 
+        z-index: 1050; 
     }
+    #ContainerTableEmpaque {
+        width: 100%;
+        display: block;
+        height: 6rem;
+        overflow-y: scroll;
+    }
+    #ContainerTableEmpaque::-webkit-scrollbar {
+        width: 3px; 
+    }
+    #ContainerTableEmpaque::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+    }
+    #ContainerTableEmpaque::-webkit-scrollbar-thumb {
+        background-color: #888; 
+        border-radius: 10px; 
+    }
+    #ContainerTableEmpaque::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+    }
+
 </style>
 @endsection
 @section('content')
@@ -73,11 +92,11 @@
                 </div>
             </div>
         </div>
-        <div id="ContentTabla" class="col-6 mt-2" style="display: none">
+        <div id="ContentTabla" class="col-6" style="display: none">
             <div class="card" id="DivCointainerTableSuministro">
             </div>
         </div>
-        <div class="col-12">
+        <div class="col-12" id="ContainerEmpacadoTable" style="display: none">
             <div style="height: 30px;"></div>
             <div class="card">
                 <div class="card-body">
@@ -91,7 +110,6 @@
                                     <th  class="text-center">Cantidad Registrada</th>
                                     <th  class="text-center">Fecha Entrega</th>
                                     <th  class="text-center">Acción</th>
-
                                 </tr>
                             </thead>
                             <tbody id="EmpacadoTableBody"></tbody>
@@ -100,13 +118,11 @@
                 </div>
             </div>
         </div>
-        </div>
     </div>
     <div  id="ContainerToastGuardado"></div>
 @endsection
 @section('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-
 <script>
     var puedeFinalizar = @json(Auth::user()->hasPermission("Finalizar Trazabilidad"));
 </script>
@@ -149,6 +165,12 @@
                 $('#CantidadDiv').hide();
                 $('#IniciarBtn').hide();
                 $('#RetrabajoDiv').hide();
+                setTimeout(function() {
+                            console.log("Recargando la tabla...");
+                            cargarTablaEmpacado();  
+                        }, 500);  
+                
+
                 document.getElementById('Retrabajo').checked = false;
                 if(response.status=="success"){
                     $('#DivCointainerTableSuministro').html(response.tabla);
@@ -199,6 +221,8 @@
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> guardado correctamente!';
                                     Color='bg-success';
                                     break;
+                                   
+                                    
                                 case 2:
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> Ya Registrado!';
                                     Color='bg-warning';
@@ -226,7 +250,7 @@
                                     //$('#CantidadPartidasOF').html('');
                                     break;
                                 case 7:
-                                    Mensaje='Codigo <strong>'+Codigo+'</strong> elimino!';
+                                    Mensaje='Codigo <strong>'+Codigo+'</strong> ultima partida!';
                                     Color='bg-danger';
                                     $('#ContentTabla').hide();
                                     $('#CantidadPartidasOF').html('');
@@ -287,7 +311,6 @@
                             $('#ToastGuardado').fadeOut();
                         }, 2000);
                 }
-                //cargarTablaEmpacado();
             },
             error: function(xhr, status, error) {
                 $('#CantidadDiv').hide();
@@ -299,6 +322,7 @@
     function TraerDatos(id,OF){
         $('#CodigoEscaner').val(OF+"-"+id);
         $('#CodigoEscanerSuministro').html('');
+        cargarTablaEmpacado();
     }
     function Retrabajo(Codigo){
         $.ajax({
@@ -335,7 +359,7 @@
                         $('#ToastGuardado').fadeOut();
                     }, 2500);
                 }
-                //cargarTablaEmpacado();
+               
             }
         });
     }
@@ -361,6 +385,7 @@
         });
     }*/
     $(document).ready(function() {
+        cargarTablaEmpacado();
         $('#Cantidad').on('input', function() {
             RegexNumeros(document.getElementById('Cantidad'));
         });
@@ -517,7 +542,9 @@
                     }, 2000);
                 }
                 
+                cargarTablaEmpacado();
                 ListaCodigo(CodigoEscaner,'CodigoEscanerSuministro')
+              
             },
             error: function(xhr, status, error) {
                 $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
@@ -541,153 +568,181 @@
         }
     }
 </script>
-
-
 <script>
 
-$(document).ready(function () {
-    cargarTablaEmpacado();
+        /*setInterval(cargarTablaEmpacado, 10000);*/
 
-    setInterval(cargarTablaEmpacado, 30000);
+        function cargarTablaEmpacado() {
+            $.ajax({
+                url: '{{ route("tabla.principal") }}',
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
 
-    function cargarTablaEmpacado() {
-        $.ajax({
-            url: '{{ route("tabla.principal") }}',
-            type: "GET",
-            dataType: "json",
-            success: function (data) {
-                let tabla = $('#EmpacadoTable');
+                    let tabla = $('#EmpacadoTable');
 
-                if ($.fn.DataTable.isDataTable(tabla)) {
-                    tabla.DataTable().destroy();
-                }
+                    if ($.fn.DataTable.isDataTable(tabla)) {
+                        tabla.DataTable().destroy();
+                    }
 
-                let tbody = $("#EmpacadoTableBody");
-                tbody.empty();
+                    let tbody = $("#EmpacadoTableBody");
+                    tbody.empty();
 
-                data.forEach((item) => {
-                    let cantidad = item.Areas_id == 9 ? item.Cantidad : "0";
+                    data.forEach((item) => {
+                        // Usamos la cantidad sumada correctamente desde la consulta SQL
+                        let cantidad = item.Areas_id == 9 ? item.CantidadTotalArea : "0";
 
-                    let botonFinalizar = (puedeFinalizar) 
-                        ? `<button class="btn btn-sm btn-danger finalizar-btn" data-id="${item.OrdenFabricacion}">Finalizar</button>`
-                        : '';
+                        let botonFinalizar = (puedeFinalizar) 
+                            ? `<button class="btn btn-sm btn-danger finalizar-btn p-1" data-id="${item.OrdenFabricacion}">Finalizar</button>`
+                            : '';
 
-                    let fila = `
-                        <tr>
-                            <td class="text-center">${item.OrdenVenta}</td>
-                            <td class="text-center">${item.OrdenFabricacion}</td>
-                            <td class="text-center">${item.CantidadTotal}</td>
-                            <td class="text-center">${cantidad}</td>
-                            <td class="text-center">${item.FechaEntrega}</td>
-                            <td class="text-center">${botonFinalizar}</td>
-                        </tr>
-                    `;
-                    tbody.append(fila);
-                });
-
-                DataTable('EmpacadoTable', true);
-
-
-                $(".finalizar-btn").off("click").on("click", function () {
-                    let id = $(this).data("id");
-
-                    console.log("ID de la orden a finalizar:", id);
-
-                    $.ajax({
-                        url: '{{ route("finProceso.empacado") }}',
-                        type: "GET",
-                        data: {
-                            id: id,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function (response) {
-                            alert(response.message); 
-                            location.reload(); 
-                        },
-                        error: function (xhr) {
-                            alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
-                        }
+                        let fila = `
+                            <tr>
+                                <td class="text-center">${item.OrdenVenta}</td>
+                                <td class="text-center">${item.OrdenFabricacion}</td>
+                                <td class="text-center">${item.CantidadTotal}</td>
+                                <td class="text-center">${cantidad}</td>
+                                <td class="text-center">${item.FechaEntrega}</td>
+                                <td class="text-center">${botonFinalizar}</td>
+                            </tr>
+                        `;
+                        tbody.append(fila);
                     });
-                });
-            },
-            error: function () {
-                console.log("Error al cargar los datos de la tabla.");
-            },
-        });
-    }
+                    DataTable('EmpacadoTable', true);
+                    $('#ContainerEmpacadoTable').fadeIn();
+                    $(".finalizar-btn").off("click").on("click", function () {
+                        let id = $(this).data("id");
 
+                        console.log("ID de la orden a finalizar:", id);
 
+                        confirmacionesss(
+                            "¿Estás seguro de que deseas finalizar esta orden?", 
+                            "", 
+                            "Confirmar", 
+                            function () {
+                                $.ajax({
+                                    url: '{{ route("finProceso.empacado") }}',
+                                    type: "GET",
+                                    data: {
+                                        id: id,
+                                        _token: '{{ csrf_token() }}'
+                                    },
+                                    success: function (response) {
+                                        console.log("Respuesta del servidor:", response);
+                                        
+                                        // Si la respuesta tiene el mensaje esperado
+                                        if (response && response.message) {
+                                            alert(response.message);
+                                        }
 
+                                        // Intentar cargar la tabla de nuevo
+                                        setTimeout(function() {
+                                            console.log("Recargando la tabla...");
+                                            cargarTablaEmpacado();  // Verifica que esta función esté actualizando correctamente el DOM
+                                        }, 500);
+                                    },
+                                    error: function (xhr) {
+                                        console.error("Error:", xhr);
+                                        alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
+                                    }
+                                });
 
+                            }
+                        );
+                    });
 
+                },
+                error: function () {
+                    console.log("Error al cargar los datos de la tabla.");
+                },
+            });
 
-    function DataTable(tabla, busqueda) {
-        $('#' + tabla).DataTable({
-            "pageLength": 10,
-            "lengthChange": false,
-            "paging": true,
-            "searching": busqueda,
-            "ordering": true,
-            "info": true,
-            "language": {
-                "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
-                "search": "Buscar",
-                
-            },
-            "initComplete": function(settings, json) {
-                $('#' + tabla).css('font-size', '0.7rem');
-            }
-        });
-    }
-});
-
-
-
-
-
+        }
+        function DataTable(tabla, busqueda) {
+            $('#' + tabla).DataTable({
+                "pageLength": 10,
+                "lengthChange": false,
+                "paging": true,
+                "searching": busqueda,
+                "ordering": true,
+                "info": true,
+                "language": {
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
+                    "search": "Buscar",
+                    
+                },
+                "initComplete": function(settings, json) {
+                    $('#' + tabla).css('font-size', '0.7rem');
+                }
+            });
+        }
+    
 </script>
 <script>
-function CancelarPartida(id) {
-    $.ajax({
-        url: '{{ route("regresar.proceso") }}',
-        method: 'POST',
-        data: {
-            id: id,
-            _token: '{{ csrf_token() }}'  
-        },
-        success: function(response) {
-            if (response.status == "success") {
-                toastr.success(response.message, 'Éxito');
-                
-                $('#registro-' + id).remove(); 
-                ListaCodigo();
-            } else if (response.status == "error") {
-                toastr.error(response.message, 'Error');
-            } else if (response.status == "errorCantidada") {
-                toastr.error(response.message, 'Cantidad no disponible');
+    function confirmacionesss(titulo, mensaje, confirmButtonText, funcion) {
+        return Swal.fire({
+            title: titulo,
+            text: mensaje,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            cancelButtonText: "Cancelar",
+            confirmButtonText: confirmButtonText,
+        }).then((result) => {
+            console.log("Resultado de confirmación: ", result); // Verifica el resultado
+            if (result.isConfirmed) {
+                console.log("Usuario ha confirmado");
+                funcion();  // Ejecuta la función pasada como argumento
+                return true;
+            } else {
+                console.log("Usuario ha cancelado");
+                return false;
             }
-            ListaCodigo();
-        },
-        error: function(xhr, status, error) {
-            toastr.error('Hubo un error al cancelar la partida.', 'Error');
+        });
+    }
+    async function CancelarPartida(id) {
+    const confirmacionRespuesta = await confirmacionesss(
+        "¿Estás seguro de que deseas cancelar esta partida?", 
+        "", 
+        "Confirmar", 
+        function() {
+            $.ajax({
+                url: '{{ route("regresar.proceso") }}',
+                method: 'POST',
+                data: {
+                    id: id,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    console.log("Respuesta del servidor:", response); 
+
+                    if (response.status == "success") {
+                        toastr.success(response.message, 'Éxito');
+                        $('#registro-' + id).remove();  
+                        ListaCodigo(response);  
+
+
+                        setTimeout(function() {
+                            console.log("Recargando la tabla...");
+                            cargarTablaEmpacado();  
+                        }, 500);  
+                    } else {
+                        toastr.error(response.message, 'Error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    toastr.error('Hubo un error al cancelar la partida.', 'Error');
+                }
+            });
         }
-    });
+    );
+    if (!confirmacionRespuesta) {
+        toastr.info('La acción fue cancelada', 'Información');
+    }
 }
 
 
 
-
-   
 </script>
-
 @endsection
-
-
-
-
-
-
-
-
-
-

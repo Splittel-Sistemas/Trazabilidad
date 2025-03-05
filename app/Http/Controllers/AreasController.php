@@ -512,7 +512,7 @@ class AreasController extends Controller
     //Area 4 Preparado
     public function Preparado(){
         $Area=$this->funcionesGenerales->encrypt(4);
-        return $this->TablaOrdenesActivasEstacion(4);
+        //return $this->TablaOrdenesActivasEstacion(4);
         return view('Areas.Preparado',compact('Area'));
     }
     public function PreparadoBuscar(Request $request){
@@ -1329,8 +1329,7 @@ class AreasController extends Controller
         return view('Areas.Visualizacion',compact('Area'));
     }
     //Area 9 Empaquetado
-    public function Empaquetado()
-    {
+    public function Empaquetado(){
           $Area=$this->funcionesGenerales->encrypt(9);
           return view('Areas.Empacado',compact('Area')); 
     }
@@ -1340,24 +1339,32 @@ class AreasController extends Controller
             ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
             ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
             ->join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
-            ->whereIn('partidasof_areas.Areas_id', [8, 9]) // Filtrar por 8 y 9
+            ->whereIn('partidasof_areas.Areas_id', [8, 9]) 
+            ->where('ordenfabricacion.Cerrada', '!=', 0)
             ->select(
+                'ordenfabricacion.Cerrada',
                 'ordenventa.OrdenVenta',
                 'ordenfabricacion.OrdenFabricacion',
                 'ordenfabricacion.CantidadTotal',
                 'ordenfabricacion.FechaEntrega',
-                'partidasof_areas.Cantidad',
+                'partidasof_areas.Areas_id',
+                DB::raw('SUM(partidasof_areas.Cantidad) as CantidadTotalArea') 
+            )
+            ->groupBy(
+                'ordenfabricacion.Cerrada',
+                'ordenventa.OrdenVenta',
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal',
+                'ordenfabricacion.FechaEntrega',
                 'partidasof_areas.Areas_id'
             )
             ->get()
-            ->groupBy(function ($item) {
-                return $item->OrdenVenta . '-' . $item->OrdenFabricacion; 
-            })
+            ->groupBy(fn($item) => $item->OrdenVenta . '-' . $item->OrdenFabricacion)
             ->map(function ($items) {
                 $area9 = $items->firstWhere('Areas_id', 9);
-
+    
                 if ($area9) {
-                    return $area9; 
+                    return $area9;
                 } else {
                     $base = $items->first();
                     return (object) [
@@ -1365,12 +1372,13 @@ class AreasController extends Controller
                         'OrdenFabricacion' => $base->OrdenFabricacion,
                         'CantidadTotal' => $base->CantidadTotal,
                         'FechaEntrega' => $base->FechaEntrega,
-                        'Cantidad' => 0, 
+                        'CantidadTotalArea' => 0, 
+                        'Cerrada' => $base->Cerrada
                     ];
                 }
             })
-            ->values(); 
-
+            ->values();
+    
         return response()->json($areas);
     }
 
@@ -2234,7 +2242,7 @@ class AreasController extends Controller
                                             <td class=" ps-3 NumParte">' . $datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '</td>
                                             <td class="ps-3   Cantidad">' . $PartdaAr['pivot']->Cantidad . '</td>
                                            <td class="ps-3 Regresar">
-                                                <button class="btn btn-primary btn-sm " onclick="CancelarPartida('.$PartdaAr['pivot']->id.')">Cancelar</button>
+                                                <button class="btn btn-primary btn-sm m-0 p-1" onclick="CancelarPartida('.$PartdaAr['pivot']->id.')">Cancelar</button>
                                             </td>
                                         </tr>';
                                 }
@@ -2255,7 +2263,7 @@ class AreasController extends Controller
                                 </div>
                             </div>
                         </div>
-                        <div class="table-responsive scrollbar mb-3" style="max-height: 300px; overflow-y: auto;">
+                         <div id="ContainerTableEmpaque" class="table-responsive scrollbar">
                             <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
                                 <thead>
                                     <tr class="bg-light">
@@ -2358,7 +2366,7 @@ class AreasController extends Controller
         $orden->Cerrada = 0; 
         $orden->save();
     
-        return response()->json(['message' => 'Orden cerrada correctamente'], 200);
+        //return response()->json(['message' => 'Orden cerrada correctamente'], 200);
     }
 
     public function RegresarProceso(Request $request)
@@ -2388,5 +2396,7 @@ class AreasController extends Controller
     
 
     
+
+
 
 }
