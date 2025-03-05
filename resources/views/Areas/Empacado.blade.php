@@ -11,23 +11,23 @@
         right: 20px; 
         z-index: 1050; 
     }
-    #DivCointainerTableSuministro {
+    #ContainerTableEmpaque {
         width: 100%;
         display: block;
-        height: 11.5rem;
+        height: 6rem;
         overflow-y: scroll;
     }
-    #DivCointainerTableSuministro::-webkit-scrollbar {
-        width: 8px; 
+    #ContainerTableEmpaque::-webkit-scrollbar {
+        width: 3px; 
     }
-    #DivCointainerTableSuministro::-webkit-scrollbar-track {
+    #ContainerTableEmpaque::-webkit-scrollbar-track {
         background-color: #f1f1f1;
     }
-    #DivCointainerTableSuministro::-webkit-scrollbar-thumb {
+    #ContainerTableEmpaque::-webkit-scrollbar-thumb {
         background-color: #888; 
         border-radius: 10px; 
     }
-    #DivCointainerTableSuministro::-webkit-scrollbar-thumb:hover {
+    #ContainerTableEmpaque::-webkit-scrollbar-thumb:hover {
         background-color: #555;
     }
 
@@ -96,7 +96,7 @@
             <div class="card" id="DivCointainerTableSuministro">
             </div>
         </div>
-        <div class="col-12">
+        <div class="col-12" id="ContainerEmpacadoTable" style="display: none">
             <div style="height: 30px;"></div>
             <div class="card">
                 <div class="card-body">
@@ -110,7 +110,6 @@
                                     <th  class="text-center">Cantidad Registrada</th>
                                     <th  class="text-center">Fecha Entrega</th>
                                     <th  class="text-center">Acción</th>
-
                                 </tr>
                             </thead>
                             <tbody id="EmpacadoTableBody"></tbody>
@@ -118,7 +117,6 @@
                     </div>
                 </div>
             </div>
-        </div>
         </div>
     </div>
     <div  id="ContainerToastGuardado"></div>
@@ -580,6 +578,7 @@
                 type: "GET",
                 dataType: "json",
                 success: function (data) {
+
                     let tabla = $('#EmpacadoTable');
 
                     if ($.fn.DataTable.isDataTable(tabla)) {
@@ -594,7 +593,7 @@
                         let cantidad = item.Areas_id == 9 ? item.CantidadTotalArea : "0";
 
                         let botonFinalizar = (puedeFinalizar) 
-                            ? `<button class="btn btn-sm btn-danger finalizar-btn" data-id="${item.OrdenFabricacion}">Finalizar</button>`
+                            ? `<button class="btn btn-sm btn-danger finalizar-btn p-1" data-id="${item.OrdenFabricacion}">Finalizar</button>`
                             : '';
 
                         let fila = `
@@ -609,9 +608,8 @@
                         `;
                         tbody.append(fila);
                     });
-
                     DataTable('EmpacadoTable', true);
-
+                    $('#ContainerEmpacadoTable').fadeIn();
                     $(".finalizar-btn").off("click").on("click", function () {
                         let id = $(this).data("id");
 

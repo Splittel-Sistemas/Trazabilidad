@@ -2242,7 +2242,7 @@ class AreasController extends Controller
                                             <td class=" ps-3 NumParte">' . $datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '</td>
                                             <td class="ps-3   Cantidad">' . $PartdaAr['pivot']->Cantidad . '</td>
                                            <td class="ps-3 Regresar">
-                                                <button class="btn btn-primary btn-sm " onclick="CancelarPartida('.$PartdaAr['pivot']->id.')">Cancelar</button>
+                                                <button class="btn btn-primary btn-sm m-0 p-1" onclick="CancelarPartida('.$PartdaAr['pivot']->id.')">Cancelar</button>
                                             </td>
                                         </tr>';
                                 }
@@ -2263,7 +2263,7 @@ class AreasController extends Controller
                                 </div>
                             </div>
                         </div>
-                        <div class="table-responsive scrollbar mb-3" style="max-height: 300px; overflow-y: auto;">
+                         <div id="ContainerTableEmpaque" class="table-responsive scrollbar">
                             <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
                                 <thead>
                                     <tr class="bg-light">
