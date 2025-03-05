@@ -1059,116 +1059,223 @@ class HomeControler extends Controller
     }
 
     public function graficastiempo(Request $request)
-    {
-        $fechaLimite = now()->setTimezone('America/Mexico_City')->toDateString();
+    { 
+        $hoy = Carbon::now()->toDateString();
+        $Porcentaje = DB::table('porcentajeplaneacion')
+        ->whereDate('Porcentajeplaneacion.FechaPlaneacion', '=', $hoy) 
+        ->select(
+            'Porcentajeplaneacion.NumeroPersonas',
+            'Porcentajeplaneacion.CantidadPlaneada'
 
-        // Consultas a la base de datos para obtener los datos de áreas y cortes
+        )
+        ->get();
+    
+        // Obtener los datos de la base de datos
         $DiasAreas = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-            ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9]) // Excluimos el área de Cortes (ID 2)
-            ->where('partidasof_areas.FechaComienzo', '>=', $fechaLimite)  // Filtrar por fecha
+            ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9])
+            ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy) 
             ->select(
-                'ordenfabricacion.OrdenFabricacion',
+                'partidasof_areas.PartidasOF_id',
                 'partidasof_areas.Areas_id',
-                'ordenfabricacion.CantidadTotal',
                 'partidasof_areas.FechaComienzo',
                 'partidasof_areas.FechaTermina',
-                DB::raw('SUM(partidasof_areas.Cantidad) as SumaTotalcantidad_partida')
+                'partidasof_areas.Cantidad',
+                DB::raw("TIMESTAMPDIFF(SECOND, partidasof_areas.FechaComienzo, partidasof_areas.FechaTermina) as TotalSegundos")
             )
-            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof_areas.Areas_id', 'partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $horas = floor($item->TotalSegundos / 3600);
+                $minutos = floor(($item->TotalSegundos % 3600) / 60);
+                $segundos = $item->TotalSegundos % 60;
+                $item->TiempoTotal = "{$horas} horas {$minutos} minutos {$segundos} segundos";
+                return $item;
+            });
     
-        // Obtener los datos de Cortes (Área ID 2) de las últimas 24 horas
-        $DiasCortes = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->where('partidasof.FechaComienzo', '>=', $fechaLimite)  // Filtrar por fecha
-            ->select(
-                'ordenfabricacion.OrdenFabricacion',
-                'ordenfabricacion.CantidadTotal',
-                'partidasof.FechaComienzo',
-                'partidasof.FechaFinalizacion',
-                DB::raw('SUM(partidasof.Cantidad_partida) as SumaTotalcantidad_partida')
-            )
-            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
-            ->get();
-    
-        $estacionesAreas = [
-            3 => 'plemasSuministrodia',
-            4 => 'plemasPreparadodia',
-            5 => 'plemasEnsambledia',
-            6 => 'plemasPulidodia',
-            7 => 'plemasMediciondia',
-            8 => 'plemasVisualizaciondia',
-            9 => 'plemasEmpaquedia'
+        // Mapeo de las áreas
+        $areasMap = [
+            3 => 'Suministro',
+            4 => 'Preparado',
+            5 => 'Ensamble',
+            6 => 'Pulido',
+            7 => 'Medición',
+            8 => 'Visualización',
+            9 => 'Empacado'
         ];
     
-        $estacionesCortes = [
-            2 => 'plemasCortedia'
+        // Sumar el tiempo total por área
+        $totalSegundosPorArea = [
+            3 => 0, // Suministro
+            4 => 0, // Preparado
+            5 => 0, // Ensamble
+            6 => 0, // Pulido
+            7 => 0, // Medición
+            8 => 0, // Visualización
+            9 => 0  // Empacado
         ];
     
-        // Inicializar datos
-        $datos = [];
-    
-        // Llenado de datos para las estaciones
-        foreach (array_merge($estacionesAreas, $estacionesCortes) as $estacion) {
-            $datos[$estacion] = [
-                'completado' => 0,
-                'pendiente' => 0,
-                'totalOrdenes' => 0
-            ];
+        // Recorrer las áreas y acumular el tiempo por cada área
+        foreach ($DiasAreas as $item) {
+            $totalSegundosPorArea[$item->Areas_id] += $item->TotalSegundos;
         }
     
-        // Llenado de datos para áreas
-        foreach ($DiasAreas as $area) {
-            if (isset($estacionesAreas[$area->Areas_id])) {
-                $nombreEstacion = $estacionesAreas[$area->Areas_id];
-                if ((float)$area->SumaTotalcantidad_partida == (float)$area->CantidadTotal) {
-                    $datos[$nombreEstacion]['completado']++;
-                } else {
-                    $datos[$nombreEstacion]['pendiente']++;
-                }
+        // Generar los datos para el gráfico con el formato de tiempo
+        $graficoData = [];
+        foreach ($totalSegundosPorArea as $areaId => $totalSegundos) {
+            if ($totalSegundos > 0) {  // Solo mostrar áreas con tiempo registrado
+                // Convertir los segundos a horas, minutos y segundos
+                $horas = floor($totalSegundos / 3600);
+                $minutos = floor(($totalSegundos % 3600) / 60);
+                $segundos = $totalSegundos % 60;
+
+                // Formatear el tiempo
+                $tiempoFormateado = "{$horas} horas {$minutos} minutos {$segundos} segundos";
+
+                $graficoData[] = [
+                    'name' => $areasMap[$areaId],
+                    'value' => $totalSegundos,  // Usar los segundos reales para el gráfico
+                    'formatted' => $tiempoFormateado  // Pasar el tiempo formateado para mostrar en el tooltip
+                ];
             }
         }
     
-        // Llenado de datos para cortes
-        $completadosCorte = 0;
-        $pendientesCorte = 0;
+        // Calcular el tiempo total y promedio
+        $totalSegundos = array_sum($totalSegundosPorArea);
+        $horasTotal = floor($totalSegundos / 3600);
+        $minutosTotal = floor(($totalSegundos % 3600) / 60);
+        $segundosTotal = $totalSegundos % 60;
     
-        foreach ($DiasCortes as $corte) {
-            if ((float)$corte->SumaTotalcantidad_partida == (float)$corte->CantidadTotal) {
-                $completadosCorte++;
-            } else {
-                $pendientesCorte++;
-            }
-        }
+        $tiempodeareas = "{$horasTotal} horas {$minutosTotal} minutos {$segundosTotal} segundos";
+        $tiempodeareasSegundos = $totalSegundos; // Total en segundos
     
-        // Asignar los valores de cortes
-        $datos['plemasCortedia']['completado'] = $completadosCorte;
-        $datos['plemasCortedia']['pendiente'] = $pendientesCorte;
+        // Calcular el tiempo promedio por pieza
+        $tiempoprmedioPiezas = $totalSegundos > 0 ? $tiempodeareasSegundos / $DiasAreas->sum('Cantidad') : 0;
     
-        // Crear labels y series para la gráfica
-        $labels = array_keys($estacionesAreas + $estacionesCortes);
-    
-        $series = [
-            [
-                'name' => 'Completado',
-                'data' => array_map(fn($estacion) => isset($datos[$estacion]) ? $datos[$estacion]['completado'] : 0, $labels)
-            ],
-            [
-                'name' => 'Pendiente',
-                'data' => array_map(fn($estacion) => isset($datos[$estacion]) ? $datos[$estacion]['pendiente'] : 0, $labels)
-            ]
-        ];
-    
-        // Respuesta JSON con el formato requerido para la gráfica
+       
         return response()->json([
-            'labels' => $labels,
-            'series' => $series,
-            'fecha' => $fechaLimite,
-            'rangoSemana' => 'Semana 1-7',  // Ejemplo, ajusta según lo que necesites
-            'mes' => now()->format('F Y')
+            'areasMap' => $areasMap,
+            'graficoData' => $graficoData,  // Aquí ya tenemos los datos listos para el gráfico
+            'tiempodeareas' => $tiempodeareas,
+            'tiempodeareasSegundos' => $tiempodeareasSegundos,
+            'tiempoprmedioPiezas' => $tiempoprmedioPiezas,
+            'cantidadTotal' => $DiasAreas->sum('Cantidad'), 
         ]);
-    }
     
-}    
+    }
+    public function graficastiempoMuerto(Request $request)
+{
+    $hoy = Carbon::now()->toDateString();
+
+    // Obtener los datos de la base de datos
+    $diasAreas = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9])
+        ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy) 
+        ->select(
+            'partidasof_areas.PartidasOF_id',
+            'partidasof_areas.Areas_id',
+            'partidasof_areas.FechaComienzo',
+            'partidasof_areas.FechaTermina',
+            'partidasof_areas.Cantidad',
+            DB::raw("TIMESTAMPDIFF(SECOND, partidasof_areas.FechaComienzo, partidasof_areas.FechaTermina) as TotalSegundos")
+        )
+        ->get();
+
+    // Obtener el último FechaTermina para el área 3
+    $ultimoFechaTerminaArea3 = $diasAreas->where('Areas_id', 3)->sortByDesc('FechaTermina')->first()->FechaTermina ?? null;
+    
+    // Obtener el primer FechaComienzo para el área 4
+    $primerFechaComienzaArea4 = $diasAreas->where('Areas_id', 4)->sortBy('FechaComienzo')->first()->FechaComienzo ?? null;
+
+    // Calcular el "tiempo muerto"
+    $tiempoMuerto = null;
+    if ($ultimoFechaTerminaArea3 && $primerFechaComienzaArea4) {
+        // Calcular la diferencia de tiempo entre el último FechaTermina de área 3 y el primer FechaComienzo de área 4
+        $diferenciaTiempo = Carbon::parse($primerFechaComienzaArea4)->diffInSeconds(Carbon::parse($ultimoFechaTerminaArea3));
+
+        // Convertir la diferencia en horas, minutos y segundos
+        $horas = floor($diferenciaTiempo / 3600);
+        $minutos = floor(($diferenciaTiempo % 3600) / 60);
+        $segundos = $diferenciaTiempo % 60;
+
+        // Resultado para tiempo muerto
+        $tiempoMuerto = "{$horas} horas {$minutos} minutos {$segundos} segundos";
+    }
+
+    // Agrupar por Areas_id y sumar los tiempos
+    $resultadosAgrupados = $diasAreas->groupBy('Areas_id')->map(function ($items) {
+        $totalSegundos = $items->sum('TotalSegundos');
+        
+        // Convertir los segundos totales en horas, minutos y segundos
+        $horas = floor($totalSegundos / 3600);
+        $minutos = floor(($totalSegundos % 3600) / 60);
+        $segundos = $totalSegundos % 60;
+        
+        // Devolver el resultado formateado
+        return [
+            'TotalSegundos' => $totalSegundos,
+            'TiempoTotal' => "{$horas} horas {$minutos} minutos {$segundos} segundos"
+        ];
+    });
+
+    // Devolver ambos tiempos: tiempo muerto y tiempos agrupados por área
+    return [
+        'TiempoMuerto' => $tiempoMuerto ?? "No se pudo calcular el tiempo muerto",
+        'TiemposPorArea' => $resultadosAgrupados
+    ];
+}
+
+    
+    /*
+    [
+        {
+          "PartidasOF_id": 28,
+          "Areas_id": 3,
+          "FechaComienzo": "2025-03-04 12:05:43",
+          "FechaTermina": "2025-03-04 12:06:09",
+          "Cantidad": 1,
+          "TotalSegundos": 26,
+          "TiempoTotal": "0 horas 0 minutos 26 segundos"
+        },
+        {
+          "PartidasOF_id": 28,
+          "Areas_id": 3,
+          "FechaComienzo": "2025-03-04 12:05:46",
+          "FechaTermina": "2025-03-04 12:06:12",
+          "Cantidad": 1,
+          "TotalSegundos": 26,
+          "TiempoTotal": "0 horas 0 minutos 26 segundos"
+        },
+        {
+          "PartidasOF_id": 29,
+          "Areas_id": 4,
+          "FechaComienzo": "2025-03-04 13:36:13",
+          "FechaTermina": "2025-03-04 13:40:12",
+          "Cantidad": 1,
+          "TotalSegundos": 239,
+          "TiempoTotal": "0 horas 3 minutos 59 segundos"
+        },
+        {
+          "PartidasOF_id": 29,
+          "Areas_id": 4,
+          "FechaComienzo": "2025-03-04 13:40:12",
+          "FechaTermina": "2025-03-04 14:21:26",
+          "Cantidad": 1,
+          "TotalSegundos": 2474,
+          "TiempoTotal": "0 horas 41 minutos 14 segundos"
+        }
+        {
+        "PartidasOF_id": 30,
+        "Areas_id": 9,
+        "FechaComienzo": "2025-03-04 13:40:12",
+        "FechaTermina": "2025-03-04 14:21:26",
+        "Cantidad": 1,
+        "TotalSegundos": 2474,
+        "TiempoTotal": "0 horas 41 minutos 14 segundos"
+        }
+      ]*/
+}
+    
+ 

@@ -733,6 +733,39 @@
             <div id="chart-month" class="chart-container"></div>
         </div>
     </div>
+
+    <div style="height: 10px;"></div>
+    <div class="card">
+        <h1 class="progress-title">Gráfica de Tiempo por Día</h1>
+        <p id="grafica-tiempo-dia" style="font-size: 14px; color: gray;"></p>
+        
+        <div id="grafica-tiempoD" class="chart-container" style="display: flex;">
+            <!-- Contenedor del gráfico -->
+            <div id="grafico" style="width: 70%;"></div>
+            
+            <!-- Contenedor de los datos informativos -->
+            <div id="datosTiempo" style="padding-left: 20px; width: 30%; font-size: 16px;">
+                <p><strong>Tiempo Total de Áreas:</strong> <span id="tiempodeareas"></span></p>
+                <p><strong>Tiempo Promedio por Piezas:</strong> <span id="tiempoprmedioPiezas"></span></p>
+                <p><strong>Cantidad Total de Piezas:</strong> <span id="cantidadTotal"></span></p>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+    <div style="height: 10px;"></div>
+    <div class="card">
+        <h1 class="progress-title">Grafica de Tiempo por Semana</h1>
+        <p id="grafica-tiempo-semana" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
+        <div id="grafica-tiempoS" class="chart-container"></div>
+    </div>
+    <div style="height: 10px;"></div>
+    <div class="card">
+        <h1 class="progress-title">Grafica de Tiempo por Mes</h1>
+        <p id="grafica-tiempo-mes" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
+        <div id="grafica-tiempoM" class="chart-container"></div>
+    </div>
     <hr class="hr">
     </div>
 @endsection
@@ -1171,8 +1204,188 @@
         myChart.setOption(option);
     })
     .catch(error => console.error('Error al obtener los datos:', error));
+    
 
-  
+    function GraficasTiempo(url, containerId, itemName, fechaId) {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // Asignar los valores informativos en los elementos del HTML
+            const tiempodeareasContainer = document.getElementById('tiempodeareas');
+            const tiempoprmedioPiezasContainer = document.getElementById('tiempoprmedioPiezas');
+            const cantidadTotalContainer = document.getElementById('cantidadTotal');
+
+            if (tiempodeareasContainer) {
+                tiempodeareasContainer.textContent = data.tiempodeareas;  // Muestra el tiempo total de áreas
+            }
+
+            if (tiempoprmedioPiezasContainer) {
+                tiempoprmedioPiezasContainer.textContent = data.tiempoprmedioPiezas;  // Muestra el tiempo promedio por pieza
+            }
+
+            if (cantidadTotalContainer) {
+                cantidadTotalContainer.textContent = data.cantidadTotal;  // Muestra la cantidad total de piezas
+            }
+
+            const option = {
+                title: {
+                    text: 'Tiempo por Áreas',
+                    subtext: 'Datos de Producción',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function (params) {
+                        // Verificar si `params.data` tiene la propiedad `formatted` y devolverla
+                        if (params.data && params.data.formatted) {
+                            return `${params.name}: ${params.data.formatted}`;
+                        }
+                        return `${params.name}: ${params.value} segundos`;  // Fallback a los segundos si no hay `formatted`
+                    }
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left'
+                },
+                series: [
+                    {
+                        name: 'Tiempo por Área',
+                        type: 'pie',
+                        radius: '50%',
+                        data: data.graficoData.map(item => ({
+                            name: item.name,
+                            value: item.value,  // Los segundos reales
+                            formatted: item.formatted  // Asegúrate de que `formatted` esté presente
+                        })),
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ],
+                toolbox: {
+                    feature: {
+                        saveAsImage: {
+                            name: `${data.tiempodeareas || ''}${data.rangoSemana || ''}${data.mes || ''}`
+                        }
+                    }
+                }
+            };
+
+            const chart = echarts.init(document.getElementById(containerId));
+            chart.setOption(option);
+        })
+        .catch(error => {
+            console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
+        });
+}
+
+
+GraficasTiempo("{{ route('graficastiempo') }}", "grafica-tiempoD", "DIa", "grafica-tiempo-Dia");
+GraficasTiempomuerto("{{ route('graficastiempoMuerto') }}", "grafica-tiempoM", "Mes", "grafica-tiempo-mes");
+
+
+function GraficasTiempomuerto(url, containerId, itemName, fechaId) {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // Asignar los valores informativos en los elementos del HTML
+            const tiempodeareasContainer = document.getElementById('tiempodeareas');
+            const tiempoprmedioPiezasContainer = document.getElementById('tiempoprmedioPiezas');
+            const cantidadTotalContainer = document.getElementById('cantidadTotal');
+
+            if (tiempodeareasContainer) {
+                tiempodeareasContainer.textContent = data.tiempodeareas;  // Muestra el tiempo total de áreas
+            }
+
+            if (tiempoprmedioPiezasContainer) {
+                tiempoprmedioPiezasContainer.textContent = data.tiempoprmedioPiezas;  // Muestra el tiempo promedio por pieza
+            }
+
+            if (cantidadTotalContainer) {
+                cantidadTotalContainer.textContent = data.cantidadTotal;  // Muestra la cantidad total de piezas
+            }
+
+            const option = {
+                title: {
+                    text: 'Tiempo de Producción y Tiempos Muertos',
+                    subtext: 'Datos de Producción',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    },
+                    formatter: function (params) {
+                        // Formato del tooltip
+                        return `${params.name}: ${params.value} segundos`;
+                    }
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left'
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'value',
+                    name: 'Segundos'
+                },
+                yAxis: {
+                    type: 'category',
+                    data: ['Tiempos Muertos', 'Tiempos de Producción']
+                },
+                series: [
+                    {
+                        name: 'Tiempos Muertos',
+                        type: 'bar',
+                        stack: 'total',
+                        label: {
+                            show: true
+                        },
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: [data.tiemposMuertos]  // Los tiempos muertos
+                    },
+                    {
+                        name: 'Tiempos de Producción',
+                        type: 'bar',
+                        stack: 'total',
+                        label: {
+                            show: true
+                        },
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: [data.tiemposProduccion]  // Los tiempos de producción
+                    }
+                ],
+                toolbox: {
+                    feature: {
+                        saveAsImage: {
+                            name: `${data.tiempodeareas || ''}${data.rangoSemana || ''}${data.mes || ''}`
+                        }
+                    }
+                }
+            };
+
+            const chart = echarts.init(document.getElementById(containerId));
+            chart.setOption(option);
+        })
+        .catch(error => {
+            console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
+        });
+}
+
 
 
     /*
