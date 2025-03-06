@@ -547,7 +547,6 @@ class HomeControler extends Controller
             'fecha' => Carbon::now()->translatedFormat('d \d\e F \d\e\l Y') // Formato en español
         ]);
     }  
-    
     public function wizarpdia()
     {
         $fechaLimite = now()->setTimezone('America/Mexico_City'); // Cambiar la zona horaria
@@ -1025,8 +1024,6 @@ class HomeControler extends Controller
             'porcentajeCerradas' => round($porcentajeCerradas, 2), 
         ]);
     }
-
-
     public function obtenerPorcentajes(Request $request)
     {
         // Simulación de datos para la prueba (reemplaza con datos de la BD)
@@ -1057,7 +1054,6 @@ class HomeControler extends Controller
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
-
     public function graficastiempo(Request $request)
     { 
         $hoy = Carbon::now()->toDateString();
@@ -1164,118 +1160,386 @@ class HomeControler extends Controller
     
     }
     public function graficastiempoMuerto(Request $request)
-{
-    $hoy = Carbon::now()->toDateString();
+    {
+        $hoy = Carbon::now()->toDateString();
+        $areas = [
+            3 => 'Suministro',
+            4 => 'Preparadodia',
+            5 => 'Ensamble',
+            6 => 'Pulido',
+            7 => 'Medicion',
+            8 => 'Visualizacion',
+            //9 => 'Empaque'
+        ];
+        $Cortesarea = [
+            2 => 'Corte'
+        ];
+        $TotalPiezas = DB::table('ordenfabricacion')
+            ->whereDate('FechaEntrega', '=', $hoy)
+            ->sum('CantidadTotal');
 
-    // Obtener los datos de la base de datos
-    $diasAreas = DB::table('ordenfabricacion')
+        $piezasinicadas= DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->whereDate('FechaComienzo', '=', $hoy)
+            ->sum('partidasof.cantidad_partida');
+        
+        $produccioncortes = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->whereDate('partidasof.FechaComienzo', '=', $hoy)
+            ->select(
+                'partidasof.OrdenFabricacion_id',
+                'partidasof.cantidad_partida',
+                DB::raw("SUM(IFNULL(TIMESTAMPDIFF(SECOND, partidasof.FechaComienzo, partidasof.FechaFinalizacion), 0)) as tiempoProduccionActual")
+            )
+            ->groupBy('partidasof.OrdenFabricacion_id', 'partidasof.cantidad_partida')
+            ->get()
+            ->map(function ($item) use ($Cortesarea) {
+                $item->area = $Cortesarea[2]; 
+                return $item;
+            });
+
+    
+        // Obtener la producción
+        $produccion = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->whereIn('partidasof_areas.Areas_id', array_keys($areas))
+            ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy)
+            ->select(
+                'partidasof_areas.Areas_id',
+                'partidasof_areas.PartidasOf_id',
+                DB::raw("SUM(TIMESTAMPDIFF(SECOND, partidasof_areas.FechaComienzo, partidasof_areas.FechaTermina)) as tiempoProduccionActual")
+            )
+            ->groupBy('partidasof_areas.Areas_id', 'partidasof_areas.PartidasOf_id')
+            ->get();
+    
+        // Obtener las piezas procesadas
+        $piezas = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->whereIn('partidasof_areas.Areas_id', array_keys($areas))
+            ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy)
+            ->where('partidasof_areas.TipoPartida', 'N')
+            ->select(
+                'partidasof_areas.PartidasOF_id',
+                'partidasof_areas.Areas_id',
+                DB::raw('SUM(partidasof_areas.Cantidad) as TotalCantidad'),
+                DB::raw('GROUP_CONCAT(partidasof_areas.NumeroEtiqueta ORDER BY partidasof_areas.NumeroEtiqueta ASC) as NumeroEtiquetas')
+            )
+            ->groupBy('partidasof_areas.PartidasOF_id', 'partidasof_areas.Areas_id')
+            ->get();
+        $tiemposPorPieza = [];
+        foreach ($produccion as $prod) {
+            $pieza = $piezas->firstWhere('PartidasOF_id', $prod->PartidasOf_id);
+            
+            if ($pieza) {
+                $tiempoPorPieza = $prod->tiempoProduccionActual / $pieza->TotalCantidad;
+                $tiemposPorPieza[] = [
+                    'Area' => $areas[$prod->Areas_id],
+                    'TiempoPorPieza' => $tiempoPorPieza
+                ];
+            }
+        }
+        $TiemposMuertos = DB::table('ordenfabricacion')
         ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
         ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-        ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9])
-        ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy) 
+        ->whereIn('partidasof_areas.Areas_id', array_keys($areas))
+        ->where('partidasof_areas.TipoPartida', 'N')
+        ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy)
         ->select(
-            'partidasof_areas.PartidasOF_id',
+            'partidasof_areas.PartidasOf_id',
             'partidasof_areas.Areas_id',
+            'partidasof_areas.NumeroEtiqueta',
             'partidasof_areas.FechaComienzo',
-            'partidasof_areas.FechaTermina',
-            'partidasof_areas.Cantidad',
-            DB::raw("TIMESTAMPDIFF(SECOND, partidasof_areas.FechaComienzo, partidasof_areas.FechaTermina) as TotalSegundos")
+            'partidasof_areas.FechaTermina'
         )
+        ->orderBy('partidasof_areas.NumeroEtiqueta')
+        ->orderBy('partidasof_areas.Areas_id')
         ->get();
+        $result = [];
+        $previousArea = null;
+        foreach ($TiemposMuertos as $item) {
+            if ($previousArea !== null && $previousArea->NumeroEtiqueta == $item->NumeroEtiqueta) {
+                $startTime = new \Carbon\Carbon($previousArea->FechaTermina);
+                $endTime = new \Carbon\Carbon($item->FechaComienzo);
+                $timeDifference = $startTime->diffInSeconds($endTime); 
 
-    // Obtener el último FechaTermina para el área 3
-    $ultimoFechaTerminaArea3 = $diasAreas->where('Areas_id', 3)->sortByDesc('FechaTermina')->first()->FechaTermina ?? null;
+                if ($previousArea->Areas_id + 1 == $item->Areas_id) {
+                    $key = $previousArea->Areas_id . ',' . $item->Areas_id;
+                    if (isset($result[$key])) {
+                        $result[$key]['TiempoMuerto'] += $timeDifference;
+                        $etiquetas = explode(',', $result[$key]['NumeroEtiqueta']);
+                        $etiquetas = array_unique(array_merge($etiquetas, [$item->NumeroEtiqueta]));
+                        $result[$key]['NumeroEtiqueta'] = implode(',', $etiquetas);
+                    } else {
+                        $result[$key] = [
+                            'PartidasOf_id' => $previousArea->PartidasOf_id, 
+                            'Areas_id' => $previousArea->Areas_id . ',' . $item->Areas_id,
+                            'NumeroEtiqueta' => $previousArea->NumeroEtiqueta . ',' . $item->NumeroEtiqueta,
+                            'TiempoMuerto' => $timeDifference
+                        ];
+                    }
+                }
+            }
+            $previousArea = $item;
+        }
+        $finalResult = array_values($result);
+        $numeroPRO = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->whereIn('partidasof_areas.Areas_id', array_keys($areas))
+        ->where('partidasof_areas.TipoPartida', 'N')
+        ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy)
+        ->select(
+            DB::raw('GROUP_CONCAT(DISTINCT partidasof_areas.partidasOF_id ORDER BY partidasof_areas.partidasOF_id) as partidasOF_id'),
+            'partidasof_areas.Areas_id',
+            DB::raw('SUM(partidasof_areas.cantidad) as cantidad'),
+            DB::raw('GROUP_CONCAT(partidasof_areas.NumeroEtiqueta ORDER BY partidasof_areas.NumeroEtiqueta) as NumeroEtiqueta')
+        )
+        ->groupBy('partidasof_areas.Areas_id')
+        ->get();  
+        $tiemposProduccionData = [];
+        $tiemposMuertosData = [];
+
+        foreach ($numeroPRO as $item) {
+            $areaName = $areas[$item->Areas_id] ?? 'Desconocido';
+            $tiemposProduccionData[$areaName] = $item->cantidad;
+        }
+        return response()->json([
+            'produccion' => $produccion,
+            'finalResult' => $finalResult,
+            'tiemposPorPieza' => $tiemposPorPieza,
+            'TotalPiezas' => $TotalPiezas,
+            'piezasinicadas'=> $piezasinicadas,
+            'numeroPRO'=>$tiemposProduccionData
+        ]);
+        
+        /*
+      [
+  {
+      "partidasOF_id": 31,32
+      "Areas_id": 4,
+      "cantidad": "5",
+      "NumeroEtiqueta": "1,1,2,3,4"
+    },
+
+    {
+      "partidasOF_id": 31,
+      "Areas_id": 6,
+      "cantidad": "4",
+      "NumeroEtiqueta": "1,2,3,4"
+    },
+$TiemposMuertos = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->whereIn('partidasof_areas.Areas_id', array_keys($areas))
+        ->where('partidasof_areas.TipoPartida', 'N')
+        ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy)
+        ->select(
+            'partidasof_areas.PartidasOf_id',
+            'partidasof_areas.Areas_id',
+            'partidasof_areas.NumeroEtiqueta',
+            'partidasof_areas.FechaComienzo',
+            'partidasof_areas.FechaTermina'
+        )
+        ->orderBy('partidasof_areas.NumeroEtiqueta')
+        ->orderBy('partidasof_areas.Areas_id')
+        ->get();
+        $result = [];
+        $previousArea = null;
+        foreach ($TiemposMuertos as $item) {
+            if ($previousArea !== null && $previousArea->NumeroEtiqueta == $item->NumeroEtiqueta) {
+                $startTime = new \Carbon\Carbon($previousArea->FechaTermina);
+                $endTime = new \Carbon\Carbon($item->FechaComienzo);
+                $timeDifference = $startTime->diffInSeconds($endTime); 
+        
+                if ($previousArea->Areas_id + 1 == $item->Areas_id) {
+                    $key = $previousArea->Areas_id . ',' . $item->Areas_id;
+        
+                    if (isset($result[$key])) {
+                        $result[$key]['TiempoMuerto'] += $timeDifference;
+                        $etiquetas = explode(',', $result[$key]['NumeroEtiqueta']);
+                        $etiquetas = array_unique(array_merge($etiquetas, [$item->NumeroEtiqueta]));
+                        $result[$key]['NumeroEtiqueta'] = implode(',', $etiquetas);
+                    } else {
+                        $result[$key] = [
+                            'PartidasOf_id' => $previousArea->PartidasOf_id, 
+                            'Areas_id' => $previousArea->Areas_id . ',' . $item->Areas_id,
+                            'NumeroEtiqueta' => $previousArea->NumeroEtiqueta . ',' . $item->NumeroEtiqueta,
+                            'TiempoMuerto' => $timeDifference
+                        ];
+                    }
+                }
+            }
+            $previousArea = $item;
+        }
+        $finalResult = array_values($result);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+        $primerYUltimo = [];
+        foreach ($areas as $areaId => $areaNombre) {
+            $primerArea = $diasAreas->where('Areas_id', $areaId)->sortBy('NumeroEtiqueta')->first();
+            $ultimoArea = $diasAreas->where('Areas_id', $areaId)->sortByDesc('NumeroEtiqueta')->first();
+            $tiempoProduccion = 0;
+            if ($primerArea && $ultimoArea) {
+                $fechaComienzoPrimer = Carbon::parse($primerArea->FechaComienzo);
+                $fechaTerminaUltimo = Carbon::parse($ultimoArea->FechaTermina);
+                $tiempoProduccion = $fechaComienzoPrimer->diffInSeconds($fechaTerminaUltimo);  
+            }
     
-    // Obtener el primer FechaComienzo para el área 4
-    $primerFechaComienzaArea4 = $diasAreas->where('Areas_id', 4)->sortBy('FechaComienzo')->first()->FechaComienzo ?? null;
+            $primerYUltimo[$areaNombre] = [
+                'primer' => $primerArea,
+                'ultimo' => $ultimoArea,
+                'tiempoProduccion' => $tiempoProduccion  
+            ];
+        }
+        $tiemposMuertosPorTransicion = [];
+        $tiemposProduccionPorTransicion = [];
+        $tiemposPorPieza = [];
+        $areaKeys = array_keys($areas);
+        for ($i = 0; $i < count($areaKeys) - 1; $i++) {
+            $areaActual = $areaKeys[$i];
+            $areaSiguiente = $areaKeys[$i + 1];
+    
+            $tiempoMuertoArea = 0;
+            $tiempoProduccionAreaActual = 0;
+            $tiempoProduccionAreaSiguiente = 0;
+    
+            if ($primerYUltimo[$areas[$areaActual]]['ultimo'] && $primerYUltimo[$areas[$areaSiguiente]]['primer']) {
+                $fechaUltimaAreaActual = Carbon::parse($primerYUltimo[$areas[$areaActual]]['ultimo']->FechaTermina);
+                $fechaPrimeraAreaSiguiente = Carbon::parse($primerYUltimo[$areas[$areaSiguiente]]['primer']->FechaComienzo);
+                Log::info("Última fecha de {$areas[$areaActual]}: " . $fechaUltimaAreaActual);
+                Log::info("Primera fecha de {$areas[$areaSiguiente]}: " . $fechaPrimeraAreaSiguiente);
+                $diferenciaTiempo = $fechaUltimaAreaActual->diffInSeconds($fechaPrimeraAreaSiguiente, false);
+                Log::info("Diferencia de tiempo entre {$areas[$areaActual]} y {$areas[$areaSiguiente]}: " . $diferenciaTiempo);
+                $tiempoMuertoArea = max(0, $diferenciaTiempo);
+            }
+            if ($primerYUltimo[$areas[$areaActual]]['primer'] && $primerYUltimo[$areas[$areaActual]]['ultimo']) {
+                $fechaComienzoPrimerAreaActual = Carbon::parse($primerYUltimo[$areas[$areaActual]]['primer']->FechaComienzo);
+                $fechaTerminaUltimaAreaActual = Carbon::parse($primerYUltimo[$areas[$areaActual]]['ultimo']->FechaTermina);
+                $tiempoProduccionAreaActual = $fechaComienzoPrimerAreaActual->diffInSeconds($fechaTerminaUltimaAreaActual);
+            }
+            if ($primerYUltimo[$areas[$areaSiguiente]]['primer'] && $primerYUltimo[$areas[$areaSiguiente]]['ultimo']) {
+                $fechaComienzoPrimerAreaSiguiente = Carbon::parse($primerYUltimo[$areas[$areaSiguiente]]['primer']->FechaComienzo);
+                $fechaTerminaUltimaAreaSiguiente = Carbon::parse($primerYUltimo[$areas[$areaSiguiente]]['ultimo']->FechaTermina);
+                $tiempoProduccionAreaSiguiente = $fechaComienzoPrimerAreaSiguiente->diffInSeconds($fechaTerminaUltimaAreaSiguiente);
+            }
+            $produccionAreaActual = $diasAreas->where('Areas_id', $areaActual)->sum('TotalSegundos');
+            $produccionAreaSiguiente = $diasAreas->where('Areas_id', $areaSiguiente)->sum('TotalSegundos');
+            $cantidadAreaActual = $diasAreas->where('Areas_id', $areaActual)->sum('Cantidad');
+            $cantidadAreaSiguiente = $diasAreas->where('Areas_id', $areaSiguiente)->sum('Cantidad');
+            
+            $tiempoPorPiezaActual = $cantidadAreaActual > 0 ? $tiempoProduccionAreaActual / $cantidadAreaActual : 0;
+            $tiempoPorPiezaSiguiente = $cantidadAreaSiguiente > 0 ? $produccionAreaSiguiente / $cantidadAreaSiguiente : 0;
+            $tiemposPorPieza["{$areas[$areaActual]}"] = [
+                'tiempoPorPiezaActual' => $tiempoPorPiezaActual,
+                'tiempoPorPiezaSiguiente' => $tiempoPorPiezaSiguiente
+            ];
+    
+            $tiemposMuertosPorTransicion["{$areas[$areaActual]}-{$areas[$areaSiguiente]}"] = $tiempoMuertoArea;
+            $tiemposProduccionPorTransicion["{$areas[$areaActual]}-{$areas[$areaSiguiente]}"] = [
+                'produccionActual' => $produccionAreaActual,
+                'produccionSiguiente' => $produccionAreaSiguiente,
+                'tiempoProduccionActual' => $tiempoProduccionAreaActual,
+                'tiempoProduccionSiguiente' => $tiempoProduccionAreaSiguiente
+            ];
+            Log::info("Producción en {$areas[$areaActual]}: " . $produccionAreaActual);
+            Log::info("Producción en {$areas[$areaSiguiente]}: " . $produccionAreaSiguiente);
+            Log::info("Tiempo de producción en {$areas[$areaActual]}: " . $tiempoProduccionAreaActual);
+            Log::info("Tiempo de producción en {$areas[$areaSiguiente]}: " . $tiempoProduccionAreaSiguiente);
+        }
+        return response()->json([
+            'tiemposMuertosPorTransicion' => $tiemposMuertosPorTransicion,
+            'tiemposProduccionPorTransicion' => $tiemposProduccionPorTransicion,
+            'tiemposPorPieza' => $tiemposPorPieza,
+            'TotalPiezas' => $TotalPiezas
+        ]);
 
-    // Calcular el "tiempo muerto"
-    $tiempoMuerto = null;
-    if ($ultimoFechaTerminaArea3 && $primerFechaComienzaArea4) {
-        // Calcular la diferencia de tiempo entre el último FechaTermina de área 3 y el primer FechaComienzo de área 4
-        $diferenciaTiempo = Carbon::parse($primerFechaComienzaArea4)->diffInSeconds(Carbon::parse($ultimoFechaTerminaArea3));
 
-        // Convertir la diferencia en horas, minutos y segundos
-        $horas = floor($diferenciaTiempo / 3600);
-        $minutos = floor(($diferenciaTiempo % 3600) / 60);
-        $segundos = $diferenciaTiempo % 60;
 
-        // Resultado para tiempo muerto
-        $tiempoMuerto = "{$horas} horas {$minutos} minutos {$segundos} segundos";
-    }
 
-    // Agrupar por Areas_id y sumar los tiempos
-    $resultadosAgrupados = $diasAreas->groupBy('Areas_id')->map(function ($items) {
-        $totalSegundos = $items->sum('TotalSegundos');
-        
-        // Convertir los segundos totales en horas, minutos y segundos
-        $horas = floor($totalSegundos / 3600);
-        $minutos = floor(($totalSegundos % 3600) / 60);
-        $segundos = $totalSegundos % 60;
-        
-        // Devolver el resultado formateado
-        return [
-            'TotalSegundos' => $totalSegundos,
-            'TiempoTotal' => "{$horas} horas {$minutos} minutos {$segundos} segundos"
+
+
+        $hoy = Carbon::now()->toDateString();
+        $areas = [
+            4 => 'Preparadodia',
+            5 => 'Ensambledia',
+            6 => 'Pulidodia',
+            7 => 'Mediciondia',
+            8 => 'Visualizaciondia',
+            9 => 'Empaquedia'
         ];
-    });
+        
+        $TotalPiezas = DB::table('ordenfabricacion')
+            ->whereDate('FechaEntrega', '=', $hoy)
+            ->sum('CantidadTotal');
+    
+        $diasAreas = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->whereIn('partidasof_areas.Areas_id', array_keys($areas))  
+            ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy)
+            ->select(
+                'partidasof_areas.NumeroEtiqueta',
+                'partidasof_areas.PartidasOF_id',
+                'partidasof_areas.Areas_id',
+                'partidasof_areas.FechaComienzo',
+                'partidasof_areas.FechaTermina',
+                DB::raw("TIMESTAMPDIFF(SECOND, partidasof_areas.FechaComienzo, partidasof_areas.FechaTermina) as TotalSegundos")
+            )
+            ->get();
+    
+        $primerYUltimo = [];
+        foreach ($areas as $areaId => $areaNombre) {
+            $primerArea = $diasAreas->where('Areas_id', $areaId)->sortBy('NumeroEtiqueta')->first();
+            $ultimoArea = $diasAreas->where('Areas_id', $areaId)->sortByDesc('NumeroEtiqueta')->first();
+            
+            // Calcular la diferencia entre FechaComienzo y FechaTermina
+            $tiempoProduccion = 0;
+            if ($primerArea && $ultimoArea) {
+                $fechaComienzoPrimer = Carbon::parse($primerArea->FechaComienzo);
+                $fechaTerminaUltimo = Carbon::parse($ultimoArea->FechaTermina);
+                $tiempoProduccion = $fechaComienzoPrimer->diffInSeconds($fechaTerminaUltimo);
+            }
+    
+            $primerYUltimo[$areaNombre] = [
+                'primer' => $primerArea,
+                'ultimo' => $ultimoArea,
+                'tiempoProduccion' => $tiempoProduccion  // Tiempo total de producción en segundos
+            ];
+        }
+    
+        return response()->json($primerYUltimo);
 
-    // Devolver ambos tiempos: tiempo muerto y tiempos agrupados por área
-    return [
-        'TiempoMuerto' => $tiempoMuerto ?? "No se pudo calcular el tiempo muerto",
-        'TiemposPorArea' => $resultadosAgrupados
-    ];
+
+    */
+
 }
 
-    
-    /*
-    [
-        {
-          "PartidasOF_id": 28,
-          "Areas_id": 3,
-          "FechaComienzo": "2025-03-04 12:05:43",
-          "FechaTermina": "2025-03-04 12:06:09",
-          "Cantidad": 1,
-          "TotalSegundos": 26,
-          "TiempoTotal": "0 horas 0 minutos 26 segundos"
-        },
-        {
-          "PartidasOF_id": 28,
-          "Areas_id": 3,
-          "FechaComienzo": "2025-03-04 12:05:46",
-          "FechaTermina": "2025-03-04 12:06:12",
-          "Cantidad": 1,
-          "TotalSegundos": 26,
-          "TiempoTotal": "0 horas 0 minutos 26 segundos"
-        },
-        {
-          "PartidasOF_id": 29,
-          "Areas_id": 4,
-          "FechaComienzo": "2025-03-04 13:36:13",
-          "FechaTermina": "2025-03-04 13:40:12",
-          "Cantidad": 1,
-          "TotalSegundos": 239,
-          "TiempoTotal": "0 horas 3 minutos 59 segundos"
-        },
-        {
-          "PartidasOF_id": 29,
-          "Areas_id": 4,
-          "FechaComienzo": "2025-03-04 13:40:12",
-          "FechaTermina": "2025-03-04 14:21:26",
-          "Cantidad": 1,
-          "TotalSegundos": 2474,
-          "TiempoTotal": "0 horas 41 minutos 14 segundos"
-        }
-        {
-        "PartidasOF_id": 30,
-        "Areas_id": 9,
-        "FechaComienzo": "2025-03-04 13:40:12",
-        "FechaTermina": "2025-03-04 14:21:26",
-        "Cantidad": 1,
-        "TotalSegundos": 2474,
-        "TiempoTotal": "0 horas 41 minutos 14 segundos"
-        }
-      ]*/
+
+
 }
     
  

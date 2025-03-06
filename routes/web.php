@@ -251,6 +251,9 @@ Route::get('/tiempos muertos',[HomeControler::class, 'graficastiempoMuerto'])->n
 
 
 
+
+
+
 //registro 
 //Route::view('/registro', "usuarios.registro")->name('register')->middleware('auth');
 
