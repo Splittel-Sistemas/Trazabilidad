@@ -67,7 +67,7 @@
                               <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
                               <div class="input-group">
                                   <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro','Salida')" id="CodigoEscanerSalida" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
-                                  <div class="invalid-feedback" id="error_CodigoEscaner"></div>
+                                  <div class="invalid-feedback" id="error_CodigoEscanerSalida"></div>
                               </div>
                               <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
                               </div>
@@ -77,16 +77,10 @@
                           <div class="form-group">
                               <label for="Cantidad">Cantidad</label>
                               <input type="text" class="form-control form-control-sm" id="CantidadSalida" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
-                              <div class="invalid-feedback" id="error_Cantidad"></div>
+                              <div class="invalid-feedback" id="error_CantidadSalida"></div>
                           </div>
                       </div>
-                      <div class="col-6 mt-2" id="RetrabajoDivSalida" style="display: none">
-                          <div class="form-check">
-                              <input class="form-check-input" id="RetrabajoSalida" type="checkbox" />
-                              <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
-                          </div>
-                      </div>
-                      <div class="col-6 mt-2" id="IniciarBtnSalida" style="display: none">
+                      <div class="col-12 mt-2" id="IniciarBtnSalida" style="display: none">
                           <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanearSalida"><i class="fa fa-play"></i> Cerrar</button>
                       </div>
                   </form>
@@ -164,7 +158,6 @@
                         $('#RetrabajoDiv').fadeOut();
                         $('#CantidadDivSalida').fadeOut();
                         $('#IniciarBtnSalida').fadeOut();
-                        $('#RetrabajoDivSalida').fadeOut();
                         if(response.EscanerExiste==0){
                             Mensaje='Codigo '+Codigo+' El codigo que intentas ingresar No existe!';
                             Color='bg-danger';
@@ -189,7 +182,6 @@
                                 $('#ContentTabla').show();
                                 $('#CantidadDivSalida').fadeIn();
                                 $('#IniciarBtnSalida').fadeIn();
-                                $('#RetrabajoDivSalida').fadeIn();
                             return 0;
                         }
                     }else{
@@ -296,7 +288,6 @@
             }
         }); 
     }
-   
     function TraerDatos(id,OF){
         $('#CodigoEscaner').val(OF+"-"+id);
         $('#CodigoEscanerSuministro').html('');
@@ -374,8 +365,11 @@
         $('#Cantidad').on('input', function() {
             RegexNumeros(document.getElementById('Cantidad'));
         });
-        $('#CodigoEscaner').on('input', function() {
-            RegexNumerosGuiones(document.getElementById('CodigoEscaner'));
+        $('#CodigoEscanerEntrada').on('input', function() {
+            RegexNumerosGuiones(document.getElementById('CodigoEscanerEntrada'));
+        });
+        $('#CodigoEscanerSalida').on('input', function() {
+            RegexNumerosGuiones(document.getElementById('CodigoEscanerSalida'));
         });
         $('#btnEscanear').click(function() {
             CodigoEscaner=$('#CodigoEscanerEntrada').val();
@@ -401,6 +395,12 @@
                 TipoNoEscaner('Entrada');
             }
         });
+        $('#btnEscanearSalida').click(function() {
+            CodigoEscaner=$('#CodigoEscanerSalida').val();
+            Cantidad=$('#CantidadSalida').val();
+            TipoNoEscaner('Salida');
+        });
+
     })
     function TipoNoEscaner(TipoEntrada) {
         CodigoEscaner=$('#CodigoEscanerEntrada').val();
@@ -409,36 +409,65 @@
         if (TipoEntrada=="Entrada") {
             Inicio = 1;
             Fin = 0;
+            // Validación Solo números para Cantidad y mayor a 0
+            if (Cantidad <= 0) {
+                $('#Cantidad').addClass('is-invalid');
+                $('#error_Cantidad').html('Campo cantidad no puede ser 0');
+                return 0;
+            } else {
+                if ($('#Cantidad').hasClass('is-invalid')) { $('#Cantidad').removeClass('is-invalid'); }
+                $('#error_Cantidad').html('');
+            }
+            if (!/^\d+$/.test(Cantidad)) {
+                $('#Cantidad').addClass('is-invalid');
+                $('#error_Cantidad').html('Solo se aceptan N&uacute;meros');
+                return 0;
+            } else {
+                if ($('#Cantidad').hasClass('is-invalid')) { $('#Cantidad').removeClass('is-invalid'); }
+                $('#error_Cantidad').html('');
+            }
+            // Validación Solo Números y -
+            if (!/^[-\d]+$/.test(CodigoEscaner)) {
+                $('#CodigoEscanerEntrada').addClass('is-invalid');
+                $('#error_CodigoEscaner').html('Solo se aceptan N&uacute;meros y -');
+                return 0;
+            } else {
+                if ($('#CodigoEscanerEntrada').hasClass('is-invalid')) { $('#CodigoEscanerEntrada').removeClass('is-invalid'); }
+                $('#error_CodigoEscaner').html('');
+            }
         }
         if (TipoEntrada=="Salida") {
             Inicio = 0;
             Fin = 1;
-        }
-        // Validación Solo números para Cantidad y mayor a 0
-        if (Cantidad <= 0) {
-            $('#Cantidad').addClass('is-invalid');
-            $('#error_Cantidad').html('Campo cantidad no puede ser 0');
-            return 0;
-        } else {
-            if ($('#Cantidad').hasClass('is-invalid')) { $('#Cantidad').removeClass('is-invalid'); }
-            $('#error_Cantidad').html('');
-        }
-        if (!/^\d+$/.test(Cantidad)) {
-            $('#Cantidad').addClass('is-invalid');
-            $('#error_Cantidad').html('Solo se aceptan N&uacute;meros');
-            return 0;
-        } else {
-            if ($('#Cantidad').hasClass('is-invalid')) { $('#Cantidad').removeClass('is-invalid'); }
-            $('#error_Cantidad').html('');
-        }
-        // Validación Solo Números y -
-        if (!/^[-\d]+$/.test(CodigoEscaner)) {
-            $('#CodigoEscanerEntrada').addClass('is-invalid');
-            $('#error_CodigoEscaner').html('Solo se aceptan N&uacute;meros y -');
-            return 0;
-        } else {
-            if ($('#CodigoEscanerEntrada').hasClass('is-invalid')) { $('#CodigoEscanerEntrada').removeClass('is-invalid'); }
-            $('#error_CodigoEscaner').html('');
+            CodigoEscaner=$('#CodigoEscanerSalida').val();
+            Cantidad=$('#CantidadSalida').val();
+            Retrabajo="false";
+            // Validación Solo números para Cantidad y mayor a 0
+            if (Cantidad <= 0) {
+                $('#CantidadSalida').addClass('is-invalid');
+                $('#error_CantidadSalida').html('Campo cantidad no puede ser 0');
+                return 0;
+            } else {
+                if ($('#CantidadSalida').hasClass('is-invalid')) { $('#CantidadSalida').removeClass('is-invalid'); }
+                $('#error_CantidadSalida').html('');
+            }
+            if (!/^\d+$/.test(Cantidad)) {
+                $('#CantidadSalida').addClass('is-invalid');
+                $('#error_CantidadSalida').html('Solo se aceptan N&uacute;meros');
+                return 0;
+            } else {
+                if ($('#CantidadSalida').hasClass('is-invalid')) { $('#CantidadSalida').removeClass('is-invalid'); }
+                $('#error_CantidadSalida').html('');
+            }
+            // Validación Solo Números y -
+            if (!/^[-\d]+$/.test(CodigoEscaner)) {
+                $('#CodigoEscanerSalida').addClass('is-invalid');
+                $('#error_CodigoEscanerSalida').html('Solo se aceptan N&uacute;meros y -');
+                return 0;
+            } else {
+                if ($('#CodigoEscanerSalida').hasClass('is-invalid')) { $('#CodigoEscanerSalida').removeClass('is-invalid'); }
+                $('#error_CodigoEscanerSalida').html('');
+            }
         }
         // Realizar la petición AJAX
         $.ajax({
@@ -493,7 +522,7 @@
                     }, 2000);
                 }else if(response.status=='SurplusFin'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
-                    $('#ToastGuardadoBody').html('Error no guardado, la cantidad de salidas supera los Entradas!');
+                    $('#ToastGuardadoBody').html('Error no guardado, la cantidad de salidas supera el total de la cantidad las partidas registradas!');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
