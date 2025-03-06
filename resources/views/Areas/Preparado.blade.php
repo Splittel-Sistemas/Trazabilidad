@@ -139,8 +139,8 @@
                 $('#CantidadDiv').hide();
                 $('#IniciarBtn').hide();
                 $('#RetrabajoDiv').hide();
-                $('#CantidadDivSalida').fadeIn();
-                $('#IniciarBtnSalida').fadeIn();
+                $('#CantidadDivSalida').hide();
+                $('#IniciarBtnSalida').hide();
                 document.getElementById('Retrabajo').checked = false;
                 if(response.status=="success"){
                     $('#DivCointainerTableSuministro').html(response.tabla);
@@ -287,8 +287,8 @@
             error: function(xhr, status, error) {
                 $('#CantidadDiv').hide();
                 $('#IniciarBtn').hide();
-                $('#CantidadDivSalida').fadeIn();
-                $('#IniciarBtnSalida').fadeIn();
+                $('#CantidadDivSalida').hide();
+                $('#IniciarBtnSalida').hide();
             }
         }); 
     }
