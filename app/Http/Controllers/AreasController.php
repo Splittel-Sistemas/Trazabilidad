@@ -39,7 +39,7 @@ class AreasController extends Controller
             $ordenFabri=$orden->ordenFabricacion;
             $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
             $orden['OrdenFabricacion']=$ordenFabri->OrdenFabricacion;
-            $orden['TotalPartida']=$ordenFabri->PartidasOF->SUM('cantidad_partida');
+            $orden['TotalPartida']=$ordenFabri->PartidasOF->SUM('cantidad_partida')-$ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida');
             $Normal=0;
             $Retrabajo=0;
             $ordenFabri->PartidasOF;
@@ -144,12 +144,12 @@ class AreasController extends Controller
             $PartidasOF->OrdenFabricacion->first()->id;
             $emisionregistro=new Emision();
             $emisionregistro->NumEmision=$emision;
-            $emisionregistro->OrdenFabricacion_id=$PartidasOF->OrdenFabricacion->first()->id;
+            $emisionregistro->OrdenFabricacion_id=$id;//$PartidasOF->OrdenFabricacion->first()->id;
             $emisionregistro->Etapaid=$idPartidaOFArea['pivot']->id;
             $emisionregistro->EtapaEmision='S';
             $emisionregistro->save();
         }else{
-            $emisionRegistro->OrdenFabricacion_id=$PartidasOF->OrdenFabricacion->first()->id;
+            $emisionRegistro->OrdenFabricacion_id=$id;//$PartidasOF->OrdenFabricacion->first()->id;
             $emisionRegistro->Etapaid=$idPartidaOFArea['pivot']->id;
             $emisionRegistro->EtapaEmision='S';
             $emisionRegistro->save();
@@ -175,7 +175,7 @@ class AreasController extends Controller
             $tabla="";
             foreach($PartidasOF as $orden) {
                 $ordenFabri=$orden->ordenFabricacion;
-                $TotalPartida=$ordenFabri->PartidasOF->SUM('cantidad_partida');
+                $TotalPartida=($ordenFabri->PartidasOF->SUM('cantidad_partida'))-($ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida'));
                 $tabla.='<tr>
                         <td>'. $ordenFabri->OrdenFabricacion .'</td>
                         <td>'. $ordenFabri->Articulo .'</td>
@@ -467,7 +467,7 @@ class AreasController extends Controller
         $PartidaOF=PartidasOF::where('id',$PartidaOF_Areas->PartidasOF_id)->first();
         $OrdenFabricacion=$PartidaOF->OrdenFabricacion;
 
-        $CantidadTotal=$OrdenFabricacion->PartidasOF->SUM('cantidad_partida');
+        $CantidadTotal=$OrdenFabricacion->PartidasOF->SUM('cantidad_partida')-$OrdenFabricacion->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida');
         $PartidasOF_AreasN=0;
         $PartidasOF_Areas=0;
         foreach($OrdenFabricacion->PartidasOF as $partida){
@@ -533,7 +533,7 @@ class AreasController extends Controller
         $CantidadCompletada=0;
         $EscanerExiste=0;
         //Valida si el codigo es aceptado tiene que ser mayor a 2
-        if($CodigoTam==3 && !($CodigoPartes[2]=="" || $CodigoPartes[2]==0)){
+        if(($CodigoTam==3 && !($CodigoPartes[2]=="" || $CodigoPartes[2]==0)) || $CodigoTam==2){
             $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
             if($datos=="" OR $datos==null){
                 return response()->json([
@@ -549,7 +549,7 @@ class AreasController extends Controller
                 $CantidadTotal=$datos->CantidadTotal;
                 //Variable  guarda el valor de Escaner para saber si es no 0=No escaner 1=escaner
                 $Escaner=$datos->Escaner;
-                if($CodigoTam==3){
+                if($CodigoTam==3 || $CodigoTam==2){
                     //Comprobamos que la etiqueta si coincida con su numero de parte
                     if($Escaner==1){
                         $CodigoValido=$this->ComprobarNumEtiqueta($CodigoPartes,$Area);
@@ -826,7 +826,7 @@ class AreasController extends Controller
         $ContarPartidas=0;
         $CodigoPartes = explode("-", $Codigo);
         //Valida que el codigo este completo
-        if(count($CodigoPartes)!=3){
+        if(count($CodigoPartes)<2){
             return response()->json([
                 'Inicio'=>$Inicio,
                 'Fin'=>$Fin,
@@ -860,7 +860,20 @@ class AreasController extends Controller
                 'OF' => $CodigoPartes[0],       
             ]);
         }
-        $contarpasoanterior=$partidasOF->Areas()->where('Areas_id',$Area-1)->whereNotNull('FechaTermina')->get();
+        if($Inicio==1){
+            if($Area==4){
+                $numeroTotalPartida = $partidasOF->cantidad_partida;
+                return$NumeroPartidasActual = $partidasOF->Areas()->where('Areas_id',$Area)->get()->SUM('Cantidad');
+                //Validar que ya exista la cantidad previa
+
+                //Valida 
+            }else{
+            }
+        }else if($Fin==1){
+
+        }
+        return $Area;
+        return$contarpasoanterior=$partidasOF->Areas()->where('Areas_id',$Area-1)->whereNotNull('FechaTermina')->get();
         $contarActuales=$partidasOF->Areas()->where('Areas_id',$Area)->whereNotNull('FechaTermina')->get();
         $CantidadTotalEstimada=$Cantidad+($contarActuales->SUM('pivot.Cantidad'));
         $CanidadtAA=$contarpasoanterior->SUM('pivot.Cantidad');

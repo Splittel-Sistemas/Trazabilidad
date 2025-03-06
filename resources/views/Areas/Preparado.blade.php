@@ -23,20 +23,6 @@
               <div class="card shadow-sm">
                 <div class="card-body row" id="filtroEntrada">
                     <h3 for="CodigoEscaner" class=" col-sm-12 pt-0 text-success">Entrada</h3>
-                    <!--<div class="col-8">
-                            <div class="form-check form-check-inline ">
-                                <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked onclick="MostrarRetrabajo('Entrada')">
-                                <label class="form-check-label" for="Iniciar">
-                                  Entrada
-                                </label>
-                            </div>
-                            <div class="form-check form-check-inline ">
-                                <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar" onclick="MostrarRetrabajo('Salida')">
-                                <label class="form-check-label" for="Finalizar">
-                                  Salida
-                                </label>
-                            </div>
-                    </div>-->
                     <hr>
                     <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
                         <div class="col-8" id="CodigoDiv">
@@ -74,20 +60,6 @@
             <div class="card shadow-sm">
               <div class="card-body row" id="filtroSalida">
                   <h3 for="CodigoEscaner" class=" col-sm-12 pt-0 text-danger">Salida</h3>
-                  <!---<div class="col-8">
-                          <div class="form-check form-check-inline ">
-                              <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked onclick="MostrarRetrabajo('Entrada')">
-                              <label class="form-check-label" for="Iniciar">
-                                Entrada
-                              </label>
-                          </div>
-                          <div class="form-check form-check-inline ">
-                              <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar" onclick="MostrarRetrabajo('Salida')">
-                              <label class="form-check-label" for="Finalizar">
-                                Salida
-                              </label>
-                          </div>
-                  </div>-->
                   <hr>
                   <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
                       <div class="col-8" id="CodigoDiv">
@@ -101,21 +73,21 @@
                               </div>
                           </div>
                       </div>
-                      <div class="col-4" id="CantidadDiv" style="display: none">
+                      <div class="col-4" id="CantidadDivSalida" style="display: none">
                           <div class="form-group">
                               <label for="Cantidad">Cantidad</label>
-                              <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
+                              <input type="text" class="form-control form-control-sm" id="CantidadSalida" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
                               <div class="invalid-feedback" id="error_Cantidad"></div>
                           </div>
                       </div>
-                      <div class="col-6 mt-2" id="RetrabajoDiv" style="display: none">
+                      <div class="col-6 mt-2" id="RetrabajoDivSalida" style="display: none">
                           <div class="form-check">
-                              <input class="form-check-input" id="Retrabajo" type="checkbox" />
+                              <input class="form-check-input" id="RetrabajoSalida" type="checkbox" />
                               <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
                           </div>
                       </div>
-                      <div class="col-6 mt-2" id="IniciarBtn" style="display: none">
-                          <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i> Iniciar</button>
+                      <div class="col-6 mt-2" id="IniciarBtnSalida" style="display: none">
+                          <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanearSalida"><i class="fa fa-play"></i> Cerrar</button>
                       </div>
                   </form>
               </div>
@@ -151,7 +123,8 @@
             Finalizar=1;
         }
         regexCodigo = /^\d+-\d+-\d+$/;
-        if(!regexCodigo.test(Codigo)) {
+        regexCodigoOF = /^\d+-\d+$/;
+        if(!(regexCodigo.test(Codigo) || regexCodigoOF.test(Codigo))) {
             return 0;
         }
         $.ajax({
@@ -189,6 +162,9 @@
                         $('#CantidadDiv').fadeOut();
                         $('#IniciarBtn').fadeOut();
                         $('#RetrabajoDiv').fadeOut();
+                        $('#CantidadDivSalida').fadeOut();
+                        $('#IniciarBtnSalida').fadeOut();
+                        $('#RetrabajoDivSalida').fadeOut();
                         if(response.EscanerExiste==0){
                             Mensaje='Codigo '+Codigo+' El codigo que intentas ingresar No existe!';
                             Color='bg-danger';
@@ -199,17 +175,21 @@
                                 $('#ToastGuardado').fadeOut();
                             }, 2000);
                         }else{
-                            $('#ContentTabla').show();
-                            $('#CantidadDiv').fadeIn();
-                            $('#IniciarBtn').fadeIn();
-                            $('#RetrabajoDiv').fadeIn();
                             if(Inicio==1){
                                 const Retrabajo = document.getElementById('Retrabajo');
                                 Retrabajo.disabled = false;
                             }else{
                                 const Retrabajo = document.getElementById('Retrabajo');
-                            Retrabajo.disabled = true;
+                                Retrabajo.disabled = true;
                             }
+                                $('#ContentTabla').show();
+                                $('#CantidadDiv').fadeIn();
+                                $('#IniciarBtn').fadeIn();
+                                $('#RetrabajoDiv').fadeIn();
+                                $('#ContentTabla').show();
+                                $('#CantidadDivSalida').fadeIn();
+                                $('#IniciarBtnSalida').fadeIn();
+                                $('#RetrabajoDivSalida').fadeIn();
                             return 0;
                         }
                     }else{
@@ -282,6 +262,9 @@
                         $('#ToastGuardadoBody').html(Mensaje);
                         $('#CantidadDiv').fadeOut();
                         $('#IniciarBtn').fadeOut();
+                        $('#CantidadDivSalida').fadeIn();
+                        $('#IniciarBtnSalida').fadeIn();
+                        
                     }
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
@@ -395,11 +378,10 @@
             RegexNumerosGuiones(document.getElementById('CodigoEscaner'));
         });
         $('#btnEscanear').click(function() {
-            CodigoEscaner=$('#CodigoEscaner').val();
+            CodigoEscaner=$('#CodigoEscanerEntrada').val();
             Cantidad=$('#Cantidad').val();
             Retrabajo=document.getElementById('Retrabajo').checked;
-            InicioInput = document.getElementById('Iniciar');
-            if(Retrabajo && InicioInput.checked){
+            if(Retrabajo){
                 Swal.fire({
                     title: 'Retrabajo',
                     text: `¿Desea enviar ${Cantidad} piezas con código ${CodigoEscaner} a Retrabajo?`,
@@ -410,31 +392,28 @@
                 }).then((result) => {
                     // Verificar si el usuario presionó "Confirmar"
                     if (result.isConfirmed) {
-                        TipoNoEscaner();
+                        TipoNoEscaner('Entrada');
                     } else {
                         return 0;
                     }
                 })
             }else{
-                TipoNoEscaner();
+                TipoNoEscaner('Entrada');
             }
         });
     })
-    function TipoNoEscaner() {
-        CodigoEscaner=$('#CodigoEscaner').val();
+    function TipoNoEscaner(TipoEntrada) {
+        CodigoEscaner=$('#CodigoEscanerEntrada').val();
         Cantidad=$('#Cantidad').val();
         Retrabajo=document.getElementById('Retrabajo').checked;
-        InicioInput = document.getElementById('Iniciar');
-        if (InicioInput.checked) {
+        if (TipoEntrada=="Entrada") {
             Inicio = 1;
             Fin = 0;
         }
-        FinalizarInput = document.getElementById('Finalizar');
-        if (FinalizarInput.checked) {
+        if (TipoEntrada=="Salida") {
             Inicio = 0;
             Fin = 1;
         }
-
         // Validación Solo números para Cantidad y mayor a 0
         if (Cantidad <= 0) {
             $('#Cantidad').addClass('is-invalid');
@@ -444,7 +423,6 @@
             if ($('#Cantidad').hasClass('is-invalid')) { $('#Cantidad').removeClass('is-invalid'); }
             $('#error_Cantidad').html('');
         }
-
         if (!/^\d+$/.test(Cantidad)) {
             $('#Cantidad').addClass('is-invalid');
             $('#error_Cantidad').html('Solo se aceptan N&uacute;meros');
@@ -453,14 +431,13 @@
             if ($('#Cantidad').hasClass('is-invalid')) { $('#Cantidad').removeClass('is-invalid'); }
             $('#error_Cantidad').html('');
         }
-
         // Validación Solo Números y -
         if (!/^[-\d]+$/.test(CodigoEscaner)) {
-            $('#CodigoEscaner').addClass('is-invalid');
+            $('#CodigoEscanerEntrada').addClass('is-invalid');
             $('#error_CodigoEscaner').html('Solo se aceptan N&uacute;meros y -');
             return 0;
         } else {
-            if ($('#CodigoEscaner').hasClass('is-invalid')) { $('#CodigoEscaner').removeClass('is-invalid'); }
+            if ($('#CodigoEscanerEntrada').hasClass('is-invalid')) { $('#CodigoEscanerEntrada').removeClass('is-invalid'); }
             $('#error_CodigoEscaner').html('');
         }
         // Realizar la petición AJAX
