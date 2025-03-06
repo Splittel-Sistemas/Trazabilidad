@@ -256,8 +256,8 @@
                         $('#ToastGuardadoBody').html(Mensaje);
                         $('#CantidadDiv').fadeOut();
                         $('#IniciarBtn').fadeOut();
-                        $('#CantidadDivSalida').fadeIn();
-                        $('#IniciarBtnSalida').fadeIn();
+                        $('#CantidadDivSalida').fadeOut();
+                        $('#IniciarBtnSalida').fadeOut();
                         
                     }
                     $('#ToastGuardado').fadeIn();
