@@ -85,7 +85,7 @@ class BusquedaController extends Controller
         $stage = $request->input('stage'); // Obtenemos la etapa
 
         // Consulta base sin duplicados
-        $query = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
+       $query = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
             ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
