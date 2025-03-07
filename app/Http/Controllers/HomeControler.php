@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\PorcentajePlaneacion;
 use App\Models\OrdenFabricacion;
+use App\Models\Partidasof_Areas;
 use Illuminate\Support\Facades\Log;
 
 
@@ -27,30 +28,26 @@ class HomeControler extends Controller
         return view('home');
     }
     public function CapacidadProductiva(){//Grafica Capacidad Productiva
-        $fecha=date('y-m-d');
+        $fecha=date('y-m-d 00:00:00');
+        $fechaFin= date('y-m-d 23:59:59');
         $PorcentajePlaneacion=PorcentajePlaneacion::where('FechaPlaneacion',$fecha)->first();
         if($PorcentajePlaneacion==""){
             $NumeroPersonas=20;
             $PiezasPorPersona=50;
-            $PlaneadoPorDia=OrdenFabricacion::where('FechaEntrega',$fecha)
-                                        ->with('PartidasOF')->get();
-            foreach($PlaneadoPorDia as $Planeado){
-                return $Planeado->partidas_o_f;
-                foreach($Planeado->partidas_o_f as $Cantidad){
-                    return $Cantidad;
-                }
-            }
-                                        //->SUM('CantidadTotal');
+            $PlaneadoPorDia=Partidasof_Areas::where('Areas_id',9)
+                                                ->where('FechaComienzo','>=',$fecha)
+                                                ->where('FechaComienzo','<=',$fechaFin)
+                                                ->get()->SUM('Cantidad');
             $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
             $PorcentajePlaneada=number_format($PlaneadoPorDia/$CantidadEstimadaDia*100,2);
             $PorcentajeFaltante=number_format(100-$PorcentajePlaneada,2);
         }else{
             $NumeroPersonas=$PorcentajePlaneacion->NumeroPersonas;
             $PiezasPorPersona=$PorcentajePlaneacion->CantidadPlaneada/$PorcentajePlaneacion->NumeroPersonas;
-            return$PlaneadoPorDia=OrdenFabricacion::where('FechaEntrega',$fecha)
-                                                ->with('partidas')
-
-                                                ->SUM('CantidadTotal');
+            $PlaneadoPorDia=Partidasof_Areas::where('Areas_id',9)
+                                                ->where('FechaComienzo','>=',$fecha)
+                                                ->where('FechaComienzo','<=',$fechaFin)
+                                                ->get()->SUM('Cantidad');
             $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
             $PorcentajePlaneada=str_replace(',','',number_format($PlaneadoPorDia/$CantidadEstimadaDia*100,2));
             $PorcentajeFaltante=number_format(100-$PorcentajePlaneada,2);
