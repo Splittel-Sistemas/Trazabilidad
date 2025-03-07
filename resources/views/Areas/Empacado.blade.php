@@ -5,19 +5,38 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
 
 <style>
-    /* Positioning the toast in the top-right corner */
     #ToastGuardado {
-        position: fixed; /* Fixed position */
-        top: 5rem; /* Distance from the top */
-        right: 20px; /* Distance from the right */
-        z-index: 1050; /* Ensure it's above other content */
+        position: fixed; 
+        top: 5rem;
+        right: 20px; 
+        z-index: 1050; 
     }
+    #ContainerTableEmpaque {
+        width: 100%;
+        display: block;
+        height: 6rem;
+        overflow-y: scroll;
+    }
+    #ContainerTableEmpaque::-webkit-scrollbar {
+        width: 3px; 
+    }
+    #ContainerTableEmpaque::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+    }
+    #ContainerTableEmpaque::-webkit-scrollbar-thumb {
+        background-color: #888; 
+        border-radius: 10px; 
+    }
+    #ContainerTableEmpaque::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+    }
+
 </style>
 @endsection
 @section('content')
     <div class="row gy-3 mb-2 justify-content-between">
         <div class="col-md-9 col-auto">
-        <h4 class="mb-2 text-1100">Empaquetad&oacute;</h4>
+        <h4 class="mb-2 text-1100">Empaquetado</h4>
         </div>
     </div>
     <div class="row">
@@ -73,15 +92,16 @@
                 </div>
             </div>
         </div>
-        <div id="ContentTabla" class="col-6 mt-2" style="display: none">
+        <div id="ContentTabla" class="col-6" style="display: none">
             <div class="card" id="DivCointainerTableSuministro">
             </div>
         </div>
-        <div class="col-12">
+        <div class="col-12" id="ContainerEmpacadoTable" style="display: none">
             <div style="height: 30px;"></div>
             <div class="card">
                 <div class="card-body">
-                    <div class="table-responsive card">
+                    <div class="table-responsive card p-1">
+                        <h5 class="text-center">Ordenes de Fabricaci&oacute;n Abiertas</h5>
                         <table id="EmpacadoTable" class="table table-sm">
                             <thead>
                                 <tr class="bg-light">
@@ -91,7 +111,6 @@
                                     <th  class="text-center">Cantidad Registrada</th>
                                     <th  class="text-center">Fecha Entrega</th>
                                     <th  class="text-center">Acción</th>
-
                                 </tr>
                             </thead>
                             <tbody id="EmpacadoTableBody"></tbody>
@@ -99,7 +118,6 @@
                     </div>
                 </div>
             </div>
-        </div>
         </div>
     </div>
     <div  id="ContainerToastGuardado"></div>
@@ -561,6 +579,7 @@
                 type: "GET",
                 dataType: "json",
                 success: function (data) {
+
                     let tabla = $('#EmpacadoTable');
 
                     if ($.fn.DataTable.isDataTable(tabla)) {
@@ -575,7 +594,7 @@
                         let cantidad = item.Areas_id == 9 ? item.CantidadTotalArea : "0";
 
                         let botonFinalizar = (puedeFinalizar) 
-                            ? `<button class="btn btn-sm btn-danger finalizar-btn" data-id="${item.OrdenFabricacion}">Finalizar</button>`
+                            ? `<button class="btn btn-sm btn-danger finalizar-btn p-1" data-id="${item.OrdenFabricacion}">Finalizar</button>`
                             : '';
 
                         let fila = `
@@ -590,9 +609,8 @@
                         `;
                         tbody.append(fila);
                     });
-
                     DataTable('EmpacadoTable', true);
-
+                    $('#ContainerEmpacadoTable').fadeIn();
                     $(".finalizar-btn").off("click").on("click", function () {
                         let id = $(this).data("id");
 

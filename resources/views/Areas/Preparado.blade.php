@@ -21,29 +21,15 @@
     <div class="row">
         <div class="col-6">
               <div class="card shadow-sm">
-                <div class="card-body row" id="filtro">
-                    <label for="CodigoEscaner" class="col-form-label col-sm-12 pt-0">Proceso <span class="text-muted"></span></label>
-                    <div class="col-8">
-                            <div class="form-check form-check-inline ">
-                                <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked onclick="MostrarRetrabajo('Entrada')">
-                                <label class="form-check-label" for="Iniciar">
-                                  Entrada
-                                </label>
-                            </div>
-                            <div class="form-check form-check-inline ">
-                                <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar" onclick="MostrarRetrabajo('Salida')">
-                                <label class="form-check-label" for="Finalizar">
-                                  Salida
-                                </label>
-                            </div>
-                    </div>
+                <div class="card-body row" id="filtroEntrada">
+                    <h3 for="CodigoEscaner" class=" col-sm-12 pt-0 text-success">Entrada</h3>
                     <hr>
                     <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
                         <div class="col-8" id="CodigoDiv">
                             <div class="">
                                 <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro')" id="CodigoEscaner" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
+                                    <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro','Entrada')" id="CodigoEscanerEntrada" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
                                     <div class="invalid-feedback" id="error_CodigoEscaner"></div>
                                 </div>
                                 <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
@@ -70,10 +56,40 @@
                 </div>
             </div>
         </div>
+        <div class="col-6">
+            <div class="card shadow-sm">
+              <div class="card-body row" id="filtroSalida">
+                  <h3 for="CodigoEscaner" class=" col-sm-12 pt-0 text-danger">Salida</h3>
+                  <hr>
+                  <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
+                      <div class="col-8" id="CodigoDiv">
+                          <div class="">
+                              <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
+                              <div class="input-group">
+                                  <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro','Salida')" id="CodigoEscanerSalida" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
+                                  <div class="invalid-feedback" id="error_CodigoEscanerSalida"></div>
+                              </div>
+                              <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-4" id="CantidadDivSalida" style="display: none">
+                          <div class="form-group">
+                              <label for="Cantidad">Cantidad</label>
+                              <input type="text" class="form-control form-control-sm" id="CantidadSalida" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
+                              <div class="invalid-feedback" id="error_CantidadSalida"></div>
+                          </div>
+                      </div>
+                      <div class="col-12 mt-2" id="IniciarBtnSalida" style="display: none">
+                          <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanearSalida"><i class="fa fa-play"></i> Cerrar</button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+        </div>
         <div id="ContentTabla" class="col-12 mt-2" style="display: none">
             <div class="card" id="DivCointainerTableSuministro">
             </div>
-        </div>
         </div>
     </div>
     <div  id="ContainerToastGuardado"></div>
@@ -81,7 +97,7 @@
 @section('scripts')
 <script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
-    function ListaCodigo(Codigo,Contenedor){
+    function ListaCodigo(Codigo,Contenedor,TipoEntrada){
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
         if (CadenaVacia(Codigo)) {
             return 0;
@@ -90,15 +106,20 @@
         if(Codigo.length<6){
             return 0;
         }
-        InicioInput=document.getElementById('Iniciar');
-        if(InicioInput.checked){
+        //InicioInput=document.getElementById('Iniciar');
+        if(TipoEntrada=="Entrada"){
             Inicio=1;
             Finalizar=0;
         }
-        FinalizarInput=document.getElementById('Finalizar');
-        if(FinalizarInput.checked){
+        //FinalizarInput=document.getElementById('Finalizar');
+        if(TipoEntrada=="Salida"){
             Inicio=0;
             Finalizar=1;
+        }
+        regexCodigo = /^\d+-\d+-\d+$/;
+        regexCodigoOF = /^\d+-\d+$/;
+        if(!(regexCodigo.test(Codigo) || regexCodigoOF.test(Codigo))) {
+            return 0;
         }
         $.ajax({
             url: "{{route('PreparadoBuscar')}}", 
@@ -118,6 +139,8 @@
                 $('#CantidadDiv').hide();
                 $('#IniciarBtn').hide();
                 $('#RetrabajoDiv').hide();
+                $('#CantidadDivSalida').hide();
+                $('#IniciarBtnSalida').hide();
                 document.getElementById('Retrabajo').checked = false;
                 if(response.status=="success"){
                     $('#DivCointainerTableSuministro').html(response.tabla);
@@ -135,6 +158,8 @@
                         $('#CantidadDiv').fadeOut();
                         $('#IniciarBtn').fadeOut();
                         $('#RetrabajoDiv').fadeOut();
+                        $('#CantidadDivSalida').fadeOut();
+                        $('#IniciarBtnSalida').fadeOut();
                         if(response.EscanerExiste==0){
                             Mensaje='Codigo '+Codigo+' El codigo que intentas ingresar No existe!';
                             Color='bg-danger';
@@ -145,17 +170,20 @@
                                 $('#ToastGuardado').fadeOut();
                             }, 2000);
                         }else{
-                            $('#ContentTabla').show();
-                            $('#CantidadDiv').fadeIn();
-                            $('#IniciarBtn').fadeIn();
-                            $('#RetrabajoDiv').fadeIn();
                             if(Inicio==1){
                                 const Retrabajo = document.getElementById('Retrabajo');
                                 Retrabajo.disabled = false;
                             }else{
                                 const Retrabajo = document.getElementById('Retrabajo');
-                            Retrabajo.disabled = true;
+                                Retrabajo.disabled = true;
                             }
+                                $('#ContentTabla').show();
+                                $('#CantidadDiv').fadeIn();
+                                $('#IniciarBtn').fadeIn();
+                                $('#RetrabajoDiv').fadeIn();
+                                $('#ContentTabla').show();
+                                $('#CantidadDivSalida').fadeIn();
+                                $('#IniciarBtnSalida').fadeIn();
                             return 0;
                         }
                     }else{
@@ -228,6 +256,9 @@
                         $('#ToastGuardadoBody').html(Mensaje);
                         $('#CantidadDiv').fadeOut();
                         $('#IniciarBtn').fadeOut();
+                        $('#CantidadDivSalida').fadeOut();
+                        $('#IniciarBtnSalida').fadeOut();
+                        
                     }
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
@@ -250,14 +281,17 @@
                             $('#ToastGuardado').fadeOut();
                         }, 2000);
                 }
+                $('#CodigoEscanerSalida').val('');
+                $('#CodigoEscanerEntrada').val('');
             },
             error: function(xhr, status, error) {
                 $('#CantidadDiv').hide();
                 $('#IniciarBtn').hide();
+                $('#CantidadDivSalida').hide();
+                $('#IniciarBtnSalida').hide();
             }
         }); 
     }
-   
     function TraerDatos(id,OF){
         $('#CodigoEscaner').val(OF+"-"+id);
         $('#CodigoEscanerSuministro').html('');
@@ -303,6 +337,8 @@
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
                     }, 2500);
+                    $('#CodigoEscanerSalida').val('');
+                    $('#CodigoEscanerEntrada').val('');
                 }
             }
         });
@@ -310,7 +346,7 @@
     function TablaList(TableName){
         var options = {
             valueNames: ['NumParte', 'Cantidad', 'Inicio', 'Fin', 'Estatus'],
-                page: 10,  
+                page: 5,  
                 pagination: true,
                 filter: {
                             key: 'Estatus' 
@@ -333,15 +369,17 @@
         $('#Cantidad').on('input', function() {
             RegexNumeros(document.getElementById('Cantidad'));
         });
-        $('#CodigoEscaner').on('input', function() {
-            RegexNumerosGuiones(document.getElementById('CodigoEscaner'));
+        $('#CodigoEscanerEntrada').on('input', function() {
+            RegexNumerosGuiones(document.getElementById('CodigoEscanerEntrada'));
+        });
+        $('#CodigoEscanerSalida').on('input', function() {
+            RegexNumerosGuiones(document.getElementById('CodigoEscanerSalida'));
         });
         $('#btnEscanear').click(function() {
-            CodigoEscaner=$('#CodigoEscaner').val();
+            CodigoEscaner=$('#CodigoEscanerEntrada').val();
             Cantidad=$('#Cantidad').val();
             Retrabajo=document.getElementById('Retrabajo').checked;
-            InicioInput = document.getElementById('Iniciar');
-            if(Retrabajo && InicioInput.checked){
+            if(Retrabajo){
                 Swal.fire({
                     title: 'Retrabajo',
                     text: `¿Desea enviar ${Cantidad} piezas con código ${CodigoEscaner} a Retrabajo?`,
@@ -352,58 +390,88 @@
                 }).then((result) => {
                     // Verificar si el usuario presionó "Confirmar"
                     if (result.isConfirmed) {
-                        TipoNoEscaner();
+                        TipoNoEscaner('Entrada');
                     } else {
                         return 0;
                     }
                 })
             }else{
-                TipoNoEscaner();
+                TipoNoEscaner('Entrada');
             }
         });
+        $('#btnEscanearSalida').click(function() {
+            CodigoEscaner=$('#CodigoEscanerSalida').val();
+            Cantidad=$('#CantidadSalida').val();
+            TipoNoEscaner('Salida');
+        });
+
     })
-    function TipoNoEscaner() {
-        CodigoEscaner=$('#CodigoEscaner').val();
+    function TipoNoEscaner(TipoEntrada) {
+        CodigoEscaner=$('#CodigoEscanerEntrada').val();
         Cantidad=$('#Cantidad').val();
         Retrabajo=document.getElementById('Retrabajo').checked;
-        InicioInput = document.getElementById('Iniciar');
-        if (InicioInput.checked) {
+        if (TipoEntrada=="Entrada") {
             Inicio = 1;
             Fin = 0;
+            // Validación Solo números para Cantidad y mayor a 0
+            if (Cantidad <= 0) {
+                $('#Cantidad').addClass('is-invalid');
+                $('#error_Cantidad').html('Campo cantidad no puede ser 0');
+                return 0;
+            } else {
+                if ($('#Cantidad').hasClass('is-invalid')) { $('#Cantidad').removeClass('is-invalid'); }
+                $('#error_Cantidad').html('');
+            }
+            if (!/^\d+$/.test(Cantidad)) {
+                $('#Cantidad').addClass('is-invalid');
+                $('#error_Cantidad').html('Solo se aceptan N&uacute;meros');
+                return 0;
+            } else {
+                if ($('#Cantidad').hasClass('is-invalid')) { $('#Cantidad').removeClass('is-invalid'); }
+                $('#error_Cantidad').html('');
+            }
+            // Validación Solo Números y -
+            if (!/^[-\d]+$/.test(CodigoEscaner)) {
+                $('#CodigoEscanerEntrada').addClass('is-invalid');
+                $('#error_CodigoEscaner').html('Solo se aceptan N&uacute;meros y -');
+                return 0;
+            } else {
+                if ($('#CodigoEscanerEntrada').hasClass('is-invalid')) { $('#CodigoEscanerEntrada').removeClass('is-invalid'); }
+                $('#error_CodigoEscaner').html('');
+            }
         }
-        FinalizarInput = document.getElementById('Finalizar');
-        if (FinalizarInput.checked) {
+        if (TipoEntrada=="Salida") {
             Inicio = 0;
             Fin = 1;
-        }
-
-        // Validación Solo números para Cantidad y mayor a 0
-        if (Cantidad <= 0) {
-            $('#Cantidad').addClass('is-invalid');
-            $('#error_Cantidad').html('Campo cantidad no puede ser 0');
-            return 0;
-        } else {
-            if ($('#Cantidad').hasClass('is-invalid')) { $('#Cantidad').removeClass('is-invalid'); }
-            $('#error_Cantidad').html('');
-        }
-
-        if (!/^\d+$/.test(Cantidad)) {
-            $('#Cantidad').addClass('is-invalid');
-            $('#error_Cantidad').html('Solo se aceptan N&uacute;meros');
-            return 0;
-        } else {
-            if ($('#Cantidad').hasClass('is-invalid')) { $('#Cantidad').removeClass('is-invalid'); }
-            $('#error_Cantidad').html('');
-        }
-
-        // Validación Solo Números y -
-        if (!/^[-\d]+$/.test(CodigoEscaner)) {
-            $('#CodigoEscaner').addClass('is-invalid');
-            $('#error_CodigoEscaner').html('Solo se aceptan N&uacute;meros y -');
-            return 0;
-        } else {
-            if ($('#CodigoEscaner').hasClass('is-invalid')) { $('#CodigoEscaner').removeClass('is-invalid'); }
-            $('#error_CodigoEscaner').html('');
+            CodigoEscaner=$('#CodigoEscanerSalida').val();
+            Cantidad=$('#CantidadSalida').val();
+            Retrabajo="false";
+            // Validación Solo números para Cantidad y mayor a 0
+            if (Cantidad <= 0) {
+                $('#CantidadSalida').addClass('is-invalid');
+                $('#error_CantidadSalida').html('Campo cantidad no puede ser 0');
+                return 0;
+            } else {
+                if ($('#CantidadSalida').hasClass('is-invalid')) { $('#CantidadSalida').removeClass('is-invalid'); }
+                $('#error_CantidadSalida').html('');
+            }
+            if (!/^\d+$/.test(Cantidad)) {
+                $('#CantidadSalida').addClass('is-invalid');
+                $('#error_CantidadSalida').html('Solo se aceptan N&uacute;meros');
+                return 0;
+            } else {
+                if ($('#CantidadSalida').hasClass('is-invalid')) { $('#CantidadSalida').removeClass('is-invalid'); }
+                $('#error_CantidadSalida').html('');
+            }
+            // Validación Solo Números y -
+            if (!/^[-\d]+$/.test(CodigoEscaner)) {
+                $('#CodigoEscanerSalida').addClass('is-invalid');
+                $('#error_CodigoEscanerSalida').html('Solo se aceptan N&uacute;meros y -');
+                return 0;
+            } else {
+                if ($('#CodigoEscanerSalida').hasClass('is-invalid')) { $('#CodigoEscanerSalida').removeClass('is-invalid'); }
+                $('#error_CodigoEscanerSalida').html('');
+            }
         }
         // Realizar la petición AJAX
         $.ajax({
@@ -458,7 +526,7 @@
                     }, 2000);
                 }else if(response.status=='SurplusFin'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
-                    $('#ToastGuardadoBody').html('Error no guardado, la cantidad de salidas supera los Entradas!');
+                    $('#ToastGuardadoBody').html('Error no guardado, la cantidad de salidas supera el total de la cantidad las partidas registradas!');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
@@ -486,7 +554,7 @@
                     }, 2000);
                 }
                 
-                ListaCodigo(CodigoEscaner,'CodigoEscanerSuministro')
+                ListaCodigo(CodigoEscaner,'CodigoEscanerSuministro','Entrada')
             },
             error: function(xhr, status, error) {
                 $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
