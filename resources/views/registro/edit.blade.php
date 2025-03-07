@@ -49,7 +49,7 @@
             <!-- Campo para seleccionar roles -->
             <div class="form-group mb-4">
                 <label class="font-weight-bold">Roles</label>
-                <small class="form-text text-muted">Seleccione uno o más roles.</small>
+                <small class="form-text text-muted">Seleccione un rol.</small>
 
                 @foreach ($roles as $value)
                     <div class="form-check">
