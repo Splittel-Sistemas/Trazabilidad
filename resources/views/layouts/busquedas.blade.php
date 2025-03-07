@@ -416,7 +416,7 @@
                             </svg>
                         </button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body ">
                         
                         <!-- Barra de progreso -->
                         <div class="progress" style="height: 22px; border-radius: 10px; box-shadow: 0px 3px 6px rgba(0,0,0,0.2); overflow: hidden; width: 90%; margin-left: 5%;">
@@ -427,12 +427,13 @@
                             </div>
                         </div>
                         <br>
-                         <div class="card">
+                         <div class="card p-3">
+                            <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
                             <div class="grid-container" id="plemasCanvases">
                                 <!-- Estación Cortes -->
                                 <div class="card">
                                     <div class="grid-item">
-                                        <h1 class="small-title">Estación Cortes</h1>
+                                        <h1 class="small-title">Cortes</h1>
 
                                         <div class="canvas-container">
                                             <canvas id="plemasCorte" width="300" height="300"></canvas> 
@@ -447,7 +448,7 @@
                     
                                 <!-- Estación Suministros -->
                                 <div class="grid-item">
-                                    <h1 class="small-title">Estación Suministros</h1>
+                                    <h1 class="small-title">Suministros</h1>
 
                                     <div class="canvas-container">
                                         <canvas id="plemasSuministro" width="300" height="300"></canvas>
@@ -460,7 +461,7 @@
             
                                 <!-- Estación Preparado -->
                                 <div class="grid-item">
-                                    <h1 class="small-title">Estación Preparado</h1>
+                                    <h1 class="small-title"> Preparado</h1>
 
                                     <div class="canvas-container">
                                         <canvas id="plemasPreparado" width="300" height="300"></canvas>
@@ -473,7 +474,7 @@
             
                                 <!-- Estación Ensamble -->
                                 <div class="grid-item">
-                                    <h1 class="small-title">Estación Ensamble</h1>
+                                    <h1 class="small-title"> Ensamble</h1>
 
                                     <div class="canvas-container">
                                         <canvas id="plemasEnsamble" width="300" height="300"></canvas>
@@ -486,7 +487,7 @@
             
                                 <!-- Estación Pulido -->
                                 <div class="grid-item">
-                                    <h1 class="small-title">Estación Pulido</h1>
+                                    <h1 class="small-title"> Pulido</h1>
                                     
                                     <div class="canvas-container">
                                         <canvas id="plemasPulido" width="300" height="300"></canvas>
@@ -499,7 +500,7 @@
             
                                 <!-- Estación Medición -->
                                 <div class="grid-item">
-                                    <h1 class="small-title">Estación Medición</h1>
+                                    <h1 class="small-title"> Medición</h1>
 
                                     <div class="canvas-container">
                                         <canvas id="plemasMedicion" width="300" height="300"></canvas>
@@ -512,7 +513,7 @@
             
                                 <!-- Estación Visualización -->
                                 <div class="grid-item">
-                                    <h1 class="small-title">Estación Visualización</h1>
+                                    <h1 class="small-title"> Visualización</h1>
                                 
                                     <div class="canvas-container">
                                         <canvas id="plemasVisualizacion" width="300" height="300"></canvas>
@@ -526,7 +527,7 @@
             
                                 <!-- Estación Empaque -->
                                 <div class="grid-item">
-                                    <h1 class="small-title">Estación Empaque</h1>
+                                    <h1 class="small-title"> Empaque</h1>
 
                                     <div class="canvas-container">
                                         <canvas id="plemasEmpaque" width="300" height="300"></canvas>
@@ -692,46 +693,48 @@
                         </ul>
                         
                         <br> 
-                        <div class="grid-container" id="canvases">
+                        
+                        <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
+                        <div class="grid-container card p-2" id="canvases">
 
                             <!-- Estación Cortes -->
                             <div class="grid-item">
-                              <h1 class="small-title">Estación Cortes</h1>
+                              <h1 class="small-title"> Cortes</h1>
                               <canvas id="corte" width="300" height="300"></canvas>
                             </div>
                             <!-- Estación Suministros -->
                             <div class="grid-item">
-                              <h1 class="small-title">Estación Suministros</h1>
+                              <h1 class="small-title"> Suministros</h1>
                               <canvas id="suministro" width="300" height="300"></canvas>
                             </div>
                             <!-- Estación Preparado -->
                             <div class="grid-item">
-                              <h1 class="small-title">Estación Preparado</h1>
+                              <h1 class="small-title"> Preparado</h1>
                               <canvas id="preparado" width="300" height="300"></canvas>
                             </div>
                             <!-- Estación Ensamble -->
                             <div class="grid-item">
-                              <h1 class="small-title">Estación Ensamble</h1>
+                              <h1 class="small-title">Ensamble</h1>
                               <canvas id="ensamble" width="300" height="300"></canvas>
                             </div>
                             <!-- Estación Pulido -->
                             <div class="grid-item">
-                              <h1 class="small-title">Estación Pulido</h1>
+                              <h1 class="small-title"> Pulido</h1>
                               <canvas id="pulido" width="300" height="300"></canvas>
                             </div>
                             <!-- Estación Medición -->
                             <div class="grid-item">
-                              <h1 class="small-title">Estación Medición</h1>
+                              <h1 class="small-title"> Medición</h1>
                               <canvas id="medicion" width="300" height="300"></canvas>
                             </div>
                             <!-- Estación Visualización -->
                             <div class="grid-item">
-                              <h1 class="small-title">Estación Visualización</h1>
+                              <h1 class="small-title"> Visualización</h1>
                               <canvas id="visualizacion" width="300" height="300"></canvas>
                             </div>
                             <!-- Estación Empaque -->
                             <div class="grid-item">
-                              <h1 class="small-title">Estación Empaque</h1>
+                              <h1 class="small-title">Empaque</h1>
                               <canvas id="empaque" width="300" height="300"></canvas>
                             </div>
                         </div>
