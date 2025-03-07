@@ -36,7 +36,7 @@
 @section('content')
     <div class="row gy-3 mb-2 justify-content-between">
         <div class="col-md-9 col-auto">
-        <h4 class="mb-2 text-1100">Empaquetad&oacute;</h4>
+        <h4 class="mb-2 text-1100">Empaquetado</h4>
         </div>
     </div>
     <div class="row">
@@ -100,7 +100,8 @@
             <div style="height: 30px;"></div>
             <div class="card">
                 <div class="card-body">
-                    <div class="table-responsive card">
+                    <div class="table-responsive card p-1">
+                        <h5 class="text-center">Ordenes de Fabricaci&oacute;n Abiertas</h5>
                         <table id="EmpacadoTable" class="table table-sm">
                             <thead>
                                 <tr class="bg-light">
