@@ -92,7 +92,7 @@
                             <th class="sort border-top ps-3" data-sort="apellido">Apellido (s)</th>
                             <th class="sort border-top ps-3" data-sort="email">Correo</th>
                             <th class="sort border-top ps-3" data-sort="password">Contraseña</th>
-                            <th class="sort border-top ps-3" data-sort="roles">Role</th>
+                            <th class="sort border-top ps-3" data-sort="roles">Rol</th>
                             <th class="sort border-top ps-3" data-sort="estatus">Desactivo/Activo</th>
                             <th class="sort border-top text-center  ps-3">Accion</th>
                         </tr>
@@ -198,7 +198,7 @@
                     </div>
                     <!-- Fila para Roles -->
                     <div class="form-group">
-                        <label for="roles">Roles</label>
+                        <label for="roles">Rol</label>
                         <div id="roles" class="form-check d-flex flex-wrap">
                             <!-- Los roles se generarán aquí dinámicamente -->
                         </div>

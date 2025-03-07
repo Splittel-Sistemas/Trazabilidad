@@ -16,24 +16,6 @@ return new class extends Migration
             $table->id();
             $table->string('name')->nullable();
         });
-        DB::table('permissions')->insert([
-            ['name' => 'CompletadosEdit'],
-            ['name' => 'Vistas Editar'],
-            ['name' => 'RolesEdit'],
-            ['name' => 'Dashboard'],
-            ['name' => 'Vista Cortes'],
-            ['name' => 'Vista Planeacion'],
-            ['name' => 'Vista Suministro'],
-            ['name' => 'Vista Preparado'],
-            ['name' => 'Vista Ensambre'],
-            ['name' => 'Vista Pulido'],
-            ['name' => 'Vista Medicion'],
-            ['name' => 'Vista Visualizacion'],
-            ['name' => 'Vista Ver'],
-            ['name' => 'PlaneacionEdit'],
-            ['name' => 'UsuriosEdit'],
-            ['name' => 'CorteEdit'],
-        ]);
     }
     /**
      * Reverse the migrations.
