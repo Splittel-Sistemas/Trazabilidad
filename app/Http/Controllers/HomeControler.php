@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\PorcentajePlaneacion;
+use App\Models\OrdenFabricacion;
+use App\Models\Partidasof_Areas;
 use Illuminate\Support\Facades\Log;
 
 
@@ -17,16 +19,49 @@ class HomeControler extends Controller
     }
     public function index()
     {
-        // Verificar si el usuario está autenticado y activo
         $user = Auth::user();
 
         if (!$user || !$user->active) {
-            // Si el usuario no está autenticado o está desactivado, lo redirigimos al login
-            Auth::logout();  // Cerrar la sesión si el usuario está desactivado
+            Auth::logout();
             return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
         }
-        // Si el usuario está activo, continua con la carga de la página
-        return view('home');  // Ajusta esto al nombre de tu vista Home
+        return view('home');
+    }
+    public function CapacidadProductiva(){//Grafica Capacidad Productiva
+        $fecha=date('y-m-d 00:00:00');
+        $fechaFin= date('y-m-d 23:59:59');
+        $PorcentajePlaneacion=PorcentajePlaneacion::where('FechaPlaneacion',$fecha)->first();
+        if($PorcentajePlaneacion==""){
+            $NumeroPersonas=20;
+            $PiezasPorPersona=50;
+            $PlaneadoPorDia=Partidasof_Areas::where('Areas_id',9)
+                                                ->where('FechaComienzo','>=',$fecha)
+                                                ->where('FechaComienzo','<=',$fechaFin)
+                                                ->get()->SUM('Cantidad');
+            $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
+            $PorcentajePlaneada=number_format($PlaneadoPorDia/$CantidadEstimadaDia*100,2);
+            $PorcentajeFaltante=number_format(100-$PorcentajePlaneada,2);
+        }else{
+            $NumeroPersonas=$PorcentajePlaneacion->NumeroPersonas;
+            $PiezasPorPersona=$PorcentajePlaneacion->CantidadPlaneada/$PorcentajePlaneacion->NumeroPersonas;
+            $PlaneadoPorDia=Partidasof_Areas::where('Areas_id',9)
+                                                ->where('FechaComienzo','>=',$fecha)
+                                                ->where('FechaComienzo','<=',$fechaFin)
+                                                ->get()->SUM('Cantidad');
+            $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
+            $PorcentajePlaneada=str_replace(',','',number_format($PlaneadoPorDia/$CantidadEstimadaDia*100,2));
+            $PorcentajeFaltante=number_format(100-$PorcentajePlaneada,2);
+        }
+        return response()->json([
+                'PorcentajePlaneada' => $PorcentajePlaneada,
+                'PorcentajeFaltante' => $PorcentajeFaltante,
+                'NumeroPersonas' => $NumeroPersonas,
+                'PlaneadoPorDia'=>$PlaneadoPorDia,
+                'CantidadEstimadaDia'=>$CantidadEstimadaDia,
+                'Piezasfaltantes'=>($CantidadEstimadaDia-$PlaneadoPorDia),
+                'Fecha_Grafica'=>Carbon::parse($fecha)->translatedFormat('d \d\e F \d\e Y'),
+
+        ]);
     }
     public function graficas()
     {
