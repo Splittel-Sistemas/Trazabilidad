@@ -1271,7 +1271,7 @@ class HomeControler extends Controller
                 $tiempoPorPieza = $prod->tiempoProduccionActual / $pieza->TotalCantidad;
                 $tiemposPorPieza[] = [
                     'Area' => $areas[$prod->Areas_id],
-                    'TiempoPorPieza' => $tiempoPorPieza
+                    'TiempoPorPieza' => number_format($tiempoPorPieza,2)
                 ];
             }
         }
