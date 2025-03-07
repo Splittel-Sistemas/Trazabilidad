@@ -86,7 +86,7 @@
                 </div>
                 <div class="form-group mt-2 mb-1">
                     <label class="font-weight-bold">Roles</label>
-                    <small class="form-text text-muted">Seleccione uno o más roles.</small>
+                    <small class="form-text text-muted">Seleccione un rol.</small>
                     <div class="roles-container d-flex flex-wrap">
                         @foreach ($roles as $value)
                             <div class="form-check mr-3">
@@ -126,7 +126,7 @@
                 </div>
                 <div class="form-group">
                     <label class="font-weight-bold mb-2">Roles</label>
-                    <small class="form-text text-muted">Seleccione uno o más roles.</small>
+                    <small class="form-text text-muted">Seleccione un rol.</small>
                     <div class="roles-container d-flex flex-wrap">
                         @foreach ($roles as $value)
                             <div class="form-check mr-3">

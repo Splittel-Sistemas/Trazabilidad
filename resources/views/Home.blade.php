@@ -650,7 +650,7 @@
     <!--progreso de la mes-->
     <div id="indicadores-mes">
             <div style="height: 10px;"></div>
-            <div class="card">
+            <div class="card" style="display: none">
                 <h1 class="progress-title">Ordenes Fabricación</h1>
                 <div class="grid-container" style="display: flex; justify-content: center;">
                     <div class="grid-item">
@@ -787,7 +787,7 @@
             indicadores.style.display = 'block';
 
             // Desplazar hacia la sección
-            indicadores.scrollIntoView({ behavior: 'smooth' });
+            //indicadores.scrollIntoView({ behavior: 'smooth' });
         });
     }
     // Función para inicializar el comportamiento de las secciones
