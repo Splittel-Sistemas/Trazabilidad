@@ -1174,15 +1174,7 @@ class HomeControler extends Controller
         $Cortesarea = [
             2 => 'Corte'
         ];
-        $TotalPiezas = DB::table('ordenfabricacion')
-            ->whereDate('FechaEntrega', '=', $hoy)
-            ->sum('CantidadTotal');
-
-        $piezasinicadas= DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->whereDate('FechaComienzo', '=', $hoy)
-            ->sum('partidasof.cantidad_partida');
-        
+       
         $produccioncortes = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->whereDate('partidasof.FechaComienzo', '=', $hoy)
@@ -1198,7 +1190,159 @@ class HomeControler extends Controller
                 return $item;
             });
 
-    
+            $cortespiezas= DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->whereDate('partidasof.FechaComienzo', '=', $hoy)
+            ->where('partidasof.TipoPartida', 'N')
+            ->select(
+                'partidasof.OrdenFabricacion_id',
+                DB::raw('SUM(partidasof.cantidad_partida) as TotalCantidad'),
+                DB::raw('GROUP_CONCAT(partidasof.NumeroPartida ORDER BY partidasof.NumeroPartida ASC) as NumeroEtiquetas')
+            )
+            ->groupBy( 'partidasof.OrdenFabricacion_id')
+            ->get()
+            ->map(function ($item) use ($Cortesarea) {
+                $item->area = $Cortesarea[2]; 
+                return $item;
+            });
+            $TiemposMuertos1 = DB::table('ordenfabricacion')
+    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+    ->where('partidasof.TipoPartida', 'N')
+    ->whereDate('partidasof.FechaComienzo', '=', $hoy)
+    ->select(
+        'partidasof.id',
+        'partidasof.OrdenFabricacion_id',
+        'partidasof.NumeroPartida',
+        'partidasof.FechaComienzo',
+        'partidasof.FechaFinalizacion'
+    )
+    ->orderBy('partidasof.NumeroPartida')
+    ->orderBy('partidasof.OrdenFabricacion_id')
+    ->get();
+
+// Agregar tiempo en segundos para cada registro de TiemposMuertos1
+$TiemposMuertos1 = $TiemposMuertos1->map(function ($item) {
+    // Usamos max y min para asegurarnos de que la fecha de inicio es la más temprana
+    $start = \Carbon\Carbon::parse($item->FechaComienzo);
+    $end = \Carbon\Carbon::parse($item->FechaFinalizacion);
+
+    // Si la fecha de Finalización es anterior a la de Comienzo, invertimos el orden
+    if ($end->lessThan($start)) {
+        $temp = $start;
+        $start = $end;
+        $end = $temp;
+    }
+
+    $tiempoMuerto = $start->diffInSeconds($end);
+
+    // Agregar el campo "tiemposfinales"
+    $item->tiemposfinales = [
+        'id' => $item->id,
+        'tiempomuerto' => $tiempoMuerto
+    ];
+
+    return $item;
+});
+
+$TiemposMuertos2 = DB::table('ordenfabricacion')
+    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+    ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+    ->where('partidasof_areas.Areas_id', 3)
+    ->where('partidasof_areas.TipoPartida', 'N')
+    ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy)
+    ->select(
+        'partidasof_areas.PartidasOf_id',
+        'partidasof_areas.Areas_id',
+        'partidasof_areas.NumeroEtiqueta',
+        'partidasof_areas.FechaComienzo',
+        'partidasof_areas.FechaTermina'
+    )
+    ->orderBy('partidasof_areas.NumeroEtiqueta')
+    ->orderBy('partidasof_areas.Areas_id')
+    ->get();
+
+// Comparar las fechas de TiemposMuertos1 y TiemposMuertos2
+$comparados = $TiemposMuertos2->map(function ($item2) use ($TiemposMuertos1) {
+    // Buscar el registro en TiemposMuertos1 que tenga el mismo id
+    $item1 = $TiemposMuertos1->firstWhere('id', $item2->PartidasOf_id);
+
+    if ($item1) {
+        // Convertir ambas fechas a objetos Carbon para compararlas
+        $fechaInicio1 = \Carbon\Carbon::parse($item1->FechaComienzo);
+        $fechaInicio2 = \Carbon\Carbon::parse($item2->FechaComienzo);
+
+        // Comparar las fechas, puedes hacer cualquier lógica que necesites
+        if ($fechaInicio1->greaterThan($fechaInicio2)) {
+            // Si la fecha de TiemposMuertos1 es mayor, puedes realizar alguna acción
+            $item2->comparacion = 'TiemposMuertos1 es posterior';
+        } elseif ($fechaInicio1->lessThan($fechaInicio2)) {
+            // Si la fecha de TiemposMuertos2 es mayor
+            $item2->comparacion = 'TiemposMuertos2 es posterior';
+        } else {
+            $item2->comparacion = 'Las fechas son iguales';
+        }
+    } else {
+        // Si no se encuentra una coincidencia en TiemposMuertos1
+        $item2->comparacion = 'No hay registro correspondiente en TiemposMuertos1';
+    }
+
+    return $item2;
+});
+
+return [
+    'TiemposMuertos2' => $comparados,
+    'TiemposMuertos1' => $TiemposMuertos1
+];
+
+
+
+            /*
+{
+  "TiemposMuertos2": [
+    {
+      "PartidasOf_id": 32,
+      "Areas_id": 3,
+      "NumeroEtiqueta": null,
+      "FechaComienzo": "2025-03-06 17:04:25",
+      "FechaTermina": "2025-03-06 17:04:27"
+    },
+    {
+      "PartidasOf_id": 31,
+      "Areas_id": 3,
+      "NumeroEtiqueta": 1,
+      "FechaComienzo": "2025-03-06 09:18:01",
+
+      "FechaTermina": "2025-03-06 09:18:04"
+    }
+  ],
+  "TiemposMuertos1": [
+    {
+      "id": 31,
+      "OrdenFabricacion_id": 67,
+      "NumeroPartida": 1,
+      "FechaComienzo": "2025-03-06 09:17:33",
+      "FechaFinalizacion": "2025-03-06 09:17:37"
+    },
+    {
+      "id": 32,
+      "OrdenFabricacion_id": 68,
+      "NumeroPartida": 1,
+      "FechaComienzo": "2025-03-06 17:02:19",
+      "FechaFinalizacion": "2025-03-06 17:02:22"
+    }
+      "tiemposfinales"[
+      {
+      "id":31,
+      tiempomuerto: 24,
+    }
+      {
+     "id":32,
+      tiempomuerto: 123,
+    }
+
+      ]
+  ]
+}
         // Obtener la producción
         $produccion = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
@@ -1214,6 +1358,25 @@ class HomeControler extends Controller
             ->get();
     
         // Obtener las piezas procesadas
+        $cortespiezas= DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->whereDate('partidasof.FechaComienzo', '=', $hoy)
+            ->where('partidasof.TipoPartida', 'N')
+            ->select(
+                'partidasof.OrdenFabricacion_id',
+                DB::raw('SUM(partidasof.cantidad_partida) as TotalCantidad'),
+                DB::raw('GROUP_CONCAT(partidasof.NumeroPartida ORDER BY partidasof.NumeroPartida ASC) as NumeroEtiquetas')
+            )
+            ->groupBy( 'partidasof.OrdenFabricacion_id')
+            ->get()
+            ->map(function ($item) use ($Cortesarea) {
+                $item->area = $Cortesarea[2]; 
+                return $item;
+            });
+        
+
+
+
         $piezas = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
@@ -1240,6 +1403,7 @@ class HomeControler extends Controller
                 ];
             }
         }
+        $tiemposPorPieza;
         $TiemposMuertos = DB::table('ordenfabricacion')
         ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
         ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
@@ -1305,6 +1469,14 @@ class HomeControler extends Controller
             $areaName = $areas[$item->Areas_id] ?? 'Desconocido';
             $tiemposProduccionData[$areaName] = $item->cantidad;
         }
+        $TotalPiezas = DB::table('ordenfabricacion')
+        ->whereDate('FechaEntrega', '=', $hoy)
+        ->sum('CantidadTotal');
+
+        $piezasinicadas= DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->whereDate('FechaComienzo', '=', $hoy)
+            ->sum('partidasof.cantidad_partida');
         return response()->json([
             'produccion' => $produccion,
             'finalResult' => $finalResult,
@@ -1312,9 +1484,32 @@ class HomeControler extends Controller
             'TotalPiezas' => $TotalPiezas,
             'piezasinicadas'=> $piezasinicadas,
             'numeroPRO'=>$tiemposProduccionData
-        ]);
+        ]);*/
         
-        /*
+        /*+
+
+        [
+  {
+    "OrdenFabricacion_id": 67,
+    "TotalCantidad": "4",
+    "NumeroEtiquetas": "1"
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       [
   {
       "partidasOF_id": 31,32
