@@ -308,6 +308,13 @@
             text-align: center;  /* Asegura que el texto esté centrado */
             width: 100%;
         }
+        /* Estilo para los botones activos */
+        .activebtn {
+            background-color: #efefef;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgb(255, 255, 255);
+        }
 
 
 
@@ -320,8 +327,8 @@
                 <h1 class="progress-title mt-3 mb-4"></h1>
                 <div class="row justify-content-center">
                     <!-- Órdenes Cerradas (Completadas) -->
-                    <div class="col-12 col-md-3 mb-4">
-                        <div class="d-flex align-items-center justify-content-center" id="click-dia" style="cursor: pointer;">
+                    <div class="col-12 col-md-3 mb-4 p-0">
+                        <div class="d-flex align-items-center justify-content-center activebtn" id="click-dia" style="cursor: pointer;">
                             <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
                                 <i class="fas fa-calendar-day" style="font-size: 30px; color: #007bff;"></i>
                             </span>
@@ -332,7 +339,7 @@
                         </div>
                     </div>
                     <!-- Órdenes Abiertas (En Proceso) -->
-                    <div class="col-12 col-md-3 mb-4">
+                    <div class="col-12 col-md-3 mb-4 p-0">
                         <div class="d-flex align-items-center justify-content-center" id="click-semana" style="cursor: pointer;">
                             <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
                                 <i class="fas fa-calendar-week" style="font-size: 30px; color: #ffc107;"></i>
@@ -344,7 +351,7 @@
                         </div>
                     </div>
                     <!-- Total de Órdenes -->
-                    <div class="col-12 col-md-3 mb-4">
+                    <div class="col-12 col-md-3 mb-4 p-0">
                         <div class="d-flex align-items-center justify-content-center" id="click-mes" style="cursor: pointer;">
                             <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
                                 <i class="fas fa-calendar-alt" style="font-size: 30px; color: #28a745;"></i>
@@ -361,17 +368,52 @@
     <!--Indicadores de Producción por Dia-->
     <hr class="hr">
     <div style="height: 10px;"></div>
-    <div id="indicadores-dia">
-            <div class="card">
-                <div class="d-flex justify-content">
-                    <div class="row">
-                        <h6 class="text-700 col-6">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
-                        <h6 class="text-700 col-6">Piezas completadas: <span id="Piezasplaneadas">0</span></h6>
-                        <h6 class="text-700 col-6">Estimado de piezas por día: <span id="Estimadopiezas">0</span></h6>
+    <div id="indicadores-dia" class="mb-4" >
+            <div class="col-sm-12 bg-white mb-4">
+                        <div class="accordion-body bg-white pt-0">
+                            <div class="card-body bg-white p-1">
+                                <h5 class="p-1">
+                                    Capacidad Productiva  &nbsp;<span id="Fecha_Grafica"> {{ \Carbon\Carbon::now()->translatedFormat('d \d\e F \d\e Y') }}
+                                </h5>
+                                <div class="d-flex justify-content-between">
+                                    <div class="row">
+                                        <h6 class="text-700 col-6">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
+                                        <h6 class="text-700 col-6">Estimado de piezas por d&iacute;a: <span id="Estimadopiezas">0</span></h6>
+                                        <h6 class="text-700 col-6">Piezas Completadas: <span id="Piezasplaneadas">0</span></h6>
+                                        <h6 class="text-700 col-6">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>  
+                                        <h6 class="text-700 col-6"></h6>  
+                                    </div>
+                                </div>
+                                <div class="pb-1 pt-1 d-flex justify-content-center aling-items-center">
+                                    <div class="p-0" id="PrcentajePlaneacion" style="width: 9rem;height:9rem"></div>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="bullet-item bg-primary me-2"></div>
+                                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Completadas</h6>
+                                            <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajeplaneada">0</span>%</h6>
+                                        </div>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="bullet-item bg-primary-200 me-2"></div>
+                                                <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Faltantes</h6>
+                                                <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajefaltante">0</span>%</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+            </div>
+            <!--<div class="card">
+                <div class="">
+                    <div class="container">
+                        <div class="row">
+                            <h6 class="text-700 col-6">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
+                            <h6 class="text-700 col-6">Piezas completadas: <span id="Piezasplaneadas">0</span></h6>
+                            <h6 class="text-700 col-6">Estimado de piezas por día: <span id="Estimadopiezas">0</span></h6>
 
-                        <h6 class="text-700 col-6">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>
+                            <h6 class="text-700 col-6">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>
 
-                        <h6 class="text-700 col-12">Total de piezas del día: <span id="Piezasdia">0</span></h6>
+                            <h6 class="text-700 col-12">Total de piezas del día: <span id="Piezasdia">0</span></h6>
+                        </div>
                     </div>
                 </div>
                 <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
@@ -389,8 +431,8 @@
                         <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajefaltante">0</span>%</h6>
                     </div>
                 </div>
-            </div>
-            <div class="card text-center">
+            </div>-->
+            <div class="card text-center pb-3">
                 <h1 class="progress-title mt-3 mb-4">Indicadores de Producción por Dia</h1>
                 <div class="row justify-content-center">
                     <!-- Órdenes Cerradas (Completadas) -->
@@ -487,7 +529,7 @@
                 </div>
             </div>
             <div style="height: 10px;"></div>
-            <div class="card">
+            <div class="card" style="display: none;">
                 <div class="col-10 col-md-18 col-lg-12 mx-auto">
                     <h1 class="progress-title">Progreso de Piezas por Dia</h1>
                     <p id="chart-hour-fecha" style="font-size: 14px; color: gray;"></p> 
@@ -608,7 +650,7 @@
     <!--progreso de la mes-->
     <div id="indicadores-mes">
             <div style="height: 10px;"></div>
-            <div class="card">
+            <div class="card" style="display: none">
                 <h1 class="progress-title">Ordenes Fabricación</h1>
                 <div class="grid-container" style="display: flex; justify-content: center;">
                     <div class="grid-item">
@@ -745,7 +787,7 @@
             indicadores.style.display = 'block';
 
             // Desplazar hacia la sección
-            indicadores.scrollIntoView({ behavior: 'smooth' });
+            //indicadores.scrollIntoView({ behavior: 'smooth' });
         });
     }
     // Función para inicializar el comportamiento de las secciones
@@ -763,6 +805,8 @@
     // Llamamos a la función de inicialización cuando la página cargue
     window.onload = init;
     document.addEventListener("DOMContentLoaded", function () {
+        PorcentajeLlenadas();
+        setInterval(PorcentajeLlenadas, 30000);
         cargarIndicadores("{{ route('indicadores-cedia') }}", [
             "plemasCortedia", "plemasSuministrodia", "plemasPreparadodia", "plemasEnsambledia",
             "plemasPulidodia", "plemasMediciondia", "plemasVisualizaciondia", "plemasEmpaquedia"
@@ -1929,5 +1973,99 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
                     .catch(error => console.error('Error al cargar los datos:', error));
             }
         */
+    function PorcentajeLlenadas(){
+        fecha=$('#FiltroOF_Fecha_table2').val();
+        $.ajax({
+                url: "{{route('CapacidadProductiva')}}", 
+                type: 'GET',
+                data: {
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+                },
+                success: function(response) {
+                    color="#007BFF";
+                    PorcentajeFaltante=0;
+                    if(response.PorcentajePlaneada>80){
+                        color='#FFFF00';
+                    } 
+                    if(response.PorcentajePlaneada>90){
+                        color='#FFA500';
+                    } 
+                    if(response.PorcentajePlaneada>100){
+                        color='#FF0000';
+                    }
+                    if(response.PorcentajeFaltante>0){
+                        PorcentajeFaltante=response.PorcentajeFaltante;
+                    }
+                    $("#Cantidadpersonas").html(response.NumeroPersonas);
+                    $("#Estimadopiezas").html(response.CantidadEstimadaDia);
+                    $("#Piezasplaneadas").html(response.PlaneadoPorDia);
+                    $("#Porcentajefaltante").html(PorcentajeFaltante);
+                    $("#Porcentajeplaneada").html(response.PorcentajePlaneada);
+                    $('#Fecha_Grafica').html(response.Fecha_Grafica);
+                    $('#Piezasfaltantes').html(response.Piezasfaltantes);
+                    var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
+                    var option = {
+                    tooltip: {
+                        trigger: 'item'
+                    },
+                    legend: {
+                        show:false,
+                    },
+                    series: [
+                        {
+                        name: 'Planeación',
+                        type: 'pie',
+                        radius: ['60%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: true,
+                            position: 'center',
+                            formatter: response.PorcentajePlaneada+'%',
+                            fontSize: 20,
+                            fontWeight: 'bold'
+                        },
+                        
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            { value: response.PorcentajePlaneada, name: 'Total Planeado', itemStyle: { color: color } },
+                            { value: PorcentajeFaltante, name: 'Total faltante estimado', itemStyle: { color: '#D3D3D3' } }
+                        ]
+                        }
+                    ]
+                    };
+
+                    // 3. Aplicar la configuración al gráfico
+                    myChart.setOption(option);
+                }
+        });
+    }
+    // Función para activar el botón
+    function activarBoton(id) {
+        document.querySelectorAll('.d-flex').forEach(function(button) {
+            button.classList.remove('activebtn');
+        });
+        document.getElementById(id).classList.add('activebtn');
+    }
+    // Añadir eventos de clic a los botones
+    document.getElementById("click-dia").addEventListener("click", function() {
+        activarBoton("click-dia");
+    });
+    document.getElementById("click-semana").addEventListener("click", function() {
+        activarBoton("click-semana");
+    });
+    document.getElementById("click-mes").addEventListener("click", function() {
+        activarBoton("click-mes");
+    });
+
 </script>
+
 @endsection

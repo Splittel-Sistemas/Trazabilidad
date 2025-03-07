@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\PorcentajePlaneacion;
+use App\Models\OrdenFabricacion;
+use App\Models\Partidasof_Areas;
 use Illuminate\Support\Facades\Log;
 
 
@@ -17,16 +19,49 @@ class HomeControler extends Controller
     }
     public function index()
     {
-        // Verificar si el usuario está autenticado y activo
         $user = Auth::user();
 
         if (!$user || !$user->active) {
-            // Si el usuario no está autenticado o está desactivado, lo redirigimos al login
-            Auth::logout();  // Cerrar la sesión si el usuario está desactivado
+            Auth::logout();
             return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
         }
-        // Si el usuario está activo, continua con la carga de la página
-        return view('home');  // Ajusta esto al nombre de tu vista Home
+        return view('home');
+    }
+    public function CapacidadProductiva(){//Grafica Capacidad Productiva
+        $fecha=date('y-m-d 00:00:00');
+        $fechaFin= date('y-m-d 23:59:59');
+        $PorcentajePlaneacion=PorcentajePlaneacion::where('FechaPlaneacion',$fecha)->first();
+        if($PorcentajePlaneacion==""){
+            $NumeroPersonas=20;
+            $PiezasPorPersona=50;
+            $PlaneadoPorDia=Partidasof_Areas::where('Areas_id',9)
+                                                ->where('FechaComienzo','>=',$fecha)
+                                                ->where('FechaComienzo','<=',$fechaFin)
+                                                ->get()->SUM('Cantidad');
+            $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
+            $PorcentajePlaneada=number_format($PlaneadoPorDia/$CantidadEstimadaDia*100,2);
+            $PorcentajeFaltante=number_format(100-$PorcentajePlaneada,2);
+        }else{
+            $NumeroPersonas=$PorcentajePlaneacion->NumeroPersonas;
+            $PiezasPorPersona=$PorcentajePlaneacion->CantidadPlaneada/$PorcentajePlaneacion->NumeroPersonas;
+            $PlaneadoPorDia=Partidasof_Areas::where('Areas_id',9)
+                                                ->where('FechaComienzo','>=',$fecha)
+                                                ->where('FechaComienzo','<=',$fechaFin)
+                                                ->get()->SUM('Cantidad');
+            $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
+            $PorcentajePlaneada=str_replace(',','',number_format($PlaneadoPorDia/$CantidadEstimadaDia*100,2));
+            $PorcentajeFaltante=number_format(100-$PorcentajePlaneada,2);
+        }
+        return response()->json([
+                'PorcentajePlaneada' => $PorcentajePlaneada,
+                'PorcentajeFaltante' => $PorcentajeFaltante,
+                'NumeroPersonas' => $NumeroPersonas,
+                'PlaneadoPorDia'=>$PlaneadoPorDia,
+                'CantidadEstimadaDia'=>$CantidadEstimadaDia,
+                'Piezasfaltantes'=>($CantidadEstimadaDia-$PlaneadoPorDia),
+                'Fecha_Grafica'=>Carbon::parse($fecha)->translatedFormat('d \d\e F \d\e Y'),
+
+        ]);
     }
     public function graficas()
     {
@@ -1197,7 +1232,8 @@ class HomeControler extends Controller
                 $item->area = $Cortesarea[2]; 
                 return $item;
             });
-        
+
+    
         // Obtener la producción
         $produccion = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
@@ -1211,7 +1247,7 @@ class HomeControler extends Controller
             )
             ->groupBy('partidasof_areas.Areas_id', 'partidasof_areas.PartidasOf_id')
             ->get();
-        
+    
         // Obtener las piezas procesadas
         $piezas = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
@@ -1222,41 +1258,23 @@ class HomeControler extends Controller
             ->select(
                 'partidasof_areas.PartidasOF_id',
                 'partidasof_areas.Areas_id',
-                DB::raw('SUM(partidasof_areas.Cantidad) as TotalCantidad')
+                DB::raw('SUM(partidasof_areas.Cantidad) as TotalCantidad'),
+                DB::raw('GROUP_CONCAT(partidasof_areas.NumeroEtiqueta ORDER BY partidasof_areas.NumeroEtiqueta ASC) as NumeroEtiquetas')
             )
             ->groupBy('partidasof_areas.PartidasOF_id', 'partidasof_areas.Areas_id')
             ->get();
-        
-        $tiemposPorPiezaAgrupados = [];
-        
+        $tiemposPorPieza = [];
         foreach ($produccion as $prod) {
             $pieza = $piezas->firstWhere('PartidasOF_id', $prod->PartidasOf_id);
-        
-            if ($pieza && $pieza->TotalCantidad > 0) { // Evitar división por cero
+            
+            if ($pieza) {
                 $tiempoPorPieza = $prod->tiempoProduccionActual / $pieza->TotalCantidad;
-                $areaNombre = $areas[$prod->Areas_id] ?? "Desconocido";
-        
-                if (!isset($tiemposPorPiezaAgrupados[$areaNombre])) {
-                    $tiemposPorPiezaAgrupados[$areaNombre] = 0;
-                }
-        
-                // Acumulamos el tiempo en la clave del área
-                $tiemposPorPiezaAgrupados[$areaNombre] += $tiempoPorPieza;
+                $tiemposPorPieza[] = [
+                    'Area' => $areas[$prod->Areas_id],
+                    'TiempoPorPieza' => number_format($tiempoPorPieza,2)
+                ];
             }
         }
-        
-        // Convertimos el array asociativo a un array indexado con el formato deseado
-        $tiemposPorPieza = [];
-        
-        foreach ($tiemposPorPiezaAgrupados as $area => $tiempoTotal) {
-            $tiemposPorPieza[] = [
-                'Area' => $area,
-                'TiempoPorPieza' => $tiempoTotal
-            ];
-        }
-        
-        //return$tiemposPorPieza;
-
         $TiemposMuertos = DB::table('ordenfabricacion')
         ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
         ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
@@ -1330,222 +1348,8 @@ class HomeControler extends Controller
             'piezasinicadas'=> $piezasinicadas,
             'numeroPRO'=>$tiemposProduccionData
         ]);
-
-
-            /*
-{
-  "TiemposMuertos2": [
-    {
-      "PartidasOf_id": 32,
-      "Areas_id": 3,
-      "NumeroEtiqueta": null,
-      "FechaComienzo": "2025-03-06 17:04:25",
-      "FechaTermina": "2025-03-06 17:04:27"
-    },
-    {
-      "PartidasOf_id": 31,
-      "Areas_id": 3,
-      "NumeroEtiqueta": 1,
-      "FechaComienzo": "2025-03-06 09:18:01",
-
-      "FechaTermina": "2025-03-06 09:18:04"
-    }
-  ],
-  "TiemposMuertos1": [
-    {
-      "id": 31,
-      "OrdenFabricacion_id": 67,
-      "NumeroPartida": 1,
-      "FechaComienzo": "2025-03-06 09:17:33",
-      "FechaFinalizacion": "2025-03-06 09:17:37"
-    },
-    {
-      "id": 32,
-      "OrdenFabricacion_id": 68,
-      "NumeroPartida": 1,
-      "FechaComienzo": "2025-03-06 17:02:19",
-      "FechaFinalizacion": "2025-03-06 17:02:22"
-    }
-      "tiemposfinales"[
-      {
-      "id":31,
-      tiempomuerto: 24,
-    }
-      {
-     "id":32,
-      tiempomuerto: 123,
-    }
-
-      ]
-  ]
-}
-        // Obtener la producción
-        $produccion = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-            ->whereIn('partidasof_areas.Areas_id', array_keys($areas))
-            ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy)
-            ->select(
-                'partidasof_areas.Areas_id',
-                'partidasof_areas.PartidasOf_id',
-                DB::raw("SUM(TIMESTAMPDIFF(SECOND, partidasof_areas.FechaComienzo, partidasof_areas.FechaTermina)) as tiempoProduccionActual")
-            )
-            ->groupBy('partidasof_areas.Areas_id', 'partidasof_areas.PartidasOf_id')
-            ->get();
-    
-        // Obtener las piezas procesadas
-        $cortespiezas= DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->whereDate('partidasof.FechaComienzo', '=', $hoy)
-            ->where('partidasof.TipoPartida', 'N')
-            ->select(
-                'partidasof.OrdenFabricacion_id',
-                DB::raw('SUM(partidasof.cantidad_partida) as TotalCantidad'),
-                DB::raw('GROUP_CONCAT(partidasof.NumeroPartida ORDER BY partidasof.NumeroPartida ASC) as NumeroEtiquetas')
-            )
-            ->groupBy( 'partidasof.OrdenFabricacion_id')
-            ->get()
-            ->map(function ($item) use ($Cortesarea) {
-                $item->area = $Cortesarea[2]; 
-                return $item;
-            });
         
-
-
-
-        $piezas = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-            ->whereIn('partidasof_areas.Areas_id', array_keys($areas))
-            ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy)
-            ->where('partidasof_areas.TipoPartida', 'N')
-            ->select(
-                'partidasof_areas.PartidasOF_id',
-                'partidasof_areas.Areas_id',
-                DB::raw('SUM(partidasof_areas.Cantidad) as TotalCantidad'),
-                DB::raw('GROUP_CONCAT(partidasof_areas.NumeroEtiqueta ORDER BY partidasof_areas.NumeroEtiqueta ASC) as NumeroEtiquetas')
-            )
-            ->groupBy('partidasof_areas.PartidasOF_id', 'partidasof_areas.Areas_id')
-            ->get();
-        $tiemposPorPieza = [];
-        foreach ($produccion as $prod) {
-            $pieza = $piezas->firstWhere('PartidasOF_id', $prod->PartidasOf_id);
-            
-            if ($pieza) {
-                $tiempoPorPieza = $prod->tiempoProduccionActual / $pieza->TotalCantidad;
-                $tiemposPorPieza[] = [
-                    'Area' => $areas[$prod->Areas_id],
-                    'TiempoPorPieza' => $tiempoPorPieza
-                ];
-            }
-        }
-        $tiemposPorPieza;
-        $TiemposMuertos = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-        ->whereIn('partidasof_areas.Areas_id', array_keys($areas))
-        ->where('partidasof_areas.TipoPartida', 'N')
-        ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy)
-        ->select(
-            'partidasof_areas.PartidasOf_id',
-            'partidasof_areas.Areas_id',
-            'partidasof_areas.NumeroEtiqueta',
-            'partidasof_areas.FechaComienzo',
-            'partidasof_areas.FechaTermina'
-        )
-        ->orderBy('partidasof_areas.NumeroEtiqueta')
-        ->orderBy('partidasof_areas.Areas_id')
-        ->get();
-        $result = [];
-        $previousArea = null;
-        foreach ($TiemposMuertos as $item) {
-            if ($previousArea !== null && $previousArea->NumeroEtiqueta == $item->NumeroEtiqueta) {
-                $startTime = new \Carbon\Carbon($previousArea->FechaTermina);
-                $endTime = new \Carbon\Carbon($item->FechaComienzo);
-                $timeDifference = $startTime->diffInSeconds($endTime); 
-
-                if ($previousArea->Areas_id + 1 == $item->Areas_id) {
-                    $key = $previousArea->Areas_id . ',' . $item->Areas_id;
-                    if (isset($result[$key])) {
-                        $result[$key]['TiempoMuerto'] += $timeDifference;
-                        $etiquetas = explode(',', $result[$key]['NumeroEtiqueta']);
-                        $etiquetas = array_unique(array_merge($etiquetas, [$item->NumeroEtiqueta]));
-                        $result[$key]['NumeroEtiqueta'] = implode(',', $etiquetas);
-                    } else {
-                        $result[$key] = [
-                            'PartidasOf_id' => $previousArea->PartidasOf_id, 
-                            'Areas_id' => $previousArea->Areas_id . ',' . $item->Areas_id,
-                            'NumeroEtiqueta' => $previousArea->NumeroEtiqueta . ',' . $item->NumeroEtiqueta,
-                            'TiempoMuerto' => $timeDifference
-                        ];
-                    }
-                }
-            }
-            $previousArea = $item;
-        }
-        $finalResult = array_values($result);
-        $numeroPRO = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-        ->whereIn('partidasof_areas.Areas_id', array_keys($areas))
-        ->where('partidasof_areas.TipoPartida', 'N')
-        ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy)
-        ->select(
-            DB::raw('GROUP_CONCAT(DISTINCT partidasof_areas.partidasOF_id ORDER BY partidasof_areas.partidasOF_id) as partidasOF_id'),
-            'partidasof_areas.Areas_id',
-            DB::raw('SUM(partidasof_areas.cantidad) as cantidad'),
-            DB::raw('GROUP_CONCAT(partidasof_areas.NumeroEtiqueta ORDER BY partidasof_areas.NumeroEtiqueta) as NumeroEtiqueta')
-        )
-        ->groupBy('partidasof_areas.Areas_id')
-        ->get();  
-        $tiemposProduccionData = [];
-        $tiemposMuertosData = [];
-
-        foreach ($numeroPRO as $item) {
-            $areaName = $areas[$item->Areas_id] ?? 'Desconocido';
-            $tiemposProduccionData[$areaName] = $item->cantidad;
-        }
-        $TotalPiezas = DB::table('ordenfabricacion')
-        ->whereDate('FechaEntrega', '=', $hoy)
-        ->sum('CantidadTotal');
-
-        $piezasinicadas= DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->whereDate('FechaComienzo', '=', $hoy)
-            ->sum('partidasof.cantidad_partida');
-        return response()->json([
-            'produccion' => $produccion,
-            'finalResult' => $finalResult,
-            'tiemposPorPieza' => $tiemposPorPieza,
-            'TotalPiezas' => $TotalPiezas,
-            'piezasinicadas'=> $piezasinicadas,
-            'numeroPRO'=>$tiemposProduccionData
-        ]);*/
-        
-        /*+
-
-        [
-  {
-    "OrdenFabricacion_id": 67,
-    "TotalCantidad": "4",
-    "NumeroEtiquetas": "1"
-  }
-]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        /*
       [
   {
       "partidasOF_id": 31,32

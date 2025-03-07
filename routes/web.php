@@ -192,6 +192,7 @@ Route::get('/retrabajo', [HomeControler:: class, 'Ordenes'])->name('ordenes.retr
 Route::get('/cerradas', [HomeControler::class, 'cerradas'])->name('orden.cerredas')->middleware('auth');
 Route::get('/abiertas', [HomeControler:: class, 'abiertas'])->name('ordenes.abiertas')->middleware('auth');
 Route::get('/graficasdores', [HomeControler:: class, 'graficas'])->name('graficas.dashboard')->middleware('auth');
+Route::get('/dashboard/capacidadproductiva', [HomeControler:: class, 'CapacidadProductiva'])->name('CapacidadProductiva')->middleware('auth');
 // routes/web.php
 Route::get('/detalles-oc', [HomeControler::class, 'detallesOC'])->name('ordenes.detallesOC')->middleware('auth');
 Route::get('/tiempo', [HomeControler::class, 'tiempoOC'])->name('ordenes.tiempo')->middleware('auth');
