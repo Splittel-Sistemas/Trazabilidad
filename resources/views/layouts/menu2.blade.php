@@ -12,10 +12,7 @@
         <!-- ===============================================-->
         <!--    Favicons-->
         <!-- ===============================================-->
-        <link rel="apple-touch-icon" sizes="180x180" href="{{asset('menu2/assets/img/favicons/apple-touch-icon.png')}}">
-        <link rel="icon" type="image/png" sizes="32x32" href="{{asset('menu2/assets/img/favicons/favicon-32x32.png')}}">
-        <link rel="icon" type="image/png" sizes="16x16" href="{{asset('menu2/assets/img/favicons/favicon-16x16.png')}}">
-        <link rel="shortcut icon" type="image/x-icon" href="{{asset('menu2/assets/img/favicons/favicon.ico')}}">
+        <!--<link rel="shortcut icon" type="image/x-icon" href="{{asset('imagenes/splittel.png') }}">-->
         <link rel="manifest" href="{{asset('menu2/assets/img/favicons/manifest.json')}}">
         <meta name="msapplication-TileImage" content="{{asset('menu2/assets/img/favicons/mstile-150x150.png')}}">
         <meta name="theme-color" content="#ffffff">
@@ -367,7 +364,7 @@
                         <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Members</h6>
                         <div class="py-2"><a class="dropdown-item py-2 d-flex align-items-center" href="pages/members.html">
                             <div class="avatar avatar-l status-online  me-2 text-900">
-                                <img class="rounded-circle " src="assets/img/team/40x40/10.webp" alt="" />
+                                <!--<img class="rounded-circle " src="assets/img/team/40x40/10.webp" alt="" />-->
                             </div>
                             <div class="flex-1">
                                 <h6 class="mb-0 text-1000 title">Carry Anna</h6>
@@ -376,7 +373,6 @@
                             </a>
                             <a class="dropdown-item py-2 d-flex align-items-center" href="pages/members.html">
                             <div class="avatar avatar-l  me-2 text-900">
-                                <img class="rounded-circle " src="assets/img/team/40x40/12.webp" alt="" />
                             </div>
                             <div class="flex-1">
                                 <h6 class="mb-0 text-1000 title">John Smith</h6>
@@ -423,7 +419,6 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/30.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Jessie Samson</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2">10m</span></p>
@@ -487,7 +482,6 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/59.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Herman Carter</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👤</span>Tagged you in a comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -502,7 +496,6 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read ">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/58.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Benjamin Button</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👍</span>Liked your comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -582,7 +575,6 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/30.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Jessie Samson</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2">10m</span></p>
@@ -646,7 +638,6 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/59.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Herman Carter</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👤</span>Tagged you in a comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -661,7 +652,6 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read ">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/58.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Benjamin Button</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👍</span>Liked your comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -697,50 +687,7 @@
                     <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-nide-dots shadow border border-300" aria-labelledby="navbarDropdownNindeDots">
                         <div class="card bg-white position-relative border-0">
                         <div class="card-body pt-3 px-3 pb-0 overflow-auto scrollbar" style="height: 20rem;">
-                            <div class="row text-center align-items-center gx-0 gy-0">
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/behance.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Behance</p>
-                                </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-cloud.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Cloud</p>
-                                </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/slack.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Slack</p>
-                                </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/gitlab.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Gitlab</p>
-                                </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/bitbucket.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">BitBucket</p>
-                                </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-drive.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Drive</p>
-                                </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/trello.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Trello</p>
-                                </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/figma.webp" alt="" width="20" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Figma</p>
-                                </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/twitter.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Twitter</p>
-                                </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/pinterest.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Pinterest</p>
-                                </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/ln.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Linkedin</p>
-                                </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-maps.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Maps</p>
-                                </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-photos.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Photos</p>
-                                </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/spotify.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Spotify</p>
-                                </a></div>
-                            </div>
+                           
                         </div>
                         </div>
                     </div>
@@ -1298,7 +1245,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/30.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Jessie Samson</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2">10m</span></p>
@@ -1362,7 +1308,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/59.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Herman Carter</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👤</span>Tagged you in a comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -1377,7 +1322,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read ">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/58.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Benjamin Button</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👍</span>Liked your comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -1414,48 +1358,7 @@
                     <div class="card bg-white position-relative border-0">
                         <div class="card-body pt-3 px-3 pb-0 overflow-auto scrollbar" style="height: 20rem;">
                         <div class="row text-center align-items-center gx-0 gy-0">
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/behance.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Behance</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-cloud.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Cloud</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/slack.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Slack</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/gitlab.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Gitlab</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/bitbucket.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">BitBucket</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-drive.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Drive</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/trello.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Trello</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/figma.webp" alt="" width="20" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Figma</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/twitter.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Twitter</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/pinterest.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Pinterest</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/ln.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Linkedin</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-maps.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Maps</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-photos.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Photos</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/spotify.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Spotify</p>
-                            </a></div>
+                            
                         </div>
                         </div>
                     </div>
@@ -2011,7 +1914,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/30.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Jessie Samson</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2">10m</span></p>
@@ -2075,7 +1977,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/59.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Herman Carter</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👤</span>Tagged you in a comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -2090,7 +1991,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read ">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/58.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Benjamin Button</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👍</span>Liked your comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -2127,48 +2027,7 @@
                     <div class="card bg-white position-relative border-0">
                         <div class="card-body pt-3 px-3 pb-0 overflow-auto scrollbar" style="height: 20rem;">
                         <div class="row text-center align-items-center gx-0 gy-0">
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/behance.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Behance</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-cloud.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Cloud</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/slack.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Slack</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/gitlab.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Gitlab</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/bitbucket.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">BitBucket</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-drive.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Drive</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/trello.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Trello</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/figma.webp" alt="" width="20" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Figma</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/twitter.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Twitter</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/pinterest.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Pinterest</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/ln.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Linkedin</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-maps.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Maps</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-photos.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Photos</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/spotify.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Spotify</p>
-                            </a></div>
+                            
                         </div>
                         </div>
                     </div>
@@ -2725,7 +2584,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/30.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Jessie Samson</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2">10m</span></p>
@@ -2789,7 +2647,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/59.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Herman Carter</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👤</span>Tagged you in a comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -2804,7 +2661,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read ">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/58.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Benjamin Button</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👍</span>Liked your comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -2841,48 +2697,7 @@
                     <div class="card bg-white position-relative border-0">
                         <div class="card-body pt-3 px-3 pb-0 overflow-auto scrollbar" style="height: 20rem;">
                         <div class="row text-center align-items-center gx-0 gy-0">
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/behance.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Behance</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-cloud.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Cloud</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/slack.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Slack</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/gitlab.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Gitlab</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/bitbucket.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">BitBucket</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-drive.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Drive</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/trello.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Trello</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/figma.webp" alt="" width="20" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Figma</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/twitter.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Twitter</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/pinterest.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Pinterest</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/ln.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Linkedin</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-maps.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Maps</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-photos.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Photos</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/spotify.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Spotify</p>
-                            </a></div>
+                            
                         </div>
                         </div>
                     </div>
@@ -3447,7 +3262,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/30.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Jessie Samson</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2">10m</span></p>
@@ -3511,7 +3325,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/59.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Herman Carter</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👤</span>Tagged you in a comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -3526,7 +3339,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read ">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/58.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Benjamin Button</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👍</span>Liked your comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -3563,48 +3375,7 @@
                     <div class="card bg-white position-relative border-0">
                         <div class="card-body pt-3 px-3 pb-0 overflow-auto scrollbar" style="height: 20rem;">
                         <div class="row text-center align-items-center gx-0 gy-0">
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/behance.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Behance</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-cloud.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Cloud</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/slack.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Slack</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/gitlab.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Gitlab</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/bitbucket.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">BitBucket</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-drive.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Drive</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/trello.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Trello</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/figma.webp" alt="" width="20" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Figma</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/twitter.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Twitter</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/pinterest.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Pinterest</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/ln.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Linkedin</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-maps.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Maps</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-photos.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Photos</p>
-                            </a></div>
-                            <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/spotify.webp" alt="" width="30" />
-                                <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Spotify</p>
-                            </a></div>
+                            
                         </div>
                         </div>
                     </div>
@@ -3720,7 +3491,7 @@
                             <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Members</h6>
                             <div class="py-2"><a class="dropdown-item py-2 d-flex align-items-center" href="pages/members.html">
                                 <div class="avatar avatar-l status-online  me-2 text-900">
-                                <img class="rounded-circle " src="assets/img/team/40x40/10.webp" alt="" />
+                                <!--<img class="rounded-circle " src="assets/img/team/40x40/10.webp" alt="" />-->
                                 </div>
                                 <div class="flex-1">
                                 <h6 class="mb-0 text-1000 title">Carry Anna</h6>
@@ -3729,7 +3500,6 @@
                             </a>
                             <a class="dropdown-item py-2 d-flex align-items-center" href="pages/members.html">
                                 <div class="avatar avatar-l  me-2 text-900">
-                                <img class="rounded-circle " src="assets/img/team/40x40/12.webp" alt="" />
                                 </div>
                                 <div class="flex-1">
                                 <h6 class="mb-0 text-1000 title">John Smith</h6>
@@ -3776,7 +3546,6 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read border-bottom">
                                     <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                        <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/30.webp" alt="" /></div>
                                         <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Jessie Samson</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>💬</span>Mentioned you in a comment.<span class="ms-2 text-400 fw-bold fs--2">10m</span></p>
@@ -3840,7 +3609,6 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                     <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                        <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/59.webp" alt="" /></div>
                                         <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Herman Carter</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👤</span>Tagged you in a comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -3855,7 +3623,6 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative read ">
                                     <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                        <div class="avatar avatar-m status-online me-3"><img class="rounded-circle" src="assets/img/team/40x40/58.webp" alt="" /></div>
                                         <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Benjamin Button</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👍</span>Liked your comment.<span class="ms-2 text-400 fw-bold fs--2"></span></p>
@@ -3892,48 +3659,7 @@
                         <div class="card bg-white position-relative border-0">
                             <div class="card-body pt-3 px-3 pb-0 overflow-auto scrollbar" style="height: 20rem;">
                             <div class="row text-center align-items-center gx-0 gy-0">
-                                <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/behance.webp" alt="" width="30" />
-                                    <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Behance</p>
-                                </a></div>
-                                <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-cloud.webp" alt="" width="30" />
-                                    <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Cloud</p>
-                                </a></div>
-                                <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/slack.webp" alt="" width="30" />
-                                    <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Slack</p>
-                                </a></div>
-                                <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/gitlab.webp" alt="" width="30" />
-                                    <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Gitlab</p>
-                                </a></div>
-                                <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/bitbucket.webp" alt="" width="30" />
-                                    <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">BitBucket</p>
-                                </a></div>
-                                <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-drive.webp" alt="" width="30" />
-                                    <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Drive</p>
-                                </a></div>
-                                <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/trello.webp" alt="" width="30" />
-                                    <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Trello</p>
-                                </a></div>
-                                <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/figma.webp" alt="" width="20" />
-                                    <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Figma</p>
-                                </a></div>
-                                <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/twitter.webp" alt="" width="30" />
-                                    <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Twitter</p>
-                                </a></div>
-                                <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/pinterest.webp" alt="" width="30" />
-                                    <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Pinterest</p>
-                                </a></div>
-                                <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/ln.webp" alt="" width="30" />
-                                    <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Linkedin</p>
-                                </a></div>
-                                <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-maps.webp" alt="" width="30" />
-                                    <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Maps</p>
-                                </a></div>
-                                <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/google-photos.webp" alt="" width="30" />
-                                    <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Photos</p>
-                                </a></div>
-                                <div class="col-4"><a class="d-block hover-bg-200 p-2 rounded-3 text-center text-decoration-none mb-3" href="#!"><img src="assets/img/nav-icons/spotify.webp" alt="" width="30" />
-                                    <p class="mb-0 text-black text-truncate fs--2 mt-1 pt-1">Spotify</p>
-                                </a></div>
+                                
                             </div>
                             </div>
                         </div>
@@ -4544,7 +4270,7 @@
                             <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Members</h6>
                             <div class="py-2"><a class="dropdown-item py-2 d-flex align-items-center" href="pages/members.html">
                                 <div class="avatar avatar-l status-online  me-2 text-900">
-                                    <img class="rounded-circle " src="assets/img/team/40x40/10.webp" alt="" />
+                                    <!--<img class="rounded-circle " src="assets/img/team/40x40/10.webp" alt="" />-->
                                 </div>
                                 <div class="flex-1">
                                     <h6 class="mb-0 text-1000 title">Carry Anna</h6>
@@ -4553,7 +4279,6 @@
                                 </a>
                                 <a class="dropdown-item py-2 d-flex align-items-center" href="pages/members.html">
                                 <div class="avatar avatar-l  me-2 text-900">
-                                    <img class="rounded-circle " src="assets/img/team/40x40/12.webp" alt="" />
                                 </div>
                                 <div class="flex-1">
                                     <h6 class="mb-0 text-1000 title">John Smith</h6>
@@ -4703,7 +4428,6 @@
                             <p class="mb-0 fw-semi-bold fs--1">My payment method not working</p><span class="fa-solid fa-paper-plane text-primary fs--1 ms-3"></span>
                         </a></div>
                         <div class="text-center mt-auto">
-                        <div class="avatar avatar-3xl status-online"><img class="rounded-circle border border-3 border-white" src="assets/img/team/30.webp" alt="" /></div>
                         <h5 class="mt-2 mb-3">Eric</h5>
                         <!--<p class="text-center text-black mb-0">Ask us anything – we’ll get back to you here or by email within 24 hours.</p>-->
                         </div>
@@ -4730,10 +4454,7 @@
             <div class="offcanvas-body scrollbar px-card" id="themeController">
                 <div class="setting-panel-item mt-0">
                 <h5 class="setting-panel-item-title">Color Scheme</h5>
-                <div class="row gx-2">
-                    <div class="col-6"><input class="btn-check" id="themeSwitcherLight" name="theme-color" type="radio" value="light" data-theme-control="phoenixTheme" /><label class="btn d-inline-block btn-navbar-style fs--1" for="themeSwitcherLight"> <span class="mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="assets/img/generic/default-light.png" alt=""/></span><span class="label-text">Light</span></label></div>
-                    <div class="col-6"><input class="btn-check" id="themeSwitcherDark" name="theme-color" type="radio" value="dark" data-theme-control="phoenixTheme" /><label class="btn d-inline-block btn-navbar-style fs--1" for="themeSwitcherDark"> <span class="mb-2 rounded d-block"><img class="img-fluid img-prototype mb-0" src="assets/img/generic/default-dark.png" alt=""/></span><span class="label-text"> Dark</span></label></div>
-                </div>
+               
                 </div>
                 <div class="border rounded-3 p-4 setting-panel-item bg-white">
                 <div class="d-flex justify-content-between align-items-center">
@@ -4751,33 +4472,18 @@
                 </div>
                 <div class="setting-panel-item">
                 <h5 class="setting-panel-item-title">Navigation Type</h5>
-                <div class="row gx-2">
-                    <div class="col-6"><input class="btn-check" id="navbarPositionVertical" name="navigation-type" type="radio" value="vertical" data-theme-control="phoenixNavbarPosition" /><label class="btn d-inline-block btn-navbar-style fs--1" for="navbarPositionVertical"> <span class="mb-2 rounded d-block"><img class="img-fluid img-prototype d-dark-none" src="assets/img/generic/default-light.png" alt=""/><img class="img-fluid img-prototype d-light-none" src="assets/img/generic/default-dark.png" alt=""/></span><span class="label-text">Vertical</span></label></div>
-                    <div class="col-6"><input class="btn-check" id="navbarPositionHorizontal" name="navigation-type" type="radio" value="horizontal" data-theme-control="phoenixNavbarPosition" /><label class="btn d-inline-block btn-navbar-style fs--1" for="navbarPositionHorizontal"> <span class="mb-2 rounded d-block"><img class="img-fluid img-prototype d-dark-none" src="assets/img/generic/top-default.png" alt=""/><img class="img-fluid img-prototype d-light-none" src="assets/img/generic/top-default-dark.png" alt=""/></span><span class="label-text"> Horizontal</span></label></div>
-                    <div class="col-6"><input class="btn-check" id="navbarPositionCombo" name="navigation-type" type="radio" value="combo" data-theme-control="phoenixNavbarPosition" /><label class="btn d-inline-block btn-navbar-style fs--1" for="navbarPositionCombo"> <span class="mb-2 rounded d-block"><img class="img-fluid img-prototype d-dark-none" src="assets/img/generic/nav-combo-light.png" alt=""/><img class="img-fluid img-prototype d-light-none" src="assets/img/generic/nav-combo-dark.png" alt=""/></span><span class="label-text"> Combo</span></label></div>
-                    <div class="col-6"><input class="btn-check" id="navbarPositionTopDouble" name="navigation-type" type="radio" value="dual-nav" data-theme-control="phoenixNavbarPosition" /><label class="btn d-inline-block btn-navbar-style fs--1" for="navbarPositionTopDouble"> <span class="mb-2 rounded d-block"><img class="img-fluid img-prototype d-dark-none" src="assets/img/generic/dual-light.png" alt=""/><img class="img-fluid img-prototype d-light-none" src="assets/img/generic/dual-dark.png" alt=""/></span><span class="label-text"> Dual nav</span></label></div>
-                </div>
                 </div>
                 <div class="setting-panel-item">
                 <h5 class="setting-panel-item-title">Vertical Navbar Appearance</h5>
-                <div class="row gx-2">
-                    <div class="col-6"><input class="btn-check" id="navbar-style-default" type="radio" name="config.name" value="default" data-theme-control="phoenixNavbarVerticalStyle" /><label class="btn d-block w-100 btn-navbar-style fs--1" for="navbar-style-default"> <img class="img-fluid img-prototype d-dark-none" src="assets/img/generic/default-light.png" alt="" /><img class="img-fluid img-prototype d-light-none" src="assets/img/generic/default-dark.png" alt="" /><span class="label-text d-dark-none"> Default</span><span class="label-text d-light-none">Default</span></label></div>
-                    <div class="col-6"><input class="btn-check" id="navbar-style-dark" type="radio" name="config.name" value="darker" data-theme-control="phoenixNavbarVerticalStyle" /><label class="btn d-block w-100 btn-navbar-style fs--1" for="navbar-style-dark"> <img class="img-fluid img-prototype d-dark-none" src="assets/img/generic/vertical-darker.png" alt="" /><img class="img-fluid img-prototype d-light-none" src="assets/img/generic/vertical-lighter.png" alt="" /><span class="label-text d-dark-none"> Darker</span><span class="label-text d-light-none">Lighter</span></label></div>
-                </div>
+               
                 </div>
                 <div class="setting-panel-item">
                 <h5 class="setting-panel-item-title">Horizontal Navbar Shape</h5>
-                <div class="row gx-2">
-                    <div class="col-6"><input class="btn-check" id="navbarShapeDefault" name="navbar-shape" type="radio" value="default" data-theme-control="phoenixNavbarTopShape" /><label class="btn d-inline-block btn-navbar-style fs--1" for="navbarShapeDefault"> <span class="mb-2 rounded d-block"><img class="img-fluid img-prototype d-dark-none mb-0" src="assets/img/generic/top-default.png" alt=""/><img class="img-fluid img-prototype d-light-none mb-0" src="assets/img/generic/top-default-dark.png" alt=""/></span><span class="label-text">Default</span></label></div>
-                    <div class="col-6"><input class="btn-check" id="navbarShapeSlim" name="navbar-shape" type="radio" value="slim" data-theme-control="phoenixNavbarTopShape" /><label class="btn d-inline-block btn-navbar-style fs--1" for="navbarShapeSlim"> <span class="mb-2 rounded d-block"><img class="img-fluid img-prototype d-dark-none mb-0" src="assets/img/generic/top-slim.png" alt=""/><img class="img-fluid img-prototype d-light-none mb-0" src="assets/img/generic/top-slim-dark.png" alt=""/></span><span class="label-text"> Slim</span></label></div>
-                </div>
+                
                 </div>
                 <div class="setting-panel-item">
                 <h5 class="setting-panel-item-title">Horizontal Navbar Appearance</h5>
-                <div class="row gx-2">
-                    <div class="col-6"><input class="btn-check" id="navbarTopDefault" name="navbar-top-style" type="radio" value="default" data-theme-control="phoenixNavbarTopStyle" /><label class="btn d-inline-block btn-navbar-style fs--1" for="navbarTopDefault"> <span class="mb-2 rounded d-block"><img class="img-fluid img-prototype d-dark-none mb-0" src="assets/img/generic/top-default.png" alt=""/><img class="img-fluid img-prototype d-light-none mb-0" src="assets/img/generic/top-style-darker.png" alt=""/></span><span class="label-text">Default</span></label></div>
-                    <div class="col-6"><input class="btn-check" id="navbarTopDarker" name="navbar-top-style" type="radio" value="darker" data-theme-control="phoenixNavbarTopStyle" /><label class="btn d-inline-block btn-navbar-style fs--1" for="navbarTopDarker"> <span class="mb-2 rounded d-block"><img class="img-fluid img-prototype d-dark-none mb-0" src="assets/img/generic/navbar-top-style-light.png" alt=""/><img class="img-fluid img-prototype d-light-none mb-0" src="assets/img/generic/top-style-lighter.png" alt=""/></span><span class="label-text d-dark-none">Darker</span><span class="label-text d-light-none">Lighter</span></label></div>
-                </div>
+               
                 </div><a class="bun btn-primary d-grid mb-3 text-white dark__text-100 mt-5 btn btn-primary" href="https://themes.getbootstrap.com/product/phoenix-admin-dashboard-webapp-template/" target="_blank">Purchase template</a>
             </div>
         </div>
