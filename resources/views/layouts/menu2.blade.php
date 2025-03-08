@@ -270,6 +270,13 @@
                                 </a>
                             </div>
                         </li>
+                        <li class="nav-item"><!-- Roles y permisos-->
+                            <div class="nav-item-wrapper">
+                                <a class="nav-link label-1 {{ Route::is('index.linea') ? 'active' : '' }}" href="{{route('index.linea')}}" role="button" data-bs-toggle="" aria-expanded="false">
+                                    <div class="d-flex align-items-center"><span class="nav-link-icon"> <span data-feather="plus-circle"></span></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Lineas</span></span></div>
+                                </a>
+                            </div>
+                        </li>
                     </ul>
                 </div>
                 </div>
