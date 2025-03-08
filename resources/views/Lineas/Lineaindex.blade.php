@@ -135,7 +135,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Fila para Correo Electrónico -->
                         <div class="form-group">
                             <label for="Descripcion">Descripción</label>
                             <input type="text" name="Descripcion" id="Descripcion" class="form-control form-control-sm" placeholder="Ingrese la descripción" required>
@@ -195,22 +194,22 @@
         }
     });
 
-    // Evento para abrir el modal en modo Edición
+
     $(document).on("click", ".btn-editar", function () {
         let id = $(this).data("id");
         let nombre = $(this).data("nombre");
         let numero = $(this).data("numero");
         let descripcion = $(this).data("descripcion");
 
-        // Configurar el modal para edición
+
         $("#lineaModalLabel").text("Editar Línea");
         $("#lineaEditForm").attr("action", `/linea/${id}`);
-        $("#lineaEditForm").find("input[name='_method']").val("PUT"); // Asegurar que es un PUT
+        $("#lineaEditForm").find("input[name='_method']").val("PUT"); 
         $("#Nombre").val(nombre);
         $("#NumeroLinea").val(numero);
         $("#Descripcion").val(descripcion);
 
-        // Abrir el modal correcto
+ 
         $("#lineaModal").modal("show");
     });
 });
