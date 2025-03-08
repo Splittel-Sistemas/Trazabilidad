@@ -56,7 +56,7 @@
 <div class="container my-4">
 
    
-    <a href="{{ route('linea.create') }}" class="btn btn-outline-info mb-3">Agregar Usuario</a>
+    <a href="{{ route('linea.create') }}" class="btn btn-outline-info mb-3">Agregar Linea</a>
 
     @if (session('status'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
