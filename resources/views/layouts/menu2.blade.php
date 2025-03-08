@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US" dir="ltr">
+<html lang="es-MX" dir="ltr">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,7 +12,7 @@
         <!-- ===============================================-->
         <!--    Favicons-->
         <!-- ===============================================-->
-        <!--<link rel="shortcut icon" type="image/x-icon" href="{{asset('imagenes/splittel.png') }}">-->
+        <link rel="shortcut icon" type="image/x-icon" href="{{asset('imagenes/splittel.png') }}">
         <link rel="manifest" href="{{asset('menu2/assets/img/favicons/manifest.json')}}">
         <meta name="msapplication-TileImage" content="{{asset('menu2/assets/img/favicons/mstile-150x150.png')}}">
         <meta name="theme-color" content="#ffffff">
@@ -237,6 +237,7 @@
                                         <li class="nav-item"><a class="nav-link {{ Route::is('Pulido') ? 'nav-tabs active' : '' }}" href="{{route('Pulido')}}" data-bs-toggle="" aria-expanded="false">
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Pulido</span></div>
                                             </a>
+                                            <hr class="p-0 m-1">
                                         </li>
                                         <li class="nav-item"><a class="nav-link {{ Route::is('Medicion') ? 'nav-tabs active' : '' }}" href="{{route('Medicion')}}" data-bs-toggle="" aria-expanded="false">
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Medici&oacute;n</span></div>
@@ -4492,7 +4493,7 @@
         <script src="{{asset('menu2/vendors/is/is.min.js')}}"></script>
         <script src="{{asset('menu2/vendors/fontawesome/all.min.js')}}"></script>
         <script src="{{asset('menu2/vendors/lodash/lodash.min.js')}}"></script>
-        <script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script>
+        <!--<script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script>-->
         {{--! Datatable --}}
         <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/2.2.1/js/dataTables.bootstrap5.min.js"></script>

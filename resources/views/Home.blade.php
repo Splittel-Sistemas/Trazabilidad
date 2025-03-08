@@ -898,12 +898,8 @@
 
                 });
             })
-            .catch(error => console.error('Error al cargar los datos:', error));
+            .catch(error => console.log('Error al cargar los datos:', error));
     }
-    $(document).ready(function () {
-        cargarOrdenesCerradas();
-        cargarOrdenesCompletas();
-    });
     function generarGrafico(url, containerId, itemName) {
         fetch(url)
             .then(response => response.json())
@@ -996,7 +992,7 @@
                 chart.setOption(option);
             })
             .catch(error => {
-                console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
+                console.log(`Error al cargar los datos del gráfico (${itemName}):`, error);
             });
     }
     // Llamadas a la función para generar gráficos
@@ -1147,7 +1143,7 @@
         document.getElementById("Porcentajeplaneada").textContent = porcentajeCompletadas.toFixed(2);  
         document.getElementById("Porcentajefaltante").textContent = porcentajeCerradas.toFixed(2);  
 
-        document.getElementById("Piezasdia").textContent = totalOfTotal;
+        //document.getElementById("Piezasdia").textContent = totalOfTotal;
         document.getElementById("Piezasplaneadas").textContent = totalCompletadas;
         document.getElementById("Piezasfaltantes").textContent = faltanteTotal;
 
@@ -1199,7 +1195,7 @@
 
         myChart.setOption(option);
     })
-    .catch(error => console.error('Error al obtener los datos:', error));
+    .catch(error => console.log('Error al obtener los datos:', error));
   
 // Función para convertir segundos a formato H:M:S
 function convertirSegundosAHMS(segundos) {
@@ -1385,7 +1381,7 @@ function crearGrafico(url, chartDomId) {
 
             myChart.setOption(option);
         })
-        .catch(error => console.error('Error al cargar los datos del gráfico:', error));
+        .catch(error => console.log('Error al cargar los datos del gráfico:', error));
 }
 crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
 
@@ -1470,7 +1466,7 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
             chart.setOption(option);
         })
         .catch(error => {
-            console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
+            console.log(`Error al cargar los datos del gráfico (${itemName}):`, error);
         });
     }
 
@@ -1490,11 +1486,11 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
                         if (data && data.progreso) {
                             updateProgressBars(data.progreso); // Actualizar las barras con los datos generales
                         } else {
-                            console.error("No se recibieron datos de progreso válidos.");
+                            console.log("No se recibieron datos de progreso válidos.");
                         }
                     })
                     .catch(error => {
-                        console.error('Error obteniendo datos de progreso:', error);
+                        console.log('Error obteniendo datos de progreso:', error);
                     });
             }
             // Actualizar las barras de progreso del dashboard
@@ -1581,7 +1577,7 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
                     // Renderizar gráfico
                     myChart.setOption(option);
                 })
-                .catch(error => console.error('Error al cargar los datos:', error));*/
+                .catch(error => console.log('Error al cargar los datos:', error));*/
             /*
             function cargarOrdenesCerradas() {
                 $.ajax({
@@ -1689,11 +1685,11 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
                         if (data.progreso) {
                             updateOFProgressBars(data.progreso); 
                         } else {
-                            console.error("No se recibieron datos de progreso de orden de fabricación.");
+                            console.log("No se recibieron datos de progreso de orden de fabricación.");
                         }
                     })
                     .catch(error => {
-                        console.error('Error obteniendo datos de progreso de orden de fabricación:', error);
+                        console.log('Error obteniendo datos de progreso de orden de fabricación:', error);
                     });
             }
 
@@ -1818,7 +1814,7 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
                         chart.setOption(option);
                     })
                     .catch(error => {
-                        console.error(`Error al cargar los datos del gráfico (${itemName}):`, error);
+                        console.log(`Error al cargar los datos del gráfico (${itemName}):`, error);
                     });
             }
             // Llamadas a la función para generar gráficos
@@ -1970,7 +1966,7 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
 
                         });
                     })
-                    .catch(error => console.error('Error al cargar los datos:', error));
+                    .catch(error => console.log('Error al cargar los datos:', error));
             }
         */
     function PorcentajeLlenadas(){
