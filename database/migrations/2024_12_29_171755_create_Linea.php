@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('Linea', function (Blueprint $table) {
             $table->id();
             $table->integer('NumeroLinea')->nullable();
+            $table->string('Nombre'); 
+            $table->text('Descripcion')->nullable(); 
             $table->timestamps();
         });
     }

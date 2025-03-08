@@ -11,6 +11,7 @@ use App\Http\Controllers\RolesPermisoController;
 use App\Http\Controllers\PreparadoController;
 use App\Http\Controllers\BusquedaController;
 use App\Http\Controllers\EmpacadoController;
+use App\Http\Controllers\LineasController;
 
 use App\Http\Controllers\DashboardControlle;
 use GuzzleHttp\Promise\Coroutine;
@@ -233,6 +234,15 @@ Route::get('/fin/Proceso',[AreasController::class,'finProcesoEmpaque'])->name('f
 Route::post('/regresar-proceso', [AreasController::class, 'RegresarProceso'])->name('regresar.proceso');
 Route::get('/tiempos-GraficaD', [HomeControler::class, 'graficastiempo'])->name('graficastiempo')->middleware('auth');
 Route::get('/tiempos muertos',[HomeControler::class, 'graficastiempoMuerto'])->name('graficastiempoMuerto')->middleware('auth');
+
+//lineas        
+Route::get('/index/linea',[LineasController::class, 'index'])->name('index.linea');    
+Route::get('/lineas/datos', [LineasController::class, 'tablalinea'])->name('lineas.datos');
+Route::get('/linea/create', [LineasController::class, 'create'])->name('linea.create');
+Route::post('/linea/store',[LineasController::class, 'store'])->name('linea.store');
+Route::put('/linea/update',[LineasController::class, 'update'])->name('linea.update');
+
+
 
 
 
