@@ -242,6 +242,9 @@ Route::get('/linea/create', [LineasController::class, 'create'])->name('linea.cr
 Route::post('/linea/store',[LineasController::class, 'store'])->name('linea.store');
 Route::put('/linea/update',[LineasController::class, 'update'])->name('linea.update');
 
+Route::post('/lineas/activar', [LineasController::class, 'activar'])->name('lineas.activar');
+Route::post('/lineas/desactivar', [LineasController::class, 'desactivar'])->name('lineas.desactivar');
+
 
 
 

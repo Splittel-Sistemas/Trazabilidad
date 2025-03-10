@@ -83,4 +83,26 @@ class LineasController extends Controller
 
         return response()->json(['message' => 'Línea eliminada con éxito']);
     }
+    public function activar(Request $request)
+    {
+        $linea = linea::find($request->NumeroLinea);
+        if ($linea) {
+            $linea->active = true;
+            $linea->save();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false, 'message' => 'Linea no encontrado.'], 404);
+    }
+
+    // Método para desactivar un usuario
+    public function desactivar(Request $request)
+    {
+        $linea = linea::find($request->NumeroLinea);
+        if ($linea) {
+            $linea->active = false;
+            $linea->save();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false, 'message' => 'Linea no encontrado.'], 404);
+    }
 }

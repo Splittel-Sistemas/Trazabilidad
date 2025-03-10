@@ -91,6 +91,7 @@
                             <th class="sort border-top ps-3" data-sort="nombre">Nombre</th>
                             <th class="sort border-top ps-3" data-sort="numero">Numero de linea</th>
                             <th class="sort border-top ps-3" data-sort="descripcion">Descripcion</th>
+                            <th class="sort border-top ps-3" data-sort="activacion">estatus</th>    
                             <th class="sort border-top text-center  ps-3">Accion</th>
                         </tr>
                     </thead>
@@ -170,6 +171,18 @@
                         <td class="ps-3">${item.Nombre}</td>
                         <td class="ps-3">${item.NumeroLinea}</td>
                         <td class="ps-3">${item.Descripcion}</td>
+                        <td class="align-center estatus ps-8">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input toggle-status" 
+                                    style="transform:scale(1.5);" 
+                                    type="checkbox" 
+                                    id="ActivarLinea${item.NumeroLinea}" 
+                                    onclick="DesactivarLinea(this);" 
+                                    data-id="${item.NumeroLinea}" 
+                                    ${item.active ? 'checked' : ''}>
+                            </div>
+                        </td>
+
                         <td class="text-center">
                             <button class="btn btn-sm btn-primary btn-editar" 
                                     data-id="${item.id}" 
@@ -212,6 +225,38 @@
  
         $("#lineaModal").modal("show");
     });
+
+    window.DesactivarLinea = function(item) {
+    var checkbox = $(item);
+    var NumeroLinea = checkbox.data('id'); 
+    var isActive = checkbox.prop('checked'); 
+    var url = isActive ? "{{ route('lineas.activar') }}" : "{{ route('lineas.desactivar') }}";
+
+    $.ajax({
+        url: url,
+        method: 'POST',
+        data: {
+            NumeroLinea: NumeroLinea, 
+            _token: $('meta[name="csrf-token"]').attr('content'),
+        },
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') 
+        },
+        success: function (response) {
+            if (!response.success) {
+                alert('Error: ' + response.message);
+                checkbox.prop('checked', !isActive); 
+            }
+        },
+        error: function () {
+            checkbox.prop('checked', !isActive); 
+            alert('Hubo un error al cambiar el estado.');
+        }
+    });
+};
+
+
+
 });
 
 
