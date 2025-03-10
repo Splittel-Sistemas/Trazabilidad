@@ -17,11 +17,11 @@ class LineasController extends Controller
     }
     public function tablalinea()
     {
-        $tabla = DB::table('linea')
-            ->select('linea.Nombre', 'linea.NumeroLinea', 'linea.Descripcion')
+        $items  = DB::table('linea')
+            ->select('linea.Nombre', 'linea.NumeroLinea', 'linea.Descripcion', 'linea.active')
             ->get();
     
-        return response()->json($tabla);
+        return response()->json($items );
     }
     public function create()
     {
