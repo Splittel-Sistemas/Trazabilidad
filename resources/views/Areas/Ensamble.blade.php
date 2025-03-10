@@ -21,23 +21,10 @@
     <div class="row">
         <div class="col-6">
               <div class="card shadow-sm">
+                <div class="card-header bg-success p-2" id="filtroEntrada">
+                    <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Entrada</h3>
+                </div>
                 <div class="card-body row" id="filtro">
-                    <h3 for="CodigoEscaner" class=" col-sm-12 pt-0 text-success">Entrada</h3>
-                    <!---<div class="col-8">
-                            <div class="form-check form-check-inline ">
-                                <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked onclick="MostrarRetrabajo('Entrada')">
-                                <label class="form-check-label" for="Iniciar">
-                                  Entrada
-                                </label>
-                            </div>
-                            <div class="form-check form-check-inline ">
-                                <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar" onclick="MostrarRetrabajo('Salida')">
-                                <label class="form-check-label" for="Finalizar">
-                                  Salida
-                                </label>
-                            </div>
-                    </div>-->
-                    <hr>
                     <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
                         <div class="col-8" id="CodigoDiv">
                             <div class="">
@@ -73,23 +60,10 @@
         </div>
         <div class="col-6">
               <div class="card shadow-sm">
+                <div class="card-header bg-danger p-2" id="filtroEntrada">
+                    <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Salida</h3>
+                </div>
                 <div class="card-body row" id="filtro">
-                    <h3 for="CodigoEscaner" class=" col-sm-12 pt-0 text-danger">Salida</h3>
-                    <!--<div class="col-8">
-                            <div class="form-check form-check-inline ">
-                                <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked onclick="MostrarRetrabajo('Entrada')">
-                                <label class="form-check-label" for="Iniciar">
-                                  Entrada
-                                </label>
-                            </div>
-                            <div class="form-check form-check-inline ">
-                                <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar" onclick="MostrarRetrabajo('Salida')">
-                                <label class="form-check-label" for="Finalizar">
-                                  Salida
-                                </label>
-                            </div>
-                    </div>-->
-                    <hr>
                     <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
                         <div class="col-8" id="CodigoDiv">
                             <div class="">

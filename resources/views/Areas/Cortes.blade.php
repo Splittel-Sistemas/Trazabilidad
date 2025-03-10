@@ -3,12 +3,34 @@
 @section('styles')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
-    .btn-link{
+    /*.btn-link{
         transform: scale(1.5);
     }
     .btn-link:hover {
     transform: scale(1.8);
-    transition: transform 0.3s ease; /* Añade una transición suave */
+    transition: transform 0.3s ease; /* Añade una transición suave 
+    }*/
+    #myTab li a{
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        padding: 0.5rem 1rem 0.5rem 1rem;
+    }
+    #myTab li a:hover{
+        border: solid 1px #e7e7e7;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+    #myTab li .active{
+        border: solid 1px #e7e7e7;
+        border-bottom: solid white;
+    }
+    #myTab li .active:hover{
+        border: solid 1px #e7e7e7;
+        border-bottom: solid white;
+    }
+    #hr-menu{
+        padding: 0;
+        margin: 0;
     }
 </style>
 @endsection
@@ -37,7 +59,7 @@
                         </a>
                     </li>
                 </ul>
-                <hr>
+                <hr id="hr-menu">
                 <div class="tab-content mt-4 " id="myTabContent">
                     <!-- Tab Proceso -->
                     <div class="tab-pane fade show active" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab">
