@@ -12,7 +12,7 @@ use App\Models\Partidasof_Areas;
 use Illuminate\Support\Facades\Log;
 
 
-class HomeControler extends Controller
+class HomeController extends Controller
 {
     public function  Home(){
         return view('Home');
@@ -25,7 +25,7 @@ class HomeControler extends Controller
             Auth::logout();
             return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
         }
-        return view('home');
+        return view('Home');
     }
     public function CapacidadProductiva(){//Grafica Capacidad Productiva
         $fecha=date('y-m-d 00:00:00');

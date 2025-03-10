@@ -42,8 +42,8 @@
     <div class="row">
         <div class="col-6">
               <div class="card shadow-sm">
-                <div class="card-body row" id="filtro">
-                    <label for="CodigoEscaner" class="col-form-label col-sm-12 pt-0">Proceso <span class="text-muted"></span></label>
+                <div class="card-body row pt-2" id="filtro">
+                    <h4 for="CodigoEscaner" class="col-form-label col-sm-12 pt-0">Proceso <span class="text-muted"></span></h4>
                     <div class="col-8">
                             <div class="form-check form-check-inline ">
                                 <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked onclick="MostrarRetrabajo('Entrada')">

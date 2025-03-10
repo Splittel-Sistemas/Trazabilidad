@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->integer('NumeroLinea')->nullable();
             $table->string('Nombre'); 
+            $table->boolean('active')->default(true);
             $table->text('Descripcion')->nullable(); 
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

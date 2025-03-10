@@ -218,7 +218,6 @@ document.getElementById('toggleOperadores').addEventListener('click', function()
     document.getElementById('formAdministrativo').style.display = 'none';
     document.getElementById('formOperador').style.display = 'block';
 });
-
 </script>
 
 </html>

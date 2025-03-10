@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US" dir="ltr">
+<html lang="es-MX" dir="ltr">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,7 +12,7 @@
         <!-- ===============================================-->
         <!--    Favicons-->
         <!-- ===============================================-->
-        <!--<link rel="shortcut icon" type="image/x-icon" href="{{asset('imagenes/splittel.png') }}">-->
+        <link rel="shortcut icon" type="image/x-icon" href="{{asset('imagenes/splittel.png') }}">
         <link rel="manifest" href="{{asset('menu2/assets/img/favicons/manifest.json')}}">
         <meta name="msapplication-TileImage" content="{{asset('menu2/assets/img/favicons/mstile-150x150.png')}}">
         <meta name="theme-color" content="#ffffff">
@@ -237,6 +237,7 @@
                                         <li class="nav-item"><a class="nav-link {{ Route::is('Pulido') ? 'nav-tabs active' : '' }}" href="{{route('Pulido')}}" data-bs-toggle="" aria-expanded="false">
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Pulido</span></div>
                                             </a>
+                                            <hr class="p-0 m-1">
                                         </li>
                                         <li class="nav-item"><a class="nav-link {{ Route::is('Medicion') ? 'nav-tabs active' : '' }}" href="{{route('Medicion')}}" data-bs-toggle="" aria-expanded="false">
                                             <div class="d-flex align-items-center"><span class="nav-link-text">Medici&oacute;n</span></div>
@@ -267,6 +268,13 @@
                             <div class="nav-item-wrapper">
                                 <a class="nav-link label-1 {{ Route::is('RolesPermisos.index') ? 'active' : '' }}" href="{{route('RolesPermisos.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
                                     <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="key"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Roles y permisos</span></span></div>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item"><!-- Roles y permisos-->
+                            <div class="nav-item-wrapper">
+                                <a class="nav-link label-1 {{ Route::is('index.linea') ? 'active' : '' }}" href="{{route('index.linea')}}" role="button" data-bs-toggle="" aria-expanded="false">
+                                    <div class="d-flex align-items-center"><span class="nav-link-icon"> <span data-feather="plus-circle"></span></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Lineas</span></span></div>
                                 </a>
                             </div>
                         </li>
@@ -4492,7 +4500,7 @@
         <script src="{{asset('menu2/vendors/is/is.min.js')}}"></script>
         <script src="{{asset('menu2/vendors/fontawesome/all.min.js')}}"></script>
         <script src="{{asset('menu2/vendors/lodash/lodash.min.js')}}"></script>
-        <script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script>
+        <!--<script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script>-->
         {{--! Datatable --}}
         <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/2.2.1/js/dataTables.bootstrap5.min.js"></script>
