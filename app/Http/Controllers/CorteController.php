@@ -554,7 +554,7 @@ class CorteController extends Controller
                 $pdf->Rect(0, 0, $pdf->GetPageWidth(),3, 'F');
                 $pdf->SetTextColor(0, 0, 0);  // Color de texto negro
                 $content = 
-                    'Número Cable: ' . strip_tags($partida['cantidad']) . "\n" .
+                    'Número Cable: ' . strip_tags($partida['cantidad']) . " / ".$OrdenFabricacion->CantidadTotal."\n" .
                     'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" .
                     'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
 

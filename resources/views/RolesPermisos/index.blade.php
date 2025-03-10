@@ -34,8 +34,6 @@
         .permisos ul {
         display: flex;
         flex-wrap: wrap; /* Ajusta los elementos a la siguiente línea */
-        max-height: 3rem; /* Limita la altura para filas más pequeñas */
-        overflow-y: auto; /* Agrega scrollbar si hay demasiados elementos */
         padding: 0;
         margin: 0;
     }

@@ -9,6 +9,20 @@
         right: 20px; /* Distance from the right */
         z-index: 1050; /* Ensure it's above other content */
     }
+    #myTab li a{
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+    #myTab li .active{
+        border-top: 1px solid blue;
+        border-right: 1px solid blue;
+        border-left: 1px  solid blue;
+        border-bottom: 0;
+    }
+    #hr-menu{
+        padding: 0;
+        margin: 0;
+    }
 </style>
 @endsection
 @section('content')
@@ -32,7 +46,7 @@
                     </a>
                 </li>
             </ul>
-            <hr>
+            <hr id="hr-menu">
             <div class="tab-content mt-4" id="myTabContent">
                 <div class="tab-pane fade show active" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab">
                     {{--<div class="col-6">
