@@ -200,22 +200,24 @@ $(document).ready(function () {
                 tbody.append('<tr><td colspan="5" class="text-center">No hay datos disponibles</td></tr>');
             } else {
                 $.each(data, function (index, item) {
+                    console.log('item.active:', item.active);
                     let fila = `
                         <tr>
                             <td class="ps-3 nombre">${item.Nombre}</td>
                             <td class="ps-3 numero">${item.NumeroLinea}</td>
                             <td class="ps-3 descripcion">${item.Descripcion}</td>
                             <td class="align-center estatus ps-8">
-                                <div class="form-check form-switch ${item.active ? 'checkbox-activo' : ''}">
+                                <div class="form-check form-switch ${item.active == 1 ? 'checkbox-activo' : ''}">
                                     <input class="form-check-input toggle-status" 
                                         style="transform:scale(1.5);" 
                                         type="checkbox" 
                                         id="ActivarLinea${item.NumeroLinea}" 
                                         onclick="DesactivarLinea(this);" 
                                         data-id="${item.NumeroLinea}" 
-                                        ${item.active ? 'checked' : ''}>
+                                        ${item.active == 1 ? 'checked' : ''}>
                                 </div>
                             </td>
+
                             <td class="text-center">
                                 <button class="btn btn-sm btn-primary btn-editar" 
                                         data-id="${item.id}" 
