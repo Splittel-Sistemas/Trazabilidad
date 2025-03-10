@@ -80,11 +80,12 @@
                     <thead class="bg-primary text-white">
                         <tr>
                             <th class="sort border-top ps-3" data-sort="nombre">Nombre</th>
-                            <th class="sort border-top ps-3" data-sort="numero">Numero de linea</th>
-                            <th class="sort border-top ps-3" data-sort="descripcion">Descripcion</th>
-                            <th class="sort border-top ps-3" data-sort="activacion">Desactivado/Activado</th>    
-                            <th class="sort border-top text-center  ps-3">Accion</th>
+                            <th class="sort border-top ps-3" data-sort="numero">Número de línea</th>
+                            <th class="sort border-top ps-3" data-sort="descripcion">Descripción</th>
+                            <th class="sort border-top ps-3" data-sort="activacion">Activar</th>    
+                            <th class="sort border-top text-center ps-3">Acción</th>
                         </tr>
+                        
                     </thead>
                     <tbody class="list"> </tbody>
                 </table>
