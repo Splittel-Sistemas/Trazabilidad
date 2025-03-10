@@ -315,14 +315,12 @@
                         <hr class="text-200 my-0" />
                         <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Products</h6>
                         <div class="py-2"><a class="dropdown-item py-2 d-flex align-items-center" href="apps/e-commerce/landing/product-details.html">
-                            <div class="file-thumbnail me-2"><img class="h-100 w-100 fit-cover rounded-3" src="assets/img/products/60x60/3.png" alt="" /></div>
                             <div class="flex-1">
                                 <h6 class="mb-0 text-1000 title">MacBook Air - 13″</h6>
                                 <p class="fs--2 mb-0 d-flex text-700"><span class="fw-medium text-600">8GB Memory - 1.6GHz - 128GB Storage</span></p>
                             </div>
                             </a>
                             <a class="dropdown-item py-2 d-flex align-items-center" href="apps/e-commerce/landing/product-details.html">
-                            <div class="file-thumbnail me-2"><img class="img-fluid" src="assets/img/products/60x60/3.png" alt="" /></div>
                             <div class="flex-1">
                                 <h6 class="mb-0 text-1000 title">MacBook Pro - 13″</h6>
                                 <p class="fs--2 mb-0 d-flex text-700"><span class="fw-medium text-600 ms-2">30 Sep at 12:30 PM</span></p>
@@ -450,7 +448,6 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle avatar-placeholder" src="assets/img/team/40x40/avatar.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Jessie Samson</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👍</span>Liked your comment.<span class="ms-2 text-400 fw-bold fs--2">1h</span></p>
@@ -606,7 +603,6 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle avatar-placeholder" src="assets/img/team/40x40/avatar.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Jessie Samson</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👍</span>Liked your comment.<span class="ms-2 text-400 fw-bold fs--2">1h</span></p>
@@ -1276,7 +1272,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle avatar-placeholder" src="assets/img/team/40x40/avatar.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Jessie Samson</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👍</span>Liked your comment.<span class="ms-2 text-400 fw-bold fs--2">1h</span></p>
@@ -1945,7 +1940,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle avatar-placeholder" src="assets/img/team/40x40/avatar.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Jessie Samson</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👍</span>Liked your comment.<span class="ms-2 text-400 fw-bold fs--2">1h</span></p>
@@ -2615,7 +2609,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle avatar-placeholder" src="assets/img/team/40x40/avatar.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Jessie Samson</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👍</span>Liked your comment.<span class="ms-2 text-400 fw-bold fs--2">1h</span></p>
@@ -3293,7 +3286,6 @@
                             <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                 <div class="d-flex align-items-center justify-content-between position-relative">
                                 <div class="d-flex">
-                                    <div class="avatar avatar-m status-online me-3"><img class="rounded-circle avatar-placeholder" src="assets/img/team/40x40/avatar.webp" alt="" /></div>
                                     <div class="flex-1 me-sm-3">
                                     <h4 class="fs--1 text-black">Jessie Samson</h4>
                                     <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👍</span>Liked your comment.<span class="ms-2 text-400 fw-bold fs--2">1h</span></p>
@@ -3442,14 +3434,12 @@
                             <hr class="text-200 my-0" />
                             <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Products</h6>
                             <div class="py-2"><a class="dropdown-item py-2 d-flex align-items-center" href="apps/e-commerce/landing/product-details.html">
-                                <div class="file-thumbnail me-2"><img class="h-100 w-100 fit-cover rounded-3" src="assets/img/products/60x60/3.png" alt="" /></div>
                                 <div class="flex-1">
                                 <h6 class="mb-0 text-1000 title">MacBook Air - 13″</h6>
                                 <p class="fs--2 mb-0 d-flex text-700"><span class="fw-medium text-600">8GB Memory - 1.6GHz - 128GB Storage</span></p>
                                 </div>
                             </a>
                             <a class="dropdown-item py-2 d-flex align-items-center" href="apps/e-commerce/landing/product-details.html">
-                                <div class="file-thumbnail me-2"><img class="img-fluid" src="assets/img/products/60x60/3.png" alt="" /></div>
                                 <div class="flex-1">
                                 <h6 class="mb-0 text-1000 title">MacBook Pro - 13″</h6>
                                 <p class="fs--2 mb-0 d-flex text-700"><span class="fw-medium text-600 ms-2">30 Sep at 12:30 PM</span></p>
@@ -3577,7 +3567,6 @@
                                 <div class="px-2 px-sm-3 py-3 border-300 notification-card position-relative unread border-bottom">
                                     <div class="d-flex align-items-center justify-content-between position-relative">
                                     <div class="d-flex">
-                                        <div class="avatar avatar-m status-online me-3"><img class="rounded-circle avatar-placeholder" src="assets/img/team/40x40/avatar.webp" alt="" /></div>
                                         <div class="flex-1 me-sm-3">
                                         <h4 class="fs--1 text-black">Jessie Samson</h4>
                                         <p class="fs--1 text-1000 mb-2 mb-sm-3 fw-normal"><span class='me-1 fs--2'>👍</span>Liked your comment.<span class="ms-2 text-400 fw-bold fs--2">1h</span></p>
@@ -4221,14 +4210,12 @@
                             <hr class="text-200 my-0" />
                             <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Products</h6>
                             <div class="py-2"><a class="dropdown-item py-2 d-flex align-items-center" href="apps/e-commerce/landing/product-details.html">
-                                <div class="file-thumbnail me-2"><img class="h-100 w-100 fit-cover rounded-3" src="assets/img/products/60x60/3.png" alt="" /></div>
                                 <div class="flex-1">
                                     <h6 class="mb-0 text-1000 title">MacBook Air - 13″</h6>
                                     <p class="fs--2 mb-0 d-flex text-700"><span class="fw-medium text-600">8GB Memory - 1.6GHz - 128GB Storage</span></p>
                                 </div>
                                 </a>
                                 <a class="dropdown-item py-2 d-flex align-items-center" href="apps/e-commerce/landing/product-details.html">
-                                <div class="file-thumbnail me-2"><img class="img-fluid" src="assets/img/products/60x60/3.png" alt="" /></div>
                                 <div class="flex-1">
                                     <h6 class="mb-0 text-1000 title">MacBook Pro - 13″</h6>
                                     <p class="fs--2 mb-0 d-flex text-700"><span class="fw-medium text-600 ms-2">30 Sep at 12:30 PM</span></p>
