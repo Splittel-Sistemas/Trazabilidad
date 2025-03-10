@@ -92,7 +92,6 @@ class LineasController extends Controller
             return redirect()->back()->withErrors($e->errors())->withInput();
         }
     }
-
     // Eliminar una línea
     public function destroy(linea $linea)
     {
