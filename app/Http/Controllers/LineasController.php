@@ -60,21 +60,29 @@ class LineasController extends Controller
     }
 
     // Actualizar una línea existente
-    public function update(Request $request, linea $linea)
+    public function update(Request $request, $numero)
     {
+        // Buscar la línea por el número
+        $linea = Linea::where('NumeroLinea', $numero)->firstOrFail();
+    
         $request->validate([
             'Nombre' => 'required|string|max:255',
             'NumeroLinea' => 'required|integer|unique:linea,NumeroLinea,' . $linea->id,
             'Descripcion' => 'nullable|string',
         ]);
-
+    
+        // Actualizar la línea con los nuevos datos
         $linea->update($request->all());
-
-        return response()->json([
+    
+        // Redirigir a la vista con el mensaje y la línea actualizada
+        
+        return view('Lineas.Lineaindex', [
             'message' => 'Línea actualizada con éxito',
             'linea' => $linea
         ]);
     }
+    
+    
 
     // Eliminar una línea
     public function destroy(linea $linea)

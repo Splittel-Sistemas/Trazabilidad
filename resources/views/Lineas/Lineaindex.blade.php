@@ -118,7 +118,7 @@
                     <h5 class="modal-title text-white" id="userModalLabel">Editar Linea</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                <form id="lineaEditForm" action="{{ route('linea.update', )}}" method="POST">
+                <form id="lineaEditForm" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
@@ -126,20 +126,19 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="Nombre">Nombre</label>
-                                <input type="text" name="Nombre" id="Nombre" class="form-control form-control-sm" placeholder="Ingrese el nombre" required>
+                                    <input type="text" name="Nombre" id="Nombre" class="form-control form-control-sm" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="NumeroLinea">Número de Línea</label>
-                                    <input type="text" name="NumeroLinea" id="NumeroLinea" class="form-control form-control-sm" placeholder="Ingrese el número de línea" required>
+                                    <input type="text" name="NumeroLinea" id="NumeroLinea" class="form-control form-control-sm" required>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="Descripcion">Descripción</label>
-                            <input type="text" name="Descripcion" id="Descripcion" class="form-control form-control-sm" placeholder="Ingrese la descripción" required>
-                            
+                            <input type="text" name="Descripcion" id="Descripcion" class="form-control form-control-sm">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -147,6 +146,7 @@
                         <button type="submit" class="btn btn-primary">Guardar cambios</button>
                     </div>
                 </form>
+                
             </div>
         </div>
     </div>
@@ -191,11 +191,7 @@
                                     data-descripcion="${item.Descripcion}">
                                 Editar
                             </button>
-                            <button class="btn btn-sm btn-danger btn-eliminar" 
-                                    data-id="${item.id}" 
-                                    data-nombre="${item.Nombre}">
-                                Eliminar
-                            </button>
+                           
                         </td>
                     </tr>
                 `;
@@ -207,23 +203,34 @@
         }
     });
 
+    $(document).ready(function() {
 
-    $(document).on("click", ".btn-editar", function () {
-        let id = $(this).data("id");
-        let nombre = $(this).data("nombre");
-        let numero = $(this).data("numero");
-        let descripcion = $(this).data("descripcion");
+        // Código para abrir el modal y editar los campos
+        $(document).on("click", ".btn-editar", function () {
+            let id = $(this).data("id");
+            let nombre = $(this).data("nombre");
+            let numero = $(this).data("numero");
+            let descripcion = $(this).data("descripcion");
 
+            // Cambia el título del modal
+            $("#lineaModalLabel").text("Editar Línea");
 
-        $("#lineaModalLabel").text("Editar Línea");
-        $("#lineaEditForm").attr("action", `/linea/${id}`);
-        $("#lineaEditForm").find("input[name='_method']").val("PUT"); 
-        $("#Nombre").val(nombre);
-        $("#NumeroLinea").val(numero);
-        $("#Descripcion").val(descripcion);
+            // Configura la URL con el número de línea
+            let actionUrl = "{{ route('linea.update', ':numero') }}".replace(':numero', numero);
 
- 
-        $("#lineaModal").modal("show");
+            $("#lineaEditForm").attr("action", actionUrl);
+
+            // Asegura que el método sea PUT
+            $("#lineaEditForm").find("input[name='_method']").val("PUT"); 
+
+            // Rellena los campos con los valores obtenidos
+            $("#Nombre").val(nombre);
+            $("#NumeroLinea").val(numero);
+            $("#Descripcion").val(descripcion);
+
+            // Muestra el modal
+            $("#lineaModal").modal("show");
+        });
     });
 
     window.DesactivarLinea = function(item) {
@@ -234,7 +241,7 @@
 
     $.ajax({
         url: url,
-        method: 'POST',
+        method: 'GET',
         data: {
             NumeroLinea: NumeroLinea, 
             _token: $('meta[name="csrf-token"]').attr('content'),
