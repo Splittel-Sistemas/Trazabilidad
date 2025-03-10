@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\HomeControler;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PlaneacionController;
 use App\Http\Controllers\CorteController;
@@ -27,7 +27,9 @@ Route::get('/logout', [loginController::class, 'logout'])->name('logout')->middl
 Route::post('/register', [loginController::class, 'register'])->name('register')->middleware('auth');
 
 //Rutas Planeación
-Route::get('/', [HomeControler::class,'Home'])->name('Home')->middleware('auth');
+Route::get('/home', [HomeController::class, 'Home'])->name('Home')->middleware('auth');
+
+
 Route::get('/Planeacion', [PlaneacionController::class,'index'])->name('Planeacion')->middleware('auth');
 Route::post('/Planeacion/Filtro/Fechas', [PlaneacionController::class,'PlaneacionFF'])->name('PlaneacionFF')->middleware('auth');
 Route::post('/Planeacion/Filtro/OrdenVenta',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOV')->middleware('auth');
@@ -189,42 +191,30 @@ Route::get('/tiempos/fabricacion',[BusquedaController::class, 'tiemposOrden'])->
 
 //rutas del dashboard
 
-Route::get('/retrabajo', [HomeControler:: class, 'Ordenes'])->name('ordenes.retrabajo')->middleware('auth');
-Route::get('/cerradas', [HomeControler::class, 'cerradas'])->name('orden.cerredas')->middleware('auth');
-Route::get('/abiertas', [HomeControler:: class, 'abiertas'])->name('ordenes.abiertas')->middleware('auth');
-Route::get('/graficasdores', [HomeControler:: class, 'graficas'])->name('graficas.dashboard')->middleware('auth');
-Route::get('/dashboard/capacidadproductiva', [HomeControler:: class, 'CapacidadProductiva'])->name('CapacidadProductiva')->middleware('auth');
+Route::get('/retrabajo', [HomeController:: class, 'Ordenes'])->name('ordenes.retrabajo')->middleware('auth');
+Route::get('/cerradas', [HomeController::class, 'cerradas'])->name('orden.cerredas')->middleware('auth');
+Route::get('/abiertas', [HomeController:: class, 'abiertas'])->name('ordenes.abiertas')->middleware('auth');
+Route::get('/graficasdores', [HomeController:: class, 'graficas'])->name('graficas.dashboard')->middleware('auth');
+Route::get('/dashboard/capacidadproductiva', [HomeController:: class, 'CapacidadProductiva'])->name('CapacidadProductiva')->middleware('auth');
 // routes/web.php
-Route::get('/detalles-oc', [HomeControler::class, 'detallesOC'])->name('ordenes.detallesOC')->middleware('auth');
-Route::get('/tiempo', [HomeControler::class, 'tiempoOC'])->name('ordenes.tiempo')->middleware('auth');
-Route::get('/progreso-das',[HomeControler::class, 'progreso'])->name('progreso.dash')->middleware('auth');
-Route::get('/progreso-of',[HomeControler::class,'progresoof'])->name('of.progreso')->middleware('auth');
-Route::get('/indicadores-ce',[HomeControler::class,'graficasmes'])->name('indicadores.CE')->middleware('auth');
-Route::get('/ordenes-abiertas',[HomeControler::class, 'tablasAbiertas'])->name('tabla.abiertas')->middleware('auth');
-Route::get('/ordenes-completada', [HomeControler::class, 'tablasCompletadas'])->name('tabla.completas')->middleware('auth');
-Route::get('/tabla-semana', [HomeControler::class,'tablasemana'])->name('tablas.semana')->middleware('auth');
-Route::get('/tabla-mes',[HomeControler::class, 'tablasMes'])->name('tablas.mes')->middleware('auth');
-Route::get('/tabla-horas',[HomeControler::class, 'tablasHoras'])->name('tablas.hora')->middleware('auth');
-
+Route::get('/detalles-oc', [HomeController::class, 'detallesOC'])->name('ordenes.detallesOC')->middleware('auth');
+Route::get('/tiempo', [HomeController::class, 'tiempoOC'])->name('ordenes.tiempo')->middleware('auth');
+Route::get('/progreso-das',[HomeController::class, 'progreso'])->name('progreso.dash')->middleware('auth');
+Route::get('/progreso-of',[HomeController::class,'progresoof'])->name('of.progreso')->middleware('auth');
+Route::get('/indicadores-ce',[HomeController::class,'graficasmes'])->name('indicadores.CE')->middleware('auth');
+Route::get('/ordenes-abiertas',[HomeController::class, 'tablasAbiertas'])->name('tabla.abiertas')->middleware('auth');
+Route::get('/ordenes-completada', [HomeController::class, 'tablasCompletadas'])->name('tabla.completas')->middleware('auth');
+Route::get('/tabla-semana', [HomeController::class,'tablasemana'])->name('tablas.semana')->middleware('auth');
+Route::get('/tabla-mes',[HomeController::class, 'tablasMes'])->name('tablas.mes')->middleware('auth');
+Route::get('/tabla-horas',[HomeController::class, 'tablasHoras'])->name('tablas.hora')->middleware('auth');
 Route::get('/tiempos',[BusquedaController::class, 'tiempoS'])->name('tiempos.hrs')->middleware('auth');
-Route::get('/wizarp', [HomeControler::class, 'wizarp'])->name('wizarp.dashboard');
-Route::get('/wizarpdia', [HomeControler::class, 'wizarpdia'])->name('wizarpdia.dashboard');
-Route::get('/wizarpmes', [HomeControler::class, 'wizarpmes'])->name('wizarpmes.dashboard');
-
-
-Route::get('/indicadores-cedia',[HomeControler::class,'graficasdia'])->name('indicadores-cedia')->middleware('auth');
-Route::get('/indicadores-cesemana',[HomeControler::class,'graficasemana'])->name('indicadores.CEsemana')->middleware('auth');
-
-
-
-
-
-
-
-
-Route::get('/dashboard/indicadorDIA',[HomeControler::class, 'Dasboardindicadordia'])->name('dashboard.indicador')->middleware('auth');
-
-Route::post('/guardar-dashboard', [HomeControler::class, 'guardarDasboard'])->name('guardar.Dasboard')->middleware('auth');
+Route::get('/wizarp', [HomeController::class, 'wizarp'])->name('wizarp.dashboard');
+Route::get('/wizarpdia', [HomeController::class, 'wizarpdia'])->name('wizarpdia.dashboard');
+Route::get('/wizarpmes', [HomeController::class, 'wizarpmes'])->name('wizarpmes.dashboard');
+Route::get('/indicadores-cedia',[HomeController::class,'graficasdia'])->name('indicadores-cedia')->middleware('auth');
+Route::get('/indicadores-cesemana',[HomeController::class,'graficasemana'])->name('indicadores.CEsemana')->middleware('auth');
+Route::get('/dashboard/indicadorDIA',[HomeController::class, 'Dasboardindicadordia'])->name('dashboard.indicador')->middleware('auth');
+Route::post('/guardar-dashboard', [HomeController::class, 'guardarDasboard'])->name('guardar.Dasboard')->middleware('auth');
 
 
 Route::get('/Area/Empacado',[AreasController::class,'Empaquetado'])->name('Empacado');
@@ -232,15 +222,17 @@ Route::get('/Tabla/principal',[AreasController::class,'tablaEmpacado'])->name('t
 Route::post('/Area/Empaquetado/buscar', [AreasController::class,'EmpaquetadoBuscar'])->name('EmpaquetadoBuscar')->middleware('auth');
 Route::get('/fin/Proceso',[AreasController::class,'finProcesoEmpaque'])->name('finProceso.empacado')->middleware('auth');
 Route::post('/regresar-proceso', [AreasController::class, 'RegresarProceso'])->name('regresar.proceso');
-Route::get('/tiempos-GraficaD', [HomeControler::class, 'graficastiempo'])->name('graficastiempo')->middleware('auth');
-Route::get('/tiempos muertos',[HomeControler::class, 'graficastiempoMuerto'])->name('graficastiempoMuerto')->middleware('auth');
+Route::get('/tiempos-GraficaD', [HomeController::class, 'graficastiempo'])->name('graficastiempo')->middleware('auth');
+Route::get('/tiempos muertos',[HomeController::class, 'graficastiempoMuerto'])->name('graficastiempoMuerto')->middleware('auth');
 
 //lineas        
 Route::get('/index/linea',[LineasController::class, 'index'])->name('index.linea');    
 Route::get('/lineas/datos', [LineasController::class, 'tablalinea'])->name('lineas.datos');
 Route::get('/linea/create', [LineasController::class, 'create'])->name('linea.create');
 Route::post('/linea/store',[LineasController::class, 'store'])->name('linea.store');
-Route::put('/linea/update',[LineasController::class, 'update'])->name('linea.update');
+Route::post('/lineas/activar', [LineasController::class, 'activar'])->name('lineas.activar');
+Route::post('/lineas/desactivar', [LineasController::class, 'desactivar'])->name('lineas.desactivar');
+Route::put('/linea/update/{numero}', [LineasController::class, 'update'])->name('linea.update');
 
 
 
@@ -298,7 +290,7 @@ Route::delete('/registro/{registro}', [RegistroController::class, 'destroy'])->n
 
 
 
-//Route::get('/', [HomeController::class,'Home'])->name('home')->middleware('auth');
+
 /*use Illuminate\Support\Facades\Route->middleware('auth');
 use App\Http\Controllers\LoginController->middleware('auth');
 use App\Http\Controllers\RegistroController->middleware('auth');

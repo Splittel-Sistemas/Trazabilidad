@@ -9,6 +9,28 @@
         right: 20px; /* Distance from the right */
         z-index: 1050; /* Ensure it's above other content */
     }
+    #myTab li a{
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        padding: 0.5rem 1rem 0.5rem 1rem;
+    }
+    #myTab li a:hover{
+        border: solid 1px #e7e7e7;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+    #myTab li .active{
+        border: solid 1px #e7e7e7;
+        border-bottom: solid white;
+    }
+    #myTab li .active:hover{
+        border: solid 1px #e7e7e7;
+        border-bottom: solid white;
+    }
+    #hr-menu{
+        padding: 0;
+        margin: 0;
+    }
 </style>
 @endsection
 @section('content')
@@ -32,7 +54,7 @@
                     </a>
                 </li>
             </ul>
-            <hr>
+            <hr id="hr-menu">
             <div class="tab-content mt-4" id="myTabContent">
                 <div class="tab-pane fade show active" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab">
                     {{--<div class="col-6">

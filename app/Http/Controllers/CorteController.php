@@ -170,13 +170,15 @@ class CorteController extends Controller
                     $Ordenfabricacionpartidas.='<td class="text-center">'.$partida->cantidad_partida.'</td>';
                     if($partida->TipoPartida=='R'){
                         $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Retrabajo</span></div></td>';
+                        $Ordenfabricacionpartidas.='<td class="text-center">'."1-".($partida->cantidad_partida).'</td>';
                     }else{
                         $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Normal</span></div></td>';
-                    }
-                    if($partida->cantidad_partida==1){
-                        $Ordenfabricacionpartidas.='<td class="text-center">'.$RangoEtiquetas.'</td>';
-                    }else{
-                        $Ordenfabricacionpartidas.='<td class="text-center">'.$RangoEtiquetas."-".($RangoEtiquetas+$partida->cantidad_partida-1).'</td>';
+                        if($partida->cantidad_partida==1){
+                            $Ordenfabricacionpartidas.='<td class="text-center">'.$RangoEtiquetas.'</td>';
+                        }else{
+                            $Ordenfabricacionpartidas.='<td class="text-center">'.$RangoEtiquetas."-".($RangoEtiquetas+$partida->cantidad_partida-1).'</td>';
+                        }
+                        $RangoEtiquetas+=$partida->cantidad_partida;
                     }
                     if(!($partida->FechaFinalizacion=='' || $partida->FechaFinalizacion==null)){
                         $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Cerrada</span></div></td>';
@@ -208,9 +210,6 @@ class CorteController extends Controller
                         }
                         $Ordenfabricacionpartidas .= '</tr>';
                     }
-                    
-                    
-                        $RangoEtiquetas+=$partida->cantidad_partida;
                 }
             }
         }else{
@@ -517,14 +516,20 @@ class CorteController extends Controller
                 throw new \Exception('No se encontraron datos para este ID.');
             }
             $OrdenFabricacion = $PartidaOF->ordenFabricacion;
-            $PartidasOFEtiq=$OrdenFabricacion->partidasOF()->get();
+            $PartidasOFEtiq=$OrdenFabricacion->partidasOF()->where('TipoPartida','N')->get();
             $inicio=0;
             $inicio=0;
             $fin=0;
             //Asignamos el numero de inicio y fin de la etiqueta para la partida seleccionada
+            $TipoPartida="N";
             foreach($PartidasOFEtiq as $PartidaOFEtiq){
                 $fin+=$PartidaOFEtiq->cantidad_partida;
                 if($PartidaOFEtiq->id==$partidaId){
+                    $TipoPartida=$PartidaOFEtiq->TipoPartida;
+                    if($TipoPartida=='R'){
+                        $fin=$PartidaOFEtiq->cantidad_partida;
+                        $inicio=0;
+                    }
                     break;
                 }
                 $inicio+=$PartidaOFEtiq->cantidad_partida;
@@ -553,11 +558,17 @@ class CorteController extends Controller
                 $pdf->SetFillColor($R, $G, $B); 
                 $pdf->Rect(0, 0, $pdf->GetPageWidth(),3, 'F');
                 $pdf->SetTextColor(0, 0, 0);  // Color de texto negro
-                $content = 
-                    'Número Cable: ' . strip_tags($partida['cantidad']) . "\n" .
+                if($TipoPartida=='N'){
+                    $content = 
+                    'Número Cable: ' . strip_tags($partida['cantidad']) . " / ".$OrdenFabricacion->CantidadTotal."\n" .
                     'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" .
                     'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
-
+                }else{
+                    $content = 
+                    'Número Cable: ' . strip_tags($partida['cantidad']) . " / ".$OrdenFabricacion->CantidadTotal." R \n" .
+                    'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" .
+                    'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
+                }
                 // Añadir el contenido a la página
                 $pdf->MultiCell(0, 5, $content, 0, 'L', 0, 1);
                 $CodigoBarras = strip_tags($partida['Codigo']);
