@@ -85,7 +85,6 @@
                             <th class="sort border-top ps-3" data-sort="activacion">Activar</th>    
                             <th class="sort border-top text-center ps-3">Acción</th>
                         </tr>
-                        
                     </thead>
                     <tbody class="list"> </tbody>
                 </table>
