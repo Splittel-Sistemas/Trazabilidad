@@ -274,12 +274,8 @@
             border-top: 5px solid rgb(22, 95, 163);
             width: 100%;
             margin: 2px auto;
-        }
-
-
-
-        /* Estilo base para los divs */
-        .col-12.col-md-3 {
+        }        
+        /*.col-12.col-md-3 {
             transition: all 0.3s ease; 
             position: relative; 
             border-radius: 90px; 
@@ -287,19 +283,32 @@
             box-sizing: border-box; 
             padding: 1px; 
             border: 4x solid transparent; 
+        }*/
+        .btn-menu{
+            padding: 0.2rem;
+            box-sizing: border-box; 
+            border-radius: 4rem;
+            box-shadow: 0 1px 2px rgba(75, 75, 75, 0.2);
+            transition: background 0.3s ease, transform 0.3s ease;
         }
-
+        .btn-menu:hover{
+            background: #f8f9fa;
+            transform: scale(1.02);
+            /*additive-symbols: box-shadow: 0 3px 5px rgba(75, 75, 75, 0.2);
+            border: 1px solid #eeeeee;*/
+        }
         /* Efecto de hover */
-        .col-12.col-md-3:hover {
-            border: 1px solid #007bff; 
+        /*.col-12.col-md-3:hover {
+            
+            border: 1px solid #eeeeee; 
             box-shadow: 0 3px 5px rgba(0, 123, 255, 0.2); 
             transform: translateY(-1px); 
-        }
+        }*/
 
         /* Opcional: Efecto de hover en el ícono */
-        .col-12.col-md-3:hover .fa-stack i {
+        /*.col-12.col-md-3:hover .fa-stack i {
             color: #007bff; 
-        }
+        }*/
 
         .center-text {
             display: flex;
@@ -310,10 +319,10 @@
         }
         /* Estilo para los botones activos */
         .activebtn {
-            background-color: #efefef;
+            background-color: #f8f9fa;
             color: white;
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgb(255, 255, 255);
+            border-radius: 4rem;
+            box-shadow: 0px 2px 4px rgb(185, 185, 185);
         }
 
 
@@ -327,36 +336,36 @@
                 <h1 class="progress-title mt-3 mb-4"></h1>
                 <div class="row justify-content-center">
                     <!-- Órdenes Cerradas (Completadas) -->
-                    <div class="col-12 col-md-3 mb-4 p-0">
-                        <div class="d-flex align-items-center justify-content-center activebtn" id="click-dia" style="cursor: pointer;">
+                    <div class="col-12 col-md-3 mb-4 m-1">
+                        <div class="d-flex align-items-center justify-content-center activebtn btn-menu" id="click-dia" style="cursor: pointer;">
                             <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
                                 <i class="fas fa-calendar-day" style="font-size: 30px; color: #007bff;"></i>
                             </span>
-                            <div class="ms-3">
+                            <div class="ms-1">
                                 <h4  class="mb-0" >Órdenes por Día</h4>
                                 <p class="text-muted fs--1 mb-0"></p>
                             </div>
                         </div>
                     </div>
                     <!-- Órdenes Abiertas (En Proceso) -->
-                    <div class="col-12 col-md-3 mb-4 p-0">
-                        <div class="d-flex align-items-center justify-content-center" id="click-semana" style="cursor: pointer;">
+                    <div class="col-12 col-md-3 mb-4 m-1 ">
+                        <div class="d-flex align-items-center justify-content-center btn-menu" id="click-semana" style="cursor: pointer;">
                             <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
                                 <i class="fas fa-calendar-week" style="font-size: 30px; color: #ffc107;"></i>
                             </span>
-                            <div class="ms-3">
+                            <div class="ms-1">
                                 <h4  class="mb-0" >Órdenes por Semana</h4>
                                 <p class="text-muted fs--1 mb-0"></p>
                             </div>
                         </div>
                     </div>
                     <!-- Total de Órdenes -->
-                    <div class="col-12 col-md-3 mb-4 p-0">
-                        <div class="d-flex align-items-center justify-content-center" id="click-mes" style="cursor: pointer;">
+                    <div class="col-12 col-md-3 mb-4 m-1">
+                        <div class="d-flex align-items-center justify-content-center btn-menu" id="click-mes" style="cursor: pointer;">
                             <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
                                 <i class="fas fa-calendar-alt" style="font-size: 30px; color: #28a745;"></i>
                             </span>
-                            <div class="ms-3">
+                            <div class="ms-1">
                                 <h4  class="mb-0" >Órdenes por Mes</h4>
                                 <p class="text-muted fs--1 mb-0"></p>  
                             </div>
