@@ -240,10 +240,11 @@ Route::get('/index/linea',[LineasController::class, 'index'])->name('index.linea
 Route::get('/lineas/datos', [LineasController::class, 'tablalinea'])->name('lineas.datos');
 Route::get('/linea/create', [LineasController::class, 'create'])->name('linea.create');
 Route::post('/linea/store',[LineasController::class, 'store'])->name('linea.store');
-Route::put('/linea/update',[LineasController::class, 'update'])->name('linea.update');
+
 
 Route::post('/lineas/activar', [LineasController::class, 'activar'])->name('lineas.activar');
 Route::post('/lineas/desactivar', [LineasController::class, 'desactivar'])->name('lineas.desactivar');
+Route::put('/linea/update/{numero}', [LineasController::class, 'update'])->name('linea.update');
 
 
 
