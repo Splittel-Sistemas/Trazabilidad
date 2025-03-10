@@ -16,6 +16,7 @@
     
 </style>
 @section('content')
+<!--
         <div style="height: 30px;"></div>
         <div class="breadcrumbs mb-4">
             <div class="row gy-3 mb-2 justify-content-between">
@@ -70,7 +71,7 @@
                     </div>   
                 </form>
             </div>
-        </div>        
+        </div>-->        
 <script>
         
 </script>

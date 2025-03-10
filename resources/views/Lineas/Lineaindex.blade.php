@@ -42,6 +42,12 @@
             color: #888; /* Color del icono */
             pointer-events: none; /* Evita que el icono sea clickeable */
         }
+
+
+
+        /* Estilo personalizado para el estado activo del checkbox */
+
+
     </style>
 @endsection
 
@@ -56,7 +62,9 @@
 <div class="container my-4">
 
    
-    <a href="{{ route('linea.create') }}" class="btn btn-outline-info mb-3">Agregar Linea</a>
+    
+    <a href="{{ route('linea.create') }}" class="btn btn-outline-info mb-3" data-bs-toggle="modal" data-bs-target="#crearModal">Agregar Linea</a>
+
 
     @if (session('status'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -70,7 +78,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-
     <div class="card p-4" style="display:block;" id="tableExample3" data-list="{&quot;valueNames&quot;:[&quot;apellido&quot;,&quot;nombre&quot;,&quot;email&quot;,&quot;roles&quot;,&quot;estatus&quot;],&quot;page&quot;:5,&quot;pagination&quot;:true}">
         <div class="search-box mb-3 mx-auto">
             <form class="position-relative d-flex align-items-center" data-bs-toggle="search" data-bs-display="static">
@@ -79,10 +86,9 @@
                        placeholder="Buscar" 
                        aria-label="Buscar">
                 <svg class="position-absolute end-0 me-3 search-box-icon" width="16" height="16" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="currentColor" d="M500.3 443.7..."></path>
+                    <path fill="currentColor" d="M11.742 10.742a7.5 7.5 0 1 0-1.42 1.42l3.56 3.56a1 1 0 0 0 1.42-1.42l-3.56-3.56zM8 12a4 4 0 1 1 4-4 4 4 0 0 1-4 4z"></path>
                 </svg>
             </form>
-            
         </div>
         <div class=" table-responsive">
                 <table class="table table-striped table-sm fs--1 mb-0">
@@ -138,15 +144,56 @@
                         </div>
                         <div class="form-group">
                             <label for="Descripcion">Descripción</label>
-                            <input type="text" name="Descripcion" id="Descripcion" class="form-control form-control-sm">
-                        </div>
+                            <textarea name="Descripcion" id="Descripcion" class="form-control form-control-sm"></textarea>
+                        </div>                        
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                         <button type="submit" class="btn btn-primary">Guardar cambios</button>
                     </div>
                 </form>
-                
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="crearModal" tabindex="-1" role="dialog" aria-labelledby="crearModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white" id="crearModalLabel">Crear Linea</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <form action="{{ route('linea.store') }}" method="POST" class="p-3 rounded bg-white">
+                    @csrf
+                    <div class="row mb-1">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Nombre">Nombre</label>
+                                <input type="text" name="Nombre" id="Nombre" class="form-control form-control-sm" placeholder="Ingrese el nombre" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="NumeroLinea">Número de Línea</label>
+                                <input type="text" name="NumeroLinea" id="NumeroLinea" class="form-control form-control-sm" placeholder="Ingrese el número de línea" required>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="row mb-1">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="Descripcion">Descripción</label>
+                                <textarea name="Descripcion" id="Descripcion" class="form-control form-control-sm" placeholder="Ingrese la descripción" required></textarea>
+                            </div>                            
+                        </div>
+                    </div>
+        
+                    <div class="d-flex justify-content-center mt-3">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-lg transition-all hover:bg-success hover:text-white">
+                            Registrar
+                        </button>
+                    </div>   
+                </form>
             </div>
         </div>
     </div>
@@ -156,115 +203,133 @@
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
+$(document).ready(function () {
+    // Cargar datos mediante AJAX
     $.ajax({
         url: '{{ route("lineas.datos") }}',
         type: "GET",
         dataType: "json",
         success: function (data) {
-            let tbody = $(".list");
+            let tbody = $(".list");  // Asegúrate de usar el contenedor correcto
             tbody.empty();
 
-            $.each(data, function (index, item) {
-                let fila = `
-                    <tr>
-                        <td class="ps-3">${item.Nombre}</td>
-                        <td class="ps-3">${item.NumeroLinea}</td>
-                        <td class="ps-3">${item.Descripcion}</td>
-                        <td class="align-center estatus ps-8">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input toggle-status" 
-                                    style="transform:scale(1.5);" 
-                                    type="checkbox" 
-                                    id="ActivarLinea${item.NumeroLinea}" 
-                                    onclick="DesactivarLinea(this);" 
-                                    data-id="${item.NumeroLinea}" 
-                                    ${item.active ? 'checked' : ''}>
-                            </div>
-                        </td>
+            if (data.length === 0) {
+                tbody.append('<tr><td colspan="5" class="text-center">No hay datos disponibles</td></tr>');
+            } else {
+                $.each(data, function (index, item) {
+                    let fila = `
+                        <tr>
+                            <td class="ps-3 nombre">${item.Nombre}</td>
+                            <td class="ps-3 numero">${item.NumeroLinea}</td>
+                            <td class="ps-3 descripcion">${item.Descripcion}</td>
+                            <td class="align-center estatus ps-8">
+                                <div class="form-check form-switch ${item.active ? 'checkbox-activo' : ''}">
+                                    <input class="form-check-input toggle-status" 
+                                        style="transform:scale(1.5);" 
+                                        type="checkbox" 
+                                        id="ActivarLinea${item.NumeroLinea}" 
+                                        onclick="DesactivarLinea(this);" 
+                                        data-id="${item.NumeroLinea}" 
+                                        ${item.active ? 'checked' : ''}>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-primary btn-editar" 
+                                        data-id="${item.id}" 
+                                        data-nombre="${item.Nombre}" 
+                                        data-numero="${item.NumeroLinea}" 
+                                        data-descripcion="${item.Descripcion}">
+                                    Editar
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.append(fila);
+                });
+            }
 
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-primary btn-editar" 
-                                    data-id="${item.id}" 
-                                    data-nombre="${item.Nombre}" 
-                                    data-numero="${item.NumeroLinea}" 
-                                    data-descripcion="${item.Descripcion}">
-                                Editar
-                            </button>
-                           
-                        </td>
-                    </tr>
-                `;
-                tbody.append(fila);
-            });
+            // Verifica si hay al menos una fila antes de inicializar List.js
+            if (tbody.children().length > 0) {
+                // Inicializa List.js solo si hay datos
+                var options = {
+                    valueNames: ['nombre', 'numero', 'descripcion', 'estatus'],
+                    page: 5,
+                    pagination: true
+                };
+                new List('tableExample3', options); // Asegúrate de pasar el ID correcto del contenedor
+            }
         },
         error: function (xhr, status, error) {
             console.error("Error al cargar los datos:", error);
         }
     });
+    // Abrir el modal para editar los campos
+    $(document).on("click", ".btn-editar", function () {
+        let id = $(this).data("id");
+        let nombre = $(this).data("nombre");
+        let numero = $(this).data("numero");
+        let descripcion = $(this).data("descripcion");
 
-    $(document).ready(function() {
+        // Cambiar título del modal
+        $("#lineaModalLabel").text("Editar Línea");
 
-        // Código para abrir el modal y editar los campos
-        $(document).on("click", ".btn-editar", function () {
-            let id = $(this).data("id");
-            let nombre = $(this).data("nombre");
-            let numero = $(this).data("numero");
-            let descripcion = $(this).data("descripcion");
+        // Configurar la URL del formulario de edición con el número de línea
+        let actionUrl = "{{ route('linea.update', ':numero') }}".replace(':numero', numero);
+        $("#lineaEditForm").attr("action", actionUrl);
 
-            // Cambia el título del modal
-            $("#lineaModalLabel").text("Editar Línea");
+        // Configurar método PUT
+        $("#lineaEditForm").find("input[name='_method']").val("PUT");
 
-            // Configura la URL con el número de línea
-            let actionUrl = "{{ route('linea.update', ':numero') }}".replace(':numero', numero);
+        // Rellenar campos del formulario
+        $("#Nombre").val(nombre);
+        $("#NumeroLinea").val(numero);
+        $("#Descripcion").val(descripcion);
 
-            $("#lineaEditForm").attr("action", actionUrl);
-
-            // Asegura que el método sea PUT
-            $("#lineaEditForm").find("input[name='_method']").val("PUT"); 
-
-            // Rellena los campos con los valores obtenidos
-            $("#Nombre").val(nombre);
-            $("#NumeroLinea").val(numero);
-            $("#Descripcion").val(descripcion);
-
-            // Muestra el modal
-            $("#lineaModal").modal("show");
-        });
+        // Mostrar el modal
+        $("#lineaModal").modal("show");
     });
 
     window.DesactivarLinea = function(item) {
-    var checkbox = $(item);
-    var NumeroLinea = checkbox.data('id'); 
-    var isActive = checkbox.prop('checked'); 
-    var url = isActive ? "{{ route('lineas.activar') }}" : "{{ route('lineas.desactivar') }}";
+        var checkbox = $(item);
+        var NumeroLinea = checkbox.data('id');
+        var isActive = checkbox.prop('checked'); // Estado actual del checkbox
+        var url = isActive ? "{{ route('lineas.activar') }}" : "{{ route('lineas.desactivar') }}";
 
-    $.ajax({
-        url: url,
-        method: 'GET',
-        data: {
-            NumeroLinea: NumeroLinea, 
-            _token: $('meta[name="csrf-token"]').attr('content'),
-        },
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') 
-        },
-        success: function (response) {
-            if (!response.success) {
-                alert('Error: ' + response.message);
-                checkbox.prop('checked', !isActive); 
+        console.log("NumeroLinea:", NumeroLinea); // Muestra el número de línea
+        console.log("isActive:", isActive); // Muestra si el checkbox está marcado o no
+        console.log("url:", url); // Muestra la URL de la solicitud
+
+        // Enviar solicitud AJAX para cambiar el estado
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: {
+                NumeroLinea: NumeroLinea, 
+                _token: $('meta[name="csrf-token"]').attr('content'),
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+                console.log("Respuesta del servidor:", response); // Muestra la respuesta del servidor
+                if (response.success) {
+                    // Actualizar el UI en función de la respuesta
+                    checkbox.prop('checked', isActive); // Dejar el estado del checkbox como estaba
+                } else {
+                    alert('Error: ' + response.message);
+                    checkbox.prop('checked', !isActive); // Revertir el cambio en el checkbox si hubo un error
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("Error en la solicitud AJAX:", error); // Muestra un mensaje si la solicitud falla
+                checkbox.prop('checked', !isActive); // Revertir el cambio en el checkbox
+                alert('Hubo un error al cambiar el estado.');
             }
-        },
-        error: function () {
-            checkbox.prop('checked', !isActive); 
-            alert('Hubo un error al cambiar el estado.');
-        }
-    });
-};
-
-
-
+        });
+    };
 });
+
+
 
 
 </script>

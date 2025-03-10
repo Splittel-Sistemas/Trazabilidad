@@ -38,15 +38,17 @@ class LineasController extends Controller
             'NumeroLinea' => 'required|integer|unique:linea',
             'Descripcion' => 'nullable|string',
         ]);
-
+    
+        // Crear la línea
         $linea = linea::create($request->all());
-
-        return response()->json([
+    
+        // Redirigir a la vista 'Lineas.Lineaindex' con los datos
+        return view('Lineas.Lineaindex', [
             'message' => 'Línea creada con éxito',
             'linea' => $linea
         ]);
     }
-
+    
     // Mostrar una línea específica
     public function show(linea $linea)
     {
@@ -93,24 +95,25 @@ class LineasController extends Controller
     }
     public function activar(Request $request)
     {
-        $linea = linea::find($request->NumeroLinea);
+        $linea = linea::where('NumeroLinea', $request->NumeroLinea)->first(); // Cambiar aquí
         if ($linea) {
             $linea->active = true;
             $linea->save();
             return response()->json(['success' => true]);
         }
-        return response()->json(['success' => false, 'message' => 'Linea no encontrado.'], 404);
+        return response()->json(['success' => false, 'message' => 'Linea no encontrada.'], 404);
     }
-
+    
     // Método para desactivar un usuario
     public function desactivar(Request $request)
     {
-        $linea = linea::find($request->NumeroLinea);
+        $linea = linea::where('NumeroLinea', $request->NumeroLinea)->first(); // Cambiar aquí
         if ($linea) {
             $linea->active = false;
             $linea->save();
             return response()->json(['success' => true]);
         }
-        return response()->json(['success' => false, 'message' => 'Linea no encontrado.'], 404);
+        return response()->json(['success' => false, 'message' => 'Linea no encontrada.'], 404);
     }
+    
 }
