@@ -1199,7 +1199,7 @@ class HomeController extends Controller
         $hoy = Carbon::now()->toDateString();
         $areas = [
             3 => 'Suministro',
-            4 => 'Preparadodia',
+            4 => 'Preparado',
             5 => 'Ensamble',
             6 => 'Pulido',
             7 => 'Medicion',

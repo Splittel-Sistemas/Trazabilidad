@@ -1,13 +1,9 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Linea;
-
-
 class LineasController extends Controller
 {
     //
@@ -15,6 +11,7 @@ class LineasController extends Controller
     {
         return view('Lineas.Lineaindex');
     }
+    //tabla principal
     public function tablalinea()
     {
         $items  = DB::table('linea')
@@ -23,6 +20,7 @@ class LineasController extends Controller
     
         return response()->json($items );
     }
+    // direccionar a la ruta crear
     public function create()
     {
         return view('lineas.create');
