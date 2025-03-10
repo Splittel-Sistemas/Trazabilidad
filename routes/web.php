@@ -18,15 +18,18 @@ use GuzzleHttp\Promise\Coroutine;
 use Illuminate\Routing\Route as RoutingRoute;
 
 
-// Ruta para mostrar el formulario de login
+
 Route::post('/operador_login', [loginController::class, 'operador'])->name('operador.login');
+// Ruta para mostrar el formulario de login
 Route::get('/login', [loginController::class, 'login_view'])->name('login');
 Route::post('/login', [loginController::class, 'login'])->name('login_post');
 Route::get('/logout', [loginController::class, 'logout'])->name('logout')->middleware('auth');
 Route::post('/register', [loginController::class, 'register'])->name('register')->middleware('auth');
 
 //Rutas Planeación
-Route::get('/home', [HomeController::class, 'Home'])->name('Home')->middleware('auth');
+Route::get('/', [HomeController::class, 'Home'])->name('Home')->middleware('auth');
+
+
 Route::get('/Planeacion', [PlaneacionController::class,'index'])->name('Planeacion')->middleware('auth');
 Route::post('/Planeacion/Filtro/Fechas', [PlaneacionController::class,'PlaneacionFF'])->name('PlaneacionFF')->middleware('auth');
 Route::post('/Planeacion/Filtro/OrdenVenta',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOV')->middleware('auth');
@@ -73,12 +76,6 @@ Route::get('/Area/Pulido', [AreasController::class,'Pulido'])->name('Pulido')->m
 Route::get('/Area/Medicion', [AreasController::class,'Medicion'])->name('Medicion')->middleware('auth');
 Route::get('/Area/Visualizacion', [AreasController::class,'Visualizacion'])->name('Visualizacion')->middleware('auth');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas')->middleware('auth');
-//Area de empaquetado
-Route::get('/Area/Empacado',[AreasController::class,'Empaquetado'])->name('Empacado');
-Route::get('/Tabla/principal',[AreasController::class,'tablaEmpacado'])->name('tabla.principal');
-Route::post('/Area/Empaquetado/buscar', [AreasController::class,'EmpaquetadoBuscar'])->name('EmpaquetadoBuscar')->middleware('auth');
-Route::get('/fin/Proceso',[AreasController::class,'finProcesoEmpaque'])->name('finProceso.empacado')->middleware('auth');
-Route::post('/regresar-proceso', [AreasController::class, 'RegresarProceso'])->name('regresar.proceso');
 
 
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden')->middleware('auth');
@@ -115,13 +112,16 @@ Route::get('/ordenes/cerradas',[CorteController:: class, 'index'])->name('ordene
     Route::post('/orden-fabricacion/update-status', [CorteController::class, 'updateStatus'])->name('orden-fabricacion.update-status')->middleware('auth');
 Route::get('/ruta-para-actualizar-tabla', [CorteController::class, 'actualizarTabla'])->name('actualizar.tabla')->middleware('auth');
 */
+
 Route::get('/corte/DetallesCompletado', [CorteController::class, 'DetallesCompletado'])->name('corte.DetallesCompletado')->middleware('auth');
+
 //rutas para generar etiquetas
 Route::get('/generar-etiquetas/{corteId}', [CorteController::class, 'getDatosGenerarEtiquetas'])->middleware('auth');
     Route::post('/generar-etiquetas', [CorteController::class, 'generarEtiquetas'])->name('generar.etiquetas')->middleware('auth');
     Route::get('/mostrar/etiqueta', [CorteController::class, 'MostarInformacion'])->name('mostrar.etiqueta')->middleware('auth');
     Route::get('/generar-pdf', [CorteController::class, 'generarPDF'])->name('generar.pdf')->middleware('auth');
 Route::post('/generar-pdf-rangos', [CorteController::class, 'PDFCondicion'])->name('pdfcondicion')->middleware('auth');
+
 //ruta para el formulario de registro
 Route::get('/registro', [RegistroController::class, 'index'])->name('registro.index')->middleware('auth');
 Route::get('/tabla/registro',[RegistroController::class, 'tablaPrincipal'])->name('principal.tabla')->middleware('auth');
@@ -146,6 +146,7 @@ Route::get('/tabla/registro',[RegistroController::class, 'tablaPrincipal'])->nam
     
     // Ruta para eliminar un rol o permiso
 Route::delete('registro/{id}', [RegistroController::class, 'destroy'])->name('registro.destroy')->middleware('auth');
+
 //rutas roles y permiso
 Route::get('/RolesPermisos', [RolesPermisoController::class, 'index'])->name('RolesPermisos.index')->middleware('auth');
     
@@ -166,7 +167,15 @@ Route::delete('destroy/{id}', [RolesPermisoController::class, 'destroy'])->name(
 
 
 Route::post('/filtrar-por-fechaS', [CorteController::class, 'fechaCompletado'])->name('Fitrar.FechaS')->middleware('auth');
+
 Route::get('/ordenes-filtradas', [CorteController::class, 'SinCortesProceso'])->name('ordenes.filtradas')->middleware('auth');
+
+
+
+
+
+
+
 
 
 //rutas busquedas
@@ -179,7 +188,9 @@ Route::get('/detallesOF',[BusquedaController::class, 'DetallesOF'])->name('Detal
 Route::get('/graficadorOF',[BusquedaController::class,'GraficadorFabricacion'])->name('graficadoOF')->middleware('auth');
 Route::get('/graficasOR/OF',[BusquedaController::class,'GraficarOROF'])->name('graficarOR.OF')->middleware('auth');
 Route::get('/tiempos/fabricacion',[BusquedaController::class, 'tiemposOrden'])->name('tiempo.orden')->middleware('auth');
+
 //rutas del dashboard
+
 Route::get('/retrabajo', [HomeController:: class, 'Ordenes'])->name('ordenes.retrabajo')->middleware('auth');
 Route::get('/cerradas', [HomeController::class, 'cerradas'])->name('orden.cerredas')->middleware('auth');
 Route::get('/abiertas', [HomeController:: class, 'abiertas'])->name('ordenes.abiertas')->middleware('auth');
@@ -204,8 +215,16 @@ Route::get('/indicadores-cedia',[HomeController::class,'graficasdia'])->name('in
 Route::get('/indicadores-cesemana',[HomeController::class,'graficasemana'])->name('indicadores.CEsemana')->middleware('auth');
 Route::get('/dashboard/indicadorDIA',[HomeController::class, 'Dasboardindicadordia'])->name('dashboard.indicador')->middleware('auth');
 Route::post('/guardar-dashboard', [HomeController::class, 'guardarDasboard'])->name('guardar.Dasboard')->middleware('auth');
+
+
+Route::get('/Area/Empacado',[AreasController::class,'Empaquetado'])->name('Empacado');
+Route::get('/Tabla/principal',[AreasController::class,'tablaEmpacado'])->name('tabla.principal');
+Route::post('/Area/Empaquetado/buscar', [AreasController::class,'EmpaquetadoBuscar'])->name('EmpaquetadoBuscar')->middleware('auth');
+Route::get('/fin/Proceso',[AreasController::class,'finProcesoEmpaque'])->name('finProceso.empacado')->middleware('auth');
+Route::post('/regresar-proceso', [AreasController::class, 'RegresarProceso'])->name('regresar.proceso');
 Route::get('/tiempos-GraficaD', [HomeController::class, 'graficastiempo'])->name('graficastiempo')->middleware('auth');
 Route::get('/tiempos muertos',[HomeController::class, 'graficastiempoMuerto'])->name('graficastiempoMuerto')->middleware('auth');
+
 //lineas        
 Route::get('/index/linea',[LineasController::class, 'index'])->name('index.linea');    
 Route::get('/lineas/datos', [LineasController::class, 'tablalinea'])->name('lineas.datos');
