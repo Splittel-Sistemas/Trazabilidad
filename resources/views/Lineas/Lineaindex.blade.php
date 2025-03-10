@@ -288,30 +288,19 @@ $(document).on("click", ".btn-editar", function () {
     let nombre = $(this).data("nombre");
     let numero = $(this).data("numero");
     let descripcion = $(this).data("descripcion");
-
     $("#lineaModalLabel").text("Editar Línea");
-    
-    // Configurar la acción del formulario para la actualización
     let actionUrl = "{{ route('linea.update', ':numero') }}".replace(':numero', numero);
     $("#lineaEditForm").attr("action", actionUrl);
-    
-    // Método PUT
     $("#lineaEditForm").find("input[name='_method']").val("PUT");
-
-    // Llenar el formulario con los valores actuales
     $("#Nombre").val(nombre);
     $("#NumeroLinea").val(numero);
     $("#Descripcion").val(descripcion);
-
-    // Mostrar el modal de edición
     $("#lineaModal").modal("show");
 });
 $(document).on("submit", "#lineaEditForm", function (event) {
     event.preventDefault(); 
-
     let form = $(this);
     let formData = new FormData(this);
-
     fetch(form.attr("action"), {
         method: "POST", 
         body: formData,
@@ -323,7 +312,6 @@ $(document).on("submit", "#lineaEditForm", function (event) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-
             Swal.fire({
                 icon: 'success',
                 title: 'Éxito',
@@ -336,7 +324,6 @@ $(document).on("submit", "#lineaEditForm", function (event) {
             setTimeout(() => location.reload(), 2000); 
         } else {
             let errorMessage = Object.values(data.errors)[0][0]; 
-
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
