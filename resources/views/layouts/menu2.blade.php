@@ -270,6 +270,7 @@
                                     <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="key"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Roles y permisos</span></span></div>
                                 </a>
                             </div>
+                            
                         </li>
                         <li class="nav-item"><!-- Roles y permisos-->
                             <div class="nav-item-wrapper">
