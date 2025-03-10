@@ -27,7 +27,9 @@ Route::get('/logout', [loginController::class, 'logout'])->name('logout')->middl
 Route::post('/register', [loginController::class, 'register'])->name('register')->middleware('auth');
 
 //Rutas Planeación
-Route::get('/', [HomeControler::class,'Home'])->name('Home')->middleware('auth');
+Route::get('/home', [HomeControler::class, 'Home'])->name('Home')->middleware('auth');
+
+
 Route::get('/Planeacion', [PlaneacionController::class,'index'])->name('Planeacion')->middleware('auth');
 Route::post('/Planeacion/Filtro/Fechas', [PlaneacionController::class,'PlaneacionFF'])->name('PlaneacionFF')->middleware('auth');
 Route::post('/Planeacion/Filtro/OrdenVenta',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOV')->middleware('auth');
@@ -205,25 +207,13 @@ Route::get('/ordenes-completada', [HomeControler::class, 'tablasCompletadas'])->
 Route::get('/tabla-semana', [HomeControler::class,'tablasemana'])->name('tablas.semana')->middleware('auth');
 Route::get('/tabla-mes',[HomeControler::class, 'tablasMes'])->name('tablas.mes')->middleware('auth');
 Route::get('/tabla-horas',[HomeControler::class, 'tablasHoras'])->name('tablas.hora')->middleware('auth');
-
 Route::get('/tiempos',[BusquedaController::class, 'tiempoS'])->name('tiempos.hrs')->middleware('auth');
 Route::get('/wizarp', [HomeControler::class, 'wizarp'])->name('wizarp.dashboard');
 Route::get('/wizarpdia', [HomeControler::class, 'wizarpdia'])->name('wizarpdia.dashboard');
 Route::get('/wizarpmes', [HomeControler::class, 'wizarpmes'])->name('wizarpmes.dashboard');
-
-
 Route::get('/indicadores-cedia',[HomeControler::class,'graficasdia'])->name('indicadores-cedia')->middleware('auth');
 Route::get('/indicadores-cesemana',[HomeControler::class,'graficasemana'])->name('indicadores.CEsemana')->middleware('auth');
-
-
-
-
-
-
-
-
 Route::get('/dashboard/indicadorDIA',[HomeControler::class, 'Dasboardindicadordia'])->name('dashboard.indicador')->middleware('auth');
-
 Route::post('/guardar-dashboard', [HomeControler::class, 'guardarDasboard'])->name('guardar.Dasboard')->middleware('auth');
 
 
@@ -240,8 +230,6 @@ Route::get('/index/linea',[LineasController::class, 'index'])->name('index.linea
 Route::get('/lineas/datos', [LineasController::class, 'tablalinea'])->name('lineas.datos');
 Route::get('/linea/create', [LineasController::class, 'create'])->name('linea.create');
 Route::post('/linea/store',[LineasController::class, 'store'])->name('linea.store');
-
-
 Route::post('/lineas/activar', [LineasController::class, 'activar'])->name('lineas.activar');
 Route::post('/lineas/desactivar', [LineasController::class, 'desactivar'])->name('lineas.desactivar');
 Route::put('/linea/update/{numero}', [LineasController::class, 'update'])->name('linea.update');
@@ -302,7 +290,7 @@ Route::delete('/registro/{registro}', [RegistroController::class, 'destroy'])->n
 
 
 
-//Route::get('/', [HomeController::class,'Home'])->name('home')->middleware('auth');
+
 /*use Illuminate\Support\Facades\Route->middleware('auth');
 use App\Http\Controllers\LoginController->middleware('auth');
 use App\Http\Controllers\RegistroController->middleware('auth');

@@ -308,16 +308,6 @@
             text-align: center;  /* Asegura que el texto esté centrado */
             width: 100%;
         }
-        /* Estilo para los botones activos */
-        .activebtn {
-            background-color: #efefef;
-            color: white;
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgb(255, 255, 255);
-        }
-
-
-
     </style>
 @endsection
 @section('content')
