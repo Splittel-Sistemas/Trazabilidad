@@ -217,7 +217,6 @@ $(document).ready(function () {
                                         ${item.active == 1 ? 'checked' : ''}>
                                 </div>
                             </td>
-
                             <td class="text-center">
                                 <button class="btn btn-sm btn-primary btn-editar" 
                                         data-id="${item.id}" 

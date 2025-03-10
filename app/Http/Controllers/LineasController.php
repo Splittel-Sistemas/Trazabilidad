@@ -93,6 +93,5 @@ class LineasController extends Controller
             return response()->json(['success' => true]);
         }
         return response()->json(['success' => false, 'message' => 'Linea no encontrada.'], 404);
-    }
-    
+    } 
 }
