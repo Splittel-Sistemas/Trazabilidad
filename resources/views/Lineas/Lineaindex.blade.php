@@ -1,9 +1,6 @@
 @extends('layouts.menu2') 
-
 @section('title', 'Lineas') 
-
 @section('styles')
-    <!-- Meta CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         .btn.toggle-status i {
@@ -42,15 +39,8 @@
             color: #888; /* Color del icono */
             pointer-events: none; /* Evita que el icono sea clickeable */
         }
-
-
-
-        /* Estilo personalizado para el estado activo del checkbox */
-
-
     </style>
 @endsection
-
 @section('content')
 <!-- Breadcrumbs -->
 <div class="row gy-3 mb-2 justify-content-between">
@@ -60,12 +50,7 @@
 </div>
 <!-- Contenido principal -->
 <div class="container my-4">
-
-   
-    
     <a href="{{ route('linea.create') }}" class="btn btn-outline-info mb-3" data-bs-toggle="modal" data-bs-target="#crearModal">Agregar Linea</a>
-
-
     @if (session('status'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('status') }}
@@ -198,19 +183,17 @@
         </div>
     </div>
 </div>
-
 @endsection
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function () {
-    // Cargar datos mediante AJAX
     $.ajax({
         url: '{{ route("lineas.datos") }}',
         type: "GET",
         dataType: "json",
         success: function (data) {
-            let tbody = $(".list");  // Asegúrate de usar el contenedor correcto
+            let tbody = $(".list");  
             tbody.empty();
 
             if (data.length === 0) {
@@ -248,58 +231,42 @@ $(document).ready(function () {
                 });
             }
 
-            // Verifica si hay al menos una fila antes de inicializar List.js
             if (tbody.children().length > 0) {
-                // Inicializa List.js solo si hay datos
+
                 var options = {
                     valueNames: ['nombre', 'numero', 'descripcion', 'estatus'],
                     page: 5,
                     pagination: true
                 };
-                new List('tableExample3', options); // Asegúrate de pasar el ID correcto del contenedor
+                new List('tableExample3', options); 
             }
         },
         error: function (xhr, status, error) {
             console.error("Error al cargar los datos:", error);
         }
     });
-    // Abrir el modal para editar los campos
     $(document).on("click", ".btn-editar", function () {
         let id = $(this).data("id");
         let nombre = $(this).data("nombre");
         let numero = $(this).data("numero");
         let descripcion = $(this).data("descripcion");
-
-        // Cambiar título del modal
         $("#lineaModalLabel").text("Editar Línea");
-
-        // Configurar la URL del formulario de edición con el número de línea
         let actionUrl = "{{ route('linea.update', ':numero') }}".replace(':numero', numero);
         $("#lineaEditForm").attr("action", actionUrl);
-
-        // Configurar método PUT
         $("#lineaEditForm").find("input[name='_method']").val("PUT");
-
-        // Rellenar campos del formulario
         $("#Nombre").val(nombre);
         $("#NumeroLinea").val(numero);
         $("#Descripcion").val(descripcion);
-
-        // Mostrar el modal
         $("#lineaModal").modal("show");
     });
-
     window.DesactivarLinea = function(item) {
         var checkbox = $(item);
         var NumeroLinea = checkbox.data('id');
-        var isActive = checkbox.prop('checked'); // Estado actual del checkbox
+        var isActive = checkbox.prop('checked'); 
         var url = isActive ? "{{ route('lineas.activar') }}" : "{{ route('lineas.desactivar') }}";
-
-        console.log("NumeroLinea:", NumeroLinea); // Muestra el número de línea
-        console.log("isActive:", isActive); // Muestra si el checkbox está marcado o no
-        console.log("url:", url); // Muestra la URL de la solicitud
-
-        // Enviar solicitud AJAX para cambiar el estado
+        console.log("NumeroLinea:", NumeroLinea); 
+        console.log("isActive:", isActive); 
+        console.log("url:", url); 
         $.ajax({
             url: url,
             method: 'POST',
@@ -311,18 +278,17 @@ $(document).ready(function () {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function (response) {
-                console.log("Respuesta del servidor:", response); // Muestra la respuesta del servidor
+                console.log("Respuesta del servidor:", response); 
                 if (response.success) {
-                    // Actualizar el UI en función de la respuesta
-                    checkbox.prop('checked', isActive); // Dejar el estado del checkbox como estaba
+                    checkbox.prop('checked', isActive); 
                 } else {
                     alert('Error: ' + response.message);
-                    checkbox.prop('checked', !isActive); // Revertir el cambio en el checkbox si hubo un error
+                    checkbox.prop('checked', !isActive); 
                 }
             },
             error: function (xhr, status, error) {
-                console.log("Error en la solicitud AJAX:", error); // Muestra un mensaje si la solicitud falla
-                checkbox.prop('checked', !isActive); // Revertir el cambio en el checkbox
+                console.log("Error en la solicitud AJAX:", error); 
+                checkbox.prop('checked', !isActive); 
                 alert('Hubo un error al cambiar el estado.');
             }
         });
