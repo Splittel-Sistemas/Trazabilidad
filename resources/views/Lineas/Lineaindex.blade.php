@@ -218,12 +218,12 @@ $(document).ready(function () {
                                 </div>
                             </td>
                             <td class="text-center">
-                                <button class="btn btn-outline-warning btn-sm" btn-editar" 
+                               <button class="btn btn-outline-warning btn-sm btn-editar"
                                         data-id="${item.id}" 
                                         data-nombre="${item.Nombre}" 
                                         data-numero="${item.NumeroLinea}" 
-                                        data-descripcion="${item.Descripcion}"><i class="fas fa-edit"></i>
-                                    Editar
+                                        data-descripcion="${item.Descripcion}">
+                                    <i class="fas fa-edit"></i> Editar
                                 </button>
                             </td>
                         </tr>
