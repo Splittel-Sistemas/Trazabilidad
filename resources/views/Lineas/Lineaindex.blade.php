@@ -82,7 +82,7 @@
                             <th class="sort border-top ps-3" data-sort="nombre">Nombre</th>
                             <th class="sort border-top ps-3" data-sort="numero">Numero de linea</th>
                             <th class="sort border-top ps-3" data-sort="descripcion">Descripcion</th>
-                            <th class="sort border-top ps-3" data-sort="activacion">estatus</th>    
+                            <th class="sort border-top ps-3" data-sort="activacion">Desactivado/Activado</th>    
                             <th class="sort border-top text-center  ps-3">Accion</th>
                         </tr>
                     </thead>
@@ -218,11 +218,11 @@ $(document).ready(function () {
                                 </div>
                             </td>
                             <td class="text-center">
-                                <button class="btn btn-sm btn-primary btn-editar" 
+                                <button  class="btn btn-outline-warning btn-sm" btn-editar" 
                                         data-id="${item.id}" 
                                         data-nombre="${item.Nombre}" 
                                         data-numero="${item.NumeroLinea}" 
-                                        data-descripcion="${item.Descripcion}">
+                                        data-descripcion="${item.Descripcion}"><i class="fas fa-edit"></i>
                                     Editar
                                 </button>
                             </td>
