@@ -12,7 +12,7 @@ use App\Models\Partidasof_Areas;
 use Illuminate\Support\Facades\Log;
 
 
-class HomeControler extends Controller
+class HomeController extends Controller
 {
     public function  Home(){
         return view('Home');
