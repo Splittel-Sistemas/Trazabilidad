@@ -661,19 +661,25 @@ class AreasController extends Controller
                 }
                 $menu='<div class="card-body">
                     <div id="ContainerTableSuministros" class="table-list">
-                        <div class="row justify-content-start g-0">
-                            <div class="col-auto px-3">
-                            <h6 class="text-center">Orden de Fabricación '.$datos->OrdenFabricacion.'</h6>
-                            <div class="badge badge-phoenix fs--4 badge-phoenix-secondary"><span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span></div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="row justify-content-start g-0">
+                                    <div class="col-auto px-3">
+                                    <h6 class="text-center">Orden de Fabricación '.$datos->OrdenFabricacion.'</h6>
+                                    <div class="badge badge-phoenix fs--4 badge-phoenix-secondary"><span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="row justify-content-end g-0">
+                                    <div class="col-auto px-3">
+                                        <select class="form-select form-select-sm mb-3" data-list-filter="data-list-filter">
+                                        '.$Opciones.'
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    <div class="row justify-content-end g-0">
-                    <div class="col-auto px-3">
-                    <select class="form-select form-select-sm mb-3" data-list-filter="data-list-filter">
-                    '.$Opciones.'
-                    </select>
-                    </div>
-                    </div>
                     <div class="table-responsive scrollbar mb-3">
                         <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
                             <thead>

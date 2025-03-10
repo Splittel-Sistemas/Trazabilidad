@@ -12,12 +12,20 @@
     #myTab li a{
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
+        padding: 0.5rem 1rem 0.5rem 1rem;
+    }
+    #myTab li a:hover{
+        border: solid 1px #e7e7e7;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
     }
     #myTab li .active{
-        border-top: 1px solid blue;
-        border-right: 1px solid blue;
-        border-left: 1px  solid blue;
-        border-bottom: 0;
+        border: solid 1px #e7e7e7;
+        border-bottom: solid white;
+    }
+    #myTab li .active:hover{
+        border: solid 1px #e7e7e7;
+        border-bottom: solid white;
     }
     #hr-menu{
         padding: 0;
