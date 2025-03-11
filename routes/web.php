@@ -232,21 +232,8 @@ Route::get('/linea/create', [LineasController::class, 'create'])->name('linea.cr
 Route::post('/linea/store',[LineasController::class, 'store'])->name('linea.store');
 Route::post('/lineas/activar', [LineasController::class, 'activar'])->name('lineas.activar');
 Route::post('/lineas/desactivar', [LineasController::class, 'desactivar'])->name('lineas.desactivar');
-Route::put('/linea/update/{numero}', [LineasController::class, 'update'])->name('linea.update');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Route::get('/linea/show/{id}', [LineasController::class, 'show'])->name('linea.show')->middleware('auth');
+Route::put('/linea/update/{id}', [LineasController::class, 'update'])->name('linea.update')->middleware('auth');
 
 
 

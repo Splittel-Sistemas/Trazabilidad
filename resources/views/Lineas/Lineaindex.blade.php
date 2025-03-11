@@ -63,7 +63,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-    <div class="card p-4" style="display:block;" id="tableExample3">
+    <div class="card p-4" style="display:block;" id="tableExample3" data-list="{&quot;valueNames&quot;:[&quot;apellido&quot;,&quot;nombre&quot;,&quot;email&quot;,&quot;roles&quot;,&quot;estatus&quot;],&quot;page&quot;:5,&quot;pagination&quot;:true}">
         <div class="search-box mb-3 mx-auto">
             <form class="position-relative d-flex align-items-center" data-bs-toggle="search" data-bs-display="static">
                 <input class="form-control search-input search form-control-sm rounded-pill pe-5" 
@@ -71,9 +71,10 @@
                        placeholder="Buscar" 
                        aria-label="Buscar">
                 <svg class="position-absolute end-0 me-3 search-box-icon" width="16" height="16" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="currentColor" d="M11.742 10.742a7.5 7.5 0 1 0-1.42 1.42l3.56 3.56a1 1 0 0 0 1.42-1.42l-3.56-3.56zM8 12a4 4 0 1 1 4-4 4 4 0 0 1-4 4z"></path>
+                    <path fill="currentColor" d="M500.3 443.7..."></path>
                 </svg>
             </form>
+            
         </div>
         <div class=" table-responsive">
                 <table class="table table-striped table-sm fs--1 mb-0">
@@ -86,11 +87,40 @@
                             <th class="sort border-top text-center ps-3">Acción</th>
                         </tr>
                     </thead>
-                    <tbody class="list"> </tbody>
+                    <tbody class="list">
+                        @foreach ($linea as $linea)
+                        <tr>
+                            <td class="align-middle nombre ps-3">{{ $linea->Nombre }}</td>
+                            <td class="align-middle numero ps-3">{{ $linea->NumeroLinea }}</td>
+                           <td class="align-middle descripcion ps-3">{{ $linea->Descripcion }}</td>
+                           <td class="align-center estatus ps-8">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input toggle-status" style="transform:scale(1.5);" 
+                                    type="checkbox" 
+                                    id="ActivarUsuario{{ $linea->id }}" 
+                                    data-id="{{ $linea->id }}" 
+                                    data-active="{{ $linea->active ? '1' : '0' }}" 
+                                    {{ $linea->active ? 'checked' : '' }} 
+                                    onclick="DesactivarLinea(this)">
+                            </div>
+                            
+                            </td>
+                           <td class="text-center pe-0">
+                            <button type="button" class="btn btn-outline-warning btn-sm" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#lineaModal" 
+                                data-id="{{ $linea->id }}">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                        </td>
+                        
+                        </tr>
+                        @endforeach
+                    </tbody>
                 </table>
         </div>
         <div class="d-flex justify-content-between mt-3">
-            <span class="d-none d-sm-inline-block" data-list="{&quot;valueNames&quot;:[&quot;apellido&quot;,&quot;nombre&quot;,&quot;numero&quot;,&quot;descripcion&quot;,&quot;activacion&quot;],&quot;page&quot;:5,&quot;pagination&quot;:true}">
+            <span class="d-none d-sm-inline-block" data-list-info="data-list-info">1 a 5 artículos de 43</span>
             <div class="d-flex">
                 <button class="page-link disabled" data-list-pagination="prev" disabled><svg class="svg-inline--fa fa-chevron-left" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M224 480c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25l192-192c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L77.25 256l169.4 169.4c12.5 12.5 12.5 32.75 0 45.25C240.4 476.9 232.2 480 224 480z"></path></svg></button>
                 <ul class="mb-0 pagination">
@@ -98,7 +128,7 @@
                     <li><button class="page" type="button" data-i="2" data-page="5">2</button></li>
                     <li><button class="page" type="button" data-i="3" data-page="5">3</button></li>
                 </ul>
-                    <button class="page-link" data-list-pagination="next"><svg class="svg-inline--fa fa-chevron-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M96 480c8.188 0 16.38-3.125 22.62-9.375l192-192c12.5-12.5 12.5-32.75 0-45.25l-192-192c-12.5-12.5-32.75-12.5-45.25 0s-12.5 32.75 0 45.25l169.4 169.4l-169.4 169.4c-12.5 12.5-12.5 32.75 0 45.25C79.62 476.9 87.81 480 96 480z"></path></svg></button>
+                <button class="page-link" data-list-pagination="next"><svg class="svg-inline--fa fa-chevron-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M96 480c8.188 0 16.38-3.125 22.62-9.375l192-192c12.5-12.5 12.5-32.75 0-45.25l-192-192c-12.5-12.5-32.75-12.5-45.25 0s-12.5 32.75 0 45.25l169.4 169.4l-169.4 169.4c-12.5 12.5-12.5 32.75 0 45.25C79.62 476.9 87.81 480 96 480z"></path></svg></button>
             </div>
         </div>
     </div>
@@ -109,7 +139,7 @@
                     <h5 class="modal-title text-white" id="userModalLabel">Editar Linea</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                <form id="lineaEditForm" method="POST">
+                <form id="userEditForm" action="{{ route('linea.update', ['id' => $linea->id]) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
@@ -188,156 +218,113 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-$(document).ready(function () {
-    $.ajax({
-        url: '{{ route("lineas.datos") }}',
-        type: "GET",
-        dataType: "json",
-        success: function (data) {
-            let tbody = $(".list");  
-            tbody.empty();
-
-            if (data.length === 0) {
-                tbody.append('<tr><td colspan="5" class="text-center">No hay datos disponibles</td></tr>');
-            } else {
-                $.each(data, function (index, item) {
-                    console.log('item.active:', item.active);
-                    let fila = `
-                        <tr>
-                            <td class="ps-3 nombre">${item.Nombre}</td>
-                            <td class="ps-3 numero">${item.NumeroLinea}</td>
-                            <td class="ps-3 descripcion">${item.Descripcion}</td>
-                            <td class="align-center estatus ps-8">
-                                <div class="form-check form-switch ${item.active == 1 ? 'checkbox-activo' : ''}">
-                                    <input class="form-check-input toggle-status" 
-                                        style="transform:scale(1.5);" 
-                                        type="checkbox" 
-                                        id="ActivarLinea${item.NumeroLinea}" 
-                                        onclick="DesactivarLinea(this);" 
-                                        data-id="${item.NumeroLinea}" 
-                                        ${item.active == 1 ? 'checked' : ''}>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                               <button class="btn btn-outline-warning btn-sm btn-editar"
-                                        data-id="${item.id}" 
-                                        data-nombre="${item.Nombre}" 
-                                        data-numero="${item.NumeroLinea}" 
-                                        data-descripcion="${item.Descripcion}">
-                                    <i class="fas fa-edit"></i> Editar
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.append(fila);
-                });
+$(document).ready(function() {
+    var lineaId;
+    function Editarlinea(linea) {
+        lineaId = $(linea).data('id');  
+        var url = "{{ route('linea.show', ['id' => '__lineaId__']) }}".replace('__lineaId__', lineaId);
+        $('#Nombre').val('');
+        $('#Descripcion').val('');
+        $('#NumeroLinea').val('');
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function(response) {
+                console.log(response);
+                $('#Nombre').val(response.Nombre);
+                $('#Descripcion').val(response.Descripcion);
+                $('#NumeroLinea').val(response.NumeroLinea);
+                $('#userEditForm').attr('action', '{{ route('linea.update', 'lineaId') }}'.replace('lineaId', lineaId));
+                $('#lineaModal').modal('show');
+            },
+            error: function() {
+                Swal.fire('Error', 'No se pudo cargar la información del servidor', 'error');
             }
-
-            if (tbody.children().length > 0) {
-
-                var options = {
-                    valueNames: ['nombre', 'numero', 'descripcion', 'activacion'],
-                    page: 5,
-                    pagination: true
-                };
-                var userList = new List('contenedor-lista', options); 
-            }
-        },
-        error: function (xhr, status, error) {
-            console.error("Error al cargar los datos:", error);
-        }
+        });
+    }
+    // Asociar el evento click a los botones de edición
+    $(document).on('click', 'button[data-id]', function() {
+        Editarlinea(this);  
     });
-  
+    // Manejo del formulario de actualización
+    $(document).on('submit', '#userEditForm', function(event) {
+        event.preventDefault();
+        var actionUrl = '{{ route('linea.update', 'lineaId') }}'.replace('lineaId', lineaId);
+        console.log('Acción URL:', actionUrl);  
+        $('#userEditForm').attr('action', actionUrl);
+        var form = $(this);
+        var formData = form.serialize();
+        $.ajax({
+            url: actionUrl,
+            method: 'PUT',
+            data: formData + '&_method=PUT',
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire('Éxito', response.message, 'success').then(() => {
+                        $('#lineaModal').modal('hide');
+                        location.reload(); 
+                    });
+                } else {
+                    Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', error);
+                console.log('Estado:', status);
+                console.log('Respuesta:', xhr.responseText);
+                Swal.fire('Error', 'Hubo un problema en el servidor.', 'error');
+            }
+        });
+    });
+    //ACTIVAR Y DESACTIVAR LINEA
     window.DesactivarLinea = function(item) {
         var checkbox = $(item);
-        var NumeroLinea = checkbox.data('id');
-        var isActive = checkbox.prop('checked'); 
+        var id = checkbox.data('id');  
+        var isActive = checkbox.prop('checked');
         var url = isActive ? "{{ route('lineas.activar') }}" : "{{ route('lineas.desactivar') }}";
-        console.log("NumeroLinea:", NumeroLinea); 
-        console.log("isActive:", isActive); 
-        console.log("url:", url); 
+        console.log("id:", id);
+        console.log("isActive:", isActive);
+        console.log("url:", url);
         $.ajax({
             url: url,
             method: 'POST',
             data: {
-                NumeroLinea: NumeroLinea, 
+                id: id,  
                 _token: $('meta[name="csrf-token"]').attr('content'),
             },
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function (response) {
-                console.log("Respuesta del servidor:", response); 
+                console.log("Respuesta del servidor:", response);
                 if (response.success) {
-                    checkbox.prop('checked', isActive); 
+                    checkbox.prop('checked', isActive);
                 } else {
                     alert('Error: ' + response.message);
-                    checkbox.prop('checked', !isActive); 
+                    checkbox.prop('checked', !isActive);
                 }
             },
             error: function (xhr, status, error) {
-                console.log("Error en la solicitud AJAX:", error); 
-                checkbox.prop('checked', !isActive); 
+                console.log("Error en la solicitud AJAX:", error);
+                checkbox.prop('checked', !isActive);
                 alert('Hubo un error al cambiar el estado.');
             }
         });
     };
-});
-$(document).on("click", ".btn-editar", function () {
-    let id = $(this).data("id");
-    let nombre = $(this).data("nombre");
-    let numero = $(this).data("numero");
-    let descripcion = $(this).data("descripcion");
-    $("#lineaModalLabel").text("Editar Línea");
-    let actionUrl = "{{ route('linea.update', ':numero') }}".replace(':numero', numero);
-    $("#lineaEditForm").attr("action", actionUrl);
-    $("#lineaEditForm").find("input[name='_method']").val("PUT");
-    $("#Nombre").val(nombre);
-    $("#NumeroLinea").val(numero);
-    $("#Descripcion").val(descripcion);
-    $("#lineaModal").modal("show");
-});
-$(document).on("submit", "#lineaEditForm", function (event) {
-    event.preventDefault(); 
-    let form = $(this);
-    let formData = new FormData(this);
-    fetch(form.attr("action"), {
-        method: "POST", 
-        body: formData,
-        headers: {
-            "X-Requested-With": "XMLHttpRequest", 
-            "X-CSRF-TOKEN": $('input[name="_token"]').val()
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: 'Línea actualizada correctamente.',
-                showConfirmButton: false,
-                timer: 2000
-            });
-
-            $("#lineaModal").modal("hide"); 
-            setTimeout(() => location.reload(), 2000); 
-        } else {
-            let errorMessage = Object.values(data.errors)[0][0]; 
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: errorMessage,
-            });
-        }
-    })
-    .catch(error => {
-        console.error("Error:", error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error inesperado',
-            text: 'Ocurrió un problema. Intenta de nuevo.',
-        });
+    //modal agregar linea
+    $(document).on("click", ".btn-editar", function () {
+        let id = $(this).data("id");
+        let nombre = $(this).data("nombre");
+        let numero = $(this).data("numero");
+        let descripcion = $(this).data("descripcion");
+        $("#lineaModalLabel").text("Editar Línea");
+        let actionUrl = "{{ route('linea.update', ':numero') }}".replace(':numero', numero);
+        $("#lineaEditForm").attr("action", actionUrl);
+        $("#lineaEditForm").find("input[name='_method']").val("PUT");
+        $("#Nombre").val(nombre);
+        $("#NumeroLinea").val(numero);
+        $("#Descripcion").val(descripcion);
+        $("#lineaModal").modal("show");
     });
 });
 </script>
