@@ -49,7 +49,6 @@
             <!-- Aquí podrías agregar un botón u otros elementos si es necesario -->
         </div>
     </div>
-    
     <!--
     <div class="card p-3 mt-3">
         <div class="profile-header d-flex align-items-center justify-content-between">
@@ -69,7 +68,7 @@
     <!-- Información Personal -->
     <div class="card">
         <div class="card p-3 mt-3 shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center p-3" style="border: 1px solid #17a2b8; background-color: #f8f9fa;">
+            <div class="card-header d-flex justify-content-between align-items-center p-3" style="border: 1px solid #17a2b8; background-color:">
                 <h6 class="mb-0 text-info font-weight-bold">Información Personal</h6>
                 <div class="profile-actions">
                     <button class="btn btn-outline-primary btn-sm btn-custom" id="editProfileBtn">
@@ -113,6 +112,9 @@
 @endsection
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     document.getElementById('editProfileBtn').addEventListener('click', function() {
         const inputs = document.querySelectorAll('#profileForm input');
@@ -152,11 +154,23 @@
             processData: false,
             contentType: false,
             success: function(response) {
-                alert(response.message); 
+                Swal.fire({
+                    title: 'Éxito',
+                    text: response.message, 
+                    icon: 'success',
+                    confirmButtonText: 'Cerrar'
+                });
+                setTimeout(function() {
+                    location.reload(); 
+                }, 2000); 
             },
-            error: function(xhr) {
-                console.log(xhr.responseText); 
-                alert('Error al actualizar el perfil');
+            error: function(xhr, status, error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un problema al actualizar el perfil. Inténtelo nuevamente.',
+                    icon: 'error',
+                    confirmButtonText: 'Cerrar'
+                });
             }
         });
     });
