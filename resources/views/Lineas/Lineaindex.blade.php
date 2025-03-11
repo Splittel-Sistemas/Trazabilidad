@@ -308,12 +308,18 @@ $(document).ready(function () {
                         </tr>
                     `;
                     tbody.append(fila);
-                    
                 });
-              
             }
-        
 
+            if (tbody.children().length > 0) {
+
+                var options = {
+                    valueNames: ['nombre', 'numero', 'descripcion', 'activacion'],
+                    page: 5,
+                    pagination: true
+                };
+                var userList = new List('contenedor-lista', options); 
+            }
         },
         error: function (xhr, status, error) {
             console.error("Error al cargar los datos:", error);
