@@ -447,7 +447,7 @@ class CorteController extends Controller
     }
     //Consultas a SAP
     
-    //Ordenes de Fbaricacion Filtro Fecha, Abierta=0 Cerrada=1
+    //Ordenes de Fabricacion Filtro Fecha, Abierta=0 Cerrada=1
     public function OrdenesFabricacionAbiertas(){
         $OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->orderBy('FechaEntrega', 'asc')->get();
         foreach($OrdenFabricacion as $orden) {
