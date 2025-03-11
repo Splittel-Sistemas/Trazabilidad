@@ -1,6 +1,5 @@
 @extends('layouts.menu2') 
 @section('title', 'Perfil de Usuario') 
-
 @section('styles')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
@@ -39,7 +38,6 @@
     }
 </style>
 @endsection
-
 @section('content')
     <!-- Encabezado -->
     <div class="row gy-3 mb-4 justify-content-between align-items-center">
@@ -112,73 +110,55 @@
             </div>
         </div>
     </div>
-    
-    
+@endsection
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     document.getElementById('editProfileBtn').addEventListener('click', function() {
-    // Alternar entre habilitar y deshabilitar los campos
-    const inputs = document.querySelectorAll('#profileForm input');
-    let isEditable = false;
-
-    // Verificar si algún campo está editado
-    inputs.forEach(input => {
-        if (!input.hasAttribute('readonly')) {
-            isEditable = true;
-        }
-    });
-
-    // Si los campos están habilitados, deshabilitarlos, de lo contrario habilitarlos
-    inputs.forEach(input => {
-        if (input.id !== 'Role') {
-            if (isEditable) {
-                input.setAttribute('readonly', 'true'); // Bloquear los campos
-            } else {
-                input.removeAttribute('readonly'); // Habilitar los campos
+        const inputs = document.querySelectorAll('#profileForm input');
+        let isEditable = false;
+        inputs.forEach(input => {
+            if (!input.hasAttribute('readonly')) {
+                isEditable = true;
             }
+        });
+        inputs.forEach(input => {
+            if (input.id !== 'Role') {
+                if (isEditable) {
+                    input.setAttribute('readonly', 'true'); 
+                } else {
+                    input.removeAttribute('readonly'); 
+                }
+            }
+        });
+        const saveButton = document.getElementById('saveProfileBtn');
+        if (isEditable) {
+            saveButton.classList.add('d-none'); 
+        } else {
+            saveButton.classList.remove('d-none'); 
         }
     });
-
-    // Alternar la visibilidad del botón de guardar
-    const saveButton = document.getElementById('saveProfileBtn');
-    if (isEditable) {
-        saveButton.classList.add('d-none'); // Ocultar el botón de guardar
-    } else {
-        saveButton.classList.remove('d-none'); // Mostrar el botón de guardar
-    }
-});
-
-
-
-$('#profileForm').on('submit', function(e) {
-    e.preventDefault(); 
-    var formData = new FormData(this);
-
-    // Agregar explícitamente el método PUT si es necesario
-    formData.append('_method', 'PUT');
-
-    $.ajax({
-        url: "{{ route('update.perfil') }}", 
-        type: 'POST',  // Usar POST en lugar de PUT con FormData
-        data: formData,
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        processData: false,
-        contentType: false,
-        success: function(response) {
-            alert(response.message); 
-        },
-        error: function(xhr) {
-            console.log(xhr.responseText); // Ver detalles del error
-            alert('Error al actualizar el perfil');
-        }
+    $('#profileForm').on('submit', function(e) {
+        e.preventDefault(); 
+        var formData = new FormData(this);
+        formData.append('_method', 'PUT');
+        $.ajax({
+            url: "{{ route('update.perfil') }}", 
+            type: 'POST',  
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                alert(response.message); 
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText); 
+                alert('Error al actualizar el perfil');
+            }
+        });
     });
-});
-
-
-
-    </script>
-    @endsection
+</script>
 @endsection
