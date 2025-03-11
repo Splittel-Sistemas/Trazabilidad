@@ -63,7 +63,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-    <div class="card p-4" style="display:block;" id="tableExample3">
+    <div class="card p-4" style="display:block;" id="tableExample3" data-list='{"valueNames":["nombre", "numero", "descripcion", "activacion"], "page":5, "pagination":true}'>
         <div class="search-box mb-3 mx-auto">
             <form class="position-relative d-flex align-items-center" data-bs-toggle="search" data-bs-display="static">
                 <input class="form-control search-input search form-control-sm rounded-pill pe-5" 
@@ -88,19 +88,23 @@
                     </thead>
                     <tbody class="list"> </tbody>
                 </table>
-        </div>
-        <div class="d-flex justify-content-between mt-3">
-            <span class="d-none d-sm-inline-block" data-list="{&quot;valueNames&quot;:[&quot;apellido&quot;,&quot;nombre&quot;,&quot;numero&quot;,&quot;descripcion&quot;,&quot;activacion&quot;],&quot;page&quot;:5,&quot;pagination&quot;:true}">
-            <div class="d-flex">
-                <button class="page-link disabled" data-list-pagination="prev" disabled><svg class="svg-inline--fa fa-chevron-left" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M224 480c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25l192-192c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L77.25 256l169.4 169.4c12.5 12.5 12.5 32.75 0 45.25C240.4 476.9 232.2 480 224 480z"></path></svg></button>
-                <ul class="mb-0 pagination">
-                    <li class="active"><button class="page" type="button" data-i="1" data-page="5">1</button></li>
-                    <li><button class="page" type="button" data-i="2" data-page="5">2</button></li>
-                    <li><button class="page" type="button" data-i="3" data-page="5">3</button></li>
-                </ul>
-                    <button class="page-link" data-list-pagination="next"><svg class="svg-inline--fa fa-chevron-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M96 480c8.188 0 16.38-3.125 22.62-9.375l192-192c12.5-12.5 12.5-32.75 0-45.25l-192-192c-12.5-12.5-32.75-12.5-45.25 0s-12.5 32.75 0 45.25l169.4 169.4l-169.4 169.4c-12.5 12.5-12.5 32.75 0 45.25C79.62 476.9 87.81 480 96 480z"></path></svg></button>
             </div>
-        </div>
+            <div class="d-flex justify-content-between mt-3">
+                <span class="d-none d-sm-inline-block" data-list-info="data-list-info">1 a 5 artículos de 43</span>
+                <div class="d-flex">
+                    <button class="page-link disabled" data-list-pagination="prev" disabled><svg class="svg-inline--fa fa-chevron-left" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M224 480c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25l192-192c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L77.25 256l169.4 169.4c12.5 12.5 12.5 32.75 0 45.25C240.4 476.9 232.2 480 224 480z"></path></svg></button>
+                    <ul class="mb-0 pagination">
+                        <li class="active"><button class="page" type="button" data-i="1" data-page="5">1</button></li>
+                        <li><button class="page" type="button" data-i="2" data-page="5">2</button></li>
+                        <li><button class="page" type="button" data-i="3" data-page="5">3</button></li>
+                    </ul>
+                   
+                        <button class="page-link" data-list-pagination="next"><svg class="svg-inline--fa fa-chevron-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M96 480c8.188 0 16.38-3.125 22.62-9.375l192-192c12.5-12.5 12.5-32.75 0-45.25l-192-192c-12.5-12.5-32.75-12.5-45.25 0s-12.5 32.75 0 45.25l169.4 169.4l-169.4 169.4c-12.5 12.5-12.5 32.75 0 45.25C79.62 476.9 87.81 480 96 480z"></path></svg></button>
+                    
+                </div>
+            </div>
+    </div>
+       
     </div>
     <div class="modal fade" id="lineaModal" tabindex="-1" role="dialog" aria-labelledby="lineaModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -230,18 +234,12 @@ $(document).ready(function () {
                         </tr>
                     `;
                     tbody.append(fila);
+                    
                 });
+              
             }
+        
 
-            if (tbody.children().length > 0) {
-
-                var options = {
-                    valueNames: ['nombre', 'numero', 'descripcion', 'activacion'],
-                    page: 5,
-                    pagination: true
-                };
-                var userList = new List('contenedor-lista', options); 
-            }
         },
         error: function (xhr, status, error) {
             console.error("Error al cargar los datos:", error);
@@ -335,9 +333,10 @@ $(document).on("submit", "#lineaEditForm", function (event) {
         console.error("Error:", error);
         Swal.fire({
             icon: 'error',
-            title: 'Error inesperado',
-            text: 'Ocurrió un problema. Intenta de nuevo.',
+            title: 'Error al guardar',
+            text: 'Numero de Linea Existente. Intenta de nuevo.',
         });
     });
 });
+
 </script>

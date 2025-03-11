@@ -41,8 +41,8 @@ class LineasController extends Controller
                     'message' => 'Línea creada correctamente'
                 ]);
             }
-            return redirect()->route('linea.index')->with('message', 'Línea creada con éxito');
-        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->route('index.linea')->with('message', 'Línea creada con éxito');
+        } catch (ValidationException $e) {
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -80,7 +80,7 @@ class LineasController extends Controller
                 ]);
             }
             return redirect()->route('linea.index')->with('message', 'Línea actualizada con éxito');
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
