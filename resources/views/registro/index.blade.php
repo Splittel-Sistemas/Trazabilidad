@@ -93,8 +93,8 @@
                             <th class="sort border-top ps-3" data-sort="email">Correo</th>
                             <th class="sort border-top ps-3" data-sort="password">Contraseña</th>
                             <th class="sort border-top ps-3" data-sort="roles">Rol</th>
-                            <th class="sort border-top ps-3" data-sort="estatus">Desactivo/Activo</th>
-                            <th class="sort border-top text-center  ps-3">Accion</th>
+                            <th class="sort border-top ps-3" data-sort="estatus">Activar</th>
+                            <th class="sort border-top text-center  ps-3">Acción</th>
                         </tr>
                     </thead>
                     <tbody class="list">

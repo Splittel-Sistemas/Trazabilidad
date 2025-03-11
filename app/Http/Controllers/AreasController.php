@@ -37,6 +37,20 @@ class AreasController extends Controller
             ->unique('OrdenFabricacion_id');
         foreach($PartidasOFA as $orden) {
             $ordenFabri=$orden->ordenFabricacion;
+            $ordenesSAP1=$this->funcionesGenerales->Emisiones($ordenFabri->OrdenFabricacion);
+            $ordenesSAP = array_filter($ordenesSAP1, function($item) {
+                return $item['Cantidad'] !== null;
+            });
+            $ordenesLocal=$ordenFabri->Emisions()->get();
+            foreach($ordenesLocal as $ordenesLoc){
+                foreach ($ordenesSAP as $key => $item) {
+                    if ($item["NoEmision"] == $ordenesLoc->NumEmision) {
+                        unset($ordenesSAP[$key]);  // Eliminar el elemento del array
+                        break;  // Detener el bucle después de eliminar
+                    }
+                }
+            }
+            $orden['OrdenFaltantes']=count($ordenesSAP);
             $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
             $orden['OrdenFabricacion']=$ordenFabri->OrdenFabricacion;
             $orden['TotalPartida']=$ordenFabri->PartidasOF->SUM('cantidad_partida')-$ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida');
@@ -175,11 +189,25 @@ class AreasController extends Controller
             $tabla="";
             foreach($PartidasOF as $orden) {
                 $ordenFabri=$orden->ordenFabricacion;
+                $ordenesSAP1=$this->funcionesGenerales->Emisiones($ordenFabri->OrdenFabricacion);
+                $ordenesSAP = array_filter($ordenesSAP1, function($item) {
+                    return $item['Cantidad'] !== null;
+                });
+                $ordenesLocal=$ordenFabri->Emisions()->get();
+                foreach($ordenesLocal as $ordenesLoc){
+                    foreach ($ordenesSAP as $key => $item) {
+                        if ($item["NoEmision"] == $ordenesLoc->NumEmision) {
+                            unset($ordenesSAP[$key]);  // Eliminar el elemento del array
+                            break;  // Detener el bucle después de eliminar
+                        }
+                    }
+                }
                 $TotalPartida=($ordenFabri->PartidasOF->SUM('cantidad_partida'))-($ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida'));
                 $tabla.='<tr>
                         <td>'. $ordenFabri->OrdenFabricacion .'</td>
                         <td>'. $ordenFabri->Articulo .'</td>
-                        <td>'. $ordenFabri->Descripcion.'</td>';
+                        <td>'. $ordenFabri->Descripcion.'</td>
+                        <td>'.count($ordenesSAP).'</td>';
                         $Normal=0;
                         $Retrabajo=0;
                         foreach($ordenFabri->PartidasOF as $partidas){

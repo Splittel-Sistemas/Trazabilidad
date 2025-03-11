@@ -30,16 +30,29 @@ class LineasController extends Controller
     // Guardar una nueva línea en la base de datos
     public function store(Request $request)
     {
-        $request->validate([
-            'Nombre' => 'required|string|max:255',
-            'NumeroLinea' => 'required|integer|unique:linea',
-            'Descripcion' => 'nullable|string',
-        ]);
-        $linea = linea::create($request->all());
-        return view('Lineas.Lineaindex', [
-            'message' => 'Línea creada con éxito',
-            'linea' => $linea
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'Nombre' => 'required|string|max:255',
+                'NumeroLinea' => 'required|integer|unique:linea,NumeroLinea',
+                'Descripcion' => 'nullable|string',
+            ]);
+            $linea = Linea::create($validatedData);
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Línea creada correctamente'
+                ]);
+            }
+            return redirect()->route('linea.index')->with('message', 'Línea creada con éxito');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        }
     }
     // Mostrar una línea específica
     public function show(linea $linea)
@@ -54,17 +67,30 @@ class LineasController extends Controller
     // Actualizar una línea existente
     public function update(Request $request, $numero)
     {
-        $linea = Linea::where('NumeroLinea', $numero)->firstOrFail();
-        $request->validate([
-            'Nombre' => 'required|string|max:255',
-            'NumeroLinea' => 'required|integer|unique:linea,NumeroLinea,' . $linea->id,
-            'Descripcion' => 'nullable|string',
-        ]);
-        $linea->update($request->all());
-        return view('Lineas.Lineaindex', [
-            'message' => 'Línea actualizada con éxito',
-            'linea' => $linea
-        ]);
+        try {
+            $linea = Linea::where('NumeroLinea', $numero)->firstOrFail();
+            $validatedData = $request->validate([
+                'Nombre' => 'required|string|max:255',
+                'NumeroLinea' => 'required|integer|unique:linea,NumeroLinea,' . $linea->id,
+                'Descripcion' => 'nullable|string',
+            ]);
+            $linea->update($validatedData);
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Línea actualizada correctamente'
+                ]);
+            }
+            return redirect()->route('linea.index')->with('message', 'Línea actualizada con éxito');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        }
     }
     // Eliminar una línea
     public function destroy(linea $linea)
@@ -93,6 +119,5 @@ class LineasController extends Controller
             return response()->json(['success' => true]);
         }
         return response()->json(['success' => false, 'message' => 'Linea no encontrada.'], 404);
-    }
-    
+    } 
 }

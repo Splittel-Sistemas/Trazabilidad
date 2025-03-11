@@ -85,11 +85,11 @@
                             </div>
                         </li>
                         <li class="nav-item"><!-- Progreso-->
-                            <p class="navbar-vertical-label">Progreso</p>
+                            <p class="navbar-vertical-label">B&uacute;squeda</p>
                             <hr class="navbar-vertical-line" /><!-- parent pages-->
                             <div class="nav-item-wrapper">
                                 <a class="nav-link label-1 {{ Route::is('Busquedas.OV') ? 'active' : '' }}" href="{{ route('Busquedas.OV') }}" role="button" data-bs-toggle="" aria-expanded="false">
-                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="bar-chart-2"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Progreso</span></span></div>
+                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span><i class="fa-solid fa-bars-progress"></i></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Progreso</span></span></div>
                                 </a>
                             </div>
                         </li>
@@ -270,11 +270,14 @@
                                     <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="key"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Roles y permisos</span></span></div>
                                 </a>
                             </div>
+                            
                         </li>
-                        <li class="nav-item"><!-- Roles y permisos-->
+                        <li class="nav-item"><!-- Lineas-->
+                            <p class="navbar-vertical-label">Configuraci&oacute;nes</p>
+                            <hr class="navbar-vertical-line" /><!-- parent pages-->
                             <div class="nav-item-wrapper">
                                 <a class="nav-link label-1 {{ Route::is('index.linea') ? 'active' : '' }}" href="{{route('index.linea')}}" role="button" data-bs-toggle="" aria-expanded="false">
-                                    <div class="d-flex align-items-center"><span class="nav-link-icon"> <span data-feather="plus-circle"></span></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Lineas</span></span></div>
+                                    <div class="d-flex align-items-center"><span class="nav-link-icon"> <span><i class="fa-solid fa-list-ol"></i></span></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">L&iacute;neas</span></span></div>
                                 </a>
                             </div>
                         </li>

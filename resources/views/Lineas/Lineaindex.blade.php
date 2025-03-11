@@ -63,7 +63,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-    <div class="card p-4" style="display:block;" id="tableExample3" data-list="{&quot;valueNames&quot;:[&quot;apellido&quot;,&quot;nombre&quot;,&quot;email&quot;,&quot;roles&quot;,&quot;estatus&quot;],&quot;page&quot;:5,&quot;pagination&quot;:true}">
+    <div class="card p-4" style="display:block;" id="tableExample3">
         <div class="search-box mb-3 mx-auto">
             <form class="position-relative d-flex align-items-center" data-bs-toggle="search" data-bs-display="static">
                 <input class="form-control search-input search form-control-sm rounded-pill pe-5" 
@@ -80,17 +80,17 @@
                     <thead class="bg-primary text-white">
                         <tr>
                             <th class="sort border-top ps-3" data-sort="nombre">Nombre</th>
-                            <th class="sort border-top ps-3" data-sort="numero">Numero de linea</th>
-                            <th class="sort border-top ps-3" data-sort="descripcion">Descripcion</th>
-                            <th class="sort border-top ps-3" data-sort="activacion">estatus</th>    
-                            <th class="sort border-top text-center  ps-3">Accion</th>
+                            <th class="sort border-top ps-3" data-sort="numero">Número de línea</th>
+                            <th class="sort border-top ps-3" data-sort="descripcion">Descripción</th>
+                            <th class="sort border-top ps-3" data-sort="activacion">Activar</th>    
+                            <th class="sort border-top text-center ps-3">Acción</th>
                         </tr>
                     </thead>
                     <tbody class="list"> </tbody>
                 </table>
         </div>
         <div class="d-flex justify-content-between mt-3">
-            <span class="d-none d-sm-inline-block" data-list-info="data-list-info">1 a 5 artículos de 43</span>
+            <span class="d-none d-sm-inline-block" data-list="{&quot;valueNames&quot;:[&quot;apellido&quot;,&quot;nombre&quot;,&quot;numero&quot;,&quot;descripcion&quot;,&quot;activacion&quot;],&quot;page&quot;:5,&quot;pagination&quot;:true}">
             <div class="d-flex">
                 <button class="page-link disabled" data-list-pagination="prev" disabled><svg class="svg-inline--fa fa-chevron-left" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M224 480c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25l192-192c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L77.25 256l169.4 169.4c12.5 12.5 12.5 32.75 0 45.25C240.4 476.9 232.2 480 224 480z"></path></svg></button>
                 <ul class="mb-0 pagination">
@@ -186,6 +186,7 @@
 @endsection
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function () {
     $.ajax({
@@ -217,14 +218,13 @@ $(document).ready(function () {
                                         ${item.active == 1 ? 'checked' : ''}>
                                 </div>
                             </td>
-
                             <td class="text-center">
-                                <button class="btn btn-sm btn-primary btn-editar" 
+                               <button class="btn btn-outline-warning btn-sm btn-editar"
                                         data-id="${item.id}" 
                                         data-nombre="${item.Nombre}" 
                                         data-numero="${item.NumeroLinea}" 
                                         data-descripcion="${item.Descripcion}">
-                                    Editar
+                                    <i class="fas fa-edit"></i> Editar
                                 </button>
                             </td>
                         </tr>
@@ -236,31 +236,18 @@ $(document).ready(function () {
             if (tbody.children().length > 0) {
 
                 var options = {
-                    valueNames: ['nombre', 'numero', 'descripcion', 'estatus'],
+                    valueNames: ['nombre', 'numero', 'descripcion', 'activacion'],
                     page: 5,
                     pagination: true
                 };
-                new List('tableExample3', options); 
+                var userList = new List('contenedor-lista', options); 
             }
         },
         error: function (xhr, status, error) {
             console.error("Error al cargar los datos:", error);
         }
     });
-    $(document).on("click", ".btn-editar", function () {
-        let id = $(this).data("id");
-        let nombre = $(this).data("nombre");
-        let numero = $(this).data("numero");
-        let descripcion = $(this).data("descripcion");
-        $("#lineaModalLabel").text("Editar Línea");
-        let actionUrl = "{{ route('linea.update', ':numero') }}".replace(':numero', numero);
-        $("#lineaEditForm").attr("action", actionUrl);
-        $("#lineaEditForm").find("input[name='_method']").val("PUT");
-        $("#Nombre").val(nombre);
-        $("#NumeroLinea").val(numero);
-        $("#Descripcion").val(descripcion);
-        $("#lineaModal").modal("show");
-    });
+  
     window.DesactivarLinea = function(item) {
         var checkbox = $(item);
         var NumeroLinea = checkbox.data('id');
@@ -295,5 +282,62 @@ $(document).ready(function () {
             }
         });
     };
+});
+$(document).on("click", ".btn-editar", function () {
+    let id = $(this).data("id");
+    let nombre = $(this).data("nombre");
+    let numero = $(this).data("numero");
+    let descripcion = $(this).data("descripcion");
+    $("#lineaModalLabel").text("Editar Línea");
+    let actionUrl = "{{ route('linea.update', ':numero') }}".replace(':numero', numero);
+    $("#lineaEditForm").attr("action", actionUrl);
+    $("#lineaEditForm").find("input[name='_method']").val("PUT");
+    $("#Nombre").val(nombre);
+    $("#NumeroLinea").val(numero);
+    $("#Descripcion").val(descripcion);
+    $("#lineaModal").modal("show");
+});
+$(document).on("submit", "#lineaEditForm", function (event) {
+    event.preventDefault(); 
+    let form = $(this);
+    let formData = new FormData(this);
+    fetch(form.attr("action"), {
+        method: "POST", 
+        body: formData,
+        headers: {
+            "X-Requested-With": "XMLHttpRequest", 
+            "X-CSRF-TOKEN": $('input[name="_token"]').val()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: 'Línea actualizada correctamente.',
+                showConfirmButton: false,
+                timer: 2000
+            });
+
+            $("#lineaModal").modal("hide"); 
+            setTimeout(() => location.reload(), 2000); 
+        } else {
+            let errorMessage = Object.values(data.errors)[0][0]; 
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: errorMessage,
+            });
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error inesperado',
+            text: 'Ocurrió un problema. Intenta de nuevo.',
+        });
+    });
 });
 </script>
