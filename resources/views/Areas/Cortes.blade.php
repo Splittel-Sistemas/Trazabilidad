@@ -632,6 +632,16 @@
                         },
                         "initComplete": function(settings, json) {
                             $('#'+tabla).css('font-size', '0.7rem');
+                        },
+                        "stateSave": true, // Mantener el estado (página, búsqueda, etc.) entre recargas
+                        "stateSaveCallback": function(settings, data) {
+                            // Esto guarda el estado actual en localStorage (opcional si no usas un backend)
+                            localStorage.setItem('datatableState_' + tabla, JSON.stringify(data));
+                        },
+                        "stateLoadCallback": function(settings) {
+                            // Esto carga el estado desde localStorage (opcional si no usas un backend)
+                            var state = localStorage.getItem('datatableState_' + tabla);
+                            return state ? JSON.parse(state) : null;
                         }
         });
     }

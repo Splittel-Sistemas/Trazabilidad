@@ -540,8 +540,26 @@ class AreasController extends Controller
     //Area 4 Preparado
     public function Preparado(){
         $Area=$this->funcionesGenerales->encrypt(4);
+        $Registros = OrdenFabricacion::select('OrdenFabricacion.*','OrdenFabricacion.id AS OrdenFabricacion_id', 'partidasOF.id AS partidasOF_id', 'partidasof_Areas.id AS partidasof_Areas_id',
+                                            'OrdenFabricacion','CantidadTotal AS OrdenFabricacionCantidad','cantidad_partida AS PartidasOFCantidad','partidasOF.NumeroPartida' )
+                    ->join('partidasOF', 'OrdenFabricacion.id', '=', 'partidasOF.OrdenFabricacion_id') // Relación entre OrdenFabricacion y partidasOF
+                    ->join('partidasof_Areas', 'partidasOF.id', '=', 'partidasof_Areas.PartidasOF_id') // Relación entre partidasOF y partidasof_Areas
+                    ->where('OrdenFabricacion.Cerrada', 1) // Filtra las órdenes que aún están abiertas
+                    ->where('partidasof_Areas.Areas_id', 3) // Filtra por el área 3 (Suministro)
+                    ->whereNotNull('partidasof_Areas.FechaTermina') // Asegura que la columna FechaTermina no sea NULL
+                    ->get();
+        foreach($Registros as $key=>$registro){
+            $Area4=PartidasOF::find($registro->partidasOF_id);
+            $NumeroActuales=$Area4->Areas()->where('Areas_id',4)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
+                            $Area4->Areas()->where('Areas_id',4)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
+            $registro['NumeroActuales']=$NumeroActuales;
+            if($NumeroActuales == $Area4->cantidad_partida){
+                unset($Registros[$key]);
+            }
+        }
+        //->unique('OrdenFabricacion');
         //return $this->TablaOrdenesActivasEstacion(4);
-        return view('Areas.Preparado',compact('Area'));
+        return view('Areas.Preparado',compact('Area','Registros'));
     }
     public function PreparadoBuscar(Request $request){
         if ($request->has('Confirmacion')) {
