@@ -75,7 +75,7 @@
                        placeholder="Buscar" 
                        aria-label="Buscar">
                 <svg class="position-absolute end-0 me-3 search-box-icon" width="16" height="16" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="currentColor" d="M500.3 443.7..."></path>
+                    <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8 8-3.58 8-8S12.42 0 8 0zm0 14C4.69 14 2 11.31 2 8s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path>
                 </svg>
             </form>
             
