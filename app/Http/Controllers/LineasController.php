@@ -70,9 +70,6 @@ class LineasController extends Controller
             return redirect()->back()->withErrors($e->errors())->withInput();
         }
     }
-    
-    
-    
     // Mostrar los detalles de una línea específica
     public function show($id)
     {
@@ -133,17 +130,15 @@ class LineasController extends Controller
         }
         return response()->json(['success' => false, 'message' => 'Línea no encontrada.'], 404);
     }
-
-// Método para desactivar una línea
-public function desactivar(Request $request)
-{
-    $linea = Linea::find($request->id); // Buscar por id en lugar de NumeroLinea
-    if ($linea) {
-        $linea->active = false;
-        $linea->save();
-        return response()->json(['success' => true]);
+    // Método para desactivar una línea
+    public function desactivar(Request $request)
+    {
+        $linea = Linea::find($request->id); // Buscar por id en lugar de NumeroLinea
+        if ($linea) {
+            $linea->active = false;
+            $linea->save();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false, 'message' => 'Línea no encontrada.'], 404);
     }
-    return response()->json(['success' => false, 'message' => 'Línea no encontrada.'], 404);
-}
-
 }

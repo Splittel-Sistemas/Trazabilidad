@@ -225,159 +225,153 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-$(document).ready(function() {
-    var lineaId;
-    function Editarlinea(linea) {
-        lineaId = $(linea).data('id');  
-        var url = "{{ route('linea.show', ['id' => '__lineaId__']) }}".replace('__lineaId__', lineaId);
-        $('#Nombre').val('');
-        $('#Descripcion').val('');
-        $('#NumeroLinea').val('');
-        $.ajax({
-            url: url,
-            method: 'GET',
-            success: function(response) {
-                console.log(response);
-                $('#Nombre').val(response.Nombre);
-                $('#Descripcion').val(response.Descripcion);
-                $('#NumeroLinea').val(response.NumeroLinea);
-                $('#userEditForm').attr('action', '{{ route('linea.update', 'lineaId') }}'.replace('lineaId', lineaId));
-                $('#lineaModal').modal('show');
-            },
-            error: function() {
-                Swal.fire('Error', 'No se pudo cargar la información del servidor', 'error');
-            }
-        });
-    }
-    // Asociar el evento click a los botones de edición
-    $(document).on('click', 'button[data-id]', function() {
-        Editarlinea(this);  
-    });
-    // Manejo del formulario de actualización
-    $(document).on('submit', '#userEditForm', function(event) {
-        event.preventDefault();
-        var actionUrl = '{{ route('linea.update', 'lineaId') }}'.replace('lineaId', lineaId);
-        console.log('Acción URL:', actionUrl);  
-        $('#userEditForm').attr('action', actionUrl);
-        var form = $(this);
-        var formData = form.serialize();
-        $.ajax({
-            url: actionUrl,
-            method: 'PUT',
-            data: formData + '&_method=PUT',
-            success: function(response) {
-                if (response.success) {
-                    Swal.fire('Éxito', response.message, 'success').then(() => {
-                        $('#lineaModal').modal('hide');
-                        location.reload(); 
-                    });
-                } else {
-                    Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
+    $(document).ready(function() {
+        var lineaId;
+        function Editarlinea(linea) {
+            lineaId = $(linea).data('id');  
+            var url = "{{ route('linea.show', ['id' => '__lineaId__']) }}".replace('__lineaId__', lineaId);
+            $('#Nombre').val('');
+            $('#Descripcion').val('');
+            $('#NumeroLinea').val('');
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(response) {
+                    console.log(response);
+                    $('#Nombre').val(response.Nombre);
+                    $('#Descripcion').val(response.Descripcion);
+                    $('#NumeroLinea').val(response.NumeroLinea);
+                    $('#userEditForm').attr('action', '{{ route('linea.update', 'lineaId') }}'.replace('lineaId', lineaId));
+                    $('#lineaModal').modal('show');
+                },
+                error: function() {
+                    Swal.fire('Error', 'No se pudo cargar la información del servidor', 'error');
                 }
-            },
-            error: function(xhr, status, error) {
-                console.log('Error:', error);
-                console.log('Estado:', status);
-                console.log('Respuesta:', xhr.responseText);
-                Swal.fire('Error', 'Hubo un problema en el servidor.', 'error');
-            }
+            });
+        }
+        // Asociar el evento click a los botones de edición
+        $(document).on('click', 'button[data-id]', function() {
+            Editarlinea(this);  
         });
-    });
-    //ACTIVAR Y DESACTIVAR LINEA
-    window.DesactivarLinea = function(item) {
-        var checkbox = $(item);
-        var id = checkbox.data('id');  
-        var isActive = checkbox.prop('checked');
-        var url = isActive ? "{{ route('lineas.activar') }}" : "{{ route('lineas.desactivar') }}";
-        console.log("id:", id);
-        console.log("isActive:", isActive);
-        console.log("url:", url);
-        $.ajax({
-            url: url,
-            method: 'POST',
-            data: {
-                id: id,  
-                _token: $('meta[name="csrf-token"]').attr('content'),
-            },
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (response) {
-                console.log("Respuesta del servidor:", response);
-                if (response.success) {
-                    checkbox.prop('checked', isActive);
-                } else {
-                    alert('Error: ' + response.message);
+        // Manejo del formulario de actualización
+        $(document).on('submit', '#userEditForm', function(event) {
+            event.preventDefault();
+            var actionUrl = '{{ route('linea.update', 'lineaId') }}'.replace('lineaId', lineaId);
+            console.log('Acción URL:', actionUrl);  
+            $('#userEditForm').attr('action', actionUrl);
+            var form = $(this);
+            var formData = form.serialize();
+            $.ajax({
+                url: actionUrl,
+                method: 'PUT',
+                data: formData + '&_method=PUT',
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire('Éxito', response.message, 'success').then(() => {
+                            $('#lineaModal').modal('hide');
+                            location.reload(); 
+                        });
+                    } else {
+                        Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Error:', error);
+                    console.log('Estado:', status);
+                    console.log('Respuesta:', xhr.responseText);
+                    Swal.fire('Error', 'Hubo un problema en el servidor.', 'error');
+                }
+            });
+        });
+        //ACTIVAR Y DESACTIVAR LINEA
+        window.DesactivarLinea = function(item) {
+            var checkbox = $(item);
+            var id = checkbox.data('id');  
+            var isActive = checkbox.prop('checked');
+            var url = isActive ? "{{ route('lineas.activar') }}" : "{{ route('lineas.desactivar') }}";
+            console.log("id:", id);
+            console.log("isActive:", isActive);
+            console.log("url:", url);
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    id: id,  
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+                    console.log("Respuesta del servidor:", response);
+                    if (response.success) {
+                        checkbox.prop('checked', isActive);
+                    } else {
+                        alert('Error: ' + response.message);
+                        checkbox.prop('checked', !isActive);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error en la solicitud AJAX:", error);
                     checkbox.prop('checked', !isActive);
+                    alert('Hubo un error al cambiar el estado.');
                 }
-            },
-            error: function (xhr, status, error) {
-                console.log("Error en la solicitud AJAX:", error);
-                checkbox.prop('checked', !isActive);
-                alert('Hubo un error al cambiar el estado.');
-            }
-        });
-    };
-});
+            });
+        };
+    });
+    $(document).ready(function() {
+        $('#createLineForm').on('submit', function(e) {
+            e.preventDefault(); // Prevenir el envío tradicional del formulario
 
+            // Obtener los datos del formulario
+            var formData = $(this).serialize();
 
+            // Mostrar alerta de que está enviando los datos
+            Swal.fire({
+                title: 'Enviando...',
+                text: 'Por favor espere.',
+                icon: 'info',
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
 
-$(document).ready(function() {
-    $('#createLineForm').on('submit', function(e) {
-        e.preventDefault(); // Prevenir el envío tradicional del formulario
+            // Enviar los datos por AJAX
+            $.ajax({
+                url: '{{ route('linea.store') }}',
+                method: 'POST',
+                data: formData,
+                success: function(response) {
+                    // Si la respuesta es exitosa, mostrar mensaje
+                    Swal.fire({
+                        title: 'Éxito',
+                        text: 'La línea fue registrada correctamente.',
+                        icon: 'success',
+                        confirmButtonText: 'Cerrar'
+                    });
 
-        // Obtener los datos del formulario
-        var formData = $(this).serialize();
+                    // Cerrar el modal y limpiar el formulario
+                    $('#crearModal').modal('hide');
+                    $('#createLineForm')[0].reset();
 
-        // Mostrar alerta de que está enviando los datos
-        Swal.fire({
-            title: 'Enviando...',
-            text: 'Por favor espere.',
-            icon: 'info',
-            showConfirmButton: false,
-            willOpen: () => {
-                Swal.showLoading();
-            }
-        });
+                    // Actualizar la vista después de 2 segundos
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000); // 2000 ms = 2 segundos
+                },
+                error: function(xhr, status, error) {
+                    // Si ocurre un error, mostrar mensaje de error
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Hubo un problema al registrar la línea. Inténtelo nuevamente.',
+                        icon: 'error',
+                        confirmButtonText: 'Cerrar'
+                    });
 
-        // Enviar los datos por AJAX
-        $.ajax({
-            url: '{{ route('linea.store') }}',
-            method: 'POST',
-            data: formData,
-            success: function(response) {
-                // Si la respuesta es exitosa, mostrar mensaje
-                Swal.fire({
-                    title: 'Éxito',
-                    text: 'La línea fue registrada correctamente.',
-                    icon: 'success',
-                    confirmButtonText: 'Cerrar'
-                });
-
-                // Cerrar el modal y limpiar el formulario
-                $('#crearModal').modal('hide');
-                $('#createLineForm')[0].reset();
-
-                // Actualizar la vista después de 2 segundos
-                setTimeout(function() {
-                    location.reload();
-                }, 2000); // 2000 ms = 2 segundos
-            },
-            error: function(xhr, status, error) {
-                // Si ocurre un error, mostrar mensaje de error
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Hubo un problema al registrar la línea. Inténtelo nuevamente.',
-                    icon: 'error',
-                    confirmButtonText: 'Cerrar'
-                });
-
-               
-            }
+                
+                }
+            });
         });
     });
-});
-
-
-
 </script>
