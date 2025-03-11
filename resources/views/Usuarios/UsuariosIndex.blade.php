@@ -19,9 +19,9 @@
         border-radius: 8px;
     }
     .btn-custom {
-        font-size: 0.5rem;
-        padding: 5px 10px;
-        border-radius: 6px;
+        font-size: 0.8rem;
+        padding: 6px 10px;
+        border-radius: 90px;
     }
     .container-custom {
         max-width: 900px;
