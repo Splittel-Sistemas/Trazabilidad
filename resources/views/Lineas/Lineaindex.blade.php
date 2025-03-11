@@ -177,7 +177,7 @@
                     <h5 class="modal-title text-white" id="crearModalLabel">Crear Linea</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                <form action="{{ route('linea.store') }}" method="POST" class="p-3 rounded bg-white">
+                <form id="createLineForm" class="p-3 rounded bg-white">
                     @csrf
                     <div class="row mb-1">
                         <div class="col-md-6">
@@ -193,16 +193,23 @@
                             </div>
                         </div>
                     </div>
-        
+    
                     <div class="row mb-1">
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="Descripcion">Descripción</label>
                                 <textarea name="Descripcion" id="Descripcion" class="form-control form-control-sm" placeholder="Ingrese la descripción" required></textarea>
-                            </div>                            
+                            </div>
                         </div>
                     </div>
-        
+    
+                    <!-- Verifica si hay un mensaje de error -->
+                    @if(session('error'))
+                        <div class="alert alert-danger mt-2" role="alert">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+    
                     <div class="d-flex justify-content-center mt-3">
                         <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-lg transition-all hover:bg-success hover:text-white">
                             Registrar
@@ -311,20 +318,66 @@ $(document).ready(function() {
             }
         });
     };
-    //modal agregar linea
-    $(document).on("click", ".btn-editar", function () {
-        let id = $(this).data("id");
-        let nombre = $(this).data("nombre");
-        let numero = $(this).data("numero");
-        let descripcion = $(this).data("descripcion");
-        $("#lineaModalLabel").text("Editar Línea");
-        let actionUrl = "{{ route('linea.update', ':numero') }}".replace(':numero', numero);
-        $("#lineaEditForm").attr("action", actionUrl);
-        $("#lineaEditForm").find("input[name='_method']").val("PUT");
-        $("#Nombre").val(nombre);
-        $("#NumeroLinea").val(numero);
-        $("#Descripcion").val(descripcion);
-        $("#lineaModal").modal("show");
+});
+
+
+
+$(document).ready(function() {
+    $('#createLineForm').on('submit', function(e) {
+        e.preventDefault(); // Prevenir el envío tradicional del formulario
+
+        // Obtener los datos del formulario
+        var formData = $(this).serialize();
+
+        // Mostrar alerta de que está enviando los datos
+        Swal.fire({
+            title: 'Enviando...',
+            text: 'Por favor espere.',
+            icon: 'info',
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Enviar los datos por AJAX
+        $.ajax({
+            url: '{{ route('linea.store') }}',
+            method: 'POST',
+            data: formData,
+            success: function(response) {
+                // Si la respuesta es exitosa, mostrar mensaje
+                Swal.fire({
+                    title: 'Éxito',
+                    text: 'La línea fue registrada correctamente.',
+                    icon: 'success',
+                    confirmButtonText: 'Cerrar'
+                });
+
+                // Cerrar el modal y limpiar el formulario
+                $('#crearModal').modal('hide');
+                $('#createLineForm')[0].reset();
+
+                // Actualizar la vista después de 2 segundos
+                setTimeout(function() {
+                    location.reload();
+                }, 2000); // 2000 ms = 2 segundos
+            },
+            error: function(xhr, status, error) {
+                // Si ocurre un error, mostrar mensaje de error
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un problema al registrar la línea. Inténtelo nuevamente.',
+                    icon: 'error',
+                    confirmButtonText: 'Cerrar'
+                });
+
+               
+            }
+        });
     });
 });
+
+
+
 </script>
