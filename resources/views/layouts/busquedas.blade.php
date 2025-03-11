@@ -82,7 +82,7 @@
             }
 
             .btn {
-                padding: 10px 20px;
+                /*padding: 10px 20px;
                 /*border: none;*/
                 cursor: pointer;
             }
@@ -98,11 +98,11 @@
             }*/
         /* Estilos de los botones */
         .btn-primary, .btn-secondary {
-            padding: 10px 20px;
+            /*padding: 10px 20px;
             font-size: 16px;
             border-radius: 25px;
             transition: background-color 0.3s ease, transform 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);*/
         }
     
         /* Barra de progreso */
@@ -314,30 +314,39 @@
 @endsection
 @section('content')
     <!-- Breadcrumbs -->
-    <div class="row gy-3 mb-2 justify-content-between">
+    <div class="row gy-3 mb-1 justify-content-between">
         <div class="col-md-9 col-auto">
             <h4 class="mb-2 text-1100">Busquedas</h4>
         </div>
     </div>
-    <div class="container my-4">
+    <div class="container mt-1">
         <div class="row">
-            <div class="card shadow-sm border-light col-4 p-3 mb-3">
-                <div class="card-header m-0 p-0">
-                </div>
-                <div class="card-body">
-                    <div class="form-check">
-                        <input class="form-check-input" id="flexRadioDefault1" type="radio" name="flexRadioDefault" checked onclick="toggleTable()">
-                        <label class="form-check-label text-black" for="flexRadioDefault1">Orden de venta</label>
+            <div class="card shadow-sm border-light col-4 col-sm-6 p-2 mb-1">
+                <div class="card-header m-1 p-1">
+                    <div class="form-check ml-2">
+                        <input class="form-check-input" id="TipoOrden1" type="radio" name="TipoOrden" checked>
+                        <label class="form-check-label text-black" for="TipoOrden1">Orden de venta</label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" id="flexRadioDefault2" type="radio" name="flexRadioDefault" onclick="toggleTable()">
-                        <label class="form-check-label text-black" for="flexRadioDefault2">Orden de fabricaci&oacute;n</label>
+                    <div class="form-check ml-2">
+                        <input class="form-check-input" id="TipoOrden2" type="radio" name="TipoOrden">
+                        <label class="form-check-label text-black" for="TipoOrden2">Orden de fabricación</label>
+                    </div>
+                </div>
+                <div class="card-body m-1 p-1">
+                    <div class="mb-2 col-10">
+                        <label for="NumeroOrden" class="form-label">N&uacute;mero de Orden</label>
+                        <div class="input-group">
+                            <input type="text" oninput="RegexNumeros(this)" class="form-control form-control-sm" id="NumeroOrden" placeholder="Ingresa número de Orden">
+                            <button class="btn btn-outline-primary btn-sm" id="Btn-BuscarOrden">
+                                Buscar
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
             <!-- Tabla 1: Orden de Venta -->
-            <div id="tablaVenta" class="card p-4" style="display:block;">
-                <div class="card border border-light mx-auto" style="max-width: 420px; border-radius: 40px; height: 50px; width: 44%;">
+            <div id="tablaVenta" class="card p-4" style="display:none;">
+                <!--<div class="card border border-light mx-auto" style="max-width: 420px; border-radius: 40px; height: 50px; width: 44%;">
                     <div class="card-body p-0 d-flex align-items-center" style="height: 100%;">
                         <form id="form-buscar-venta" style="width: 100%;">
                             <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
@@ -348,7 +357,7 @@
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>-->
                 <div style="margin-top: 20px;"></div>
                 <div class="table-responsive">
                     <div class="card" >
@@ -368,7 +377,7 @@
             </div>
             <!-- Tabla 2: Orden de Fabricación -->
             <div id="tablaFabricacion" class="card p-4" style="display:none;">
-                <div class="card border border-light mx-auto" style="max-width: 420px; border-radius: 40px; height: 50px; width: 44%;">
+                <!--<div class="card border border-light mx-auto" style="max-width: 420px; border-radius: 40px; height: 50px; width: 44%;">
                     <div class="card-body p-0 d-flex align-items-center" style="height: 100%;">
                         <form id="form-buscar-fabricacion" style="width: 100%;">
                             <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
@@ -379,7 +388,7 @@
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>-->
                 
                 <div style="margin-top: 20px;"></div>
                 <div class="card">
@@ -755,84 +764,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-
-    // Función para alternar entre las tablas de Venta y Fabricación
-    function toggleTable() {
-    var radioVenta = document.getElementById("flexRadioDefault1");
-    var radioFabricacion = document.getElementById("flexRadioDefault2");
-
-    // Ocultar ambas tablas por defecto
-    document.getElementById("tablaVenta").style.display = "none";
-    document.getElementById("tablaFabricacion").style.display = "none";
-
-    // Mostrar la tabla correspondiente según el radio seleccionado
-    if (radioVenta.checked) {
-        document.getElementById("tablaVenta").style.display = "block";
-        // Limpiar y mostrar el formulario de búsqueda
-        document.getElementById("inputBusquedaVenta").value = '';
-        document.getElementById("tabla-resultadosVenta").innerHTML = '';
-    } else if (radioFabricacion.checked) {
-        document.getElementById("tablaFabricacion").style.display = "block";
-        // Limpiar y mostrar el formulario de búsqueda
-        document.getElementById("inputBusquedaFabricacion").value = '';
-        document.getElementById("tabla-resultadosFabricacion").innerHTML = '';
-    }
-    }
-    // Cargar datos de la tabla de orden de venta
-    $('#buscarVenta').on('click', function () {
-        var search = $('input[name="search"]').val().trim();
-
-        if (search === '') {
-            return;  // No hace nada si el término de búsqueda está vacío
-        }
-
-        cargarDatosVenta(search);
-    });
-
-    //cargar los datode venta
-    function cargarDatosVenta(search) {
-        
-        $.ajax({
-            url: '{{ route("Buscar.Venta") }}',
-            method: 'GET',
-            data: { search: search },
-            success: function (data) {
-                console.log(data);
-
-                var tbody = $('#tabla-resultadosVenta');
-                tbody.empty();
-
-                if (data.length > 0) {
-                    data.forEach(function (item) {
-                        console.log(item);
-                        var row = `
-                            <tr>
-                                <td >${item.OrdenVenta}</td>
-                                <td>${item.NombreCliente}</td>
-                                <td class="text-center align-middle">
-                                    <a href="#" class="btn btn-info btn-sm ver-detalles" 
-                                    data-id="${item.id}"
-                                    data-ordenventa="${item.OrdenVenta}"
-                                    data-nombrecliente="${item.NombreCliente}"
-                                    style="border-radius: 3px; padding: 4px 8px; font-size: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); transition: background-color 0.3s, transform 0.2s;">
-                                        <i class="bi bi-eye uil-comment-info"></i> Detalles
-                                    </a>
-                                </td>
-                            </tr>`;
-                            
-                        tbody.append(row);
-                    });
-                } else {
-                    tbody.append('<tr><td colspan="3" class="text-center">No se encontraron resultados</td></tr>');
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                alert('Error al cargar los datos de la Orden de Venta. Estado: ' + textStatus + ', Error: ' + errorThrown);
-            }
-        });
-    }
-    
-    //detalles de la orden venta
     $(document).on('click', '.ver-detalles', function (e) {
         var ordenVenta = $(this).data('ordenventa');
         
@@ -961,24 +892,28 @@
     });
 
     // Cargar datos de la tabla de orden de fabricación
-    $('#buscarFabricacion').on('click', function () {
-        var search = $('#inputBusquedaFabricacion').val().trim();
-
+    $('#Btn-BuscarOrden').on('click', function () {
+        var search = $('#NumeroOrden').val().trim();
         if (search === '') {
             return;  
         }
-
+        var radioButton1 = document.getElementById("TipoOrden1");
+        if (radioButton1.checked) {
+            cargarDatosVenta(search);
+        }else{
             cargarDatosFabricacion(search);
+        }
     });
-
     //cargar los datos de fabricacion
     function cargarDatosFabricacion(search) {
+        $('#tablaVenta').hide();
+        var tablaFabricacion = $('#tablaFabricacion');
+        tablaFabricacion.fadeIn(1000);
             $.ajax({
                 url: '{{ route("Buscar.Fabricacion") }}', 
                 method: 'GET',
                 data: { search: search },
                 success: function (data) {
-                    var tablaFabricacion = $('#tablaFabricacion');
                     var tbody = $('#tabla-resultadosFabricacion');
                     tbody.empty();
 
@@ -1277,6 +1212,47 @@
                 }
             });
     });
+    //Cargar Ventas
+    function cargarDatosVenta(search) {
+        $('#tablaFabricacion').hide(100);
+        $('#tablaVenta').fadeIn(1000);
+        $.ajax({
+            url: '{{ route("Buscar.Venta") }}',
+            method: 'GET',
+            data: { search: search },
+            success: function (data) {
+                var tbody = $('#tabla-resultadosVenta');
+                tbody.empty();
+
+                if (data.length > 0) {
+                    data.forEach(function (item) {
+                        console.log(item);
+                        var row = `
+                            <tr>
+                                <td >${item.OrdenVenta}</td>
+                                <td>${item.NombreCliente}</td>
+                                <td class="text-center align-middle">
+                                    <a href="#" class="btn btn-info btn-sm ver-detalles" 
+                                    data-id="${item.id}"
+                                    data-ordenventa="${item.OrdenVenta}"
+                                    data-nombrecliente="${item.NombreCliente}"
+                                    style="border-radius: 3px; padding: 4px 8px; font-size: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); transition: background-color 0.3s, transform 0.2s;">
+                                        <i class="bi bi-eye uil-comment-info"></i> Detalles
+                                    </a>
+                                </td>
+                            </tr>`;
+                            
+                        tbody.append(row);
+                    });
+                } else {
+                    tbody.append('<tr><td colspan="3" class="text-center">No se encontraron resultados</td></tr>');
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert('Error al cargar los datos de la Orden de Venta. Estado: ' + textStatus + ', Error: ' + errorThrown);
+            }
+        });
+    }
 
     //funcion para cargar los canvases general para Or-V Y Or-F
     function drawGauge(canvasId, value, label) {
@@ -1467,73 +1443,73 @@
 
     // Lógica cuando se hace clic en el botón VerMas
     $(document).on('click', '.VerMas', function (e) {
-    var ordenfabricacion = $(this).data('ordenfabricacion');
-    console.log('Orden de fabricación en el botón VerMas:', ordenfabricacion);
+        var ordenfabricacion = $(this).data('ordenfabricacion');
+        console.log('Orden de fabricación en el botón VerMas:', ordenfabricacion);
 
-    if (!ordenfabricacion) {
-        alert("No se ha seleccionado ninguna Orden de Fabricación.");
-        return;
-    }
+        if (!ordenfabricacion) {
+            alert("No se ha seleccionado ninguna Orden de Fabricación.");
+            return;
+        }
 
-    let content = $("#collapseContent");
-    let container = $("#estacionesContainer");
-    let icon = $(this).find('.toggle-icon');
+        let content = $("#collapseContent");
+        let container = $("#estacionesContainer");
+        let icon = $(this).find('.toggle-icon');
 
-    let isOpen = content.hasClass("show");
+        let isOpen = content.hasClass("show");
 
-    $.ajax({
-            url: '{{ route("tiempo.orden") }}',
-            type: "GET",
-            data: { ordenfabricacion: ordenfabricacion },
-            dataType: "json",
-            success: function (response) {
-                console.log('Datos recibidos:', response);
-                container.html("");
+        $.ajax({
+                url: '{{ route("tiempo.orden") }}',
+                type: "GET",
+                data: { ordenfabricacion: ordenfabricacion },
+                dataType: "json",
+                success: function (response) {
+                    console.log('Datos recibidos:', response);
+                    container.html("");
 
-                response.forEach(resultado => {
-                    let tiempoDuracion = "No registrado";
-                    
-                    if (resultado.Tiempoinicio && resultado.Tiempofin) {
-                        let inicio = new Date(resultado.Tiempoinicio);
-                        let fin = new Date(resultado.Tiempofin);
-                        let diferencia = fin - inicio; // Diferencia en milisegundos
+                    response.forEach(resultado => {
+                        let tiempoDuracion = "No registrado";
+                        
+                        if (resultado.Tiempoinicio && resultado.Tiempofin) {
+                            let inicio = new Date(resultado.Tiempoinicio);
+                            let fin = new Date(resultado.Tiempofin);
+                            let diferencia = fin - inicio; // Diferencia en milisegundos
 
-                        let dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
-                        let horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        let minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+                            let dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+                            let horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            let minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
 
-                        let partes = [];
-                        if (dias > 0) partes.push(`${dias} día${dias > 1 ? 's' : ''}`);
-                        if (horas > 0) partes.push(`${horas} hora${horas > 1 ? 's' : ''}`);
-                        if (minutos > 0) partes.push(`${minutos} minuto${minutos > 1 ? 's' : ''}`);
+                            let partes = [];
+                            if (dias > 0) partes.push(`${dias} día${dias > 1 ? 's' : ''}`);
+                            if (horas > 0) partes.push(`${horas} hora${horas > 1 ? 's' : ''}`);
+                            if (minutos > 0) partes.push(`${minutos} minuto${minutos > 1 ? 's' : ''}`);
 
-                        tiempoDuracion = partes.join(", ");
+                            tiempoDuracion = partes.join(", ");
+                        }
+
+                        let card = `
+                            <div class="card estacion-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">${resultado.fase}</h5>
+                                    <p class="card-text">
+                                        <strong>Duración:</strong> <span class="badge ${tiempoDuracion !== "No registrado" ? 'badge-success' : 'badge-warning'}">${tiempoDuracion}</span><br>
+                                    </p>
+                                </div>
+                            </div>`;
+                        container.append(card);
+                    });
+
+                    if (isOpen) {
+                        content.removeClass("show").slideUp();
+                        icon.text('+');
+                    } else {
+                        content.addClass("show").slideDown();
+                        icon.text('−');
                     }
-
-                    let card = `
-                        <div class="card estacion-card">
-                            <div class="card-body">
-                                <h5 class="card-title">${resultado.fase}</h5>
-                                <p class="card-text">
-                                    <strong>Duración:</strong> <span class="badge ${tiempoDuracion !== "No registrado" ? 'badge-success' : 'badge-warning'}">${tiempoDuracion}</span><br>
-                                </p>
-                            </div>
-                        </div>`;
-                    container.append(card);
-                });
-
-                if (isOpen) {
-                    content.removeClass("show").slideUp();
-                    icon.text('+');
-                } else {
-                    content.addClass("show").slideDown();
-                    icon.text('−');
+                },
+                error: function () {
+                    alert("Error al cargar los tiempos de las estaciones.");
                 }
-            },
-            error: function () {
-                alert("Error al cargar los tiempos de las estaciones.");
-            }
-        });
+            });
     });
 </script>
 @endsection

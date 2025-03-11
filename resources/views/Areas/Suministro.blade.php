@@ -118,6 +118,7 @@
                                             <th>Orden Fabricación</th>
                                             <th>Artículo</th>
                                             <th>Descripción</th>
+                                            <th>Emisiones Pendientes</th>
                                             <th>Suministro Normal</th>
                                             <th>Suministro Retrabajo</th>
                                             <th>Cantidad Cortes</th>
@@ -131,6 +132,7 @@
                                             <td class="text-center">{{$partida->OrdenFabricacion }}</td>
                                             <td>{{$partida->Articulo }}</td>
                                             <td>{{$partida->Descripcion }}</td>
+                                            <td>{{$partida->OrdenFaltantes}}</td>
                                             <td>{{$partida->Normal }}</td>
                                             <td>{{$partida->Retrabajo }}</td>
                                             <td class="text-center">{{$partida->TotalPartida }}</td>
