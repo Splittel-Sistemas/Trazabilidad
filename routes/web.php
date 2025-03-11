@@ -12,6 +12,7 @@ use App\Http\Controllers\PreparadoController;
 use App\Http\Controllers\BusquedaController;
 use App\Http\Controllers\EmpacadoController;
 use App\Http\Controllers\LineasController;
+use App\Http\Controllers\PerfilController;
 
 use App\Http\Controllers\DashboardControlle;
 use GuzzleHttp\Promise\Coroutine;
@@ -235,6 +236,12 @@ Route::post('/lineas/desactivar', [LineasController::class, 'desactivar'])->name
 Route::get('/linea/show/{id}', [LineasController::class, 'show'])->name('linea.show')->middleware('auth');
 Route::put('/linea/update/{id}', [LineasController::class, 'update'])->name('linea.update')->middleware('auth');
 
+
+//perfil usuarios
+
+
+Route::get('/index/perfil',[PerfilController::class, 'index'])->name('index.perfil')->middleware('auth'); 
+Route::put('/update/perfil', [PerfilController::class, 'update'])->name('update.perfil')->middleware('auth');
 
 
 
