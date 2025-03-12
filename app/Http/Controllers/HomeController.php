@@ -19,7 +19,6 @@ class HomeController extends Controller
     {
         return view('Home');
     }
-
     public function index()
     {
         $user = Auth::user();
