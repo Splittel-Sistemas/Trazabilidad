@@ -21,26 +21,52 @@ class LineasController extends Controller
     public function store(Request $request)
     {
         try {
+            // Validación de los datos
             $validatedData = $request->validate([
                 'Nombre' => 'required|string|max:255',
                 'NumeroLinea' => 'required|integer|unique:linea,NumeroLinea',
                 'Descripcion' => 'nullable|string',
             ]);
+    
+            // Verificar si el NumeroLinea ya existe
+            if (Linea::where('NumeroLinea', $request->NumeroLinea)->exists()) {
+                // Muestra si está entrando en este bloque
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Número de línea ya existe'
+                    ], 400); // 400 es el código para "Bad Request"
+                }
+    
+                // Si no es AJAX, enviamos el mensaje de error a la vista
+                return redirect()->back()->with('error', 'Número de línea ya existe');
+            }
+    
+            // Si no existe, se crea la nueva línea
             $linea = Linea::create($validatedData);
+    
+            // Si es una solicitud AJAX, retornar una respuesta JSON
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Línea creada correctamente'
+                    'message' => 'Línea creada con éxito',
+                    'data' => $linea // Devuelve los datos de la nueva línea
                 ]);
             }
-            return redirect()->route('index.linea')->with('message', 'Línea creada con éxito');
+    
+            // Si no es una solicitud AJAX, redirige con un mensaje de éxito
+            return redirect()->route('linea.index')->with('message', 'Línea creada con éxito');
         } catch (ValidationException $e) {
+            // Si ocurre un error de validación
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'errors' => $e->errors()
-                ], 422);
+                    'message' => 'Errores de validación',
+                    'errors' => $e->errors() // Devuelve los errores de validación
+                ], 422); // 422 es el código para "Unprocessable Entity"
             }
+    
+            // Si no es AJAX, se redirige con los errores
             return redirect()->back()->withErrors($e->errors())->withInput();
         }
     }
@@ -94,27 +120,25 @@ class LineasController extends Controller
         return response()->json(['message' => 'Línea eliminada con éxito']);
     }
     // Método para activar una línea
-public function activar(Request $request)
-{
-    $linea = Linea::find($request->id); // Buscar por id en lugar de NumeroLinea
-    if ($linea) {
-        $linea->active = true;
-        $linea->save();
-        return response()->json(['success' => true]);
+    public function activar(Request $request)
+    {
+        $linea = Linea::find($request->id); // Buscar por id en lugar de NumeroLinea
+        if ($linea) {
+            $linea->active = true;
+            $linea->save();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false, 'message' => 'Línea no encontrada.'], 404);
     }
-    return response()->json(['success' => false, 'message' => 'Línea no encontrada.'], 404);
-}
-
-// Método para desactivar una línea
-public function desactivar(Request $request)
-{
-    $linea = Linea::find($request->id); // Buscar por id en lugar de NumeroLinea
-    if ($linea) {
-        $linea->active = false;
-        $linea->save();
-        return response()->json(['success' => true]);
+    // Método para desactivar una línea
+    public function desactivar(Request $request)
+    {
+        $linea = Linea::find($request->id); // Buscar por id en lugar de NumeroLinea
+        if ($linea) {
+            $linea->active = false;
+            $linea->save();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false, 'message' => 'Línea no encontrada.'], 404);
     }
-    return response()->json(['success' => false, 'message' => 'Línea no encontrada.'], 404);
-}
-
 }

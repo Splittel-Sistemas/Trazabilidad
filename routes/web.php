@@ -12,7 +12,7 @@ use App\Http\Controllers\PreparadoController;
 use App\Http\Controllers\BusquedaController;
 use App\Http\Controllers\EmpacadoController;
 use App\Http\Controllers\LineasController;
-
+use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\DashboardControlle;
 use GuzzleHttp\Promise\Coroutine;
 use Illuminate\Routing\Route as RoutingRoute;
@@ -68,7 +68,6 @@ Route::post('/Area/Suministro/Buscar', [AreasController::class,'BuscarSuministro
 //Preparado
 Route::get('/Area/Preparado', [AreasController::class,'Preparado'])->name('Preparado')->middleware('auth');
 Route::post('/Area/Preparado/buscar', [AreasController::class,'PreparadoBuscar'])->name('PreparadoBuscar')->middleware('auth');
-
 Route::get('/Area/Suministro/buscar', [AreasController::class,'SuministroBuscar'])->name('SuministroBuscar')->middleware('auth');
 Route::post('/Area/Suministro/NoEscaner', [AreasController::class,'TipoNoEscaner'])->name('TipoNoEscaner')->middleware('auth');
 Route::get('/Area/Ensamble', [AreasController::class,'Ensamble'])->name('Ensamble')->middleware('auth');
@@ -76,6 +75,7 @@ Route::get('/Area/Pulido', [AreasController::class,'Pulido'])->name('Pulido')->m
 Route::get('/Area/Medicion', [AreasController::class,'Medicion'])->name('Medicion')->middleware('auth');
 Route::get('/Area/Visualizacion', [AreasController::class,'Visualizacion'])->name('Visualizacion')->middleware('auth');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas')->middleware('auth');
+Route::post('/Area/Tabla/Pendientes', [AreasController::class,'AreaTablaPendientes'])->name('AreaTablaPendientes')->middleware('auth');
 
 
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden')->middleware('auth');
@@ -235,6 +235,12 @@ Route::post('/lineas/desactivar', [LineasController::class, 'desactivar'])->name
 Route::get('/linea/show/{id}', [LineasController::class, 'show'])->name('linea.show')->middleware('auth');
 Route::put('/linea/update/{id}', [LineasController::class, 'update'])->name('linea.update')->middleware('auth');
 
+
+//perfil usuarios
+
+
+Route::get('/index/perfil',[PerfilController::class, 'index'])->name('index.perfil')->middleware('auth'); 
+Route::put('/update/perfil', [PerfilController::class, 'update'])->name('update.perfil')->middleware('auth');
 
 
 
