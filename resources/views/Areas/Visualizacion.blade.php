@@ -114,7 +114,7 @@
                                 <th>Cantidad Actual</th>
                                 <th>Cantidad Faltante</th>
                                 <th>Cantidad Total</th>
-                                <th>Estatus</th>
+                                <th>Estatus</th> 
                             </tr>
                         </thead>
                         <tbody id="TablaPreparadoPendientesBody" class="list">
