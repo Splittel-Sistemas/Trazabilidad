@@ -101,6 +101,39 @@
             <div class="card" id="DivCointainerTableSuministro">
             </div>
         </div>
+        <div id="ContentTablaPendientes" class="col-12 mt-2">
+            <div class="card" id="DivCointainerTablePendientes">
+                <h4 class="text-center mt-2 p-0">Ordenes Pendientes</h4>
+                <div class="table-responsive">
+                    <table id="TablaPreparadoPendientes" class="table table-sm fs--1 mb-1">
+                        <thead>
+                            <tr class="bg-light">
+                                <th>Orden Fabricación</th>
+                                <th>Artículo</th>
+                                <th>Descripción</th>
+                                <th>Cantidad Actual</th>
+                                <th>Cantidad Faltante</th>
+                                <th>Cantidad Total</th>
+                                <th>Estatus</th>
+                            </tr>
+                        </thead>
+                        <tbody id="TablaPreparadoPendientesBody" class="list">
+                            @foreach($Registros as $partida)
+                            <tr>
+                                <td class="text-center">{{$partida->OrdenFabricacion }}</td>
+                                <td>{{$partida->Articulo }}</td>
+                                <td>{{$partida->Descripcion }}</td>
+                                <td>{{$partida->NumeroActuales}}</td>
+                                <td>{{$partida->PartidasOFCantidad-$partida->NumeroActuales }}</td>
+                                <td>{{$partida->PartidasOFCantidad }}</td>
+                                <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
     <div  id="ContainerToastGuardado"></div>
 @endsection
@@ -282,6 +315,7 @@
                 }
                 $('#CodigoEscanerSalida').val('');
                 $('#CodigoEscanerEntrada').val('');
+                RecargarTablaPendientes();
             },
             error: function(xhr, status, error) {
                 $('#CantidadDiv').hide();
@@ -394,6 +428,20 @@
                 TipoNoEscaner();
             }
         });
+        $('#TablaPreparadoPendientes').DataTable(
+            {"language": {
+                    "sProcessing":     "Procesando...",
+                    "sLengthMenu":     "Mostrar _MENU_ registros",
+                    "sZeroRecords":    "No se encontraron resultados",
+                    "sInfo":           "Mostrando de _START_ a _END_ de _TOTAL_ registros",
+                    "sInfoEmpty":      "Mostrando de 0 a 0 de 0 registros",
+                    "sInfoFiltered":   "(filtrado de _MAX_ registros en total)",
+                    "sSearch":         "Buscar:",
+                    "sUrl":            "",
+                }
+            }
+        );
+        setInterval(RecargarTablaPendientes,180000);
     })
     function TipoNoEscaner() {
         CodigoEscaner=$('#CodigoEscaner').val();
@@ -541,6 +589,40 @@
             // Ocultar el input cuando 'Salida' esté seleccionado
             Retrabajo.disabled = true;
         }
+    }
+    function RecargarTablaPendientes(){
+        $.ajax({
+            url: "{{route('AreaTablaPendientes')}}",
+            type: 'POST',
+            data: {
+                Area: '{{$Area}}',
+                _token: '{{ csrf_token() }}'
+            },
+            beforeSend: function() {
+            },
+            success: function(response) {
+                if ($.fn.DataTable.isDataTable('#TablaPreparadoPendientes')) {
+                    $('#TablaPreparadoPendientes').DataTable().clear().destroy();
+                }
+                $('#TablaPreparadoPendientesBody').html(response);
+                $('#TablaPreparadoPendientes').DataTable(
+                    {"language": {
+                            "sProcessing":     "Procesando...",
+                            "sLengthMenu":     "Mostrar _MENU_ registros",
+                            "sZeroRecords":    "No se encontraron resultados",
+                            "sInfo":           "Mostrando de _START_ a _END_ de _TOTAL_ registros",
+                            "sInfoEmpty":      "Mostrando de 0 a 0 de 0 registros",
+                            "sInfoFiltered":   "(filtrado de _MAX_ registros en total)",
+                            "sSearch":         "Buscar:",
+                            "sUrl":            "",
+                        }
+                    }
+                );
+            },
+            error: function(xhr, status, error) {
+               console.log('Ocurrio un error al traer las Ordenes Pendientes' ); 
+            }
+        });
     }
 </script>
 @endsection
