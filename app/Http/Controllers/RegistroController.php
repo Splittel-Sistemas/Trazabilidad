@@ -18,11 +18,7 @@ class RegistroController extends Controller
     // Método para listar todos los usuarios
     public function index()
     {
-
         $user = Auth::user();
-       
-        
-       
         //if ($user->hasPermission('Vistas Editar')) {
             
             $roles = Role::with('permissions')->get();
@@ -75,7 +71,8 @@ class RegistroController extends Controller
     // Método para actualizar un usuario
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        return$user = User::findOrFail($id);
+        
     
         $validatedData = $request->validate([
             'apellido' => 'required|string|max:255',

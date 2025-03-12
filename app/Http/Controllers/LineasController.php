@@ -1,28 +1,18 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Linea;
-
-
 class LineasController extends Controller
 {
     //
     public function index()
     {
-        return view('Lineas.Lineaindex');
+        $linea = Linea::orderBy('Nombre', 'asc')->get();
+        return view('Lineas.Lineaindex', compact('linea'));
     }
-    public function tablalinea()
-    {
-        $items  = DB::table('linea')
-            ->select('linea.Nombre', 'linea.NumeroLinea', 'linea.Descripcion', 'linea.active')
-            ->get();
-    
-        return response()->json($items );
-    }
+    // Mostrar el formulario para crear una nueva línea
     public function create()
     {
         return view('lineas.create');
@@ -31,47 +21,77 @@ class LineasController extends Controller
     public function store(Request $request)
     {
         try {
+            // Validación de los datos
             $validatedData = $request->validate([
                 'Nombre' => 'required|string|max:255',
                 'NumeroLinea' => 'required|integer|unique:linea,NumeroLinea',
                 'Descripcion' => 'nullable|string',
             ]);
+    
+            // Verificar si el NumeroLinea ya existe
+            if (Linea::where('NumeroLinea', $request->NumeroLinea)->exists()) {
+                // Muestra si está entrando en este bloque
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Número de línea ya existe'
+                    ], 400); // 400 es el código para "Bad Request"
+                }
+    
+                // Si no es AJAX, enviamos el mensaje de error a la vista
+                return redirect()->back()->with('error', 'Número de línea ya existe');
+            }
+    
+            // Si no existe, se crea la nueva línea
             $linea = Linea::create($validatedData);
+    
+            // Si es una solicitud AJAX, retornar una respuesta JSON
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Línea creada correctamente'
+                    'message' => 'Línea creada con éxito',
+                    'data' => $linea // Devuelve los datos de la nueva línea
                 ]);
             }
+    
+            // Si no es una solicitud AJAX, redirige con un mensaje de éxito
             return redirect()->route('linea.index')->with('message', 'Línea creada con éxito');
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
+            // Si ocurre un error de validación
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'errors' => $e->errors()
-                ], 422);
+                    'message' => 'Errores de validación',
+                    'errors' => $e->errors() // Devuelve los errores de validación
+                ], 422); // 422 es el código para "Unprocessable Entity"
             }
+    
+            // Si no es AJAX, se redirige con los errores
             return redirect()->back()->withErrors($e->errors())->withInput();
         }
     }
-    // Mostrar una línea específica
-    public function show(linea $linea)
-    {
-        return response()->json($linea);
-    }
-    // Mostrar el formulario de edición (si usas vistas Blade)
-    public function edit(linea $linea)
-    {
-        return view('linea.edit', compact('linea'));
-    }
-    // Actualizar una línea existente
-    public function update(Request $request, $numero)
+    // Mostrar los detalles de una línea específica
+    public function show($id)
     {
         try {
-            $linea = Linea::where('NumeroLinea', $numero)->firstOrFail();
+            $linea = Linea::findOrFail($id);
+            return response()->json([
+                'Nombre' => $linea->Nombre,
+                'Descripcion' => $linea->Descripcion,
+                'NumeroLinea' => $linea->NumeroLinea,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Línea no encontrada'], 404);
+        }
+    }
+    // Actualizar los detalles de una línea
+    public function update(Request $request, $id)
+    {
+        try {
+            $linea = Linea::findOrFail($id);
             $validatedData = $request->validate([
                 'Nombre' => 'required|string|max:255',
-                'NumeroLinea' => 'required|integer|unique:linea,NumeroLinea,' . $linea->id,
+                'NumeroLinea' => 'required|integer|unique:linea,NumeroLinea,' . $linea->id, 
                 'Descripcion' => 'nullable|string',
             ]);
             $linea->update($validatedData);
@@ -82,14 +102,14 @@ class LineasController extends Controller
                 ]);
             }
             return redirect()->route('linea.index')->with('message', 'Línea actualizada con éxito');
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (\Exception $e) {
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'errors' => $e->errors()
+                    'errors' => $e->getMessage()
                 ], 422);
             }
-            return redirect()->back()->withErrors($e->errors())->withInput();
+            return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
     }
     // Eliminar una línea
@@ -99,25 +119,26 @@ class LineasController extends Controller
 
         return response()->json(['message' => 'Línea eliminada con éxito']);
     }
+    // Método para activar una línea
     public function activar(Request $request)
     {
-        $linea = linea::where('NumeroLinea', $request->NumeroLinea)->first(); 
+        $linea = Linea::find($request->id); // Buscar por id en lugar de NumeroLinea
         if ($linea) {
             $linea->active = true;
             $linea->save();
             return response()->json(['success' => true]);
         }
-        return response()->json(['success' => false, 'message' => 'Linea no encontrada.'], 404);
+        return response()->json(['success' => false, 'message' => 'Línea no encontrada.'], 404);
     }
-    // Método para desactivar un usuario
+    // Método para desactivar una línea
     public function desactivar(Request $request)
     {
-        $linea = linea::where('NumeroLinea', $request->NumeroLinea)->first(); 
+        $linea = Linea::find($request->id); // Buscar por id en lugar de NumeroLinea
         if ($linea) {
             $linea->active = false;
             $linea->save();
             return response()->json(['success' => true]);
         }
-        return response()->json(['success' => false, 'message' => 'Linea no encontrada.'], 404);
-    } 
+        return response()->json(['success' => false, 'message' => 'Línea no encontrada.'], 404);
+    }
 }

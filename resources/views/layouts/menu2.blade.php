@@ -543,7 +543,7 @@
                             
                         <div class="overflow-auto scrollbar" style="height: 5rem;">
                             <ul class="nav d-flex flex-column mb-2 pb-1">
-                                <li class="nav-item"><a class="nav-link px-3" href="#!"> <span class="me-2 text-900" data-feather="user"></span><span>Perfil</span></a></li>
+                                <li class="nav-item"><a class="nav-link px-3" href="{{route('index.perfil')}}"> <span class="me-2 text-900" data-feather="user"></span><span>Perfil</span></a></li>
                                 <li class="nav-item"><a class="nav-link px-3" href="{{route('Home')}}"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
                             </ul>
                         </div>

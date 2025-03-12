@@ -15,6 +15,7 @@
         padding: 0.5rem 1rem 0.5rem 1rem;
     }
     #myTab li a:hover{
+        background: #f1f1f1;
         border: solid 1px #e7e7e7;
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
@@ -207,7 +208,7 @@
                                             <td class="text-center">{{$partida->NumeroPartida }}</td>
                                             <td>{{$partida->Articulo }}</td>
                                             <td>{{$partida->Descripcion }}</td>
-                                            <td class="text-center">{{$partida->cantidad_partida }}</td>
+                                            <td class="text-center">{{$partida->TotalPartida }}</td>
                                             <td class="text-center">{{$partida->FechaFinalizacion }}</td>
                                             <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Cerrada</span></div></td>
                                             <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Detalles('{{$partida->idEncript}}')">Detalles</button></td>

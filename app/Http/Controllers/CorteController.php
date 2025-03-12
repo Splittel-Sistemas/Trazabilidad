@@ -419,6 +419,10 @@ class CorteController extends Controller
             $OrdenFabricacion->EstatusEntrega=1;
             $OrdenFabricacion->save();
         }
+        foreach($OrdenFabricacion->PartidasOF as $partida){
+            $partida->EstatusPartidaOF=0;
+            $partida->save();
+        }
         return response()->json([
             'status' => 'success',
             'message' =>'Partida '.$PartidasOF->NumeroPartida.' Finalizada correctamente!',
@@ -516,7 +520,7 @@ class CorteController extends Controller
                 throw new \Exception('No se encontraron datos para este ID.');
             }
             $OrdenFabricacion = $PartidaOF->ordenFabricacion;
-            $PartidasOFEtiq=$OrdenFabricacion->partidasOF()->where('TipoPartida','N')->get();
+            $PartidasOFEtiq=$OrdenFabricacion->partidasOF()->get();
             $inicio=0;
             $inicio=0;
             $fin=0;
@@ -578,7 +582,7 @@ class CorteController extends Controller
             }
             ob_end_clean();
             // Generar el archivo PDF y devolverlo al navegador
-            return $pdf->Output('orden_fabricacion_' . $partidaId . '.pdf', 'I');//D descarga, I devolver
+            return $pdf->Output('orden_fabricacion_'.$OrdenFabricacion->OrdenFabricacion.'_' . $partidaId . '.pdf', 'I');//D descarga, I devolver
         } catch (\Exception $e) {
             //Log::error('Error al generar PDF: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);

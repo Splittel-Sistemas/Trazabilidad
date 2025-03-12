@@ -16,6 +16,7 @@
         padding: 0.5rem 1rem 0.5rem 1rem;
     }
     #myTab li a:hover{
+        background: #f1f1f1;
         border: solid 1px #e7e7e7;
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
@@ -470,7 +471,7 @@
             // Mostrarlo en la consola o hacer algo con el valor
             $('#Cantitadpiezas').val(cantidad);
         });
-        setInterval(RecargarTabla, 60000);
+        setInterval(RecargarTabla, 180000);
         $('#procesoTable').show();
     });
     function RecargarTabla(){
@@ -632,7 +633,17 @@
                         },
                         "initComplete": function(settings, json) {
                             $('#'+tabla).css('font-size', '0.7rem');
-                        }
+                        }/*,
+                        "stateSave": true, // Mantener el estado (página, búsqueda, etc.) entre recargas
+                        "stateSaveCallback": function(settings, data) {
+                            // Esto guarda el estado actual en localStorage (opcional si no usas un backend)
+                            localStorage.setItem('datatableState_' + tabla, JSON.stringify(data));
+                        },
+                        "stateLoadCallback": function(settings) {
+                            // Esto carga el estado desde localStorage (opcional si no usas un backend)
+                            var state = localStorage.getItem('datatableState_' + tabla);
+                            return state ? JSON.parse(state) : null;
+                        }*/
         });
     }
     function etiquetaColor(id){
