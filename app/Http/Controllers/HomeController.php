@@ -14,9 +14,12 @@ use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 { 
-    public function  Home(){
+   // HomeController.php
+    public function Home()
+    {
         return view('Home');
     }
+
     public function index()
     {
         $user = Auth::user();
@@ -27,7 +30,7 @@ class HomeController extends Controller
         }
         return view('Home');
     }
-    public function CapacidadProductiva(){//Grafica Capacidad Productiva
+    public function CapacidadProductiva(){
         $fecha=date('y-m-d 00:00:00');
         $fechaFin= date('y-m-d 23:59:59');
         $PorcentajePlaneacion=PorcentajePlaneacion::where('FechaPlaneacion',$fecha)->first();
