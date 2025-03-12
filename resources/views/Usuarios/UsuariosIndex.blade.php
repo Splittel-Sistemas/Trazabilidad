@@ -95,20 +95,22 @@
     </form>
 </div>
 @endsection
+
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.getElementById('editProfileBtn').addEventListener('click', function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('editProfileBtn').addEventListener('click', function() {
             const inputs = document.querySelectorAll('#profileForm input');
             let isEditable = false;
-    
+
             inputs.forEach(input => {
                 if (!input.hasAttribute('readonly') && input.id !== 'Role') {
                     isEditable = true;
                 }
             });
-    
+
             inputs.forEach(input => {
                 if (input.id !== 'Role') {
                     if (isEditable) {
@@ -122,13 +124,14 @@
                     }
                 }
             });
-    
+
             const saveButton = document.getElementById('saveProfileBtn');
             if (isEditable) {
                 saveButton.classList.add('d-none');
             } else {
                 saveButton.classList.remove('d-none');
             }
+        });
     });
     $('#profileForm').on('submit', function(e) {
         e.preventDefault(); 
@@ -164,5 +167,6 @@
             }
         });
     });
+
 </script>
 @endsection
