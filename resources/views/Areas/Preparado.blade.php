@@ -116,8 +116,8 @@
                                 <td>{{$partida->Articulo }}</td>
                                 <td>{{$partida->Descripcion }}</td>
                                 <td>{{$partida->NumeroActuales}}</td>
-                                <td>{{$partida->PartidasOFCantidad-$partida->NumeroActuales }}</td>
-                                <td>{{$partida->PartidasOFCantidad }}</td>
+                                <td>{{$partida->CantidadTotal-$partida->NumeroActuales }}</td>
+                                <td>{{$partida->CantidadTotal }}</td>
                                 <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
                             </tr>
                         @endforeach

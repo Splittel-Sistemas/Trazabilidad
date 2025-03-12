@@ -419,6 +419,10 @@ class CorteController extends Controller
             $OrdenFabricacion->EstatusEntrega=1;
             $OrdenFabricacion->save();
         }
+        foreach($OrdenFabricacion->PartidasOF as $partida){
+            $partida->EstatusPartidaOF=0;
+            $partida->save();
+        }
         return response()->json([
             'status' => 'success',
             'message' =>'Partida '.$PartidasOF->NumeroPartida.' Finalizada correctamente!',
