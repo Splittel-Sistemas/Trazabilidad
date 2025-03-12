@@ -50,52 +50,56 @@
         <h4 class="mb-2 text-1100 font-weight-bold">Mi Perfil</h4>
     </div>
 </div>
-<div class="card p-4 mt-2 shadow-sm mx-auto" style="width: 100%; max-width: 80%; border-radius: 10px;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0 font-weight-bold">Perfil de Usuario</h5>
-        <button class="btn btn-outline-primary btn-sm" id="editProfileBtn">
-            <i class="fas fa-user-edit"></i> Editar
-        </button>
-    </div>
-    <hr class="my-3">
-    <form id="profileForm" method="POST">
-        @csrf
-        @method('PUT')
-        <div class="row justify-content-center">
-            <div class="col-md-6 mb-2">
-                <label for="name" class="form-label">Nombre</label>
-                <input type="text" class="form-control form-control-sm" id="name" name="name" value="{{ $user->name }}" readonly
-                    style="background-color: #f8f9fa; cursor: not-allowed;">
-            </div>
-            <div class="col-md-6 mb-2">
-                <label for="apellido" class="form-label">Apellido</label>
-                <input type="text" class="form-control form-control-sm" id="apellido" name="apellido" value="{{ $user->apellido }}" readonly
-                    style="background-color: #f8f9fa; cursor: not-allowed;">
-            </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-md-6 mb-2">
-                <label for="Role" class="form-label">Rol</label>
-                <input type="text" class="form-control form-control-sm" id="Role" name="Role" value="{{ $roles->pluck('name')->join(', ') }}" readonly
-                    style="background-color: #e9ecef; cursor: not-allowed;">
-            </div>
-            @if ($user->role === 'A')
-                <div class="col-md-6 mb-2">
-                    <label for="email" class="form-label">Correo Electrónico</label>
-                    <input type="text" class="form-control form-control-sm" id="email" name="email" value="{{ $user->email }}" readonly
-                        style="background-color: #f8f9fa; cursor: not-allowed;">
-                </div>
-            @endif
-        </div>
-        <div class="text-center mt-4">
-            <button type="submit" class="btn btn-success btn-sm d-none" id="saveProfileBtn" style="font-size: 0.875rem; padding: 6px 24px;">
-                Guardar
+<div class="container my-1">
+    <div class="card p-4 mt-2">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0 font-weight-bold">Perfil de Usuario</h5>
+            <button class="btn btn-outline-primary btn-sm" id="editProfileBtn">
+                <i class="fas fa-user-edit"></i> Editar
             </button>
         </div>
-    </form>
+        <hr class="my-3">
+        <form id="profileForm" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="p-1">
+                <div class="row justify-content-center">
+                    <div class="col-md-5 mb-2">
+                        <label for="name" class="form-label">Nombre</label>
+                        <input type="text" class="form-control form-control-sm" id="name" name="name" value="{{ $user->name }}" readonly
+                            style="background-color: #f8f9fa; cursor: not-allowed;">
+                    </div>
+                    <div class="col-md-5 mb-2">
+                        <label for="apellido" class="form-label">Apellido</label>
+                        <input type="text" class="form-control form-control-sm" id="apellido" name="apellido" value="{{ $user->apellido }}" readonly
+                            style="background-color: #f8f9fa; cursor: not-allowed;">
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-5 mb-2">
+                        <label for="Role" class="form-label">Rol</label>
+                        <input type="text" class="form-control form-control-sm" id="Role" name="Role" value="{{ $roles->pluck('name')->join(', ') }}" readonly
+                            style="background-color: #e9ecef; cursor: not-allowed;">
+                    </div>
+                    @if ($user->role === 'A')
+                        <div class="col-md-5 mb-2">
+                            <label for="email" class="form-label">Correo Electrónico</label>
+                            <input type="text" class="form-control form-control-sm" id="email" name="email" value="{{ $user->email }}" readonly
+                                style="background-color: #f8f9fa; cursor: not-allowed;">
+                        </div>
+                    @endif
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success btn-sm d-none" id="saveProfileBtn" style="font-size: 0.875rem; padding: 6px 24px;">
+                    Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 </div>
 @endsection
-
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -104,13 +108,11 @@
         document.getElementById('editProfileBtn').addEventListener('click', function() {
             const inputs = document.querySelectorAll('#profileForm input');
             let isEditable = false;
-
             inputs.forEach(input => {
                 if (!input.hasAttribute('readonly') && input.id !== 'Role') {
                     isEditable = true;
                 }
             });
-
             inputs.forEach(input => {
                 if (input.id !== 'Role') {
                     if (isEditable) {
@@ -124,7 +126,6 @@
                     }
                 }
             });
-
             const saveButton = document.getElementById('saveProfileBtn');
             if (isEditable) {
                 saveButton.classList.add('d-none');
@@ -167,6 +168,5 @@
             }
         });
     });
-
 </script>
 @endsection
