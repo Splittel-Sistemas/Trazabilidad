@@ -77,7 +77,7 @@
             <div class="col-md-6 mb-2">
                 <label for="Role" class="form-label">Rol</label>
                 <input type="text" class="form-control form-control-sm" id="Role" name="Role" value="{{ $roles->pluck('name')->join(', ') }}" readonly
-                    style="background-color: #f8f9fa; cursor: not-allowed;">
+                    style="background-color: #e9ecef; cursor: not-allowed;">
             </div>
             @if ($user->role === 'A')
                 <div class="col-md-6 mb-2">
@@ -94,13 +94,12 @@
         </div>
     </form>
 </div>
-
-    @endsection
-    @section('scripts')
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.getElementById('editProfileBtn').addEventListener('click', function() {
+@endsection
+@section('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById('editProfileBtn').addEventListener('click', function() {
             const inputs = document.querySelectorAll('#profileForm input');
             let isEditable = false;
     
@@ -130,8 +129,7 @@
             } else {
                 saveButton.classList.remove('d-none');
             }
-        });
-    
+    });
     $('#profileForm').on('submit', function(e) {
         e.preventDefault(); 
         var formData = new FormData(this);
