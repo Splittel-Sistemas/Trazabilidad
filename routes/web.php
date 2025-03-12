@@ -27,7 +27,7 @@ Route::get('/logout', [loginController::class, 'logout'])->name('logout')->middl
 Route::post('/register', [loginController::class, 'register'])->name('register')->middleware('auth');
 
 //Rutas Planeación
-Route::get('/', [HomeController::class, 'Home'])->name('Home')->middleware('auth');
+Route::get('/', [HomeController::class, 'index'])->name('Home')->middleware('auth');
 
 
 Route::get('/Planeacion', [PlaneacionController::class,'index'])->name('Planeacion')->middleware('auth');

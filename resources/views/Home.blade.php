@@ -817,7 +817,7 @@
         PorcentajeLlenadas();
         setInterval(PorcentajeLlenadas, 30000);
         cargarIndicadores("{{ route('indicadores-cedia') }}", [
-            "plemasCortedia", "plemasSuministrodia", "plemasPreparado", "plemasEnsambledia",
+            "plemasCortedia", "plemasSuministrodia", "plemasPreparadodia", "plemasEnsambledia",
             "plemasPulidodia", "plemasMediciondia", "plemasVisualizaciondia", "plemasEmpaquedia"
         ]);
 
