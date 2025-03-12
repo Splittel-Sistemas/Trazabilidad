@@ -508,7 +508,7 @@ class AreasController extends Controller
             $PartidasOF_AreasN+=$partida->Areas()->where('Areas_id',3)->where('TipoPartida','N')->SUM('Cantidad');
             $PartidasOF_Areas+=$partida->Areas()->where('Areas_id',3)->whereNull('FechaTermina')->count();
         }
-        if($PartidasOF_Areas==0 && $PartidasOF_AreasN==$CantidadTotal){
+        if($PartidasOF_Areas==0 && $PartidasOF_AreasN>=$CantidadTotal){
             foreach($OrdenFabricacion->PartidasOF as $partida){
                 $partida->EstatusPartidaOF=1;
                 $partida->save();
@@ -542,6 +542,9 @@ class AreasController extends Controller
         }
         return $opciones;
     }
+    //Chris
+
+    //End
     
     //Area 4 Preparado
     public function Preparado(){
@@ -552,10 +555,18 @@ class AreasController extends Controller
             $Area4=PartidasOF::find($registro->partidasOF_id);
             $NumeroActuales=$Area4->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
                             $Area4->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
-            $registro['NumeroActuales']=$NumeroActuales;
             if($NumeroActuales == $Area4->cantidad_partida){
                 unset($Registros[$key]);
             }
+        }
+        foreach($Registros as $key=>$registro){
+            $OrdenFabricacion=OrdenFabricacion::find($registro->OrdenFabricacion_id);
+            $TotalActual=0;
+            foreach($OrdenFabricacion->PartidasOF as $Partidas){
+                $TotalActual+=$Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
+                            $Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
+            }
+            $registro['NumeroActuales']=$TotalActual;
         }
         return view('Areas.Preparado',compact('Area','Registros'));
     }
@@ -1565,10 +1576,18 @@ class AreasController extends Controller
             $Area4=PartidasOF::find($registro->partidasOF_id);
             $NumeroActuales=$Area4->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
                             $Area4->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
-            $registro['NumeroActuales']=$NumeroActuales;
             if($NumeroActuales == $Area4->cantidad_partida){
                 unset($Registros[$key]);
             }
+        }
+        foreach($Registros as $key=>$registro){
+            $OrdenFabricacion=OrdenFabricacion::find($registro->OrdenFabricacion_id);
+            $TotalActual=0;
+            foreach($OrdenFabricacion->PartidasOF as $Partidas){
+                $TotalActual+=$Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
+                            $Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
+            }
+            $registro['NumeroActuales']=$TotalActual;
         }
         return view('Areas.Ensamble',compact('Area','Registros'));
     }
@@ -1581,10 +1600,18 @@ class AreasController extends Controller
             $Area4=PartidasOF::find($registro->partidasOF_id);
             $NumeroActuales=$Area4->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
                             $Area4->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
-            $registro['NumeroActuales']=$NumeroActuales;
             if($NumeroActuales == $Area4->cantidad_partida){
                 unset($Registros[$key]);
             }
+        }
+        foreach($Registros as $key=>$registro){
+            $OrdenFabricacion=OrdenFabricacion::find($registro->OrdenFabricacion_id);
+            $TotalActual=0;
+            foreach($OrdenFabricacion->PartidasOF as $Partidas){
+                $TotalActual+=$Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
+                            $Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
+            }
+            $registro['NumeroActuales']=$TotalActual;
         }
         return view('Areas.Pulido',compact('Area','Registros'));
     }
@@ -1597,10 +1624,18 @@ class AreasController extends Controller
             $Area4=PartidasOF::find($registro->partidasOF_id);
             $NumeroActuales=$Area4->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
                             $Area4->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
-            $registro['NumeroActuales']=$NumeroActuales;
             if($NumeroActuales == $Area4->cantidad_partida){
                 unset($Registros[$key]);
             }
+        }
+        foreach($Registros as $key=>$registro){
+            $OrdenFabricacion=OrdenFabricacion::find($registro->OrdenFabricacion_id);
+            $TotalActual=0;
+            foreach($OrdenFabricacion->PartidasOF as $Partidas){
+                $TotalActual+=$Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
+                            $Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
+            }
+            $registro['NumeroActuales']=$TotalActual;
         }
         return view('Areas.Medicion',compact('Area','Registros'));
     }
@@ -1613,10 +1648,18 @@ class AreasController extends Controller
             $Area4=PartidasOF::find($registro->partidasOF_id);
             $NumeroActuales=$Area4->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
                             $Area4->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
-            $registro['NumeroActuales']=$NumeroActuales;
             if($NumeroActuales == $Area4->cantidad_partida){
                 unset($Registros[$key]);
             }
+        }
+        foreach($Registros as $key=>$registro){
+            $OrdenFabricacion=OrdenFabricacion::find($registro->OrdenFabricacion_id);
+            $TotalActual=0;
+            foreach($OrdenFabricacion->PartidasOF as $Partidas){
+                $TotalActual+=$Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
+                            $Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
+            }
+            $registro['NumeroActuales']=$TotalActual;
         }
         return view('Areas.Visualizacion',compact('Area','Registros'));
     }
@@ -1683,7 +1726,8 @@ class AreasController extends Controller
             ->where('partidasof_Areas.Areas_id', $Area) // Filtra por el área 3 (Suministro)
             ->whereNotNull('partidasof_Areas.FechaTermina') // Asegura que la columna FechaTermina no sea NULL
             ->get()
-            ->unique('partidasOF_id');
+            ->unique('partidasOF_id')
+            ->unique('OrdenFabricacion');
         return $Registros; 
     }
     public function OrdenFabricacionPendienteTabla($Area){
@@ -1695,15 +1739,24 @@ class AreasController extends Controller
             ->where('partidasof_Areas.Areas_id', $Area) // Filtra por el área 3 (Suministro)
             ->whereNotNull('partidasof_Areas.FechaTermina') // Asegura que la columna FechaTermina no sea NULL
             ->get()
-            ->unique('partidasOF_id');
+            ->unique('partidasOF_id')
+            ->unique('OrdenFabricacion');;
         foreach($Registros as $key=>$registro){
             $Area4=PartidasOF::find($registro->partidasOF_id);
             $NumeroActuales=$Area4->Areas()->where('Areas_id',$Area+1)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
                             $Area4->Areas()->where('Areas_id',$Area+1)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
-            $registro['NumeroActuales']=$NumeroActuales;
             if($NumeroActuales == $Area4->cantidad_partida){
                 unset($Registros[$key]);
             }
+        }
+        foreach($Registros as $key=>$registro){
+            $OrdenFabricacion=OrdenFabricacion::find($registro->OrdenFabricacion_id);
+            $TotalActual=0;
+            foreach($OrdenFabricacion->PartidasOF as $Partidas){
+                $TotalActual+=$Partidas->Areas()->where('Areas_id',$Area+1)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
+                            $Partidas->Areas()->where('Areas_id',$Area+1)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
+            }
+            $registro['NumeroActuales']=$TotalActual;
         }
         return $Registros; 
     }
@@ -1717,8 +1770,8 @@ class AreasController extends Controller
                             <td>'.$partida->Articulo .'</td>
                             <td>'.$partida->Descripcion.'</td>
                             <td>'.$partida->NumeroActuales.'</td>
-                            <td>'.$partida->PartidasOFCantidad-$partida->NumeroActuales.'</td>
-                            <td>'.$partida->PartidasOFCantidad .'</td>
+                            <td>'.$partida->CantidadTotal-$partida->NumeroActuales.'</td>
+                            <td>'.$partida->CantidadTotal .'</td>
                             <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
                             </tr>';
         }
