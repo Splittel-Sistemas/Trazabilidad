@@ -89,26 +89,30 @@
                         @foreach ([
                             ['name', 'Nombre', $user->name],
                             ['apellido', 'Apellido', $user->apellido],
-                            ['email', 'Correo Electrónico', $user->email],
                             ['Role', 'Rol', $roles->pluck('name')->join(', ')]
                         ] as [$id, $label, $value])
                             <div class="col-md-6 mb-3">
                                 <div class="mb-2">
                                     <label for="{{ $id }}" class="form-label">{{ $label }}</label>
-                                    @if ($id === 'Role')
-                                        <input type="text" class="form-control form-control-sm" id="{{ $id }}" name="{{ $id }}" value="{{ $value }}" readonly>
-                                    @else
-                                        <input type="text" class="form-control form-control-sm" id="{{ $id }}" name="{{ $id }}" value="{{ $value }}" readonly>
-                                    @endif
+                                    <input type="text" class="form-control form-control-sm" id="{{ $id }}" name="{{ $id }}" value="{{ $value }}" readonly>
                                 </div>
                             </div>
                         @endforeach
+        
+                        @if ($user->role === 'A') 
+                            <div class="col-md-6 mb-3">
+                                <div class="mb-2">
+                                    <label for="email" class="form-label">Correo Electrónico</label>
+                                    <input type="text" class="form-control form-control-sm" id="email" name="email" value="{{ $user->email }}" readonly>
+                                </div>
+                            </div>
+                        @endif
                     </div>           
                     <button type="submit" class="btn btn-success w-100 d-none btn-custom" id="saveProfileBtn" style="font-size: 1rem; padding: 8px;">Guardar</button>
                 </form>
             </div>
         </div>
-    </div>
+        
 @endsection
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
