@@ -32,7 +32,7 @@
             </div>
         @endif
         <div class="card shadow-sm border-light col-4 p-3 mb-1">
-            <div class="card-header m-0 p-0">
+            <div >
                 <p class="m-0">Selecciona el Tipo de Usuario</p>
             </div>
             <div class="form-check mt-1">
