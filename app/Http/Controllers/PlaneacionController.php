@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 use Exception;
 use Carbon\Carbon;
@@ -15,8 +14,6 @@ use App\Models\RegistrosBuffer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Linea;
-
-
 class PlaneacionController extends Controller
 {
     protected $funcionesGenerales;
@@ -48,14 +45,10 @@ class PlaneacionController extends Controller
                 $VerificarSAP=0;
                 $status = "empty";
             }
-            $linea=DB::table('linea')
-            ->select(
-                'linea.NumeroLinea',
-                'linea.Nombre',
-                'linea.active',
-                'linea.Descripcion'
-            )
-            ->get();
+            $linea = Linea::get();
+
+            
+           
            // return $linea;
 
     
@@ -73,17 +66,13 @@ class PlaneacionController extends Controller
         }
     }
     public function PorcentajesPlaneacion(Request $request){
- 
         $fecha = $request->fecha;
-        
-        
         $Linea_id = $request->Linea_id;
         $PorcentajePlaneacion = PorcentajePlaneacion::where('FechaPlaneacion', $fecha)
                     ->where('Linea_id', $Linea_id)//chris
                     ->first();
         if ($PorcentajePlaneacion == "") {
             $NumeroPersonas = 20;
-            $Linea_id = $request->Linea;
             $PiezasPorPersona = 50;
             $PlaneadoPorDia = OrdenFabricacion::where('FechaEntrega', $fecha)->SUM('CantidadTotal');
             $CantidadEstimadaDia = $NumeroPersonas * $PiezasPorPersona;
@@ -97,9 +86,8 @@ class PlaneacionController extends Controller
             $PorcentajePlaneada = str_replace(',', '', number_format($PlaneadoPorDia / $CantidadEstimadaDia * 100, 2));
             $PorcentajeFaltante = number_format(100 - $PorcentajePlaneada, 2);
         }
-
         return response()->json([
-            'Linea_id' => $Linea_id, 
+            'Linea_id' => $Linea_id, //chris
             'PorcentajePlaneada' => $PorcentajePlaneada,
             'PorcentajeFaltante' => $PorcentajeFaltante,
             'NumeroPersonas' => $NumeroPersonas,
@@ -109,7 +97,6 @@ class PlaneacionController extends Controller
             'Fecha_Grafica' => Carbon::parse($fecha)->translatedFormat('d \d\e F \d\e Y'),
         ]);
     }
-    
     public function GuardarParametrosPorcentajes(Request $request){
         $CantidadPersona=$request->CantidadPersona;
         $Piezaspersona=$request->Piezaspersona;
@@ -329,6 +316,7 @@ class PlaneacionController extends Controller
                 'status' => "errordate",
             ]);
         }
+       
         $bandera="";
         $NumOV="";
         $NumOF=[];
@@ -364,6 +352,8 @@ class PlaneacionController extends Controller
                     $respuestaOF->EstatusEntrega=0;
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
                     $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
+                    $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;//christian
+
                     $respuestaOF->save();
                 }
                 else{
@@ -388,6 +378,8 @@ class PlaneacionController extends Controller
                     $respuestaOF->EstatusEntrega=0;
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
                     $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
+                    $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;//christian
+
                     $respuestaOF->save();
                 }
             }
@@ -407,43 +399,53 @@ class PlaneacionController extends Controller
         }
     }
     public function PartidasOFFiltroFechas_Tabla(Request $request){
-        $Fecha=$request->input('fecha');
-        $datos=$this->PartidasOFFiltroFechas($Fecha);
-        //return $datos;
-        $tabla="";
-        
-        if(count($datos)>0){
-            for ($i=0; $i < count($datos); $i++) {
-                $countdatosOrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion','=',$datos[$i]['OrdenFabricacion'])->first();
-                $countdatosOrdenFabricacion=$countdatosOrdenFabricacion->partidasOF()->get()->count();
-                if($countdatosOrdenFabricacion==0){ 
-                    $tabla.='<tr>
-                            <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
-                            <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
-                            <td class="text-center">'.'<button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" <a class="btn btn-sm btn-danger"><i class="fa fa-arrow-left"></i> Cancelar</button>
-                             <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary "><i class="fa fa-eye"></i> Detalles</button>'.'
-                             </td>
+        $Fecha = $request->input('fecha');
+        $datos = $this->PartidasOFFiltroFechas($Fecha);
+        $Linea_id = $request->Linea_id;//chris
+        $tabla = "";
+    
+        if (count($datos) > 0) {
+            foreach ($datos as $dato) {
+                $countdatosOrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion', '=', $dato['OrdenFabricacion'])
+                    ->where('Linea_id', $Linea_id)//chris
+                    ->first();
+    
+                if ($countdatosOrdenFabricacion) {
+                    $countPartidas = $countdatosOrdenFabricacion->partidasOF()->count();
+                    if ($countPartidas == 0) { 
+                        $tabla .= '<tr>
+                            <td class="text-center">'.$dato['OrdenVenta'].'</td>
+                            <td class="text-center">'.$dato['OrdenFabricacion'].'</td>
+                            <td class="text-center">
+                                <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
+                                    <i class="fa fa-arrow-left"></i> Cancelar
+                                </button>
+                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-eye"></i> Detalles
+                                </button>
+                            </td>
                         </tr>';
-                }else{
-                    $tabla.='<tr>
-                            <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
-                            <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
+                    } else {
+                        $tabla .= '<tr>
+                            <td class="text-center">'.$dato['OrdenVenta'].'</td>
+                            <td class="text-center">'.$dato['OrdenFabricacion'].'</td>
                             <td class="text-center"></td>
                         </tr>';
+                    }
                 }
             }
             return response()->json([
                 'status' => "success",
                 'tabla' => $tabla
             ]);
-        }else{
+        } else {
             return response()->json([
                 'status' => "empty",
-                'tabla' => '<tr><td colspan="100%"" align="center">No existen registros</td></tr>'
+                'tabla' => '<tr><td colspan="100%" align="center">No existen registros</td></tr>'
             ]);
         }
-
     }
+    
     public function LlenarTablaVencidasOV(){
         $datos=RegistrosBuffer::select('OrdenVentaB')
                                     ->groupBy('OrdenVentaB')  // Agrupa por 'OrdenVentaB'
@@ -734,8 +736,10 @@ class PlaneacionController extends Controller
     // Funcion filtro por Orden de venta o Orden fabricacion
     public function PlaneacionFOFOV(Request $request){
         $FiltroOF_table2=$request->input('FiltroOF_table2');
+        $Linea_id = $request->Linea_id;
         $datos=OrdenFabricacion::join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
         ->where('ordenfabricacion.OrdenFabricacion', 'like', '%'.$FiltroOF_table2. '%')
+        ->where('Linea_id', $Linea_id)//chris
         ->orWhere('ordenventa.OrdenVenta', 'like', '%'.$FiltroOF_table2. '%')
         ->select('ordenfabricacion.id as ordenfabricacion_id', 'ordenventa.id as ordenventa_id','OrdenVenta','OrdenFabricacion') 
         ->orderBy('OrdenVenta', 'asc') // Orden descendente
