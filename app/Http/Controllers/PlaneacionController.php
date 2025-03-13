@@ -13,6 +13,9 @@ use App\Models\PorcentajePlaneacion;
 use App\Models\FechasBuffer;
 use App\Models\RegistrosBuffer;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\Linea;
+
 
 class PlaneacionController extends Controller
 {
@@ -45,13 +48,23 @@ class PlaneacionController extends Controller
                 $VerificarSAP=0;
                 $status = "empty";
             }
+            $linea=DB::table('linea')
+            ->select(
+                'linea.NumeroLinea',
+                'linea.Nombre',
+                'linea.active',
+                'linea.Descripcion'
+            )
+            ->get();
+           // return $linea;
+
     
             // Ajustar formato de las fechas para la vista
             $FechaInicio = date('Y-m-d');
             $FechaFin = date('Y-m-d');
     
             // Retornar la vista con los datos
-            return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status','VerificarSAP'));
+            return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status','VerificarSAP', 'linea'));
     
         } else {
     
@@ -60,40 +73,56 @@ class PlaneacionController extends Controller
         }
     }
     public function PorcentajesPlaneacion(Request $request){
-        $fecha=$request->fecha;
-        $PorcentajePlaneacion=PorcentajePlaneacion::where('FechaPlaneacion',$fecha)->first();
-        if($PorcentajePlaneacion==""){
-            $NumeroPersonas=20;
-            $PiezasPorPersona=50;
-            $PlaneadoPorDia=OrdenFabricacion::where('FechaEntrega',$fecha)->SUM('CantidadTotal');
-            $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
-            $PorcentajePlaneada=number_format($PlaneadoPorDia/$CantidadEstimadaDia*100,2);
-            $PorcentajeFaltante=number_format(100-$PorcentajePlaneada,2);
-        }else{
-            $NumeroPersonas=$PorcentajePlaneacion->NumeroPersonas;
-            $PiezasPorPersona=$PorcentajePlaneacion->CantidadPlaneada/$PorcentajePlaneacion->NumeroPersonas;
-            $PlaneadoPorDia=OrdenFabricacion::where('FechaEntrega',$fecha)->SUM('CantidadTotal');
-            $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
-            $PorcentajePlaneada=str_replace(',','',number_format($PlaneadoPorDia/$CantidadEstimadaDia*100,2));
-            $PorcentajeFaltante=number_format(100-$PorcentajePlaneada,2);
+ 
+        $fecha = $request->fecha;
+        
+        
+        $Linea_id = $request->Linea_id;
+        $PorcentajePlaneacion = PorcentajePlaneacion::where('FechaPlaneacion', $fecha)
+                    ->where('Linea_id', $Linea_id)//chris
+                    ->first();
+        if ($PorcentajePlaneacion == "") {
+            $NumeroPersonas = 20;
+            $Linea_id = $request->Linea;
+            $PiezasPorPersona = 50;
+            $PlaneadoPorDia = OrdenFabricacion::where('FechaEntrega', $fecha)->SUM('CantidadTotal');
+            $CantidadEstimadaDia = $NumeroPersonas * $PiezasPorPersona;
+            $PorcentajePlaneada = number_format($PlaneadoPorDia / $CantidadEstimadaDia * 100, 2);
+            $PorcentajeFaltante = number_format(100 - $PorcentajePlaneada, 2);
+        } else {
+            $NumeroPersonas = $PorcentajePlaneacion->NumeroPersonas;
+            $PiezasPorPersona = $PorcentajePlaneacion->CantidadPlaneada / $PorcentajePlaneacion->NumeroPersonas;
+            $PlaneadoPorDia = OrdenFabricacion::where('FechaEntrega', $fecha)->SUM('CantidadTotal');
+            $CantidadEstimadaDia = $NumeroPersonas * $PiezasPorPersona;
+            $PorcentajePlaneada = str_replace(',', '', number_format($PlaneadoPorDia / $CantidadEstimadaDia * 100, 2));
+            $PorcentajeFaltante = number_format(100 - $PorcentajePlaneada, 2);
         }
-        return response()->json([
-                'PorcentajePlaneada' => $PorcentajePlaneada,
-                'PorcentajeFaltante' => $PorcentajeFaltante,
-                'NumeroPersonas' => $NumeroPersonas,
-                'PlaneadoPorDia'=>$PlaneadoPorDia,
-                'CantidadEstimadaDia'=>$CantidadEstimadaDia,
-                'Piezasfaltantes'=>($CantidadEstimadaDia-$PlaneadoPorDia),
-                'Fecha_Grafica'=>Carbon::parse($fecha)->translatedFormat('d \d\e F \d\e Y'),
 
+        return response()->json([
+            'Linea_id' => $Linea_id, 
+            'PorcentajePlaneada' => $PorcentajePlaneada,
+            'PorcentajeFaltante' => $PorcentajeFaltante,
+            'NumeroPersonas' => $NumeroPersonas,
+            'PlaneadoPorDia' => $PlaneadoPorDia,
+            'CantidadEstimadaDia' => $CantidadEstimadaDia,
+            'Piezasfaltantes' => ($CantidadEstimadaDia - $PlaneadoPorDia),
+            'Fecha_Grafica' => Carbon::parse($fecha)->translatedFormat('d \d\e F \d\e Y'),
         ]);
     }
+    
     public function GuardarParametrosPorcentajes(Request $request){
         $CantidadPersona=$request->CantidadPersona;
         $Piezaspersona=$request->Piezaspersona;
         $Fecha=$request->Fecha;
-        $registro=PorcentajePlaneacion::where('FechaPlaneacion',$Fecha)->first();
+        $Linea_id = $request->Linea; //chris
+        $registro=PorcentajePlaneacion::where('FechaPlaneacion',$Fecha)
+                                       ->where('Linea_id',$Linea_id)->first();
+        $linea = Linea::where('NumeroLinea', $request->Linea)->first();//chris
+
+
+
         if($registro=="" OR $registro==null){
+            $Linea_id = $request->Linea;
             $NumeroPersonas=20;
             $PiezasPorPersona=50;
             $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
@@ -101,11 +130,13 @@ class PlaneacionController extends Controller
             $PorcentajePlaneacion->FechaPlaneacion = $Fecha;
             $PorcentajePlaneacion->CantidadPlaneada = $CantidadEstimadaDia; 
             $PorcentajePlaneacion->NumeroPersonas = $NumeroPersonas;
+            $PorcentajePlaneacion->Linea_id = $Linea_id;//christian
             $PorcentajePlaneacion->save();
         }else{
             $registro->FechaPlaneacion=$Fecha;
             $registro->NumeroPersonas=$CantidadPersona;
             $registro->CantidadPlaneada=$Piezaspersona*$CantidadPersona;
+            $registro->Linea_id = $Linea_id;//christian
             $registro->save();
         }
         return Carbon::parse($Fecha)->translatedFormat('d \d\e F \d\e Y');

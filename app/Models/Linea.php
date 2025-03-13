@@ -8,7 +8,17 @@ class Linea extends Model
 {
     use HasFactory;
 
-    protected $table = 'linea'; // Asegúrate de que coincide con tu base de datos
+    protected $table = 'linea'; // Nombre de la tabla sin cambios
 
     protected $fillable = ['Nombre', 'NumeroLinea', 'Descripcion'];
+
+    public function porcentajePlaneacion()
+    {
+        return $this->hasMany(PorcentajePlaneacion::class, 'Linea_id', 'NumeroLinea');
+    }
+    public function ordenesFabricacion()
+    {
+        return $this->hasMany(OrdenFabricacion::class, 'Linea_id', 'id');
+    }
+
 }

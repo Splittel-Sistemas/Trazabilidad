@@ -6,23 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('PorcentajePlaneacion', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('Linea_id');
             $table->integer('NumeroPersonas')->nullable();
             $table->date('FechaPlaneacion');
             $table->integer('CantidadPlaneada');
             $table->timestamps();
+
+            $table->foreign('Linea_id')->references('id')->on('Linea')->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('PorcentajePlaneacion');
