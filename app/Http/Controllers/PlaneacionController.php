@@ -46,12 +46,7 @@ class PlaneacionController extends Controller
                 $status = "empty";
             }
             $linea = Linea::get();
-
-            
-           
            // return $linea;
-
-    
             // Ajustar formato de las fechas para la vista
             $FechaInicio = date('Y-m-d');
             $FechaFin = date('Y-m-d');
@@ -445,7 +440,6 @@ class PlaneacionController extends Controller
             ]);
         }
     }
-    
     public function LlenarTablaVencidasOV(){
         $datos=RegistrosBuffer::select('OrdenVentaB')
                                     ->groupBy('OrdenVentaB')  // Agrupa por 'OrdenVentaB'

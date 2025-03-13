@@ -178,7 +178,7 @@
                 <div class="row">
                     <div class="col-4 mb-4 pt-1">
                         <label for="linea" >Selecciona línea</label>
-                        <select name="linea" id="linea" class="form-select form-select-sm border-primary w-100">
+                        <select name="linea" id="linea" class="form-select form-select-sm border-primary w-100" onclick="RecargarTablaOF();>
                             <option value="">Selecciona una línea</option>
                             @foreach($linea as $l)
                                 <option value="{{ $l->NumeroLinea }}" {{ $l->NumeroLinea == 1 ? 'selected' : '' }}>
@@ -789,8 +789,6 @@
     function TablaOrdenFabricacion(fecha){
         var modal = $('#ModalPlaneacionVencidos');
         var Linea_id = $('#linea').val();//chris
-        //console.log("FiltroOF_table2: " + FiltroOF_table2);  // Log del valor de FiltroOF_table2
-        //console.log("FiltroLinea: " + FiltroLinea);
         $.ajax({
             url: "{{route('PartidasOFFiltroFechas_Tabla')}}", 
             type: 'POST',
