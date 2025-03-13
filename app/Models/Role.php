@@ -1,14 +1,13 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Permission\Traits\HasRoles; // Importar el trait
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Role extends Model
 {
-    //use HasFactory, HasRoles; 
+    use HasFactory; // Mantén solo HasFactory
 
     protected $fillable = ['name'];
 

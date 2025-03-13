@@ -197,7 +197,6 @@
                         </div>
                     </div>
                 </div>
-                
                 <div ondrop="drop(event)" ondragover="allowDrop(event)" 
                     class="dropzone mt-4 border-dashed rounded-2 min-h-0 mb-4">
                     <h5>Arrastra la Orden de Fabricacion</h5>
@@ -662,7 +661,7 @@
             row.classList.remove("selected");
         }
     }
-     //Permitir que el elemento sea soltado
+    //Permitir que el elemento sea soltado
     function allowDrop(event) {
         event.preventDefault();
     }

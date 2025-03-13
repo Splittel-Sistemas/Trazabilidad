@@ -45,7 +45,8 @@ class PlaneacionController extends Controller
                 $VerificarSAP=0;
                 $status = "empty";
             }
-            $linea = Linea::get();
+            $linea = Linea::where('active', 1)->get();
+
            // return $linea;
             // Ajustar formato de las fechas para la vista
             $FechaInicio = date('Y-m-d');

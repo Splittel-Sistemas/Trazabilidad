@@ -10,6 +10,7 @@ class PermissionRoleSeeder extends Seeder
     public function run()
     {
         // Inserta las relaciones entre permisos y roles
+        
         DB::table('permission_role')->insert([
             ['role_id' => 1, 'permission_id' => 1],
             ['role_id' => 1, 'permission_id' => 2],
