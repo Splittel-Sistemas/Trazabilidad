@@ -562,11 +562,13 @@ class AreasController extends Controller
         foreach($Registros as $key=>$registro){
             $OrdenFabricacion=OrdenFabricacion::find($registro->OrdenFabricacion_id);
             $TotalActual=0;
+            $Totalretrabajos=$OrdenFabricacion->PartidasOF->where('TipoPartida','R')->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida');
             foreach($OrdenFabricacion->PartidasOF as $Partidas){
-                $TotalActual+=$Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
-                            $Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
+                    $TotalActual+=$Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
+                    $Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
             }
-            $registro['NumeroActuales']=$TotalActual;
+            $registro['NumeroActuales'] = $TotalActual-$Totalretrabajos;
+            $registro->CantidadTotal = $OrdenFabricacion->PartidasOF->SUM('cantidad_partida');
         }
         return view('Areas.Preparado',compact('Area','Registros'));
     }
@@ -1272,22 +1274,35 @@ class AreasController extends Controller
         //Return 0:No es el codigo; 1:Si es el codigo; 2:Aun no ha pasado por el area Anterior
         //Comprueba si los datos que vienen en el codigo Existen
         $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
-        $partidasOF=$datos->partidasOF;
+        $partidasOF=$datos->partidasOF->where('TipoPartida','N');
         $TotalEtiqueta=0;
         $CantidadEtiqueta=0;
+        $TipoPartida='R';
         foreach($partidasOF as $partida){
             $TotalEtiqueta+=$partida->cantidad_partida;
             if($partida->NumeroPartida == $CodigoPartes[1]){
+                $TipoPartida='N';
                 $CantidadEtiqueta=$partida->cantidad_partida;
                 break;
             }
         }
-        $inicio=$TotalEtiqueta-$CantidadEtiqueta;
-        $fin=$TotalEtiqueta;
-        if($CodigoPartes[2]>$inicio && $CodigoPartes[2]<=$fin){
-            return 1;
+        if($TipoPartida=='N'){
+            $inicio=$TotalEtiqueta-$CantidadEtiqueta;
+            $fin=$TotalEtiqueta;
+            if($CodigoPartes[2]>$inicio && $CodigoPartes[2]<=$fin){
+                return 1;
+            }else{
+                return 0;
+            }
         }else{
-            return 0;
+            $partidasOF=$datos->partidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
+            $inicio=0;
+            $fin=$partidasOF->cantidad_partida;
+            if($CodigoPartes[2]>$inicio && $CodigoPartes[2]<=$fin){
+                return 1;
+            }else{
+                return 0;
+            }
         }
     }
 
@@ -1770,8 +1785,8 @@ class AreasController extends Controller
                             <td>'.$partida->Articulo .'</td>
                             <td>'.$partida->Descripcion.'</td>
                             <td>'.$partida->NumeroActuales.'</td>
-                            <td>'.$partida->CantidadTotal-$partida->NumeroActuales.'</td>
-                            <td>'.$partida->CantidadTotal .'</td>
+                            <td>'.$partida->PartidasOFCantidad-$partida->NumeroActuales.'</td>
+                            <td>'.$partida->PartidasOFCantidad .'</td>
                             <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
                             </tr>';
         }

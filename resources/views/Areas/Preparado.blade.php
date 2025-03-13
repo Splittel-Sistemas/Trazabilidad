@@ -316,8 +316,11 @@
                             $('#ToastGuardado').fadeOut();
                         }, 2000);
                 }
-                $('#CodigoEscanerSalida').val('');
-                $('#CodigoEscanerEntrada').val('');
+                CoincidenciasCodigo = Codigo.match(/-/g);
+                if(CoincidenciasCodigo.length==2){
+                    $('#CodigoEscanerSalida').val('');
+                    $('#CodigoEscanerEntrada').val('');
+                }
                 RecargarTablaPendientes();
             },
             error: function(xhr, status, error) {
