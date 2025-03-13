@@ -24,7 +24,6 @@ class PlaneacionController extends Controller
     public function index(){
         // Obtener el usuario autenticado
         $user = Auth::user();
-    
         // Verificar el permiso 'Vista Planeacion'
         if ($user->hasPermission('Vista Planeacion')) {
     
@@ -46,12 +45,9 @@ class PlaneacionController extends Controller
                 $status = "empty";
             }
             $linea = Linea::where('active', 1)->get();
-
-           // return $linea;
             // Ajustar formato de las fechas para la vista
             $FechaInicio = date('Y-m-d');
             $FechaFin = date('Y-m-d');
-    
             // Retornar la vista con los datos
             return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status','VerificarSAP', 'linea'));
     
