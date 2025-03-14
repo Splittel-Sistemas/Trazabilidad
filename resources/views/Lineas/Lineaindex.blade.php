@@ -63,7 +63,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-    <div class="card p-4" style="display:block;" id="tableExample3" data-list="{&quot;valueNames&quot;:[&quot;apellido&quot;,&quot;nombre&quot;,&quot;email&quot;,&quot;roles&quot;,&quot;estatus&quot;],&quot;page&quot;:5,&quot;pagination&quot;:true}">
+    <div class="card p-4" style="display:block;" id="tableExample3" data-list="{&quot;valueNames&quot;:[&quot;apellido&quot;,&quot;nombre&quot;,&quot;email&quot;,&quot;roles&quot;,&quot;estatus&quot;],&quot;page&quot;:10,&quot;pagination&quot;:true}">
         <div class="search-box mb-3 mx-auto">
             <form class="position-relative d-flex align-items-center" data-bs-toggle="search" data-bs-display="static">
                 <input class="form-control search-input search form-control-sm rounded-pill pe-5" 
@@ -80,20 +80,21 @@
                 <table class="table table-striped table-sm fs--1 mb-0">
                     <thead class="bg-primary text-white">
                         <tr>
+                            <th class="sort border-top text-center ps-3" data-sort="numero">Número de línea</th>
                             <th class="sort border-top ps-3" data-sort="nombre">Nombre</th>
-                            <th class="sort border-top ps-3" data-sort="numero">Número de línea</th>
                             <th class="sort border-top ps-3" data-sort="descripcion">Descripción</th>
                             <th class="sort border-top ps-3" data-sort="activacion">Activar</th>    
+                            <th class="sort border-top ps-3" data-sort="activacion">Color</th>
                             <th class="sort border-top text-center ps-3">Acción</th>
                         </tr>
                     </thead>
                     <tbody class="list">
                         @foreach ($linea as $linea)
                         <tr>
+                            <td class="align-middle text-center numero ps-3">{{ $linea->NumeroLinea }}</td>
                             <td class="align-middle nombre ps-3">{{ $linea->Nombre }}</td>
-                            <td class="align-middle numero ps-3">{{ $linea->NumeroLinea }}</td>
-                           <td class="align-middle descripcion ps-3">{{ $linea->Descripcion }}</td>
-                           <td class="align-center estatus ps-8">
+                            <td class="align-middle descripcion ps-3">{{ $linea->Descripcion }}</td>
+                            <td class="align-center estatus ps-8">
                             <div class="form-check form-switch">
                                 <input class="form-check-input toggle-status" style="transform:scale(1.5);" 
                                     type="checkbox" 
@@ -103,16 +104,16 @@
                                     {{ $linea->active ? 'checked' : '' }} 
                                     onclick="DesactivarLinea(this)">
                             </div>
-                            
                             </td>
-                           <td class="text-center pe-0">
-                            <button type="button" class="btn btn-outline-warning btn-sm" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#lineaModal" 
-                                data-id="{{ $linea->id }}">
-                                <i class="fas fa-edit"></i> Editar
-                            </button>
-                        </td>
+                            <td><div class="p-3" style="background: {{ $linea->ColorLinea }};"></div></td>
+                            <td class="text-center pe-0">
+                                <button type="button" class="btn btn-outline-warning btn-sm" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#lineaModal" 
+                                    data-id="{{ $linea->id }}">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                            </td>
                         
                         </tr>
                         @endforeach
@@ -139,21 +140,27 @@
                     <h5 class="modal-title text-white" id="userModalLabel">Editar Linea</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                <form id="userEditForm" action="{{ route('linea.update', ['id' => $linea->id]) }}" method="POST">
+                <form id="userEditForm" action="" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
                         <div class="row mb-4">
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="Nombre">Nombre</label>
                                     <input type="text" name="Nombre" id="Nombre" class="form-control form-control-sm" required>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="NumeroLinea">Número de Línea</label>
                                     <input type="text" name="NumeroLinea" id="NumeroLinea" class="form-control form-control-sm" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="NumeroLinea">Color</label>
+                                    <input type="color" id="ColorLinea" name="ColorLinea"  class="form-control form-control-color" title="Selecciona un color">
                                 </div>
                             </div>
                         </div>
@@ -174,26 +181,31 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h5 class="modal-title text-white" id="crearModalLabel">Crear Linea</h5>
+                    <h5 class="modal-title text-white" id="crearModalLabel">Crear L&iacute;nea</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <form id="createLineForm" class="p-3 rounded bg-white">
                     @csrf
                     <div class="row mb-1">
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <div class="form-group">
                                 <label for="Nombre">Nombre</label>
                                 <input type="text" name="Nombre" id="Nombre" class="form-control form-control-sm" placeholder="Ingrese el nombre" required>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="NumeroLinea">Número de Línea</label>
                                 <input type="text" name="NumeroLinea" id="NumeroLinea" class="form-control form-control-sm" placeholder="Ingrese el número de línea" required>
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="NumeroLinea">Color</label>
+                                <input type="color" id="ColorLinea" name="ColorLinea"  class="form-control form-control-color" title="Selecciona un color">
+                            </div>
+                        </div>
                     </div>
-    
                     <div class="row mb-1">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -233,6 +245,7 @@
             $('#Nombre').val('');
             $('#Descripcion').val('');
             $('#NumeroLinea').val('');
+            $('#ColorLinea').val('');
             $.ajax({
                 url: url,
                 method: 'GET',
@@ -241,6 +254,7 @@
                     $('#Nombre').val(response.Nombre);
                     $('#Descripcion').val(response.Descripcion);
                     $('#NumeroLinea').val(response.NumeroLinea);
+                    $('#ColorLinea').val(response.ColorLinea);
                     $('#userEditForm').attr('action', '{{ route('linea.update', 'lineaId') }}'.replace('lineaId', lineaId));
                     $('#lineaModal').modal('show');
                 },
@@ -321,12 +335,8 @@
     });
     $(document).ready(function() {
         $('#createLineForm').on('submit', function(e) {
-            e.preventDefault(); // Prevenir el envío tradicional del formulario
-
-            // Obtener los datos del formulario
+            e.preventDefault(); 
             var formData = $(this).serialize();
-
-            // Mostrar alerta de que está enviando los datos
             Swal.fire({
                 title: 'Enviando...',
                 text: 'Por favor espere.',
@@ -350,18 +360,14 @@
                         icon: 'success',
                         confirmButtonText: 'Cerrar'
                     });
-
                     // Cerrar el modal y limpiar el formulario
                     $('#crearModal').modal('hide');
                     $('#createLineForm')[0].reset();
-
-                    // Actualizar la vista después de 2 segundos
                     setTimeout(function() {
                         location.reload();
-                    }, 2000); // 2000 ms = 2 segundos
+                    }, 1000);
                 },
                 error: function(xhr, status, error) {
-                    // Si ocurre un error, mostrar mensaje de error
                     Swal.fire({
                         title: 'Error',
                         text: 'Hubo un problema al registrar la línea. Inténtelo nuevamente.',

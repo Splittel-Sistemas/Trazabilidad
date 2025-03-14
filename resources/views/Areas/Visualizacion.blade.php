@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col-6">
             <div class="card shadow-sm">
-                <div class="card-header bg-success p-2" id="filtroEntrada">
+                <div class="card-header p-2" id="filtroEntrada" style="background: #005187">
                     <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Entrada</h3>
                 </div>
                 <div class="card-body row" id="filtro">
@@ -60,7 +60,7 @@
         </div>
         <div class="col-6">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-danger p-2" id="filtroEntrada">
+                    <div class="card-header p-2" id="filtroEntrada" style="background:#D21637;">
                         <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Salida</h3>
                     </div>
                     <div class="card-body row" id="filtro">
@@ -116,6 +116,7 @@
                                 <th>Cantidad Pendiente</th>
                                 <th>Total Orden Fabricaci&oacute;n</th>
                                 <th>Estatus</th>
+                                <th>L&iacute;nea</th>
                             </tr>
                         </thead>
                         <tbody id="TablaPreparadoPendientesBody" class="list">
@@ -129,6 +130,7 @@
                                 <td>{{$partida->TotalPendiente }}</td>
                                 <td>{{$partida->CantidadTotal }}</td>
                                 <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                                <td><h5 class="text-light text-center p-2" style="background: {{$partida->ColorLinea }};">{{$partida->Linea }}</h5></td>
                             </tr>
                         @endforeach
                         </tbody>

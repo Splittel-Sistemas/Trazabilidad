@@ -71,9 +71,7 @@ class RegistroController extends Controller
     // Método para actualizar un usuario
     public function update(Request $request, $id)
     {
-        return$user = User::findOrFail($id);
-        
-    
+        $user = User::findOrFail($id);
         $validatedData = $request->validate([
             'apellido' => 'required|string|max:255',
             'name' => 'required|string|max:255',
