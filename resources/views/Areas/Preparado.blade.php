@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col-6">
               <div class="card shadow-sm">
-                <div class="card-header bg-success p-2" id="filtroEntrada">
+                <div class="card-header p-2" id="filtroEntrada" style="background:#71d772">
                     <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Entrada</h3>
                 </div>
                 <div class="card-body row" id="filtroEntrada">
@@ -59,7 +59,7 @@
         </div>
         <div class="col-6">
             <div class="card shadow-sm">
-                <div class="card-header bg-danger p-2" id="filtroEntrada">
+                <div class="card-header p-2" id="filtroEntrada" style="background:#f9635c;">
                     <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Salida</h3>
                 </div>
                 <div class="card-body row" id="filtroSalida">
@@ -90,22 +90,23 @@
             </div>
         </div>
         <div id="ContentTabla" class="col-12 mt-2" style="display: none">
-            <div class="card" id="DivCointainerTableSuministro" style="background: #ffc107;">
+            <div class="card" id="DivCointainerTableSuministro" >
             </div>
         </div>
         <div id="ContentTablaPendientes" class="col-12 mt-2">
             <div class="card" id="DivCointainerTablePendientes">
-                <h4 class="text-center mt-2 p-0">Ordenes Pendientes</h4>
-                <div class="table-responsive">
+                <h4 class="text-center mt-2 p-0">Ordenes de Fabricaci&oacute;n Pendientes</h4>
+                <div class="table-responsive" style="background: #ffe293">
                     <table id="TablaPreparadoPendientes" class="table table-sm fs--1 mb-1">
                         <thead>
                             <tr class="bg-light">
                                 <th>Orden Fabricación</th>
                                 <th>Artículo</th>
                                 <th>Descripción</th>
-                                <th>Cantidad Actual</th>
+                                <th>Cantidad Completada</th>
                                 <th>Cantidad Faltante</th>
-                                <th>Cantidad Total</th>
+                                <th>Cantidad Pendiente</th>
+                                <th>Total Orden Fabricaci&oacute;n</th>
                                 <th>Estatus</th>
                             </tr>
                         </thead>
@@ -116,7 +117,8 @@
                                 <td>{{$partida->Articulo }}</td>
                                 <td>{{$partida->Descripcion }}</td>
                                 <td>{{$partida->NumeroActuales}}</td>
-                                <td>{{$partida->CantidadTotal-$partida->NumeroActuales }}</td>
+                                <td>{{$partida->TotalPendiente-$partida->NumeroActuales }}</td>
+                                <td>{{$partida->TotalPendiente }}</td>
                                 <td>{{$partida->CantidadTotal }}</td>
                                 <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
                             </tr>
@@ -379,6 +381,7 @@
                     $('#CodigoEscanerSalida').val('');
                     $('#CodigoEscanerEntrada').val('');
                 }
+                RecargarTablaPendientes();
             }
         });
     }
@@ -456,7 +459,7 @@
                 }
             }
         );
-        setInterval(RecargarTablaPendientes,180000);
+        setInterval(RecargarTablaPendientes,180000);//180000
 
     })
     function TipoNoEscaner(TipoEntrada) {
