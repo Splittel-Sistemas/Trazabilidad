@@ -178,7 +178,7 @@
                 <div class="row">
                     <div class="col-4 mb-4 pt-1">
                         <label for="linea" >Selecciona línea</label>
-                        <select name="linea" id="linea" class="form-select form-select-sm border-primary w-100" onclick="RecargarTablaOF();>
+                        <select name="linea" id="linea" class="form-select form-select-sm border-primary w-100" onclick="RecargarTablaOF();">
                             <option value="">Selecciona una línea</option>
                             @foreach($linea as $l)
                                 <option value="{{ $l->NumeroLinea }}" {{ $l->NumeroLinea == 1 ? 'selected' : '' }}>

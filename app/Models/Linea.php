@@ -10,11 +10,11 @@ class Linea extends Model
 
     protected $table = 'linea'; // Nombre de la tabla sin cambios
 
-    protected $fillable = ['Nombre', 'NumeroLinea', 'Descripcion'];
+    protected $fillable = ['Nombre', 'NumeroLinea', 'Descripcion','ColorLinea'];
 
     public function porcentajePlaneacion()
     {
-        return $this->hasMany(PorcentajePlaneacion::class, 'Linea_id', 'NumeroLinea');
+        return $this->hasMany(PorcentajePlaneacion::class, 'Linea_id', 'id');
     }
     public function ordenesFabricacion()
     {

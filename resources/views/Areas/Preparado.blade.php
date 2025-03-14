@@ -108,6 +108,7 @@
                                 <th>Cantidad Pendiente</th>
                                 <th>Total Orden Fabricaci&oacute;n</th>
                                 <th>Estatus</th>
+                                <th>L&iacute;nea</th>
                             </tr>
                         </thead>
                         <tbody id="TablaPreparadoPendientesBody" class="list">
@@ -121,6 +122,7 @@
                                 <td>{{$partida->TotalPendiente }}</td>
                                 <td>{{$partida->CantidadTotal }}</td>
                                 <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                                <td><h5 class="text-light text-center p-2" style="background: {{$partida->ColorLinea }};">{{$partida->Linea }}</h5></td>
                             </tr>
                         @endforeach
                         </tbody>

@@ -9,6 +9,6 @@ class PorcentajePlaneacion extends Model
 
     public function Linea()
     {
-        return $this->belongsTo(Linea::class, 'Linea_id', 'NumeroLinea');
+        return $this->belongsTo(Linea::class, 'Linea_id', 'id');
     }
 }
