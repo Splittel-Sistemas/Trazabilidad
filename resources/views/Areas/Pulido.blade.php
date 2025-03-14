@@ -111,9 +111,10 @@
                                 <th>Orden Fabricación</th>
                                 <th>Artículo</th>
                                 <th>Descripción</th>
-                                <th>Cantidad Actual</th>
+                                <th>Cantidad Completada</th>
                                 <th>Cantidad Faltante</th>
-                                <th>Cantidad Total</th>
+                                <th>Cantidad Pendiente</th>
+                                <th>Total Orden Fabricaci&oacute;n</th>
                                 <th>Estatus</th>
                             </tr>
                         </thead>
@@ -124,7 +125,8 @@
                                 <td>{{$partida->Articulo }}</td>
                                 <td>{{$partida->Descripcion }}</td>
                                 <td>{{$partida->NumeroActuales}}</td>
-                                <td>{{$partida->CantidadTotal-$partida->NumeroActuales }}</td>
+                                <td>{{$partida->TotalPendiente-$partida->NumeroActuales }}</td>
+                                <td>{{$partida->TotalPendiente }}</td>
                                 <td>{{$partida->CantidadTotal }}</td>
                                 <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
                             </tr>
@@ -441,7 +443,7 @@
                 }
             }
         );
-        setInterval(RecargarTablaPendientes,180000);
+        setInterval(RecargarTablaPendientes,10000);
     })
     function TipoNoEscaner() {
         CodigoEscaner=$('#CodigoEscaner').val();
