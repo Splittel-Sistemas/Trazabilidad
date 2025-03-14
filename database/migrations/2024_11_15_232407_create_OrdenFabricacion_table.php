@@ -11,8 +11,8 @@ class CreateOrdenFabricacionTable extends Migration
         Schema::create('OrdenFabricacion', function (Blueprint $table) {
             $table->id();
             $table->boolean('Escaner')->default(false);
-            $table->unsignedBigInteger('OrdenVenta_id')
-                    ->nullable();
+            $table->unsignedBigInteger('Linea_id');
+            $table->unsignedBigInteger('OrdenVenta_id')->nullable();
             $table->string('OrdenFabricacion');
             $table->string('Articulo');
             $table->string('Descripcion');
@@ -22,13 +22,15 @@ class CreateOrdenFabricacionTable extends Migration
             $table->boolean('Cerrada')->default(true);
             $table->date('FechaEntregaSAP');
             $table->date('FechaEntrega');
-            $table->foreign('OrdenVenta_id')->references('id')
-                    ->on('OrdenVenta')
-                    ->onDelete('cascade')
-                    ->onUpdate('cascade');
             $table->timestamps();
+        
+            // Definir la clave foránea correctamente
+            //$table->foreign('Linea_id')->references('id')->on(DB::raw('`Linea`'))->onDelete('cascade');
+
         });
-    }
+        
+        
+    }        
 
     public function down()
     {

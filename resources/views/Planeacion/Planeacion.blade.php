@@ -72,14 +72,23 @@
                                     <div class="accordion-body pt-0">
                                         <div class="card-body p-1">
                                             <div class="d-flex justify-content-between">
-                                                    <div class="row">
-                                                        <h6 class="text-700 col-6">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
-                                                        <h6 class="text-700 col-6">Estimado de piezas por d&iacute;a: <span id="Estimadopiezas">0</span></h6>
-                                                        <h6 class="text-700 col-6">Piezas planeadas: <span id="Piezasplaneadas">0</span></h6>
-                                                        <h6 class="text-700 col-6">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>  
-                                                        <h6 class="text-700 col-6"></h6>
-                                                        <div class="col-12"><button class="btn btn-link mx-5 p-0" type="button" data-bs-toggle="modal" onclick="LlenarModalPorcentajes()" data-bs-target="#ParametrosPorcentaje"><i class="far fa-edit"></i>Capacidad productiva</button></div>  
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <h6 class="text-700">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
+                                                        <h6 class="text-700">Estimado de piezas por d&iacute;a: <span id="Estimadopiezas">0</span></h6>
                                                     </div>
+                                                    <div class="col-md-6">
+                                                        <h6 class="text-700 ">Linea <span id="NumeroLinea">0</span></h6> 
+                                                        <h6 class="text-700">Piezas planeadas: <span id="Piezasplaneadas">0</span></h6>
+                                                        <h6 class="text-700">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>
+                                                    </div>
+
+                                                    <div class="col-12 mt-3">
+                                                        <button class="btn btn-link mx-5 p-0" type="button" data-bs-toggle="modal" onclick="LlenarModalPorcentajes()" data-bs-target="#ParametrosPorcentaje">
+                                                            <i class="far fa-edit"></i> Capacidad productiva
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="pb-1 pt-1 d-flex justify-content-center aling-items-center">
                                                    <div class="p-0" id="PrcentajePlaneacion" style="width: 9rem;height:9rem"></div>
@@ -165,13 +174,27 @@
             <!-- Columna 2: Dropzone y Tabla de Migrados -->
             <div class="col-md-6 mb-2">
                 <!-- Área de Dropzone -->
-                <div class="col 12 mb-2 pt-1">
-                    <label for="Filtrofecha_table2">Selecciona la fecha de planeaci&oacute;n:</label>
-                    <div class="input-group ">
-                        <input type="date" name="FiltroOF_Fecha_table2"  id="FiltroOF_Fecha_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
-                        <button id="buscarOV" class="btn btn-primary btn-sm" onclick="RecargarTablaOF();">
-                            Mostrar
-                        </button>
+                <!--Christian-->
+                <div class="row">
+                    <div class="col-4 mb-4 pt-1">
+                        <label for="linea" >Selecciona línea</label>
+                        <select name="linea" id="linea" class="form-select form-select-sm border-primary w-100" onchange="RecargarTablaOF();">
+                            <option value="">Selecciona una línea</option>
+                            @foreach($linea as $l)
+                                <option value="{{ $l->id }}" {{ $l->NumeroLinea == 1 ? 'selected' : '' }}>
+                                    {{ $l->NumeroLinea }}-{{ $l->Nombre }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-8 mb-2 pt-1">
+                        <label for="Filtrofecha_table2">Selecciona la fecha de planeación:</label>
+                        <div class="input-group">
+                            <input type="date" name="FiltroOF_Fecha_table2" id="FiltroOF_Fecha_table2" class="form-control form-control-sm w-75 border-primary" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
+                            <button id="buscarOV" class="btn btn-primary btn-sm w-25" onclick="RecargarTablaOF();">
+                                Mostrar
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div ondrop="drop(event)" ondragover="allowDrop(event)" 
@@ -337,18 +360,19 @@
               <h5 class="modal-title" id="ParametrosPorcentajeLabel">Modificar Par&aacute;metros</h5><button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1"></span></button>
             </div>
             <div class="modal-body">
+                <h5 class="text-700 col-12">Linea <span id="NumeroLinea1">0</span></h5>  
                 <div class="row">
                     <div class="mb-1 col-6">
                         <label class="form-label" for="CantidadPersona">Cantidad de personas:</label>
                         <input class="form-control" id="CantidadPersona" oninput="RegexNumeros(this)" type="text" placeholder="Ingresa una cantidad" />
                         <div class="invalid-feedback" id="error_CantidadPersona"></div>
-                      </div>
-                      <div class="mb-1 col-6">
+                    </div>
+                    <div class="mb-1 col-6">
                         <label class="form-label" for="Piezaspersona">Piezas por persona:</label>
-                        <input class="form-control" id="Piezaspersona" oninput="RegexNumeros(this)"  type="text" placeholder="Ingresa una cantidad" />
+                        <input class="form-control" id="Piezaspersona" oninput="RegexNumeros(this)" type="text" placeholder="Ingresa una cantidad" />
                         <div class="invalid-feedback" id="error_Piezaspersona"></div>
-                      </div>
-                </div>  
+                    </div>
+                </div>
             </div>
             <div class="modal-footer"><button class="btn btn-primary" onclick="GuardarParametrosPorcentajes()">Guardar</button><button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cancelar</button></div>
           </div>
@@ -357,7 +381,6 @@
     <input type="hidden" id="FechaInicioActual" value="{{$FechaInicio }}">
     <input type="hidden" id="FechaFinActual" value="{{$FechaFin}}">
 @endsection
-
 @section('scripts')
 <script src="{{ asset('js/OrdenesVenta.js') }}"></script>
 <script>
@@ -446,6 +469,7 @@
             RegexNumeros(document.getElementById('FiltroOF_table2'));
             FiltroOF_table2=$('#FiltroOF_table2').val();
             $('#FiltroOF_text').html('<p>Filtro: '+FiltroOF_table2+'</p>');
+            FiltroLinea = $('#linea').val();//christian
             /*if(CadenaVacia(FiltroOF_table2)){
                 return 0;
             }*/
@@ -457,6 +481,7 @@
                 url: "{{route('PlaneacionFOFOV')}}", 
                 type: 'GET',
                 data: {
+                   FiltroLinea: FiltroLinea, //christian
                     FiltroOF_table2: FiltroOF_table2,
                     _token: '{{ csrf_token() }}'  
                 },
@@ -636,7 +661,7 @@
             row.classList.remove("selected");
         }
     }
-     //Permitir que el elemento sea soltado
+    //Permitir que el elemento sea soltado
     function allowDrop(event) {
         event.preventDefault();
     }
@@ -661,6 +686,9 @@
         if (modal.is(':visible')) {
             inputFecha = document.getElementById('FiltroOF_Fecha_table2_vencidas');
         }
+        //chris
+        var selectLinea = document.getElementById("linea");
+        var lineaSeleccionada = selectLinea.value;//fin
         const rowIds = data.split(",");
         if (data.length === 0) {
             return 0;
@@ -697,9 +725,13 @@
                 Linea:cells[9].innerHTML,
                 Fecha_planeada:inputFecha.value,
                 Escanner:isChecked,
+                Linea: lineaSeleccionada,
             });
             IdRow.remove();
         });
+        console.log("Datos a enviar:", Datosenviar);
+
+
         $.ajax({
             url: "{{route('PartidasOFGuardar')}}", 
             type: 'POST',
@@ -707,6 +739,7 @@
                 DatosPlaneacion: JSON.stringify(Datosenviar),
                 _token: '{{ csrf_token() }}'  
             },
+            
             beforeSend: function() {
                 //$('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
                 // You can display a loading spinner here
@@ -754,11 +787,13 @@
     });
     function TablaOrdenFabricacion(fecha){
         var modal = $('#ModalPlaneacionVencidos');
+        var Linea_id = $('#linea').val();//chris
         $.ajax({
             url: "{{route('PartidasOFFiltroFechas_Tabla')}}", 
             type: 'POST',
             data: {
                 fecha: fecha,
+                Linea_id: Linea_id,//chris
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
@@ -982,86 +1017,98 @@
             }
         });
     }
-    function PorcentajeLlenadas(){
-        fecha=$('#FiltroOF_Fecha_table2').val();
+    //christian
+    $(document).ready(function() {
+        $('#linea').change(function() {
+            PorcentajeLlenadas(); 
+        });
+    });
+    //fin
+    function PorcentajeLlenadas() {
+        let fecha = $('#FiltroOF_Fecha_table2').val();
+        //chris
+        let lineaSeleccionada = $('#linea').val() || 1; 
+        let textoSeleccionado = $('#linea option:selected').text(); 
+        let numeroLinea = textoSeleccionado.split('-')[0].trim(); //
+
+        //chris
+        $('#NumeroLinea').text(lineaSeleccionada);
+        $('#NumeroLinea1').text(lineaSeleccionada);
+
         $.ajax({
-                url: "{{route('PorcentajesPlaneacion')}}", 
-                type: 'GET',
-                data: {
-                    fecha: fecha, 
-                    _token: '{{ csrf_token() }}'  
-                },
-                beforeSend: function() {
-                },
-                success: function(response) {
-                    color="#007BFF";
-                    PorcentajeFaltante=0;
-                    if(response.PorcentajePlaneada>80){
-                        color='#FFFF00';
-                    } 
-                    if(response.PorcentajePlaneada>90){
-                        color='#FFA500';
-                    } 
-                    if(response.PorcentajePlaneada>100){
-                        color='#FF0000';
-                    }
-                    if(response.PorcentajeFaltante>0){
-                        PorcentajeFaltante=response.PorcentajeFaltante;
-                    }
-                    $("#Cantidadpersonas").html(response.NumeroPersonas);
-                    $("#Estimadopiezas").html(response.CantidadEstimadaDia);
-                    $("#Piezasplaneadas").html(response.PlaneadoPorDia);
-                    $("#Porcentajefaltante").html(PorcentajeFaltante);
-                    $("#Porcentajeplaneada").html(response.PorcentajePlaneada);
-                    $('#Fecha_Grafica').html(response.Fecha_Grafica);
-                    $('#Piezasfaltantes').html(response.Piezasfaltantes);
-                    var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
-                    var option = {
-                    tooltip: {
-                        trigger: 'item'
-                    },
-                    legend: {
-                        show:false,
-                    },
+            url: "{{ route('PorcentajesPlaneacion') }}",
+            type: 'GET',
+            data: {
+                fecha: fecha,
+                Linea_id: lineaSeleccionada, // chris
+                _token: '{{ csrf_token() }}'
+            },
+            beforeSend: function () {},
+            success: function (response) {
+                let color = "#007BFF";
+                let PorcentajeFaltante = 0;
+
+                if (response.PorcentajePlaneada > 80) color = '#FFFF00';
+                if (response.PorcentajePlaneada > 90) color = '#FFA500';
+                if (response.PorcentajePlaneada > 100) color = '#FF0000';
+                if (response.PorcentajeFaltante > 0) PorcentajeFaltante = response.PorcentajeFaltante;
+
+                // Actualizar la interfaz con los datos de la respuesta
+                $("#Cantidadpersonas").html(response.NumeroPersonas);
+                $("#Estimadopiezas").html(response.CantidadEstimadaDia);
+                $("#Piezasplaneadas").html(response.PlaneadoPorDia);
+                $("#Porcentajefaltante").html(PorcentajeFaltante);
+                $("#Porcentajeplaneada").html(response.PorcentajePlaneada);
+                $('#Fecha_Grafica').html(response.Fecha_Grafica);
+                $('#Piezasfaltantes').html(response.Piezasfaltantes);
+
+                //chis
+                if (response.Linea_id) {
+                let lineaTexto = $(`#linea option[value="${response.Linea_id}"]`).text(); 
+                let lineaNumero = lineaTexto.split('-')[0].trim(); 
+                $('#NumeroLinea').text(lineaNumero);
+                $('#NumeroLinea1').text(lineaNumero);//
+            }
+
+                var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
+                var option = {
+                    tooltip: { trigger: 'item' },
+                    legend: { show: false },
                     series: [
                         {
-                        name: 'Planeación',
-                        type: 'pie',
-                        radius: ['60%', '70%'],
-                        avoidLabelOverlap: false,
-                        itemStyle: {
-                            borderRadius: 10,
-                            borderColor: '#fff',
-                            borderWidth: 2
-                        },
-                        label: {
-                            show: true,
-                            position: 'center',
-                            formatter: response.PorcentajePlaneada+'%',
-                            fontSize: 20,
-                            fontWeight: 'bold'
-                        },
-                        
-                        labelLine: {
-                            show: false
-                        },
-                        data: [
-                            { value: response.PorcentajePlaneada, name: 'Total Planeado', itemStyle: { color: color } },
-                            { value: PorcentajeFaltante, name: 'Total faltante estimado', itemStyle: { color: '#D3D3D3' } }
-                        ]
+                            name: 'Planeación',
+                            type: 'pie',
+                            radius: ['60%', '70%'],
+                            avoidLabelOverlap: false,
+                            itemStyle: {
+                                borderRadius: 10,
+                                borderColor: '#fff',
+                                borderWidth: 2
+                            },
+                            label: {
+                                show: true,
+                                position: 'center',
+                                formatter: response.PorcentajePlaneada + '%',
+                                fontSize: 20,
+                                fontWeight: 'bold'
+                            },
+                            labelLine: { show: false },
+                            data: [
+                                { value: response.PorcentajePlaneada, name: 'Total Planeado', itemStyle: { color: color } },
+                                { value: PorcentajeFaltante, name: 'Total faltante estimado', itemStyle: { color: '#D3D3D3' } }
+                            ]
                         }
                     ]
-                    };
-
-                    // 3. Aplicar la configuración al gráfico
-                    myChart.setOption(option);
-                }
-            });
+                };
+                myChart.setOption(option);
+            }
+        });
     }
     function GuardarParametrosPorcentajes(){
         CantidadPersona=$('#CantidadPersona').val();
         Piezaspersona=$('#Piezaspersona').val();
         Fecha=$('#FiltroOF_Fecha_table2').val();
+        Linea = $('#linea').val();//chris
         errorCantidadPersona=$('#error_CantidadPersona');
         errorPiezaspersona=$('#error_Piezaspersona');
         if(CantidadPersona==0 || CantidadPersona==""){
@@ -1080,13 +1127,20 @@
             errorPiezaspersona.text('');
             errorPiezaspersona.hide(); 
         }
-        $.ajax({
+        console.log('Datos enviados:', {
+        CantidadPersona: CantidadPersona,
+        Piezaspersona: Piezaspersona,
+        Fecha: Fecha,
+        Linea: Linea // chris
+    });
+    $.ajax({
             url: "{{route('GuardarParametrosPorcentajes')}}", 
             type: 'POST',
             data: {
                 CantidadPersona:CantidadPersona,
                 Piezaspersona: Piezaspersona,
                 Fecha:Fecha,
+                Linea: Linea, //chris
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
@@ -1097,12 +1151,16 @@
             error: function(xhr, status, error) {
                 errorBD();
             }
-        }); 
-        $('#ParametrosPorcentaje').modal('hide');
+    }); 
+    $('#ParametrosPorcentaje').modal('hide');
     }
     function LlenarModalPorcentajes(){
+        
         Cantidadpersonas=$('#Cantidadpersonas').html();
         Estimadopiezas=$('#Estimadopiezas').html();
+        Linea_id=$('#NumeroLinea1').html();//chris
+
+        
         if(Cantidadpersonas==0 || Estimadopiezas==0){
             Cantidadpersonas=0;
             Estimadopiezas=0;
@@ -1111,6 +1169,8 @@
         }
         $('#CantidadPersona').val(Cantidadpersonas);
         $('#Piezaspersona').val(Estimadopiezas);
+        $('#NumeroLinea1').val( Linea_id);//chris
+
         errorCantidadPersona=$('#error_CantidadPersona');
         errorPiezaspersona=$('#error_Piezaspersona');
         errorCantidadPersona.hide(); 

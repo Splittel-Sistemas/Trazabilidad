@@ -26,4 +26,9 @@ class OrdenFabricacion extends Model
     {
         return $this->hasMany(Emision::class, 'OrdenFabricacion_id');
     } 
+    public function linea()
+    {
+        return $this->belongsTo(Linea::class, 'Linea_id', 'id');
+    }
+    
 }

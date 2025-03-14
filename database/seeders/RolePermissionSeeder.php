@@ -9,7 +9,7 @@ use App\Models\Permission;
 class RolePermissionSeeder extends Seeder
 {
     public function run()
-    {
+    {/*
         // Crear permisos si no existen
         $verDashboard = Permission::firstOrCreate(['name' => 'Dashboard']);
         $verCortes = Permission::firstOrCreate(['name' => 'Vista Cortes']);
@@ -82,6 +82,6 @@ class RolePermissionSeeder extends Seeder
         $personalSuministros->givePermissionTo([
             $verDashboard,
             $verSuministro,
-        ]);
+        ]);*/
     }
 }

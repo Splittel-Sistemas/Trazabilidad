@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 use Exception;
 use Carbon\Carbon;
@@ -13,7 +12,8 @@ use App\Models\PorcentajePlaneacion;
 use App\Models\FechasBuffer;
 use App\Models\RegistrosBuffer;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\DB;
+use App\Models\Linea;
 class PlaneacionController extends Controller
 {
     protected $funcionesGenerales;
@@ -24,7 +24,6 @@ class PlaneacionController extends Controller
     public function index(){
         // Obtener el usuario autenticado
         $user = Auth::user();
-    
         // Verificar el permiso 'Vista Planeacion'
         if ($user->hasPermission('Vista Planeacion')) {
     
@@ -45,13 +44,12 @@ class PlaneacionController extends Controller
                 $VerificarSAP=0;
                 $status = "empty";
             }
-    
+            $linea = Linea::where('active', 1)->get();
             // Ajustar formato de las fechas para la vista
             $FechaInicio = date('Y-m-d');
             $FechaFin = date('Y-m-d');
-    
             // Retornar la vista con los datos
-            return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status','VerificarSAP'));
+            return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status','VerificarSAP', 'linea'));
     
         } else {
     
@@ -59,41 +57,53 @@ class PlaneacionController extends Controller
             return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
         }
     }
-    public function PorcentajesPlaneacion(Request $request){
-        $fecha=$request->fecha;
-        $PorcentajePlaneacion=PorcentajePlaneacion::where('FechaPlaneacion',$fecha)->first();
-        if($PorcentajePlaneacion==""){
-            $NumeroPersonas=20;
-            $PiezasPorPersona=50;
-            $PlaneadoPorDia=OrdenFabricacion::where('FechaEntrega',$fecha)->SUM('CantidadTotal');
-            $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
-            $PorcentajePlaneada=number_format($PlaneadoPorDia/$CantidadEstimadaDia*100,2);
-            $PorcentajeFaltante=number_format(100-$PorcentajePlaneada,2);
-        }else{
-            $NumeroPersonas=$PorcentajePlaneacion->NumeroPersonas;
-            $PiezasPorPersona=$PorcentajePlaneacion->CantidadPlaneada/$PorcentajePlaneacion->NumeroPersonas;
-            $PlaneadoPorDia=OrdenFabricacion::where('FechaEntrega',$fecha)->SUM('CantidadTotal');
-            $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
-            $PorcentajePlaneada=str_replace(',','',number_format($PlaneadoPorDia/$CantidadEstimadaDia*100,2));
-            $PorcentajeFaltante=number_format(100-$PorcentajePlaneada,2);
-        }
-        return response()->json([
-                'PorcentajePlaneada' => $PorcentajePlaneada,
-                'PorcentajeFaltante' => $PorcentajeFaltante,
-                'NumeroPersonas' => $NumeroPersonas,
-                'PlaneadoPorDia'=>$PlaneadoPorDia,
-                'CantidadEstimadaDia'=>$CantidadEstimadaDia,
-                'Piezasfaltantes'=>($CantidadEstimadaDia-$PlaneadoPorDia),
-                'Fecha_Grafica'=>Carbon::parse($fecha)->translatedFormat('d \d\e F \d\e Y'),
+    public function PorcentajesPlaneacion(Request $request)
+    {
+        $fecha = $request->fecha;
+        $Linea_id = $request->Linea_id;//chris
+        $PorcentajePlaneacion = PorcentajePlaneacion::where('FechaPlaneacion', $fecha)
+            ->where('Linea_id', $Linea_id)//chris
+            ->first();
 
+        if (!$PorcentajePlaneacion) {
+            $NumeroPersonas = 20;  
+            $PiezasPorPersona = 50; 
+        } else {
+            $NumeroPersonas = $PorcentajePlaneacion->NumeroPersonas;
+            $PiezasPorPersona = $PorcentajePlaneacion->CantidadPlaneada / max($NumeroPersonas, 1); 
+        }
+        $PlaneadoPorDia = OrdenFabricacion::where('FechaEntrega', $fecha)
+            ->where('Linea_id', $Linea_id)
+            ->sum('CantidadTotal');
+
+        $CantidadEstimadaDia = $NumeroPersonas * $PiezasPorPersona;
+        $PorcentajePlaneada = $CantidadEstimadaDia > 0 
+            ? number_format($PlaneadoPorDia / $CantidadEstimadaDia * 100, 2) 
+            : 0;
+
+        $PorcentajeFaltante = number_format(100 - $PorcentajePlaneada, 2);
+
+        return response()->json([
+            'Linea_id' => $Linea_id,//chris
+            'PorcentajePlaneada' => $PorcentajePlaneada,
+            'PorcentajeFaltante' => $PorcentajeFaltante,
+            'NumeroPersonas' => $NumeroPersonas,
+            'PlaneadoPorDia' => $PlaneadoPorDia,
+            'CantidadEstimadaDia' => $CantidadEstimadaDia,
+            'Piezasfaltantes' => max($CantidadEstimadaDia - $PlaneadoPorDia, 0),
+            'Fecha_Grafica' => Carbon::parse($fecha)->translatedFormat('d \d\e F \d\e Y'),
         ]);
     }
     public function GuardarParametrosPorcentajes(Request $request){
         $CantidadPersona=$request->CantidadPersona;
         $Piezaspersona=$request->Piezaspersona;
         $Fecha=$request->Fecha;
-        $registro=PorcentajePlaneacion::where('FechaPlaneacion',$Fecha)->first();
+        $Linea_id = $request->id; //chris
+        $registro=PorcentajePlaneacion::where('FechaPlaneacion',$Fecha)
+                                       ->where('Linea_id',$Linea_id)->first();
+        $linea = Linea::where('NumeroLinea', $request->Linea)->first();//chris
         if($registro=="" OR $registro==null){
+            $Linea_id = $request->Linea;
             $NumeroPersonas=20;
             $PiezasPorPersona=50;
             $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
@@ -101,11 +111,13 @@ class PlaneacionController extends Controller
             $PorcentajePlaneacion->FechaPlaneacion = $Fecha;
             $PorcentajePlaneacion->CantidadPlaneada = $CantidadEstimadaDia; 
             $PorcentajePlaneacion->NumeroPersonas = $NumeroPersonas;
+            $PorcentajePlaneacion->Linea_id = $Linea_id;//christian
             $PorcentajePlaneacion->save();
         }else{
             $registro->FechaPlaneacion=$Fecha;
             $registro->NumeroPersonas=$CantidadPersona;
             $registro->CantidadPlaneada=$Piezaspersona*$CantidadPersona;
+            $registro->Linea_id = $Linea_id;//christian
             $registro->save();
         }
         return Carbon::parse($Fecha)->translatedFormat('d \d\e F \d\e Y');
@@ -292,12 +304,15 @@ class PlaneacionController extends Controller
     public function PartidasOFGuardar(Request $request){
         $DatosPlaneacion=json_decode($request->input('DatosPlaneacion'));
         $FechaHoy=date('Y-m-d');
+        $Linea_id = $request->Linea_id;
+        
         $Fechaplaneada=$DatosPlaneacion[0]->Fecha_planeada;
         if($Fechaplaneada<$FechaHoy){
             return response()->json([
                 'status' => "errordate",
             ]);
         }
+       
         $bandera="";
         $NumOV="";
         $NumOF=[];
@@ -333,6 +348,8 @@ class PlaneacionController extends Controller
                     $respuestaOF->EstatusEntrega=0;
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
                     $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
+                    $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;//christian
+
                     $respuestaOF->save();
                 }
                 else{
@@ -357,6 +374,8 @@ class PlaneacionController extends Controller
                     $respuestaOF->EstatusEntrega=0;
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
                     $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
+                    $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;//christian
+
                     $respuestaOF->save();
                 }
             }
@@ -376,42 +395,51 @@ class PlaneacionController extends Controller
         }
     }
     public function PartidasOFFiltroFechas_Tabla(Request $request){
-        $Fecha=$request->input('fecha');
-        $datos=$this->PartidasOFFiltroFechas($Fecha);
-        //return $datos;
-        $tabla="";
-        
-        if(count($datos)>0){
-            for ($i=0; $i < count($datos); $i++) {
-                $countdatosOrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion','=',$datos[$i]['OrdenFabricacion'])->first();
-                $countdatosOrdenFabricacion=$countdatosOrdenFabricacion->partidasOF()->get()->count();
-                if($countdatosOrdenFabricacion==0){ 
-                    $tabla.='<tr>
-                            <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
-                            <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
-                            <td class="text-center">'.'<button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" <a class="btn btn-sm btn-danger"><i class="fa fa-arrow-left"></i> Cancelar</button>
-                             <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary "><i class="fa fa-eye"></i> Detalles</button>'.'
-                             </td>
+        $Fecha = $request->input('fecha');
+        $datos = $this->PartidasOFFiltroFechas($Fecha);
+        $Linea_id = $request->Linea_id;//chris
+        $tabla = "";
+    
+        if (count($datos) > 0) {
+            foreach ($datos as $dato) {
+                $countdatosOrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion', '=', $dato['OrdenFabricacion'])
+                    ->where('Linea_id', $Linea_id)//chris
+                    ->first();
+    
+                if ($countdatosOrdenFabricacion) {
+                    $countPartidas = $countdatosOrdenFabricacion->partidasOF()->count();
+                    if ($countPartidas == 0) { 
+                        $tabla .= '<tr>
+                            <td class="text-center">'.$dato['OrdenVenta'].'</td>
+                            <td class="text-center">'.$dato['OrdenFabricacion'].'</td>
+                            <td class="text-center">
+                                <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
+                                    <i class="fa fa-arrow-left"></i> Cancelar
+                                </button>
+                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-eye"></i> Detalles
+                                </button>
+                            </td>
                         </tr>';
-                }else{
-                    $tabla.='<tr>
-                            <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
-                            <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
+                    } else {
+                        $tabla .= '<tr>
+                            <td class="text-center">'.$dato['OrdenVenta'].'</td>
+                            <td class="text-center">'.$dato['OrdenFabricacion'].'</td>
                             <td class="text-center"></td>
                         </tr>';
+                    }
                 }
             }
             return response()->json([
                 'status' => "success",
                 'tabla' => $tabla
             ]);
-        }else{
+        } else {
             return response()->json([
                 'status' => "empty",
-                'tabla' => '<tr><td colspan="100%"" align="center">No existen registros</td></tr>'
+                'tabla' => '<tr><td colspan="100%" align="center">No existen registros</td></tr>'
             ]);
         }
-
     }
     public function LlenarTablaVencidasOV(){
         $datos=RegistrosBuffer::select('OrdenVentaB')
@@ -703,8 +731,10 @@ class PlaneacionController extends Controller
     // Funcion filtro por Orden de venta o Orden fabricacion
     public function PlaneacionFOFOV(Request $request){
         $FiltroOF_table2=$request->input('FiltroOF_table2');
+        $Linea_id = $request->Linea_id;
         $datos=OrdenFabricacion::join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
         ->where('ordenfabricacion.OrdenFabricacion', 'like', '%'.$FiltroOF_table2. '%')
+        ->where('Linea_id', $Linea_id)//chris
         ->orWhere('ordenventa.OrdenVenta', 'like', '%'.$FiltroOF_table2. '%')
         ->select('ordenfabricacion.id as ordenfabricacion_id', 'ordenventa.id as ordenventa_id','OrdenVenta','OrdenFabricacion') 
         ->orderBy('OrdenVenta', 'asc') // Orden descendente
