@@ -57,35 +57,40 @@ class PlaneacionController extends Controller
             return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
         }
     }
-    public function PorcentajesPlaneacion(Request $request){
+    public function PorcentajesPlaneacion(Request $request)
+    {
         $fecha = $request->fecha;
-        $Linea_id = $request->Linea_id;
+        $Linea_id = $request->Linea_id;//chris
         $PorcentajePlaneacion = PorcentajePlaneacion::where('FechaPlaneacion', $fecha)
-                    ->where('Linea_id', $Linea_id)//chris
-                    ->first();
-        if ($PorcentajePlaneacion == "") {
-            $NumeroPersonas = 20;
-            $PiezasPorPersona = 50;
-            $PlaneadoPorDia = OrdenFabricacion::where('FechaEntrega', $fecha)->SUM('CantidadTotal');
-            $CantidadEstimadaDia = $NumeroPersonas * $PiezasPorPersona;
-            $PorcentajePlaneada = number_format($PlaneadoPorDia / $CantidadEstimadaDia * 100, 2);
-            $PorcentajeFaltante = number_format(100 - $PorcentajePlaneada, 2);
+            ->where('Linea_id', $Linea_id)//chris
+            ->first();
+
+        if (!$PorcentajePlaneacion) {
+            $NumeroPersonas = 20;  
+            $PiezasPorPersona = 50; 
         } else {
             $NumeroPersonas = $PorcentajePlaneacion->NumeroPersonas;
-            $PiezasPorPersona = $PorcentajePlaneacion->CantidadPlaneada / $PorcentajePlaneacion->NumeroPersonas;
-            $PlaneadoPorDia = OrdenFabricacion::where('FechaEntrega', $fecha)->SUM('CantidadTotal');
-            $CantidadEstimadaDia = $NumeroPersonas * $PiezasPorPersona;
-            $PorcentajePlaneada = str_replace(',', '', number_format($PlaneadoPorDia / $CantidadEstimadaDia * 100, 2));
-            $PorcentajeFaltante = number_format(100 - $PorcentajePlaneada, 2);
+            $PiezasPorPersona = $PorcentajePlaneacion->CantidadPlaneada / max($NumeroPersonas, 1); 
         }
+        $PlaneadoPorDia = OrdenFabricacion::where('FechaEntrega', $fecha)
+            ->where('Linea_id', $Linea_id)
+            ->sum('CantidadTotal');
+
+        $CantidadEstimadaDia = $NumeroPersonas * $PiezasPorPersona;
+        $PorcentajePlaneada = $CantidadEstimadaDia > 0 
+            ? number_format($PlaneadoPorDia / $CantidadEstimadaDia * 100, 2) 
+            : 0;
+
+        $PorcentajeFaltante = number_format(100 - $PorcentajePlaneada, 2);
+
         return response()->json([
-            'Linea_id' => $Linea_id, //chris
+            'Linea_id' => $Linea_id,//chris
             'PorcentajePlaneada' => $PorcentajePlaneada,
             'PorcentajeFaltante' => $PorcentajeFaltante,
             'NumeroPersonas' => $NumeroPersonas,
             'PlaneadoPorDia' => $PlaneadoPorDia,
             'CantidadEstimadaDia' => $CantidadEstimadaDia,
-            'Piezasfaltantes' => ($CantidadEstimadaDia - $PlaneadoPorDia),
+            'Piezasfaltantes' => max($CantidadEstimadaDia - $PlaneadoPorDia, 0),
             'Fecha_Grafica' => Carbon::parse($fecha)->translatedFormat('d \d\e F \d\e Y'),
         ]);
     }
@@ -93,13 +98,10 @@ class PlaneacionController extends Controller
         $CantidadPersona=$request->CantidadPersona;
         $Piezaspersona=$request->Piezaspersona;
         $Fecha=$request->Fecha;
-        $Linea_id = $request->Linea; //chris
+        $Linea_id = $request->id; //chris
         $registro=PorcentajePlaneacion::where('FechaPlaneacion',$Fecha)
                                        ->where('Linea_id',$Linea_id)->first();
         $linea = Linea::where('NumeroLinea', $request->Linea)->first();//chris
-
-
-
         if($registro=="" OR $registro==null){
             $Linea_id = $request->Linea;
             $NumeroPersonas=20;
@@ -302,6 +304,8 @@ class PlaneacionController extends Controller
     public function PartidasOFGuardar(Request $request){
         $DatosPlaneacion=json_decode($request->input('DatosPlaneacion'));
         $FechaHoy=date('Y-m-d');
+        $Linea_id = $request->Linea_id;
+        
         $Fechaplaneada=$DatosPlaneacion[0]->Fecha_planeada;
         if($Fechaplaneada<$FechaHoy){
             return response()->json([

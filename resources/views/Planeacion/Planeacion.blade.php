@@ -178,10 +178,10 @@
                 <div class="row">
                     <div class="col-4 mb-4 pt-1">
                         <label for="linea" >Selecciona línea</label>
-                        <select name="linea" id="linea" class="form-select form-select-sm border-primary w-100" onclick="RecargarTablaOF();>
+                        <select name="linea" id="linea" class="form-select form-select-sm border-primary w-100" onchange="RecargarTablaOF();">
                             <option value="">Selecciona una línea</option>
                             @foreach($linea as $l)
-                                <option value="{{ $l->NumeroLinea }}" {{ $l->NumeroLinea == 1 ? 'selected' : '' }}>
+                                <option value="{{ $l->id }}" {{ $l->NumeroLinea == 1 ? 'selected' : '' }}>
                                     {{ $l->NumeroLinea }}-{{ $l->Nombre }}
                                 </option>
                             @endforeach
@@ -481,7 +481,7 @@
                 url: "{{route('PlaneacionFOFOV')}}", 
                 type: 'GET',
                 data: {
-                    FiltroLinea: FiltroLinea, //christian
+                   FiltroLinea: FiltroLinea, //christian
                     FiltroOF_table2: FiltroOF_table2,
                     _token: '{{ csrf_token() }}'  
                 },
@@ -1026,7 +1026,10 @@
     //fin
     function PorcentajeLlenadas() {
         let fecha = $('#FiltroOF_Fecha_table2').val();
-        let lineaSeleccionada = $('#linea').val() || 1; // chris
+        //chris
+        let lineaSeleccionada = $('#linea').val() || 1; 
+        let textoSeleccionado = $('#linea option:selected').text(); 
+        let numeroLinea = textoSeleccionado.split('-')[0].trim(); //
 
         //chris
         $('#NumeroLinea').text(lineaSeleccionada);
@@ -1061,11 +1064,11 @@
 
                 //chis
                 if (response.Linea_id) {
-                    $('#NumeroLinea').text(response.Linea_id);
-                }///
-                if (response.Linea_id) {
-                    $('#NumeroLinea1').text(response.Linea_id);
-                }///
+                let lineaTexto = $(`#linea option[value="${response.Linea_id}"]`).text(); 
+                let lineaNumero = lineaTexto.split('-')[0].trim(); 
+                $('#NumeroLinea').text(lineaNumero);
+                $('#NumeroLinea1').text(lineaNumero);//
+            }
 
                 var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
                 var option = {
