@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col-6">
               <div class="card shadow-sm">
-                <div class="card-header p-2" id="filtroEntrada" style="background:#71d772">
+                <div class="card-header p-2" id="filtroEntrada" style="background: #005187">
                     <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Entrada</h3>
                 </div>
                 <div class="card-body row" id="filtroEntrada">
@@ -59,7 +59,7 @@
         </div>
         <div class="col-6">
             <div class="card shadow-sm">
-                <div class="card-header p-2" id="filtroEntrada" style="background:#f9635c;">
+                <div class="card-header p-2" id="filtroEntrada" style="background:#D21637;">
                     <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Salida</h3>
                 </div>
                 <div class="card-body row" id="filtroSalida">
@@ -96,7 +96,7 @@
         <div id="ContentTablaPendientes" class="col-12 mt-2">
             <div class="card" id="DivCointainerTablePendientes">
                 <h4 class="text-center mt-2 p-0">Ordenes de Fabricaci&oacute;n Pendientes</h4>
-                <div class="table-responsive" style="background: #ffe293">
+                <div class="table-responsive">
                     <table id="TablaPreparadoPendientes" class="table table-sm fs--1 mb-1">
                         <thead>
                             <tr class="bg-light">

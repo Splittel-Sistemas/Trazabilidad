@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col-6">
               <div class="card shadow-sm">
-                <div class="card-header bg-success p-2" id="filtroEntrada">
+                <div class="card-header p-2" id="filtroEntrada" style="background: #005187">
                     <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Entrada</h3>
                 </div>
                 <div class="card-body row" id="filtro">
@@ -60,7 +60,7 @@
         </div>
         <div class="col-6">
               <div class="card shadow-sm">
-                <div class="card-header bg-danger p-2" id="filtroEntrada">
+                <div class="card-header p-2" id="filtroEntrada" style="background:#D21637;">
                     <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Salida</h3>
                 </div>
                 <div class="card-body row" id="filtro">
