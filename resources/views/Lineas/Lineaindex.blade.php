@@ -74,7 +74,6 @@
                     <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8 8-3.58 8-8S12.42 0 8 0zm0 14C4.69 14 2 11.31 2 8s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path>
                 </svg>
             </form>
-            
         </div>
         <div class=" table-responsive">
                 <table class="table table-striped table-sm fs--1 mb-0">
@@ -133,7 +132,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="lineaModal" tabindex="-1" role="dialog" aria-labelledby="lineaModalLabel" aria-hidden="true">
+    <div class="modal fade" id="lineaModal" tabindex="-1" role="dialog" aria-labelledby="lineaModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
@@ -177,12 +176,12 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="crearModal" tabindex="-1" role="dialog" aria-labelledby="crearModalLabel" aria-hidden="true">
+    <div class="modal fade" id="crearModal" tabindex="-1" role="dialog" aria-labelledby="crearModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
                     <h5 class="modal-title text-white" id="crearModalLabel">Crear L&iacute;nea</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
                 </div>
                 <form id="createLineForm" class="p-3 rounded bg-white">
                     @csrf
@@ -221,12 +220,12 @@
                             {{ session('error') }}
                         </div>
                     @endif
-    
-                    <div class="d-flex justify-content-center mt-3">
-                        <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-lg transition-all hover:bg-success hover:text-white">
-                            Registrar
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-sm btn-primary btn-lg">
+                           Guardar
                         </button>
-                    </div>   
+                    </div> 
                 </form>
             </div>
         </div>

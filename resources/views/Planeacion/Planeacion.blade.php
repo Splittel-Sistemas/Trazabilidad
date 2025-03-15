@@ -357,10 +357,9 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="ParametrosPorcentajeLabel">Modificar Par&aacute;metros</h5><button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1"></span></button>
+              <h5 class="modal-title" id="ParametrosPorcentajeLabel">Modificar Par&aacute;metros L&iacute;nea <span id="NumeroLinea1">0</span></h5><button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1"></span></button>
             </div>
             <div class="modal-body">
-                <h5 class="text-700 col-12">Linea <span id="NumeroLinea1">0</span></h5>  
                 <div class="row">
                     <div class="mb-1 col-6">
                         <label class="form-label" for="CantidadPersona">Cantidad de personas:</label>
@@ -1127,40 +1126,36 @@
             errorPiezaspersona.text('');
             errorPiezaspersona.hide(); 
         }
-        console.log('Datos enviados:', {
-        CantidadPersona: CantidadPersona,
-        Piezaspersona: Piezaspersona,
-        Fecha: Fecha,
-        Linea: Linea // chris
-    });
-    $.ajax({
-            url: "{{route('GuardarParametrosPorcentajes')}}", 
-            type: 'POST',
-            data: {
-                CantidadPersona:CantidadPersona,
-                Piezaspersona: Piezaspersona,
-                Fecha:Fecha,
-                Linea: Linea, //chris
-                _token: '{{ csrf_token() }}'  
-            },
-            beforeSend: function() {
-            },
-            success: function(response) {
-                PorcentajeLlenadas();
-            },
-            error: function(xhr, status, error) {
-                errorBD();
-            }
-    }); 
-    $('#ParametrosPorcentaje').modal('hide');
+        $.ajax({
+                url: "{{route('GuardarParametrosPorcentajes')}}", 
+                type: 'POST',
+                data: {
+                    CantidadPersona:CantidadPersona,
+                    Piezaspersona: Piezaspersona,
+                    Fecha:Fecha,
+                    Linea: Linea, //chris
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+                },
+                success: function(response) {
+                    if(response==0){
+                        error('Error con la Línea','El número de linea no existe o esta desactivada');
+                        return 0;
+                    }
+                    PorcentajeLlenadas();
+                },
+                error: function(xhr, status, error) {
+                    errorBD();
+                }
+        }); 
+        $('#ParametrosPorcentaje').modal('hide');
     }
     function LlenarModalPorcentajes(){
         
         Cantidadpersonas=$('#Cantidadpersonas').html();
         Estimadopiezas=$('#Estimadopiezas').html();
-        Linea_id=$('#NumeroLinea1').html();//chris
-
-        
+        Linea_id=$('#linea').html();
         if(Cantidadpersonas==0 || Estimadopiezas==0){
             Cantidadpersonas=0;
             Estimadopiezas=0;

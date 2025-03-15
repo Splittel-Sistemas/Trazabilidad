@@ -608,104 +608,74 @@
                         <br>
                         <!-- Lista de etapas -->
                         <ul class="progress-bar-stages">
-                            <!--
-                            <li class="stage" id="stage1">
-                                <div class="stage-circle">
-                                    <i class="fas fa-cogs"></i>
-                                </div>
-                                <span>1. Planeación</span>
-                            </li>-->
-                        
                             <li class="stage" id="stage2" >
                                 <div class="stage-circle">
                                     <i class="fas fa-cut"></i>
                                 </div>
                                 <span>2. Corte</span>
-                                
-                                <!-- Contenedor de progreso que estará dentro del <li> -->
                                 <div id="progress-wrapper-2" class="collapse" style="margin-top: 10px;">
-                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
                                 </div>
                             </li>
-                        
                             <li class="stage" id="stage3" >
                                 <div class="stage-circle">
                                     <i class="fas fa-cut"></i>
                                 </div>
                                 <span>3. Suministro</span>
-                                
-                                <!-- Contenedor de progreso que estará dentro del <li> -->
                                 <div id="progress-wrapper-3" class="collapse" style="margin-top: 10px;">
-                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
                                 </div>
                             </li>
-                        
                             <li class="stage" id="stage4">
                                 <div class="stage-circle">
                                     <i class="fas fa-tools"></i>
                                 </div>
                                 <span>4. Preparado</span>
                                 <div id="progress-wrapper-4" class="collapse" style="margin-top: 10px;">
-                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
                                 </div>
                             </li>
-                        
                             <li class="stage" id="stage5">
                                 <div class="stage-circle">
                                     <i class="fas fa-tools"></i>
                                 </div>
                                 <span>5. Ensamble</span>
                                 <div id="progress-wrapper-5" class="collapse" style="margin-top: 10px;">
-                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
                                 </div>
                             </li>
-                        
                             <li class="stage" id="stage6">
                                 <div class="stage-circle">
                                     <i class="fas fa-tools"></i>
                                 </div>
                                 <span>6. Pulido</span>
                                 <div id="progress-wrapper-6" class="collapse" style="margin-top: 10px;">
-                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
                                 </div>
                             </li>
-                        
                             <li class="stage" id="stage7">
                                 <div class="stage-circle">
                                     <i class="fas fa-tools"></i>
                                 </div>
                                 <span>7. Medición</span>
                                 <div id="progress-wrapper-7" class="collapse" style="margin-top: 10px;">
-                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
                                 </div>
                             </li>
-                        
                             <li class="stage" id="stage8">
                                 <div class="stage-circle">
                                     <i class="fas fa-tools"></i>
                                 </div>
                                 <span>8. Visualización</span>
                                 <div id="progress-wrapper-8" class="collapse" style="margin-top: 10px;">
-                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
                                 </div>
                             </li>
-                        
                             <li class="stage" id="stage9">
                                 <div class="stage-circle">
                                     <i class="fas fa-tools"></i>
                                 </div>
                                 <span>9. Empaque</span>
                                 <div id="progress-wrapper-9" class="collapse" style="margin-top: 10px;">
-                                    <!-- Las barras de progreso se generarán dinámicamente aquí -->
                                 </div>
                             </li>
                         </ul>
-                        
                         <br> 
-                        
                         <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
                         <div class="grid-container card p-2" id="canvases">
-
                             <!-- Estación Cortes -->
                             <div class="grid-item">
                               <h1 class="small-title"> Cortes</h1>

@@ -57,8 +57,7 @@ class PlaneacionController extends Controller
             return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
         }
     }
-    public function PorcentajesPlaneacion(Request $request)
-    {
+    public function PorcentajesPlaneacion(Request $request){
         $fecha = $request->fecha;
         $Linea_id = $request->Linea_id;//chris
         $PorcentajePlaneacion = PorcentajePlaneacion::where('FechaPlaneacion', $fecha)
@@ -98,14 +97,17 @@ class PlaneacionController extends Controller
         $CantidadPersona=$request->CantidadPersona;
         $Piezaspersona=$request->Piezaspersona;
         $Fecha=$request->Fecha;
-        $Linea_id = $request->id; //chris
+        $Linea_id = $request->Linea; //chris
+        $linea = Linea::where('id', $Linea_id)->where('active',1)->first();//chris
+        if($linea == "" OR $linea == null){
+            return 0;
+        }
         $registro=PorcentajePlaneacion::where('FechaPlaneacion',$Fecha)
                                        ->where('Linea_id',$Linea_id)->first();
-        $linea = Linea::where('NumeroLinea', $request->Linea)->first();//chris
         if($registro=="" OR $registro==null){
-            $Linea_id = $request->Linea;
-            $NumeroPersonas=20;
-            $PiezasPorPersona=50;
+            $Linea_id = $Linea_id;
+            $NumeroPersonas=$CantidadPersona;
+            $PiezasPorPersona=$Piezaspersona;
             $CantidadEstimadaDia=$NumeroPersonas*$PiezasPorPersona;
             $PorcentajePlaneacion = new PorcentajePlaneacion();
             $PorcentajePlaneacion->FechaPlaneacion = $Fecha;

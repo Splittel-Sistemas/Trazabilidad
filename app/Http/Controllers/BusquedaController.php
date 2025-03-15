@@ -27,13 +27,9 @@ class BusquedaController extends Controller
         $partidasAreas = DB::table('partidasof_areas')
         ->where('PartidasOF_id', $partidaId)  
         ->get();
-
         return view('layouts.busquedas', compact('partidasAreas'));
     
     }
-
-///inicia orden venta
-
     // Controlador para las órdenes de Venta
     public function obtenerOrdenesVenta(Request $request)
     {
@@ -222,9 +218,6 @@ class BusquedaController extends Controller
         }
         return response()->json($response);
     }
-////
-
-//inicia orden de frabicacion
     // Controlador para las órdenes de fabricación
     public function obtenerOrdenesFabricacion(Request $request)
     {
@@ -317,7 +310,19 @@ class BusquedaController extends Controller
     {
         $idFabricacion = $request->input('id');
         $tipoOF = $request->input('tipo'); 
-        
+        $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion', $idFabricacion)->first();
+        $TotalCompletadosCortes=0;
+        $TotalOrdenFabricacion=0;
+        if(!($OrdenFabricacion=="" OR $OrdenFabricacion==null)){
+            $TotalCompletadosCortes=$OrdenFabricacion->PartidasOF()->where('TipoPartida','N')->whereNotNull('FechaFinalizacion')->get()->SUM('cantidad_partida')-
+                                $OrdenFabricacion->PartidasOF()->where('TipoPartida','N')->whereNull('FechaFinalizacion')->get()->SUM('cantidad_partida');
+        }
+        /*$OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion', $idFabricacion)
+                                                ->join('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+                                                ->join('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+                                                ->where('OrdenFabricacion.OrdenFabricacion', $idFabricacion)
+                                                ->get(); */
+
         if (!empty($idFabricacion)) {
             // Definir las consultas para cada tipo (como ya lo tienes en tu código)
             if ($tipoOF === 'plemasCorte') {
