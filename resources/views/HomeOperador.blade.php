@@ -30,14 +30,7 @@
         margin-top: 15px;
         font-weight: 500;
     }
-    .clock {
-        font-size: 40px;
-        color: #c00000;
-        font-weight: bold;
-        margin-top: 25px;
-        transition: color 0.3s ease;
-        letter-spacing: 2px;
-    }
+
     .form-label {
         font-size: 1rem;
         color: #f7f0f0;
@@ -88,6 +81,27 @@
        font-size: 5rem;
        border-radius: 100px;
     }
+
+
+
+        #clock {
+        text-align: center;
+        font-family: Arial, sans-serif;
+        font-size: 24px;
+    }
+
+    #date {
+        font-size: 30px;
+        font-weight: bold;
+        color: #c00000;
+    }
+
+    #time {
+        font-size: 28px;
+        font-weight: bold;
+        color: #c00000;
+    }
+
 </style>
 @endsection
 
@@ -102,7 +116,11 @@
                 <h1 class="welcome-title">Bienvenido</h1>
                 <h2 class="user-name">{{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}</h2>          
                 <p class="welcome-message" id="message"></p>
-                <div class="clock" id="clock">00:00:00</div>
+                <div id="clock">
+                    <div id="date"></div>
+                    <div id="time"></div>
+                </div>
+                
             </div>  
         </div>
     </div>
@@ -112,13 +130,28 @@
 <script>
     function updateClock() {
         const now = new Date();
+        
+        // Obtener fecha
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Mes empieza en 0
+        const day = now.getDate().toString().padStart(2, '0');
+
+        // Obtener hora
         const hours = now.getHours().toString().padStart(2, '0');
         const minutes = now.getMinutes().toString().padStart(2, '0');
         const seconds = now.getSeconds().toString().padStart(2, '0');
-        document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+
+        // Actualizar elementos en la página
+        document.getElementById('date').textContent = `${year}-${month}-${day}`;
+        document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
     }
+
+    // Actualizar cada segundo
     setInterval(updateClock, 1000);
+
+    // Llamar la función una vez para que no haya retraso
     updateClock();
+
 
         function updateMessage() {
         const now = new Date();
