@@ -956,9 +956,9 @@ class AreasController extends Controller
         }
             if($Inicio==1){
                 if($Area==4){
-                    $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','N')->whereNotNull('Fechatermina')->get();//->SUM('Cantidad');
-                    $NumeroPartidasTodas = $NumeroPartidasTodas->SUM('pivot.Cantidad');
-                    //$NumeroPartidasRetrabajo = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','R')->whereNotNull('Fechatermina')->get();
+                    //Numero de piezas iniciadas
+                    $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad');
+                    $NumeroPartidasRetrabajo = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
                     //return$NumeroPartidasRetrabajo = $NumeroPartidasRetrabajo->SUM('Cantidad');
                     $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->whereNull('Fechatermina')->get();
                     $NumeroPartidasAbiertas = $NumeroPartidasAbiertas->SUM('pivot.Cantidad');
