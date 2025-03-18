@@ -18,16 +18,21 @@ use Illuminate\Support\Facades\Response;
 use Carbon\Carbon as CarbonClass;
 
 
+
 class BusquedaController extends Controller
 {
     //vista
     public function index(Request $request)
     {
+        $user = Auth::user();
+        if($user->hasPermission('Vista Busquedas')){
         $partidaId = 1;
         $partidasAreas = DB::table('partidasof_areas')
         ->where('PartidasOF_id', $partidaId)  
         ->get();
         return view('layouts.busquedas', compact('partidasAreas'));
+        }else
+        return redirect()->route('error.');
     
     }
     // Controlador para las órdenes de Venta

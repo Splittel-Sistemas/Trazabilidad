@@ -16,10 +16,7 @@ class RolesPermisoController extends Controller
     {
         // Obtener el usuario autenticado
         $user = Auth::user();
-       
-    
-       
-        if ($user->hasPermission('Vistas Editar')) {
+        if ($user->hasPermission('Vista Roles y Permisos')) {
             
             $roles = Role::with('permissions')->get();
            
@@ -29,7 +26,7 @@ class RolesPermisoController extends Controller
             return view('RolesPermisos.index', compact('roles', 'permissions'));
         } else {
             
-            return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
+            return redirect()->route('error.');
         }
     }
 

@@ -79,20 +79,30 @@
                             <p class="navbar-vertical-label">Trazabilidad</p>
                             <hr class="navbar-vertical-line"/>
                             <div class="nav-item-wrapper">
-                                <a class="nav-link label-1 {{ Route::is('Home') ? 'active' : '' }}" href="{{route('Home')}}" role="button" data-bs-toggle="" aria-expanded="false">
-                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="pie-chart"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Dashboard</span></span></div>
+                                <a class="nav-link label-1 {{ Route::is('index.operador') ? 'active' : '' }}"  href="{{route('index.operador')}}" role="button">
+                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="home"></span> </span><span class="nav-link-text-wrapper"><span class="nav-link-text">Dashboard Operador</span></span></div>
                                 </a>
-                            </div>
+                            </div> 
+                            @if(Auth::user()->hasPermission("Vista Dashboard"))
+                                <div class="nav-item-wrapper">
+                                    <a class="nav-link label-1 {{ Route::is('Home') ? 'active' : '' }}" href="{{route('Home')}}" role="button" data-bs-toggle="" aria-expanded="false">
+                                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="pie-chart"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Dashboard Administrativo</span></span></div>
+                                    </a>
+                                </div>
+                            @endif                           
                         </li>
-                        <li class="nav-item"><!-- Progreso-->
-                            <p class="navbar-vertical-label">B&uacute;squeda</p>
-                            <hr class="navbar-vertical-line" /><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link label-1 {{ Route::is('Busquedas.OV') ? 'active' : '' }}" href="{{ route('Busquedas.OV') }}" role="button" data-bs-toggle="" aria-expanded="false">
-                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span><i class="fa-solid fa-bars-progress"></i></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Progreso</span></span></div>
-                                </a>
-                            </div>
-                        </li>
+                        @if(Auth::user()->hasPermission("Vista Busquedas"))
+                            <li class="nav-item"><!-- Progreso-->
+                                <p class="navbar-vertical-label">B&uacute;squeda</p>
+                                <hr class="navbar-vertical-line" /><!-- parent pages-->
+                                <div class="nav-item-wrapper">
+                                    <a class="nav-link label-1 {{ Route::is('Busquedas.OV') ? 'active' : '' }}" href="{{ route('Busquedas.OV') }}" role="button" data-bs-toggle="" aria-expanded="false">
+                                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span><i class="fa-solid fa-bars-progress"></i></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Progreso</span></span></div>
+                                    </a>
+                                </div>
+                            </li>
+                        @endif
+                       
                         <li class="nav-item"><!-- reportes-->
                             <p class="navbar-vertical-label">Reportes</p>
                             <hr class="navbar-vertical-line">
@@ -213,65 +223,86 @@
                                 <div class="parent-wrapper label-1">
                                     <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-e-areas">
                                         <li class="collapsed-nav-item-title d-none">Estaciones</li>
-                                        <li class="nav-item"><a class="nav-link {{ Route::is('Planeacion') ? 'nav-tabs active' : '' }}" href="{{route('Planeacion')}}" data-bs-toggle="" aria-expanded="false">
-                                            <div class="d-flex align-items-center"><span class="nav-link-text">Planeaci&oacute;n</span></div>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item"><a class="nav-link {{ Route::is('corte.index') ? 'nav-tabs active' : '' }}" href="{{route('corte.index')}}" data-bs-toggle="" aria-expanded="false">
-                                            <div class="d-flex align-items-center"><span class="nav-link-text">Corte</span></div>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item"><a class="nav-link {{ Route::is('Suministro') ? 'nav-tabs active' : '' }}" href="{{route('Suministro')}}" data-bs-toggle="" aria-expanded="false">
-                                            <div class="d-flex align-items-center"><span class="nav-link-text">Suministro</span></div>
-                                            </a>
-                                            <hr class="p-0 m-1">
-                                        </li>
-                                        <li class="nav-item"><a class="nav-link {{ Route::is('Preparado') ? 'nav-tabs active' : '' }}" href="{{route('Preparado')}}" data-bs-toggle="" aria-expanded="false">
-                                            <div class="d-flex align-items-center"><span class="nav-link-text">Preparado</span></div>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item"><a class="nav-link {{ Route::is('Ensamble') ? 'nav-tabs active' : '' }}" href="{{route('Ensamble')}}" data-bs-toggle="" aria-expanded="false">
-                                            <div class="d-flex align-items-center"><span class="nav-link-text">Ensamble</span></div>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item"><a class="nav-link {{ Route::is('Pulido') ? 'nav-tabs active' : '' }}" href="{{route('Pulido')}}" data-bs-toggle="" aria-expanded="false">
-                                            <div class="d-flex align-items-center"><span class="nav-link-text">Pulido</span></div>
-                                            </a>
-                                            <hr class="p-0 m-1">
-                                        </li>
-                                        <li class="nav-item"><a class="nav-link {{ Route::is('Medicion') ? 'nav-tabs active' : '' }}" href="{{route('Medicion')}}" data-bs-toggle="" aria-expanded="false">
-                                            <div class="d-flex align-items-center"><span class="nav-link-text">Medici&oacute;n</span></div>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item"><a class="nav-link {{ Route::is('Visualizacion') ? 'nav-tabs active' : '' }}" href="{{route('Visualizacion')}}" data-bs-toggle="" aria-expanded="false">
-                                            <div class="d-flex align-items-center"><span class="nav-link-text">Visualizaci&oacute;n</span></div>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item"><a class="nav-link {{ Route::is('Empacado') ? 'nav-tabs active' : '' }}" href="{{route('Empacado')}}" data-bs-toggle="" aria-expanded="false">
-                                            <div class="d-flex align-items-center"><span class="nav-link-text">Empaquetado</span></div>
-                                            </a>
-                                        </li>
+                                        @if(Auth::user()->hasPermission("VIsta Planeacion"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Planeacion') ? 'nav-tabs active' : '' }}" href="{{route('Planeacion')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Planeaci&oacute;n</span></div>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if(Auth::user()->hasPermission("VIsta Corte"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('corte.index') ? 'nav-tabs active' : '' }}" href="{{route('corte.index')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Corte</span></div>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if(Auth::user()->hasPermission("VIsta Suministro"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Suministro') ? 'nav-tabs active' : '' }}" href="{{route('Suministro')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Suministro</span></div>
+                                                </a>
+                                                <hr class="p-0 m-1">
+                                            </li>
+                                        @endif
+                                        @if(Auth::user()->hasPermission("VIsta Preparado"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Preparado') ? 'nav-tabs active' : '' }}" href="{{route('Preparado')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Preparado</span></div>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if(Auth::user()->hasPermission("VIsta Ensamble"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Ensamble') ? 'nav-tabs active' : '' }}" href="{{route('Ensamble')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Ensamble</span></div>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if(Auth::user()->hasPermission("VIsta Pulido"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Pulido') ? 'nav-tabs active' : '' }}" href="{{route('Pulido')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Pulido</span></div>
+                                                </a>
+                                                <hr class="p-0 m-1">
+                                            </li>
+                                        @endif
+                                        @if(Auth::user()->hasPermission("VIsta Medicion"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Medicion') ? 'nav-tabs active' : '' }}" href="{{route('Medicion')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Medici&oacute;n</span></div>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if(Auth::user()->hasPermission("VIsta Visualizacion"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Visualizacion') ? 'nav-tabs active' : '' }}" href="{{route('Visualizacion')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Visualizaci&oacute;n</span></div>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if(Auth::user()->hasPermission("VIsta Empacado"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Empacado') ? 'nav-tabs active' : '' }}" href="{{route('Empacado')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Empaquetado</span></div>
+                                                </a>
+                                            </li>
+                                        @endif
                                     </ul>
                                 </div>
                             </div>
                         </li>
-                        <li class="nav-item"><!-- usuarios-->
-                            <p class="navbar-vertical-label">Usuarios</p>
-                            <hr class="navbar-vertical-line" /><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link label-1 {{ Route::is('registro.index') ? 'active' : '' }}" href="{{route('registro.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
-                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="user"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Usuarios</span></span></div>
-                                </a>
-                            </div>
-                        </li>
-                        <li class="nav-item"><!-- Roles y permisos-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link label-1 {{ Route::is('RolesPermisos.index') ? 'active' : '' }}" href="{{route('RolesPermisos.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
-                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="key"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Roles y permisos</span></span></div>
-                                </a>
-                            </div>
-                            
-                        </li>
+                        @if(Auth::user()->hasPermission("VIsta Usuarios"))
+                            <li class="nav-item"><!-- usuarios-->
+                                <p class="navbar-vertical-label">Usuarios</p>
+                                <hr class="navbar-vertical-line" /><!-- parent pages-->
+                                <div class="nav-item-wrapper">
+                                    <a class="nav-link label-1 {{ Route::is('registro.index') ? 'active' : '' }}" href="{{route('registro.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
+                                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="user"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Usuarios</span></span></div>
+                                    </a>
+                                </div>
+                            </li>
+                        @endif
+                        @if(Auth::user()->hasPermission("VIsta Roles y Permisos"))
+                            <li class="nav-item"><!-- Roles y permisos-->
+                                <div class="nav-item-wrapper">
+                                    <a class="nav-link label-1 {{ Route::is('RolesPermisos.index') ? 'active' : '' }}" href="{{route('RolesPermisos.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
+                                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="key"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Roles y permisos</span></span></div>
+                                    </a>
+                                </div>
+                            </li>
+                        @endif
                         <li class="nav-item"><!-- Lineas-->
                             <p class="navbar-vertical-label">Configuraci&oacute;nes</p>
                             <hr class="navbar-vertical-line" /><!-- parent pages-->

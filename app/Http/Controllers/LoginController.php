@@ -32,7 +32,7 @@ class LoginController extends Controller
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $remember)) {
             $request->session()->regenerate();
-            return redirect()->intended(route('Home'));
+            return redirect()->intended(route('index.operador'));
         } else {
 
             return redirect('login')
@@ -53,7 +53,7 @@ class LoginController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
         Auth::login($user);
-        return redirect(route('Home'));
+        return redirect(route('index.operador'));
     }
     public function operador(Request $request){
         $request->validate([
@@ -64,7 +64,7 @@ class LoginController extends Controller
             if ($operador->active == 1) {
                 Auth::login($operador);
                 $request->session()->regenerate();
-                return redirect()->intended(route('Home'));
+                return redirect()->intended(route('index.operador'));
             } else {
                 return redirect()->route('login')
                     ->withErrors(['clave' => 'El acceso ha sido restringido. Contacte al administrador.']);

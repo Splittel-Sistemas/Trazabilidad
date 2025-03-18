@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
+
 //use function PHPUnit\Framework\returnValue;
 class AreasController extends Controller
 {
@@ -89,7 +90,7 @@ class AreasController extends Controller
             return view('Areas.Suministro',compact('Area','PartidasOFA','PartidasOFC','fecha','fechaAtras'));
         }else {
            
-            return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
+            return redirect()->route('error.');
         }
     }
     public function SuministroGuardar(Request $request){
@@ -544,40 +545,49 @@ class AreasController extends Controller
     }
     
     //Area 4 Preparado
-    public function Preparado(){
-        $AreaOriginal=4;
-        $Area=$this->funcionesGenerales->encrypt($AreaOriginal);
-        $Registros=$this->OrdenFabricacionPendiente($AreaOriginal-1);
-        foreach($Registros as $key=>$registro){
-            $Area4=PartidasOF::find($registro->partidasOF_id);
-            $NumeroActuales=$Area4->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
-                            $Area4->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
-            if($NumeroActuales == $Area4->cantidad_partida){
-                unset($Registros[$key]);
+    public function Preparado()
+    {
+        $user = Auth::user();
+        // Verifica si el usuario tiene el permiso necesario
+        if ($user->hasPermission('Vista Preparado')) {
+            $AreaOriginal = 4;
+            $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
+            $Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
+            foreach ($Registros as $key => $registro) {
+                $Area4 = PartidasOF::find($registro->partidasOF_id);
+                $NumeroActuales = $Area4->Areas()->where('Areas_id', $AreaOriginal)->where('TipoPartida', 'N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad') -
+                    $Area4->Areas()->where('Areas_id', $AreaOriginal)->where('TipoPartida', 'R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
+                if ($NumeroActuales == $Area4->cantidad_partida) {
+                    unset($Registros[$key]);
+                }
             }
+            foreach ($Registros as $key => $registro) {
+                $OrdenFabricacion = OrdenFabricacion::find($registro->OrdenFabricacion_id);
+                $Linea = $OrdenFabricacion->Linea()->first();
+                $TotalActual = 0;
+                $TotalPendiente = 0;
+                foreach ($OrdenFabricacion->PartidasOF as $Partidas) {
+                    $TotalActual += $Partidas->Areas()->where('Areas_id', $AreaOriginal)->where('TipoPartida', 'N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad') -
+                        $Partidas->Areas()->where('Areas_id', $AreaOriginal)->where('TipoPartida', 'R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
+    
+                    $TotalPendiente += $Partidas->Areas()->where('Areas_id', $AreaOriginal - 1)->where('TipoPartida', 'N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad') -
+                        $Partidas->Areas()->where('Areas_id', $AreaOriginal - 1)->where('TipoPartida', 'R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
+                }
+                $registro['NumeroActuales'] = $TotalActual;
+                $registro['TotalPendiente'] = $TotalPendiente;
+                $registro['Linea'] = $Linea->NumeroLinea;
+                $registro['ColorLinea'] = $Linea->ColorLinea;
+    
+                if ($TotalActual >= $TotalPendiente) {
+                    unset($Registros[$key]);
+                }
+            }
+            return view('Areas.Preparado', compact('Area', 'Registros'));
+        } else {
+            return redirect()->route('error.');
         }
-        foreach($Registros as $key=>$registro){
-            $OrdenFabricacion=OrdenFabricacion::find($registro->OrdenFabricacion_id);
-            $Linea = $OrdenFabricacion->Linea()->first();
-            $TotalActual=0;
-            $TotalPendiente=0;
-            //$Totalretrabajos=$OrdenFabricacion->PartidasOF->where('TipoPartida','R')->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida');
-            foreach($OrdenFabricacion->PartidasOF as $Partidas){
-                    $TotalActual+=$Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
-                    $Partidas->Areas()->where('Areas_id',$AreaOriginal)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
-                    $TotalPendiente+=$Partidas->Areas()->where('Areas_id',$AreaOriginal-1)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
-                    $Partidas->Areas()->where('Areas_id',$AreaOriginal-1)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
-            }
-            $registro['NumeroActuales'] = $TotalActual;//-$Totalretrabajos;
-            $registro['TotalPendiente'] = $TotalPendiente;
-            $registro['Linea'] = $Linea->NumeroLinea;
-            $registro['ColorLinea'] = $Linea->ColorLinea;
-            if($TotalActual>=$TotalPendiente){
-                unset($Registros[$key]);
-            }
-        }
-        return view('Areas.Preparado',compact('Area','Registros'));
     }
+    
     public function PreparadoBuscar(Request $request){
         if ($request->has('Confirmacion')) {
             $confirmacion=1;
@@ -1590,6 +1600,8 @@ class AreasController extends Controller
     }
     //Area 5 Ensamble
     public function Ensamble(){
+        $user= Auth::user();
+        if($user->hasPermission('Vista Ensamble')){
         $AreaOriginal=5;
         $Area=$this->funcionesGenerales->encrypt($AreaOriginal);
         $Registros=$this->OrdenFabricacionPendiente($AreaOriginal-1);
@@ -1622,9 +1634,14 @@ class AreasController extends Controller
             }
         }
         return view('Areas.Ensamble',compact('Area','Registros'));
+    }else{
+        return redirect()->route('error.');
+    }
     }
     //Area 6 Pulido
     public function Pulido(){
+        $user=Auth::user();
+        if($user->haspermission('Vista Pulido')){
         $AreaOriginal=6;
         $Area=$this->funcionesGenerales->encrypt($AreaOriginal);
         $Registros=$this->OrdenFabricacionPendiente($AreaOriginal-1);
@@ -1657,9 +1674,14 @@ class AreasController extends Controller
             }
         }
         return view('Areas.Pulido',compact('Area','Registros'));
+    }else{
+        return redirect()->route('error.');
+    }
     }
     //Area 7 Medicion
     public function Medicion(){
+        $user=Auth::user();
+        if($user->hasPermission('Vista Medicion')){
         $AreaOriginal=7;
         $Area=$this->funcionesGenerales->encrypt($AreaOriginal);
         $Registros=$this->OrdenFabricacionPendiente($AreaOriginal-1);
@@ -1692,9 +1714,14 @@ class AreasController extends Controller
             }
         }
         return view('Areas.Medicion',compact('Area','Registros'));
+    }else{
+        return redirect()->route('error.');
+    }
     }
     //Area 8 Visualizacion
     public function Visualizacion(){
+        $user=Auth::user();
+        if($user->hasPermission('Vista Visualizacion')){
         $AreaOriginal=8;
         $Area=$this->funcionesGenerales->encrypt($AreaOriginal);
         $Registros=$this->OrdenFabricacionPendiente($AreaOriginal-1);
@@ -1727,11 +1754,19 @@ class AreasController extends Controller
             }
         }
         return view('Areas.Visualizacion',compact('Area','Registros'));
+    }else{
+        return redirect()->route('error.');
+    }
     }
     //Area 9 Empaquetado
     public function Empaquetado(){
+        $user=Auth::user();
+        if($user->hasPermission('Vistas Empaquetado')){
           $Area=$this->funcionesGenerales->encrypt(9);
           return view('Areas.Empacado',compact('Area')); 
+        }else{
+            return redirect()->route('error.');
+        }
     }
     public function tablaEmpacado()
     {

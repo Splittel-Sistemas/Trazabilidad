@@ -4,13 +4,19 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Linea;
+use Illuminate\Support\Facades\Auth;
 class LineasController extends Controller
 {
     //
     public function index()
     {
-        $linea = Linea::orderBy('NumeroLinea', 'asc')->get();
-        return view('Lineas.Lineaindex', compact('linea'));
+        $user = Auth::user();
+        if ($user->hasPermission('Vistas Editar')) {
+            $linea = Linea::orderBy('NumeroLinea', 'asc')->get();
+            return view('Lineas.Lineaindex', compact('linea'));
+        } else {
+            return redirect()->route('error.');
+        }
     }
     // Mostrar el formulario para crear una nueva línea
     public function create()
@@ -120,7 +126,7 @@ class LineasController extends Controller
     // Método para activar una línea
     public function activar(Request $request)
     {
-        $linea = Linea::find($request->id); // Buscar por id en lugar de NumeroLinea
+        $linea = Linea::find($request->id); 
         if ($linea) {
             $linea->active = true;
             $linea->save();
@@ -131,7 +137,7 @@ class LineasController extends Controller
     // Método para desactivar una línea
     public function desactivar(Request $request)
     {
-        $linea = Linea::find($request->id); // Buscar por id en lugar de NumeroLinea
+        $linea = Linea::find($request->id); 
         if ($linea) {
             $linea->active = false;
             $linea->save();
