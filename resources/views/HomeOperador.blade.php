@@ -96,7 +96,8 @@
 @endsection
 
 @section('content')
-    <div class="card">
+
+    <div class="card" style="background-color: rgba(0, 0, 0, 0.1);">
         <div class="welcome-container">
             
             <div class="profile-image col-12">

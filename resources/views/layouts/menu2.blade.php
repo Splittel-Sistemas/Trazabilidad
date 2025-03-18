@@ -78,18 +78,18 @@
                         <li class="nav-item"><!-- dashboard-->
                             <p class="navbar-vertical-label">Trazabilidad</p>
                             <hr class="navbar-vertical-line"/>
+                            <div class="nav-item-wrapper">
+                                <a class="nav-link label-1 {{ Route::is('index.operador') ? 'active' : '' }}"  href="{{route('index.operador')}}" role="button">
+                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="home"></span> </span><span class="nav-link-text-wrapper"><span class="nav-link-text">Dashboard Operador</span></span></div>
+                                </a>
+                            </div> 
                             @if(Auth::user()->hasPermission("Vista Dashboard"))
                                 <div class="nav-item-wrapper">
                                     <a class="nav-link label-1 {{ Route::is('Home') ? 'active' : '' }}" href="{{route('Home')}}" role="button" data-bs-toggle="" aria-expanded="false">
-                                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="pie-chart"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Dashboard</span></span></div>
+                                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="pie-chart"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Dashboard Administrativo</span></span></div>
                                     </a>
                                 </div>
-                            @endif
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link label-1 {{ Route::is('index.operador') ? 'active' : '' }}"  href="{{route('index.operador')}}" role="button">
-                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="home"></span> </span><span class="nav-link-text-wrapper"><span class="nav-link-text">Dashboard</span></span></div>
-                                </a>
-                            </div>                            
+                            @endif                           
                         </li>
                         @if(Auth::user()->hasPermission("Vista Busquedas"))
                             <li class="nav-item"><!-- Progreso-->
