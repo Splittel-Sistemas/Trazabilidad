@@ -99,7 +99,6 @@
 
     <div class="card" style="background-color: rgba(0, 0, 0, 0.1);">
         <div class="welcome-container">
-            
             <div class="profile-image col-12">
                 <i class="fas fa-user icono-user"></i>
             </div>
