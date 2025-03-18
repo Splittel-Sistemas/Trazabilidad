@@ -86,10 +86,10 @@
                                 </div>
                             @endif
                             <div class="nav-item-wrapper">
-                                <a class="nav-link label-1 {{ Route::is('index.operador') ? 'active' : '' }}" href="{{route('index.operador')}}" role="button" data-bs-toggle="" aria-expanded="false">
-                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="pie-chart"></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Dashboard</span></span></div>
+                                <a class="nav-link label-1 {{ Route::is('index.operador') ? 'active' : '' }}"  href="{{route('index.operador')}}" role="button">
+                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="home"></span> </span><span class="nav-link-text-wrapper"><span class="nav-link-text">Dashboard</span></span></div>
                                 </a>
-                            </div>
+                            </div>                            
                         </li>
                         @if(Auth::user()->hasPermission("Vista Busquedas"))
                             <li class="nav-item"><!-- Progreso-->

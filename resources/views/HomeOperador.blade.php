@@ -16,17 +16,17 @@
         padding: 20px;
        
         border-radius: 12px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 6px 20px rgba(247, 247, 247, 0.1);
     }
     .icono-user{
         padding: 2rem;
-        background: #ff0101;
+        background: #015396c2;
         border-radius: 100px;
 
     }
     .profile-image {
         font-size: 50px;
-        color: #000000;
+        color: #fffbfbea;
     }
 
     .welcome-title {
@@ -43,7 +43,7 @@
     }
     .clock {
         font-size: 40px;
-        color: #4CAF50;
+        color: #015396c2;
         font-weight: bold;
         margin-top: 25px;
         transition: color 0.3s ease;
@@ -51,7 +51,7 @@
     }
     .form-label {
         font-size: 1rem;
-        color: #333;
+        color: #f7f0f0;
         font-weight: bold;
     }
     .form-select {
@@ -102,20 +102,12 @@
             <div class="profile-image col-12">
                 <i class="fas fa-user icono-user"></i>
             </div>
-            <h1 class="welcome-title">Bienvenido, {{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}</h1>
-            <p class="welcome-message" id="message"></p>
-            <div class="clock" id="clock">00:00:00</div>
-        </div>
-        <div class="container">
-            <label for="lineSelector" class="form-label">Seleccione una línea</label>
-            <select id="lineSelector" class="form-select">
-                <option value="">Selecciona una línea</option>
-                @foreach($linea as $l)
-                    <option value="{{ $l->id }}" {{ $l->NumeroLinea == 1 ? 'selected' : '' }}>
-                        {{ $l->NumeroLinea }}-{{ $l->Nombre }}
-                    </option>
-                @endforeach
-            </select>
+            <div class="welcome-container">
+                <h1 class="welcome-title">Bienvenido</h1>
+                <h2 class="user-name">{{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}</h2>          
+                <p class="welcome-message" id="message"></p>
+                <div class="clock" id="clock">00:00:00</div>
+            </div>  
         </div>
     </div>
 @endsection
@@ -132,7 +124,7 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    function updateMessage() {
+        function updateMessage() {
         const now = new Date();
         const hour = now.getHours();
         let message = "¡Que tengas un gran día!";
@@ -141,8 +133,10 @@
             message = "🌞 ¡Buenos días! ¡A comenzar con energía!";
         } else if (hour >= 12 && hour < 18) {
             message = "🌤️ ¡Buenas tardes! Sigue con el gran trabajo.";
+        } else if (hour >= 18 && hour < 22) {
+            message = "🌆 ¡Buenas noches! Mantén el ritmo, casi terminas.";
         } else {
-            message = "🌙 ¡Buenas noches! Disfruta tu descanso.";
+            message = "🌙 ¡Turno nocturno en marcha! Mucha exito y concentración.";
         }
 
         const messageElement = document.getElementById('message');
@@ -152,6 +146,7 @@
             messageElement.style.opacity = 1;
         }, 500);
     }
+
     updateMessage();
 </script>
 @endsection
