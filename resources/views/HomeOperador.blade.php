@@ -18,17 +18,6 @@
         border-radius: 12px;
         box-shadow: 0 6px 20px rgba(247, 247, 247, 0.1);
     }
-    .icono-user{
-        padding: 2rem;
-        background: #015396c2;
-        border-radius: 100px;
-
-    }
-    .profile-image {
-        font-size: 50px;
-        color: #fffbfbea;
-    }
-
     .welcome-title {
         font-size: 30px;
         color: #333;
@@ -43,7 +32,7 @@
     }
     .clock {
         font-size: 40px;
-        color: #015396c2;
+        color: #c00000;
         font-weight: bold;
         margin-top: 25px;
         transition: color 0.3s ease;
@@ -92,6 +81,13 @@
             opacity: 1;
         }
     }
+    .usuario-icono{
+        background: #c00000;
+        color: white;
+        padding: 1.3rem;
+       font-size: 5rem;
+       border-radius: 100px;
+    }
 </style>
 @endsection
 
@@ -100,7 +96,7 @@
     <div class="card" style="background-color: rgba(0, 0, 0, 0.1);">
         <div class="welcome-container">
             <div class="profile-image col-12">
-                <i class="fas fa-user icono-user"></i>
+                <i class="far fa-user usuario-icono"></i>
             </div>
             <div class="welcome-container">
                 <h1 class="welcome-title">Bienvenido</h1>
