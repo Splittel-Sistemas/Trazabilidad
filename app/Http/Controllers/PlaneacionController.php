@@ -54,7 +54,7 @@ class PlaneacionController extends Controller
         } else {
     
             // Redirigir a una página de error si no tiene permiso
-            return redirect()->away('https://assets-blog.hostgator.mx/wp-content/uploads/2018/10/paginas-de-error-hostgator.webp');
+            return redirect()->route('error.');
         }
     }
     public function PorcentajesPlaneacion(Request $request){

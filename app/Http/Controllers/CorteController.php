@@ -9,6 +9,7 @@ use App\Models\OrdenFabricacion;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
 use TCPDF;
+use Illuminate\Support\Facades\Auth;
 
 class CorteController extends Controller
 {
@@ -16,14 +17,22 @@ class CorteController extends Controller
     public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
     }
-    public function index(){
-        // Fecha actual
-        $fecha = date('Y-m-d');
-        $fechaAtras=date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
-        $OrdenesFabricacionAbiertas=$this->OrdenesFabricacionAbiertas();
-        $OrdenesFabricacionCerradas=$this->OrdenesFabricacionCerradas($fechaAtras, $fecha);
-        return view('Areas.Cortes', compact('OrdenesFabricacionAbiertas','OrdenesFabricacionCerradas','fecha','fechaAtras'));
+    public function index()
+    {
+        $user = Auth::user();
+        if ($user->hasPermission('Vista Cortes')) {
+            $fecha = date('Y-m-d');
+            $fechaAtras = date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
+            
+            $OrdenesFabricacionAbiertas = $this->OrdenesFabricacionAbiertas();
+            $OrdenesFabricacionCerradas = $this->OrdenesFabricacionCerradas($fechaAtras, $fecha);
+            return view('Areas.Cortes', compact('OrdenesFabricacionAbiertas', 'OrdenesFabricacionCerradas', 'fecha', 'fechaAtras'));
+        } else {
+ 
+            return redirect()->route('error.');
+        }
     }
+    
     public function CorteRecargarTabla(){
         //EstatusEntrega==0 aun no iniciado; 1 igual a terminado
         try {

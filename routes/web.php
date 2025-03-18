@@ -242,6 +242,10 @@ Route::put('/linea/update/{id}', [LineasController::class, 'update'])->name('lin
 Route::get('/index/perfil',[PerfilController::class, 'index'])->name('index.perfil')->middleware('auth'); 
 Route::put('/update/perfil', [PerfilController::class, 'update'])->name('update.perfil')->middleware('auth');
 
+//error
+Route::get('/Error/permiso',[HomeController::class, 'error'])->name('error.')->middleware('auth'); 
+Route::get('/Dashboard/operador',[HomeController::class, 'indexoperador'])->name('index.operador')->middleware('auth'); 
+
 
 
 
