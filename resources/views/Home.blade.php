@@ -328,6 +328,12 @@
 
 
     </style>
+    <style>
+        .linea-row {
+            margin-top: 20px; /* Ajusta el valor según la separación que desees */
+        }
+    </style>
+    
 @endsection
 @section('content')
     <!--botones principales Dia,Semana,mes-->
@@ -373,75 +379,66 @@
                     </div>
                 </div>
             <hr class="hr2">
-    </div>
+        </div>
     <!--Indicadores de Producción por Dia-->
-    <hr class="hr">
-    <div style="height: 10px;"></div>
-    <div id="indicadores-dia" class="mb-4" >
+        <hr class="hr">
+        <div style="height: 10px;"></div>
+        <div id="indicadores-dia" class="mb-4">
             <div class="col-sm-12 bg-white mb-4">
-                        <div class="accordion-body bg-white pt-0">
-                            <div class="card-body bg-white p-1">
-                                <h5 class="p-1">
-                                    Capacidad Productiva  &nbsp;<span id="Fecha_Grafica"> {{ \Carbon\Carbon::now()->translatedFormat('d \d\e F \d\e Y') }}
-                                </h5>
-                                <div class="d-flex justify-content-between">
-                                    <div class="row">
-                                        <h6 class="text-700 col-6">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
-                                        <h6 class="text-700 col-6">Estimado de piezas por d&iacute;a: <span id="Estimadopiezas">0</span></h6>
-                                        <h6 class="text-700 col-6">Piezas Completadas: <span id="Piezasplaneadas">0</span></h6>
-                                        <h6 class="text-700 col-6">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>  
-                                        <h6 class="text-700 col-6"></h6>  
-                                    </div>
-                                </div>
-                                <div class="pb-1 pt-1 d-flex justify-content-center aling-items-center">
-                                    <div class="p-0" id="PrcentajePlaneacion" style="width: 9rem;height:9rem"></div>
-                                </div>
-                                <div>
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="bullet-item bg-primary me-2"></div>
-                                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Completadas</h6>
-                                            <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajeplaneada">0</span>%</h6>
-                                        </div>
-                                        <div class="d-flex align-items-center mb-2">
-                                            <div class="bullet-item bg-primary-200 me-2"></div>
-                                                <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Faltantes</h6>
-                                                <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajefaltante">0</span>%</h6>
-                                        </div>
-                                    </div>
-                                </div>
+                <div class="accordion-body bg-white pt-0">
+                    <div class="card-body bg-white p-1">
+                        <h5 class="p-1">
+                            Capacidad Productiva &nbsp;
+                            <span id="Fecha_Grafica">{{ \Carbon\Carbon::now()->translatedFormat('d \d\e F \d\e Y') }}</span>
+                        </h5>
+                        <div class="d-flex justify-content-between">
+                            <div class="row">
+                                <h6 class="text-700 col-6">
+                                    Cantidad personas: <span id="Cantidadpersonas">0</span>
+                                </h6>
+                                <h6 class="text-700 col-6">
+                                    Estimado de piezas por día: <span id="Estimadopiezas">0</span>
+                                </h6>
+                                <h6 class="text-700 col-6">
+                                    Piezas Completadas: <span id="Piezasplaneadas">0</span>
+                                </h6>
+                                <h6 class="text-700 col-6">
+                                    Piezas faltantes: <span id="Piezasfaltantes">0</span>
+                                </h6>
+                                <h6 class="text-700 col-6"></h6>
                             </div>
-            </div>
-            <!--<div class="card">
-                <div class="">
-                    <div class="container">
-                        <div class="row">
-                            <h6 class="text-700 col-6">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
-                            <h6 class="text-700 col-6">Piezas completadas: <span id="Piezasplaneadas">0</span></h6>
-                            <h6 class="text-700 col-6">Estimado de piezas por día: <span id="Estimadopiezas">0</span></h6>
+                        </div>
+                        <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
+                            <div class="p-0" id="PrcentajePlaneacion" style="width: 9rem; height: 9rem"></div>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bullet-item bg-primary me-2"></div>
+                                <h6 class="text-900 fw-semi-bold flex-1 mb-0">
+                                    Porcentaje Completadas
+                                </h6>
+                                <h6 class="text-900 fw-semi-bold mb-0">
+                                    <span id="Porcentajeplaneada">0</span>%
+                                </h6>
+                            </div>
 
-                            <h6 class="text-700 col-6">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>
-
-                            <h6 class="text-700 col-12">Total de piezas del día: <span id="Piezasdia">0</span></h6>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bullet-item bg-primary-200 me-2"></div>
+                                <h6 class="text-900 fw-semi-bold flex-1 mb-0">
+                                    Porcentaje Faltantes
+                                </h6>
+                                <h6 class="text-900 fw-semi-bold mb-0">
+                                    <span id="Porcentajefaltante">0</span>%
+                                </h6>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
-                    <div class="p-0" id="PrcentajePlaneacion" style="width: 9rem; height:9rem"></div>
-                </div>
-                <div>
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="bullet-item bg-primary me-2"></div>
-                        <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Completadas</h6>
-                        <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajeplaneada">0</span>%</h6>
-                    </div>
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="bullet-item bg-primary-200 me-2"></div>
-                        <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Faltantes</h6>
-                        <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajefaltante">0</span>%</h6>
-                    </div>
-                </div>
-            </div>-->
-            <div class="card text-center pb-3">
+            </div>
+        </div>
+    <div id="indicadores-dia" class="mb-4">
+        <div class="row" id="lineas-container"></div>   
+        <div class="card text-center pb-3">
                 <h1 class="progress-title mt-3 mb-4">Indicadores de Producción por Dia</h1>
                 <div class="row justify-content-center">
                     <!-- Órdenes Cerradas (Completadas) -->
@@ -536,20 +533,20 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div style="height: 10px;"></div>
-            <div class="card" style="display: none;">
+        </div>
+        <div style="height: 10px;"></div>
+        <div class="card" style="display: none;">
                 <div class="col-10 col-md-18 col-lg-12 mx-auto">
                     <h1 class="progress-title">Progreso de Piezas por Dia</h1>
                     <p id="chart-hour-fecha" style="font-size: 14px; color: gray;"></p> 
                     <div id="chart-hour" class="chart-container"></div>
                 </div>
-            </div>
-            <div style="height: 10px;"></div>
-            <div class="card">
+        </div>
+        <div style="height: 10px;"></div>
+        <div class="card">
                 <p id="grafica-tiempo-dia" style="font-size: 14px; color: gray;"></p> 
                 <div id="grafica-tiempoD" class="chart-container" style="height: 400px;"></div> 
-            </div>
+        </div>
     </div>
     <!--Progreso de semana-->
     <div id="indicadores-semana">
@@ -1143,23 +1140,15 @@
         const faltanteTotal = parseInt(data.faltanteTotal) || 0;
         const Estimadopiezas = parseFloat(data.Estimadopiezas) || 0;
         const Cantidadpersonas = parseInt(data.Cantidadpersonas) || 0;
-
-        // Mostrar los valores sin modificar
         document.getElementById("Estimadopiezas").textContent = Estimadopiezas.toFixed();
         document.getElementById("Cantidadpersonas").textContent = Cantidadpersonas;
-
-        // Ajuste de los porcentajes mostrados
         document.getElementById("Porcentajeplaneada").textContent = porcentajeCompletadas.toFixed(2);  
         document.getElementById("Porcentajefaltante").textContent = porcentajeCerradas.toFixed(2);  
-
-        //document.getElementById("Piezasdia").textContent = totalOfTotal;
         document.getElementById("Piezasplaneadas").textContent = totalCompletadas;
         document.getElementById("Piezasfaltantes").textContent = faltanteTotal;
-
-        let color = "#007BFF"; // Color predeterminado
-
+        let color = "#007BFF"; 
         if (totalCompletadas === 0 && faltanteTotal === 0) {
-            color = "#D3D3D3"; // Gris neutro
+            color = "#D3D3D3"; 
         } else if (porcentajeCompletadas > 1) {
             color = "#FF0000";
         } else if (porcentajeCompletadas > 0.9) {
@@ -1168,7 +1157,6 @@
             color = "#FFFF00";
         }
 
-        // Configuración del gráfico
         var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
         var option = {
             tooltip: { trigger: 'item' },
@@ -1393,14 +1381,9 @@ function crearGrafico(url, chartDomId) {
         .catch(error => console.log('Error al cargar los datos del gráfico:', error));
 }
 crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
+/*
 
-
-
-
-
-
-
-
+/*
 
    /* function GraficasTiempo(url, containerId, itemName, fechaId) {
     fetch(url)
@@ -1978,6 +1961,7 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
                     .catch(error => console.log('Error al cargar los datos:', error));
             }
         */
+       /*
     function PorcentajeLlenadas(){
         fecha=$('#FiltroOF_Fecha_table2').val();
         $.ajax({
@@ -2069,8 +2053,112 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
     });
     document.getElementById("click-mes").addEventListener("click", function() {
         activarBoton("click-mes");
-    });
+    });*/
 
 </script>
+
+
+<script>
+fetch("{{ route('lineas.indicador') }}")
+    .then(response => response.json())
+    .then(data => {
+        const porcentajeCerradas = parseFloat(data.porcentajeCerradas) || 0;
+        const porcentajeCompletadas = parseFloat(data.PorcentajeCompletadas) || 0;
+        const totalOfTotal = parseInt(data.TotalOfTotal) || 0;
+        const totalCompletadas = parseInt(data.TotalOFcompletadas) || 0;
+        const faltanteTotal = parseInt(data.faltanteTotal) || 0
+        const container = document.getElementById('lineas-container');
+        container.innerHTML = ''; 
+        data.lineas.forEach(linea => {
+            const card = document.createElement('div');
+            card.classList.add('col-md-4', 'mb-4');
+            card.innerHTML = `
+                <div class="col-sm-12 bg-white mb-4">
+                    <div class="accordion-body bg-white pt-0">
+                        <div class="card-body bg-white p-1">
+                            <h5 class="p-1">
+                                Línea ${linea.id}
+                               
+                            </h5>
+                            <div class="d-flex justify-content-between">
+                                <div class="row">
+                                    <h6 class="text-700 col-6">
+                                        Cantidad personas: <span id="Cantidadpersonas${linea.id}">${linea.cantidad_personas}</span>
+                                    </h6>
+                                    <h6 class="text-700 col-6">
+                                        Estimado de piezas por día: <span id="Estimadopiezas${linea.id}">${linea.estimado_piezas}</span>
+                                    </h6>
+                                    <h6 class="text-700 col-6">
+                                        Piezas Completadas: <span id="Piezasplaneadas${linea.id}">${linea.piezas_completadas}</span>
+                                    </h6>
+                                    <h6 class="text-700 col-6">
+                                        Piezas faltantes: <span id="Piezasfaltantes${linea.id}">${linea.piezas_faltantes}</span>
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
+                                <div class="p-0" id="lineasprocentaje${linea.id}" style="width: 9rem; height: 9rem"></div>
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="bullet-item bg-primary me-2"></div>
+                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">
+                                        Porcentaje Completadas
+                                    </h6>
+                                    <h6 class="text-900 fw-semi-bold mb-0">
+                                        <span id="Porcentajeplaneada${linea.id}">${linea.porcentaje_completadas}</span>%
+                                    </h6>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="bullet-item bg-primary-200 me-2"></div>
+                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">
+                                        Porcentaje Faltantes
+                                    </h6>
+                                    <h6 class="text-900 fw-semi-bold mb-0">
+                                        <span id="Porcentajefaltante${linea.id}">${linea.porcentaje_faltantes}</span>%
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+            var myChart = echarts.init(document.getElementById(`lineasprocentaje${linea.id}`));
+            var option = {
+                tooltip: { trigger: 'item' },
+                legend: { show: false },
+                series: [
+                    {
+                        name: 'Planeación',
+                        type: 'pie',
+                        radius: ['60%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: true,
+                            position: 'center',
+                            formatter: `${linea.porcentaje_completadas.toFixed(2)}%`,
+                            fontSize: 20,
+                            fontWeight: 'bold'
+                        },
+                        labelLine: { show: false },
+                        data: [
+                            { value: linea.piezas_completadas, name: 'Completadas', itemStyle: { color: "#007BFF" } },
+                            { value: linea.piezas_faltantes, name: 'Faltantes', itemStyle: { color: '#D3D3D3' } }
+                        ]
+                    }
+                ]
+            };
+            myChart.setOption(option);
+        });
+    })
+    .catch(error => console.log('Error al obtener los datos:', error));
+</script>
+
 
 @endsection

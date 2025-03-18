@@ -24,6 +24,8 @@ Route::post('/login', [loginController::class, 'login'])->name('login_post');
 Route::get('/logout', [loginController::class, 'logout'])->name('logout')->middleware('auth');
 Route::post('/register', [loginController::class, 'register'])->name('register')->middleware('auth');
 
+Route::get('/lineas/progreso', [HomeController::class, 'lineas'])->name('lineas.indicador');
+
 //Ruta Home
 Route::get('/', [HomeController::class, 'index'])->name('Home')->middleware('auth');
 
@@ -174,7 +176,7 @@ Route::get('/wizarpdia', [HomeController::class, 'wizarpdia'])->name('wizarpdia.
 Route::get('/wizarpmes', [HomeController::class, 'wizarpmes'])->name('wizarpmes.dashboard');
 Route::get('/indicadores-cedia',[HomeController::class,'graficasdia'])->name('indicadores-cedia')->middleware('auth');
 Route::get('/indicadores-cesemana',[HomeController::class,'graficasemana'])->name('indicadores.CEsemana')->middleware('auth');
-Route::get('/dashboard/indicadorDIA',[HomeController::class, 'Dasboardindicadordia'])->name('dashboard.indicador')->middleware('auth');
+Route::get('/dashboard/indicadordia',[HomeController::class, 'Dasboardindicadordia'])->name('dashboard.indicador')->middleware('auth');
 Route::post('/guardar-dashboard', [HomeController::class, 'guardarDasboard'])->name('guardar.Dasboard')->middleware('auth');
 
 //area empaquetado
