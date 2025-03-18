@@ -18,7 +18,6 @@ class LineasController extends Controller
             return redirect()->route('error.');
         }
     }
-    
     // Mostrar el formulario para crear una nueva línea
     public function create()
     {
@@ -127,7 +126,7 @@ class LineasController extends Controller
     // Método para activar una línea
     public function activar(Request $request)
     {
-        $linea = Linea::find($request->id); // Buscar por id en lugar de NumeroLinea
+        $linea = Linea::find($request->id); 
         if ($linea) {
             $linea->active = true;
             $linea->save();
@@ -138,7 +137,7 @@ class LineasController extends Controller
     // Método para desactivar una línea
     public function desactivar(Request $request)
     {
-        $linea = Linea::find($request->id); // Buscar por id en lugar de NumeroLinea
+        $linea = Linea::find($request->id); 
         if ($linea) {
             $linea->active = false;
             $linea->save();
