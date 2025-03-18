@@ -17,19 +17,17 @@ use App\Http\Controllers\DashboardControlle;
 use GuzzleHttp\Promise\Coroutine;
 use Illuminate\Routing\Route as RoutingRoute;
 
-
-
-Route::post('/operador_login', [loginController::class, 'operador'])->name('operador.login');
 // Ruta para mostrar el formulario de login
+Route::post('/operador_login', [loginController::class, 'operador'])->name('operador.login');
 Route::get('/login', [loginController::class, 'login_view'])->name('login');
 Route::post('/login', [loginController::class, 'login'])->name('login_post');
 Route::get('/logout', [loginController::class, 'logout'])->name('logout')->middleware('auth');
 Route::post('/register', [loginController::class, 'register'])->name('register')->middleware('auth');
 
-//Rutas Planeación
+//Ruta Home
 Route::get('/', [HomeController::class, 'index'])->name('Home')->middleware('auth');
 
-
+//Rutas Planeación
 Route::get('/Planeacion', [PlaneacionController::class,'index'])->name('Planeacion')->middleware('auth');
 Route::post('/Planeacion/Filtro/Fechas', [PlaneacionController::class,'PlaneacionFF'])->name('PlaneacionFF')->middleware('auth');
 Route::post('/Planeacion/Filtro/OrdenVenta',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOV')->middleware('auth');
@@ -90,13 +88,11 @@ Route::get('/ruta-para-actualizar-tabla', [CorteController::class, 'actualizarTa
 Route::delete('/corte/eliminar', [CorteController::class, 'eliminarCorte'])->name('corte.eliminarCorte')->middleware('auth');
 Route::delete('/corte/eliminar1', [CorteController::class, 'eliminarCorte1'])->name('corte.eliminarCorte1')->middleware('auth');
 Route::post('/buscar',[CorteController::class, 'buscar'])->name('buscar.todo')->middleware('auth');
-
-
-
-
 Route::post('/filtrar-fecha', [CorteController::class, 'filtrarPorFechac'])->name('Fitrar.Fechacerrado')->middleware('auth');
 Route::get('/corte/detalles', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalles')->middleware('auth');
 Route::get('/ordenes/cerradas',[CorteController:: class, 'index'])->name('ordenes.cerradas')->middleware('auth');
+Route::post('/filtrar-por-fechaS', [CorteController::class, 'fechaCompletado'])->name('Fitrar.FechaS')->middleware('auth');
+Route::get('/ordenes-filtradas', [CorteController::class, 'SinCortesProceso'])->name('ordenes.filtradas')->middleware('auth');
 //Rutas cortes
 /*
     Route::get('/cortes/getData', [CorteController::class, 'getData'])->name('corte.getData')->middleware('auth');
@@ -117,66 +113,31 @@ Route::get('/corte/DetallesCompletado', [CorteController::class, 'DetallesComple
 
 //rutas para generar etiquetas
 Route::get('/generar-etiquetas/{corteId}', [CorteController::class, 'getDatosGenerarEtiquetas'])->middleware('auth');
-    Route::post('/generar-etiquetas', [CorteController::class, 'generarEtiquetas'])->name('generar.etiquetas')->middleware('auth');
-    Route::get('/mostrar/etiqueta', [CorteController::class, 'MostarInformacion'])->name('mostrar.etiqueta')->middleware('auth');
-    Route::get('/generar-pdf', [CorteController::class, 'generarPDF'])->name('generar.pdf')->middleware('auth');
+Route::post('/generar-etiquetas', [CorteController::class, 'generarEtiquetas'])->name('generar.etiquetas')->middleware('auth');
+Route::get('/mostrar/etiqueta', [CorteController::class, 'MostarInformacion'])->name('mostrar.etiqueta')->middleware('auth');
+Route::get('/generar-pdf', [CorteController::class, 'generarPDF'])->name('generar.pdf')->middleware('auth');
 Route::post('/generar-pdf-rangos', [CorteController::class, 'PDFCondicion'])->name('pdfcondicion')->middleware('auth');
 
 //ruta para el formulario de registro
 Route::get('/registro', [RegistroController::class, 'index'])->name('registro.index')->middleware('auth');
 Route::get('/tabla/registro',[RegistroController::class, 'tablaPrincipal'])->name('principal.tabla')->middleware('auth');
-
-    Route::post('/users/activar', [RegistroController::class, 'activar'])->name('users.activar')->middleware('auth');
-    Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar')->middleware('auth');
-    
-    // Ruta para mostrar el formulario de creación
-    Route::get('/registro/create', [RegistroController::class, 'create'])->name('registro.create')->middleware('auth');
-    Route::post('/operador/store', [RegistroController::class, 'storeoperador'])->name('operador.store')->middleware('auth');
-    
-    // Ruta para almacenar un nuevo rol o permiso
-    Route::post('/registro/store', [RegistroController::class, 'store'])->name('registro.store')->middleware('auth');
-    
-    // Ruta para mostrar el formulario de edición
-    Route::get('/registro/edit/{id}', [RegistroController::class, 'edit'])->name('registro.edit')->middleware('auth');
-
-    Route::get('/registro/show/{id}',[RegistroController::class, 'show'])->name('registro.show')->middleware('auth');
-    
-    // Ruta para actualizar un rol o permiso
-    Route::put('/registro/update/{id}', [RegistroController::class, 'update'])->name('registro.update')->middleware('auth');
-    
-    // Ruta para eliminar un rol o permiso
+Route::post('/users/activar', [RegistroController::class, 'activar'])->name('users.activar')->middleware('auth');
+Route::post('/users/desactivar', [RegistroController::class, 'desactivar'])->name('users.desactivar')->middleware('auth');
+Route::get('/registro/create', [RegistroController::class, 'create'])->name('registro.create')->middleware('auth');
+Route::post('/operador/store', [RegistroController::class, 'storeoperador'])->name('operador.store')->middleware('auth');
+Route::post('/registro/store', [RegistroController::class, 'store'])->name('registro.store')->middleware('auth');
+Route::get('/registro/edit/{id}', [RegistroController::class, 'edit'])->name('registro.edit')->middleware('auth');
+Route::get('/registro/show/{id}',[RegistroController::class, 'show'])->name('registro.show')->middleware('auth');
+Route::put('/registro/update/{id}', [RegistroController::class, 'update'])->name('registro.update')->middleware('auth');
 Route::delete('registro/{id}', [RegistroController::class, 'destroy'])->name('registro.destroy')->middleware('auth');
 
 //rutas roles y permiso
 Route::get('/RolesPermisos', [RolesPermisoController::class, 'index'])->name('RolesPermisos.index')->middleware('auth');
-    
-    // Ruta para mostrar el formulario de creación
-    Route::get('/RolesPermisos/create', [RolesPermisoController::class, 'create'])->name('RolesPermisos.create')->middleware('auth');
-    
-    // Ruta para almacenar un nuevo rol o permiso
-    Route::post('/RolesPermisos/store', [RolesPermisoController::class, 'store'])->name('RolesPermisos.store')->middleware('auth');
-    
-    // Ruta para mostrar el formulario de edición
-    Route::get('/RolesPermisos/edit/{id}', [RolesPermisoController::class, 'edit'])->name('RolesPermisos.edit')->middleware('auth');
-    
-    // Ruta para actualizar un rol o permiso
-    Route::put('/RolesPermisos/update/{id}', [RolesPermisoController::class, 'update'])->name('RolesPermisos.update')->middleware('auth');
-    
-    // Ruta para eliminar un rol o permiso
+Route::get('/RolesPermisos/create', [RolesPermisoController::class, 'create'])->name('RolesPermisos.create')->middleware('auth');
+Route::post('/RolesPermisos/store', [RolesPermisoController::class, 'store'])->name('RolesPermisos.store')->middleware('auth');
+Route::get('/RolesPermisos/edit/{id}', [RolesPermisoController::class, 'edit'])->name('RolesPermisos.edit')->middleware('auth');
+Route::put('/RolesPermisos/update/{id}', [RolesPermisoController::class, 'update'])->name('RolesPermisos.update')->middleware('auth');
 Route::delete('destroy/{id}', [RolesPermisoController::class, 'destroy'])->name('destroy')->middleware('auth');
-
-
-Route::post('/filtrar-por-fechaS', [CorteController::class, 'fechaCompletado'])->name('Fitrar.FechaS')->middleware('auth');
-
-Route::get('/ordenes-filtradas', [CorteController::class, 'SinCortesProceso'])->name('ordenes.filtradas')->middleware('auth');
-
-
-
-
-
-
-
-
 
 //rutas busquedas
 Route::get('/busquedas',[BusquedaController::class, 'index'])->name('Busquedas.OV')->middleware('auth');
@@ -190,12 +151,12 @@ Route::get('/graficasOR/OF',[BusquedaController::class,'GraficarOROF'])->name('g
 Route::get('/tiempos/fabricacion',[BusquedaController::class, 'tiemposOrden'])->name('tiempo.orden')->middleware('auth');
 
 //rutas del dashboard
-
 Route::get('/retrabajo', [HomeController:: class, 'Ordenes'])->name('ordenes.retrabajo')->middleware('auth');
 Route::get('/cerradas', [HomeController::class, 'cerradas'])->name('orden.cerredas')->middleware('auth');
 Route::get('/abiertas', [HomeController:: class, 'abiertas'])->name('ordenes.abiertas')->middleware('auth');
 Route::get('/graficasdores', [HomeController:: class, 'graficas'])->name('graficas.dashboard')->middleware('auth');
 Route::get('/dashboard/capacidadproductiva', [HomeController:: class, 'CapacidadProductiva'])->name('CapacidadProductiva')->middleware('auth');
+
 // routes/web.php
 Route::get('/detalles-oc', [HomeController::class, 'detallesOC'])->name('ordenes.detallesOC')->middleware('auth');
 Route::get('/tiempo', [HomeController::class, 'tiempoOC'])->name('ordenes.tiempo')->middleware('auth');
@@ -216,7 +177,7 @@ Route::get('/indicadores-cesemana',[HomeController::class,'graficasemana'])->nam
 Route::get('/dashboard/indicadorDIA',[HomeController::class, 'Dasboardindicadordia'])->name('dashboard.indicador')->middleware('auth');
 Route::post('/guardar-dashboard', [HomeController::class, 'guardarDasboard'])->name('guardar.Dasboard')->middleware('auth');
 
-
+//area empaquetado
 Route::get('/Area/Empacado',[AreasController::class,'Empaquetado'])->name('Empacado');
 Route::get('/Tabla/principal',[AreasController::class,'tablaEmpacado'])->name('tabla.principal');
 Route::post('/Area/Empaquetado/buscar', [AreasController::class,'EmpaquetadoBuscar'])->name('EmpaquetadoBuscar')->middleware('auth');
@@ -235,15 +196,14 @@ Route::post('/lineas/desactivar', [LineasController::class, 'desactivar'])->name
 Route::get('/linea/show/{id}', [LineasController::class, 'show'])->name('linea.show')->middleware('auth');
 Route::put('/linea/update/{id}', [LineasController::class, 'update'])->name('linea.update')->middleware('auth');
 
-
 //perfil usuarios
-
-
 Route::get('/index/perfil',[PerfilController::class, 'index'])->name('index.perfil')->middleware('auth'); 
 Route::put('/update/perfil', [PerfilController::class, 'update'])->name('update.perfil')->middleware('auth');
 
 //error
 Route::get('/Error/permiso',[HomeController::class, 'error'])->name('error.')->middleware('auth'); 
+
+//dasboard operador
 Route::get('/Dashboard/operador',[HomeController::class, 'indexoperador'])->name('index.operador')->middleware('auth'); 
 
 

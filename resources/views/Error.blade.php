@@ -119,7 +119,7 @@
             Si crees que esto es un error, por favor contacta al administrador.
         </div>
          <div style="height: 15px;"></div>
-        <a href="{{ url('/') }}" class="home-link">Volver al inicio</a>
+        <a href="{{ url('/Dashboard/operador') }}" class="home-link">Volver al inicio</a>
     </div>
     
     <!-- Agregar un espaciado aquí entre los textos y el ícono -->
