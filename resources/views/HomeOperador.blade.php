@@ -91,13 +91,13 @@
     }
 
     #date {
-        font-size: 30px;
+        font-size: 20px;
         font-weight: bold;
         color: #c00000;
     }
 
     #time {
-        font-size: 28px;
+        font-size: 25px;
         font-weight: bold;
         color: #c00000;
     }
@@ -130,27 +130,19 @@
 <script>
     function updateClock() {
         const now = new Date();
-        
-        // Obtener fecha
+        const day = now.getDate();
         const year = now.getFullYear();
-        const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Mes empieza en 0
-        const day = now.getDate().toString().padStart(2, '0');
-
-        // Obtener hora
+        const months = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+        const month = months[now.getMonth()];
         const hours = now.getHours().toString().padStart(2, '0');
         const minutes = now.getMinutes().toString().padStart(2, '0');
         const seconds = now.getSeconds().toString().padStart(2, '0');
-
-        // Actualizar elementos en la página
-        document.getElementById('date').textContent = `${year}-${month}-${day}`;
+        document.getElementById('date').textContent = `${day} de ${month} del ${year}`;
         document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
     }
-
-    // Actualizar cada segundo
     setInterval(updateClock, 1000);
-
-    // Llamar la función una vez para que no haya retraso
     updateClock();
+
 
 
         function updateMessage() {
