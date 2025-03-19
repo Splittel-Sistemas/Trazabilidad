@@ -1610,13 +1610,22 @@ class HomeController extends Controller
     //dasboard operador 
     public function indexoperador(Request $request)
     {
+        $hoy = Carbon::today(); 
+    
+        $avisos = DB::table('avisos')
+            ->whereDate('fecha_envio', $hoy) 
+            ->orderBy('created_at', 'desc')
+            ->get();
+    
         $linea = Linea::where('active', 1)->get();
         $user = Auth::user();
+    
         if (!$user || !$user->active) {
             Auth::logout();
             return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
         }
-        return view('HomeOperador', compact('user','linea'));
+    
+        return view('HomeOperador', compact('user', 'linea', 'avisos'));
     }
     //vista sin permisos
     public function error(Request $request)
@@ -1700,7 +1709,32 @@ class HomeController extends Controller
     ]);
 }
 
-    
+
+
+
+public function guardarAviso(Request $request)
+{
+    // Valida la entrada del usuario
+    $request->validate([
+        'titulo' => 'nullable|string|max:255', 
+        'aviso' => 'required|string',
+    ]);
+
+    // Inserta el aviso en la base de datos
+    DB::table('avisos')->insert([
+        'titulo' => $request->input('titulo'),
+        'contenido' => $request->input('aviso'),
+        'fecha_envio' => $request->input('fecha'),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    // Redirige con mensaje de éxito
+    return redirect()->back()->with('success', 'Aviso enviado correctamente.');
 }
+
+}
+
+    
     
  

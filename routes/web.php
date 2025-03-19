@@ -209,6 +209,7 @@ Route::get('/Error/permiso',[HomeController::class, 'error'])->name('error.')->m
 Route::get('/Dashboard/operador',[HomeController::class, 'indexoperador'])->name('index.operador')->middleware('auth'); 
 
 
+Route::post('/guardar-aviso', [HomeController::class, 'guardarAviso'])->name('guardarAviso');
 
 
 

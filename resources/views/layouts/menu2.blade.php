@@ -80,7 +80,7 @@
                             <hr class="navbar-vertical-line"/>
                             <div class="nav-item-wrapper">
                                 <a class="nav-link label-1 {{ Route::is('index.operador') ? 'active' : '' }}"  href="{{route('index.operador')}}" role="button">
-                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="home"></span> </span><span class="nav-link-text-wrapper"><span class="nav-link-text">Dashboard Operador</span></span></div>
+                                    <div class="d-flex align-items-center"><span class="nav-link-icon"><span data-feather="home"></span> </span><span class="nav-link-text-wrapper"><span class="nav-link-text">Home</span></span></div>
                                 </a>
                             </div> 
                             @if(Auth::user()->hasPermission("Vista Dashboard"))
