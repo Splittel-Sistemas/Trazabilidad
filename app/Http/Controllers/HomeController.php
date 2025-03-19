@@ -34,7 +34,7 @@ class HomeController extends Controller
 }
 
 
-   /* public function CapacidadProductiva(){
+    public function CapacidadProductiva(){
         $fecha=date('y-m-d 00:00:00');
         $fechaFin= date('y-m-d 23:59:59');
         $PorcentajePlaneacion=PorcentajePlaneacion::where('FechaPlaneacion',$fecha)->first();
@@ -69,7 +69,7 @@ class HomeController extends Controller
                 'Fecha_Grafica'=>Carbon::parse($fecha)->translatedFormat('d \d\e F \d\e Y'),
 
         ]);
-    }*/
+    }
     public function graficas()
     {
         // Órdenes por día
