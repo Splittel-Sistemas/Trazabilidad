@@ -436,7 +436,6 @@
                 </div>
             </div>
         </div>
-    <div id="indicadores-dia" class="mb-4">
         <div class="row" id="lineas-container"></div>   
         <div class="card text-center pb-3">
                 <h1 class="progress-title mt-3 mb-4">Indicadores de Producción por Dia</h1>
@@ -533,7 +532,7 @@
                         </div>
                     </div>
                 </div>
-        </div>
+            </div>
         <div style="height: 10px;"></div>
         <div class="card" style="display: none;">
                 <div class="col-10 col-md-18 col-lg-12 mx-auto">
@@ -1140,15 +1139,23 @@
         const faltanteTotal = parseInt(data.faltanteTotal) || 0;
         const Estimadopiezas = parseFloat(data.Estimadopiezas) || 0;
         const Cantidadpersonas = parseInt(data.Cantidadpersonas) || 0;
+
+        // Mostrar los valores sin modificar
         document.getElementById("Estimadopiezas").textContent = Estimadopiezas.toFixed();
         document.getElementById("Cantidadpersonas").textContent = Cantidadpersonas;
+
+        // Ajuste de los porcentajes mostrados
         document.getElementById("Porcentajeplaneada").textContent = porcentajeCompletadas.toFixed(2);  
         document.getElementById("Porcentajefaltante").textContent = porcentajeCerradas.toFixed(2);  
+
+        //document.getElementById("Piezasdia").textContent = totalOfTotal;
         document.getElementById("Piezasplaneadas").textContent = totalCompletadas;
         document.getElementById("Piezasfaltantes").textContent = faltanteTotal;
-        let color = "#007BFF"; 
+
+        let color = "#007BFF"; // Color predeterminado
+
         if (totalCompletadas === 0 && faltanteTotal === 0) {
-            color = "#D3D3D3"; 
+            color = "#D3D3D3"; // Gris neutro
         } else if (porcentajeCompletadas > 1) {
             color = "#FF0000";
         } else if (porcentajeCompletadas > 0.9) {
@@ -1157,6 +1164,7 @@
             color = "#FFFF00";
         }
 
+        // Configuración del gráfico
         var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
         var option = {
             tooltip: { trigger: 'item' },
@@ -1381,9 +1389,14 @@ function crearGrafico(url, chartDomId) {
         .catch(error => console.log('Error al cargar los datos del gráfico:', error));
 }
 crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
-/*
 
-/*
+
+
+
+
+
+
+
 
    /* function GraficasTiempo(url, containerId, itemName, fechaId) {
     fetch(url)
@@ -1961,7 +1974,6 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
                     .catch(error => console.log('Error al cargar los datos:', error));
             }
         */
-       /*
     function PorcentajeLlenadas(){
         fecha=$('#FiltroOF_Fecha_table2').val();
         $.ajax({
@@ -2053,7 +2065,7 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
     });
     document.getElementById("click-mes").addEventListener("click", function() {
         activarBoton("click-mes");
-    });*/
+    });
 
 </script>
 
