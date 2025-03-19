@@ -393,22 +393,22 @@
                     <div class="d-flex justify-content-between">
                         <div class="row">
                             <h6 class="text-700 col-6">
-                                Cantidad personas: <span id="Cantidadpersonas">0</span>
+                                Cantidad personas: <span id="Cantidad">0</span>
                             </h6>
                             <h6 class="text-700 col-6">
-                                Estimado de piezas por día: <span id="Estimadopiezas">0</span>
+                                Estimado de piezas por día: <span id="piezas">0</span>
                             </h6>
                             <h6 class="text-700 col-6">
-                                Piezas Completadas: <span id="Piezasplaneadas">0</span>
+                                Piezas Completadas: <span id="Piezaplaneadas">0</span>
                             </h6>
                             <h6 class="text-700 col-6">
-                                Piezas faltantes: <span id="Piezasfaltantes">0</span>
+                                Piezas faltantes: <span id="Piezafaltantes">0</span>
                             </h6>
                             <h6 class="text-700 col-6"></h6>
                         </div>
                     </div>
                     <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
-                        <div class="p-0" id="PrcentajePlaneacion" style="width: 9rem; height: 9rem"></div>
+                        <div class="p-0" id="PorcentajePlaneacion" style="width: 9rem; height: 9rem"></div>
                     </div>
                     <div>
                         <div class="d-flex align-items-center mb-2">
@@ -1116,79 +1116,88 @@
         // Renderizar gráfico
         myChart.setOption(option);
     });
+
+    document.addEventListener("DOMContentLoaded", function () {
     fetch("{{ route('dashboard.indicador') }}")
-    .then(response => response.json())
-    .then(data => {
-        const porcentajeCerradas = parseFloat(data.porcentajeCerradas) || 0;  
-        const porcentajeCompletadas = parseFloat(data.PorcentajeCompletadas) || 0;  
-        const totalOfTotal = parseInt(data.TotalOfTotal) || 0;
-        const totalCompletadas = parseInt(data.TotalOFcompletadas) || 0;  
-        const faltanteTotal = parseInt(data.faltanteTotal) || 0;
-        const Estimadopiezas = parseFloat(data.Estimadopiezas) || 0;
-        const Cantidadpersonas = parseInt(data.Cantidadpersonas) || 0;
+        .then(response => response.json())
+        .then(data => {
+            console.log("Datos recibidos:", data); // Depuración
 
-        // Mostrar los valores sin modificar
-        document.getElementById("Estimadopiezas").textContent = Estimadopiezas.toFixed();
-        document.getElementById("Cantidadpersonas").textContent = Cantidadpersonas;
+            // Asignar valores a las variables, asegurando que no sean null o undefined
+            const porcentajeCerradas = parseFloat(data.porcentajeCerradas) || 0;  
+            const porcentajeCompletadas = parseFloat(data.PorcentajeCompletadas) || 0;  
+            const totalCompletadas = parseInt(data.TotalOfCompletadas) || 0;  
+            const faltanteTotal = parseInt(data.faltanteTotal) || 0;
+            const Estimadopiezas = parseFloat(data.Estimadopiezas) || 0;
+            const Cantidadpersonas = parseInt(data.Cantidadpersonas) || 0;
 
-        // Ajuste de los porcentajes mostrados
-        document.getElementById("Porcentajeplaneada").textContent = porcentajeCompletadas.toFixed(2);  
-        document.getElementById("Porcentajefaltante").textContent = porcentajeCerradas.toFixed(2);  
+            // Mostrar los valores en la interfaz
+            document.getElementById("piezas").textContent = Estimadopiezas.toFixed();
+            document.getElementById("Cantidad").textContent = Cantidadpersonas;
+            document.getElementById("Porcentajeplaneada").textContent = porcentajeCompletadas.toFixed(2);  
+            document.getElementById("Porcentajefaltante").textContent = porcentajeCerradas.toFixed(2);  
+            document.getElementById("Piezaplaneadas").textContent = totalCompletadas;
+            document.getElementById("Piezafaltantes").textContent = faltanteTotal;
 
-        //document.getElementById("Piezasdia").textContent = totalOfTotal;
-        document.getElementById("Piezasplaneadas").textContent = totalCompletadas;
-        document.getElementById("Piezasfaltantes").textContent = faltanteTotal;
+            // Definir color del gráfico basado en el porcentaje completado
+            let color = "#007BFF"; // Color por defecto (azul)
+            if (totalCompletadas === 0 && faltanteTotal === 0) {
+                color = "#D3D3D3"; // Gris si no hay datos
+            } else if (porcentajeCompletadas > 1) {
+                color = "#FF0000"; // Rojo si el porcentaje supera 100%
+            } else if (porcentajeCompletadas > 0.9) {
+                color = "#FFA500"; // Naranja (90-100%)
+            } else if (porcentajeCompletadas > 0.8) {
+                color = "#FFFF00"; // Amarillo (80-90%)
+            }
 
-        let color = "#007BFF"; // Color predeterminado
+            // Inicializar gráfico si el contenedor existe
+            let chartContainer = document.getElementById("PorcentajePlaneacion");
+            if (!chartContainer) {
+                console.error("Elemento 'PorcentajePlaneacion' no encontrado en el DOM.");
+                return;
+            }
 
-        if (totalCompletadas === 0 && faltanteTotal === 0) {
-            color = "#D3D3D3"; // Gris neutro
-        } else if (porcentajeCompletadas > 1) {
-            color = "#FF0000";
-        } else if (porcentajeCompletadas > 0.9) {
-            color = "#FFA500";
-        } else if (porcentajeCompletadas > 0.8) {
-            color = "#FFFF00";
-        }
+            let myChart = echarts.init(chartContainer);
+            let option = {
+                tooltip: { trigger: 'item' },
+                legend: { show: false },
+                series: [
+                    {
+                        name: 'Planeación',
+                        type: 'pie',
+                        radius: ['60%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: true,
+                            position: 'center',
+                            formatter: totalCompletadas === 0 && faltanteTotal === 0 
+                                ? '0.00' 
+                                : `${porcentajeCompletadas.toFixed(2)}`,
+                            fontSize: 20,
+                            fontWeight: 'bold'
+                        },
+                        labelLine: { show: false },
+                        data: totalCompletadas === 0 && faltanteTotal === 0
+                            ? [{ value: 1, name: 'Sin datos', itemStyle: { color: "#D3D3D3" } }]
+                            : [
+                                { value: totalCompletadas, name: 'Total Completados', itemStyle: { color: color } },
+                                { value: faltanteTotal, name: 'Total Faltante', itemStyle: { color: '#D3D3D3' } }
+                            ]
+                    }
+                ]
+            };
 
-        // Configuración del gráfico
-        var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
-        var option = {
-            tooltip: { trigger: 'item' },
-            legend: { show: false },
-            series: [
-                {
-                    name: 'Planeación',
-                    type: 'pie',
-                    radius: ['60%', '70%'],
-                    avoidLabelOverlap: false,
-                    itemStyle: {
-                        borderRadius: 10,
-                        borderColor: '#fff',
-                        borderWidth: 2
-                    },
-                    label: {
-                        show: true,
-                        position: 'center',
-                        formatter: totalCompletadas === 0 && faltanteTotal === 0 ? '0.00' : `${porcentajeCompletadas.toFixed(2)}`,
-                        fontSize: 20,
-                        fontWeight: 'bold'
-                    },
-                    labelLine: { show: false },
-                    data: totalCompletadas === 0 && faltanteTotal === 0
-                        ? [{ value: 1, name: 'Sin datos', itemStyle: { color: "#D3D3D3" } }]
-                        : [
-                            { value: totalCompletadas, name: 'Total Completados', itemStyle: { color: color } },
-                            { value: faltanteTotal, name: 'Total Faltante', itemStyle: { color: '#D3D3D3' } }
-                        ]
-                }
-            ]
-        };
+            myChart.setOption(option);
+        })
+        .catch(error => console.error("Error al obtener los datos:", error));
+});
 
-        myChart.setOption(option);
-    })
-    .catch(error => console.log('Error al obtener los datos:', error));
-  
 // Función para convertir segundos a formato H:M:S
 function convertirSegundosAHMS(segundos) {
     var horas = Math.floor(segundos / 3600);
@@ -1959,8 +1968,8 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
                         });
                     })
                     .catch(error => console.log('Error al cargar los datos:', error));
-            }
-        */
+            }*/
+        
     function PorcentajeLlenadas(){
         fecha=$('#FiltroOF_Fecha_table2').val();
         $.ajax({
