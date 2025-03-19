@@ -571,7 +571,6 @@
     }
 </script>
 <script>
-
         /*setInterval(cargarTablaEmpacado, 10000);*/
 
         function cargarTablaEmpacado() {
