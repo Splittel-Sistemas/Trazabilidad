@@ -576,6 +576,7 @@ class AreasController extends Controller
                 $Linea = $OrdenFabricacion->Linea()->first();
                 $TotalActual = 0;
                 $TotalPendiente = 0;
+                $NumeroPartidasTodas = 0;
                 foreach ($OrdenFabricacion->PartidasOF as $Partidas) {
                     $banderaSinRegistros=0;
                     if($OrdenFabricacion->Escaner==1){
@@ -584,18 +585,18 @@ class AreasController extends Controller
                         $TotalPendiente += $Partidas->Areas()->where('Areas_id', $AreaOriginal - 1)->where('TipoPartida', 'N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad') 
                             - $Partidas->Areas()->where('Areas_id', $AreaOriginal - 1)->where('TipoPartida', 'R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
                     }else{
-                        $NumeroPartidasTodas=$Partidas->Areas()->where('Areas_id', $AreaOriginal)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
+                        return$NumeroPartidasTodas+=$Partidas->Areas()->where('Areas_id', $AreaOriginal)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
                                             - $Partidas->Areas()->where('Areas_id', $AreaOriginal)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad');
-                        $TotalActual=$OrdenFabricacion->CantidadTotal-$NumeroPartidasTodas;
-                        $TotalPendiente=$OrdenFabricacion->CantidadTotal;
+                        //$TotalActual=$OrdenFabricacion->CantidadTotal-$NumeroPartidasTodas;
+                        //$TotalPendiente=$OrdenFabricacion->CantidadTotal;
                         if($Area4->Areas()->where('Areas_id', $AreaOriginal)->where('TipoPartida','!=', 'F')->count()==0){
                             $banderaSinRegistros=1;
                         }
-                        $TotalActual=$OrdenFabricacion->CantidadTotal-$NumeroPartidasTodas;
+                        $TotalActual=$NumeroPartidasTodas;
                         $TotalPendiente=$OrdenFabricacion->CantidadTotal;
                     }
                 }
-                $registro['NumeroActuales'] = $TotalActual;
+                $registro['NumeroActuales'] = $NumeroPartidasTodas;
                 $registro['TotalPendiente'] = $TotalPendiente;
                 $registro['Linea'] = $Linea->NumeroLinea;
                 $registro['ColorLinea'] = $Linea->ColorLinea;
