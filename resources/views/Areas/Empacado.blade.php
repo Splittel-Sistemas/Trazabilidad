@@ -3,7 +3,6 @@
 @section('styles')
 <link rel="stylesheet" href="{{asset('css/Suministro.css')}}">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
-
 <style>
     #ToastGuardado {
         position: fixed; 
@@ -744,8 +743,5 @@
         toastr.info('La acción fue cancelada', 'Información');
     }
 }
-
-
-
 </script>
 @endsection
