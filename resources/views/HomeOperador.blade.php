@@ -1,7 +1,5 @@
 @extends('layouts.menu2')
-
 @section('title', 'Dashboard Operador')
-
 @section('styles')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -104,9 +102,7 @@
 
 </style>
 @endsection
-
 @section('content')
-
     <div class="card" style="background-color: rgba(0, 0, 0, 0.1);">
         <div class="welcome-container">
             <div class="profile-image col-12">
@@ -119,13 +115,11 @@
                 <div id="clock">
                     <div id="date"></div>
                     <div id="time"></div>
-                </div>
-                
+                </div> 
             </div>  
         </div>
     </div>
 @endsection
-
 @section('scripts')
 <script>
     function updateClock() {
@@ -142,14 +136,10 @@
     }
     setInterval(updateClock, 1000);
     updateClock();
-
-
-
         function updateMessage() {
         const now = new Date();
         const hour = now.getHours();
         let message = "¡Que tengas un gran día!";
-
         if (hour >= 5 && hour < 12) {
             message = "🌞 ¡Buenos días! ¡A comenzar con energía!";
         } else if (hour >= 12 && hour < 18) {

@@ -273,7 +273,7 @@
                                                 </a>
                                             </li>
                                         @endif
-                                        @if(Auth::user()->hasPermission("VIsta Empacado"))
+                                        @if(Auth::user()->hasPermission("Vistas Empaquetado"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Empacado') ? 'nav-tabs active' : '' }}" href="{{route('Empacado')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Empaquetado</span></div>
                                                 </a>

@@ -328,451 +328,446 @@
 
 
     </style>
+    <style>
+        .linea-row {
+            margin-top: 20px; /* Ajusta el valor según la separación que desees */
+        }
+    </style>
 @endsection
 @section('content')
-    <!--botones principales Dia,Semana,mes-->
-    <div class="card text-center">
-            <hr class="hr2">
-                <h1 class="progress-title mt-3 mb-4"></h1>
-                <div class="row justify-content-center">
-                    <!-- Órdenes Cerradas (Completadas) -->
-                    <div class="col-12 col-md-3 mb-4 m-1">
-                        <div class="d-flex align-items-center justify-content-center activebtn btn-menu" id="click-dia" style="cursor: pointer;">
-                            <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                                <i class="fas fa-calendar-day" style="font-size: 30px; color: #007bff;"></i>
-                            </span>
-                            <div class="ms-1">
-                                <h4  class="mb-0" >Órdenes por Día</h4>
-                                <p class="text-muted fs--1 mb-0"></p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Órdenes Abiertas (En Proceso) -->
-                    <div class="col-12 col-md-3 mb-4 m-1 ">
-                        <div class="d-flex align-items-center justify-content-center btn-menu" id="click-semana" style="cursor: pointer;">
-                            <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                                <i class="fas fa-calendar-week" style="font-size: 30px; color: #ffc107;"></i>
-                            </span>
-                            <div class="ms-1">
-                                <h4  class="mb-0" >Órdenes por Semana</h4>
-                                <p class="text-muted fs--1 mb-0"></p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Total de Órdenes -->
-                    <div class="col-12 col-md-3 mb-4 m-1">
-                        <div class="d-flex align-items-center justify-content-center btn-menu" id="click-mes" style="cursor: pointer;">
-                            <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                                <i class="fas fa-calendar-alt" style="font-size: 30px; color: #28a745;"></i>
-                            </span>
-                            <div class="ms-1">
-                                <h4  class="mb-0" >Órdenes por Mes</h4>
-                                <p class="text-muted fs--1 mb-0"></p>  
-                            </div>
+<!--botones principales Dia,Semana,mes-->
+<div class="card text-center">
+        <hr class="hr2">
+            <h1 class="progress-title mt-3 mb-4"></h1>
+            <div class="row justify-content-center">
+                <!-- Órdenes Cerradas (Completadas) -->
+                <div class="col-12 col-md-3 mb-4 m-1">
+                    <div class="d-flex align-items-center justify-content-center activebtn btn-menu" id="click-dia" style="cursor: pointer;">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-calendar-day" style="font-size: 30px; color: #007bff;"></i>
+                        </span>
+                        <div class="ms-1">
+                            <h4  class="mb-0" >Órdenes por Día</h4>
+                            <p class="text-muted fs--1 mb-0"></p>
                         </div>
                     </div>
                 </div>
-            <hr class="hr2">
-    </div>
-    <!--Indicadores de Producción por Dia-->
+                <!-- Órdenes Abiertas (En Proceso) -->
+                <div class="col-12 col-md-3 mb-4 m-1 ">
+                    <div class="d-flex align-items-center justify-content-center btn-menu" id="click-semana" style="cursor: pointer;">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-calendar-week" style="font-size: 30px; color: #ffc107;"></i>
+                        </span>
+                        <div class="ms-1">
+                            <h4  class="mb-0" >Órdenes por Semana</h4>
+                            <p class="text-muted fs--1 mb-0"></p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Total de Órdenes -->
+                <div class="col-12 col-md-3 mb-4 m-1">
+                    <div class="d-flex align-items-center justify-content-center btn-menu" id="click-mes" style="cursor: pointer;">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-calendar-alt" style="font-size: 30px; color: #28a745;"></i>
+                        </span>
+                        <div class="ms-1">
+                            <h4  class="mb-0" >Órdenes por Mes</h4>
+                            <p class="text-muted fs--1 mb-0"></p>  
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <hr class="hr2">
+</div>
+<!--Indicadores de Producción por Dia-->
     <hr class="hr">
     <div style="height: 10px;"></div>
-    <div id="indicadores-dia" class="mb-4" >
-            <div class="col-sm-12 bg-white mb-4">
-                        <div class="accordion-body bg-white pt-0">
-                            <div class="card-body bg-white p-1">
-                                <h5 class="p-1">
-                                    Capacidad Productiva  &nbsp;<span id="Fecha_Grafica"> {{ \Carbon\Carbon::now()->translatedFormat('d \d\e F \d\e Y') }}
-                                </h5>
-                                <div class="d-flex justify-content-between">
-                                    <div class="row">
-                                        <h6 class="text-700 col-6">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
-                                        <h6 class="text-700 col-6">Estimado de piezas por d&iacute;a: <span id="Estimadopiezas">0</span></h6>
-                                        <h6 class="text-700 col-6">Piezas Completadas: <span id="Piezasplaneadas">0</span></h6>
-                                        <h6 class="text-700 col-6">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>  
-                                        <h6 class="text-700 col-6"></h6>  
-                                    </div>
-                                </div>
-                                <div class="pb-1 pt-1 d-flex justify-content-center aling-items-center">
-                                    <div class="p-0" id="PrcentajePlaneacion" style="width: 9rem;height:9rem"></div>
-                                </div>
-                                <div>
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="bullet-item bg-primary me-2"></div>
-                                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Completadas</h6>
-                                            <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajeplaneada">0</span>%</h6>
-                                        </div>
-                                        <div class="d-flex align-items-center mb-2">
-                                            <div class="bullet-item bg-primary-200 me-2"></div>
-                                                <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Faltantes</h6>
-                                                <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajefaltante">0</span>%</h6>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-            </div>
-            <!--<div class="card">
-                <div class="">
-                    <div class="container">
+    <div id="indicadores-dia" class="mb-4">
+        <div class="col-sm-12 bg-white mb-4">
+            <div class="accordion-body bg-white pt-0">
+                <div class="card-body bg-white p-1">
+                    <h5 class="p-1">
+                        Capacidad Productiva &nbsp;
+                        <span id="Fecha_Grafica">{{ \Carbon\Carbon::now()->translatedFormat('d \d\e F \d\e Y') }}</span>
+                    </h5>
+                    <div class="d-flex justify-content-between">
                         <div class="row">
-                            <h6 class="text-700 col-6">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
-                            <h6 class="text-700 col-6">Piezas completadas: <span id="Piezasplaneadas">0</span></h6>
-                            <h6 class="text-700 col-6">Estimado de piezas por día: <span id="Estimadopiezas">0</span></h6>
+                            <h6 class="text-700 col-6">
+                                Cantidad personas: <span id="Cantidadpersonas">0</span>
+                            </h6>
+                            <h6 class="text-700 col-6">
+                                Estimado de piezas por día: <span id="Estimadopiezas">0</span>
+                            </h6>
+                            <h6 class="text-700 col-6">
+                                Piezas Completadas: <span id="Piezasplaneadas">0</span>
+                            </h6>
+                            <h6 class="text-700 col-6">
+                                Piezas faltantes: <span id="Piezasfaltantes">0</span>
+                            </h6>
+                            <h6 class="text-700 col-6"></h6>
+                        </div>
+                    </div>
+                    <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
+                        <div class="p-0" id="PrcentajePlaneacion" style="width: 9rem; height: 9rem"></div>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="bullet-item bg-primary me-2"></div>
+                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">
+                                Porcentaje Completadas
+                            </h6>
+                            <h6 class="text-900 fw-semi-bold mb-0">
+                                <span id="Porcentajeplaneada">0</span>%
+                            </h6>
+                        </div>
 
-                            <h6 class="text-700 col-6">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="bullet-item bg-primary-200 me-2"></div>
+                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">
+                                Porcentaje Faltantes
+                            </h6>
+                            <h6 class="text-900 fw-semi-bold mb-0">
+                                <span id="Porcentajefaltante">0</span>%
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                            <h6 class="text-700 col-12">Total de piezas del día: <span id="Piezasdia">0</span></h6>
+    <div class="row" id="lineas-container"></div>   
+    <div class="card text-center pb-3">
+            <h1 class="progress-title mt-3 mb-4">Indicadores de Producción por Dia</h1>
+            <div class="row justify-content-center">
+                <!-- Órdenes Cerradas (Completadas) -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-check-circle" style="font-size: 30px; color: #28a745;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="ordenesCompletadasDia" class="mb-0">Órdenes Cerradas</h4>
+                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del dia cerradas</p>
                         </div>
                     </div>
                 </div>
-                <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
-                    <div class="p-0" id="PrcentajePlaneacion" style="width: 9rem; height:9rem"></div>
-                </div>
-                <div>
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="bullet-item bg-primary me-2"></div>
-                        <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Completadas</h6>
-                        <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajeplaneada">0</span>%</h6>
-                    </div>
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="bullet-item bg-primary-200 me-2"></div>
-                        <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Faltantes</h6>
-                        <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajefaltante">0</span>%</h6>
-                    </div>
-                </div>
-            </div>-->
-            <div class="card text-center pb-3">
-                <h1 class="progress-title mt-3 mb-4">Indicadores de Producción por Dia</h1>
-                <div class="row justify-content-center">
-                    <!-- Órdenes Cerradas (Completadas) -->
-                    <div class="col-12 col-md-4 mb-4">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                                <i class="fas fa-check-circle" style="font-size: 30px; color: #28a745;"></i>
-                            </span>
-                            <div class="ms-3">
-                                <h4 id="ordenesCompletadasDia" class="mb-0">Órdenes Cerradas</h4>
-                                <p class="text-muted fs--1 mb-0">Órdenes fabricación del dia cerradas</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Órdenes Abiertas (En Proceso) -->
-                    <div class="col-12 col-md-4 mb-4">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                                <i class="fas fa-sync-alt" style="font-size: 30px; color: #ffc107;"></i>
-                            </span>
-                            <div class="ms-3">
-                                <h4 id="ordenesAbiertasDia" class="mb-0">Órdenes Abiertas</h4>
-                                <p class="text-muted fs--1 mb-0">Órdenes fabricación del dia abiertas</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Total de Órdenes -->
-                    <div class="col-12 col-md-4 mb-4">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                                <i class="fas fa-boxes" style="font-size: 30px; color: #007bff;"></i>
-                            </span>
-                            <div class="ms-3">
-                                <h4 id="totalOrdenesDia" class="mb-0">Total De Órdenes</h4>
-                                <p class="text-muted fs--1 mb-0">Total de todas las órdenes del dia</p>
-                            </div>
+                <!-- Órdenes Abiertas (En Proceso) -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-sync-alt" style="font-size: 30px; color: #ffc107;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="ordenesAbiertasDia" class="mb-0">Órdenes Abiertas</h4>
+                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del dia abiertas</p>
                         </div>
                     </div>
                 </div>
-                <div style="height: 10px;"></div>
-                <div class="container">
-                    <div class="row mb-4">
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasCortedia" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasSuministrodia" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasPreparadodia" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasEnsambledia" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasPulidodia" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasMediciondia" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasVisualizaciondia" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasEmpaquedia" width="150" height="150"></canvas>
-                            </div>
+                <!-- Total de Órdenes -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-boxes" style="font-size: 30px; color: #007bff;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="totalOrdenesDia" class="mb-0">Total De Órdenes</h4>
+                            <p class="text-muted fs--1 mb-0">Total de todas las órdenes del dia</p>
                         </div>
                     </div>
                 </div>
             </div>
             <div style="height: 10px;"></div>
-            <div class="card" style="display: none;">
-                <div class="col-10 col-md-18 col-lg-12 mx-auto">
-                    <h1 class="progress-title">Progreso de Piezas por Dia</h1>
-                    <p id="chart-hour-fecha" style="font-size: 14px; color: gray;"></p> 
-                    <div id="chart-hour" class="chart-container"></div>
+            <div class="container">
+                <div class="row mb-4">
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasCortedia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasSuministrodia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasPreparadodia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasEnsambledia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasPulidodia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasMediciondia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasVisualizaciondia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasEmpaquedia" width="150" height="150"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div style="height: 10px;"></div>
-            <div class="card">
-                <p id="grafica-tiempo-dia" style="font-size: 14px; color: gray;"></p> 
-                <div id="grafica-tiempoD" class="chart-container" style="height: 400px;"></div> 
+        </div>
+    <div style="height: 10px;"></div>
+    <div class="card" style="display: none;">
+            <div class="col-10 col-md-18 col-lg-12 mx-auto">
+                <h1 class="progress-title">Progreso de Piezas por Dia</h1>
+                <p id="chart-hour-fecha" style="font-size: 14px; color: gray;"></p> 
+                <div id="chart-hour" class="chart-container"></div>
             </div>
     </div>
-    <!--Progreso de semana-->
-    <div id="indicadores-semana">
+    <div style="height: 10px;"></div>
+    <div class="card">
+            <p id="grafica-tiempo-dia" style="font-size: 14px; color: gray;"></p> 
+            <div id="grafica-tiempoD" class="chart-container" style="height: 400px;"></div> 
+    </div>
+</div>
+<!--Progreso de semana-->
+<div id="indicadores-semana">
+    <div class="card text-center">
+            <h1 class="progress-title mt-3 mb-4">Indicadores de Producción de la semana</h1>
+            <div class="row justify-content-center">
+                <!-- Órdenes Cerradas (Completadas) -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-check-circle" style="font-size: 30px; color: #28a745;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="ordenesCompletadasemana" class="mb-0">Órdenes Cerradas</h4>
+                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del la semana cerradas</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Órdenes Abiertas (En Proceso) -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-sync-alt" style="font-size: 30px; color: #ffc107;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="ordenesAbiertasemana" class="mb-0">Órdenes Abiertas</h4>
+                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del la semana abiertas</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Total de Órdenes -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-boxes" style="font-size: 30px; color: #007bff;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="totalOrdenesemana" class="mb-0">Total De Órdenes</h4>
+                            <p class="text-muted fs--1 mb-0">Total de todas las órdenes del la semana</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="height: 10px;"></div>
+            <div class="container">
+                <div class="row mb-4">
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasCortesemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasSuministrosemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasPreparadosemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasEnsamblesemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasPulidosemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasMedicionsemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasVisualizacionsemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasEmpaquesemana" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <div style="height: 10px;"></div>
+    <div class="card">
+            <h1 class="progress-title">Progreso de la Semana</h1>
+            <p id="chart-day-rango" style="font-size: 14px; color: gray;"></p>  
+            <div id="chart-day" class="chart-container"></div>
+    </div>
+</div>
+<!--progreso de la mes-->
+<div id="indicadores-mes">
+        <div style="height: 10px;"></div>
+        <div class="card" style="display: none">
+            <h1 class="progress-title">Ordenes Fabricación</h1>
+            <div class="grid-container" style="display: flex; justify-content: center;">
+                <div class="grid-item">
+                    <h1 class="small-title"></h1>
+                    <canvas id="plemasordenes" width="700" height="300"></canvas>
+                </div>     
+            </div>
+        </div>
         <div class="card text-center">
-                <h1 class="progress-title mt-3 mb-4">Indicadores de Producción de la semana</h1>
-                <div class="row justify-content-center">
-                    <!-- Órdenes Cerradas (Completadas) -->
-                    <div class="col-12 col-md-4 mb-4">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                                <i class="fas fa-check-circle" style="font-size: 30px; color: #28a745;"></i>
-                            </span>
-                            <div class="ms-3">
-                                <h4 id="ordenesCompletadasemana" class="mb-0">Órdenes Cerradas</h4>
-                                <p class="text-muted fs--1 mb-0">Órdenes fabricación del la semana cerradas</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Órdenes Abiertas (En Proceso) -->
-                    <div class="col-12 col-md-4 mb-4">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                                <i class="fas fa-sync-alt" style="font-size: 30px; color: #ffc107;"></i>
-                            </span>
-                            <div class="ms-3">
-                                <h4 id="ordenesAbiertasemana" class="mb-0">Órdenes Abiertas</h4>
-                                <p class="text-muted fs--1 mb-0">Órdenes fabricación del la semana abiertas</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Total de Órdenes -->
-                    <div class="col-12 col-md-4 mb-4">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                                <i class="fas fa-boxes" style="font-size: 30px; color: #007bff;"></i>
-                            </span>
-                            <div class="ms-3">
-                                <h4 id="totalOrdenesemana" class="mb-0">Total De Órdenes</h4>
-                                <p class="text-muted fs--1 mb-0">Total de todas las órdenes del la semana</p>
-                            </div>
+            <h1 class="progress-title mt-3 mb-4">Indicadores de Producción del Mes</h1>
+            <div class="row justify-content-center">
+                <!-- Órdenes Cerradas (Completadas) -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-check-circle" style="font-size: 30px; color: #28a745;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="ordenesCompletadas" class="mb-0">Órdenes Cerradas</h4>
+                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del mes cerradas</p>
                         </div>
                     </div>
                 </div>
-                <div style="height: 10px;"></div>
-                <div class="container">
-                    <div class="row mb-4">
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasCortesemana" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasSuministrosemana" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasPreparadosemana" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasEnsamblesemana" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasPulidosemana" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasMedicionsemana" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasVisualizacionsemana" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasEmpaquesemana" width="150" height="150"></canvas>
-                            </div>
+                <!-- Órdenes Abiertas (En Proceso) -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-sync-alt" style="font-size: 30px; color: #ffc107;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="ordenesAbiertas" class="mb-0">Órdenes Abiertas</h4>
+                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del mes abiertas</p>
                         </div>
                     </div>
                 </div>
+                <!-- Total de Órdenes -->
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
+                            <i class="fas fa-boxes" style="font-size: 30px; color: #007bff;"></i>
+                        </span>
+                        <div class="ms-3">
+                            <h4 id="totalOrdenes" class="mb-0">Total De Órdenes</h4>
+                            <p class="text-muted fs--1 mb-0">Total de todas las órdenes del mes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="height: 10px;"></div>
+            <div class="container">
+                <div class="row mb-4">
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasCorte" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasSuministro" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasPreparado" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasEnsamble" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasPulido" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasMedicion" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasVisualizacion" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-3">
+                        <div class="grid-item">
+                            <h1 class="small-title"></h1>
+                            <canvas id="plemasEmpaque" width="150" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div style="height: 10px;"></div>
         <div class="card">
-                <h1 class="progress-title">Progreso de la Semana</h1>
-                <p id="chart-day-rango" style="font-size: 14px; color: gray;"></p>  
-                <div id="chart-day" class="chart-container"></div>
+            <h1 class="progress-title">Progreso del Mes</h1>
+            <p id="chart-month-mes" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
+            <div id="chart-month" class="chart-container"></div>
         </div>
-    </div>
-    <!--progreso de la mes-->
-    <div id="indicadores-mes">
-            <div style="height: 10px;"></div>
-            <div class="card" style="display: none">
-                <h1 class="progress-title">Ordenes Fabricación</h1>
-                <div class="grid-container" style="display: flex; justify-content: center;">
-                    <div class="grid-item">
-                        <h1 class="small-title"></h1>
-                        <canvas id="plemasordenes" width="700" height="300"></canvas>
-                    </div>     
-                </div>
-            </div>
-            <div class="card text-center">
-                <h1 class="progress-title mt-3 mb-4">Indicadores de Producción del Mes</h1>
-                <div class="row justify-content-center">
-                    <!-- Órdenes Cerradas (Completadas) -->
-                    <div class="col-12 col-md-4 mb-4">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                                <i class="fas fa-check-circle" style="font-size: 30px; color: #28a745;"></i>
-                            </span>
-                            <div class="ms-3">
-                                <h4 id="ordenesCompletadas" class="mb-0">Órdenes Cerradas</h4>
-                                <p class="text-muted fs--1 mb-0">Órdenes fabricación del mes cerradas</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Órdenes Abiertas (En Proceso) -->
-                    <div class="col-12 col-md-4 mb-4">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                                <i class="fas fa-sync-alt" style="font-size: 30px; color: #ffc107;"></i>
-                            </span>
-                            <div class="ms-3">
-                                <h4 id="ordenesAbiertas" class="mb-0">Órdenes Abiertas</h4>
-                                <p class="text-muted fs--1 mb-0">Órdenes fabricación del mes abiertas</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Total de Órdenes -->
-                    <div class="col-12 col-md-4 mb-4">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                                <i class="fas fa-boxes" style="font-size: 30px; color: #007bff;"></i>
-                            </span>
-                            <div class="ms-3">
-                                <h4 id="totalOrdenes" class="mb-0">Total De Órdenes</h4>
-                                <p class="text-muted fs--1 mb-0">Total de todas las órdenes del mes</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div style="height: 10px;"></div>
-                <div class="container">
-                    <div class="row mb-4">
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasCorte" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasSuministro" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasPreparado" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasEnsamble" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasPulido" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasMedicion" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasVisualizacion" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 col-lg-3">
-                            <div class="grid-item">
-                                <h1 class="small-title"></h1>
-                                <canvas id="plemasEmpaque" width="150" height="150"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="height: 10px;"></div>
-            <div class="card">
-                <h1 class="progress-title">Progreso del Mes</h1>
-                <p id="chart-month-mes" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
-                <div id="chart-month" class="chart-container"></div>
-            </div>
-    </div>
-    <hr class="hr">
+</div>
+<hr class="hr">
 @endsection
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -799,19 +794,14 @@
             //indicadores.scrollIntoView({ behavior: 'smooth' });
         });
     }
-    // Función para inicializar el comportamiento de las secciones
-    function init() {
-        // Al cargar la página, mostrar solo la sección de 'por día' y ocultar las demás
-        document.getElementById('indicadores-dia').style.display = 'block'; // Mostrar 'por día'
-        document.getElementById('indicadores-semana').style.display = 'none'; // Ocultar 'por semana'
-        document.getElementById('indicadores-mes').style.display = 'none'; // Ocultar 'por mes'
-
-        // Configuración de los listeners para cada clic
+    function init() { 
+        document.getElementById('indicadores-dia').style.display = 'block'; 
+        document.getElementById('indicadores-semana').style.display = 'none'; 
+        document.getElementById('indicadores-mes').style.display = 'none';
         setupClickListener('click-dia', 'indicadores-dia', ['indicadores-semana', 'indicadores-mes']);
         setupClickListener('click-semana', 'indicadores-semana', ['indicadores-dia', 'indicadores-mes']);
         setupClickListener('click-mes', 'indicadores-mes', ['indicadores-dia', 'indicadores-semana']);
     }
-    // Llamamos a la función de inicialización cuando la página cargue
     window.onload = init;
     document.addEventListener("DOMContentLoaded", function () {
         PorcentajeLlenadas();
@@ -914,31 +904,24 @@
             .then(response => response.json())
             .then(data => {
                 const datasetSource = [[itemName, ...data.labels]];
-
                 data.series.forEach((serie) => {
                     datasetSource.push([serie.name, ...serie.data]);
                 });
-
-                // Asignar valores a los elementos del HTML
                 const fechaContainer = document.getElementById(`${containerId}-fecha`);
                 const rangoContainer = document.getElementById(`${containerId}-rango`);
                 const mesContainer = document.getElementById(`${containerId}-mes`);
-                
                 if (mesContainer) {
                     mesContainer.classList.add('center-text'); 
                     mesContainer.textContent = ` ${data.mes}`;
                 }
-
                 if (fechaContainer) {
                     fechaContainer.classList.add('center-text'); 
                     fechaContainer.textContent = `${data.fecha}`;
                 }
-
                 if (rangoContainer) {
                     rangoContainer.classList.add('center-text'); 
                     rangoContainer.textContent = ` ${data.rangoSemana}`;
                 }
-
                 const option = {
                 tooltip: { trigger: 'axis' },
                 legend: { left: '5%' },
@@ -2072,5 +2055,109 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
     });
 
 </script>
+
+
+<script>
+fetch("{{ route('lineas.indicador') }}")
+    .then(response => response.json())
+    .then(data => {
+        const porcentajeCerradas = parseFloat(data.porcentajeCerradas) || 0;
+        const porcentajeCompletadas = parseFloat(data.PorcentajeCompletadas) || 0;
+        const totalOfTotal = parseInt(data.TotalOfTotal) || 0;
+        const totalCompletadas = parseInt(data.TotalOFcompletadas) || 0;
+        const faltanteTotal = parseInt(data.faltanteTotal) || 0
+        const container = document.getElementById('lineas-container');
+        container.innerHTML = ''; 
+        data.lineas.forEach(linea => {
+            const card = document.createElement('div');
+            card.classList.add('col-md-4', 'mb-4');
+            card.innerHTML = `
+                <div class="col-sm-12 bg-white mb-4">
+                    <div class="accordion-body bg-white pt-0">
+                        <div class="card-body bg-white p-1">
+                            <h5 class="p-1">
+                                Línea ${linea.id}
+                               
+                            </h5>
+                            <div class="d-flex justify-content-between">
+                                <div class="row">
+                                    <h6 class="text-700 col-6">
+                                        Cantidad personas: <span id="Cantidadpersonas${linea.id}">${linea.cantidad_personas}</span>
+                                    </h6>
+                                    <h6 class="text-700 col-6">
+                                        Estimado de piezas por día: <span id="Estimadopiezas${linea.id}">${linea.estimado_piezas}</span>
+                                    </h6>
+                                    <h6 class="text-700 col-6">
+                                        Piezas Completadas: <span id="Piezasplaneadas${linea.id}">${linea.piezas_completadas}</span>
+                                    </h6>
+                                    <h6 class="text-700 col-6">
+                                        Piezas faltantes: <span id="Piezasfaltantes${linea.id}">${linea.piezas_faltantes}</span>
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
+                                <div class="p-0" id="lineasprocentaje${linea.id}" style="width: 9rem; height: 9rem"></div>
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="bullet-item bg-primary me-2"></div>
+                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">
+                                        Porcentaje Completadas
+                                    </h6>
+                                    <h6 class="text-900 fw-semi-bold mb-0">
+                                        <span id="Porcentajeplaneada${linea.id}">${linea.porcentaje_completadas}</span>%
+                                    </h6>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="bullet-item bg-primary-200 me-2"></div>
+                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">
+                                        Porcentaje Faltantes
+                                    </h6>
+                                    <h6 class="text-900 fw-semi-bold mb-0">
+                                        <span id="Porcentajefaltante${linea.id}">${linea.porcentaje_faltantes}</span>%
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+            var myChart = echarts.init(document.getElementById(`lineasprocentaje${linea.id}`));
+            var option = {
+                tooltip: { trigger: 'item' },
+                legend: { show: false },
+                series: [
+                    {
+                        name: 'Planeación',
+                        type: 'pie',
+                        radius: ['60%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: true,
+                            position: 'center',
+                            formatter: `${linea.porcentaje_completadas.toFixed(2)}%`,
+                            fontSize: 20,
+                            fontWeight: 'bold'
+                        },
+                        labelLine: { show: false },
+                        data: [
+                            { value: linea.piezas_completadas, name: 'Completadas', itemStyle: { color: "#007BFF" } },
+                            { value: linea.piezas_faltantes, name: 'Faltantes', itemStyle: { color: '#D3D3D3' } }
+                        ]
+                    }
+                ]
+            };
+            myChart.setOption(option);
+        });
+    })
+    .catch(error => console.log('Error al obtener los datos:', error));
+</script>
+
 
 @endsection
