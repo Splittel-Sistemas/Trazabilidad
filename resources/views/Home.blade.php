@@ -399,7 +399,7 @@
                                 Estimado de piezas por día: <span id="piezas">0</span>
                             </h6>
                             <h6 class="text-700 col-6">
-                                Piezas Completadas: <span id="Piezaplaneadas">0</span>
+                                Piezas Completadas: <span id="Piezasfinalizadas">0</span>
                             </h6>
                             <h6 class="text-700 col-6">
                                 Piezas faltantes: <span id="Piezafaltantes">0</span>
@@ -1126,7 +1126,7 @@
             // Asignar valores a las variables, asegurando que no sean null o undefined
             const porcentajeCerradas = parseFloat(data.porcentajeCerradas) || 0;  
             const porcentajeCompletadas = parseFloat(data.PorcentajeCompletadas) || 0;  
-            const totalCompletadas = parseInt(data.TotalOfCompletadas) || 0;  
+            const totalCompletadas = parseInt(data.TotalOFcompletadas) || 0;
             const faltanteTotal = parseInt(data.faltanteTotal) || 0;
             const Estimadopiezas = parseFloat(data.Estimadopiezas) || 0;
             const Cantidadpersonas = parseInt(data.Cantidadpersonas) || 0;
@@ -1136,8 +1136,10 @@
             document.getElementById("Cantidad").textContent = Cantidadpersonas;
             document.getElementById("Porcentajeplaneada").textContent = porcentajeCompletadas.toFixed(2);  
             document.getElementById("Porcentajefaltante").textContent = porcentajeCerradas.toFixed(2);  
-            document.getElementById("Piezaplaneadas").textContent = totalCompletadas;
+            document.getElementById("Piezasfinalizadas").textContent = totalCompletadas;
+            //document.getElementById("Piezasfinalizadas").textContent = totalCompletadas;
             document.getElementById("Piezafaltantes").textContent = faltanteTotal;
+            //Piezaplaneadas
 
             // Definir color del gráfico basado en el porcentaje completado
             let color = "#007BFF"; // Color por defecto (azul)
@@ -1997,7 +1999,7 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
                     }
                     $("#Cantidadpersonas").html(response.NumeroPersonas);
                     $("#Estimadopiezas").html(response.CantidadEstimadaDia);
-                    $("#Piezasplaneadas").html(response.PlaneadoPorDia);
+                    //$("#Piezasplaneadas").html(response.PlaneadoPorDia);
                     $("#Porcentajefaltante").html(PorcentajeFaltante);
                     $("#Porcentajeplaneada").html(response.PorcentajePlaneada);
                     $('#Fecha_Grafica').html(response.Fecha_Grafica);
