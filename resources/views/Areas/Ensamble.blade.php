@@ -461,7 +461,7 @@
                 }
             }
         );
-        setInterval(RecargarTablaPendientes,10000);//180000
+        setInterval(RecargarTablaPendientes,180000);//180000
 
     })
     function TipoNoEscaner(TipoEntrada) {
