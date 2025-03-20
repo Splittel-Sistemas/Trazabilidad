@@ -132,9 +132,11 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
-<div class="d-flex justify-content-end">
-    <button class="btn btn-outline-info custom-rounded" type="submit" id="enviaraviso">Nuevo Aviso</button>
-</div>
+@if(Auth::user()->hasPermission("Enviar Avisos"))
+    <div class="d-flex justify-content-end">
+        <button class="btn btn-outline-info custom-rounded" type="submit" id="enviaraviso">Nuevo Aviso</button>
+    </div>
+@endif    
 <div style="height: 5px;"></div>
 <div class="welcome-container"> 
     <i class="far fa-user usuario-icono"></i>

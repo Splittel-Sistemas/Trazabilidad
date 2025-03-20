@@ -80,6 +80,7 @@ class PermissionSeeder extends Seeder
             'Eliminar Empaquetado',
             'Eliminar Usuarios',
             'Eliminar Roles y Permisos',
+            'Enviar Avisos',
         ];        
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
