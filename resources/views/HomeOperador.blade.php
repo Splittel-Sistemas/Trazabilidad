@@ -3,34 +3,38 @@
 @section('styles')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
     body {
- 
         font-family: 'Arial', sans-serif;
     }
+
     .welcome-container {
         text-align: center;
         animation: fadeIn 1s ease-in-out;
         padding: 30px;
         border-radius: 15px;
-     
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     }
+
     .welcome-title {
         font-size: 24px;
         font-weight: bold;
         color: #333;
     }
+
     .user-name {
         font-size: 22px;
         color: #c00000;
         font-weight: bold;
     }
+
     .welcome-message {
         font-size: 16px;
         color: #555;
         margin-top: 15px;
     }
+
     .usuario-icono {
         background: #c00000;
         color: white;
@@ -39,54 +43,127 @@
         border-radius: 50%;
         margin-bottom: 15px;
     }
+
     #clock {
         font-size: 16px;
         margin-top: 10px;
         font-weight: bold;
         color: #c00000;
     }
+
     .messages-container {
         padding: 20px;
-
         border-radius: 15px;
         max-width: 800px;
         margin: 20px auto;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         text-align: center;
     }
-    .message {
 
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        margin-bottom: 15px;
-    }
     .message h3 {
         color: #007BFF;
+        font-size: 20px;
+        margin-bottom: 10px;
     }
+
     .message p {
         color: #555;
+        font-size: 16px;
     }
-    .btn-primary {
-        background: #007BFF;
-        border: none;
-        transition: 0.3s;
-    }
+
     .btn-primary:hover {
         background: #0056b3;
     }
+
+    /* Carrusel */
+    .carousel {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 300px; /* Ajusta el alto del carrusel */
+        margin: 0 auto;
+    }
+
+    .carousel-inner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width:20%;
+    }
+
+    .carousel-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%; /* Hace que cada item ocupe todo el ancho */
+        text-align: center; /* Asegura que el contenido esté centrado */
+        padding: 0 10px; /* Espaciado en los lados */
+    }
+
+    .carousel-item .message {
+        width: 100%; /* Hace que el mensaje ocupe el ancho completo */
+        max-width: 800px; /* Limita el ancho máximo del mensaje */
+        padding: 1px;
+        margin: 0 auto; /* Centra el mensaje */
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-color: #c00000; /* Colores para las flechas */
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        font-size: 1px;
+        color: #c00000;
+    }
+
     @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
     }
 </style>
 @endsection
 
 @section('content')
-<div class="col-12 col-md-1 mb-4 m-1">
+<div id="avisosCarousel" class="carousel slide" data-bs-ride="false">
+    <div class="carousel-inner">
+        @foreach($avisos as $index => $aviso)
+            <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                <div class="message p-3">
+                    <h3>{{ ucwords($aviso->titulo ?? 'Avisos') }}</h3>
+                    <p>{{ $aviso->contenido }}</p>
+                </div>
+            </div>
+        @endforeach
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#avisosCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#avisosCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+
+
+
+
+
+
+
+<div class="col-1 col-md-1 mb-4 m-1">
     <div class="d-flex align-items-center justify-content-center activebtn btn-menu" id="click-dia" style="cursor: pointer;">
-        <span class="fa-stack" style="min-height: 36px; min-width: 40px;">
-            <i class="fas fa-home" style="font-size: 30px; color: #c00000;"></i>
+        <span class="fa-stack" style="min-height: 1px; min-width: 1px;">
+            <i class="fas fa-home" style="font-size: 28px; color: #c00000;"></i>
         </span>
         <div class="ms-1">
             <h4  class="mb-0" style="font-size: 16px; font-weight: 600;">Home</h4>
@@ -111,18 +188,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
-<div class="messages-container">
-    <h4>Avisos</h4>
-    @foreach($avisos as $aviso)
-        <div class="message">
-            <h3>{{ $aviso->titulo ?? 'Avisos' }}</h3>
-            <p>{{ $aviso->contenido }}</p>
-        </div>
-    @endforeach
-    @if($avisos->isEmpty())
-        <p>No hay avisos por el momento.</p>
-    @endif
-</div>
+
+
+@if($avisos->isEmpty())
+    <p>No hay avisos por el momento.</p>
+@endif
+
 <div class="modal fade" id="avisoModal" tabindex="-1" aria-labelledby="avisoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content shadow-lg rounded-4">
@@ -139,7 +210,7 @@
                     </div>
                     <div class="mb-1">
                         <label for="aviso" class="form-label fw-semibold">Aviso</label>
-                        <textarea class="form-control border-2 rounded-3" id="aviso" name="aviso" rows="4" placeholder="Escribe tu aviso aquí..." style="resize: none;"></textarea>
+                        <textarea name="aviso" id="aviso" class="form-control form-control-sm" rows="4" placeholder="Escribe tu aviso aquí..." required></textarea>
                     </div>
                     <div class="mb-1">
                         <label for="fecha" class="form-label fw-semibold">Fecha</label>
@@ -156,6 +227,8 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 <script>
     function updateClock() {
         const now = new Date();
@@ -193,26 +266,14 @@
             messageElement.style.opacity = 1;
         }, 500);
     }
-
     updateMessage();
-</script>
-<script>
-    // Cuando el documento esté listo
     document.addEventListener("DOMContentLoaded", function() {
-        // Selecciona el botón por su id
         const btnAbrirModal = document.getElementById('enviaraviso');
-        
-        // Selecciona el modal de Bootstrap por su id
         const modal = new bootstrap.Modal(document.getElementById('avisoModal'));
-
-        // Agrega un evento de clic al botón
         btnAbrirModal.addEventListener('click', function() {
-            // Abre el modal cuando el botón sea clickeado
             modal.show();
         });
     });
-</script>
-<script>
     setTimeout(function() {
         let alert = document.querySelector(".alert");
         if (alert) {
@@ -220,7 +281,7 @@
             alert.style.opacity = "0";
             setTimeout(() => alert.remove(), 500);
         }
-    }, 3000); // La alerta desaparecerá después de 3 segundos
+    }, 2000); 
 </script>
 
 @endsection
