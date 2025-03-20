@@ -703,7 +703,17 @@ class PlaneacionController extends Controller
                             </tr>
                             <tr>
                                 <th class="table-active">Fecha Planeación</th>
-                                <td class="text-center">'.Carbon::parse($datos->FechaEntrega)->format('d/m/Y').'</td>
+                                <td class="text-center">
+                                    <div class="row d-flex justify-content-center">
+                                        <div class=" col-5 d-flex justify-content-center"">
+                                            <div class="input-group text-center">
+                                                    <input type="date" class="form-control form-control-sm " disabled id="fechaSeleccionada_'.$datos->OrdenFabricacion.'" value="'.$datos->FechaEntrega.'">
+                                                    <button id="btnEditar_'.$datos->OrdenFabricacion.'" class="btn btn-outline-info btn-xs p-1" onclick="mostrarCalendario(\''.$datos->OrdenFabricacion.'\')"><i class="fa-solid fa-pen-to-square"></i></button>
+                                                    <button id="btnGuardar_'.$datos->OrdenFabricacion.'" class="btn btn-success btn-xs p-1 d-none" onclick="guardarFecha(\''.$datos->OrdenFabricacion.'\')">Guardar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                             <tr>
                                 <th class="table-active">Fecha Entrega</th>
@@ -834,4 +844,43 @@ class PlaneacionController extends Controller
         }
         return "Datos guardados correctamente::".$fecha;
     }
+
+    public function ActualizarPlaneacion(Request $request)
+    {
+        try {
+            $ordenFabricacion = $request->input('OrdenFabricacion');
+            $fechaEntrega = $request->input('fecha_entrega');
+    
+            // Validación básica
+            if (!$ordenFabricacion || !$fechaEntrega) {
+                return response()->json(['message' => 'Datos incompletos'], 400);
+            }
+    
+            // Convertir la fecha de entrega a un objeto Carbon
+            $fechaEntregaCarbon = Carbon::parse($fechaEntrega);
+            $fechaActual = Carbon::today();
+    
+            // Validar que la fecha de entrega no sea menor a la fecha actual
+            if ($fechaEntregaCarbon->lt($fechaActual)) {
+                return response()->json(['message' => 'La fecha de entrega no puede ser menor a la fecha actual'], 400);
+            }
+    
+            // Buscar la orden en la base de datos
+            $orden = ordenfabricacion::where('OrdenFabricacion', $ordenFabricacion)->first();
+            if (!$orden) {
+                return response()->json(['message' => 'Orden no encontrada'], 404);
+            }
+    
+            // Actualizar la fecha de entrega
+            $orden->FechaEntrega = $fechaEntrega;
+            $orden->save();
+    
+            return response()->json(['message' => 'Fecha actualizada correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+    
+    
+    
 }    
