@@ -79,7 +79,6 @@
         to { opacity: 1; }
     }
 </style>
-
 <style>
     .carousel-inner {
       position: relative;
@@ -123,17 +122,12 @@
   .custom-rounded {
     border-radius: 15px;
    }
-
-
-
   </style>
 @endsection
 @section('content')
 @php
     $colores = ['#FF5733', '#33B5E5', '#4CAF50', '#FFC107', '#9C27B0']; 
 @endphp
-
-
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         {{ session('success') }}
@@ -186,7 +180,6 @@
             </a>
         </div>
     </div>
-
 </div>
 <div class="modal fade" id="avisoModal" tabindex="-1" aria-labelledby="avisoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -195,7 +188,6 @@
                 <h5 class="modal-title fw-bold text-white" id="avisoModalLabel">Aviso</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            
             <div class="modal-body p-1">
                 <form action="{{ route('guardarAviso') }}" method="POST">
                     @csrf
@@ -266,7 +258,6 @@
             messageElement.style.opacity = 1;
         }, 500);
     }
-
     updateMessage();
     document.addEventListener("DOMContentLoaded", function() {
         const btnAbrirModal = document.getElementById('enviaraviso');
@@ -292,5 +283,4 @@
         }
     }, 3000); 
 </script>
-
 @endsection
