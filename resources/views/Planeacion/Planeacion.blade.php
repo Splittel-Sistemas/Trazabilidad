@@ -1,7 +1,10 @@
 @extends('layouts.menu2')
 @section('title', 'Planeacion')
 @section('styles')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="stylesheet" href="{{asset('css/Planecion.css')}}">
+
+
 @endsection
 @section('content')
     <div class="row gy-3 mb-2 justify-content-between">
@@ -224,6 +227,7 @@
                             </tr>
                         </thead>
                         <tbody id="table-2-content">
+                          
                             <!-- Aquí se añadirán las filas movidas -->
                         </tbody>
                     </table>
@@ -382,6 +386,8 @@
 @endsection
 @section('scripts')
 <script src="{{ asset('js/OrdenesVenta.js') }}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
     $(document).ready(function() {
         $('#element').toast('show');
@@ -440,7 +446,7 @@
             }else{$('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>Filtro: '+OV+'</p>');}
             $.ajax({
                 url: "{{route('PlaneacionFOV')}}", 
-                type: 'POST',
+                type: 'PUT',
                 data: {
                     OV: OV,
                     _token: '{{ csrf_token() }}'  
@@ -1171,5 +1177,95 @@
         errorCantidadPersona.hide(); 
         errorPiezaspersona.hide(); 
     }
+</script>
+<script>
+function mostrarCalendario(OrdenFabricacion) {
+   
+    document.getElementById('btnEditar_' + OrdenFabricacion).classList.add('d-none');
+    $('#fechaSeleccionada_' + OrdenFabricacion).prop('disabled',false);
+    document.getElementById('btnGuardar_' + OrdenFabricacion).classList.remove('d-none');
+}
+function guardarFecha(OrdenFabricacion) {
+    let fecha = document.getElementById('fechaSeleccionada_' + OrdenFabricacion).value;
+    if (!fecha) {
+        Swal.fire({
+            title: 'Atención',
+            text: 'Por favor selecciona una fecha.',
+            icon: 'warning',
+            confirmButtonText: 'Cerrar'
+        });
+        return;
+    }
+
+    // Obtener la fecha actual en formato YYYY-MM-DD
+    let fechaActual = new Date().toISOString().split('T')[0];
+
+    // Validar si la fecha seleccionada es menor a la actual
+    if (fecha < fechaActual) {
+        Swal.fire({
+            title: 'Error',
+            text: 'La fecha no puede ser menor a la fecha actual.',
+            icon: 'error',
+            confirmButtonText: 'Cerrar'
+        });
+        return;
+    }
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Estás a punto de actualizar la fecha de entrega.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, actualizar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+            if (csrfTokenMeta) {
+                let csrfToken = csrfTokenMeta.getAttribute('content');
+                $.ajax({
+                    url: "{{ route('ActualizarPlaneacion') }}",
+                    type: "PUT",
+                    data: {
+                        OrdenFabricacion: OrdenFabricacion,
+                        fecha_entrega: fecha,
+                        _token: csrfToken 
+                    },
+                    success: function(data) {
+                        Swal.fire({
+                            title: 'Éxito',
+                            text: 'La fecha fue actualizada correctamente.',
+                            icon: 'success',
+                            confirmButtonText: 'Cerrar'
+                        });
+                        $('#fechaSeleccionada_' + OrdenFabricacion).prop('disabled',true);
+                        document.getElementById('btnGuardar_' + OrdenFabricacion).classList.add('d-none');
+                        document.getElementById('btnEditar_' + OrdenFabricacion).classList.remove('d-none');
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Hubo un problema al actualizar la fecha.',
+                            icon: 'error',
+                            confirmButtonText: 'Cerrar'
+                        });
+                        console.error('Error:', error);
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se encontró el token CSRF.',
+                    icon: 'error',
+                    confirmButtonText: 'Cerrar'
+                });
+            }
+        }
+    });
+}
+
+
+
+
+
 </script>
 @endsection

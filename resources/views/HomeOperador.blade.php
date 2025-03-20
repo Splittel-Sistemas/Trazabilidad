@@ -13,7 +13,6 @@
         animation: fadeIn 1s ease-in-out;
         padding: 30px;
         border-radius: 15px;
-     
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     }
     .welcome-title {
@@ -80,20 +79,63 @@
         to { opacity: 1; }
     }
 </style>
-@endsection
 
+<style>
+    .carousel-inner {
+      position: relative;
+      overflow: hidden; 
+    }
+    .carousel-item {
+      height: 135px;
+      width: 100%;
+      color: white;
+      position: relative;
+      text-align: center;
+      padding: 20px;
+      transition: transform 0.8s ease-in-out;
+      border-radius: 15px;
+    
+    }
+    .carousel-item div {
+      display: grid;
+      place-items: center;  
+      height: 100%; 
+      width: 100%; 
+    }
+    .carousel-control-prev,
+    .carousel-control-next {
+      z-index: 3;
+      width: 5%;
+    }
+    .carousel-indicators li {
+      background-color: white;
+    }
+    .carousel-title {
+    margin-bottom: -1rem; 
+  }
+
+  .carousel-content {
+    margin-top: 0; 
+  }
+  .custom-rounded {
+    border-radius: 15px;
+   }
+  </style>
+@endsection
 @section('content')
-<div class="col-12 col-md-1 mb-4 m-1">
-    <div class="d-flex align-items-center justify-content-center activebtn btn-menu" id="click-dia" style="cursor: pointer;">
-        <span class="fa-stack" style="min-height: 36px; min-width: 40px;">
-            <i class="fas fa-home" style="font-size: 30px; color: #c00000;"></i>
-        </span>
-        <div class="ms-1">
-            <h4  class="mb-0" style="font-size: 16px; font-weight: 600;">Home</h4>
-            <p class="text-muted fs--1 mb-0"></p>
-        </div>
+@php
+    $colores = ['#FF5733', '#33B5E5', '#4CAF50', '#FFC107', '#9C27B0']; 
+@endphp
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+@endif
+<div class="d-flex justify-content-end">
+    <button class="btn btn-outline-info custom-rounded" type="submit" id="enviaraviso">Nuevo Aviso</button>
 </div>
+<div style="height: 5px;"></div>
 <div class="welcome-container"> 
     <i class="far fa-user usuario-icono"></i>
     <h1 class="welcome-title">Bienvenido</h1>
@@ -102,34 +144,42 @@
     <div id="clock">
         <div id="date"></div>
         <div id="time"></div>
-    </div>
-    <button class="btn btn-outline-info " type="submit" id="enviaraviso">Nuevo Aviso</button>  
+    </div> 
 </div> 
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
-<div class="messages-container">
-    <h4>Avisos</h4>
-    @foreach($avisos as $aviso)
-        <div class="message">
-            <h3>{{ $aviso->titulo ?? 'Avisos' }}</h3>
-            <p>{{ $aviso->contenido }}</p>
+<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="false">
+    <ol class="carousel-indicators">
+      @foreach($avisos as $index => $aviso)
+        <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ $index }}" class="{{ $index === 0 ? 'active' : '' }}"></li>
+      @endforeach
+    </ol>
+    <div class="carousel-inner">
+      @foreach($avisos as $index => $aviso)
+        <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" 
+             style="background-color: {{ $colores[$index % count($colores)] }};">
+            <div>
+                <h3 class="carousel-title">{{ ucwords($aviso->titulo ?? 'Avisos') }}</h3>
+                <p class="carousel-content">{{ $aviso->contenido }}</p>
+            </div>
         </div>
-    @endforeach
-    @if($avisos->isEmpty())
-        <p>No hay avisos por el momento.</p>
-    @endif
+      @endforeach
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
 </div>
 <div class="modal fade" id="avisoModal" tabindex="-1" aria-labelledby="avisoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content shadow-lg rounded-4">
             <div class="modal-header bg-primary text-white rounded-top-4">
-                <h5 class="modal-title fw-bold" id="avisoModalLabel">📢 Escribir un Aviso</h5>
+                <h5 class="modal-title fw-bold text-white" id="avisoModalLabel">Aviso</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            
             <div class="modal-body p-1">
                 <form action="{{ route('guardarAviso') }}" method="POST">
                     @csrf
@@ -138,25 +188,33 @@
                         <input type="text" class="form-control border-2 rounded-3" id="titulo" name="titulo" placeholder="Escribe un título...">
                     </div>
                     <div class="mb-1">
-                        <label for="aviso" class="form-label fw-semibold">Aviso</label>
-                        <textarea class="form-control border-2 rounded-3" id="aviso" name="aviso" rows="4" placeholder="Escribe tu aviso aquí..." style="resize: none;"></textarea>
-                    </div>
-                    <div class="mb-1">
                         <label for="fecha" class="form-label fw-semibold">Fecha</label>
                         <input type="date" class="form-control border-2 rounded-3" id="fecha" name="fecha">
                     </div>
-                    <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary fw-bold px-4 py-2 rounded-3 shadow-sm">Enviar Aviso 🚀</button>
+                    <div class="mb-1">
+                        <label for="aviso" class="form-label fw-semibold">Aviso</label>
+                        <textarea class="form-control border-2 rounded-3" id="aviso" name="aviso" rows="4" placeholder="Escribe tu aviso aquí..." style="resize: none;"></textarea>
                     </div>
+                    <div style="height: 5px;"></div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary fw-bold px-4 py-2 rounded-3 shadow-sm">Enviar </button>
+                    </div>
+                    <div style="height: 5px;"></div>
                 </form>
             </div>
         </div>
     </div>
 </div>
 @endsection
-
 @section('scripts')
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var myCarousel = new bootstrap.Carousel(document.getElementById('carouselExampleIndicators'), {
+            interval: 4000,  
+            ride: true,      
+            wrap: true     
+        });
+    });
     function updateClock() {
         const now = new Date();
         const day = now.getDate();
@@ -171,7 +229,6 @@
     }
     setInterval(updateClock, 1000);
     updateClock();
-
     function updateMessage() {
         const now = new Date();
         const hour = now.getHours();
@@ -195,24 +252,21 @@
     }
 
     updateMessage();
-</script>
-<script>
-    // Cuando el documento esté listo
     document.addEventListener("DOMContentLoaded", function() {
-        // Selecciona el botón por su id
         const btnAbrirModal = document.getElementById('enviaraviso');
-        
-        // Selecciona el modal de Bootstrap por su id
         const modal = new bootstrap.Modal(document.getElementById('avisoModal'));
-
-        // Agrega un evento de clic al botón
         btnAbrirModal.addEventListener('click', function() {
-            // Abre el modal cuando el botón sea clickeado
             modal.show();
         });
     });
-</script>
-<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var fechaInput = document.getElementById('fecha');
+        var today = new Date();
+        var day = String(today.getDate()).padStart(2, '0'); 
+        var month = String(today.getMonth() + 1).padStart(2, '0'); 
+        var year = today.getFullYear();
+        fechaInput.value = year + '-' + month + '-' + day;
+    });
     setTimeout(function() {
         let alert = document.querySelector(".alert");
         if (alert) {
@@ -220,7 +274,7 @@
             alert.style.opacity = "0";
             setTimeout(() => alert.remove(), 500);
         }
-    }, 3000); // La alerta desaparecerá después de 3 segundos
+    }, 3000); 
 </script>
 
 @endsection
