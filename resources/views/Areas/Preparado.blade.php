@@ -573,8 +573,10 @@
                 }else if(response.status=='success'){
                     if(response.Inicio==1){
                         mensaje='Nueva Entrada del Codigo '+CodigoEscaner+' Guardada!';
+                        $('#CodigoEscanerEntrada').focus();
                     }else if(response.Inicio==0){
                         mensaje='Salida del Codigo '+CodigoEscaner+' Guardada!';
+                        $('#CodigoEscanerSalida').focus();
                     }
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html(mensaje);
@@ -611,8 +613,10 @@
                         $('#ToastGuardado').fadeOut();
                     }, 2000);
                 }
-                
-                ListaCodigo(CodigoEscaner,'CodigoEscanerSuministro','Entrada')
+                ListaCodigo(CodigoEscaner,'CodigoEscanerSuministro','Entrada');
+                RecargarTablaPendientes();
+                $('#CodigoEscanerEntrada').val('');
+                $('#CodigoEscanerSalida').val('');
             },
             error: function(xhr, status, error) {
                 $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
