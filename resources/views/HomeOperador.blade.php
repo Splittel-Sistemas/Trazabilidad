@@ -84,16 +84,18 @@
     .carousel-inner {
       position: relative;
       overflow: hidden; 
+      border-radius: 15px;
     }
     .carousel-item {
-      height: 135px;
+      height: 200px;
       width: 100%;
       color: white;
       position: relative;
       text-align: center;
       padding: 20px;
       transition: transform 0.8s ease-in-out;
-      border-radius: 15px;
+     
+      
     
     }
     .carousel-item div {
@@ -101,6 +103,7 @@
       place-items: center;  
       height: 100%; 
       width: 100%; 
+      border-radius: 15px;
     }
     .carousel-control-prev,
     .carousel-control-next {
@@ -111,7 +114,7 @@
       background-color: white;
     }
     .carousel-title {
-    margin-bottom: -1rem; 
+    margin-bottom: 0.5rem; 
   }
 
   .carousel-content {
@@ -120,12 +123,17 @@
   .custom-rounded {
     border-radius: 15px;
    }
+
+
+
   </style>
 @endsection
 @section('content')
 @php
     $colores = ['#FF5733', '#33B5E5', '#4CAF50', '#FFC107', '#9C27B0']; 
 @endphp
+
+
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         {{ session('success') }}
@@ -139,7 +147,7 @@
 @endif    
 <div style="height: 5px;"></div>
 <div class="welcome-container"> 
-    <i class="far fa-user usuario-icono"></i>
+   <!-- <i class="far fa-user usuario-icono"></i>-->
     <h1 class="welcome-title">Bienvenido</h1>
     <h2 class="user-name">{{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}</h2>          
     <p class="welcome-message" id="message"></p>
@@ -147,32 +155,38 @@
         <div id="date"></div>
         <div id="time"></div>
     </div> 
-</div> 
-<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="false">
-    <ol class="carousel-indicators">
-      @foreach($avisos as $index => $aviso)
-        <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ $index }}" class="{{ $index === 0 ? 'active' : '' }}"></li>
-      @endforeach
-    </ol>
-    <div class="carousel-inner">
-      @foreach($avisos as $index => $aviso)
-        <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" 
-             style="background-color: {{ $colores[$index % count($colores)] }};">
-            <div>
-                <h3 class="carousel-title">{{ ucwords($aviso->titulo ?? 'Avisos') }}</h3>
-                <p class="carousel-content">{{ $aviso->contenido }}</p>
+    <div style="height: 5px;"></div>
+    
+    <div class="card">
+        <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="false">
+            <ol class="carousel-indicators">
+            @foreach($avisos as $index => $aviso)
+                <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ $index }}" class="{{ $index === 0 ? 'active' : '' }}"></li>
+            @endforeach
+            </ol>
+            <div class="carousel-inner">
+                @foreach($avisos as $index => $aviso)
+                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" 
+                    style="background-color: {{ $colores[$index % count($colores)] }};">
+                    <div class="carousel-content-wrapper" style="max-height: 200px; overflow-y: auto; padding: 10px;">
+                        <h3 class="carousel-title">{{ ucwords($aviso->titulo ?? 'Avisos') }}</h3>
+                        <p class="carousel-content">{{ $aviso->contenido }}</p>
+                    </div>
+                </div>
+            @endforeach
+            
             </div>
+            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+            </a>
         </div>
-      @endforeach
     </div>
-    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
+    
 </div>
 <div class="modal fade" id="avisoModal" tabindex="-1" aria-labelledby="avisoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
