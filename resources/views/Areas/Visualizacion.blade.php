@@ -21,84 +21,76 @@
     <div class="row">
         <div class="col-6">
             <div class="card shadow-sm">
-                <div class="card-header p-2" id="filtroEntrada" style="background: #005187">
-                    <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Entrada</h3>
+              <div class="card-header p-2" id="filtroEntrada" style="background: #005187">
+                  <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Entrada</h3>
+              </div>
+              <div class="card-body row" id="filtroEntrada">
+                  <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
+                      <div class="col-8" id="CodigoDiv">
+                          <div class="">
+                              <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
+                              <div class="input-group">
+                                  <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro','Entrada')" id="CodigoEscanerEntrada" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
+                                  <div class="invalid-feedback" id="error_CodigoEscaner"></div>
+                              </div>
+                              <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-4" id="CantidadDiv" style="display: none">
+                          <div class="form-group">
+                              <label for="Cantidad">Cantidad</label>
+                              <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
+                              <div class="invalid-feedback" id="error_Cantidad"></div>
+                          </div>
+                      </div>
+                      <div class="col-6 mt-2" id="RetrabajoDiv" style="display: none">
+                          <div class="form-check">
+                              <input class="form-check-input" id="Retrabajo" type="checkbox" />
+                              <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
+                          </div>
+                      </div>
+                      <div class="col-6 mt-2" id="IniciarBtn" style="display: none">
+                          <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i> Iniciar</button>
+                      </div>
+                  </form>
+              </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card shadow-sm">
+                <div class="card-header p-2" id="filtroEntrada" style="background:#D21637;">
+                    <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Salida</h3>
                 </div>
-                <div class="card-body row" id="filtro">
+                <div class="card-body row" id="filtroSalida">
                     <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
                         <div class="col-8" id="CodigoDiv">
                             <div class="">
                                 <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
-                                <!--<a href=""><i class="fa fa-toggle-on"></i></a>-->
                                 <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro','Entrada')" id="CodigoEscanerEntrada" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
-                                    <div class="invalid-feedback" id="error_CodigoEscaner"></div>
+                                    <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro','Salida')" id="CodigoEscanerSalida" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
+                                    <div class="invalid-feedback" id="error_CodigoEscanerSalida"></div>
                                 </div>
                                 <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
                                 </div>
                             </div>
                         </div>
-                        <div class="col-4" id="CantidadDiv" style="display: none">
+                        <div class="col-4" id="CantidadDivSalida" style="display: none">
                             <div class="form-group">
                                 <label for="Cantidad">Cantidad</label>
-                                <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
-                                <div class="invalid-feedback" id="error_Cantidad"></div>
+                                <input type="text" class="form-control form-control-sm" id="CantidadSalida" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
+                                <div class="invalid-feedback" id="error_CantidadSalida"></div>
                             </div>
                         </div>
-                        <div class="col-6 mt-2" id="RetrabajoDiv" style="display: none">
-                            <div class="form-check">
-                                <input class="form-check-input" id="Retrabajo" type="checkbox" />
-                                <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
-                            </div>
-                        </div>
-                        <div class="col-6 mt-2" id="IniciarBtn" style="display: none">
-                            <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i> Iniciar</button>
+                        <div class="col-12 mt-2" id="IniciarBtnSalida" style="display: none">
+                            <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanearSalida"><i class="fa fa-play"></i> Cerrar</button>
                         </div>
                     </form>
                 </div>
-          </div>
-        </div>
-        <div class="col-6">
-                <div class="card shadow-sm">
-                    <div class="card-header p-2" id="filtroEntrada" style="background:#D21637;">
-                        <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Salida</h3>
-                    </div>
-                    <div class="card-body row" id="filtro">
-                        <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
-                            <div class="col-8" id="CodigoDiv">
-                                <div class="">
-                                    <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
-                                    <!--<a href=""><i class="fa fa-toggle-on"></i></a>-->
-                                    <div class="input-group">
-                                        <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro','Salida')" id="CodigoEscanerSalida" aria-describedby="CodigoEscanerSalida" placeholder="Escánea o ingresa manualmente.">
-                                        <div class="invalid-feedback" id="error_CodigoEscaner"></div>
-                                    </div>
-                                    <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-4" id="CantidadDiv" style="display: none">
-                                <div class="form-group">
-                                    <label for="Cantidad">Cantidad</label>
-                                    <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
-                                    <div class="invalid-feedback" id="error_Cantidad"></div>
-                                </div>
-                            </div>
-                            <div class="col-6 mt-2" id="RetrabajoDiv" style="display: none">
-                                <div class="form-check">
-                                    <input class="form-check-input" id="Retrabajo" type="checkbox" />
-                                    <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
-                                </div>
-                            </div>
-                            <div class="col-6 mt-2" id="IniciarBtn" style="display: none">
-                                <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i> Iniciar</button>
-                            </div>
-                        </form>
-                    </div>
             </div>
         </div>
         <div id="ContentTabla" class="col-12 mt-2" style="display: none">
-            <div class="card" id="DivCointainerTableSuministro">
+            <div class="card" id="DivCointainerTableSuministro" >
             </div>
         </div>
         <div id="ContentTablaPendientes" class="col-12 mt-2">
