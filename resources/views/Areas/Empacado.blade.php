@@ -219,9 +219,9 @@
                                 //$('#CodigoEscaner').val('');
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> guardado correctamente!';
                                     Color='bg-success';
+                                    $('#CodigoEscaner').val('');
+                                    $('#Cantidad').val('');
                                     break;
-                                   
-                                    
                                 case 2:
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> Ya Registrado!';
                                     Color='bg-warning';
@@ -460,10 +460,30 @@
                         $('#ToastGuardado').fadeOut();
                     }, 2000);
                 }else if(response.status=='success'){
+                    $('#CodigoEscaner').val('');
+                    $('#Cantidad').val('');
                     if(response.Inicio==1){
                         mensaje='Nueva Entrada del Codigo '+CodigoEscaner+' Guardada!';
                     }else if(response.Inicio==0){
                         mensaje='Salida del Codigo '+CodigoEscaner+' Guardada!';
+                    }
+                    if(response.Terminada==0){
+                        Swal.fire({
+                            title: "Orden de Fabricación completada",
+                            text: "¿Desea Finalizar la Orden de Fabricación "+response.OrdenFabricacion+"?",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#d33",
+                            cancelButtonColor: "#808080",
+                            cancelButtonText: "Cancelar",
+                            confirmButtonText: "Finalizar",
+                            didOpen: () => {
+                                // Access the confirm button and add classes and data-id attribute
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.classList.add("finalizar-btn");
+                                confirmButton.setAttribute("data-id", "133478");
+                            }
+                        })
                     }
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html(mensaje);
@@ -572,8 +592,8 @@
                         console.log("ID de la orden a finalizar:", id);
 
                         confirmacionesss(
-                            "¿Estás seguro de que deseas finalizar esta orden?", 
-                            "", 
+                            "Finalizar Orden de Fabricación", 
+                            "¿Estás seguro de que deseas finalizar esta orden de Fabricación?", 
                             "Confirmar", 
                             function () {
                                 $.ajax({
@@ -632,7 +652,6 @@
                 }
             });
         }
-    
 </script>
 <script>
     function confirmacionesss(titulo, mensaje, confirmButtonText, funcion) {
@@ -657,7 +676,7 @@
             }
         });
     }
-    async function CancelarPartida(id) {
+    async function CancelarPartida(id,Codigo) {
     const confirmacionRespuesta = await confirmacionesss(
         "¿Estás seguro de que deseas cancelar esta partida?", 
         "", 
@@ -671,14 +690,11 @@
                     _token: '{{ csrf_token() }}'
                 },
                 success: function(response) {
-                    console.log("Respuesta del servidor:", response); 
-
                     if (response.status == "success") {
                         toastr.success(response.message, 'Éxito');
                         $('#registro-' + id).remove();  
-                        ListaCodigo(response);  
-
-
+                        //ListaCodigo(response);  
+                        ListaCodigo(Codigo,'CodigoEscanerSuministro')
                         setTimeout(function() {
                             console.log("Recargando la tabla...");
                             cargarTablaEmpacado();  
@@ -692,10 +708,10 @@
                 }
             });
         }
-    );
-    if (!confirmacionRespuesta) {
-        toastr.info('La acción fue cancelada', 'Información');
+        );
+        if (!confirmacionRespuesta) {
+            toastr.info('La acción fue cancelada', 'Información');
+        }
     }
-}
 </script>
 @endsection

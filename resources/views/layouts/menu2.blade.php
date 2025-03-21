@@ -91,7 +91,7 @@
                                 </div>
                             @endif                           
                         </li>
-                        @if(Auth::user()->hasPermission("Vista Busquedas"))
+                        @if(Auth::user()->hasPermission("Vista Busqueda"))
                             <li class="nav-item"><!-- Progreso-->
                                 <p class="navbar-vertical-label">B&uacute;squeda</p>
                                 <hr class="navbar-vertical-line" /><!-- parent pages-->

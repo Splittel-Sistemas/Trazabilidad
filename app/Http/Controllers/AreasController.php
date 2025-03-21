@@ -1076,10 +1076,11 @@ class AreasController extends Controller
                         ]);
                     }
                 }elseif($Area==9){
+                    //Total que paso del area anterior
                     $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$Area-1)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
                                             -$partidasOF->Areas()->where('Areas_id',$Area-1)->where('TipoPartida', '=','F')->get()->SUM('pivot.Cantidad');
                     $NumeroPartidasTodasAnterior = $partidasOF->Areas()->where('Areas_id',$Area-1)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-$NumeroPartidasTodas;
-                    $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','N')->whereNull('Fechatermina')->get()->SUM('pivot.Cantidad');
+                    $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','N')->whereNotNull('Fechatermina')->get()->SUM('pivot.Cantidad');
                     $NumeroPartidasAbiertas=$NumeroPartidasAbiertas+$Cantidad;
                     if($NumeroPartidasAbiertas>$NumeroPartidasTodasAnterior){
                         return response()->json([
@@ -1101,10 +1102,18 @@ class AreasController extends Controller
                         'Users_id' => $this->funcionesGenerales->InfoUsuario(),
                     ];
                     $partidasOF->Areas()->attach($Area, $data);
+                    $Partidastodas = $datos->partidasOF;
+                    $TotalActual=0;
+                    foreach($Partidastodas as $CantidadTotal){
+                        $TotalActual = $CantidadTotal->Areas()->where('Areas_id',$Area)->get()->SUM('pivot.Cantidad');
+                    }
+                    $Terminada= $datos->CantidadTotal-$TotalActual;
                     return response()->json([
                         'Inicio'=>$Inicio,
                         'Fin'=>$Fin,
                         'status' => "success",
+                        'Terminada'=>$Terminada,
+                        'OrdenFabricacion'=>$datos->OrdenFabricacion,
                         'OF' => $CodigoPartes[0],       
                     ]);
                 }else{//Todas las Areas excepto 4 y 9
@@ -2830,7 +2839,7 @@ class AreasController extends Controller
                                         <td class=" ps-3 NumParte">' . $datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '</td>
                                         <td class="ps-3   Cantidad">' . $PartdaAr['pivot']->Cantidad . '</td>
                                        <td class="ps-3 Regresar">
-                                            <button class="btn btn-primary btn-sm m-0 p-1" onclick="CancelarPartida('.$PartdaAr['pivot']->id.')">Cancelar</button>
+                                            <button class="btn btn-primary btn-sm m-0 p-1" onclick="CancelarPartida('.$PartdaAr['pivot']->id.',\''.$datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '\')">Cancelar</button>
                                         </td>
                                     </tr>';
                             }
@@ -2844,7 +2853,7 @@ class AreasController extends Controller
                                         <td class=" ps-3 NumParte">' . $datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '</td>
                                         <td class="ps-3   Cantidad">' . $PartdaAr['pivot']->Cantidad . '</td>
                                         <td class="ps-3 Regresar">
-                                            <button class="btn btn-primary btn-sm m-0 p-1" onclick="CancelarPartida('.$PartdaAr['pivot']->id.')">Cancelar</button>
+                                            <button class="btn btn-primary btn-sm m-0 p-1" onclick="CancelarPartida('.$PartdaAr['pivot']->id.',\''.$datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '\')">Cancelar</button>
                                         </td>
                                     </tr>';
                             }
@@ -2964,7 +2973,9 @@ class AreasController extends Controller
     }
     public function RegresarProceso(Request $request){
         $partidaOfAreaId = $request->input('id'); 
-
+        $Partidasof_Areas=Partidasof_Areas::where('id',$partidaOfAreaId)->first();
+        $PartidasOF=PartidasOF::where('id',$Partidasof_Areas->PartidasOF_id)->first();
+        $OrdenFabricacion=$PartidasOF->OrdenFabricacion;
         // Intentamos eliminar la partida
         $deleted = DB::table('partidasof_areas')
             ->where('id', $partidaOfAreaId)
@@ -2972,6 +2983,8 @@ class AreasController extends Controller
 
         // Devolvemos una respuesta JSON según el resultado de la eliminación
         if ($deleted) {
+            $OrdenFabricacion->Cerrada=1;
+            $OrdenFabricacion->save();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Partida eliminada exitosamente.',
