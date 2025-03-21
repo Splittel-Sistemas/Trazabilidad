@@ -55,27 +55,41 @@ class BusquedaController extends Controller
     //boton detalles de la orden de venta        
     public function detallesventa(Request $request)
     {
-    
         $idVenta = $request->input('id');
+        $total = DB::table('ordenventa')
+            ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
+            ->where('ordenventa.OrdenVenta', $idVenta)
+            ->select(
+                'ordenventa.OrdenVenta',
+                DB::raw('MAX(ordenfabricacion.OrdenFabricacion) as OrdenFabricacion'),
+                DB::raw('SUM(ordenfabricacion.CantidadTotal) as CantidadTotal')
+            )
+            ->groupBy('ordenventa.OrdenVenta')
+            ->first();
 
         $partidasAreas = DB::table('ordenventa')
-            ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id') 
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-            ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
-            ->join('areas', 'partidasof_areas.Areas_id', '=', 'areas.id') 
-            ->where('ordenventa.OrdenVenta', $idVenta) 
+            ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->join('areas', 'partidasof_areas.Areas_id', '=', 'areas.id')
+            ->where('ordenventa.OrdenVenta', $idVenta)
             ->whereIn('partidasof_areas.Areas_id', [9])
-
-            ->select('partidasof_areas.PartidasOF_id', 'areas.nombre as Estado', 'ordenventa.OrdenVenta') 
+            ->select('partidasof_areas.NumeroEtiqueta', 'partidasof_areas.Cantidad', 'partidasof_areas.PartidasOF_id', 'ordenventa.OrdenVenta', 'ordenfabricacion.OrdenFabricacion')
             ->get();
-        if ($partidasAreas->isEmpty()) {
-        
-            $partidasAreas = null; 
-        }
+
+        $cantidadPartidas = $partidasAreas->sum('Cantidad');
+        $cantidadTotal = $total->CantidadTotal ?? 1; // Evita división por cero
+        $porcentaje = ($cantidadPartidas / $cantidadTotal) * 100;
 
         return response()->json([
-            'partidasAreas' => $partidasAreas 
+            "OrdenVenta" => $total->OrdenVenta,
+            "OrdenFabricacion" => $total->OrdenFabricacion,
+            "CantidadTotal" => $cantidadTotal,
+            "Cantidad" => $cantidadPartidas,
+            "Porcentaje" => round($porcentaje, 2), // Sin símbolo "%"
+            "partidasAreas" => $partidasAreas
         ]);
+
     }
 
     

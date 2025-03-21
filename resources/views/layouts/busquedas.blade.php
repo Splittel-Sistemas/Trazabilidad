@@ -592,8 +592,6 @@
                             Detalles De Orden Venta:
                             <span id="ordenVentaNumero" class="ms-3 text-muted"></span>
                         </h5>
-                        
-                        
                         <button type="button" class="btn p-1" data-bs-dismiss="modal" aria-label="Close">
                             <svg class="svg-inline--fa fa-xmark fs--1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
                                 <path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"></path>
@@ -746,77 +744,66 @@
         $('#stage7').data('ordenventa', ordenVenta);
         $('#stage8').data('ordenventa', ordenVenta);
         $('#stage9').data('ordenventa', ordenVenta);
-
         $('.progress-bar').css('width', '0%').text('0%');
         $('.progress-bar-stages .stage').removeClass('pending active completed no-data').addClass('pending');
-
         $.ajax({
-            url: '{{ route("Buscar.Venta.Detalle") }}',
-            type: 'GET',
-            data: { id: ordenVenta },
-            success: function (response) {
-                if (response.partidasAreas) {
-                    var totalEtapas = $('.progress-bar-stages .stage').length;
-                    var etapasCompletadas = 0;
+                url: '{{ route("Buscar.Venta.Detalle") }}',
+                type: 'GET',
+                data: { id: ordenVenta },
+                success: function (response) {
+                    if (response.partidasAreas.length > 0) {
+                        var totalEtapas = $('.progress-bar-stages .stage').length;
+                        var etapasCompletadas = 0;
+                        response.partidasAreas.forEach(function (partida) {
+                            var estadoId = {
+                                'planeacion': '#stage1',
+                                'corte': '#stage2',
+                                'suministro': '#stage3',
+                                'preparado': '#stage4',
+                                'ensamble': '#stage5',
+                                'pulido': '#stage6',
+                                'medicion': '#stage7',
+                                'visualizacion': '#stage8',
+                                'Abierto': '#stage9',
+                            }[partida.Estado];
 
-                    response.partidasAreas.forEach(function (partida) {
-                        var estadoId = {
-                            'planeacion': '#stage1',
-                            'corte': '#stage2',
-                            'suministro': '#stage3',
-                            'preparado': '#stage4',
-                            'ensamble': '#stage5',
-                            'pulido': '#stage6',
-                            'medicion': '#stage7',
-                            'visualizacion': '#stage8',
-                            'Abierto': '#stage9',
-                        }[partida.Estado];
+                            if (estadoId) {
+                                $(estadoId).removeClass('pending active no-data').addClass('completed');
+                                etapasCompletadas++;
+                            }
+                        });
+                        var estadoActivo = response.partidasAreas.find(partida => partida.EstadoActual);
+                        if (estadoActivo) {
+                            var activoId = {
+                                'planeacion': '#stage1',
+                                'corte': '#stage2',
+                                'suministro': '#stage3',
+                                'preparado': '#stage4',
+                                'ensamble': '#stage5',
+                                'pulido': '#stage6',
+                                'medicion': '#stage7',
+                                'visualizacion': '#stage8',
+                                'Abierto': '#stage9',
+                            }[estadoActivo.Estado];
 
-                        if (estadoId) {
-                            $(estadoId).removeClass('pending active no-data').addClass('completed');
-                            etapasCompletadas++;
+                            if (activoId) {
+                                $(activoId).removeClass('pending completed').addClass('active');
+                            }
                         }
-                    });
-
-                    var estadoActivo = response.partidasAreas.find(partida => partida.EstadoActual);
-                    if (estadoActivo) {
-                        var activoId = {
-                            'planeacion': '#stage1',
-                            'corte': '#stage2',
-                            'suministro': '#stage3',
-                            'preparado': '#stage4',
-                            'ensamble': '#stage5',
-                            'pulido': '#stage6',
-                            'medicion': '#stage7',
-                            'visualizacion': '#stage8',
-                            'Abierto': '#stage9',
-                        }[estadoActivo.Estado];
-
-                        if (activoId) {
-                            $(activoId).removeClass('pending completed').addClass('active');
-                        }
+                        var porcentaje = response.Porcentaje;
+                        $('#progressBar').css('width', porcentaje + '%').text(porcentaje + '%');
+                        $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
+                    } else {
+                        $('.progress-bar-stages .stage').addClass('no-data');
+                        $('#progressBar').css('width', '0%').text('0%');
+                        $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
                     }
-
-                    // Actualizar el porcentaje de progreso
-                    var porcentaje = Math.round((etapasCompletadas / totalEtapas) * 100);
-                    $('#progressBar').css('width', porcentaje + '%').text(porcentaje + '%');
-
-                    // Actualiza el número de la orden en el modal
-                    $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
-                } else {
-                    // Si no hay datos, aplica el estado "no-data"
-                    $('.progress-bar-stages .stage').addClass('no-data');
-                    $('#progressBar').css('width', '0%').text('0%');
-                    // También puedes actualizar el número de orden en este caso
-                    $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
+                    $('#exampleModal').modal('show');
+                },
+                error: function () {
+                    alert('Error al obtener los datos de la venta.');
                 }
-
-                $('#exampleModal').modal('show');
-            },
-            error: function () {
-                alert('Error al obtener los datos de la venta.');
-            }
-        });
+            });
             const endpoints = [
             { tipo: 'cortes', id: 'corte' },
             { tipo: 'suministros', id: 'suministro' },
@@ -827,7 +814,6 @@
             { tipo: 'visualizacion', id: 'visualizacion' },
             { tipo: 'empaque', id: 'empaque' },
         ];
-
         // Verifica si la variable ordenVenta está definida
         if (typeof ordenVenta === "undefined" || ordenVenta === null) {
             console.error("Error: ordenVenta no está definida.");
@@ -860,7 +846,6 @@
             });
         }
     });
-
     // Cargar datos de la tabla de orden de fabricación
     $('#Btn-BuscarOrden').on('click', function () {
         var search = $('#NumeroOrden').val().trim();
@@ -1223,7 +1208,6 @@
             }
         });
     }
-
     //funcion para cargar los canvases general para Or-V Y Or-F
     function drawGauge(canvasId, value, label) {
         const canvas = document.getElementById(canvasId);
@@ -1312,7 +1296,6 @@
             loadProgressData(ordenVenta, stageId); // Llamada unificada
         });
     });
-
     // Función para cargar los datos de progreso combinados
     function loadProgressData(ordenVenta, stageId) {
         $.ajax({
@@ -1397,7 +1380,6 @@
             }
         });
     }
-
     // Cuando se haga clic en una fila para seleccionar la OrdenFabricacion
     $(document).on('click', '.ver-fabricacion', function () {
         var ordenfabricacion = $(this).data('ordenfabricacion');  // Obtener el valor de ordenfabricacion desde la fila
@@ -1410,7 +1392,6 @@
         // Si deseas que el texto del botón también cambie para indicar la orden seleccionada:
        // $('.VerMas').text(` Orden ${ordenfabricacion} +`);
     });
-
     // Lógica cuando se hace clic en el botón VerMas
     $(document).on('click', '.VerMas', function (e) {
         var ordenfabricacion = $(this).data('ordenfabricacion');
