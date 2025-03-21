@@ -33,10 +33,10 @@
     .usuario-icono {
         background: #c00000;
         color: white;
-        padding: 20px;
+        padding: 12px;
         font-size: 50px;
         border-radius: 50%;
-        margin-bottom: 15px;
+        margin-bottom: 1px;
     }
     #clock {
         font-size: 16px;
@@ -123,7 +123,7 @@
     border-radius: 15px;
    }
    .hr{
-            border-top: 10px solid rgb(189, 42, 42); 
+            border-top: 1px solid rgb(189, 42, 42); 
             width: 100%; 
             margin: 1px auto;
         }
@@ -139,17 +139,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
-<hr class="hr">
 <div style="height: 8px;"></div>
 @if(Auth::user()->hasPermission("Enviar Avisos"))
     <div class="d-flex justify-content-end">
         <button class="btn btn-outline-info custom-rounded" type="submit" id="enviaraviso">Nuevo Aviso</button>
     </div>
 @endif    
-
-
 <div class="welcome-container"> 
-   <!-- <i class="far fa-user usuario-icono"></i>-->
+    <i class="far fa-user usuario-icono"></i>
     <h1 class="welcome-title">Bienvenido</h1>
     <h2 class="user-name">{{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}</h2>          
     <p class="welcome-message" id="message"></p>
@@ -157,7 +154,6 @@
         <div id="date"></div>
         <div id="time"></div>
     </div> 
-
     <div class="card">
         <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="false">
             <ol class="carousel-indicators">
@@ -189,7 +185,6 @@
     </div>
 </div>
 <div style="height: 30px;"></div>
-<hr class="hr">
 <div class="modal fade" id="avisoModal" tabindex="-1" aria-labelledby="avisoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content shadow-lg rounded-4">
