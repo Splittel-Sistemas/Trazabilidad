@@ -86,8 +86,8 @@
                                 <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
                             </div>
                         </div>
-                        <div class="col-6 mt-2" id="IniciarBtn" style="display: none">
-                            <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i> Iniciar</button>
+                        <div class="col-12 mt-2" id="IniciarBtn" style="display: none">
+                            <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i>Guardar</button>
                         </div>
                     </form>
                 </div>
@@ -166,7 +166,6 @@
             success: function(response) {
                 $('#CantidadDiv').hide();
                 $('#IniciarBtn').hide();
-                $('#RetrabajoDiv').hide();
                 setTimeout(function() {
                             console.log("Recargando la tabla...");
                             cargarTablaEmpacado();  
@@ -189,7 +188,6 @@
                         }
                         $('#CantidadDiv').fadeOut();
                         $('#IniciarBtn').fadeOut();
-                        $('#RetrabajoDiv').fadeOut();
                         if(response.EscanerExiste==0){
                             Mensaje='Codigo '+Codigo+' El codigo que intentas ingresar No existe!';
                             Color='bg-danger';
@@ -203,7 +201,6 @@
                             $('#ContentTabla').show();
                             $('#CantidadDiv').fadeIn();
                             $('#IniciarBtn').fadeIn();
-                            $('#RetrabajoDiv').fadeIn();
                             if(Inicio==1){
                                 const Retrabajo = document.getElementById('Retrabajo');
                                 Retrabajo.disabled = false;
@@ -320,7 +317,6 @@
             }
         }); 
     }
-  
     function TraerDatos(id,OF){
         $('#CodigoEscaner').val(OF+"-"+id);
         $('#CodigoEscanerSuministro').html('');
@@ -365,27 +361,6 @@
             }
         });
     }
-    /*
-    function TablaList(TableName){
-        var options = {
-            valueNames: ['NumParte', 'Cantidad'],
-                page: 10,  
-                pagination: true,
-               
-        };
-        userList = new List(TableName, options);
-        userList.sort('Inicio', { order: 'desc' });
-        document.querySelector('[data-list-filter="data-list-filter"]').addEventListener('change', function() {
-            var filterValue = this.value; // Obtener el valor seleccionado
-            if (filterValue === "") {
-                userList.filter();  // Si no hay filtro seleccionado, muestra todos los elementos
-            } else {
-                userList.filter(function(item) {
-                    return item.values().Estatus.toLowerCase().includes(filterValue.toLowerCase());
-                });
-            }
-        });
-    }*/
     $(document).ready(function() {
         cargarTablaEmpacado();
         $('#Cantidad').on('input', function() {
@@ -399,25 +374,7 @@
             Cantidad=$('#Cantidad').val();
             Retrabajo=document.getElementById('Retrabajo').checked;
             InicioInput = document.getElementById('Iniciar');
-            if(Retrabajo && InicioInput.checked){
-                Swal.fire({
-                    title: 'Retrabajo',
-                    text: `¿Desea enviar ${Cantidad} piezas con código ${CodigoEscaner} a Retrabajo?`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Confirmar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    // Verificar si el usuario presionó "Confirmar"
-                    if (result.isConfirmed) {
-                        TipoNoEscaner();
-                    } else {
-                        return 0;
-                    }
-                })
-            }else{
                 TipoNoEscaner();
-            }
         });
     })
     function TipoNoEscaner() {
@@ -571,8 +528,6 @@
     }
 </script>
 <script>
-        /*setInterval(cargarTablaEmpacado, 10000);*/
-
         function cargarTablaEmpacado() {
             $.ajax({
                 url: '{{ route("tabla.principal") }}',
