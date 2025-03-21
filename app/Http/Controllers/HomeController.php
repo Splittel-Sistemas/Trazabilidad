@@ -163,12 +163,29 @@ class HomeController extends Controller
     {
         $fechaInicio = now()->startOfMonth(); // Primer día del mes actual
         $fechaFin = now()->endOfMonth(); // Último día del mes actual
+        $area9 = DB::table('partidasof_areas')
+        ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
+        ->whereBetween('ordenfabricacion.FechaEntrega', [$fechaInicio, $fechaFin]) // Filtrar por el mes actual
+        ->where('partidasof_areas.Areas_id', 9)
+        ->where('ordenfabricacion.Cerrada', 0)
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            'ordenfabricacion.CantidadTotal',
+            'partidasof_areas.Areas_id',
+            DB::raw('GROUP_CONCAT(partidasof_areas.id) as id'),
+            'ordenfabricacion.FechaEntrega',
+            DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),
+            DB::raw('ROUND(LEAST((SUM(partidasof_areas.Cantidad) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso')
+        )
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
+        ->get();
 
         $areas = DB::table('partidasof_areas')
             ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
             ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
             ->whereBetween('ordenfabricacion.FechaEntrega', [$fechaInicio, $fechaFin]) // Filtrar por el mes actual
-            ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9])
+            ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8])
             ->select(
                 'ordenfabricacion.OrdenFabricacion',
                 'ordenfabricacion.CantidadTotal',
@@ -206,16 +223,19 @@ class HomeController extends Controller
             6 => 'plemasPulido',
             7 => 'plemasMedicion',
             8 => 'plemasVisualizacion',
-            9 => 'plemasEmpaque'
+            
         ];
 
         $estacionesCortes = [
             2 => 'plemasCorte'
         ];
+        $estacionEmpacado = [
+            9 => 'plemasEmpaque'
+        ];
 
         $datos = [];
 
-        foreach (array_merge($estacionesAreas, $estacionesCortes) as $estacion) {
+        foreach (array_merge($estacionesAreas, $estacionesCortes, $estacionEmpacado) as $estacion) {
             $datos[$estacion] = [
                 'completado' => 0,
                 'pendiente' => 0,
@@ -228,6 +248,18 @@ class HomeController extends Controller
                 $nombreEstacion = $estacionesAreas[$area->Areas_id];
 
                 if ((float)$area->Progreso == 100.00) {
+                    $datos[$nombreEstacion]['completado']++;
+                } else {
+                    $datos[$nombreEstacion]['pendiente']++;
+                }
+            }
+        }
+          // Procesar área 9 (Empaque)
+          foreach ($area9 as $empacado) {
+            if (isset($estacionEmpacado[$empacado->Areas_id])) {
+                $nombreEstacion = $estacionEmpacado[$empacado->Areas_id];
+    
+                if ((float)$empacado->Progreso == 100.00) {
                     $datos[$nombreEstacion]['completado']++;
                 } else {
                     $datos[$nombreEstacion]['pendiente']++;
@@ -601,6 +633,7 @@ class HomeController extends Controller
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
             ->where('partidasof_areas.Areas_id', 9)
+            ->where('ordenfabricacion.Cerrada', 0)
             ->whereDate('ordenfabricacion.FechaEntrega', '=', $fechaLimite) // Filtra por la fecha exacta
             ->select(
                 'ordenfabricacion.CantidadTotal',
@@ -644,6 +677,7 @@ class HomeController extends Controller
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
             ->where('partidasof_areas.Areas_id', 9)
+            ->where('ordenfabricacion.Cerrada', 0)
             ->whereBetween('ordenfabricacion.FechaEntrega', [$inicioSemana, $finSemana])
             ->select(
                 'ordenfabricacion.CantidadTotal',
@@ -693,6 +727,7 @@ class HomeController extends Controller
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
             ->where('partidasof_areas.Areas_id', 9)
+            ->where('ordenfabricacion.Cerrada', 0)
             ->whereBetween('ordenfabricacion.FechaEntrega', [$primerDiaDelMes, $ultimoDiaDelMes]) // Filtra por el rango de fechas del mes
             ->select(
                 'ordenfabricacion.CantidadTotal',
@@ -727,48 +762,60 @@ class HomeController extends Controller
     public function graficasdia()
     {
         $fechaLimite = now()->setTimezone('America/Mexico_City')->toDateString();
-
-        //dd( $fechaLimite);
+    
+        $area9 = DB::table('partidasof_areas')
+            ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
+            ->whereDate('partidasof_areas.FechaComienzo', '>=', $fechaLimite) 
+            ->where('partidasof_areas.Areas_id', 9)
+            ->where('ordenfabricacion.Cerrada', 0)
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal',
+                'partidasof_areas.Areas_id',
+                DB::raw('GROUP_CONCAT(partidasof_areas.id) as id'),
+                'ordenfabricacion.FechaEntrega',
+                DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),
+                DB::raw('ROUND(LEAST((SUM(partidasof_areas.Cantidad) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso')
+            )
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
+            ->get();
     
         $areas = DB::table('partidasof_areas')
-        ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-        ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
-        ->whereDate('partidasof_areas.FechaComienzo', '>=', $fechaLimite) 
-        ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9])
-        ->select(
-            'ordenfabricacion.OrdenFabricacion',
-            'ordenfabricacion.CantidadTotal',
-            'partidasof_areas.Areas_id',
-           
-            DB::raw('GROUP_CONCAT(partidasof_areas.id) as id'),  // Concatenar los IDs
-            'ordenfabricacion.FechaEntrega',
-            DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),  // Sumar las cantidades
-            DB::raw('ROUND(LEAST((SUM(partidasof_areas.Cantidad) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso')  // Calcular progreso
-        )
-        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
-        ->get();
-
-        $cortes = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->select(
-            DB::raw('GROUP_CONCAT(partidasof.id) as id'), // Agrupar los IDs en una lista
-            'ordenfabricacion.OrdenFabricacion',
-            'ordenfabricacion.CantidadTotal',
-            DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'), // Usar la fecha más antigua
-            DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalcantidad_partida'),
-            DB::raw('ROUND(LEAST((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso')
-        )
-        ->whereDate('ordenfabricacion.FechaEntrega', '=', $fechaLimite)
-        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
-        ->get();
+            ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
+            ->whereDate('partidasof_areas.FechaComienzo', '>=', $fechaLimite) 
+            ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8])
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal',
+                'partidasof_areas.Areas_id',
+                DB::raw('GROUP_CONCAT(partidasof_areas.id) as id'),
+                'ordenfabricacion.FechaEntrega',
+                DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),
+                DB::raw('ROUND(LEAST((SUM(partidasof_areas.Cantidad) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso')
+            )
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
+            ->get();
     
-            //dd($cortes);
-
-            $totalOrdenes = DB::table('ordenfabricacion')
+        $cortes = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->select(
+                DB::raw('GROUP_CONCAT(partidasof.id) as id'),
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal',
+                DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'),
+                DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalcantidad_partida'),
+                DB::raw('ROUND(LEAST((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso')
+            )
+            ->whereDate('ordenfabricacion.FechaEntrega', '=', $fechaLimite)
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+            ->get();
+    
+        $totalOrdenes = DB::table('ordenfabricacion')
             ->whereDate('FechaEntrega', '=', $fechaLimite)
-            ->select('ordenfabricacion.Ordenfabricacion') // Filtra por la fecha exacta
+            ->select('ordenfabricacion.Ordenfabricacion')
             ->count();
-           
     
         $estacionesAreas = [
             3 => 'plemasSuministrodia',
@@ -777,20 +824,23 @@ class HomeController extends Controller
             6 => 'plemasPulidodia',
             7 => 'plemasMediciondia',
             8 => 'plemasVisualizaciondia',
-            9 => 'plemasEmpaquedia'
         ];
     
         $estacionesCortes = [
             2 => 'plemasCortedia'
         ];
     
+        $estacionEmpacado = [
+            9 => 'plemasEmpaquedia'
+        ];
+    
         $datos = [];
     
-        foreach (array_merge($estacionesAreas, $estacionesCortes) as $estacion) {
+        foreach (array_merge($estacionesAreas, $estacionesCortes, $estacionEmpacado) as $estacion) {
             $datos[$estacion] = [
                 'completado' => 0,
                 'pendiente' => 0,
-                'totalOrdenes' => $totalOrdenes 
+                'totalOrdenes' => $totalOrdenes
             ];
         }
     
@@ -799,6 +849,19 @@ class HomeController extends Controller
                 $nombreEstacion = $estacionesAreas[$area->Areas_id];
     
                 if ((float)$area->Progreso == 100.00) {
+                    $datos[$nombreEstacion]['completado']++;
+                } else {
+                    $datos[$nombreEstacion]['pendiente']++;
+                }
+            }
+        }
+    
+        // Procesar área 9 (Empaque)
+        foreach ($area9 as $empacado) {
+            if (isset($estacionEmpacado[$empacado->Areas_id])) {
+                $nombreEstacion = $estacionEmpacado[$empacado->Areas_id];
+    
+                if ((float)$empacado->Progreso == 100.00) {
                     $datos[$nombreEstacion]['completado']++;
                 } else {
                     $datos[$nombreEstacion]['pendiente']++;
@@ -819,103 +882,136 @@ class HomeController extends Controller
     
         $datos['plemasCortedia']['completado'] = $completadosCorte;
         $datos['plemasCortedia']['pendiente'] = $pendientesCorte;
-
-   
+    
         return response()->json($datos);
-        
     }
+    
     public function graficasemana()
-    {
-        $fechaInicioSemana = now()->startOfWeek()->toDateString();
-        $fechaFinSemana = now()->endOfWeek()->toDateString();
+{
+    $fechaInicioSemana = now()->startOfWeek()->toDateString();
+    $fechaFinSemana = now()->endOfWeek()->toDateString();
+
+    $area9 = DB::table('partidasof_areas')
+    ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+    ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
+    ->whereBetween('ordenfabricacion.FechaEntrega', [$fechaInicioSemana, $fechaFinSemana]) 
+    ->where('partidasof_areas.Areas_id', 9)
+    ->where('ordenfabricacion.Cerrada', 0)
+    ->select(
+        'ordenfabricacion.OrdenFabricacion',
+        'ordenfabricacion.CantidadTotal',
+        'partidasof_areas.Areas_id',
+        DB::raw('GROUP_CONCAT(partidasof_areas.id) as id'),
+        'ordenfabricacion.FechaEntrega',
+        DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),
+        DB::raw('ROUND(LEAST((SUM(partidasof_areas.Cantidad) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso')
+    )
+    ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
+    ->get();
         
-        $areas = DB::table('partidasof_areas')
-            ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-            ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
-            ->whereBetween('ordenfabricacion.FechaEntrega', [$fechaInicioSemana, $fechaFinSemana]) 
-            ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8, 9])
-            ->select(
-                'ordenfabricacion.OrdenFabricacion',
-                'ordenfabricacion.CantidadTotal',
-                'partidasof_areas.Areas_id',
-                DB::raw('GROUP_CONCAT(partidasof_areas.id) as id'),  // Concatenar los IDs
-                'ordenfabricacion.FechaEntrega',
-                DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),  // Sumar las cantidades
-                DB::raw('ROUND(LEAST((SUM(partidasof_areas.Cantidad) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso')  // Calcular progreso
-            )
-            ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
-            ->get();
-        
-        $cortes = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->select(
-                'ordenfabricacion.OrdenFabricacion',
-                'ordenfabricacion.CantidadTotal', 
-                'ordenfabricacion.FechaEntrega',
-                DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalcantidad_partida'),
-                DB::raw('ROUND(LEAST((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso'),  // Limitar a 100
-                DB::raw('ROUND(SUM(partidasof.cantidad_partida) - ordenfabricacion.CantidadTotal, 0) as retrabajo')
-            )
-            ->whereBetween('ordenfabricacion.FechaEntrega', [$fechaInicioSemana, $fechaFinSemana]) 
-            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
-            ->get();
-        
-        $totalOrdenes = DB::table('ordenfabricacion')
-            ->whereBetween('FechaEntrega', [$fechaInicioSemana, $fechaFinSemana]) 
-            ->count();
-        
-        $estacionesAreas = [
-            3 => 'plemasSuministrosemana',
-            4 => 'plemasPreparadosemana',
-            5 => 'plemasEnsamblesemana',
-            6 => 'plemasPulidosemana',
-            7 => 'plemasMedicionsemana',
-            8 => 'plemasVisualizacionsemana',
-            9 => 'plemasEmpaquesemana'
+    $areas = DB::table('partidasof_areas')
+        ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
+        ->whereBetween('ordenfabricacion.FechaEntrega', [$fechaInicioSemana, $fechaFinSemana]) 
+        ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8])
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            'ordenfabricacion.CantidadTotal',
+            'partidasof_areas.Areas_id',
+            DB::raw('GROUP_CONCAT(partidasof_areas.id) as id'),
+            'ordenfabricacion.FechaEntrega',
+            DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),
+            DB::raw('ROUND(LEAST((SUM(partidasof_areas.Cantidad) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso')
+        )
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
+        ->get();
+    
+    $cortes = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            'ordenfabricacion.CantidadTotal', 
+            'ordenfabricacion.FechaEntrega',
+            DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalcantidad_partida'),
+            DB::raw('ROUND(LEAST((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso'),
+            DB::raw('ROUND(SUM(partidasof.cantidad_partida) - ordenfabricacion.CantidadTotal, 0) as retrabajo')
+        )
+        ->whereBetween('ordenfabricacion.FechaEntrega', [$fechaInicioSemana, $fechaFinSemana]) 
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
+        ->get();
+    
+    $totalOrdenes = DB::table('ordenfabricacion')
+        ->whereBetween('FechaEntrega', [$fechaInicioSemana, $fechaFinSemana]) 
+        ->count();
+    
+    $estacionesAreas = [
+        3 => 'plemasSuministrosemana',
+        4 => 'plemasPreparadosemana',
+        5 => 'plemasEnsamblesemana',
+        6 => 'plemasPulidosemana',
+        7 => 'plemasMedicionsemana',
+        8 => 'plemasVisualizacionsemana',
+       
+    ];
+    
+    $estacionesCortes = [
+        2 => 'plemasCortesemana'
+    ];
+    $estacionesEmpacado = [
+        9 => 'plemasEmpaquesemana'  // Esta es la estación de Empaque (Estación 9)
+    ];
+
+    $datos = [];
+    
+    foreach (array_merge($estacionesAreas, $estacionesCortes, $estacionesEmpacado) as $estacion) {
+        $datos[$estacion] = [
+            'completado' => 0,
+            'pendiente' => 0,
+            'totalOrdenes' => $totalOrdenes 
         ];
-        
-        $estacionesCortes = [
-            2 => 'plemasCortesemana'
-        ];
-        
-        $datos = [];
-        
-        foreach (array_merge($estacionesAreas, $estacionesCortes) as $estacion) {
-            $datos[$estacion] = [
-                'completado' => 0,
-                'pendiente' => 0,
-                'totalOrdenes' => $totalOrdenes 
-            ];
-        }
-        
-        foreach ($areas as $area) {
-            if (isset($estacionesAreas[$area->Areas_id])) {
-                $nombreEstacion = $estacionesAreas[$area->Areas_id];
-        
-                if ((float)$area->Progreso == 100.00) {
-                    $datos[$nombreEstacion]['completado']++;
-                } else {
-                    $datos[$nombreEstacion]['pendiente']++;
-                }
-            }
-        }
-        
-        $completadosCorte = 0;
-        $pendientesCorte = 0;
-        
-        foreach ($cortes as $corte) {
-            if ((float)$corte->Progreso == 100.00) {
-                $completadosCorte++;
+    }
+    
+    foreach ($areas as $area) {
+        if (isset($estacionesAreas[$area->Areas_id])) {
+            $nombreEstacion = $estacionesAreas[$area->Areas_id];
+
+            if ((float)$area->Progreso == 100.00) {
+                $datos[$nombreEstacion]['completado']++;
             } else {
-                $pendientesCorte++;
+                $datos[$nombreEstacion]['pendiente']++;
             }
         }
-        
-        $datos['plemasCortesemana']['completado'] = $completadosCorte;
-        $datos['plemasCortesemana']['pendiente'] = $pendientesCorte;
-        
-        return response()->json($datos);
-    }     
+    }
+     // Procesar área 9 (Empaque)
+     foreach ($area9 as $empacado) {
+        if (isset($estacionesEmpacado[$empacado->Areas_id])) {
+            $nombreEstacion = $estacionesEmpacado[$empacado->Areas_id];
+
+            if ((float)$empacado->Progreso == 100.00) {
+                $datos[$nombreEstacion]['completado']++;
+            } else {
+                $datos[$nombreEstacion]['pendiente']++;
+            }
+        }
+    }
+    
+    $completadosCorte = 0;
+    $pendientesCorte = 0;
+    
+    foreach ($cortes as $corte) {
+        if ((float)$corte->Progreso == 100.00) {
+            $completadosCorte++;
+        } else {
+            $pendientesCorte++;
+        }
+    }
+    
+    $datos['plemasCortesemana']['completado'] = $completadosCorte;
+    $datos['plemasCortesemana']['pendiente'] = $pendientesCorte;
+
+    return response()->json($datos);
+}
+
     public function tablasemana()
     {
         $SumaCantidadTotalGeneral = DB::table('ordenfabricacion')->sum('CantidadTotal');
