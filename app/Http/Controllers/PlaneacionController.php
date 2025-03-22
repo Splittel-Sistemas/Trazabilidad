@@ -844,7 +844,6 @@ class PlaneacionController extends Controller
         }
         return "Datos guardados correctamente::".$fecha;
     }
-
     public function ActualizarPlaneacion(Request $request)
     {
         try {
