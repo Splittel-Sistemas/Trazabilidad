@@ -307,9 +307,32 @@
                 margin-bottom: -20px; 
             }
             .title-container {
-                font-size: 1px; /* Ajusta el tamaño del texto */
-                padding: -100px; /* Ajusta el espacio alrededor */
+                font-size: 1px; 
+                padding: -100px; 
             }
+
+            .status-box {
+            padding: 10px 20px;     
+            border-radius: 90px;     
+            font-weight: bold;      
+            color: white;           
+            text-align: center;     
+            transition: background-color 0.3s ease; 
+            min-width: 1px;       
+            max-width: 2px;       
+            width: auto;   
+            position: relative; 
+            left: 500px;        
+            }
+
+            .open {
+            background-color: green;
+            }
+
+            .closed {
+            background-color: red;
+            }
+
     </style>
 @endsection
 @section('content')
@@ -589,8 +612,14 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title text-info" id="exampleModalLabel">
-                            Detalles De Orden Venta:
+                            Detalles Orden Venta:
                             <span id="ordenVentaNumero" class="ms-3 text-muted"></span>
+                          <!--  <span id="Estatus" class="ms-12 text-muted text-dark"></span>-->
+                          <span id="Estatus" class="ms-12 text-muted text-white status-box"></span>
+
+                            
+
+
                         </h5>
                         <button type="button" class="btn p-1" data-bs-dismiss="modal" aria-label="Close">
                             <svg class="svg-inline--fa fa-xmark fs--1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
@@ -747,63 +776,89 @@
         $('.progress-bar').css('width', '0%').text('0%');
         $('.progress-bar-stages .stage').removeClass('pending active completed no-data').addClass('pending');
         $.ajax({
-                url: '{{ route("Buscar.Venta.Detalle") }}',
-                type: 'GET',
-                data: { id: ordenVenta },
-                success: function (response) {
-                    if (response.partidasAreas.length > 0) {
-                        var totalEtapas = $('.progress-bar-stages .stage').length;
-                        var etapasCompletadas = 0;
-                        response.partidasAreas.forEach(function (partida) {
-                            var estadoId = {
-                                'planeacion': '#stage1',
-                                'corte': '#stage2',
-                                'suministro': '#stage3',
-                                'preparado': '#stage4',
-                                'ensamble': '#stage5',
-                                'pulido': '#stage6',
-                                'medicion': '#stage7',
-                                'visualizacion': '#stage8',
-                                'Abierto': '#stage9',
-                            }[partida.Estado];
+            url: '{{ route("Buscar.Venta.Detalle") }}',
+            type: 'GET',
+            data: { id: ordenVenta },
+            success: function (response) {
+                if (response.partidasAreas.length > 0) {
+                    var totalEtapas = $('.progress-bar-stages .stage').length;
+                    var etapasCompletadas = 0;
+                    response.partidasAreas.forEach(function (partida) {
+                        var estadoId = {
+                            'planeacion': '#stage1',
+                            'corte': '#stage2',
+                            'suministro': '#stage3',
+                            'preparado': '#stage4',
+                            'ensamble': '#stage5',
+                            'pulido': '#stage6',
+                            'medicion': '#stage7',
+                            'visualizacion': '#stage8',
+                            'Abierto': '#stage9',
+                        }[partida.Estado];
 
-                            if (estadoId) {
-                                $(estadoId).removeClass('pending active no-data').addClass('completed');
-                                etapasCompletadas++;
-                            }
-                        });
-                        var estadoActivo = response.partidasAreas.find(partida => partida.EstadoActual);
-                        if (estadoActivo) {
-                            var activoId = {
-                                'planeacion': '#stage1',
-                                'corte': '#stage2',
-                                'suministro': '#stage3',
-                                'preparado': '#stage4',
-                                'ensamble': '#stage5',
-                                'pulido': '#stage6',
-                                'medicion': '#stage7',
-                                'visualizacion': '#stage8',
-                                'Abierto': '#stage9',
-                            }[estadoActivo.Estado];
-
-                            if (activoId) {
-                                $(activoId).removeClass('pending completed').addClass('active');
-                            }
+                        if (estadoId) {
+                            $(estadoId).removeClass('pending active no-data').addClass('completed');
+                            etapasCompletadas++;
                         }
-                        var porcentaje = response.Porcentaje;
-                        $('#progressBar').css('width', porcentaje + '%').text(porcentaje + '%');
-                        $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
-                    } else {
-                        $('.progress-bar-stages .stage').addClass('no-data');
-                        $('#progressBar').css('width', '0%').text('0%');
-                        $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
+                    });
+
+                    var estadoActivo = response.partidasAreas.find(partida => partida.EstadoActual);
+                    if (estadoActivo) {
+                        var activoId = {
+                            'planeacion': '#stage1',
+                            'corte': '#stage2',
+                            'suministro': '#stage3',
+                            'preparado': '#stage4',
+                            'ensamble': '#stage5',
+                            'pulido': '#stage6',
+                            'medicion': '#stage7',
+                            'visualizacion': '#stage8',
+                            'Abierto': '#stage9',
+                        }[estadoActivo.Estado];
+
+                        if (activoId) {
+                            $(activoId).removeClass('pending completed').addClass('active');
+                        }
                     }
-                    $('#exampleModal').modal('show');
-                },
-                error: function () {
-                    alert('Error al obtener los datos de la venta.');
+
+                    var porcentaje = response.Porcentaje;
+                    $('#progressBar').css('width', porcentaje + '%').text(porcentaje + '%');
+                    $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
+
+                    // Aquí es donde debes mostrar el Estatus
+                    //var estatus = response.Estatus; // Asignamos el estatus desde la respuesta
+                    // Verificamos si alguna orden tiene el estado 'Abierta'
+                    var algunaAbierta = response.Estatus.some(function(item) {
+                        return item.Estado === 'Abierta'; // Si alguna orden está abierta
+                    });
+
+                    // Asignamos el estatus según si alguna orden está abierta
+                    $('#Estatus').removeClass('text-muted text-info').addClass('status-box');
+
+                    if (algunaAbierta) {
+                        $('#Estatus').addClass('open').removeClass('closed').text('Abierta');
+                    } else {
+                        $('#Estatus').addClass('closed').removeClass('open').text('Cerrada');
+                    }
+
+
+
+                } else {
+                    $('.progress-bar-stages .stage').addClass('no-data');
+                    $('#progressBar').css('width', '0%').text('0%');
+                    $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
+                    $('#Estatus').removeClass('text-muted text-info').addClass('status-box').text('Estado de la OV: ' + response.Estatus);
+                    // Mostrar estatus aquí
                 }
-            });
+                $('#exampleModal').modal('show');
+            },
+            error: function () {
+                alert('Error al obtener los datos de la venta.');
+            }
+        });
+
+
+
             const endpoints = [
             { tipo: 'cortes', id: 'corte' },
             { tipo: 'suministros', id: 'suministro' },
@@ -959,60 +1014,53 @@
                     }
                 });
                 const endpoints = [
-                    { tipo: 'plemasCorte', id: 'plemasCorte' },
-                    { tipo: 'plemasSuministro', id: 'plemasSuministro' },
-                    { tipo: 'plemasPreparado', id: 'plemasPreparado' },
-                    { tipo: 'plemasEnsamble', id: 'plemasEnsamble' },
-                    { tipo: 'plemasPulido', id: 'plemasPulido' },
-                    { tipo: 'plemasMedicion', id: 'plemasMedicion' },
-                    { tipo: 'plemasVisualizacion', id: 'plemasVisualizacion' },
-                    { tipo: 'plemasEmpaque', id: 'plemasEmpaque' },
-                ];
+    { tipo: 'plemasCorte', id: 'plemasCorte', areaId: 2 },
+    { tipo: 'plemasSuministrodia', id: 'plemasSuministro', areaId: 3 },
+    { tipo: 'plemasPreparadodia', id: 'plemasPreparado', areaId: 4 },
+    { tipo: 'plemasEnsambledia', id: 'plemasEnsamble', areaId: 5 },
+    { tipo: 'plemasPulidodia', id: 'plemasPulido', areaId: 6 },
+    { tipo: 'plemasMediciondia', id: 'plemasMedicion', areaId: 7 },
+    { tipo: 'plemasVisualizaciondia', id: 'plemasVisualizacion', areaId: 8 },
+    { tipo: 'plemasEmpaque', id: 'plemasEmpaque', areaId: 9 },
+];
 
-                endpoints.forEach(endpoint => {
-                    $.ajax({
-                        url: '{{ route("graficadoOF") }}',  // Ruta del controlador
-                        type: 'GET',
-                        data: { 
-                            id: ordenfabricacion,  // Asumiendo que 'ordenfabricacion' está disponible
-                            tipo: endpoint.tipo,   // Enviar tipo dinámico
-                        },
-                        success: function(response) {
-                            if (response && response.CantidadTotal !== undefined) {  
-                                let cantidadTotal = response.CantidadTotal;
-                                let totalPartidas = response.TotalPartidas;
-                                let retrabajo = 0;
-                                let progreso = 0;
-                                let label = '';
+$.ajax({
+    url: '{{ route("graficadoOF") }}',
+    type: 'GET',
+    data: { id: ordenfabricacion },
+    success: function(response) {
+        if (response && response.estaciones) {
+            endpoints.forEach(endpoint => {
+                // Obtener los datos de la estación correspondiente usando el tipo
+                let estacion = response.estaciones[endpoint.tipo];
 
-                                if (totalPartidas > cantidadTotal) {
-                                    // Si hay más partidas que la cantidad total, el exceso es retrabajo
-                                    retrabajo = totalPartidas - cantidadTotal;
-                                    totalPartidas = cantidadTotal; // Solo consideramos las primeras unidades
-                                }
+                if (estacion && estacion.length > 0) {
+                    let datos = estacion[0]; // Tomamos el primer resultado
+                    let porcentaje = datos.porcentaje || 0; // Usamos el porcentaje calculado en el backend
 
-                                // Calcular el porcentaje con las unidades dentro del límite de cantidad total
-                                progreso = (totalPartidas / cantidadTotal) * 100;
-                                
-                                // Redondear el porcentaje a un valor entero
-                                progreso = Math.round(progreso); // O usar Math.floor() si prefieres redondear hacia abajo
-                                
-                                if (retrabajo > 0) {
-                                    label = `Retrabajo: ${retrabajo}`;
-                                }
+                    // Mostrar el valor de totalR como la etiqueta si es mayor que 0
+                    let label = datos.totalR > 0 ? `Retrabajo: ${datos.totalR}` : '';
 
-                                drawGauge(endpoint.id, progreso, label);
-                            } else {
-                                console.log('No hay datos para mostrar.');
-                                drawGauge(endpoint.id, 0, 'Sin Datos');
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
-                            drawGauge(endpoint.id, 0, 'Error');
-                        }
-                    });
-                });
+                    drawGauge(endpoint.id, porcentaje, label);
+                } else {
+                    console.log(`No hay datos para ${endpoint.tipo}`);
+                    drawGauge(endpoint.id, 0, 'Sin Datos');
+                }
+            });
+        } else {
+            console.log('No hay datos para mostrar.');
+            // Si no hay respuesta o no hay estaciones, se dibujan todos los gráficos con "Sin Datos"
+            endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Sin Datos'));
+        }
+    },
+    error: function(xhr, status, error) {
+        console.error('Error al obtener los datos:', error);
+        // Si hay error, todos los gráficos se actualizan con "Error"
+        endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Error'));
+    }
+});
+
+
 
 
 
@@ -1462,5 +1510,30 @@
                 }
             });
     });
+
+
+
+
+
+
+
+
+
+
+
+    function cambiarEstatus(estado) {
+  const estatusElement = document.getElementById('Estatus');
+  
+  if (estado === 'abierto') {
+    estatusElement.classList.add('open');
+    estatusElement.classList.remove('closed');
+    estatusElement.textContent = 'Abierto';
+  } else {
+    estatusElement.classList.add('closed');
+    estatusElement.classList.remove('open');
+    estatusElement.textContent = 'Cerrado';
+  }
+}
+
 </script>
 @endsection

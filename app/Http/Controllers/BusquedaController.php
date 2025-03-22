@@ -55,6 +55,7 @@ class BusquedaController extends Controller
     //boton detalles de la orden de venta        
     public function detallesventa(Request $request)
     {
+
         $idVenta = $request->input('id');
         $total = DB::table('ordenventa')
             ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
@@ -81,14 +82,25 @@ class BusquedaController extends Controller
         $cantidadTotal = $total->CantidadTotal ?? 1; // Evita división por cero
         $porcentaje = ($cantidadPartidas / $cantidadTotal) * 100;
 
+        $estatus = DB::table('ordenventa')
+        ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
+        ->where('ordenventa.OrdenVenta', $idVenta)
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            DB::raw("CASE WHEN ordenfabricacion.Cerrada = 1 THEN 'Abierta' ELSE 'Cerrada' END as Estado")
+        )
+        ->get();
+    
         return response()->json([
             "OrdenVenta" => $total->OrdenVenta,
             "OrdenFabricacion" => $total->OrdenFabricacion,
             "CantidadTotal" => $cantidadTotal,
             "Cantidad" => $cantidadPartidas,
             "Porcentaje" => round($porcentaje, 2), // Sin símbolo "%"
-            "partidasAreas" => $partidasAreas
+            "partidasAreas" => $partidasAreas,
+            "Estatus" => $estatus,// Aquí agregamos el estado
         ]);
+        
 
     }
 
@@ -328,6 +340,176 @@ class BusquedaController extends Controller
     public function GraficadorFabricacion(Request $request)
     {
         $idFabricacion = $request->input('id');
+    
+        // Definir las estaciones y áreas
+        $estacionesAreas = [
+            3 => 'plemasSuministrodia',
+            4 => 'plemasPreparadodia',
+            5 => 'plemasEnsambledia',
+            6 => 'plemasPulidodia',
+            7 => 'plemasMediciondia',
+            8 => 'plemasVisualizaciondia',
+            9 => 'plemasEmpaque',
+        ];
+    
+        $estacionArea2 = [
+            2 => 'plemasCorte',
+        ];
+    
+        // Inicializar el resultado que se va a devolver
+        $result = [];
+    
+        // Procesar las estaciones del primer conjunto (estacionesAreas)
+        foreach ($estacionesAreas as $areaId => $areaName) {
+            // Obtener la cantidad total de la orden
+            $total = DB::table('ordenfabricacion')
+                ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                ->select('ordenfabricacion.CantidadTotal')
+                ->first();
+    
+            $cantidadTotal = $total ? (int)$total->CantidadTotal : 0;
+    
+            // Obtener el total de partidas normales (TipoPartida = 'N')
+            $resultOF = DB::table('ordenfabricacion')
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+                ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+                ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                ->where('partidasof_areas.Areas_id', $areaId)
+                ->where('partidasof_areas.TipoPartida', 'N')
+                ->select(DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'))
+                ->first();
+    
+            $totalN = $resultOF ? (int)$resultOF->TotalPartidas : 0;
+    
+            // Obtener todas las combinaciones de FechaComienzo y FechaTermina para 'R'
+            $resultadosR = DB::table('ordenfabricacion')
+                ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+                ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+                ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                ->where('partidasof_areas.Areas_id', $areaId)
+                ->where('partidasof_areas.TipoPartida', 'R')
+                ->select(
+                    'partidasof_areas.FechaComienzo',
+                    'partidasof_areas.FechaTermina',
+                    DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas')
+                )
+                ->groupBy('partidasof_areas.FechaComienzo', 'partidasof_areas.FechaTermina')
+                ->get();
+    
+            // Agregar los resultados de la estación
+            $result[$areaName] = [];
+    
+            if ($resultadosR->isEmpty()) {
+                $result[$areaName][] = [
+                    'nombre' => $areaName,
+                    'diferencia' => $totalN, // No hay retrabajo, diferencia = totalN
+                    'totalN' => $totalN,
+                    'totalR' => 0,
+                    'cantidadTotal' => $cantidadTotal,
+                    'porcentaje' => $cantidadTotal > 0 ? ($totalN / $cantidadTotal) * 100 : 0,
+                    'FechaComienzo' => null,
+                    'FechaTermina' => null
+                ];
+            } else {
+                foreach ($resultadosR as $registro) {
+                    $totalR = (int)$registro->TotalPartidas;
+                    $diferencia = is_null($registro->FechaTermina) ? $totalN - $totalR : $totalN; // Se ajustó el cálculo de la diferencia
+                    $porcentaje = $cantidadTotal > 0 ? ($diferencia / $cantidadTotal) * 100 : 0;
+    
+                    $result[$areaName][] = [
+                        'nombre' => $areaName,
+                        'diferencia' => $diferencia,
+                        'totalN' => $totalN,
+                        'totalR' => $totalR,
+                        'cantidadTotal' => $cantidadTotal,
+                        'porcentaje' => $porcentaje,
+                        'FechaComienzo' => $registro->FechaComienzo,
+                        'FechaTermina' => $registro->FechaTermina
+                    ];
+                }
+            }
+        }
+        // Procesar el área 2 (plemasCorte)
+foreach ($estacionArea2 as $areaId => $areaName) {
+    // Obtener la cantidad total de la orden
+    $total = DB::table('ordenfabricacion')
+        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+        ->select('ordenfabricacion.CantidadTotal')
+        ->first();
+
+    $cantidadTotal = $total ? (int)$total->CantidadTotal : 0;
+
+    // Obtener el total de partidas normales (TipoPartida = 'N')
+    $resultOF = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+        ->where('partidasof_areas.Areas_id', $areaId)
+        ->where('partidasof_areas.TipoPartida', 'N')
+        ->select(DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'))
+        ->first();
+
+    $totalN = $resultOF ? (int)$resultOF->TotalPartidas : 0;
+
+    // Obtener todas las combinaciones de FechaComienzo y FechaTermina para 'R'
+    $area2 = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'), // Obtener la fecha más temprana
+            DB::raw('MAX(partidasof.FechaFinalizacion) as FechaFinalizacion'), // Obtener la fecha más tardía
+            DB::raw('ordenfabricacion.cantidadTotal'),
+            DB::raw('SUM(partidasof.cantidad_partida) as TotalPartidas'),
+            DB::raw('ROUND((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100) as porcentaje')
+        )
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+        ->first();
+
+    // Agregar los resultados de la estación de área2 (plemasCorte)
+    $result[$areaName] = [];
+
+    if (!$area2) {
+        $result[$areaName][] = [
+            'nombre' => $areaName,
+            'diferencia' => max(0, $totalN), // Evitar valores negativos en diferencia
+            'totalN' => $totalN,
+            'totalR' => 0,
+            'cantidadTotal' => $cantidadTotal,
+            'porcentaje' => $cantidadTotal > 0 ? ($totalN / $cantidadTotal) * 100 : 0,
+            'FechaComienzo' => null,
+            'FechaTermina' => null
+        ];
+    } else {
+        $totalR = (int)$area2->TotalPartidas;
+        $diferencia = $totalN > 0 ? max(0, $totalN - $totalR) : $totalR;
+        
+        // Usar el porcentaje que ya vino calculado en la consulta
+        $porcentaje = $area2->porcentaje;
+
+        $result[$areaName][] = [
+            'nombre' => $areaName,
+            'diferencia' => $diferencia,
+            'totalN' => $totalN,
+           
+            'cantidadTotal' => $cantidadTotal,
+            'porcentaje' => $porcentaje,
+            'FechaComienzo' => $area2->FechaComienzo,
+            'FechaTermina' => $area2->FechaFinalizacion
+        ];
+    }
+}
+
+    
+        // Devolver los resultados en formato JSON
+        return response()->json([
+            'estaciones' => $result
+        ]);
+    
+    
+    
+    /*
+        $idFabricacion = $request->input('id');
         $tipoOF = $request->input('tipo'); 
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion', $idFabricacion)->first();
         $TotalCompletadosCortes=0;
@@ -336,11 +518,6 @@ class BusquedaController extends Controller
             $TotalCompletadosCortes=$OrdenFabricacion->PartidasOF()->where('TipoPartida','N')->whereNotNull('FechaFinalizacion')->get()->SUM('cantidad_partida')-
                                 $OrdenFabricacion->PartidasOF()->where('TipoPartida','N')->whereNull('FechaFinalizacion')->get()->SUM('cantidad_partida');
         }
-        /*$OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion', $idFabricacion)
-                                                ->join('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                                                ->join('partidasof', 'OrdenFabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-                                                ->where('OrdenFabricacion.OrdenFabricacion', $idFabricacion)
-                                                ->get(); */
 
         if (!empty($idFabricacion)) {
             // Definir las consultas para cada tipo (como ya lo tienes en tu código)
@@ -621,7 +798,7 @@ class BusquedaController extends Controller
             return response()->json($resultOF);
         } else {
             return response()->json([], 204); 
-        }
+        }*/
     }
     //tiempos de orden de fabricacion
     public function tiempoS(Request $request)
