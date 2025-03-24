@@ -2950,50 +2950,6 @@ class AreasController extends Controller
             'message' => 'Finalizado correctamente!',
             'codigo' => 'Success', //Cuando  si se guardo
         ], 200);
-        /*$query = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id') 
-            ->join('areas', 'partidasof_areas.Areas_id', '=', 'areas.id') 
-            ->where('partidasof_areas.Areas_id', 9)
-            ->select(
-                'partidasof_areas.PartidasOF_id', 
-                'areas.nombre as Estado',   
-                'ordenfabricacion.OrdenFabricacion',
-                'ordenfabricacion.CantidadTotal',
-                DB::raw('SUM(partidasof_areas.Cantidad) as cantidad_total')
-            )
-            ->groupBy(
-                'partidasof_areas.PartidasOF_id',
-                'areas.nombre',   
-                'ordenfabricacion.OrdenFabricacion',
-                'ordenfabricacion.CantidadTotal'
-            );
-    */
-        /*if (is_array($idFabricacion)) {
-            $query->whereIn('ordenfabricacion.OrdenFabricacion', $idFabricacion);
-        } else {
-            $query->where('ordenfabricacion.OrdenFabricacion', $idFabricacion);
-        }*/
-        
-        /*$ordenfabricacion = $query->first(); 
-        if ($ordenfabricacion->cantidad_total != $ordenfabricacion->CantidadTotal) {
-            return response()->json([
-                'error' => 'No se puede cerrar la orden porque no se ha completado.',
-                'cantidad_total' => $ordenfabricacion->cantidad_total,
-                'CantidadTotal' => $ordenfabricacion->CantidadTotal
-            ], 400);
-        }*/
-        /*$orden = ordenfabricacion::where('OrdenFabricacion', $idFabricacion)->first();
-    
-        if (!$orden) {
-            Log::error('Orden no encontrada en la base de datos con ID: ' . $idFabricacion);
-            return response()->json(['error' => 'Orden no encontrada'], 4);
-        }*/
-    
-        /*$orden->Cerrada = 0; 
-        $orden->save();*/
-    
-        //return response()->json(['message' => 'Orden cerrada correctamente'], 200);
     }
     public function RegresarProceso(Request $request){
         $partidaOfAreaId = $request->input('id'); 
