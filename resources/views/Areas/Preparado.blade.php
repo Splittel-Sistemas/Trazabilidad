@@ -105,7 +105,7 @@
                                 <th>Descripción</th>
                                 <th>Cantidad Completada</th>
                                 <th>Cantidad Faltante</th>
-                                <th>Cantidad Pendiente</th>
+                                <th>Cantidad Entrante</th>
                                 <th>Total Orden Fabricaci&oacute;n</th>
                                 <th>Estatus</th>
                                 <th>L&iacute;nea</th>
@@ -117,12 +117,12 @@
                                 <td class="text-center">{{$partida->OrdenFabricacion }}</td>
                                 <td>{{$partida->Articulo }}</td>
                                 <td>{{$partida->Descripcion }}</td>
-                                <td>{{$partida->NumeroActuales}}</td>
-                                <td>{{$partida->TotalPendiente-$partida->NumeroActuales }}</td>
-                                <td>{{$partida->TotalPendiente }}</td>
-                                <td>{{$partida->CantidadTotal }}</td>
+                                <td class="text-center">{{$partida->NumeroActuales}}</td>
+                                <td class="text-center">{{$partida->TotalPendiente-$partida->NumeroActuales }}</td>
+                                <td class="text-center">{{$partida->TotalPendiente }}</td>
+                                <td class="text-center">{{$partida->CantidadTotal }}</td>
                                 <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                                <td><h5 class="text-light text-center p-2" style="background: {{$partida->ColorLinea }};">{{$partida->Linea }}</h5></td>
+                                <td><h5 class="text-light text-center p-0" style="background: {{$partida->ColorLinea }};">{{$partida->Linea }}</h5></td>
                             </tr>
                         @endforeach
                         </tbody>
@@ -310,7 +310,7 @@
                         $('#ToastGuardado').fadeIn();
                         setTimeout(function(){
                             $('#ToastGuardado').fadeOut();
-                        }, 2000);
+                        }, 4000);
                     //}
                 }else if(response.status=="NoExiste"){
                         $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
@@ -318,7 +318,7 @@
                         $('#ToastGuardado').fadeIn();
                         setTimeout(function(){
                             $('#ToastGuardado').fadeOut();
-                        }, 2000);
+                        }, 4000);
                 }
                 CoincidenciasCodigo = Codigo.match(/-/g);
                 if(CoincidenciasCodigo.length==2){
