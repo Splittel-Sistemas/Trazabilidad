@@ -1305,8 +1305,7 @@ class BusquedaController extends Controller
         'tiemposareas' => $tiemposareas
         ]);
 
-    }
-    
+    } 
 }
 
 
