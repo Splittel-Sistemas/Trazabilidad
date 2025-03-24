@@ -25,7 +25,7 @@ class BusquedaController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        if($user->hasPermission('Vista Busquedas')){
+        if($user->hasPermission('Vista Busqueda')){
         $partidaId = 1;
         $partidasAreas = DB::table('partidasof_areas')
         ->where('PartidasOF_id', $partidaId)  
