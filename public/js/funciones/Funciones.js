@@ -101,3 +101,6 @@ function RegexNumeros_valor(datos){
   // Asigna el valor filtrado de nuevo al campo de texto
   return valor;
 }
+function RegexMayusculas(Input){
+  $(Input).val($(Input).val().toUpperCase());
+}

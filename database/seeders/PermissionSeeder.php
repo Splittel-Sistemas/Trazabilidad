@@ -81,6 +81,7 @@ class PermissionSeeder extends Seeder
             'Eliminar Usuarios',
             'Eliminar Roles y Permisos',
             'Enviar Avisos',
+            'Vista Busqueda',
         ];        
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);

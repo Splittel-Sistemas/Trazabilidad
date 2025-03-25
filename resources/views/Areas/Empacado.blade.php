@@ -66,7 +66,7 @@
                                 <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
                                 <!--<a href=""><i class="fa fa-toggle-on"></i></a>-->
                                 <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro')" id="CodigoEscaner" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
+                                    <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro','Ninguno')" id="CodigoEscaner" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
                                     <div class="invalid-feedback" id="error_CodigoEscaner"></div>
                                 </div>
                                 <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
@@ -130,7 +130,7 @@
 </script>
 <script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
-    function ListaCodigo(Codigo,Contenedor){
+    function ListaCodigo(Codigo,Contenedor,Accion){
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
         if (CadenaVacia(Codigo)) {
             return 0;
@@ -156,6 +156,7 @@
                 Codigo: Codigo,
                 Retrabajo: 'no',
                 Inicio:Inicio,
+                Accion:Accion,
                 Finalizar:Finalizar,
                 Area:'{{$Area}}',
                 _token: '{{ csrf_token() }}'  
@@ -196,7 +197,7 @@
                             $('#ToastGuardado').fadeIn();
                             setTimeout(function(){
                                 $('#ToastGuardado').fadeOut();
-                            }, 2000);
+                            }, 3500);
                         }else{
                             $('#ContentTabla').show();
                             $('#CantidadDiv').fadeIn();
@@ -221,6 +222,24 @@
                                     Color='bg-success';
                                     $('#CodigoEscaner').val('');
                                     $('#Cantidad').val('');
+                                    if(response.Terminada==0){
+                                        Swal.fire({
+                                            title: "Orden de Fabricación completada",
+                                            text: "¿Desea Finalizar la Orden de Fabricación "+response.OrdenFabricacion+"?",
+                                            icon: "warning",
+                                            showCancelButton: true,
+                                            confirmButtonColor: "#d33",
+                                            cancelButtonColor: "#808080",
+                                            cancelButtonText: "Cancelar",
+                                            confirmButtonText: "Finalizar",
+                                            didOpen: () => {
+                                                // Access the confirm button and add classes and data-id attribute
+                                                const confirmButton = Swal.getConfirmButton();
+                                                confirmButton.classList.add("finalizar-btn");
+                                                confirmButton.setAttribute("data-id", response.OrdenFabricacion);
+                                            }
+                                        });
+                                    }
                                     break;
                                 case 2:
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> Ya Registrado!';
@@ -289,10 +308,12 @@
                         $('#CantidadDiv').fadeOut();
                         $('#IniciarBtn').fadeOut();
                     }
-                    $('#ToastGuardado').fadeIn();
-                    setTimeout(function(){
-                        $('#ToastGuardado').fadeOut();
-                    }, 2500);
+                    if(Accion!='Cancelar'){
+                        $('#ToastGuardado').fadeIn();
+                        setTimeout(function(){
+                            $('#ToastGuardado').fadeOut();
+                        }, 4000);
+                    }
                 }else if(response.status=="empty"){
                     //if(response.Escaner!=0){
                         $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
@@ -300,7 +321,7 @@
                         $('#ToastGuardado').fadeIn();
                         setTimeout(function(){
                             $('#ToastGuardado').fadeOut();
-                        }, 2000);
+                        }, 4000);
                     //}
                 }else if(response.status=="NoExiste"){
                         $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
@@ -308,7 +329,7 @@
                         $('#ToastGuardado').fadeIn();
                         setTimeout(function(){
                             $('#ToastGuardado').fadeOut();
-                        }, 2000);
+                        }, 4000);
                 }
             },
             error: function(xhr, status, error) {
@@ -355,7 +376,7 @@
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2500);
+                    }, 3500);
                 }
                
             }
@@ -444,21 +465,21 @@
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }else if(response.status=='PasBackerror'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('La cantidad solicitada aún no puede ser procesada!, Aún no han pasado las piezas del paso anterior');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }else if(response.status=='error'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('Ocurrio un error no fue posible guardar la información para codigo'+CodigoEscaner+'!');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }else if(response.status=='success'){
                     $('#CodigoEscaner').val('');
                     $('#Cantidad').val('');
@@ -481,7 +502,7 @@
                                 // Access the confirm button and add classes and data-id attribute
                                 const confirmButton = Swal.getConfirmButton();
                                 confirmButton.classList.add("finalizar-btn");
-                                confirmButton.setAttribute("data-id", "133478");
+                                confirmButton.setAttribute("data-id", response.OrdenFabricacion);
                             }
                         })
                     }
@@ -490,39 +511,39 @@
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }else if(response.status=='SurplusFin'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('Error no guardado, la cantidad de salidas supera los Entradas!');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }else if(response.status=='SurplusRetrabajo'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('Error no guardado, Para mandar a retrabajo las ordenes tienen que estar en Estatus "Finalizado" !');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }else if(response.status=='SurplusInicio'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('Error no guardado, La cantidad de entradas no puede superar la cantidad Total de la Partida de la Orden de Fabricación !');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }else if(response.status=='SurplusInicioAnt'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('Error no guardado, La cantidad de entradas, Aún faltan de procesarse piezas en la area Anterior !');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }
                 
                 cargarTablaEmpacado();
-                ListaCodigo(CodigoEscaner,'CodigoEscanerSuministro')
+                ListaCodigo(CodigoEscaner,'CodigoEscanerSuministro',"Ninguno")
               
             },
             error: function(xhr, status, error) {
@@ -531,7 +552,7 @@
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 3000);
+                    }, 3500);
             }
         });
     }
@@ -546,9 +567,7 @@
             Retrabajo.disabled = true;
         }
     }
-</script>
-<script>
-        function cargarTablaEmpacado() {
+    function cargarTablaEmpacado() {
             $.ajax({
                 url: '{{ route("tabla.principal") }}',
                 type: "GET",
@@ -588,9 +607,6 @@
                     $('#ContainerEmpacadoTable').fadeIn();
                     $(".finalizar-btn").off("click").on("click", function () {
                         let id = $(this).data("id");
-
-                        console.log("ID de la orden a finalizar:", id);
-
                         confirmacionesss(
                             "Finalizar Orden de Fabricación", 
                             "¿Estás seguro de que deseas finalizar esta orden de Fabricación?", 
@@ -604,17 +620,14 @@
                                         _token: '{{ csrf_token() }}'
                                     },
                                     success: function (response) {
-                                        console.log("Respuesta del servidor:", response);
-                                        
-                                        // Si la respuesta tiene el mensaje esperado
-                                        if (response && response.message) {
-                                            alert(response.message);
+                                        if (response.codigo=='Success') {
+                                            success('Orden de Fabricacion Finalizada',response.message);
+                                        }else{
+                                            error('Ocurrio un error',response.message);
                                         }
-
-                                        // Intentar cargar la tabla de nuevo
                                         setTimeout(function() {
                                             console.log("Recargando la tabla...");
-                                            cargarTablaEmpacado();  // Verifica que esta función esté actualizando correctamente el DOM
+                                            cargarTablaEmpacado();
                                         }, 500);
                                     },
                                     error: function (xhr) {
@@ -633,8 +646,8 @@
                 },
             });
 
-        }
-        function DataTable(tabla, busqueda) {
+    }
+    function DataTable(tabla, busqueda) {
             $('#' + tabla).DataTable({
                 "pageLength": 10,
                 "lengthChange": false,
@@ -651,9 +664,7 @@
                     $('#' + tabla).css('font-size', '0.7rem');
                 }
             });
-        }
-</script>
-<script>
+    }
     function confirmacionesss(titulo, mensaje, confirmButtonText, funcion) {
         return Swal.fire({
             title: titulo,
@@ -677,7 +688,7 @@
         });
     }
     async function CancelarPartida(id,Codigo) {
-    const confirmacionRespuesta = await confirmacionesss(
+        const confirmacionRespuesta = await confirmacionesss(
         "¿Estás seguro de que deseas cancelar esta partida?", 
         "", 
         "Confirmar", 
@@ -694,7 +705,7 @@
                         toastr.success(response.message, 'Éxito');
                         $('#registro-' + id).remove();  
                         //ListaCodigo(response);  
-                        ListaCodigo(Codigo,'CodigoEscanerSuministro')
+                        ListaCodigo(Codigo,'CodigoEscanerSuministro',"Cancelar")
                         setTimeout(function() {
                             console.log("Recargando la tabla...");
                             cargarTablaEmpacado();  

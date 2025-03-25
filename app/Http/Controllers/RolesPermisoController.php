@@ -17,13 +17,12 @@ class RolesPermisoController extends Controller
         // Obtener el usuario autenticado
         $user = Auth::user();
         if ($user->hasPermission('Vista Roles y Permisos')) {
-            
-            $roles = Role::with('permissions')->get();
-           
-            $permissions = Permission::all();
-            
-           
-            return view('RolesPermisos.index', compact('roles', 'permissions'));
+            //$roles = Role::with('permissions')->get();
+            $roles = Role::with(['permissions' => function($query) {
+                $query->orderBy('name');  // Ordena los permisos por nombre alfabéticamente
+            }])->get();
+            $permissions1 = Permission::orderBy('name')->get();
+            return view('RolesPermisos.index', compact('roles', 'permissions1'));
         } else {
             
             return redirect()->route('error.');
@@ -64,8 +63,7 @@ class RolesPermisoController extends Controller
     public function edit($id)
     {
         $role = Role::with('permissions')->find($id); 
-        $allPermissions = Permission::all(); 
-
+        $allPermissions = Permission::OrderBy('name')->get(); 
         return response()->json([
             'id' => $role->id,
             'name' => $role->name,

@@ -149,7 +149,7 @@ class AreasController extends Controller
             'Cantidad' => $Cantitadpiezas,
             'TipoPartida' => $TipoPartida, // N = Normal
             'FechaComienzo' => now(),
-            'Linea_id' => $this->funcionesGenerales->Linea(),
+            'Linea_id' => $OrdenFabricacion->Linea_id,
             'Users_id' => $this->funcionesGenerales->InfoUsuario(),
         ];
         $PartidasOF->Areas()->attach(3, $data);
@@ -547,7 +547,6 @@ class AreasController extends Controller
     //Area 4 Preparado
     public function Preparado(){
         $user = Auth::user();
-        //133478, //133431, //133426
         // Verifica si el usuario tiene el permiso necesario
         if ($user->hasPermission('Vista Preparado')) {
             $AreaOriginal = 4;
@@ -575,7 +574,6 @@ class AreasController extends Controller
                     //return$Registros;
                 }
             }
-
             //return $Registros;
             foreach ($Registros as $key => $registro) {
                 $OrdenFabricacion = OrdenFabricacion::find($registro->OrdenFabricacion_id);
@@ -583,7 +581,7 @@ class AreasController extends Controller
                 $TotalActual = 0;
                 $TotalPendiente = 0;
                 $NumeroPartidasTodas = 0;
-                $banderaSinRegistro=0;
+                $banderaSinRegistros=0;
                 foreach ($OrdenFabricacion->PartidasOF as $Partidas) {
                     //$banderaSinRegistros=0;
                     if($OrdenFabricacion->Escaner==1){
@@ -636,7 +634,8 @@ class AreasController extends Controller
         $CantidadCompletada=0;
         $EscanerExiste=0;
         //Valida si el codigo es aceptado tiene que ser mayor a 2
-        if(($CodigoTam==3 && !($CodigoPartes[2]=="" || $CodigoPartes[2]==0)) || $CodigoTam==2){
+        //if(($CodigoTam==3 && !($CodigoPartes[2]=="" || $CodigoPartes[2]==0)) || $CodigoTam==2){
+        if($CodigoTam==3 || $CodigoTam==2){
             $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
             if($datos=="" OR $datos==null){
                 return response()->json([
@@ -873,7 +872,7 @@ class AreasController extends Controller
                     'TipoPartida' => 'N', // N = Normal
                     'FechaComienzo' => now(),
                     'NumeroEtiqueta' =>$CodigoPartes[2],
-                    'Linea_id' => $this->funcionesGenerales->Linea(),
+                    'Linea_id' => $OrdenFabricacion->Linea_id,
                     'Users_id' => $this->funcionesGenerales->InfoUsuario(),
                 ];
                 $PartidasOF->Areas()->attach($Area, $data);
@@ -885,7 +884,7 @@ class AreasController extends Controller
                         'TipoPartida' => 'R', // R = Retrabajo
                         'FechaComienzo' => now(),
                         'NumeroEtiqueta' =>$CodigoPartes[2],
-                        'Linea_id' => $this->funcionesGenerales->Linea(),
+                        'Linea_id' => $OrdenFabricacion->Linea_id,
                         'Users_id' => $this->funcionesGenerales->InfoUsuario(),
                     ];
                     $PartidasOF->Areas()->attach($Area, $data);
@@ -901,7 +900,7 @@ class AreasController extends Controller
                     'FechaComienzo' => now(),
                     'FechaTermina' => now(), // Guardamos la fecha de finalización
                     'NumeroEtiqueta' => $CodigoPartes[2],
-                    'Linea_id' => $this->funcionesGenerales->Linea(),
+                    'Linea_id' => $OrdenFabricacion->Linea_id,
                     'Users_id' => $this->funcionesGenerales->InfoUsuario(),
                 ];
                 $PartidasOF->Areas()->attach($Area, $data);
@@ -1015,9 +1014,11 @@ class AreasController extends Controller
                 if($Area==4){
                     if($Retrabajo=="false"){
                         //Numero de piezas Area Anterior
-                        $NumeroPartidasTodasAnterior = $partidasOF->Areas()->where('Areas_id',$Area-1)->where('TipoPartida','N')->whereNotNull('fechaTermina')->get()->SUM('pivot.Cantidad');
+                        /*$NumeroPartidasTodasAnterior = $partidasOF->Areas()->where('Areas_id',$Area-1)->where('TipoPartida','N')->whereNotNull('fechaTermina')->get()->SUM('pivot.Cantidad');
                         $NumeroPartidasRetrabajoAnterior = $partidasOF->Areas()->where('Areas_id',$Area-1)->where('TipoPartida','R')->whereNull('fechaTermina')->get()->SUM('pivot.Cantidad');
-                        $NumeroPartidasTodasAnterior = $NumeroPartidasTodasAnterior - $NumeroPartidasRetrabajoAnterior;
+                        $NumeroPartidasTodasAnterior = $NumeroPartidasTodasAnterior - $NumeroPartidasRetrabajoAnterior;*/
+                        //Se compara con la cantidad de la Partida solo Area 4
+                        $NumeroPartidasTodasAnterior = $partidasOF->cantidad_partida;
                         //Numero de piezasen Area actual
                         $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','N')->whereNull('Fechatermina')->get()->SUM('pivot.Cantidad');
                         $NumeroPartidasAbiertas=$NumeroPartidasAbiertas+$Cantidad;
@@ -1036,7 +1037,7 @@ class AreasController extends Controller
                             'TipoPartida' => 'N', // N = Normal
                             'FechaComienzo' => now(),
                             'NumeroEtiqueta' =>0,
-                            'Linea_id' => $this->funcionesGenerales->Linea(),
+                            'Linea_id' => $datos->Linea_id,
                             'Users_id' => $this->funcionesGenerales->InfoUsuario(),
                         ];
                         $partidasOF->Areas()->attach($Area, $data);
@@ -1064,7 +1065,7 @@ class AreasController extends Controller
                             'TipoPartida' => 'R', // N = Normal
                             'FechaComienzo' => now(),
                             'NumeroEtiqueta' =>0,
-                            'Linea_id' => $this->funcionesGenerales->Linea(),
+                            'Linea_id' => $datos->Linea_id,
                             'Users_id' => $this->funcionesGenerales->InfoUsuario(),
                         ];
                         $partidasOF->Areas()->attach($Area, $data);
@@ -1098,7 +1099,7 @@ class AreasController extends Controller
                         'FechaComienzo' => now(),
                         'FechaTermina' => now(),
                         'NumeroEtiqueta' =>0,
-                        'Linea_id' => $this->funcionesGenerales->Linea(),
+                        'Linea_id' => $datos->Linea_id,
                         'Users_id' => $this->funcionesGenerales->InfoUsuario(),
                     ];
                     $partidasOF->Areas()->attach($Area, $data);
@@ -1138,7 +1139,7 @@ class AreasController extends Controller
                             'TipoPartida' => 'N', // N = Normal
                             'FechaComienzo' => now(),
                             'NumeroEtiqueta' =>0,
-                            'Linea_id' => $this->funcionesGenerales->Linea(),
+                            'Linea_id' => $datos->Linea_id,
                             'Users_id' => $this->funcionesGenerales->InfoUsuario(),
                         ];
                         $partidasOF->Areas()->attach($Area, $data);
@@ -1166,7 +1167,7 @@ class AreasController extends Controller
                             'TipoPartida' => 'R', // N = Normal
                             'FechaComienzo' => now(),
                             'NumeroEtiqueta' =>0,
-                            'Linea_id' => $this->funcionesGenerales->Linea(),
+                            'Linea_id' => $datos->Linea_id,
                             'Users_id' => $this->funcionesGenerales->InfoUsuario(),
                         ];
                         $partidasOF->Areas()->attach($Area, $data);
@@ -1200,7 +1201,7 @@ class AreasController extends Controller
                         'TipoPartida' => 'F', // F = Finalizada
                         'FechaTermina' => now(),
                         'NumeroEtiqueta' =>0,
-                        'Linea_id' => $this->funcionesGenerales->Linea(),
+                        'Linea_id' => $datos->Linea_id,
                         'Users_id' => $this->funcionesGenerales->InfoUsuario(),
                     ];
                     $partidasOF->Areas()->attach($Area, $data);
@@ -1231,7 +1232,7 @@ class AreasController extends Controller
                         'TipoPartida' => 'F', // F = Finalizada
                         'FechaTermina' => now(),
                         'NumeroEtiqueta' =>0,
-                        'Linea_id' => $this->funcionesGenerales->Linea(),
+                        'Linea_id' => $datos->Linea_id,
                         'Users_id' => $this->funcionesGenerales->InfoUsuario(),
                     ];
                     $partidasOF->Areas()->attach($Area, $data);
@@ -2016,12 +2017,12 @@ class AreasController extends Controller
                             <td class="text-center">'.$partida->OrdenFabricacion.'</td>
                             <td>'.$partida->Articulo .'</td>
                             <td>'.$partida->Descripcion.'</td>
-                            <td>'.$partida->NumeroActuales.'</td>
-                            <td>'.$partida->TotalPendiente-$partida->NumeroActuales .'</td>
-                            <td>'.$partida->TotalPendiente .'</td>
-                            <td>'.$partida->CantidadTotal.'</td>
+                            <td class="text-center">'.$partida->NumeroActuales.'</td>
+                            <td class="text-center">'.$partida->TotalPendiente-$partida->NumeroActuales .'</td>
+                            <td class="text-center">'.$partida->TotalPendiente .'</td>
+                            <td class="text-center">'.$partida->CantidadTotal.'</td>
                             <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                            <td><h5 class="text-light text-center p-2" style="background: '.$partida->ColorLinea .';">'.$partida->Linea .'</h5></td>
+                            <td><h5 class="text-light text-center p-0" style="background: '.$partida->ColorLinea .';">'.$partida->Linea .'</h5></td>
                             </tr>';
         }
         return$tabla;
@@ -2068,7 +2069,7 @@ class AreasController extends Controller
                     $pivotData = [
                         'FechaComienzo' => $FechaHoy,
                         'Users_id' => $this->funcionesGenerales->InfoUsuario(),
-                        'Linea_id' => $this->funcionesGenerales->Linea(),
+                        'Linea_id' => $datos->Linea_id,
                     ];
                     if ($Partidas->save()) {
                         $Partidas->Areas()->attach($Area,$pivotData);
@@ -2091,7 +2092,7 @@ class AreasController extends Controller
                                 $pivotData = [
                                     'FechaComienzo' => $FechaHoy,
                                     'Users_id' => $this->funcionesGenerales->InfoUsuario(),
-                                    'Linea_id' => $this->funcionesGenerales->Linea(),
+                                    'Linea_id' => $datos->Linea_id,
                                 ];
                                 if ($Partidas->save()) {
                                     $Partidas->Areas()->attach($Area,$pivotData);
@@ -2113,7 +2114,7 @@ class AreasController extends Controller
                             $pivotData = [
                                 'FechaComienzo' => $FechaHoy,
                                 'Users_id' => $this->funcionesGenerales->InfoUsuario(),
-                                'Linea_id' => $this->funcionesGenerales->Linea(),
+                                'Linea_id' => $datos->Linea_id,
                             ];
                             if ($Partidas->save()) {
                                 $Partidas->Areas()->attach($Area,$pivotData);
@@ -2159,7 +2160,7 @@ class AreasController extends Controller
                 $pivotData = [
                     'FechaComienzo' => $FechaHoy,
                     'Users_id' => $this->funcionesGenerales->InfoUsuario(),
-                    'Linea_id' => $this->funcionesGenerales->Linea(),
+                    'Linea_id' => $datos->Linea_id,
                 ];
                 $datosPartidas->Areas()->attach($Area,$pivotData);
                 return 1;
@@ -2179,7 +2180,7 @@ class AreasController extends Controller
                         $pivotData = [
                             'FechaComienzo' => $FechaHoy,
                             'Users_id' => $this->funcionesGenerales->InfoUsuario(),
-                            'Linea_id' => $this->funcionesGenerales->Linea(),
+                            'Linea_id' => $datos->Linea_id,
                         ];
                         $datosPartidas->Areas()->attach($Area,$pivotData);
                         return 1;
@@ -2392,13 +2393,13 @@ class AreasController extends Controller
                             $pivotData = [
                                 'FechaComienzo' => $FechaHoy,
                                 'Users_id' => $this->funcionesGenerales->InfoUsuario(),
-                                'Linea_id' => $this->funcionesGenerales->Linea(),
+                                'Linea_id' => $datos->Linea_id,
                             ];
                         }else{
                             $pivotData = [
                                 'FechaTermina' => $FechaHoy,
                                 'Users_id' => $this->funcionesGenerales->InfoUsuario(),
-                                'Linea_id' => $this->funcionesGenerales->Linea(),
+                                'Linea_id' => $datos->Linea_id,
                             ];
                         }
                         if ($Partidasg->save()) {
@@ -2618,13 +2619,13 @@ class AreasController extends Controller
                         $pivotData = [
                             'FechaComienzo' => $FechaHoy,
                             'Users_id' => $this->funcionesGenerales->InfoUsuario(),
-                            'Linea_id' => $this->funcionesGenerales->Linea(),
+                            'Linea_id' => $OrdenFabricacion->Linea_id,
                         ];
                     }else{
                         $pivotData = [
                             'FechaTermina' => $FechaHoy,
                             'Users_id' => $this->funcionesGenerales->InfoUsuario(),
-                            'Linea_id' => $this->funcionesGenerales->Linea(),
+                            'Linea_id' => $OrdenFabricacion->Linea_id,
                         ];
                     }
                     if ($Partidasg->save()) {
@@ -2760,6 +2761,7 @@ class AreasController extends Controller
         $Escaner="";
         $CantidadCompletada=0;
         $EscanerExiste=0;
+        $Terminada=1;
         //Valida si el codigo es aceptado tiene que ser mayor a 2
         if($CodigoTam<=3 && $CodigoTam>=2){
             $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
@@ -2792,30 +2794,39 @@ class AreasController extends Controller
                 
                             ]);
                         }
-                        if($Inicio==1){
-                            $TipoEscanerrespuesta=$this->CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
-                            if($TipoEscanerrespuesta!=6){
-                                if($Area!=4){//Si el area es diferente de Suministro 4
-                                    $TipoEscanerrespuesta=$this->CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
-                                    if($TipoEscanerrespuesta != 5){
-                                        $retrabajo=$request->Retrabajo;
-                                        if($Area==4){
-                                            $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo);
-                                        }else{
-                                            $TipoEscanerrespuesta=$this->ValidarPasoUnaVezAA($Area,$CodigoPartes);
-                                            if($TipoEscanerrespuesta>0){
+                        if($request->has('Accion') && $request->Accion!="Cancelar"){
+                            if($Inicio==1){
+                                $TipoEscanerrespuesta=$this->CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                                if($TipoEscanerrespuesta!=6){
+                                    if($Area!=4){//Si el area es diferente de Suministro 4
+                                        $TipoEscanerrespuesta=$this->CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                                        if($TipoEscanerrespuesta != 5){
+                                            $retrabajo=$request->Retrabajo;
+                                            if($Area==4){
                                                 $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo);
-                                            }else{$TipoEscanerrespuesta=5;}
+                                            }else{
+                                                $TipoEscanerrespuesta=$this->ValidarPasoUnaVezAA($Area,$CodigoPartes);
+                                                if($TipoEscanerrespuesta>0){
+                                                    $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo);
+                                                }else{$TipoEscanerrespuesta=5;}
+                                            }
                                         }
+                                    }else{
+                                        $retrabajo=$request->Retrabajo;
+                                        $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo);
                                     }
-                                }else{
-                                    $retrabajo=$request->Retrabajo;
-                                    $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo);
                                 }
+                            }else{
+                                    $TipoEscanerrespuesta=$this->FinalizarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
                             }
-                        }else{
-                                $TipoEscanerrespuesta=$this->FinalizarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
                         }
+                        $TotalActual=0;
+                        $Partidastodas = $datos->PartidasOF()->get();
+                        foreach($Partidastodas as $CantidadTotal){
+                            $TotalActual += $CantidadTotal->Areas()->where('Areas_id',$Area)->get()->SUM('pivot.Cantidad');
+                        }
+                        $Terminada= $datos->CantidadTotal-$TotalActual;
+                        $CantidadTotal=$datos->CantidadTotal;
                     }else if($Escaner==0){
                         $TipoManualrespuesta=$datos->partidasOF()->where('NumeroPartida','=',$CodigoPartes[1])->first();
                         if(!($TipoManualrespuesta=="" || $TipoManualrespuesta==null)){
@@ -2885,15 +2896,16 @@ class AreasController extends Controller
                         </div>
                     </div>
                 </div>';
-    
                 return response()->json([
                     'tabla' => $menu,
                     'Escaner' => $Escaner,
                     'EscanerExiste' => $EscanerExiste,
                     'status' => "success",
+                    'Terminada'=> $Terminada,
                     'CantidadTotal' => $CantidadTotal,
                     'Inicio' => $Inicio,
                     'Finalizar' =>$Finalizar,
+                    'OrdenFabricacion'=>$datos->OrdenFabricacion,
                     'TipoEscanerrespuesta'=>$TipoEscanerrespuesta,
                     'CantidadCompletada' => $CantidadCompletada,
                     'OF' => $CodigoPartes[0]
@@ -2913,74 +2925,38 @@ class AreasController extends Controller
         }
     }
     public function finProcesoEmpaque(Request $request){   
-        $idFabricacion = $request->input('id');  
-    
-        Log::info('ID recibido: ', ['id' => $idFabricacion]);
-        
-        $query = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id') 
-            ->join('areas', 'partidasof_areas.Areas_id', '=', 'areas.id') 
-            ->where('partidasof_areas.Areas_id', 9)
-            ->select(
-                'partidasof_areas.PartidasOF_id', 
-                'areas.nombre as Estado',   
-                'ordenfabricacion.OrdenFabricacion',
-                'ordenfabricacion.CantidadTotal',
-                DB::raw('SUM(partidasof_areas.Cantidad) as cantidad_total')
-            )
-            ->groupBy(
-                'partidasof_areas.PartidasOF_id',
-                'areas.nombre',   
-                'ordenfabricacion.OrdenFabricacion',
-                'ordenfabricacion.CantidadTotal'
-            );
-    
-        if (is_array($idFabricacion)) {
-            $query->whereIn('ordenfabricacion.OrdenFabricacion', $idFabricacion);
-        } else {
-            $query->where('ordenfabricacion.OrdenFabricacion', $idFabricacion);
-        }
-        
-        $ordenfabricacion = $query->first(); 
-    
-        if (!$ordenfabricacion) {
-            Log::error('Orden no encontrada en la base de datos con ID: ' . $idFabricacion);
-            return response()->json(['error' => 'Orden no encontrada'], 404);
-        }
-    
-       
-        if ($ordenfabricacion->cantidad_total != $ordenfabricacion->CantidadTotal) {
+        $idFabricacion = $request->input('id'); 
+        $OrdenFabricacion = Ordenfabricacion::where('OrdenFabricacion',$idFabricacion)->first(); 
+        if (!$OrdenFabricacion) {
             return response()->json([
-                'error' => 'No se puede cerrar la orden porque no se ha completado.',
-                'cantidad_total' => $ordenfabricacion->cantidad_total,
-                'CantidadTotal' => $ordenfabricacion->CantidadTotal
-            ], 400);
+                'message' => 'Orden de fabricación No encontrada.',
+                'codigo' => 'Error', //Cuando es error
+            ], 200);
         }
-    
-        
-        $orden = ordenfabricacion::where('OrdenFabricacion', $idFabricacion)->first();
-    
-        if (!$orden) {
-            Log::error('Orden no encontrada en la base de datos con ID: ' . $idFabricacion);
-            return response()->json(['error' => 'Orden no encontrada'], 4);
+        $PartidasOF=$OrdenFabricacion->PartidasOF()->get();
+        $Totalcompletadas=0;
+        foreach($PartidasOF as $Partida){
+            $Totalcompletadas+=$Partida->Areas()->where('Areas_id','9')->get()->SUM('pivot.Cantidad');
         }
-    
-        $orden->Cerrada = 0; 
-        $orden->save();
-    
-        //return response()->json(['message' => 'Orden cerrada correctamente'], 200);
+        if($OrdenFabricacion->CantidadTotal > $Totalcompletadas){
+            return response()->json([
+                'message' => 'No se puede cerrar la orden porque no se ha completado',
+                'codigo' => 'Error', //Cuando es error
+            ], 200);
+        }
+        $OrdenFabricacion->Cerrada = 0; 
+        $OrdenFabricacion->save();
+        return response()->json([
+            'message' => 'Finalizado correctamente!',
+            'codigo' => 'Success', //Cuando  si se guardo
+        ], 200);
     }
     public function RegresarProceso(Request $request){
         $partidaOfAreaId = $request->input('id'); 
         $Partidasof_Areas=Partidasof_Areas::where('id',$partidaOfAreaId)->first();
         $PartidasOF=PartidasOF::where('id',$Partidasof_Areas->PartidasOF_id)->first();
         $OrdenFabricacion=$PartidasOF->OrdenFabricacion;
-        // Intentamos eliminar la partida
-        $deleted = DB::table('partidasof_areas')
-            ->where('id', $partidaOfAreaId)
-            ->delete();
-
+        $deleted = $Partidasof_Areas->delete();
         // Devolvemos una respuesta JSON según el resultado de la eliminación
         if ($deleted) {
             $OrdenFabricacion->Cerrada=1;

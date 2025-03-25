@@ -8,80 +8,53 @@
 
     <!-- Estilos específicos para los botones de cambio de estado -->
     <style>
-        .btn.toggle-status {
-            border: none;
-            background-color: transparent;
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        .btn.toggle-status i {
-            font-size: 1.5rem;
-            transition: color 0.3s ease;
-        }
-
-        .btn.toggle-status.active i {
-            color: #28a745;
-        }
-
-        .btn.toggle-status.inactive i {
-            color: #dc3545;
-        }
-
-        .btn.toggle-status:hover i {
-            transform: scale(1.2);
-        }
         .permisos ul {
         display: flex;
         flex-wrap: wrap; /* Ajusta los elementos a la siguiente línea */
         padding: 0;
         margin: 0;
-    }
-    .permisos ul::-webkit-scrollbar {
-        width: 6px; /* Ancho del scrollbar */
-    }
+        }
+        .permisos ul::-webkit-scrollbar {
+            width: 6px; /* Ancho del scrollbar */
+        }
 
-    .permisos ul::-webkit-scrollbar-thumb {
-        background-color: #c2c2c2; /* Color claro de Bootstrap (ejemplo: bg-light) */
-        border-radius: 10px; /* Bordes redondeados del thumb */
-    }
+        .permisos ul::-webkit-scrollbar-thumb {
+            background-color: #c2c2c2; /* Color claro de Bootstrap (ejemplo: bg-light) */
+            border-radius: 10px; /* Bordes redondeados del thumb */
+        }
 
-    .permisos ul::-webkit-scrollbar-track {
-        background-color: #f8f9fa; 
-    }
+        .permisos ul::-webkit-scrollbar-track {
+            background-color: #f8f9fa; 
+        }
 
-    .permisos li {
-        flex: 1 1 calc(20% - 0.4rem); /* Hasta 5 elementos por fila */
-        max-width: calc(20% - 0.4rem);
-        margin-bottom: 0.25rem; /* Menor espacio vertical entre filas */
-        white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
-        overflow: hidden; /* Oculta texto excedente */
-        text-overflow: ellipsis; /* Muestra "..." si el texto es muy largo */
-        text-align: left; /* Alinea el texto a la izquierda */
-        font-size: 0.85rem; /* Tamaño de texto más pequeño */
-        color: #333; /* Texto con color neutro */
-    }
-    .permissions-container {
-        display: flex;
-        flex-wrap: wrap; /* Permite que los elementos pasen a una nueva línea si no caben */
-        gap: 10px;       /* Espaciado entre elementos */
-    }
+        .permisos li {
+            flex: 1 1 calc(20% - 0.4rem); /* Hasta 5 elementos por fila */
+            max-width: calc(20% - 0.4rem);
+            margin-bottom: 0.25rem; /* Menor espacio vertical entre filas */
+            white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+            overflow: hidden; /* Oculta texto excedente */
+            text-overflow: ellipsis; /* Muestra "..." si el texto es muy largo */
+            text-align: left; /* Alinea el texto a la izquierda */
+            font-size: 0.85rem; /* Tamaño de texto más pequeño */
+            color: #333; /* Texto con color neutro */
+        }
+        .permissions-container {
+            display: flex;
+            flex-wrap: wrap; /* Permite que los elementos pasen a una nueva línea si no caben */
+            gap: 10px;       /* Espaciado entre elementos */
+        }
 
-    .form-check {
-        display: flex;
-        align-items: center; /* Alinea el checkbox con el texto */
-    }
-
-
-
-    .search-input {
-    border-radius: 10px; /* Ajusta según necesidad */
-}
-
-
-
-       
-
+        .form-check {
+            display: flex;
+            align-items: center; /* Alinea el checkbox con el texto */
+        }
+        .search-input {
+        border-radius: 10px; /* Ajusta según necesidad */
+        }
+        .Permisos-Colapse{
+            height: 2.5rem;
+            overflow: hidden;
+        }
     </style>
 @endsection
 
@@ -95,9 +68,6 @@
 
     <!-- Contenido principal -->
     <div class="container my-4">
-        @if(Auth::user()->hasPermission("RolesEdit"))
-            <a href="{{ route('RolesPermisos.create') }}" class="btn btn-outline-info mb-3">Agregar Rol</a>
-        @endif
         @if (session('status'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('status') }}
@@ -110,18 +80,18 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
+        @if(Auth::user()->hasPermission("RolesEdit"))
+            <a href="{{ route('RolesPermisos.create') }}" class="btn btn-outline-info mb-3">Agregar Rol</a>
+        @endif
         <div class="card p-4" style="display:block;" id="roles-table" data-list='{"valueNames":["nombreRol","permisos"],"page":5,"pagination":true}'>
             <div class="search-box mb-3 mx-auto">
-                <form class="position-relative" data-bs-toggle="search" data-bs-display="static">
-                    <input class="form-control search-input search form-control-sm rounded-pill" type="search" placeholder="Buscar" aria-label="Buscar">
-                    <svg class="position-absolute end-0 me-3 search-box-icon" width="16" height="16" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-                        <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8 8-3.58 8-8S12.42 0 8 0zm0 14C4.69 14 2 11.31 2 8s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path>
-                    </svg>
-                </form>   
+              <form class="position-relative" data-bs-toggle="search" data-bs-display="static"><input class="form-control search-input search form-control-sm" type="search" placeholder="Search" aria-label="Search" />
+                <span class="fas fa-search search-box-icon"></span>
+              </form>
             </div>
             <div class="table-responsive">
                 <div class="card shadow-sm">
-                    <table class="table table-bordered table-striped table-sm fs--1" data-list='{"page":5,"pagination":{"innerWindow":2,"left":1,"right":1}}'>
+                    <table class="table table-bordered table-striped table-sm fs--1">
                         <thead class="bg-primary text-white">
                             <tr>
                                 <th class="sort border-top ps-3" data-sort="nombreRol" style="width: 15%">Nombre del Rol</th>
@@ -130,30 +100,29 @@
                             </tr>
                         </thead>
                         <tbody class="list">
-                            @foreach ($roles as $role)
+                            @foreach ($roles as $key=>$role)
                             <tr>
                                 <td class="nombreRol align-middle ps-3">{{ $role->name }}</td>
                                 <td class="permisos align-middle">
-                                    <ul class="list-unstyled d-flex flex-wrap">
+                                    <div class="row Permisos-Colapse" id="Fila{{$key}}">
                                         @foreach ($role->permissions as $permission)
-                                            <li class="me-2 mb-1 text-truncate">
-                                                <span class="bullet">•</span> {{ $permission->name }}
-                                            </li>
+                                            <div class="col-4 text-truncate">
+                                                <span class="bullet">• {{ $permission->name }}</span>
+                                            </div>
                                         @endforeach
-                                    </ul>
+                                    </div>
+                                    @if($role->permissions->count()>6)
+                                    <button id="BtnFila{{$key}}" onclick="MostrarPermisos('Fila{{$key}}')" class="btn btn-link m-0 p-0 float-end">Ver mas...</button>
+                                    @endif
                                 </td>
                                 <td class="text-center pe-0">
                                     @if(Auth::user()->hasPermission("RolesEdit"))
-                                    <button type="button" class="btn btn-outline-warning btn-sm btn-edit" 
-                                            data-bs-toggle="modal" data-bs-target="#roleModal" 
-                                            data-id="{{ $role->id }}">
+                                    <button type="button" class="btn btn-outline-warning btn-sm btn-edit" data-bs-toggle="modal" data-bs-target="#roleModal" data-id="{{ $role->id }}">
                                         <i class="fas fa-edit"></i> Editar
                                     </button> 
                                     @endif 
                                 </td>
-                              
                             </tr>
-                            
                             @endforeach
                         </tbody>
                     </table>
@@ -167,7 +136,7 @@
 
     <!-- Modal para editar el rol -->
     <div class="modal fade" id="roleModal" tabindex="-1" aria-labelledby="roleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="roleModalLabel">Editar Rol</h5>
@@ -179,7 +148,7 @@
                     <div class="modal-body">
                         <div class="form-group mb-2">
                             <label for="roleName">Nombre del Rol</label>
-                            <input type="text" class="form-control" id="roleName" name="name" required>
+                            <input type="text" class="form-control form-control-sm" id="roleName" name="name" required>
                         </div>
                         <div class="form-group">
                             <label for="rolePermissions" class="mb-1">Permisos</label>
@@ -196,7 +165,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
                     </div>
                 </form>
             </div>
@@ -229,7 +198,7 @@
                     permissionsContainer.empty();
                     data.available_permissions.forEach(function(permission) {
                         permissionsContainer.append(`
-                            <div class="form-check col-4">
+                            <div class="form-check col-4 col-sm-3">
                                 <input type="checkbox" class="form-check-input" id="permission-${permission.id}" name="permissions[]" value="${permission.id}" ${data.permissions.includes(permission.id) ? 'checked' : ''}>
                                 <label class="form-check-label" for="permission-${permission.id}">${permission.name}</label>
                             </div>
@@ -256,5 +225,14 @@
                 }
             });
         });
+        function MostrarPermisos(NumRole){
+            if ($('#'+NumRole).hasClass('Permisos-Colapse')) {
+                $('#'+NumRole).removeClass('Permisos-Colapse');
+                $('#Btn'+NumRole).html('Ver menos');
+            } else {
+                $('#'+NumRole).addClass('Permisos-Colapse');
+                $('#Btn'+NumRole).html('Ver más...');
+            }
+        }
     </script>
 @endsection
