@@ -204,7 +204,7 @@
                     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
                     
                     display: block; 
-        }
+                }
 
 
 
@@ -310,27 +310,21 @@
                 font-size: 1px; 
                 padding: -100px; 
             }
-
             .status-box {
-            padding: 10px 20px;     
-            border-radius: 90px;     
-            font-weight: bold;      
-            color: white;           
-            text-align: center;     
-            transition: background-color 0.3s ease; 
-            min-width: 1px;       
-            max-width: 2px;       
-            width: auto;   
-            position: relative; 
-            left: 500px;        
+                display: inline-block;
+                width: 72px;
+                height: 25px;
+                border-radius: 50%;
+                background-color: gray; /* Color por defecto */
             }
-
-            .open {
-            background-color: green;
+            .status-box.bg-success {
+                background-color: green; /* Verde cuando está abierta */
             }
-
-            .closed {
-            background-color: red;
+            .status-box.bg-danger {
+                background-color: red; /* Rojo cuando está cerrada */
+            }
+            .status-box.bg-secondary {
+                background-color: gray; /* Gris para estado desconocido */
             }
 
     </style>
@@ -614,13 +608,8 @@
                         <h5 class="modal-title text-info" id="exampleModalLabel">
                             Detalles Orden Venta:
                             <span id="ordenVentaNumero" class="ms-3 text-muted"></span>
-                          <!--  <span id="Estatus" class="ms-12 text-muted text-dark"></span>-->
-                          <span id="Estatus" class="ms-12 text-muted text-white status-box"></span>
-
-                            
-
-
                         </h5>
+                        <span id="Estatus1"class="status-box">Estado</span> 
                         <button type="button" class="btn p-1" data-bs-dismiss="modal" aria-label="Close">
                             <svg class="svg-inline--fa fa-xmark fs--1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
                                 <path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"></path>
@@ -757,10 +746,11 @@
 @endsection
 @section('scripts')
     <!-- Scripts -->
-    <script src="vendors/echarts/echarts.min.js"></script>
+   
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+       
     $(document).on('click', '.ver-detalles', function (e) {
         var ordenVenta = $(this).data('ordenventa');
         
@@ -775,91 +765,107 @@
         $('#stage9').data('ordenventa', ordenVenta);
         $('.progress-bar').css('width', '0%').text('0%');
         $('.progress-bar-stages .stage').removeClass('pending active completed no-data').addClass('pending');
+        /*$.ajax({
+            url: '{{ route("Buscar.Venta.Detalle") }}',
+            type: 'GET',
+            data: { id: ordenVenta },
+            success: function (response) {
+            // console.log('Respuesta completa:', response);  // Verifica la estructura de la respuesta
+
+                if (response.partidasAreas.length > 0) {
+                    var totalEtapas = $('.progress-bar-stages .stage').length;
+                    var etapasCompletadas = 0;
+
+                
+
+                    
+
+                    var porcentaje = response.Porcentaje;
+                    $('#progressBar').css('width', porcentaje + '%').text(porcentaje + '%');
+                    $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
+                    var estadoDeVenta = response.Estatus.length > 0 ? response.Estatus[0].Estado : '';  // Verifica si existe al menos un estado
+
+            // Depuración: Verifica el estado recibido
+            console.log('Estado recibido:', estadoDeVenta);
+
+            // Elimina todas las clases de estado anteriores
+            $('#Estatus1').removeClass('badge bg-success bg-danger bg-secondary').addClass('badge');
+
+            if (estadoDeVenta === 'Abierta') {
+                $('#Estatus1').removeClass('bg-danger bg-secondary').addClass('bg-success').text('Abierta');
+                console.log('Estado: Abierta, Clases: bg-success');
+            } else if (estadoDeVenta === 'Cerrada') {
+                $('#Estatus1').removeClass('bg-success bg-secondary').addClass('bg-danger').text('Cerrada');
+                console.log('Estado: Cerrada, Clases: bg-danger');
+            } else {
+                $('#Estatus1').removeClass('bg-success bg-danger').addClass('bg-secondary').text('Estado desconocido');
+                console.log('Estado desconocido, Clases: bg-secondary');
+            }
+
+                    } else {
+                        $('.progress-bar-stages .stage').addClass('no-data');
+                        $('#progressBar').css('width', '0%').text('0%');
+                        $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
+
+                        // Verificamos si hay datos en `Estatus`
+                        if (response.Estatus.length > 0) {
+                            var estados = response.Estatus.map(item => item.Estado).join(', ');
+                            $('#Estatus1').text('Estado de la OV: ' + estados);
+                        } else {
+                            $('#Estatus1').text('Estado de la OV: No disponible');
+                        }
+                    }
+
+                    $('#exampleModal').modal('show');
+                },
+                error: function () {
+                    alert('Error al obtener los datos de la venta.');
+                }
+        });*/
         $.ajax({
             url: '{{ route("Buscar.Venta.Detalle") }}',
             type: 'GET',
             data: { id: ordenVenta },
             success: function (response) {
-                if (response.partidasAreas.length > 0) {
-                    var totalEtapas = $('.progress-bar-stages .stage').length;
-                    var etapasCompletadas = 0;
-                    response.partidasAreas.forEach(function (partida) {
-                        var estadoId = {
-                            'planeacion': '#stage1',
-                            'corte': '#stage2',
-                            'suministro': '#stage3',
-                            'preparado': '#stage4',
-                            'ensamble': '#stage5',
-                            'pulido': '#stage6',
-                            'medicion': '#stage7',
-                            'visualizacion': '#stage8',
-                            'Abierto': '#stage9',
-                        }[partida.Estado];
+                console.log('Respuesta de la API:', response);  // Verifica la respuesta completa
 
-                        if (estadoId) {
-                            $(estadoId).removeClass('pending active no-data').addClass('completed');
-                            etapasCompletadas++;
-                        }
-                    });
-
-                    var estadoActivo = response.partidasAreas.find(partida => partida.EstadoActual);
-                    if (estadoActivo) {
-                        var activoId = {
-                            'planeacion': '#stage1',
-                            'corte': '#stage2',
-                            'suministro': '#stage3',
-                            'preparado': '#stage4',
-                            'ensamble': '#stage5',
-                            'pulido': '#stage6',
-                            'medicion': '#stage7',
-                            'visualizacion': '#stage8',
-                            'Abierto': '#stage9',
-                        }[estadoActivo.Estado];
-
-                        if (activoId) {
-                            $(activoId).removeClass('pending completed').addClass('active');
-                        }
-                    }
-
+                if (response.Estatus && response.Estatus.length > 0) {
                     var porcentaje = response.Porcentaje;
                     $('#progressBar').css('width', porcentaje + '%').text(porcentaje + '%');
                     $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
 
-                    // Aquí es donde debes mostrar el Estatus
-                    //var estatus = response.Estatus; // Asignamos el estatus desde la respuesta
-                    // Verificamos si alguna orden tiene el estado 'Abierta'
-                    var algunaAbierta = response.Estatus.some(function(item) {
-                        return item.Estado === 'Abierta'; // Si alguna orden está abierta
-                    });
+                    var estadoDeVenta = response.Estatus.length > 0 ? response.Estatus[0].Estado : 'Desconocido';
 
-                    // Asignamos el estatus según si alguna orden está abierta
-                    $('#Estatus').removeClass('text-muted text-info').addClass('status-box');
+                    console.log('Estado recibido:', estadoDeVenta);  // Verifica el estado recibido
 
-                    if (algunaAbierta) {
-                        $('#Estatus').addClass('open').removeClass('closed').text('Abierta');
+                    // Muestra el modal
+                    $('#exampleModal').modal('show'); 
+
+                    // Elimina todas las clases de estado anteriores
+                    $('#Estatus1').removeClass('badge bg-success bg-danger bg-secondary').addClass('badge');
+
+                    if (estadoDeVenta === 'Abierta') {
+                        $('#Estatus1').removeClass('bg-danger bg-secondary').addClass('bg-success').text('Abierta');
+                        console.log('Estado: Abierta, Clases: bg-success');
+                    } else if (estadoDeVenta === 'Cerrada') {
+                        $('#Estatus1').removeClass('bg-success bg-secondary').addClass('bg-danger').text('Cerrada');
+                        console.log('Estado: Cerrada, Clases: bg-danger');
                     } else {
-                        $('#Estatus').addClass('closed').removeClass('open').text('Cerrada');
+                        $('#Estatus1').removeClass('bg-success bg-danger').addClass('bg-secondary').text('Estado desconocido');
+                        console.log('Estado desconocido, Clases: bg-secondary');
                     }
-
-
-
                 } else {
+                    console.log('No se encontró el estado de la venta');
                     $('.progress-bar-stages .stage').addClass('no-data');
                     $('#progressBar').css('width', '0%').text('0%');
                     $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
-                    $('#Estatus').removeClass('text-muted text-info').addClass('status-box').text('Estado de la OV: ' + response.Estatus);
-                    // Mostrar estatus aquí
                 }
-                $('#exampleModal').modal('show');
             },
             error: function () {
-                alert('Error al obtener los datos de la venta.');
+                console.log('Error al obtener los datos de la venta');
             }
         });
-
-
-
-            const endpoints = [
+        const endpoints = [
             { tipo: 'cortes', id: 'corte' },
             { tipo: 'suministros', id: 'suministro' },
             { tipo: 'preparado', id: 'preparado' },
@@ -882,14 +888,14 @@
                         tipo: endpoint.tipo
                     },
                     success: function(response) {
-                        console.log(`Respuesta de ${endpoint.tipo}:`, response); // Depuración
+                       // console.log(`Respuesta de ${endpoint.tipo}:`, response); // Depuración
                         
                         if (response.result && response.result.length > 0) {
                             const progreso = Math.min(response.Progreso.Progreso, 100); // Acceder correctamente
                             
                             drawGauge(endpoint.id, progreso, ''); 
                         } else {
-                            console.log(`No hay datos para ${endpoint.tipo}`);
+                            //console.log(`No hay datos para ${endpoint.tipo}`);
                             drawGauge(endpoint.id, 0, 'Sin Datos'); 
                         }
                     },
@@ -1014,56 +1020,43 @@
                     }
                 });
                 const endpoints = [
-    { tipo: 'plemasCorte', id: 'plemasCorte', areaId: 2 },
-    { tipo: 'plemasSuministrodia', id: 'plemasSuministro', areaId: 3 },
-    { tipo: 'plemasPreparadodia', id: 'plemasPreparado', areaId: 4 },
-    { tipo: 'plemasEnsambledia', id: 'plemasEnsamble', areaId: 5 },
-    { tipo: 'plemasPulidodia', id: 'plemasPulido', areaId: 6 },
-    { tipo: 'plemasMediciondia', id: 'plemasMedicion', areaId: 7 },
-    { tipo: 'plemasVisualizaciondia', id: 'plemasVisualizacion', areaId: 8 },
-    { tipo: 'plemasEmpaque', id: 'plemasEmpaque', areaId: 9 },
-];
-
-$.ajax({
-    url: '{{ route("graficadoOF") }}',
-    type: 'GET',
-    data: { id: ordenfabricacion },
-    success: function(response) {
-        if (response && response.estaciones) {
-            endpoints.forEach(endpoint => {
-                // Obtener los datos de la estación correspondiente usando el tipo
-                let estacion = response.estaciones[endpoint.tipo];
-
-                if (estacion && estacion.length > 0) {
-                    let datos = estacion[0]; // Tomamos el primer resultado
-                    let porcentaje = datos.porcentaje || 0; // Usamos el porcentaje calculado en el backend
-
-                    // Mostrar el valor de totalR como la etiqueta si es mayor que 0
-                    let label = datos.totalR > 0 ? `Retrabajo: ${datos.totalR}` : '';
-
-                    drawGauge(endpoint.id, porcentaje, label);
-                } else {
-                    console.log(`No hay datos para ${endpoint.tipo}`);
-                    drawGauge(endpoint.id, 0, 'Sin Datos');
+                { tipo: 'plemasCorte', id: 'plemasCorte', areaId: 2 },
+                { tipo: 'plemasSuministrodia', id: 'plemasSuministro', areaId: 3 },
+                { tipo: 'plemasPreparadodia', id: 'plemasPreparado', areaId: 4 },
+                { tipo: 'plemasEnsambledia', id: 'plemasEnsamble', areaId: 5 },
+                { tipo: 'plemasPulidodia', id: 'plemasPulido', areaId: 6 },
+                { tipo: 'plemasMediciondia', id: 'plemasMedicion', areaId: 7 },
+                { tipo: 'plemasVisualizaciondia', id: 'plemasVisualizacion', areaId: 8 },
+                { tipo: 'plemasEmpaque', id: 'plemasEmpaque', areaId: 9 },
+            ];
+            $.ajax({
+                url: '{{ route("graficadoOF") }}',
+                type: 'GET',
+                data: { id: ordenfabricacion },
+                success: function(response) {
+                    if (response && response.estaciones) {
+                        endpoints.forEach(endpoint => {
+                            let estacion = response.estaciones[endpoint.tipo];
+                            if (estacion && estacion.length > 0) {
+                                let datos = estacion[0]; 
+                                let porcentaje = datos.porcentaje || 0; 
+                                let label = datos.totalR > 0 ? `Retrabajo: ${datos.totalR}` : '';
+                                drawGauge(endpoint.id, porcentaje, label);
+                            } else {
+                                console.log(`No hay datos para ${endpoint.tipo}`);
+                                drawGauge(endpoint.id, 0, 'Sin Datos');
+                            }
+                        });
+                    } else {
+                        console.log('No hay datos para mostrar.');
+                        endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Sin Datos'));
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al obtener los datos:', error);
+                    endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Error'));
                 }
             });
-        } else {
-            console.log('No hay datos para mostrar.');
-            // Si no hay respuesta o no hay estaciones, se dibujan todos los gráficos con "Sin Datos"
-            endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Sin Datos'));
-        }
-    },
-    error: function(xhr, status, error) {
-        console.error('Error al obtener los datos:', error);
-        // Si hay error, todos los gráficos se actualizan con "Error"
-        endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Error'));
-    }
-});
-
-
-
-
-
             $.ajax({
             url: '{{ route("tiempos.hrs") }}',
             method: 'GET',
@@ -1229,7 +1222,7 @@ $.ajax({
 
                 if (data.length > 0) {
                     data.forEach(function (item) {
-                        console.log(item);
+                        //console.log(item);
                         var row = `
                             <tr>
                                 <td >${item.OrdenVenta}</td>
