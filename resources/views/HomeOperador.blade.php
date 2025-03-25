@@ -15,21 +15,12 @@
         border-radius: 15px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     }
-    .welcome-title {
-        font-size: 24px;
-        font-weight: bold;
-        color: #333;
-    }
     .user-name {
         font-size: 22px;
         color: #c00000;
         font-weight: bold;
     }
-    .welcome-message {
-        font-size: 16px;
-        color: #555;
-        margin-top: 15px;
-    }
+    
     .usuario-icono {
         background: #c00000;
         color: white;
@@ -40,7 +31,6 @@
     }
     #clock {
         font-size: 16px;
-        margin-top: 10px;
         font-weight: bold;
         color: #c00000;
     }
@@ -141,14 +131,14 @@
 @endif
 <div style="height: 8px;"></div>
 @if(Auth::user()->hasPermission("Enviar Avisos"))
-    <div class="d-flex justify-content-end">
+    <div class="d-flex justify-content-end mb-2">
         <button class="btn btn-outline-info custom-rounded" type="submit" id="enviaraviso">Nuevo Aviso</button>
     </div>
 @endif    
-<div class="welcome-container"> 
-    <i class="far fa-user usuario-icono"></i>
-    <h1 class="welcome-title">Bienvenido</h1>
-    <h2 class="user-name">{{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}</h2>          
+<div class="welcome-container card" > 
+    <!--<i class="far fa-user usuario-icono"></i>-->
+    <h4 class="text-start">¡Bienvenido/a </h4>
+    <h3 class="text-start">{{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}!</h3>          
     <p class="welcome-message" id="message"></p>
     <div id="clock">
         <div id="date"></div>
