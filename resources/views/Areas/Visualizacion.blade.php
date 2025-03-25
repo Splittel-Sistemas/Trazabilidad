@@ -21,8 +21,8 @@
     <div class="row">
         <div class="col-6">
             <div class="card shadow-sm">
-              <div class="card-header p-2" id="filtroEntrada" style="background: #005187">
-                  <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Entrada</h3>
+                <div class="card-header p-2" id="filtroEntrada" style="background: #009150">
+                    <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Entrada <i class="fas fa-arrow-down"></i></h3>
               </div>
               <div class="card-body row" id="filtroEntrada">
                   <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
@@ -60,7 +60,7 @@
         <div class="col-6">
             <div class="card shadow-sm">
                 <div class="card-header p-2" id="filtroEntrada" style="background:#D21637;">
-                    <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Salida</h3>
+                    <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Salida <i class="fas fa-arrow-up"></i></h3>
                 </div>
                 <div class="card-body row" id="filtroSalida">
                     <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
@@ -78,7 +78,7 @@
                         <div class="col-4" id="CantidadDivSalida" style="display: none">
                             <div class="form-group">
                                 <label for="Cantidad">Cantidad</label>
-                                <input type="text" class="form-control form-control-sm" id="CantidadSalida" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
+                                <input type="text" class="form-control form-control-sm" id="CantidadSalida" aria-describedby="Cantidad" oninput="RegexNumeros(this);" value="1" placeholder="Ingresa cantidad recibida.">
                                 <div class="invalid-feedback" id="error_CantidadSalida"></div>
                             </div>
                         </div>
@@ -168,8 +168,7 @@
                 Retrabajo: 'no',
                 Inicio:Inicio,
                 Finalizar:Finalizar,
-                Area:'{{$Area}}',
-                _token: '{{ csrf_token() }}'  
+                Area:'{{$Area}}'
             },
             beforeSend: function() {
                 //$('#CodigoEscanerSuministro').html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /><br>Cargando</p>");
@@ -207,7 +206,7 @@
                             $('#ToastGuardado').fadeIn();
                             setTimeout(function(){
                                 $('#ToastGuardado').fadeOut();
-                            }, 2000);
+                            }, 3500);
                         }else{
                             if(Inicio==1){
                                 const Retrabajo = document.getElementById('Retrabajo');
@@ -223,6 +222,9 @@
                                 $('#ContentTabla').show();
                                 $('#CantidadDivSalida').fadeIn();
                                 $('#IniciarBtnSalida').fadeIn();
+                                $('#CodigoEscanerEntrada').val(Codigo);
+                                $('#CodigoEscanerSalida').val(Codigo);
+
                             return 0;
                         }
                     }else{
@@ -233,6 +235,11 @@
                                 case 1:
                                 //$('#CodigoEscaner').val('');
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> guardado correctamente!';
+                                    CoincidenciasCodigo = Codigo.match(/-/g);
+                                    if(CoincidenciasCodigo.length==2){
+                                        $('#CodigoEscanerSalida').val('');
+                                        $('#CodigoEscanerEntrada').val('');
+                                    }
                                     Color='bg-success';
                                     break;
                                 case 2:
@@ -261,6 +268,10 @@
                                     //$('#ContentTabla').hide();
                                     //$('#CantidadPartidasOF').html('');
                                     break;
+                                case 7:
+                                    Mensaje='Codigo <strong>'+Codigo+'</strong> No existe!';
+                                    Color='bg-danger';
+                                    break;
                                 default:
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> Ocurrio un error!';
                                     Color='bg-danger';
@@ -273,6 +284,11 @@
                                 case 1:
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> Finalizado!';
                                     Color='bg-success';
+                                    CoincidenciasCodigo = Codigo.match(/-/g);
+                                    if(CoincidenciasCodigo.length==2){
+                                        $('#CodigoEscanerSalida').val('');
+                                        $('#CodigoEscanerEntrada').val('');
+                                    }
                                     break;
                                 case 2:
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> El codigo Aún no ha sido inicializado!';
@@ -282,27 +298,30 @@
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> no encontrado!';
                                     Color='bg-danger';
                                     break;
-                            
+                                case 7:
+                                    Mensaje='Codigo <strong>'+Codigo+'</strong> No existe!';
+                                    Color='bg-danger';
+                                    break;
                                 default:
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> Ocurrio un error!';
                                     Color='bg-danger';
                                     break;
-                                    break;
                             }
 
                         }
-                        $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
-                        $('#ToastGuardadoBody').html(Mensaje);
-                        $('#CantidadDiv').fadeOut();
-                        $('#IniciarBtn').fadeOut();
-                        $('#CantidadDivSalida').fadeOut();
-                        $('#IniciarBtnSalida').fadeOut();
-                        
+                            $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                            $('#ToastGuardadoBody').html(Mensaje);
+                            $('#CantidadDiv').fadeOut();
+                            $('#IniciarBtn').fadeOut();
+                            $('#CantidadDivSalida').fadeOut();
+                            $('#IniciarBtnSalida').fadeOut();
                     }
-                    $('#ToastGuardado').fadeIn();
-                    setTimeout(function(){
-                        $('#ToastGuardado').fadeOut();
-                    }, 2500);
+                    if(response.TipoEscanerrespuesta!=7){
+                        $('#ToastGuardado').fadeIn();
+                        setTimeout(function(){
+                            $('#ToastGuardado').fadeOut();
+                        }, 2500);
+                    }
                 }else if(response.status=="empty"){
                     //if(response.Escaner!=0){
                         $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
@@ -310,7 +329,7 @@
                         $('#ToastGuardado').fadeIn();
                         setTimeout(function(){
                             $('#ToastGuardado').fadeOut();
-                        }, 3500);
+                        }, 4000);
                     //}
                 }else if(response.status=="NoExiste"){
                         $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
@@ -318,12 +337,7 @@
                         $('#ToastGuardado').fadeIn();
                         setTimeout(function(){
                             $('#ToastGuardado').fadeOut();
-                        }, 3500);
-                }
-                CoincidenciasCodigo = Codigo.match(/-/g);
-                if(CoincidenciasCodigo.length==2){
-                    $('#CodigoEscanerSalida').val('');
-                    $('#CodigoEscanerEntrada').val('');
+                        }, 4000);
                 }
                 RecargarTablaPendientes();
             },
@@ -348,8 +362,7 @@
                 Inicio:1,
                 Finalizar:0,
                 Retrabajo: 'si',
-                Area:'{{$Area}}',
-                _token: '{{ csrf_token() }}'  
+                Area:'{{$Area}}' 
             },
             beforeSend: function() {
                 $('#CodigoEscanerSuministro').html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /><br>Cargando</p>");
@@ -541,8 +554,7 @@
                 Inicio: Inicio,
                 Fin: Fin,
                 Retrabajo: Retrabajo,
-                Area: '{{$Area}}',
-                _token: '{{ csrf_token() }}'
+                Area: '{{$Area}}'
             },
             beforeSend: function() {
                 $('#CodigoEscanerSuministro').html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /><br>Cargando</p>");
@@ -555,21 +567,21 @@
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }else if(response.status=='PasBackerror'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('La cantidad solicitada aún no puede ser procesada!, Aún no han pasado las piezas del paso anterior');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }else if(response.status=='error'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('Ocurrio un error no fue posible guardar la información para codigo'+CodigoEscaner+'!');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }else if(response.status=='success'){
                     if(response.Inicio==1){
                         mensaje='Nueva Entrada del Codigo '+CodigoEscaner+' Guardada!';
@@ -583,40 +595,42 @@
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500); 
+                    $('#CodigoEscanerEntrada').val('');
+                    $('#CodigoEscanerSalida').val('');
+                    $('#Cantidad').val(1);
+                    $('#CantidadSalida').val(1);
                 }else if(response.status=='SurplusFin'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('Error no guardado, la cantidad de salidas supera el total de la cantidad las partidas registradas!');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }else if(response.status=='SurplusRetrabajo'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('Error no guardado, Para mandar a retrabajo las ordenes tienen que estar en Estatus "Finalizado" !');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }else if(response.status=='SurplusInicio'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('Error no guardado, La cantidad de entradas no puede superar la cantidad Total de la Partida de la Orden de Fabricación !');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }else if(response.status=='SurplusInicioAnt'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('Error no guardado, La cantidad de entradas, Aún faltan de procesarse piezas en la area Anterior !');
                     $('#ToastGuardado').fadeIn();
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
-                    }, 2000);
+                    }, 3500);
                 }
                 ListaCodigo(CodigoEscaner,'CodigoEscanerSuministro','Entrada');
                 RecargarTablaPendientes();
-                $('#CodigoEscanerEntrada').val('');
-                $('#CodigoEscanerSalida').val('');
             },
             error: function(xhr, status, error) {
                 $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
@@ -644,8 +658,7 @@
             url: "{{route('AreaTablaPendientes')}}",
             type: 'POST',
             data: {
-                Area: '{{$Area}}',
-                _token: '{{ csrf_token() }}'
+                Area: '{{$Area}}'
             },
             beforeSend: function() {
             },

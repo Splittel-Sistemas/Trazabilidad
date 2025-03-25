@@ -10,6 +10,7 @@ use App\Models\OrdenFabricacion;
 use App\Models\PartidasOF;
 use App\Models\Partidas;
 use App\Models\Emision;
+use App\Models\Linea;
 use App\Models\Partidasof_Areas;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
@@ -653,7 +654,7 @@ class AreasController extends Controller
                 $Escaner=$datos->Escaner;
                 if($CodigoTam==3 || $CodigoTam==2){
                     //Comprobamos que la etiqueta si coincida con su numero de parte
-                    if($Escaner==1){
+                    if($Escaner==1 && isset($CodigoPartes[2])){
                         $CodigoValido=$this->ComprobarNumEtiqueta($CodigoPartes,$Area);
                         if($CodigoValido==0){
                             return response()->json([
@@ -698,6 +699,9 @@ class AreasController extends Controller
                             $EscanerExiste = 0;
                         }
                     }
+                    if(!isset($CodigoPartes[2])){
+                        $TipoEscanerrespuesta=7;
+                    }
                 }
                 $CantidadCompletada=$this->NumeroCompletadas($CodigoPartes,$Area);
                 if($CantidadCompletada<0){
@@ -727,7 +731,8 @@ class AreasController extends Controller
                                                 $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Abierta</span><span class="ms-1 fas fa-cogs"></span></div></td>';
                                             }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Cerrada</span><span class="ms-1 fas fa-check"></span></div></td>';
                                             }
-                                            $menu.='<td class="align-middle text-center Linea">'.$PartdaAr['pivot']->Linea_id.'</td></tr>';
+                                    $Linea = Linea::find($PartdaAr['pivot']->Linea_id);
+                                            $menu.='<td class="align-middle text-center Linea"><h5 class="text-light text-center p-0 mx-1" style="background:'.$Linea->ColorLinea.'">'.$Linea->NumeroLinea.'</h5></td></tr>';
                                 }
                             }
                 }else{
@@ -757,7 +762,8 @@ class AreasController extends Controller
                                             $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">iniciado</span><span class="ms-1 fas fa-cogs"></span></div></td>';
                                         }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">finalizado</span><span class="ms-1 fas fa-check"></span></div></td>';
                                         }
-                                        $menu.='<td class="align-middle text-center Linea">'.$PartdaAr['pivot']->Linea_id.'</td></tr>';
+                                $Linea = Linea::find($PartdaAr['pivot']->Linea_id);
+                                        $menu.='<td class="align-middle text-center Linea"><h5 class="text-light text-center p-0 mx-1" style="background:'.$Linea->ColorLinea.'">'.$Linea->NumeroLinea.'</h5></td></tr>';
                             }
                     }
                 }
@@ -1278,6 +1284,9 @@ class AreasController extends Controller
         }else{
             $partidasOF=$datos->partidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
             $inicio=0;
+            if($partidasOF==""){
+                return 0;
+            }
             $fin=$partidasOF->cantidad_partida;
             if($CodigoPartes[2]>$inicio && $CodigoPartes[2]<=$fin){
                 return 1;
