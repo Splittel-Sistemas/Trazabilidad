@@ -1431,12 +1431,12 @@
     }
     // Cuando se haga clic en una fila para seleccionar la OrdenFabricacion
     $(document).on('click', '.ver-fabricacion', function () {
-        var ordenfabricacion = $(this).data('ordenfabricacion');  // Obtener el valor de ordenfabricacion desde la fila
-        console.log('Orden de fabricación seleccionada:', ordenfabricacion);  // Verifica que se obtiene el valor
+        var ordenfabricacion = $(this).data('ordenfabricacion');  
+        console.log('Orden de fabricación seleccionada:', ordenfabricacion);  
 
         // Asignar ese valor al botón VerMas
-        $('.VerMas').data('ordenfabricacion', ordenfabricacion);  // Asigna el valor al botón
-        console.log('Valor asignado al botón VerMas:', $('.VerMas').data('ordenfabricacion'));  // Verifica que se asignó correctamente
+        $('.VerMas').data('ordenfabricacion', ordenfabricacion);  
+      //  console.log('Valor asignado al botón VerMas:', $('.VerMas').data('ordenfabricacion')); 
 
         // Si deseas que el texto del botón también cambie para indicar la orden seleccionada:
        // $('.VerMas').text(` Orden ${ordenfabricacion} +`);
