@@ -50,7 +50,9 @@
 </div>
 <!-- Contenido principal -->
 <div class="container my-4">
-    <a href="{{ route('linea.create') }}" class="btn btn-outline-info mb-3" data-bs-toggle="modal" data-bs-target="#crearModal">Agregar Linea</a>
+    @if(Auth::user()->hasPermission("Crear Linea"))
+        <a href="{{ route('linea.create') }}" class="btn btn-outline-info mb-3" data-bs-toggle="modal" data-bs-target="#crearModal">Agregar Linea</a>
+    @endif
     @if (session('status'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('status') }}
@@ -94,26 +96,29 @@
                             <td class="align-middle nombre ps-3">{{ $linea->Nombre }}</td>
                             <td class="align-middle descripcion ps-3">{{ $linea->Descripcion }}</td>
                             <td class="align-center estatus ps-8">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input toggle-status" style="transform:scale(1.5);" 
-                                    type="checkbox" 
-                                    id="ActivarUsuario{{ $linea->id }}" 
-                                    data-id="{{ $linea->id }}" 
-                                    data-active="{{ $linea->active ? '1' : '0' }}" 
-                                    {{ $linea->active ? 'checked' : '' }} 
-                                    onclick="DesactivarLinea(this)">
-                            </div>
+                                @if(Auth::user()->hasPermission("Activar/Desactivar Linea"))
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input toggle-status" style="transform:scale(1.5);" 
+                                            type="checkbox" 
+                                            id="ActivarUsuario{{ $linea->id }}" 
+                                            data-id="{{ $linea->id }}" 
+                                            data-active="{{ $linea->active ? '1' : '0' }}" 
+                                            {{ $linea->active ? 'checked' : '' }} 
+                                            onclick="DesactivarLinea(this)">
+                                    </div>
+                                @endif
                             </td>
                             <td><div class="p-3" style="background: {{ $linea->ColorLinea }};"></div></td>
-                            <td class="text-center pe-0">
-                                <button type="button" class="btn btn-outline-warning btn-sm" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#lineaModal" 
-                                    data-id="{{ $linea->id }}">
-                                    <i class="fas fa-edit"></i> Editar
-                                </button>
-                            </td>
-                        
+                                <td class="text-center pe-0">
+                                    @if(Auth::user()->hasPermission("Editar Linea"))
+                                        <button type="button" class="btn btn-outline-warning btn-sm" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#lineaModal" 
+                                            data-id="{{ $linea->id }}">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                    @endif
+                                </td>
                         </tr>
                         @endforeach
                     </tbody>

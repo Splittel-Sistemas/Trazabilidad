@@ -11,7 +11,7 @@ class LineasController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if ($user->hasPermission('Vistas Editar')) {
+        if ($user->hasPermission('Vista Lineas')) {
             $linea = Linea::orderBy('NumeroLinea', 'asc')->get();
             return view('Lineas.Lineaindex', compact('linea'));
         } else {

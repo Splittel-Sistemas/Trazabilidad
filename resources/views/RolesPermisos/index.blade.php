@@ -80,8 +80,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-        @if(Auth::user()->hasPermission("RolesEdit"))
-            <a href="{{ route('RolesPermisos.create') }}" class="btn btn-outline-info mb-3">Agregar Rol</a>
+        @if(Auth::user()->hasPermission("Crear Rol"))
+            <a href="{{ route('RolesPermisos.create') }}" class="btn btn-outline-info mb-3">Crear Rol</a>
         @endif
         <div class="card p-4" style="display:block;" id="roles-table" data-list='{"valueNames":["nombreRol","permisos"],"page":5,"pagination":true}'>
             <div class="search-box mb-3 mx-auto">
@@ -116,7 +116,7 @@
                                     @endif
                                 </td>
                                 <td class="text-center pe-0">
-                                    @if(Auth::user()->hasPermission("RolesEdit"))
+                                    @if(Auth::user()->hasPermission("Editar Rol"))
                                     <button type="button" class="btn btn-outline-warning btn-sm btn-edit" data-bs-toggle="modal" data-bs-target="#roleModal" data-id="{{ $role->id }}">
                                         <i class="fas fa-edit"></i> Editar
                                     </button> 
