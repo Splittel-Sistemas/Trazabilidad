@@ -1511,29 +1511,18 @@
                 }
             });
     });
-
-
-
-
-
-
-
-
-
-
-
     function cambiarEstatus(estado) {
-  const estatusElement = document.getElementById('Estatus');
+        const estatusElement = document.getElementById('Estatus');
   
-  if (estado === 'abierto') {
-    estatusElement.classList.add('open');
-    estatusElement.classList.remove('closed');
-    estatusElement.textContent = 'Abierto';
-  } else {
-    estatusElement.classList.add('closed');
-    estatusElement.classList.remove('open');
-    estatusElement.textContent = 'Cerrado';
-  }
-}
+        if (estado === 'abierto') {
+            estatusElement.classList.add('open');
+            estatusElement.classList.remove('closed');
+            estatusElement.textContent = 'Abierto';
+        } else {
+            estatusElement.classList.add('closed');
+            estatusElement.classList.remove('open');
+            estatusElement.textContent = 'Cerrado';
+        }
+    }
 </script>
 @endsection
