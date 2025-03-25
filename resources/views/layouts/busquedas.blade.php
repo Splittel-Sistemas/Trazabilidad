@@ -312,26 +312,26 @@
             }
 
             .status-box {
-            padding: 10px 20px;     
-            border-radius: 90px;     
-            font-weight: bold;      
-            color: white;           
-            text-align: center;     
-            transition: background-color 0.3s ease; 
-            min-width: 1px;       
-            max-width: 2px;       
-            width: auto;   
-            position: relative; 
-            left: 500px;        
-            }
+    display: inline-block;
+    width: 20px;  /* Tamaño del círculo */
+    height: 20px; /* Altura igual al ancho */
+    border-radius: 50%; /* Hace el elemento completamente circular */
+    transition: background-color 0.3s ease;
+    position: relative;
+    left: 500px;
+}
 
-            .open {
-            background-color: green;
-            }
+/* Estado Abierto - Verde */
+.status-box.open {
+    background-color: green;
+}
 
-            .closed {
-            background-color: red;
-            }
+/* Estado Cerrado - Rojo */
+.status-box.closed {
+    background-color: red;
+}
+
+
 
     </style>
 @endsection
@@ -615,7 +615,12 @@
                             Detalles Orden Venta:
                             <span id="ordenVentaNumero" class="ms-3 text-muted"></span>
                           <!--  <span id="Estatus" class="ms-12 text-muted text-dark"></span>-->
-                          <span id="Estatus" class="ms-12 text-muted text-white status-box"></span>
+                          
+                          <div id="EstatusContainer">
+                            <span id="Estatus" class="status-box"></span>
+                        </div>
+                        
+                        
 
                             
 
@@ -783,6 +788,7 @@
                 if (response.partidasAreas.length > 0) {
                     var totalEtapas = $('.progress-bar-stages .stage').length;
                     var etapasCompletadas = 0;
+
                     response.partidasAreas.forEach(function (partida) {
                         var estadoId = {
                             'planeacion': '#stage1',
@@ -825,37 +831,41 @@
                     $('#progressBar').css('width', porcentaje + '%').text(porcentaje + '%');
                     $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
 
-                    // Aquí es donde debes mostrar el Estatus
-                    //var estatus = response.Estatus; // Asignamos el estatus desde la respuesta
-                    // Verificamos si alguna orden tiene el estado 'Abierta'
                     var algunaAbierta = response.Estatus.some(function(item) {
-                        return item.Estado === 'Abierta'; // Si alguna orden está abierta
+                        return item.Estado === 'Abierta';
                     });
 
-                    // Asignamos el estatus según si alguna orden está abierta
-                    $('#Estatus').removeClass('text-muted text-info').addClass('status-box');
+                    // Limpiamos clases anteriores
+                    $('#Estatus').removeClass('open closed');
 
+                    // Asignamos el estado correcto con las clases definidas en CSS
                     if (algunaAbierta) {
-                        $('#Estatus').addClass('open').removeClass('closed').text('Abierta');
+                        $('#Estatus').addClass('open'); // Color verde
                     } else {
-                        $('#Estatus').addClass('closed').removeClass('open').text('Cerrada');
+                        $('#Estatus').addClass('closed'); // Color rojo
                     }
-
-
-
                 } else {
                     $('.progress-bar-stages .stage').addClass('no-data');
                     $('#progressBar').css('width', '0%').text('0%');
                     $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
-                    $('#Estatus').removeClass('text-muted text-info').addClass('status-box').text('Estado de la OV: ' + response.Estatus);
-                    // Mostrar estatus aquí
+
+                    // Verificamos si hay datos en `Estatus`
+                    if (response.Estatus.length > 0) {
+                        var estados = response.Estatus.map(item => item.Estado).join(', ');
+                        $('#Estatus').text('Estado de la OV: ' + estados);
+                    } else {
+                        $('#Estatus').text('Estado de la OV: No disponible');
+                    }
                 }
+
                 $('#exampleModal').modal('show');
             },
             error: function () {
                 alert('Error al obtener los datos de la venta.');
             }
         });
+
+
 
 
 
@@ -1014,56 +1024,43 @@
                     }
                 });
                 const endpoints = [
-    { tipo: 'plemasCorte', id: 'plemasCorte', areaId: 2 },
-    { tipo: 'plemasSuministrodia', id: 'plemasSuministro', areaId: 3 },
-    { tipo: 'plemasPreparadodia', id: 'plemasPreparado', areaId: 4 },
-    { tipo: 'plemasEnsambledia', id: 'plemasEnsamble', areaId: 5 },
-    { tipo: 'plemasPulidodia', id: 'plemasPulido', areaId: 6 },
-    { tipo: 'plemasMediciondia', id: 'plemasMedicion', areaId: 7 },
-    { tipo: 'plemasVisualizaciondia', id: 'plemasVisualizacion', areaId: 8 },
-    { tipo: 'plemasEmpaque', id: 'plemasEmpaque', areaId: 9 },
-];
-
-$.ajax({
-    url: '{{ route("graficadoOF") }}',
-    type: 'GET',
-    data: { id: ordenfabricacion },
-    success: function(response) {
-        if (response && response.estaciones) {
-            endpoints.forEach(endpoint => {
-                // Obtener los datos de la estación correspondiente usando el tipo
-                let estacion = response.estaciones[endpoint.tipo];
-
-                if (estacion && estacion.length > 0) {
-                    let datos = estacion[0]; // Tomamos el primer resultado
-                    let porcentaje = datos.porcentaje || 0; // Usamos el porcentaje calculado en el backend
-
-                    // Mostrar el valor de totalR como la etiqueta si es mayor que 0
-                    let label = datos.totalR > 0 ? `Retrabajo: ${datos.totalR}` : '';
-
-                    drawGauge(endpoint.id, porcentaje, label);
-                } else {
-                    console.log(`No hay datos para ${endpoint.tipo}`);
-                    drawGauge(endpoint.id, 0, 'Sin Datos');
+                { tipo: 'plemasCorte', id: 'plemasCorte', areaId: 2 },
+                { tipo: 'plemasSuministrodia', id: 'plemasSuministro', areaId: 3 },
+                { tipo: 'plemasPreparadodia', id: 'plemasPreparado', areaId: 4 },
+                { tipo: 'plemasEnsambledia', id: 'plemasEnsamble', areaId: 5 },
+                { tipo: 'plemasPulidodia', id: 'plemasPulido', areaId: 6 },
+                { tipo: 'plemasMediciondia', id: 'plemasMedicion', areaId: 7 },
+                { tipo: 'plemasVisualizaciondia', id: 'plemasVisualizacion', areaId: 8 },
+                { tipo: 'plemasEmpaque', id: 'plemasEmpaque', areaId: 9 },
+            ];
+            $.ajax({
+                url: '{{ route("graficadoOF") }}',
+                type: 'GET',
+                data: { id: ordenfabricacion },
+                success: function(response) {
+                    if (response && response.estaciones) {
+                        endpoints.forEach(endpoint => {
+                            let estacion = response.estaciones[endpoint.tipo];
+                            if (estacion && estacion.length > 0) {
+                                let datos = estacion[0]; 
+                                let porcentaje = datos.porcentaje || 0; 
+                                let label = datos.totalR > 0 ? `Retrabajo: ${datos.totalR}` : '';
+                                drawGauge(endpoint.id, porcentaje, label);
+                            } else {
+                                console.log(`No hay datos para ${endpoint.tipo}`);
+                                drawGauge(endpoint.id, 0, 'Sin Datos');
+                            }
+                        });
+                    } else {
+                        console.log('No hay datos para mostrar.');
+                        endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Sin Datos'));
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al obtener los datos:', error);
+                    endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Error'));
                 }
             });
-        } else {
-            console.log('No hay datos para mostrar.');
-            // Si no hay respuesta o no hay estaciones, se dibujan todos los gráficos con "Sin Datos"
-            endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Sin Datos'));
-        }
-    },
-    error: function(xhr, status, error) {
-        console.error('Error al obtener los datos:', error);
-        // Si hay error, todos los gráficos se actualizan con "Error"
-        endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Error'));
-    }
-});
-
-
-
-
-
             $.ajax({
             url: '{{ route("tiempos.hrs") }}',
             method: 'GET',
