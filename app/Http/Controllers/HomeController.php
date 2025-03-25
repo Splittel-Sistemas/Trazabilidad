@@ -21,16 +21,19 @@ class HomeController extends Controller
         return view('Home');
     }
     public function index()
-{
-    $user = Auth::user();
+{   $user = Auth::user();
+    if ($user->hasPermission('Vista Dashboard')) {
 
-    if (!$user || !$user->active) {
-        Auth::logout();
-        return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
+        $user = Auth::user();
+        if (!$user || !$user->active) {
+            Auth::logout();
+            return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
+        }
+        // Si el usuario está autenticado y su cuenta está activa
+        return view('Home', compact('user')); // O la vista que corresponda
+    } else {
+        return redirect()->route('index.operador');
     }
-
-    // Si el usuario está autenticado y su cuenta está activa
-    return view('Home', compact('user')); // O la vista que corresponda
 }
 
 

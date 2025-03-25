@@ -91,7 +91,7 @@
                                 </div>
                             @endif                           
                         </li>
-                        @if(Auth::user()->hasPermission("Vista Busqueda"))
+                        @if(Auth::user()->hasPermission("Vista Progreso"))
                             <li class="nav-item"><!-- Progreso-->
                                 <p class="navbar-vertical-label">B&uacute;squeda</p>
                                 <hr class="navbar-vertical-line" /><!-- parent pages-->
@@ -102,114 +102,115 @@
                                 </div>
                             </li>
                         @endif
-                       
-                        <li class="nav-item"><!-- reportes-->
-                            <p class="navbar-vertical-label">Reportes</p>
-                            <hr class="navbar-vertical-line">
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link dropdown-indicator label-1 collapsed" href="#nv-e-reportes" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-e-reportes">
-                                    <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon">
-                                            <svg class="svg-inline--fa fa-caret-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
-                                                <path fill="currentColor" d="M118.6 105.4l128 127.1C252.9 239.6 256 247.8 256 255.1s-3.125 16.38-9.375 22.63l-128 127.1c-9.156 9.156-22.91 11.9-34.88 6.943S64 396.9 64 383.1V128c0-12.94 7.781-24.62 19.75-29.58S109.5 96.23 118.6 105.4z"></path>
-                                            </svg>
+                        @if(Auth::user()->hasPermission("Vista Reportes"))
+                            <li class="nav-item"><!-- reportes-->
+                                <p class="navbar-vertical-label">Reportes</p>
+                                <hr class="navbar-vertical-line">
+                                <div class="nav-item-wrapper">
+                                    <a class="nav-link dropdown-indicator label-1 collapsed" href="#nv-e-reportes" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-e-reportes">
+                                        <div class="d-flex align-items-center">
+                                            <div class="dropdown-indicator-icon">
+                                                <svg class="svg-inline--fa fa-caret-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
+                                                    <path fill="currentColor" d="M118.6 105.4l128 127.1C252.9 239.6 256 247.8 256 255.1s-3.125 16.38-9.375 22.63l-128 127.1c-9.156 9.156-22.91 11.9-34.88 6.943S64 396.9 64 383.1V128c0-12.94 7.781-24.62 19.75-29.58S109.5 96.23 118.6 105.4z"></path>
+                                                </svg>
+                                            </div>
+                                            <span class="nav-link-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text text-900 fs-3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                            </span><span class="nav-link-text">Reportes</span>
                                         </div>
-                                        <span class="nav-link-icon">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text text-900 fs-3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                                        </span><span class="nav-link-text">Reportes</span>
+                                    </a>
+                                    <div class="parent-wrapper label-1">
+                                        <ul class="nav parent collapse" data-bs-parent="#navbarVerticalCollapse" id="nv-e-reportes" style="">
+                                            <li class="collapsed-nav-item-title d-none">Reportes</li>
+                                            <li class="nav-item">
+                                                <a class="nav-link dropdown-indicator collapsed" href="#nv-splittel" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-splittel">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="dropdown-indicator-icon">
+                                                            <svg class="svg-inline--fa fa-caret-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="clipb" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
+                                                                <path fill="currentColor" d="M118.6 105.4l128 127.1C252.9 239.6 256 247.8 256 255.1s-3.125 16.38-9.375 22.63l-128 127.1c-9.156 9.156-22.91 11.9-34.88 6.943S64 396.9 64 383.1V128c0-12.94 7.781-24.62 19.75-29.58S109.5 96.23 118.6 105.4z"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <span class="nav-link-text">SPLITTEL</span>
+                                                    </div>
+                                                </a>
+                                                <div class="parent-wrapper">
+                                                    <ul class="nav parent collapse" data-bs-parent="#e-commerce" id="nv-splittel" style="">
+                                                        <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 1</span></div>
+                                                        </a><!-- more inner pages-->
+                                                        </li>
+                                                        <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 2</span></div>
+                                                        </a><!-- more inner pages-->
+                                                        </li>
+                                                        <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 3</span></div>
+                                                        </a><!-- more inner pages-->
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link dropdown-indicator collapsed" href="#nv-maquila" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-maquila">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="dropdown-indicator-icon">
+                                                            <svg class="svg-inline--fa fa-caret-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="clipb" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
+                                                                <path fill="currentColor" d="M118.6 105.4l128 127.1C252.9 239.6 256 247.8 256 255.1s-3.125 16.38-9.375 22.63l-128 127.1c-9.156 9.156-22.91 11.9-34.88 6.943S64 396.9 64 383.1V128c0-12.94 7.781-24.62 19.75-29.58S109.5 96.23 118.6 105.4z"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <span class="nav-link-text">MAQUILA</span>
+                                                    </div>
+                                                </a>
+                                                <div class="parent-wrapper">
+                                                    <ul class="nav parent collapse" data-bs-parent="#e-commerce" id="nv-maquila" style="">
+                                                        <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 1</span></div>
+                                                        </a><!-- more inner pages-->
+                                                        </li>
+                                                        <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 2</span></div>
+                                                        </a><!-- more inner pages-->
+                                                        </li>
+                                                        <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 3</span></div>
+                                                        </a><!-- more inner pages-->
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link dropdown-indicator collapsed" href="#nv-imex" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-imex">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="dropdown-indicator-icon">
+                                                            <svg class="svg-inline--fa fa-caret-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="clipb" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
+                                                                <path fill="currentColor" d="M118.6 105.4l128 127.1C252.9 239.6 256 247.8 256 255.1s-3.125 16.38-9.375 22.63l-128 127.1c-9.156 9.156-22.91 11.9-34.88 6.943S64 396.9 64 383.1V128c0-12.94 7.781-24.62 19.75-29.58S109.5 96.23 118.6 105.4z"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <span class="nav-link-text">IMEX</span>
+                                                    </div>
+                                                </a>
+                                                <div class="parent-wrapper">
+                                                    <ul class="nav parent collapse" data-bs-parent="#e-commerce" id="nv-imex" style="">
+                                                        <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 1</span></div>
+                                                        </a><!-- more inner pages-->
+                                                        </li>
+                                                        <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 2</span></div>
+                                                        </a><!-- more inner pages-->
+                                                        </li>
+                                                        <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
+                                                            <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 3</span></div>
+                                                        </a><!-- more inner pages-->
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        </ul>
                                     </div>
-                                </a>
-                                <div class="parent-wrapper label-1">
-                                    <ul class="nav parent collapse" data-bs-parent="#navbarVerticalCollapse" id="nv-e-reportes" style="">
-                                        <li class="collapsed-nav-item-title d-none">Reportes</li>
-                                        <li class="nav-item">
-                                            <a class="nav-link dropdown-indicator collapsed" href="#nv-splittel" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-splittel">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="dropdown-indicator-icon">
-                                                        <svg class="svg-inline--fa fa-caret-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="clipb" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
-                                                            <path fill="currentColor" d="M118.6 105.4l128 127.1C252.9 239.6 256 247.8 256 255.1s-3.125 16.38-9.375 22.63l-128 127.1c-9.156 9.156-22.91 11.9-34.88 6.943S64 396.9 64 383.1V128c0-12.94 7.781-24.62 19.75-29.58S109.5 96.23 118.6 105.4z"></path>
-                                                        </svg>
-                                                    </div>
-                                                    <span class="nav-link-text">SPLITTEL</span>
-                                                </div>
-                                            </a>
-                                            <div class="parent-wrapper">
-                                                <ul class="nav parent collapse" data-bs-parent="#e-commerce" id="nv-splittel" style="">
-                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
-                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 1</span></div>
-                                                    </a><!-- more inner pages-->
-                                                    </li>
-                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
-                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 2</span></div>
-                                                    </a><!-- more inner pages-->
-                                                    </li>
-                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
-                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 3</span></div>
-                                                    </a><!-- more inner pages-->
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link dropdown-indicator collapsed" href="#nv-maquila" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-maquila">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="dropdown-indicator-icon">
-                                                        <svg class="svg-inline--fa fa-caret-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="clipb" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
-                                                            <path fill="currentColor" d="M118.6 105.4l128 127.1C252.9 239.6 256 247.8 256 255.1s-3.125 16.38-9.375 22.63l-128 127.1c-9.156 9.156-22.91 11.9-34.88 6.943S64 396.9 64 383.1V128c0-12.94 7.781-24.62 19.75-29.58S109.5 96.23 118.6 105.4z"></path>
-                                                        </svg>
-                                                    </div>
-                                                    <span class="nav-link-text">MAQUILA</span>
-                                                </div>
-                                            </a>
-                                            <div class="parent-wrapper">
-                                                <ul class="nav parent collapse" data-bs-parent="#e-commerce" id="nv-maquila" style="">
-                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
-                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 1</span></div>
-                                                    </a><!-- more inner pages-->
-                                                    </li>
-                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
-                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 2</span></div>
-                                                    </a><!-- more inner pages-->
-                                                    </li>
-                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
-                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 3</span></div>
-                                                    </a><!-- more inner pages-->
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link dropdown-indicator collapsed" href="#nv-imex" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-imex">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="dropdown-indicator-icon">
-                                                        <svg class="svg-inline--fa fa-caret-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="clipb" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
-                                                            <path fill="currentColor" d="M118.6 105.4l128 127.1C252.9 239.6 256 247.8 256 255.1s-3.125 16.38-9.375 22.63l-128 127.1c-9.156 9.156-22.91 11.9-34.88 6.943S64 396.9 64 383.1V128c0-12.94 7.781-24.62 19.75-29.58S109.5 96.23 118.6 105.4z"></path>
-                                                        </svg>
-                                                    </div>
-                                                    <span class="nav-link-text">IMEX</span>
-                                                </div>
-                                            </a>
-                                            <div class="parent-wrapper">
-                                                <ul class="nav parent collapse" data-bs-parent="#e-commerce" id="nv-imex" style="">
-                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
-                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 1</span></div>
-                                                    </a><!-- more inner pages-->
-                                                    </li>
-                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
-                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 2</span></div>
-                                                    </a><!-- more inner pages-->
-                                                    </li>
-                                                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="" aria-expanded="false">
-                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Reporte 3</span></div>
-                                                    </a><!-- more inner pages-->
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </li>
-                                    </ul>
                                 </div>
-                            </div>
-                        </li>
+                            </li>
+                        @endif
                         <li class="nav-item"><!-- Areas-->
                             <!-- label-->
                             <p class="navbar-vertical-label">Estaciones</p>
@@ -223,57 +224,57 @@
                                 <div class="parent-wrapper label-1">
                                     <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-e-areas">
                                         <li class="collapsed-nav-item-title d-none">Estaciones</li>
-                                        @if(Auth::user()->hasPermission("VIsta Planeacion"))
+                                        @if(Auth::user()->hasPermission("Vista Planeacion"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Planeacion') ? 'nav-tabs active' : '' }}" href="{{route('Planeacion')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Planeaci&oacute;n</span></div>
                                                 </a>
                                             </li>
                                         @endif
-                                        @if(Auth::user()->hasPermission("VIsta Corte"))
+                                        @if(Auth::user()->hasPermission("Vista Corte"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('corte.index') ? 'nav-tabs active' : '' }}" href="{{route('corte.index')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Corte</span></div>
                                                 </a>
                                             </li>
                                         @endif
-                                        @if(Auth::user()->hasPermission("VIsta Suministro"))
+                                        @if(Auth::user()->hasPermission("Vista Suministro"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Suministro') ? 'nav-tabs active' : '' }}" href="{{route('Suministro')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Suministro</span></div>
                                                 </a>
                                                 <hr class="p-0 m-1">
                                             </li>
                                         @endif
-                                        @if(Auth::user()->hasPermission("VIsta Preparado"))
+                                        @if(Auth::user()->hasPermission("Vista Preprado"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Preparado') ? 'nav-tabs active' : '' }}" href="{{route('Preparado')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Preparado</span></div>
                                                 </a>
                                             </li>
                                         @endif
-                                        @if(Auth::user()->hasPermission("VIsta Ensamble"))
+                                        @if(Auth::user()->hasPermission("Vista Ensamble"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Ensamble') ? 'nav-tabs active' : '' }}" href="{{route('Ensamble')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Ensamble</span></div>
                                                 </a>
                                             </li>
                                         @endif
-                                        @if(Auth::user()->hasPermission("VIsta Pulido"))
+                                        @if(Auth::user()->hasPermission("Vista Pulido"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Pulido') ? 'nav-tabs active' : '' }}" href="{{route('Pulido')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Pulido</span></div>
                                                 </a>
                                                 <hr class="p-0 m-1">
                                             </li>
                                         @endif
-                                        @if(Auth::user()->hasPermission("VIsta Medicion"))
+                                        @if(Auth::user()->hasPermission("Vista Medicion"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Medicion') ? 'nav-tabs active' : '' }}" href="{{route('Medicion')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Medici&oacute;n</span></div>
                                                 </a>
                                             </li>
                                         @endif
-                                        @if(Auth::user()->hasPermission("VIsta Visualizacion"))
+                                        @if(Auth::user()->hasPermission("Vista Visualizacion"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Visualizacion') ? 'nav-tabs active' : '' }}" href="{{route('Visualizacion')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Visualizaci&oacute;n</span></div>
                                                 </a>
                                             </li>
                                         @endif
-                                        @if(Auth::user()->hasPermission("Vistas Empaquetado"))
+                                        @if(Auth::user()->hasPermission("Vista Empaquetado"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Empacado') ? 'nav-tabs active' : '' }}" href="{{route('Empacado')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Empaquetado</span></div>
                                                 </a>
@@ -283,7 +284,7 @@
                                 </div>
                             </div>
                         </li>
-                        @if(Auth::user()->hasPermission("VIsta Usuarios"))
+                        @if(Auth::user()->hasPermission("Vista Usuarios"))
                             <li class="nav-item"><!-- usuarios-->
                                 <p class="navbar-vertical-label">Usuarios</p>
                                 <hr class="navbar-vertical-line" /><!-- parent pages-->
@@ -294,7 +295,7 @@
                                 </div>
                             </li>
                         @endif
-                        @if(Auth::user()->hasPermission("VIsta Roles y Permisos"))
+                        @if(Auth::user()->hasPermission("Vista Roles y permisos"))
                             <li class="nav-item"><!-- Roles y permisos-->
                                 <div class="nav-item-wrapper">
                                     <a class="nav-link label-1 {{ Route::is('RolesPermisos.index') ? 'active' : '' }}" href="{{route('RolesPermisos.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
@@ -303,15 +304,17 @@
                                 </div>
                             </li>
                         @endif
-                        <li class="nav-item"><!-- Lineas-->
-                            <p class="navbar-vertical-label">Configuraci&oacute;nes</p>
-                            <hr class="navbar-vertical-line" /><!-- parent pages-->
-                            <div class="nav-item-wrapper">
-                                <a class="nav-link label-1 {{ Route::is('index.linea') ? 'active' : '' }}" href="{{route('index.linea')}}" role="button" data-bs-toggle="" aria-expanded="false">
-                                    <div class="d-flex align-items-center"><span class="nav-link-icon"> <span><i class="fa-solid fa-list-ol"></i></span></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">L&iacute;neas</span></span></div>
-                                </a>
-                            </div>
-                        </li>
+                        @if(Auth::user()->hasPermission("Vista Lineas"))
+                            <li class="nav-item"><!-- Lineas-->
+                                <p class="navbar-vertical-label">Configuraci&oacute;nes</p>
+                                <hr class="navbar-vertical-line" /><!-- parent pages-->
+                                <div class="nav-item-wrapper">
+                                    <a class="nav-link label-1 {{ Route::is('index.linea') ? 'active' : '' }}" href="{{route('index.linea')}}" role="button" data-bs-toggle="" aria-expanded="false">
+                                        <div class="d-flex align-items-center"><span class="nav-link-icon"> <span><i class="fa-solid fa-list-ol"></i></span></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">L&iacute;neas</span></span></div>
+                                    </a>
+                                </div>
+                            </li>
+                        @endif
                     </ul>
                 </div>
                 </div>

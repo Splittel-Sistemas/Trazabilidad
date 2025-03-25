@@ -54,7 +54,10 @@
 </div>
 <!-- Contenido principal -->
 <div class="container my-4">
+    @if(Auth::user()->hasPermission("Crear Usuario"))
         <a href="{{ route('registro.create') }}" class="btn btn-outline-info mb-3">Agregar Usuario</a>
+    @endif
+        
     @if (session('status'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('status') }}
@@ -114,13 +117,19 @@
                                 @endforeach
                             </td>
                             <td class="align-center estatus ps-8">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input toggle-status" style="transform:scale(1.5);" onclick="DesactivarUsuario(this);" type="checkbox" id="ActivarUsuario{{ $registro->id }}" onclick="ActivarUsuario(this)" data-id="{{ $registro->id }}" data-active="{{ $registro->active ? '1' : '0' }}" {{ $registro->active ? 'checked' : '' }}>
-                                </div>
+                                @if(Auth::user()->hasPermission("Activar/Desactivar Usuario"))
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input toggle-status" style="transform:scale(1.5);" onclick="DesactivarUsuario(this);" type="checkbox" id="ActivarUsuario{{ $registro->id }}" onclick="ActivarUsuario(this)" data-id="{{ $registro->id }}" data-active="{{ $registro->active ? '1' : '0' }}" {{ $registro->active ? 'checked' : '' }}>
+                                    </div>
+                                @endif
                             </td>
+                            
                             <td class=" text-center pe-0">
+                                @if(Auth::user()->hasPermission("Editar Usuario"))
                                     <button type="button" class="btn btn-outline-warning btn-sm" onclick="EditarUsuario(this);" data-bs-toggle="modal" data-bs-target="#userModal" data-id="{{ $registro->id }}"><i class="fas fa-edit"></i> Editar</button>
+                                @endif
                             </td>
+                           
                         </tr>
                         @endforeach
                     </tbody>

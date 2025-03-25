@@ -19,7 +19,7 @@ class RegistroController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if ($user->hasPermission('Vistas Editar')) {
+        if ($user->hasPermission('Vista Usuarios')) {
             
             $roles = Role::with('permissions')->get();
             $personal = User::orderBy('name', 'asc')->get();
