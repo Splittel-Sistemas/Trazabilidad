@@ -4548,6 +4548,16 @@
         <script src="{{asset('menu2/vendors/leaflet.tilelayer.colorfilter/leaflet-tilelayer-colorfilter.min.js')}}"></script>
         <script src="{{asset('menu2/assets/js/ecommerce-dashboard.js')}}"></script>
         <script src="{{ asset('js/funciones/Funciones.js') }}"></script>
+        <script>
+            // Configuración global del token CSRF para todas las solicitudes AJAX
+            $(document).ready(function() {
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+            });
+        </script>
         @yield('scripts')
     </body>
 

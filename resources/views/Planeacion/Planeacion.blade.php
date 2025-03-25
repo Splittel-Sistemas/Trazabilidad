@@ -185,7 +185,7 @@
                             <option value="">Selecciona una línea</option>
                             @foreach($linea as $l)
                                 <option value="{{ $l->id }}" {{ $l->NumeroLinea == 1 ? 'selected' : '' }}>
-                                    {{ $l->NumeroLinea }}-{{ $l->Nombre }}
+                                    {{ $l->Nombre }}
                                 </option>
                             @endforeach
                         </select>
@@ -300,7 +300,7 @@
                                         <option value="">Selecciona una línea</option>
                                         @foreach($linea as $l)
                                             <option value="{{ $l->id }}" {{ $l->NumeroLinea == 1 ? 'selected' : '' }}>
-                                                {{ $l->NumeroLinea }}-{{ $l->Nombre }}
+                                                {{ $l->Nombre }}
                                             </option>
                                         @endforeach
                                     </select>
