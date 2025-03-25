@@ -179,7 +179,7 @@
                 <!-- Área de Dropzone -->
                 <!--Christian-->
                 <div class="row">
-                    <div class="col-4 mb-4 pt-1">
+                    <div class="col-4 mb-1 pt-1">
                         <label for="linea" >Selecciona línea</label>
                         <select name="linea" id="linea" class="form-select form-select-sm border-primary w-100" onchange="RecargarTablaOF();">
                             <option value="">Selecciona una línea</option>
@@ -190,11 +190,11 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-8 mb-2 pt-1">
-                        <label for="Filtrofecha_table2">Selecciona la fecha de planeación:</label>
+                    <div class="col-8 mb-1 pt-1">
+                        <label for="Filtrofecha_table2">Selecciona fecha de planeación</label>
                         <div class="input-group">
-                            <input type="date" name="FiltroOF_Fecha_table2" id="FiltroOF_Fecha_table2" class="form-control form-control-sm w-75 border-primary" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
-                            <button id="buscarOV" class="btn btn-primary btn-sm w-25" onclick="RecargarTablaOF();">
+                            <input type="date" name="FiltroOF_Fecha_table2" id="FiltroOF_Fecha_table2" class="form-control form-control-sm border-primary" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
+                            <button id="buscarOV" class="btn btn-primary btn-sm" onclick="RecargarTablaOF();">
                                 Mostrar
                             </button>
                         </div>
@@ -293,15 +293,28 @@
                         </div>
                         <div class="col-6">
                             <!-- Área de Dropzone -->
-                            <div class="col 12 mb-2 pt-1">
-                                <div class="form-row">
-                                    <div class="col-12 mb-3">
-                                        <label for="Filtrofecha_table2">Selecciona la fecha de planeaci&oacute;n:</label>
-                                        <div class="input-group">
-                                            <input type="date" name="FiltroOF_Fecha_table2_vencidas" onchange="PartidasOF_modal(this)"  id="FiltroOF_Fecha_table2_vencidas" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
-                                            <button id="buscarOV_vencidas" onclick="RecargarTablaOF();" class="btn btn-primary btn-sm">
-                                                Mostrar
-                                            </button>
+                            <div class="row">
+                                <div class="col-4 mb-1 pt-1">
+                                    <label for="lineaModal" >Selecciona línea</label>
+                                    <select name="lineaModal" id="lineaModal" class="form-select form-select-sm border-primary w-100" onchange="RecargarTablaOF();">
+                                        <option value="">Selecciona una línea</option>
+                                        @foreach($linea as $l)
+                                            <option value="{{ $l->id }}" {{ $l->NumeroLinea == 1 ? 'selected' : '' }}>
+                                                {{ $l->NumeroLinea }}-{{ $l->Nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-8 mb-2 pt-1">
+                                    <div class="form-row">
+                                        <div class="col-12 mb-3">
+                                            <label for="Filtrofecha_table2">Selecciona la fecha de planeaci&oacute;n:</label>
+                                            <div class="input-group">
+                                                <input type="date" name="FiltroOF_Fecha_table2_vencidas" onchange="PartidasOF_modal(this)"  id="FiltroOF_Fecha_table2_vencidas" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
+                                                <button id="buscarOV_vencidas" onclick="RecargarTablaOF();" class="btn btn-primary btn-sm">
+                                                    Mostrar
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -621,7 +634,6 @@
         }
     }
     function loadContentVencidas(idcontenedor, docNum, cliente) {
-        
         let elemento = document.getElementById(idcontenedor + "cerrar");
         if (!elemento.classList.contains('collapsed')) {
             $.ajax({
@@ -688,12 +700,14 @@
         const data = event.dataTransfer.getData("text");
         var inputFecha = document.getElementById('FiltroOF_Fecha_table2');
         var modal = $('#ModalPlaneacionVencidos');
+        var lineaSeleccionada = $('#linea').val();
         if (modal.is(':visible')) {
             inputFecha = document.getElementById('FiltroOF_Fecha_table2_vencidas');
+            lineaSeleccionada = $('#lineaModal').val();
         }
         //chris
-        var selectLinea = document.getElementById("linea");
-        var lineaSeleccionada = selectLinea.value;//fin
+        /*var selectLinea = document.getElementById("linea");
+        var lineaSeleccionada = selectLinea.value;//fin*/
         const rowIds = data.split(",");
         if (data.length === 0) {
             return 0;
@@ -1179,93 +1193,88 @@
     }
 </script>
 <script>
-function mostrarCalendario(OrdenFabricacion) {
-   
-    document.getElementById('btnEditar_' + OrdenFabricacion).classList.add('d-none');
-    $('#fechaSeleccionada_' + OrdenFabricacion).prop('disabled',false);
-    document.getElementById('btnGuardar_' + OrdenFabricacion).classList.remove('d-none');
-}
-function guardarFecha(OrdenFabricacion) {
-    let fecha = document.getElementById('fechaSeleccionada_' + OrdenFabricacion).value;
-    if (!fecha) {
-        Swal.fire({
-            title: 'Atención',
-            text: 'Por favor selecciona una fecha.',
-            icon: 'warning',
-            confirmButtonText: 'Cerrar'
-        });
-        return;
+    function mostrarCalendario(OrdenFabricacion) {
+    
+        document.getElementById('btnEditar_' + OrdenFabricacion).classList.add('d-none');
+        $('#fechaSeleccionada_' + OrdenFabricacion).prop('disabled',false);
+        document.getElementById('btnGuardar_' + OrdenFabricacion).classList.remove('d-none');
     }
-
-    // Obtener la fecha actual en formato YYYY-MM-DD
-    let fechaActual = new Date().toISOString().split('T')[0];
-
-    // Validar si la fecha seleccionada es menor a la actual
-    if (fecha < fechaActual) {
-        Swal.fire({
-            title: 'Error',
-            text: 'La fecha no puede ser menor a la fecha actual.',
-            icon: 'error',
-            confirmButtonText: 'Cerrar'
-        });
-        return;
-    }
-    Swal.fire({
-        title: '¿Estás seguro?',
-        text: 'Estás a punto de actualizar la fecha de entrega.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, actualizar',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            let csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
-            if (csrfTokenMeta) {
-                let csrfToken = csrfTokenMeta.getAttribute('content');
-                $.ajax({
-                    url: "{{ route('ActualizarPlaneacion') }}",
-                    type: "PUT",
-                    data: {
-                        OrdenFabricacion: OrdenFabricacion,
-                        fecha_entrega: fecha,
-                        _token: csrfToken 
-                    },
-                    success: function(data) {
-                        Swal.fire({
-                            title: 'Éxito',
-                            text: 'La fecha fue actualizada correctamente.',
-                            icon: 'success',
-                            confirmButtonText: 'Cerrar'
-                        });
-                        $('#fechaSeleccionada_' + OrdenFabricacion).prop('disabled',true);
-                        document.getElementById('btnGuardar_' + OrdenFabricacion).classList.add('d-none');
-                        document.getElementById('btnEditar_' + OrdenFabricacion).classList.remove('d-none');
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Hubo un problema al actualizar la fecha.',
-                            icon: 'error',
-                            confirmButtonText: 'Cerrar'
-                        });
-                        console.error('Error:', error);
-                    }
-                });
-            } else {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'No se encontró el token CSRF.',
-                    icon: 'error',
-                    confirmButtonText: 'Cerrar'
-                });
-            }
+    function guardarFecha(OrdenFabricacion) {
+        let fecha = document.getElementById('fechaSeleccionada_' + OrdenFabricacion).value;
+        if (!fecha) {
+            Swal.fire({
+                title: 'Atención',
+                text: 'Por favor selecciona una fecha.',
+                icon: 'warning',
+                confirmButtonText: 'Cerrar'
+            });
+            return;
         }
-    });
-}
 
+        // Obtener la fecha actual en formato YYYY-MM-DD
+        let fechaActual = new Date().toISOString().split('T')[0];
 
-
-
-
+        // Validar si la fecha seleccionada es menor a la actual
+        if (fecha < fechaActual) {
+            Swal.fire({
+                title: 'Error',
+                text: 'La fecha no puede ser menor a la fecha actual.',
+                icon: 'error',
+                confirmButtonText: 'Cerrar'
+            });
+            return;
+        }
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Estás a punto de actualizar la fecha de entrega.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, actualizar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+                if (csrfTokenMeta) {
+                    let csrfToken = csrfTokenMeta.getAttribute('content');
+                    $.ajax({
+                        url: "{{ route('ActualizarPlaneacion') }}",
+                        type: "PUT",
+                        data: {
+                            OrdenFabricacion: OrdenFabricacion,
+                            fecha_entrega: fecha,
+                            _token: csrfToken 
+                        },
+                        success: function(data) {
+                            Swal.fire({
+                                title: 'Éxito',
+                                text: 'La fecha fue actualizada correctamente.',
+                                icon: 'success',
+                                confirmButtonText: 'Cerrar'
+                            });
+                            $('#fechaSeleccionada_' + OrdenFabricacion).prop('disabled',true);
+                            document.getElementById('btnGuardar_' + OrdenFabricacion).classList.add('d-none');
+                            document.getElementById('btnEditar_' + OrdenFabricacion).classList.remove('d-none');
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Hubo un problema al actualizar la fecha.',
+                                icon: 'error',
+                                confirmButtonText: 'Cerrar'
+                            });
+                            console.error('Error:', error);
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'No se encontró el token CSRF.',
+                        icon: 'error',
+                        confirmButtonText: 'Cerrar'
+                    });
+                }
+            }
+        });
+    }
 </script>
 @endsection

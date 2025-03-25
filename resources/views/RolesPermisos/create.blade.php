@@ -14,12 +14,11 @@
 
 </style>
 @section('content')
-<div class="row gy-3 mb-2 justify-content-between">
-    <div class="col-md-9 col-auto">
-    <h4 class="mb-2 text-1100">Nuevo Rol</h4>
+    <div class="row gy-3 mb-2 justify-content-between">
+        <div class="col-md-9 col-auto">
+        <h4 class="mb-2 text-1100">Nuevo Rol</h4>
+        </div>
     </div>
-</div>
-<div class="breadcrumbs m-2">
     <div class="row g-0">
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -30,27 +29,29 @@
                 </ul>
             </div>
         @endif
-        <div class='card'>
-            <form action="{{ route('RolesPermisos.store') }}" method="POST" class="shadow-lg p-4 rounded-lg bg-white">
+        <div class='card p-4'>
+            <form action="{{ route('RolesPermisos.store') }}" method="POST" class="">
                 @csrf
                 <div class="form-row mb-3">
-                    <div class="col-md-4">
+                    <div class="col-md-8">
                         <div class="form-group">
                             <label class="font-weight-bold text-dark">Nombre De Rol</label>
-                            <input type="text" name="nombre" id="nombre" class="form-control form-control-sm border-2 border-success" placeholder="nombre" required>
+                            <input type="text" name="nombre" oninput="RegexMayusculas(this)" id="nombre" class="form-control form-control-sm border-2 border-success" placeholder="nombre" required>
                         </div>
                     </div>
                 </div>
+                <hr>
                 <div class="form-row mb-4">
                     <div class="col-md-12">
                         <div class="form-group">
                             <label class="font-weight-bold text-dark">Permisos</label>
                             <br>
+                            <small class="form-text text-muted">Seleccione uno o más Permisos.</small>
+                            <br>
                             <div class="form-check mr-3 mb-2 col-6">
                                 <input type="checkbox" id="MarcarTodoCheck" class="form-check-input">
                                 <label for="MarcarTodo" class="form-check-label">Marcar todo</label>
                             </div>
-                            <small class="form-text text-muted">Seleccione uno o más Permisos.</small>
                             <div class="permissions-container d-flex flex-wrap mt-4">
                                 <div class="container">
                                     <div class="row" id="PermisosCheck">

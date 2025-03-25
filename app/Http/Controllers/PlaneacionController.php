@@ -844,9 +844,7 @@ class PlaneacionController extends Controller
         }
         return "Datos guardados correctamente::".$fecha;
     }
-
-    public function ActualizarPlaneacion(Request $request)
-    {
+    public function ActualizarPlaneacion(Request $request){
         try {
             $ordenFabricacion = $request->input('OrdenFabricacion');
             $fechaEntrega = $request->input('fecha_entrega');
@@ -857,7 +855,7 @@ class PlaneacionController extends Controller
             }
     
             // Convertir la fecha de entrega a un objeto Carbon
-            $fechaEntregaCarbon = Carbon::parse($fechaEntrega);
+            return$fechaEntregaCarbon = Carbon::parse($fechaEntrega);
             $fechaActual = Carbon::today();
     
             // Validar que la fecha de entrega no sea menor a la fecha actual
