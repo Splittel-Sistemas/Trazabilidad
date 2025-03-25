@@ -311,7 +311,8 @@
                 padding: -100px; 
             }
             .status-box {
-                display: inline-block;
+                display: flex;
+                
                 width: 72px;
                 height: 25px;
                 border-radius: 50%;
@@ -326,6 +327,13 @@
             .status-box.bg-secondary {
                 background-color: gray; /* Gris para estado desconocido */
             }
+            #Estatus1 {
+                display: block;
+                text-align: center;
+                margin: 0 auto;
+            }
+
+            
 
     </style>
 @endsection
@@ -1527,6 +1535,5 @@
     estatusElement.textContent = 'Cerrado';
   }
 }
-
 </script>
 @endsection
