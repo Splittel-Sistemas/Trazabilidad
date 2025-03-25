@@ -55,6 +55,25 @@
             height: 2.5rem;
             overflow: hidden;
         }
+
+
+        .sub-permissions {
+            display: none; /* Inicialmente oculto */
+            padding-left: 20px;
+            margin-top: 5px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease-in-out; /* Efecto suave */
+        }
+
+        .sub-permissions .form-check {
+            margin-left: 15px;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            margin-top: 10px;
+        }
+
     </style>
 @endsection
 
@@ -195,20 +214,74 @@
                 success: function(data) {
                     $('#roleName').val(data.name);
                     var permissionsContainer = $('#rolePermissions');
-                    permissionsContainer.empty();
+                    permissionsContainer.empty(); // Limpiar contenedor de permisos
+
+                    // Definir los sub-permisos
+                    var subPermissions = {
+                        'Vista Lineas': ['Crear Linea', 'Editar Linea', 'Activar/Desactivar Linea'],
+                        'Vista Usuarios': ['Crear Usuario', 'Editar Usuario', 'Activar/Desactivar Usuario'],
+                        'Vista Roles y permisos': ['Crear Rol', 'Editar Rol'],
+                    };
+
+                    // Recorrer los permisos principales
                     data.available_permissions.forEach(function(permission) {
-                        permissionsContainer.append(`
-                            <div class="form-check col-4 col-sm-3">
-                                <input type="checkbox" class="form-check-input" id="permission-${permission.id}" name="permissions[]" value="${permission.id}" ${data.permissions.includes(permission.id) ? 'checked' : ''}>
-                                <label class="form-check-label" for="permission-${permission.id}">${permission.name}</label>
-                            </div>
-                        `);
+                        var hasSubPermissions = subPermissions[permission.name]; // Verificar si tiene sub-permisos
+                        var targetID = permission.name.replace(/\s+/g, '_').toLowerCase(); // Crear ID único
+
+                        // Verificar si el permiso ya fue agregado
+                        if (!permissionsContainer.find(`#permission-${permission.id}`).length) {
+                            // Agregar el checkbox principal
+                            permissionsContainer.append(`
+                                <div class="form-check col-4 col-sm-3 mb-2">
+                                    <input type="checkbox" class="form-check-input toggle-sub" id="permission-${permission.id}" 
+                                        name="permissions[]" value="${permission.id}" ${data.permissions.includes(permission.id) ? 'checked' : ''} 
+                                        data-target="${targetID}">
+                                    <label class="form-check-label" for="permission-${permission.id}">${permission.name}</label>
+                                </div>
+                            `);
+
+                            // Si el permiso tiene sub-permisos, agregarlos debajo
+                            if (hasSubPermissions) {
+                                permissionsContainer.append(`
+                                    <div id="${targetID}" class="sub-permissions col-12 ml-4 pl-3" style="display: none;">
+                                        <div class="card p-2">
+                                            ${subPermissions[permission.name].map(function(subPermission) {
+                                                // Verificar si el sub-permiso ya fue agregado
+                                                return `
+                                                    <div class="form-check">
+                                                        <input type="checkbox" class="form-check-input sub-permission" 
+                                                            id="subpermission-${subPermission}" name="permissions[]" value="${subPermission}" 
+                                                            data-parent="permission-${permission.id}">
+                                                        <label class="form-check-label" for="subpermission-${subPermission}">
+                                                            ${subPermission}
+                                                        </label>
+                                                    </div>
+                                                `;
+                                            }).join('')}
+                                        </div>
+                                    </div>
+                                `);
+                            }
+                        }
+                    });
+
+                    // Manejar el cambio del checkbox principal
+                    $(".toggle-sub").on('change', function() {
+                        let target = $("#" + $(this).data('target'));
+                        if ($(this).is(':checked')) {
+                            target.fadeIn(); // Mostrar sub-permisos
+                        } else {
+                            target.fadeOut(); // Ocultar sub-permisos
+                            target.find('.sub-permission').prop('checked', false); // Desmarcar sub-permisos
+                        }
                     });
                 },
                 error: function(xhr, status, error) {
                     Swal.fire('Error', 'Hubo un error al cargar los datos del rol.', 'error');
                 }
             });
+
+
         });
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('MarcarTodoCheck').addEventListener('change', function(){
