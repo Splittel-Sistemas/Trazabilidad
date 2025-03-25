@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\OrdenVenta;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Auth;
 
 class FuncionesGeneralesController extends Controller
 {
@@ -64,16 +65,24 @@ class FuncionesGeneralesController extends Controller
             odbc_close($this->connection);  
         }
     }
+    //Funcion para encriptar
     public function encrypt($dato){
         $encrypted = Crypt::encrypt($dato);
         return $encrypted;
     }
+    //funcion para desencriptar
     public function decrypt($dato){
         $encrypted = Crypt::decrypt($dato);
         return $encrypted;
     }
+    //retorna el id del usuario
     public function InfoUsuario(){
-        return 1;
+        if (auth()->check()) {
+        $usuario = auth()->user();
+        return$usuario->id;
+        }else{
+            return redirect()->route('login');
+        }
     }
     public function Linea(){
         return 1;
