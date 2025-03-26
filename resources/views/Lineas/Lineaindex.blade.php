@@ -364,7 +364,7 @@
                     $('#createLineForm')[0].reset();
                     setTimeout(function() {
                         location.reload();
-                    }, 1000);
+                    }, 500);
                 },
                 error: function(xhr, status, error) {
                     Swal.fire({
@@ -373,8 +373,6 @@
                         icon: 'error',
                         confirmButtonText: 'Cerrar'
                     });
-
-                
                 }
             });
         });
