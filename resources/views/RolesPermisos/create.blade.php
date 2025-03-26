@@ -104,13 +104,13 @@
                                             @if ($hasSubPermissions)
                                             <div id="{{ $targetID }}" class="sub-permissions col-md-3 ml-1 pl-1" style="display: none;">
                                                 <div class="card p-4">
-                                                    <div class="row"> <!-- Se agrega la fila para distribuir mejor -->
+                                                    <div class="row"> 
                                                         @foreach ($subPermissions[$value->name] as $subPermiso)
                                                             @php
                                                                 $subValue = $permissions->firstWhere('name', $subPermiso);
                                                             @endphp
                                                             @if ($subValue)
-                                                                <div class="form-check col-md-4"> <!-- Se agrega col-md-4 -->
+                                                                <div class="form-check col-md-4"> 
                                                                     <input type="checkbox" name="permissions[]" id="permission_{{ $subValue->id }}" 
                                                                         value="{{ $subValue->id }}" class="form-check-input sub-permission"
                                                                         data-parent="permission_{{ $value->id }}">
@@ -148,44 +148,36 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".toggle-sub").forEach(function (checkbox) {
         checkbox.addEventListener("change", function () {
             let target = document.getElementById(this.dataset.target);
-
-            // Si se marca el checkbox
             if (target) {
                 if (this.checked) {
-                    // Ocultar todos los sub-permisos
+                    
                     document.querySelectorAll(".sub-permissions").forEach(function (subPerm) {
                         if (subPerm !== target) {
                             subPerm.style.display = "none";
-                            subPerm.previousElementSibling.querySelector("input").checked = false; // Desmarcar el checkbox
+                            subPerm.previousElementSibling.querySelector("input").checked = false; 
                         }
                     });
 
-                    // Mostrar el sub-permiso correspondiente
+                    
                     target.style.display = "block";
                     setTimeout(function () {
-                        target.style.height = "auto"; // Asegura que se ajuste a la altura
+                        target.style.height = "auto"; 
                     }, 300);
                 } else {
-                    target.style.display = "none";  // Ocultar subpermisos
+                    target.style.display = "none";  
                 }
             }
         });
-
-        // Mantener abiertos los subpermisos seleccionados al cargar
         let target = document.getElementById(checkbox.dataset.target);
         if (target && checkbox.checked) {
             target.style.display = "block";
         }
     });
-
-    // "Marcar Todo"
     document.getElementById("MarcarTodoCheck").addEventListener("change", function () {
         let allCheckboxes = document.querySelectorAll("input[name='permissions[]']");
         
         allCheckboxes.forEach(chk => {
             chk.checked = this.checked;
-
-            // Mostrar/ocultar sub-permisos al marcar todo
             let target = document.getElementById(chk.dataset.target);
             if (target) {
                 target.style.display = this.checked ? "block" : "none";
