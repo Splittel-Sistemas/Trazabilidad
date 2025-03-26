@@ -12,23 +12,21 @@
         align-items: center; /* Alinea el checkbox con el texto */
     }
     .sub-permissions {
-    display: none; /* Inicialmente oculto */
-    padding-left: 1px;
-    margin-top: 1px;
-    font-size: 0.9rem;
-    transition: all 0.3s ease-in-out; /* Efecto suave */
-}
+        display: none; /* Inicialmente oculto */
+        padding-left: 1px;
+        margin-top: 1px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease-in-out; /* Efecto suave */
+    }
 
-.sub-permissions .form-check {
-    margin-left: 1px;
-}
+    .sub-permissions .form-check {
+        margin-left: 1px;
+    }
 
-.card {
-    border: 1px solid #ddd;
-    margin-top: 1px;
-}
-
-
+    .card {
+        border: 1px solid #ddd;
+        margin-top: 1px;
+    }
 
 </style>
 @section('content')
@@ -94,7 +92,7 @@
                                                 $hasSubPermissions = array_key_exists($value->name, $subPermissions);
                                                 $targetID = str_replace(' ', '_', strtolower($value->name));
                                             @endphp
-                                            <div class="form-check col-md-4 mb-2">
+                                            <div class="form-check col-md-6 mb-2">
                                                 <input type="checkbox" name="permissions[]" id="permission_{{ $value->id }}" 
                                                     value="{{ $value->id }}" class="form-check-input toggle-sub"
                                                     data-target="{{ $targetID }}"
@@ -104,14 +102,15 @@
                                                 </label>
                                             </div>
                                             @if ($hasSubPermissions)
-                                                <div id="{{ $targetID }}" class="sub-permissions col-md-12 ml-4 pl-3" style="display: none;">
-                                                    <div class="card p-2">
+                                            <div id="{{ $targetID }}" class="sub-permissions col-md-3 ml-1 pl-3" style="display: none;">
+                                                <div class="card p-2">
+                                                    <div class="row"> <!-- Se agrega la fila para distribuir mejor -->
                                                         @foreach ($subPermissions[$value->name] as $subPermiso)
                                                             @php
                                                                 $subValue = $permissions->firstWhere('name', $subPermiso);
                                                             @endphp
                                                             @if ($subValue)
-                                                                <div class="form-check">
+                                                                <div class="form-check col-md-4"> <!-- Se agrega col-md-4 -->
                                                                     <input type="checkbox" name="permissions[]" id="permission_{{ $subValue->id }}" 
                                                                         value="{{ $subValue->id }}" class="form-check-input sub-permission"
                                                                         data-parent="permission_{{ $value->id }}">
@@ -121,9 +120,11 @@
                                                                 </div>
                                                             @endif
                                                         @endforeach
-                                                    </div>
+                                                    </div> <!-- Cierra el row -->
                                                 </div>
-                                            @endif
+                                            </div>
+                                        @endif
+
                                         @endforeach
                                     </div>
                                 </div>
