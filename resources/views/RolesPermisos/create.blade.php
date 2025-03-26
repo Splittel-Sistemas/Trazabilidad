@@ -92,7 +92,7 @@
                                                 $hasSubPermissions = array_key_exists($value->name, $subPermissions);
                                                 $targetID = str_replace(' ', '_', strtolower($value->name));
                                             @endphp
-                                            <div class="form-check col-md-6 mb-2">
+                                            <div class="form-check col-md-2 mb-4">
                                                 <input type="checkbox" name="permissions[]" id="permission_{{ $value->id }}" 
                                                     value="{{ $value->id }}" class="form-check-input toggle-sub"
                                                     data-target="{{ $targetID }}"
@@ -102,8 +102,8 @@
                                                 </label>
                                             </div>
                                             @if ($hasSubPermissions)
-                                            <div id="{{ $targetID }}" class="sub-permissions col-md-3 ml-1 pl-3" style="display: none;">
-                                                <div class="card p-2">
+                                            <div id="{{ $targetID }}" class="sub-permissions col-md-3 ml-1 pl-1" style="display: none;">
+                                                <div class="card p-4">
                                                     <div class="row"> <!-- Se agrega la fila para distribuir mejor -->
                                                         @foreach ($subPermissions[$value->name] as $subPermiso)
                                                             @php
