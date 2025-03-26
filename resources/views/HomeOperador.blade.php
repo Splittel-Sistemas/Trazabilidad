@@ -4,6 +4,26 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
+    .carousel-content-wrapper{ 
+        max-height: 200px; 
+        overflow-y: auto; 
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+    .carousel-content-wrapper::-webkit-scrollbar {
+        width: 3px;
+    }
+    .carousel-content-wrapper::-webkit-scrollbar-track {
+        background: #fdfdfd;
+        border-radius: 10px;
+    }
+    .carousel-content-wrapper::-webkit-scrollbar-thumb {
+        background: #fdfdfd; /* Color del thumb */
+        border-radius: 10px; /* Esquinas redondeadas */
+    }
+    .carousel-content-wrapper::-webkit-scrollbar-thumb:hover {
+        background: #fdfdfd; /* Color del thumb al pasar el mouse */
+    }
     body {
  
         font-family: 'Arial', sans-serif;
@@ -15,21 +35,12 @@
         border-radius: 15px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     }
-    .welcome-title {
-        font-size: 24px;
-        font-weight: bold;
-        color: #333;
-    }
     .user-name {
         font-size: 22px;
         color: #c00000;
         font-weight: bold;
     }
-    .welcome-message {
-        font-size: 16px;
-        color: #555;
-        margin-top: 15px;
-    }
+    
     .usuario-icono {
         background: #c00000;
         color: white;
@@ -40,7 +51,6 @@
     }
     #clock {
         font-size: 16px;
-        margin-top: 10px;
         font-weight: bold;
         color: #c00000;
     }
@@ -78,8 +88,6 @@
         from { opacity: 0; }
         to { opacity: 1; }
     }
-</style>
-<style>
     .carousel-inner {
       position: relative;
       overflow: hidden; 
@@ -93,9 +101,6 @@
       text-align: center;
       padding: 20px;
       transition: transform 0.8s ease-in-out;
-     
-      
-    
     }
     .carousel-item div {
       display: grid;
@@ -122,11 +127,12 @@
   .custom-rounded {
     border-radius: 15px;
    }
-   .hr{
-            border-top: 1px solid rgb(189, 42, 42); 
-            width: 100%; 
-            margin: 1px auto;
-        }
+   .carousel-title{
+        color: #fdfdfd;
+   }
+   .carousel-content{
+    color: #ffffff;
+   }
   </style>
 @endsection
 @section('content')
@@ -141,19 +147,20 @@
 @endif
 <div style="height: 8px;"></div>
 @if(Auth::user()->hasPermission("Enviar Avisos"))
-    <div class="d-flex justify-content-end">
+    <div class="d-flex justify-content-end mb-2">
         <button class="btn btn-outline-info custom-rounded" type="submit" id="enviaraviso">Nuevo Aviso</button>
     </div>
 @endif    
-<div class="welcome-container"> 
-    <i class="far fa-user usuario-icono"></i>
-    <h1 class="welcome-title">Bienvenido</h1>
-    <h2 class="user-name">{{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}</h2>          
-    <p class="welcome-message" id="message"></p>
+<div class="welcome-container card" > 
+    <!--<i class="far fa-user usuario-icono"></i>-->
+    <h4 class="text-start">¡Bienvenido/a </h4>
+    <h3 class="text-start">{{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}!</h3>          
+    <p class="welcome-message m-0" id="message"></p>
     <div id="clock">
-        <div id="date"></div>
-        <div id="time"></div>
+        <span id="date"></span>
+        <span id="time"></span>
     </div> 
+    <h4 class="text-center">Avisos</h4>
     <div class="card">
         <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="false">
             <ol class="carousel-indicators">
@@ -165,7 +172,7 @@
                 @foreach($avisos as $index => $aviso)
                 <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" 
                     style="background-color: {{ $colores[$index % count($colores)] }};">
-                    <div class="carousel-content-wrapper" style="max-height: 200px; overflow-y: auto; padding: 10px;">
+                    <div class="carousel-content-wrapper">
                         <h3 class="carousel-title">{{ ucwords($aviso->titulo ?? 'Avisos') }}</h3>
                         <p class="carousel-content">{{ $aviso->contenido }}</p>
                     </div>
