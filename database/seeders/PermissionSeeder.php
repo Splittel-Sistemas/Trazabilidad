@@ -25,9 +25,14 @@ class PermissionSeeder extends Seeder
             'Vista Usuarios',
             'Vista Roles y permisos',
             'Vista Lineas',
-            'Crear Usuario','Editar Usuario','Activar/Desactivar Usuario',
-            'Crear Linea','Editar Linea','Activar/Desactivar Linea',
-            'Crear Rol','Editar Rol',
+            'Crear Usuario',
+            'Editar Usuario',
+            'Activar/Desactivar Usuario',
+            'Crear Linea',
+            'Editar Linea',
+            'Activar/Desactivar Linea',
+            'Crear Rol',
+            'Editar Rol',
         ];        
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);

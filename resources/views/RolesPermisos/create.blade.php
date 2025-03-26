@@ -11,6 +11,24 @@
         display: flex;
         align-items: center; /* Alinea el checkbox con el texto */
     }
+    .sub-permissions {
+    display: none; /* Inicialmente oculto */
+    padding-left: 1px;
+    margin-top: 1px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease-in-out; /* Efecto suave */
+}
+
+.sub-permissions .form-check {
+    margin-left: 1px;
+}
+
+.card {
+    border: 1px solid #ddd;
+    margin-top: 1px;
+}
+
+
 
 </style>
 @section('content')
@@ -45,22 +63,67 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label class="font-weight-bold text-dark">Permisos</label>
+                            <small class="form-text text-muted">Seleccione uno o más permisos.</small>
                             <br>
-                            <small class="form-text text-muted">Seleccione uno o más Permisos.</small>
-                            <br>
-                            <div class="form-check mr-3 mb-2 col-6">
+                            <!-- Checkbox "Marcar Todo" -->
+                            <div class="form-check mb-3">
                                 <input type="checkbox" id="MarcarTodoCheck" class="form-check-input">
-                                <label for="MarcarTodo" class="form-check-label">Marcar todo</label>
+                                <label for="MarcarTodoCheck" class="form-check-label font-weight-bold">Marcar todo</label>
                             </div>
-                            <div class="permissions-container d-flex flex-wrap mt-4">
+                            <div class="permissions-container mt-4">
                                 <div class="container">
                                     <div class="row" id="PermisosCheck">
-                                        @foreach ($permissions as $value)
-                                        <div class="form-check mr-3 mb-2 col-3 col-sm-2 col-sm-2">
-                                            <input type="checkbox" name="permissions[]" id="permission_{{ $value->id }}" value="{{ $value->id }}" class="form-check-input" 
-                                                {{ (isset($registro) && $registro->permissions->contains($value->id)) ? 'checked' : '' }}>
-                                            <label for="permission_{{ $value->id }}" class="form-check-label">{{ $value->name }}</label>
-                                        </div>
+                                        @php
+                                            $subPermissions = [
+                                                'Vista Lineas' => ['Crear Linea', 'Editar Linea', 'Activar/Desactivar Linea'],
+                                                'Vista Usuarios' => ['Crear Usuario', 'Editar Usuario', 'Activar/Desactivar Usuario'],
+                                                'Vista Roles y permisos' => ['Crear Rol', 'Editar Rol'],
+                                            ];
+                
+                                            $permisosPrincipales = $permissions->reject(function ($permiso) use ($subPermissions) {
+                                                foreach ($subPermissions as $subs) {
+                                                    if (in_array($permiso->name, $subs)) {
+                                                        return true; // Excluir si es un sub-permiso
+                                                    }
+                                                }
+                                                return false;
+                                            });
+                                        @endphp
+                                        @foreach ($permisosPrincipales as $value)
+                                            @php
+                                                $hasSubPermissions = array_key_exists($value->name, $subPermissions);
+                                                $targetID = str_replace(' ', '_', strtolower($value->name));
+                                            @endphp
+                                            <div class="form-check col-md-4 mb-2">
+                                                <input type="checkbox" name="permissions[]" id="permission_{{ $value->id }}" 
+                                                    value="{{ $value->id }}" class="form-check-input toggle-sub"
+                                                    data-target="{{ $targetID }}"
+                                                    {{ (isset($registro) && $registro->permissions->contains($value->id)) ? 'checked' : '' }}>
+                                                <label for="permission_{{ $value->id }}" class="form-check-label font-weight-bold">
+                                                    {{ $value->name }}
+                                                </label>
+                                            </div>
+                                            @if ($hasSubPermissions)
+                                                <div id="{{ $targetID }}" class="sub-permissions col-md-12 ml-4 pl-3" style="display: none;">
+                                                    <div class="card p-2">
+                                                        @foreach ($subPermissions[$value->name] as $subPermiso)
+                                                            @php
+                                                                $subValue = $permissions->firstWhere('name', $subPermiso);
+                                                            @endphp
+                                                            @if ($subValue)
+                                                                <div class="form-check">
+                                                                    <input type="checkbox" name="permissions[]" id="permission_{{ $subValue->id }}" 
+                                                                        value="{{ $subValue->id }}" class="form-check-input sub-permission"
+                                                                        data-parent="permission_{{ $value->id }}">
+                                                                    <label for="permission_{{ $subValue->id }}" class="form-check-label">
+                                                                        {{ $subPermiso }}
+                                                                    </label>
+                                                                </div>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
                                         @endforeach
                                     </div>
                                 </div>
@@ -69,7 +132,6 @@
                                 <div class="text-danger mt-2">{{ $message }}</div> 
                             @enderror
                         </div>
-                        
                     </div>
                 </div>
                 <div class="d-flex justify-content-center">
@@ -81,6 +143,64 @@
 @endsection
 @section('scripts')
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".toggle-sub").forEach(function (checkbox) {
+        checkbox.addEventListener("change", function () {
+            let target = document.getElementById(this.dataset.target);
+
+            // Si se marca el checkbox
+            if (target) {
+                if (this.checked) {
+                    // Ocultar todos los sub-permisos
+                    document.querySelectorAll(".sub-permissions").forEach(function (subPerm) {
+                        if (subPerm !== target) {
+                            subPerm.style.display = "none";
+                            subPerm.previousElementSibling.querySelector("input").checked = false; // Desmarcar el checkbox
+                        }
+                    });
+
+                    // Mostrar el sub-permiso correspondiente
+                    target.style.display = "block";
+                    setTimeout(function () {
+                        target.style.height = "auto"; // Asegura que se ajuste a la altura
+                    }, 300);
+                } else {
+                    target.style.display = "none";  // Ocultar subpermisos
+                }
+            }
+        });
+
+        // Mantener abiertos los subpermisos seleccionados al cargar
+        let target = document.getElementById(checkbox.dataset.target);
+        if (target && checkbox.checked) {
+            target.style.display = "block";
+        }
+    });
+
+    // "Marcar Todo"
+    document.getElementById("MarcarTodoCheck").addEventListener("change", function () {
+        let allCheckboxes = document.querySelectorAll("input[name='permissions[]']");
+        
+        allCheckboxes.forEach(chk => {
+            chk.checked = this.checked;
+
+            // Mostrar/ocultar sub-permisos al marcar todo
+            let target = document.getElementById(chk.dataset.target);
+            if (target) {
+                target.style.display = this.checked ? "block" : "none";
+                if (!this.checked) {
+                    target.querySelectorAll(".sub-permission").forEach(sub => {
+                        sub.checked = false; 
+                    });
+                }
+            }
+        });
+    });
+});
+
+</script>
+<script>
+    /*
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('MarcarTodoCheck').addEventListener('change', function(){
             var estaMarcado = $('#MarcarTodoCheck').prop('checked');
@@ -95,6 +215,6 @@
                 });
             }
         });
-    });
+    });*/
 </script>
 @endsection
