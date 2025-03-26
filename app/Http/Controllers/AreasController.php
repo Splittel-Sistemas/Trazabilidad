@@ -1848,7 +1848,7 @@ class AreasController extends Controller
     //Area 9 Empaquetado
     public function Empaquetado(){
         $user=Auth::user();
-        if($user->hasPermission('Vistas Empaquetado')){
+        if($user->hasPermission('Vista Empaquetado')){
           $Area=$this->funcionesGenerales->encrypt(9);
           return view('Areas.Empacado',compact('Area')); 
         }else{

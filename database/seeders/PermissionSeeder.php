@@ -16,7 +16,7 @@ class PermissionSeeder extends Seeder
             'Vista Planeacion',
             'Vista Corte',
             'Vista Suministro',
-            'Vista Preprado',
+            'Vista Preparado',
             'Vista Ensamble',
             'Vista Pulido',
             'Vista Medicion',
