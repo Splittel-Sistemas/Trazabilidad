@@ -243,7 +243,7 @@
                                                 <hr class="p-0 m-1">
                                             </li>
                                         @endif
-                                        @if(Auth::user()->hasPermission("Vista Preprado"))
+                                        @if(Auth::user()->hasPermission("Vista Preparado"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Preparado') ? 'nav-tabs active' : '' }}" href="{{route('Preparado')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Preparado</span></div>
                                                 </a>
