@@ -21,20 +21,20 @@ class HomeController extends Controller
         return view('Home');
     }
     public function index()
-{   $user = Auth::user();
-    if ($user->hasPermission('Vista Dashboard')) {
+    {   $user = Auth::user();
+        if ($user->hasPermission('Vista Dashboard')) {
 
-        $user = Auth::user();
-        if (!$user || !$user->active) {
-            Auth::logout();
-            return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
+            $user = Auth::user();
+            if (!$user || !$user->active) {
+                Auth::logout();
+                return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
+            }
+            // Si el usuario está autenticado y su cuenta está activa
+            return view('Home', compact('user')); // O la vista que corresponda
+        } else {
+            return redirect()->route('index.operador');
         }
-        // Si el usuario está autenticado y su cuenta está activa
-        return view('Home', compact('user')); // O la vista que corresponda
-    } else {
-        return redirect()->route('index.operador');
     }
-}
 
 
     public function CapacidadProductiva(){
@@ -888,35 +888,17 @@ class HomeController extends Controller
     
         return response()->json($datos);
     }
-    
     public function graficasemana()
-{
-    $fechaInicioSemana = now()->startOfWeek()->toDateString();
-    $fechaFinSemana = now()->endOfWeek()->toDateString();
+    {
+        $fechaInicioSemana = now()->startOfWeek()->toDateString();
+        $fechaFinSemana = now()->endOfWeek()->toDateString();
 
-    $area9 = DB::table('partidasof_areas')
-    ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-    ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
-    ->whereBetween('ordenfabricacion.FechaEntrega', [$fechaInicioSemana, $fechaFinSemana]) 
-    ->where('partidasof_areas.Areas_id', 9)
-    ->where('ordenfabricacion.Cerrada', 0)
-    ->select(
-        'ordenfabricacion.OrdenFabricacion',
-        'ordenfabricacion.CantidadTotal',
-        'partidasof_areas.Areas_id',
-        DB::raw('GROUP_CONCAT(partidasof_areas.id) as id'),
-        'ordenfabricacion.FechaEntrega',
-        DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),
-        DB::raw('ROUND(LEAST((SUM(partidasof_areas.Cantidad) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso')
-    )
-    ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
-    ->get();
-        
-    $areas = DB::table('partidasof_areas')
+        $area9 = DB::table('partidasof_areas')
         ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
         ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
         ->whereBetween('ordenfabricacion.FechaEntrega', [$fechaInicioSemana, $fechaFinSemana]) 
-        ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8])
+        ->where('partidasof_areas.Areas_id', 9)
+        ->where('ordenfabricacion.Cerrada', 0)
         ->select(
             'ordenfabricacion.OrdenFabricacion',
             'ordenfabricacion.CantidadTotal',
@@ -928,93 +910,109 @@ class HomeController extends Controller
         )
         ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
         ->get();
-    
-    $cortes = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->select(
-            'ordenfabricacion.OrdenFabricacion',
-            'ordenfabricacion.CantidadTotal', 
-            'ordenfabricacion.FechaEntrega',
-            DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalcantidad_partida'),
-            DB::raw('ROUND(LEAST((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso'),
-            DB::raw('ROUND(SUM(partidasof.cantidad_partida) - ordenfabricacion.CantidadTotal, 0) as retrabajo')
-        )
-        ->whereBetween('ordenfabricacion.FechaEntrega', [$fechaInicioSemana, $fechaFinSemana]) 
-        ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
-        ->get();
-    
-    $totalOrdenes = DB::table('ordenfabricacion')
-        ->whereBetween('FechaEntrega', [$fechaInicioSemana, $fechaFinSemana]) 
-        ->count();
-    
-    $estacionesAreas = [
-        3 => 'plemasSuministrosemana',
-        4 => 'plemasPreparadosemana',
-        5 => 'plemasEnsamblesemana',
-        6 => 'plemasPulidosemana',
-        7 => 'plemasMedicionsemana',
-        8 => 'plemasVisualizacionsemana',
-       
-    ];
-    
-    $estacionesCortes = [
-        2 => 'plemasCortesemana'
-    ];
-    $estacionesEmpacado = [
-        9 => 'plemasEmpaquesemana'  // Esta es la estación de Empaque (Estación 9)
-    ];
-
-    $datos = [];
-    
-    foreach (array_merge($estacionesAreas, $estacionesCortes, $estacionesEmpacado) as $estacion) {
-        $datos[$estacion] = [
-            'completado' => 0,
-            'pendiente' => 0,
-            'totalOrdenes' => $totalOrdenes 
+            
+        $areas = DB::table('partidasof_areas')
+            ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
+            ->whereBetween('ordenfabricacion.FechaEntrega', [$fechaInicioSemana, $fechaFinSemana]) 
+            ->whereIn('partidasof_areas.Areas_id', [3, 4, 5, 6, 7, 8])
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal',
+                'partidasof_areas.Areas_id',
+                DB::raw('GROUP_CONCAT(partidasof_areas.id) as id'),
+                'ordenfabricacion.FechaEntrega',
+                DB::raw('SUM(partidasof_areas.Cantidad) as Cantidad'),
+                DB::raw('ROUND(LEAST((SUM(partidasof_areas.Cantidad) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso')
+            )
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.Areas_id', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
+            ->get();
+        
+        $cortes = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal', 
+                'ordenfabricacion.FechaEntrega',
+                DB::raw('SUM(partidasof.cantidad_partida) as SumaTotalcantidad_partida'),
+                DB::raw('ROUND(LEAST((SUM(partidasof.cantidad_partida) / ordenfabricacion.CantidadTotal) * 100, 100), 2) as Progreso'),
+                DB::raw('ROUND(SUM(partidasof.cantidad_partida) - ordenfabricacion.CantidadTotal, 0) as retrabajo')
+            )
+            ->whereBetween('ordenfabricacion.FechaEntrega', [$fechaInicioSemana, $fechaFinSemana]) 
+            ->groupBy('ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.FechaEntrega')
+            ->get();
+        
+        $totalOrdenes = DB::table('ordenfabricacion')
+            ->whereBetween('FechaEntrega', [$fechaInicioSemana, $fechaFinSemana]) 
+            ->count();
+        
+        $estacionesAreas = [
+            3 => 'plemasSuministrosemana',
+            4 => 'plemasPreparadosemana',
+            5 => 'plemasEnsamblesemana',
+            6 => 'plemasPulidosemana',
+            7 => 'plemasMedicionsemana',
+            8 => 'plemasVisualizacionsemana',
+        
         ];
-    }
-    
-    foreach ($areas as $area) {
-        if (isset($estacionesAreas[$area->Areas_id])) {
-            $nombreEstacion = $estacionesAreas[$area->Areas_id];
+        
+        $estacionesCortes = [
+            2 => 'plemasCortesemana'
+        ];
+        $estacionesEmpacado = [
+            9 => 'plemasEmpaquesemana'  // Esta es la estación de Empaque (Estación 9)
+        ];
 
-            if ((float)$area->Progreso == 100.00) {
-                $datos[$nombreEstacion]['completado']++;
-            } else {
-                $datos[$nombreEstacion]['pendiente']++;
+        $datos = [];
+        
+        foreach (array_merge($estacionesAreas, $estacionesCortes, $estacionesEmpacado) as $estacion) {
+            $datos[$estacion] = [
+                'completado' => 0,
+                'pendiente' => 0,
+                'totalOrdenes' => $totalOrdenes 
+            ];
+        }
+        
+        foreach ($areas as $area) {
+            if (isset($estacionesAreas[$area->Areas_id])) {
+                $nombreEstacion = $estacionesAreas[$area->Areas_id];
+
+                if ((float)$area->Progreso == 100.00) {
+                    $datos[$nombreEstacion]['completado']++;
+                } else {
+                    $datos[$nombreEstacion]['pendiente']++;
+                }
             }
         }
-    }
-     // Procesar área 9 (Empaque)
-     foreach ($area9 as $empacado) {
-        if (isset($estacionesEmpacado[$empacado->Areas_id])) {
-            $nombreEstacion = $estacionesEmpacado[$empacado->Areas_id];
+        // Procesar área 9 (Empaque)
+        foreach ($area9 as $empacado) {
+            if (isset($estacionesEmpacado[$empacado->Areas_id])) {
+                $nombreEstacion = $estacionesEmpacado[$empacado->Areas_id];
 
-            if ((float)$empacado->Progreso == 100.00) {
-                $datos[$nombreEstacion]['completado']++;
-            } else {
-                $datos[$nombreEstacion]['pendiente']++;
+                if ((float)$empacado->Progreso == 100.00) {
+                    $datos[$nombreEstacion]['completado']++;
+                } else {
+                    $datos[$nombreEstacion]['pendiente']++;
+                }
             }
         }
-    }
-    
-    $completadosCorte = 0;
-    $pendientesCorte = 0;
-    
-    foreach ($cortes as $corte) {
-        if ((float)$corte->Progreso == 100.00) {
-            $completadosCorte++;
-        } else {
-            $pendientesCorte++;
+        
+        $completadosCorte = 0;
+        $pendientesCorte = 0;
+        
+        foreach ($cortes as $corte) {
+            if ((float)$corte->Progreso == 100.00) {
+                $completadosCorte++;
+            } else {
+                $pendientesCorte++;
+            }
         }
+        
+        $datos['plemasCortesemana']['completado'] = $completadosCorte;
+        $datos['plemasCortesemana']['pendiente'] = $pendientesCorte;
+
+        return response()->json($datos);
     }
-    
-    $datos['plemasCortesemana']['completado'] = $completadosCorte;
-    $datos['plemasCortesemana']['pendiente'] = $pendientesCorte;
-
-    return response()->json($datos);
-}
-
     public function tablasemana()
     {
         $SumaCantidadTotalGeneral = DB::table('ordenfabricacion')->sum('CantidadTotal');
@@ -1121,77 +1119,208 @@ class HomeController extends Controller
         ]);
     }
     public function Dasboardindicadordia()
-{
-    $NumeroPersonas = DB::table('porcentajeplaneacion')
-        ->join('linea', 'porcentajeplaneacion.Linea_id', '=', 'linea.id')
-        ->whereDate('porcentajeplaneacion.FechaPlaneacion', today())
-        ->where('linea.active', 1)
-        ->select('linea.id as LineaId', 'linea.Nombre', DB::raw('SUM(porcentajeplaneacion.NumeroPersonas) as TotalNumeroPersonas'), DB::raw('SUM(porcentajeplaneacion.CantidadPlaneada) as TotalCantidadPlaneada'))
-        ->groupBy('linea.id', 'linea.Nombre')
+    {
+        $NumeroPersonas = DB::table('porcentajeplaneacion')
+            ->join('linea', 'porcentajeplaneacion.Linea_id', '=', 'linea.id')
+            ->whereDate('porcentajeplaneacion.FechaPlaneacion', today())
+            ->where('linea.active', 1)
+            ->select('linea.id as LineaId', 'linea.Nombre', DB::raw('SUM(porcentajeplaneacion.NumeroPersonas) as TotalNumeroPersonas'), DB::raw('SUM(porcentajeplaneacion.CantidadPlaneada) as TotalCantidadPlaneada'))
+            ->groupBy('linea.id', 'linea.Nombre')
+            ->get();
+
+        $personal = [
+            'LineaId' => $NumeroPersonas->pluck('LineaId')->implode(','),
+            'Nombre' => $NumeroPersonas->pluck('Nombre')->implode(','),
+            'NumeroPersonas' => $NumeroPersonas->sum('TotalNumeroPersonas'),
+            'CantidadPlaneada' => $NumeroPersonas->sum('TotalCantidadPlaneada'),
+        ];
+
+        $total = DB::table('porcentajeplaneacion')
+            ->join('linea', 'porcentajeplaneacion.Linea_id', '=', 'linea.id')
+            ->whereDate('porcentajeplaneacion.FechaPlaneacion', today())
+            ->where('linea.active', 1)
+            ->select('linea.id as LineaId', 'linea.Nombre', DB::raw('SUM(porcentajeplaneacion.NumeroPersonas) as TotalNumeroPersonas'), DB::raw('SUM(porcentajeplaneacion.CantidadPlaneada) as TotalCantidadPlaneada'))
+            ->groupBy('linea.id', 'linea.Nombre')
+            ->get();
+
+        $TotalOfTotal = [
+            'LineaId' => $total->pluck('LineaId')->implode(','),
+            'Nombre' => $total->pluck('Nombre')->implode(','),
+            'NumeroPersonas' => $total->sum('TotalNumeroPersonas'),
+            'CantidadTotal' => $total->sum('TotalCantidadPlaneada'),
+        ];
+        $indicador = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->whereDate('ordenfabricacion.FechaEntrega', today())
+        ->where('partidasof_areas.Areas_id', 9)
+        ->select(
+            'OrdenFabricacion',
+            'OrdenVenta_id',
+            'partidasof_areas.Cantidad',
+            'ordenfabricacion.Cerrada',
+            'partidasof_areas.Areas_id',
+            DB::raw('SUM(partidasof_areas.Cantidad) as SumaCantidad')
+        )
+        ->groupBy('OrdenFabricacion', 'OrdenVenta_id', 'partidasof_areas.Cantidad', 'ordenfabricacion.Cerrada', 'partidasof_areas.Areas_id')
         ->get();
 
-    $personal = [
-        'LineaId' => $NumeroPersonas->pluck('LineaId')->implode(','),
-        'Nombre' => $NumeroPersonas->pluck('Nombre')->implode(','),
-        'NumeroPersonas' => $NumeroPersonas->sum('TotalNumeroPersonas'),
-        'CantidadPlaneada' => $NumeroPersonas->sum('TotalCantidadPlaneada'),
-    ];
+        // Calcular correctamente TotalOFcompletadas
+        $totalOFcompletadas = $indicador->where('Cerrada', 1)->sum(function ($item) {
+            return $item->SumaCantidad;  // Sumar SumaCantidad en lugar de Cantidad
+        });
 
-    $total = DB::table('porcentajeplaneacion')
-        ->join('linea', 'porcentajeplaneacion.Linea_id', '=', 'linea.id')
-        ->whereDate('porcentajeplaneacion.FechaPlaneacion', today())
-        ->where('linea.active', 1)
-        ->select('linea.id as LineaId', 'linea.Nombre', DB::raw('SUM(porcentajeplaneacion.NumeroPersonas) as TotalNumeroPersonas'), DB::raw('SUM(porcentajeplaneacion.CantidadPlaneada) as TotalCantidadPlaneada'))
-        ->groupBy('linea.id', 'linea.Nombre')
-        ->get();
+        $totalSumaCantidad = $indicador->sum('SumaCantidad'); // Sumar todas las SumaCantidad
 
-    $TotalOfTotal = [
-        'LineaId' => $total->pluck('LineaId')->implode(','),
-        'Nombre' => $total->pluck('Nombre')->implode(','),
-        'NumeroPersonas' => $total->sum('TotalNumeroPersonas'),
-        'CantidadTotal' => $total->sum('TotalCantidadPlaneada'),
-    ];
-    $indicador = DB::table('ordenfabricacion')
-    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-    ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-    ->whereDate('ordenfabricacion.FechaEntrega', today())
-    ->where('partidasof_areas.Areas_id', 9)
-    ->select(
-        'OrdenFabricacion',
-        'OrdenVenta_id',
-        'partidasof_areas.Cantidad',
-        'ordenfabricacion.Cerrada',
-        'partidasof_areas.Areas_id',
-        DB::raw('SUM(partidasof_areas.Cantidad) as SumaCantidad')
-    )
-    ->groupBy('OrdenFabricacion', 'OrdenVenta_id', 'partidasof_areas.Cantidad', 'ordenfabricacion.Cerrada', 'partidasof_areas.Areas_id')
-    ->get();
+        $porcentajeCompletadas = $TotalOfTotal['CantidadTotal'] > 0 ? ($totalOFcompletadas / $TotalOfTotal['CantidadTotal']) * 100 : 0;
+        $faltanteTotal = $TotalOfTotal['CantidadTotal'] - $totalSumaCantidad;
+        $porcentajeCerradas = $TotalOfTotal['CantidadTotal'] > 0 ? ($faltanteTotal / $TotalOfTotal['CantidadTotal']) * 100 : 0;
 
-    // Calcular correctamente TotalOFcompletadas
-    $totalOFcompletadas = $indicador->where('Cerrada', 1)->sum(function ($item) {
-        return $item->SumaCantidad;  // Sumar SumaCantidad en lugar de Cantidad
-    });
+        return response()->json([
+            'Cantidadpersonas' => $personal['NumeroPersonas'] ?? 0,
+            'Estimadopiezas' => $personal['CantidadPlaneada'] ?? 0,
+            'indicador' => $indicador,
+            'TotalOFcompletadas' => $totalOFcompletadas,
+            'TotalOfTotal' => (int) $TotalOfTotal['CantidadTotal'],
+            'faltanteTotal' => $faltanteTotal,
+            'PorcentajeCompletadas' => round($porcentajeCompletadas, 2),
+            'porcentajeCerradas' => round($porcentajeCerradas, 2),
+        ]);
 
-    $totalSumaCantidad = $indicador->sum('SumaCantidad'); // Sumar todas las SumaCantidad
+    }
+    public function tiempopromedio() 
+    {
+        $startOfDay = Carbon::now()->startOfDay();
+        $endOfDay = Carbon::now()->endOfDay();
+        $FechaInicio = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->where('ordenfabricacion.Escaner', 0)
+            ->whereIn('partidasof_areas.Areas_id', [4,5,6,7,8])
+            ->whereBetween('partidasof_areas.FechaComienzo', [$startOfDay, $endOfDay])
+            ->select(
+                'partidasof_areas.PartidasOF_id',
+                'partidasof_areas.Areas_id',
+                'partidasof_areas.Cantidad',
+                'partidasof_areas.FechaComienzo',
+                'partidasof_areas.FechaTermina'
+            )
+            ->get();
+        $FechaFin = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->where('ordenfabricacion.Escaner', 0)
+            ->whereIn('partidasof_areas.Areas_id', [4,5,6,7,8])
+            ->whereBetween('partidasof_areas.FechaTermina', [$startOfDay, $endOfDay])
+            ->select(
+                'partidasof_areas.PartidasOF_id',
+                'partidasof_areas.Areas_id',
+                'partidasof_areas.Cantidad',
+                'partidasof_areas.FechaComienzo',
+                'partidasof_areas.FechaTermina'
+            )
+            ->get();
+        $filteredFechaFin = $FechaFin->filter(function($item) {
+            return !is_null($item->FechaTermina);
+        });
+        $groupedFechaFin = $filteredFechaFin->groupBy(function($item) {
+            return $item->PartidasOF_id . '-' . $item->Areas_id;
+        });
+        $result = [];
+        foreach ($groupedFechaFin as $key => $group) {
+            $firstFechaInicio = $FechaInicio->first(function($item) use ($group) {
+                return $item->PartidasOF_id == $group->first()->PartidasOF_id && $item->Areas_id == $group->first()->Areas_id;
+            });
+            $last = $group->last();
+            $totalQuantity = $group->sum('Cantidad');
+            $fechaComienzo = Carbon::parse($firstFechaInicio->FechaComienzo);
+            $fechaTermina = Carbon::parse($last->FechaTermina);
+            $diffInSeconds = $fechaComienzo->diffInSeconds($fechaTermina);
+    
+            $result[] = [
+                [
+                    'PartidasOF_id' => $firstFechaInicio->PartidasOF_id,
+                    'Areas' => $firstFechaInicio->Areas_id,
+                    'Cantidad' => $totalQuantity,
+                    'FechaComienzo' => $firstFechaInicio->FechaComienzo,
+                    'FechaTermina' => $last->FechaTermina,
+                    'TiempoEnSegundos' => $diffInSeconds,
+                    'Tiempopieza' => round($diffInSeconds / $totalQuantity, 2),
+                ]
+            ];
+        }
+        $TiempoCortes = DB::table('partidasof')
+            ->whereBetween('partidasof.FechaComienzo', [$startOfDay, $endOfDay])
+            ->whereBetween('partidasof.FechaFinalizacion', [$startOfDay, $endOfDay])
+            ->selectRaw('MIN(FechaComienzo) as FechaComienzo, MAX(FechaFinalizacion) as FechaTermina, 
+                        SUM(cantidad_partida) as Cantidad, 
+                        TIMESTAMPDIFF(SECOND, MIN(FechaComienzo), MAX(FechaFinalizacion)) as TotalSegundos,
+                        TIMESTAMPDIFF(SECOND, MIN(FechaComienzo), MAX(FechaFinalizacion)) / SUM(cantidad_partida) as SegundosPorUnidad')
+            ->get();
+        $Tiempo = DB::table('partidasof_areas')
+            ->whereBetween('FechaComienzo', [$startOfDay, $endOfDay])
+            ->whereBetween('FechaTermina', [$startOfDay, $endOfDay])
+            ->select('Cantidad', 'Areas_id', 'FechaComienzo', 'FechaTermina',
+                     DB::raw('TIMESTAMPDIFF(SECOND, FechaComienzo, FechaTermina) as TotalSegundos'))
+            ->get();
+        $finalResult = $Tiempo->groupBy('Areas_id')->map(function($items) {
+            $totalSegundos = $items->sum('TotalSegundos');
+            $totalCantidad = $items->sum('Cantidad');
+            $tiempopiezas = $totalSegundos / $totalCantidad; 
+            return [
+                'Areas' => $items->first()->Areas_id,
+                'Cantidad' => $totalCantidad,
+                'total' => $totalSegundos,
+                'tiempopiezas' => round($tiempopiezas, 2)
+            ];
+        })->values();
+        return response()->json([
+            'finalResult' => $finalResult,
+            'TiempoCortes' => $TiempoCortes,
+            'result' => $result
+        ]);
+    }
+    
 
-    $porcentajeCompletadas = $TotalOfTotal['CantidadTotal'] > 0 ? ($totalOFcompletadas / $TotalOfTotal['CantidadTotal']) * 100 : 0;
-    $faltanteTotal = $TotalOfTotal['CantidadTotal'] - $totalSumaCantidad;
-    $porcentajeCerradas = $TotalOfTotal['CantidadTotal'] > 0 ? ($faltanteTotal / $TotalOfTotal['CantidadTotal']) * 100 : 0;
+    
 
-    return response()->json([
-        'Cantidadpersonas' => $personal['NumeroPersonas'] ?? 0,
-        'Estimadopiezas' => $personal['CantidadPlaneada'] ?? 0,
-        'indicador' => $indicador,
-        'TotalOFcompletadas' => $totalOFcompletadas,
-        'TotalOfTotal' => (int) $TotalOfTotal['CantidadTotal'],
-        'faltanteTotal' => $faltanteTotal,
-        'PorcentajeCompletadas' => round($porcentajeCompletadas, 2),
-        'porcentajeCerradas' => round($porcentajeCerradas, 2),
-    ]);
 
-}
 
-    /*public function obtenerPorcentajes(Request $request)
+    /*
+
+    
+    {
+  "finalResult": [
+    {
+      "Areas": 3,
+      "Cantidad": 12,
+      "total": 4,
+      "tiempopiezas": 0.33
+    },
+    {
+      "Areas": 4,
+      "Cantidad": 4,
+      "total": 39,
+      "tiempopiezas": 9.75
+    }
+  ],
+  "result": [
+    [
+      {
+        "PartidasOF_id": 5,
+        "Areas": 4,
+        "Cantidad": 8,
+        "FechaComienzo": "2025-03-27 10:09:11",
+        "FechaTermina": "2025-03-27 10:09:38",
+        "TiempoEnSegundos": 27,
+        "Tiempopieza": 3.38
+      }
+    ],
+
+    
+    
+    
+    public function obtenerPorcentajes(Request $request)
     {
         // Simulación de datos para la prueba (reemplaza con datos de la BD)
         $datos = [
@@ -1734,103 +1863,99 @@ class HomeController extends Controller
         
     }
     public function lineas(Request $request)
-{
-    $personal = DB::table('porcentajeplaneacion')
-        ->join('linea', 'porcentajeplaneacion.Linea_id', '=', 'linea.id')
-        ->whereDate('porcentajeplaneacion.FechaPlaneacion', today())
-        ->where('linea.active', 1)
-        ->select('linea.id as LineaId', 'linea.Nombre', 'porcentajeplaneacion.NumeroPersonas', 'porcentajeplaneacion.CantidadPlaneada')
-        ->get();
-    $TotalOfTotal = DB::table('porcentajeplaneacion')
-        ->join('linea', 'porcentajeplaneacion.Linea_id', '=', 'linea.id')
-        ->whereDate('FechaPlaneacion', today())
-        ->where('linea.active', 1)
-        ->select(
-            'Linea_id',
-            DB::raw('COALESCE(NumeroPersonas, 20) as NumeroPersonas'),
-            DB::raw('COALESCE(CantidadPlaneada, 100) as CantidadTotal')
-        )
-        ->get();
-    $indicador = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-        ->whereDate('ordenfabricacion.FechaEntrega', today())
-        ->where('partidasof_areas.Areas_id', 9)
-        ->select(
-            'ordenfabricacion.Linea_id',
-            'OrdenFabricacion',
-            'OrdenVenta_id',
-            'partidasof_areas.Cantidad',
-            'ordenfabricacion.Cerrada',
-            'partidasof_areas.Areas_id',
-            DB::raw('SUM(partidasof_areas.Cantidad) as SumaCantidad')
-        )
-        ->groupBy('OrdenFabricacion', 'OrdenVenta_id', 'partidasof_areas.Cantidad', 'ordenfabricacion.Cerrada', 'partidasof_areas.Areas_id', 'ordenfabricacion.Linea_id')
-        ->get();
-    $linea = DB::table('linea')
-        ->where('active', 1)
-        ->get();
-    $totalOFcompletadas = 0;
-    $totalSumaCantidad = 0;
-    $totalFaltante = 0;
-    $lineas = [];
-    foreach ($TotalOfTotal as $lineaTotal) {
-        $lineaId = $lineaTotal->Linea_id;
-        $personalLinea = $personal->firstWhere('LineaId', $lineaId);
-        $cantidadPersonas = $personalLinea ? ($personalLinea->NumeroPersonas ?? 20) : 20;
-        $cantidadPlaneada = $personalLinea ? ($personalLinea->CantidadPlaneada ?? 100) : 100;
-        $indicadorLinea = $indicador->where('Linea_id', $lineaId);
-        $totalOFcompletadasLinea = $indicadorLinea->where('Cerrada', 1)->sum('SumaCantidad');
-        $totalSumaCantidadLinea = $indicadorLinea->sum('SumaCantidad');
-        $faltanteTotalLinea = $lineaTotal->CantidadTotal - $totalSumaCantidadLinea;
-        $totalOFcompletadas += $totalOFcompletadasLinea;
-        $totalSumaCantidad += $totalSumaCantidadLinea;
-        $totalFaltante += $faltanteTotalLinea;
-        $lineas[] = [
-            'id' => $lineaId,
-            'cantidad_personas' => $cantidadPersonas,
-            'estimado_piezas' => $cantidadPlaneada,
-            'piezas_completadas' => $totalOFcompletadasLinea,
-            'piezas_faltantes' => $faltanteTotalLinea,
-            'porcentaje_completadas' => $lineaTotal->CantidadTotal > 0 ? round(($totalOFcompletadasLinea / $lineaTotal->CantidadTotal) * 100, 2) : 0,
-            'porcentaje_faltantes' => $lineaTotal->CantidadTotal > 0 ? round(($faltanteTotalLinea / $lineaTotal->CantidadTotal) * 100, 2) : 0
-        ];
+    {
+        $personal = DB::table('porcentajeplaneacion')
+            ->join('linea', 'porcentajeplaneacion.Linea_id', '=', 'linea.id')
+            ->whereDate('porcentajeplaneacion.FechaPlaneacion', today())
+            ->where('linea.active', 1)
+            ->select('linea.id as LineaId', 'linea.Nombre', 'porcentajeplaneacion.NumeroPersonas', 'porcentajeplaneacion.CantidadPlaneada')
+            ->get();
+        $TotalOfTotal = DB::table('porcentajeplaneacion')
+            ->join('linea', 'porcentajeplaneacion.Linea_id', '=', 'linea.id')
+            ->whereDate('FechaPlaneacion', today())
+            ->where('linea.active', 1)
+            ->select(
+                'Linea_id',
+                DB::raw('COALESCE(NumeroPersonas, 20) as NumeroPersonas'),
+                DB::raw('COALESCE(CantidadPlaneada, 100) as CantidadTotal')
+            )
+            ->get();
+        $indicador = DB::table('ordenfabricacion')
+            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->whereDate('ordenfabricacion.FechaEntrega', today())
+            ->where('partidasof_areas.Areas_id', 9)
+            ->select(
+                'ordenfabricacion.Linea_id',
+                'OrdenFabricacion',
+                'OrdenVenta_id',
+                'partidasof_areas.Cantidad',
+                'ordenfabricacion.Cerrada',
+                'partidasof_areas.Areas_id',
+                DB::raw('SUM(partidasof_areas.Cantidad) as SumaCantidad')
+            )
+            ->groupBy('OrdenFabricacion', 'OrdenVenta_id', 'partidasof_areas.Cantidad', 'ordenfabricacion.Cerrada', 'partidasof_areas.Areas_id', 'ordenfabricacion.Linea_id')
+            ->get();
+        $linea = DB::table('linea')
+            ->where('active', 1)
+            ->get();
+        $totalOFcompletadas = 0;
+        $totalSumaCantidad = 0;
+        $totalFaltante = 0;
+        $lineas = [];
+        foreach ($TotalOfTotal as $lineaTotal) {
+            $lineaId = $lineaTotal->Linea_id;
+            $personalLinea = $personal->firstWhere('LineaId', $lineaId);
+            $cantidadPersonas = $personalLinea ? ($personalLinea->NumeroPersonas ?? 20) : 20;
+            $cantidadPlaneada = $personalLinea ? ($personalLinea->CantidadPlaneada ?? 100) : 100;
+            $indicadorLinea = $indicador->where('Linea_id', $lineaId);
+            $totalOFcompletadasLinea = $indicadorLinea->where('Cerrada', 1)->sum('SumaCantidad');
+            $totalSumaCantidadLinea = $indicadorLinea->sum('SumaCantidad');
+            $faltanteTotalLinea = $lineaTotal->CantidadTotal - $totalSumaCantidadLinea;
+            $totalOFcompletadas += $totalOFcompletadasLinea;
+            $totalSumaCantidad += $totalSumaCantidadLinea;
+            $totalFaltante += $faltanteTotalLinea;
+            $lineas[] = [
+                'id' => $lineaId,
+                'cantidad_personas' => $cantidadPersonas,
+                'estimado_piezas' => $cantidadPlaneada,
+                'piezas_completadas' => $totalOFcompletadasLinea,
+                'piezas_faltantes' => $faltanteTotalLinea,
+                'porcentaje_completadas' => $lineaTotal->CantidadTotal > 0 ? round(($totalOFcompletadasLinea / $lineaTotal->CantidadTotal) * 100, 2) : 0,
+                'porcentaje_faltantes' => $lineaTotal->CantidadTotal > 0 ? round(($faltanteTotalLinea / $lineaTotal->CantidadTotal) * 100, 2) : 0
+            ];
+        }
+        $porcentajeCompletadas = $totalSumaCantidad > 0 ? round(($totalOFcompletadas / $totalSumaCantidad) * 100, 2) : 0;
+        $porcentajeCerradas = $totalSumaCantidad > 0 ? round(($totalFaltante / $totalSumaCantidad) * 100, 2) : 0;
+        return response()->json([
+            'lineas' => $lineas,
+            'TotalOFcompletadas' => $totalOFcompletadas,
+            'TotalOfTotal' => (int) $totalSumaCantidad,
+            'faltanteTotal' => $totalFaltante,
+            'PorcentajeCompletadas' => $porcentajeCompletadas,
+            'porcentajeCerradas' => $porcentajeCerradas
+        ]);
     }
-    $porcentajeCompletadas = $totalSumaCantidad > 0 ? round(($totalOFcompletadas / $totalSumaCantidad) * 100, 2) : 0;
-    $porcentajeCerradas = $totalSumaCantidad > 0 ? round(($totalFaltante / $totalSumaCantidad) * 100, 2) : 0;
-    return response()->json([
-        'lineas' => $lineas,
-        'TotalOFcompletadas' => $totalOFcompletadas,
-        'TotalOfTotal' => (int) $totalSumaCantidad,
-        'faltanteTotal' => $totalFaltante,
-        'PorcentajeCompletadas' => $porcentajeCompletadas,
-        'porcentajeCerradas' => $porcentajeCerradas
-    ]);
-}
+    public function guardarAviso(Request $request)
+    {
+        // Valida la entrada del usuario
+        $request->validate([
+            'titulo' => 'nullable|string|max:255', 
+            'aviso' => 'required|string',
+        ]);
 
+        // Inserta el aviso en la base de datos
+        DB::table('avisos')->insert([
+            'titulo' => $request->input('titulo'),
+            'contenido' => $request->input('aviso'),
+            'fecha_envio' => $request->input('fecha'),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-
-
-public function guardarAviso(Request $request)
-{
-    // Valida la entrada del usuario
-    $request->validate([
-        'titulo' => 'nullable|string|max:255', 
-        'aviso' => 'required|string',
-    ]);
-
-    // Inserta el aviso en la base de datos
-    DB::table('avisos')->insert([
-        'titulo' => $request->input('titulo'),
-        'contenido' => $request->input('aviso'),
-        'fecha_envio' => $request->input('fecha'),
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
-
-    // Redirige con mensaje de éxito
-    return redirect()->back()->with('success', 'Aviso enviado correctamente.');
-}
+        // Redirige con mensaje de éxito
+        return redirect()->back()->with('success', 'Aviso enviado correctamente.');
+    }
 
 }
 
