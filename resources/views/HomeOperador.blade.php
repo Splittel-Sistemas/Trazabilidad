@@ -5,6 +5,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
     .carousel-content-wrapper{ 
+        max-width: 100%;
         max-height: 200px; 
         overflow-y: auto; 
         padding-left: 8px;
@@ -24,6 +25,9 @@
     .carousel-content-wrapper::-webkit-scrollbar-thumb:hover {
         background: #fdfdfd; /* Color del thumb al pasar el mouse */
     }
+    #carouselExampleIndicators{
+        width: 90%;
+    }
     body {
  
         font-family: 'Arial', sans-serif;
@@ -35,72 +39,26 @@
         border-radius: 15px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     }
-    .user-name {
-        font-size: 22px;
-        color: #c00000;
-        font-weight: bold;
-    }
-    
-    .usuario-icono {
-        background: #c00000;
-        color: white;
-        padding: 12px;
-        font-size: 50px;
-        border-radius: 50%;
-        margin-bottom: 1px;
-    }
     #clock {
         font-size: 16px;
         font-weight: bold;
         color: #c00000;
     }
-    .messages-container {
-        padding: 20px;
-
-        border-radius: 15px;
-        max-width: 800px;
-        margin: 20px auto;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
-    .message {
-
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        margin-bottom: 15px;
-    }
-    .message h3 {
-        color: #007BFF;
-    }
-    .message p {
-        color: #555;
-    }
-    .btn-primary {
-        background: #007BFF;
-        border: none;
-        transition: 0.3s;
-    }
-    .btn-primary:hover {
-        background: #0056b3;
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
     .carousel-inner {
-      position: relative;
-      overflow: hidden; 
-      border-radius: 15px;
+        width: 100%;
+        height: 200px;
+        position: relative;
+        overflow: hidden; 
+        border-radius: 15px;
     }
     .carousel-item {
-      height: 200px;
-      width: 100%;
-      color: white;
-      position: relative;
-      text-align: center;
-      padding: 20px;
-      transition: transform 0.8s ease-in-out;
+        height: 200px;
+        width: 100%;
+        color: white;
+        position: relative;
+        text-align: center;
+        padding: 20px;
+        transition: transform 0.8s ease-in-out;
     }
     .carousel-item div {
       display: grid;
@@ -133,6 +91,25 @@
    .carousel-content{
     color: #ffffff;
    }
+   #ImgSinAvisos{
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;     /* Centra verticalmente */
+   }
+   #ImgSinAvisos img{
+    width: 50%;
+   }
+   .Div-centrar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+   }
+   .welcome-message{
+    font-weight: bolder;
+    color: #5a5a5a;
+    font-size:large;
+   }
   </style>
 @endsection
 @section('content')
@@ -153,15 +130,20 @@
 @endif    
 <div class="welcome-container card" > 
     <!--<i class="far fa-user usuario-icono"></i>-->
-    <h4 class="text-start">¡Bienvenido/a </h4>
-    <h3 class="text-start">{{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}!</h3>          
+    <h4 class="text-start" style="color: #5a5a5a;">¡Bienvenido/a </h4>
+    <h3 class="text-start" style="color: #5a5a5a;">{{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}!</h3>          
     <p class="welcome-message m-0" id="message"></p>
     <div id="clock">
         <span id="date"></span>
         <span id="time"></span>
     </div> 
-    <h4 class="text-center">Avisos</h4>
-    <div class="card">
+    @if($avisos->count()==0)
+    <div id="ImgSinAvisos">
+        <img id="" src="{{asset('imagenes/splittel.png') }}" alt="Splittel">
+    </div>
+    @else
+    <h4 class="text-center mt-2">Avisos</h4>
+    <div class="Div-centrar mt-1">
         <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="false">
             <ol class="carousel-indicators">
             @foreach($avisos as $index => $aviso)
@@ -190,6 +172,7 @@
             </a>
         </div>
     </div>
+    @endif
 </div>
 <div style="height: 30px;"></div>
 <div class="modal fade" id="avisoModal" tabindex="-1" aria-labelledby="avisoModalLabel" aria-hidden="true">
