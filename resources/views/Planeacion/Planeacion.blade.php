@@ -213,7 +213,7 @@
                                 <th colspan="6" class="fw-bold">
                                     <p style="color: black" id="filtro-fecha-Ov">Planeaci&oacute;n <br> <span id="FiltroOF_text">Fecha: {{\Carbon\Carbon::parse($FechaFin)->format('d/m/Y')}}</span></p>
                                     <div class="input-group">
-                                        <input type="text" name="FiltroOF_table2"  id="FiltroOF_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Buscar Orden de fabricación o Orden de Venta" >
+                                        <input type="text" name="FiltroOF_table2"  id="FiltroOF_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Buscar Orden de fabricación u Orden de Venta" >
                                         <button id="buscarOV" class="btn btn-sm btn-primary">
                                             <i class="fa fa-search"></i> buscar
                                         </button>

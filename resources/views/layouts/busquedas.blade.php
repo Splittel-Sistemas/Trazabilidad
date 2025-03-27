@@ -754,7 +754,6 @@
 @endsection
 @section('scripts')
     <!-- Scripts -->
-   
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -1047,7 +1046,8 @@
                             let estacion = response.estaciones[endpoint.tipo];
                             if (estacion && estacion.length > 0) {
                                 let datos = estacion[0]; 
-                                let porcentaje = datos.porcentaje || 0; 
+                                let porcentaje = datos.porcentaje ? Math.floor(datos.porcentaje) : 0;
+
                                 let label = datos.totalR > 0 ? `Retrabajo: ${datos.totalR}` : '';
                                 drawGauge(endpoint.id, porcentaje, label);
                             } else {

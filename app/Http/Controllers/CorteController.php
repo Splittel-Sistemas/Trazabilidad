@@ -20,7 +20,7 @@ class CorteController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if ($user->hasPermission('Vista Cortes')) {
+        if ($user->hasPermission('Vista Corte')) {
             $fecha = date('Y-m-d');
             $fechaAtras = date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
             

@@ -118,9 +118,13 @@
                             </td>
                             <td class="align-center estatus ps-8">
                                 @if(Auth::user()->hasPermission("Activar/Desactivar Usuario"))
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input toggle-status" style="transform:scale(1.5);" onclick="DesactivarUsuario(this);" type="checkbox" id="ActivarUsuario{{ $registro->id }}" onclick="ActivarUsuario(this)" data-id="{{ $registro->id }}" data-active="{{ $registro->active ? '1' : '0' }}" {{ $registro->active ? 'checked' : '' }}>
-                                    </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input toggle-status" style="transform:scale(1.5);"
+                                        type="checkbox" id="ActivarUsuario{{ $registro->id }}" 
+                                        data-id="{{ $registro->id }}" 
+                                        data-active="{{ $registro->active ? '1' : '0' }}" 
+                                        {{ $registro->active ? 'checked' : '' }}>
+                                </div>
                                 @endif
                             </td>
                             
@@ -359,12 +363,12 @@
             }
         });
     }
-    function DesactivarUsuario(registro){
-        var button = $(registro); 
-        var userId = button.data('id'); 
-        var isActive = button.data('active') == '1'; 
-        var url = isActive ? "{{ route('users.desactivar') }}" : "{{ route('users.activar') }}";
-        var newState = isActive ? 0 : 1;
+    $(document).ready(function () {
+    $('.toggle-status').on('change', function () {
+        var checkbox = $(this);
+        var userId = checkbox.data('id');
+        var isActive = checkbox.is(':checked'); 
+        var url = isActive ? "{{ route('users.activar') }}" : "{{ route('users.desactivar') }}";
         $.ajax({
             url: url,
             method: 'POST',
@@ -373,12 +377,15 @@
                 _token: $('meta[name="csrf-token"]').attr('content'),
             },
             success: function (response) {
+                checkbox.data('active', isActive ? '1' : '0');
             },
             error: function () {
-                button.prop('checked', false);
+                checkbox.prop('checked', !isActive);
                 alert('Hubo un error al cambiar el estado.');
             }
         });
-    }
+    });
+});
+
 </script>
 @endsection
