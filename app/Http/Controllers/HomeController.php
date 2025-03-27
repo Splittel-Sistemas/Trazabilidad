@@ -1283,46 +1283,10 @@ class HomeController extends Controller
     
 
     
-
-
-
     /*
-
-    
-    {
-  "finalResult": [
-    {
-      "Areas": 3,
-      "Cantidad": 12,
-      "total": 4,
-      "tiempopiezas": 0.33
-    },
-    {
-      "Areas": 4,
-      "Cantidad": 4,
-      "total": 39,
-      "tiempopiezas": 9.75
-    }
-  ],
-  "result": [
-    [
-      {
-        "PartidasOF_id": 5,
-        "Areas": 4,
-        "Cantidad": 8,
-        "FechaComienzo": "2025-03-27 10:09:11",
-        "FechaTermina": "2025-03-27 10:09:38",
-        "TiempoEnSegundos": 27,
-        "Tiempopieza": 3.38
-      }
-    ],
-
-    
-    
-    
     public function obtenerPorcentajes(Request $request)
     {
-        // Simulación de datos para la prueba (reemplaza con datos de la BD)
+       
         $datos = [
             'NumeroPersonas' => 10,
             'CantidadEstimadaDia' => 100,
@@ -1340,9 +1304,6 @@ class HomeController extends Controller
     {
         try {
             Log::info('Datos recibidos:', $request->all());
-
-            // Aquí puedes guardar los datos en la base de datos si es necesario
-
             return response()->json(['success' => true, 'message' => 'Datos guardados correctamente.']);
         } catch (\Exception $e) {
             Log::error('Error al guardar datos: ' . $e->getMessage());
@@ -1833,8 +1794,6 @@ class HomeController extends Controller
         */
 
     }
-
-
     //dasboard operador 
     public function indexoperador(Request $request)
     {
