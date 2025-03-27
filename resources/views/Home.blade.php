@@ -236,20 +236,13 @@
         }
 
         /* Acordeón con bordes suaves */
-        .card {
-            margin-bottom: 1rem;
-        }
+       
 
         .collapse {
             transition: all 0.3s ease;
         }
 
-        .card-body {
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+       
 
         /* Mejorar la apariencia del contenedor del gráfico */
         .chart-container {
@@ -647,10 +640,12 @@
             </div>
     </div>
     <div style="height: 10px;"></div>
+
     <div class="card">
-            <p id="grafica-tiempo-dia" style="font-size: 14px; color: gray;"></p> 
-            <div id="grafica-tiempoD" class="chart-container" style="height: 400px;"></div> 
+       
+        <div id="grafica-tiempoD"" class="chart-container"></div>
     </div>
+    
 
 
     
@@ -1320,33 +1315,32 @@ function convertirSegundosAHMS(segundos) {
 }
 function crearGrafico(url, chartDomId) {
     var chartDom = document.getElementById(chartDomId);
+    chartDom.style.width = "70vw";  // Ajusta el ancho al 80% de la pantalla
+    chartDom.style.height = "450px"; // Ajusta la altura de la gráfica
     var myChart = echarts.init(chartDom);
+
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            // Mapeo de los datos
             var tiemposProduccionData = [];
             var tiemposMuertosData = [];
-            var areas = Object.entries(data.numeroPRO).map(([nombre,valor]) => `${nombre} 'No'${valor}`);; // Reemplaza con los nombres de las áreas correctas según el id
+            var areas = Object.entries(data.numeroPRO).map(([nombre, valor]) => `${nombre} 'No'${valor}`);
 
-            // Crear un diccionario para los tiempos de producción, utilizando Areas_id como clave
             var produccionMap = {};
             data.produccion.forEach(item => {
                 produccionMap[item.Areas_id] = parseInt(item.tiempoProduccionActual, 10);
             });
 
-            // Crear un diccionario para los tiempos muertos
             var finalResultMap = {};
             data.finalResult.forEach(item => {
-                var areasId = item.Areas_id.split(',').map(area => parseInt(area, 10)); // Convierte el string Areas_id a un array de ids
+                var areasId = item.Areas_id.split(',').map(area => parseInt(area, 10));
                 areasId.forEach(id => {
-                    finalResultMap[id] = item.TiempoMuerto; // Asocia cada área con su tiempo muerto
+                    finalResultMap[id] = item.TiempoMuerto;
                 });
             });
 
-            // Llenar los arrays con los datos
             areas.forEach(area => {
-                var areaId = areas.indexOf(area) + 3; // Asume que las áreas comienzan en 3
+                var areaId = areas.indexOf(area) + 3;
                 var tiempoProduccion = produccionMap[areaId] || 0;
                 var tiempoMuerto = finalResultMap[areaId] || 0;
 
@@ -1354,52 +1348,24 @@ function crearGrafico(url, chartDomId) {
                 tiemposMuertosData.push(tiempoMuerto);
             });
 
-            // Preparar los datos para la gráfica de pastel
-            var tiemposPorPieza = data.tiemposPorPieza.map(item => {
-                // Convertir los segundos a horas, minutos y segundos
-                var tiempoPorPieza = item.TiempoPorPieza;
-                var horas = Math.floor(tiempoPorPieza / 3600);
-                var minutos = Math.floor((tiempoPorPieza % 3600) / 60);
-                var segundos = tiempoPorPieza % 60;
-
-                return {
-                    name: item.Area,
-                    value: item.TiempoPorPieza,
-                    label: {
-                        formatter: `{b}: ${horas}h ${minutos}m ${segundos}s`
-                    }
-                };
-            });
-
             var option = {
                 title: [
                     {
-                        text: 'Gráfica de Tiempo por Piezas',
-                        left: '78%',
-                        top: '2%',
-                        textAlign: 'center',
-                        textStyle: {
-                            fontSize: 10,
-                            fontWeight: 'bold'
-                        }
-                    },
-                    {
                         text: 'Cantidad de Piezas Registradas: ' + data.TotalPiezas,
-                        left: '50%', 
-                        top: '-1%', 
-                        textAlign: 'center',
+                        left: 'center', // Centrar el título
+                        top: '2%',
                         textStyle: {
-                            fontSize: 11,
+                            fontSize: 14,
                             fontWeight: 'bold',
                             color: '#333'
                         }
                     },
                     {
                         text: 'Tiempo de Producción vs Tiempo Muerto',
-                        left: '13%',
-                        top: '2%',
+                        left: 'center', // Centrar subtítulo
+                        top: '6%',
                         textStyle: {
-                            fontSize: 10,
+                            fontSize: 12,
                             fontWeight: 'bold'
                         }
                     }
@@ -1413,24 +1379,22 @@ function crearGrafico(url, chartDomId) {
                 },
                 legend: {
                     data: ['Tiempo Muerto', 'Tiempo de Producción'],
-                    left: '13%',
-                    top: '7%',
-                    textStyle: {
-                        fontSize: 8,
-                    }
+                    left: 'center', // Centrar la leyenda
+                    top: '12%',
+                    textStyle: { fontSize: 10 }
                 },
                 grid: {
-                    left: '5%',
-                    right: '44%',
+                    left: '1%',   // Margen izquierdo mayor para evitar cortes
+                    right: '20%',  // Margen derecho mayor
                     bottom: '10%',
-                    top: '15%',
+                    top: '20%',    // Más espacio en la parte superior
                     containLabel: true
                 },
                 xAxis: {
                     type: 'value',
                     axisLabel: {
                         formatter: convertirSegundosAHMS,
-                        fontSize: 10,
+                        fontSize: 12,
                     },
                     splitLine: {
                         show: true,
@@ -1440,7 +1404,7 @@ function crearGrafico(url, chartDomId) {
                 yAxis: {
                     type: 'category',
                     data: areas,
-                    axisLabel: { fontSize: 10, margin: 50 },
+                    axisLabel: { fontSize: 12, margin: 50 },
                     axisTick: { show: false },
                     axisLine: { show: true, lineStyle: { color: '#000', width: 2 } }
                 },
@@ -1453,7 +1417,7 @@ function crearGrafico(url, chartDomId) {
                             show: true,
                             position: 'inside',
                             formatter: params => convertirSegundosAHMS(params.value),
-                            fontSize: 9
+                            fontSize: 10
                         },
                         itemStyle: { color: '#FF6F61' },
                         data: tiemposMuertosData
@@ -1466,22 +1430,11 @@ function crearGrafico(url, chartDomId) {
                             show: true,
                             position: 'inside',
                             formatter: params => convertirSegundosAHMS(params.value),
-                            fontSize: 9
+                            fontSize: 10
                         },
                         itemStyle: { color: '#3B8F82' },
                         data: tiemposProduccionData
                     },
-                    {
-                        type: 'pie',
-                        radius: '35%',
-                        center: ['78%', '50%'],
-                        data: tiemposPorPieza,
-                        label: {
-                            show: true,
-                            formatter: '{b}: {c} ({d}%)',
-                            fontSize: 10
-                        }
-                    }
                 ],
                 toolbox: {
                     feature: {
@@ -1494,10 +1447,13 @@ function crearGrafico(url, chartDomId) {
             };
 
             myChart.setOption(option);
+            window.addEventListener('resize', () => myChart.resize()); // Redimensionar la gráfica si cambia el tamaño de la pantalla
         })
         .catch(error => console.log('Error al cargar los datos del gráfico:', error));
 }
+
 crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
+
 
 
 
@@ -1598,41 +1554,33 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
 
 
 <script>
-    fetch("{{ route('lineas.indicador') }}")
+fetch("{{ route('lineas.indicador') }}")
     .then(response => response.json())
     .then(data => {
-        const porcentajeCerradas = parseFloat(data.porcentajeCerradas) || 0;
-        const porcentajeCompletadas = parseFloat(data.PorcentajeCompletadas) || 0;
-        const totalOfTotal = parseInt(data.TotalOfTotal) || 0;
-        const totalCompletadas = parseInt(data.TotalOFcompletadas) || 0;
-        const faltanteTotal = parseInt(data.faltanteTotal) || 0
         const container = document.getElementById('lineas-container');
         container.innerHTML = ''; 
         data.lineas.forEach(linea => {
+            // Valores por defecto
+            const cantidadPersonas = linea.cantidad_personas ?? 0;
+            const estimadoPiezas = linea.estimado_piezas ?? 0;
+            const piezasCompletadas = linea.piezas_completadas ?? 0;
+            const piezasFaltantes = linea.piezas_faltantes ?? 0;
+            const porcentajeCompletadas = linea.porcentaje_completadas ?? 0;
+            const porcentajeFaltantes = linea.porcentaje_faltantes ?? 0;
+
             const card = document.createElement('div');
             card.classList.add('col-md-4', 'mb-4');
             card.innerHTML = `
                 <div class="col-sm-12 bg-white mb-4">
                     <div class="accordion-body bg-white pt-0">
                         <div class="card-body bg-white p-1">
-                            <h5 class="p-1">
-                                Línea ${linea.id}
-                               
-                            </h5>
+                            <h5 class="p-1">Línea ${linea.id}</h5>
                             <div class="d-flex justify-content-between">
                                 <div class="row">
-                                    <h6 class="text-700 col-6">
-                                        Cantidad personas: <span id="Cantidadpersonas${linea.id}">${linea.cantidad_personas}</span>
-                                    </h6>
-                                    <h6 class="text-700 col-6">
-                                        Estimado de piezas por día: <span id="Estimadopiezas${linea.id}">${linea.estimado_piezas}</span>
-                                    </h6>
-                                    <h6 class="text-700 col-6">
-                                        Piezas Completadas: <span id="Piezasplaneadas${linea.id}">${linea.piezas_completadas}</span>
-                                    </h6>
-                                    <h6 class="text-700 col-6">
-                                        Piezas faltantes: <span id="Piezasfaltantes${linea.id}">${linea.piezas_faltantes}</span>
-                                    </h6>
+                                    <h6 class="text-700 col-6">Cantidad personas: <span>${cantidadPersonas}</span></h6>
+                                    <h6 class="text-700 col-6">Estimado de piezas por día: <span>${estimadoPiezas}</span></h6>
+                                    <h6 class="text-700 col-6">Piezas Completadas: <span>${piezasCompletadas}</span></h6>
+                                    <h6 class="text-700 col-6">Piezas faltantes: <span>${piezasFaltantes}</span></h6>
                                 </div>
                             </div>
                             <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
@@ -1641,21 +1589,13 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
                             <div>
                                 <div class="d-flex align-items-center mb-2">
                                     <div class="bullet-item bg-primary me-2"></div>
-                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">
-                                        Porcentaje Completadas
-                                    </h6>
-                                    <h6 class="text-900 fw-semi-bold mb-0">
-                                        <span id="Porcentajeplaneada${linea.id}">${linea.porcentaje_completadas}</span>%
-                                    </h6>
+                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Completadas</h6>
+                                    <h6 class="text-900 fw-semi-bold mb-0"><span>${porcentajeCompletadas}</span>%</h6>
                                 </div>
                                 <div class="d-flex align-items-center mb-2">
                                     <div class="bullet-item bg-primary-200 me-2"></div>
-                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">
-                                        Porcentaje Faltantes
-                                    </h6>
-                                    <h6 class="text-900 fw-semi-bold mb-0">
-                                        <span id="Porcentajefaltante${linea.id}">${linea.porcentaje_faltantes}</span>%
-                                    </h6>
+                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Faltantes</h6>
+                                    <h6 class="text-900 fw-semi-bold mb-0"><span>${porcentajeFaltantes}</span>%</h6>
                                 </div>
                             </div>
                         </div>
@@ -1663,6 +1603,8 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
                 </div>
             `;
             container.appendChild(card);
+
+            // Configuración de la gráfica
             var myChart = echarts.init(document.getElementById(`lineasprocentaje${linea.id}`));
             var option = {
                 tooltip: { trigger: 'item' },
@@ -1681,14 +1623,14 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
                         label: {
                             show: true,
                             position: 'center',
-                            formatter: `${linea.porcentaje_completadas.toFixed(2)}%`,
+                            formatter: `${porcentajeCompletadas.toFixed(2)}%`,
                             fontSize: 20,
                             fontWeight: 'bold'
                         },
                         labelLine: { show: false },
                         data: [
-                            { value: linea.piezas_completadas, name: 'Completadas', itemStyle: { color: "#007BFF" } },
-                            { value: linea.piezas_faltantes, name: 'Faltantes', itemStyle: { color: '#D3D3D3' } }
+                            { value: piezasCompletadas, name: 'Completadas', itemStyle: { color: "#007BFF" } },
+                            { value: piezasFaltantes, name: 'Faltantes', itemStyle: { color: '#D3D3D3' } }
                         ]
                     }
                 ]
@@ -1696,6 +1638,8 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
             myChart.setOption(option);
         });
     })
+    .catch(error => console.error("Error al cargar los datos:", error));
+
    
     document.addEventListener("DOMContentLoaded", function() {
         fetch("{{ route('tiempopromedio') }}")
