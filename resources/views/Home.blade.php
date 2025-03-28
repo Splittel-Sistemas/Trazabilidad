@@ -1506,6 +1506,7 @@
                             formatter: response.PorcentajePlaneada+'%',
                             fontSize: 20,
                             fontWeight: 'bold'
+                           
                         },
                         
                         labelLine: {
