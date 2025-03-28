@@ -881,8 +881,7 @@
 <script>
      /*setInterval(function() {
         location.reload();
-    }, 60000);    */                                                                                                                                                                                                                                                                                                       
-        
+    }, 60000);    */                                                                                                                                                                                                                                                                                                         
     function setupClickListener(clickId, indicadoresId, hideIds) {
         document.getElementById(clickId).addEventListener('click', function() {
           
@@ -1222,7 +1221,6 @@
         // Renderizar gráfico
         myChart.setOption(option);
     });
-
     document.addEventListener("DOMContentLoaded", function () {
     fetch("{{ route('dashboard.indicador') }}")
         .then(response => response.json())
@@ -1305,157 +1303,152 @@
         })
         .catch(error => console.error("Error al obtener los datos:", error));
 });
+    // Función para convertir segundos a formato H:M:S
+    function convertirSegundosAHMS(segundos) {
+        var horas = Math.floor(segundos / 3600);
+        var minutos = Math.floor((segundos % 3600) / 60);
+        var segundosRestantes = segundos % 60;
+        return `${horas}h ${minutos}m ${segundosRestantes}s`;
+    }
+    function crearGrafico(url, chartDomId) {
+        var chartDom = document.getElementById(chartDomId);
+        chartDom.style.width = "70vw";  // Ajusta el ancho al 80% de la pantalla
+        chartDom.style.height = "450px"; // Ajusta la altura de la gráfica
+        var myChart = echarts.init(chartDom);
 
-// Función para convertir segundos a formato H:M:S
-function convertirSegundosAHMS(segundos) {
-    var horas = Math.floor(segundos / 3600);
-    var minutos = Math.floor((segundos % 3600) / 60);
-    var segundosRestantes = segundos % 60;
-    return `${horas}h ${minutos}m ${segundosRestantes}s`;
-}
-function crearGrafico(url, chartDomId) {
-    var chartDom = document.getElementById(chartDomId);
-    chartDom.style.width = "70vw";  // Ajusta el ancho al 80% de la pantalla
-    chartDom.style.height = "450px"; // Ajusta la altura de la gráfica
-    var myChart = echarts.init(chartDom);
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                var tiemposProduccionData = [];
+                var tiemposMuertosData = [];
+                var areas = Object.entries(data.numeroPRO).map(([nombre, valor]) => `${nombre} 'No'${valor}`);
 
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            var tiemposProduccionData = [];
-            var tiemposMuertosData = [];
-            var areas = Object.entries(data.numeroPRO).map(([nombre, valor]) => `${nombre} 'No'${valor}`);
-
-            var produccionMap = {};
-            data.produccion.forEach(item => {
-                produccionMap[item.Areas_id] = parseInt(item.tiempoProduccionActual, 10);
-            });
-
-            var finalResultMap = {};
-            data.finalResult.forEach(item => {
-                var areasId = item.Areas_id.split(',').map(area => parseInt(area, 10));
-                areasId.forEach(id => {
-                    finalResultMap[id] = item.TiempoMuerto;
+                var produccionMap = {};
+                data.produccion.forEach(item => {
+                    produccionMap[item.Areas_id] = parseInt(item.tiempoProduccionActual, 10);
                 });
-            });
 
-            areas.forEach(area => {
-                var areaId = areas.indexOf(area) + 3;
-                var tiempoProduccion = produccionMap[areaId] || 0;
-                var tiempoMuerto = finalResultMap[areaId] || 0;
+                var finalResultMap = {};
+                data.finalResult.forEach(item => {
+                    var areasId = item.Areas_id.split(',').map(area => parseInt(area, 10));
+                    areasId.forEach(id => {
+                        finalResultMap[id] = item.TiempoMuerto;
+                    });
+                });
 
-                tiemposProduccionData.push(tiempoProduccion);
-                tiemposMuertosData.push(tiempoMuerto);
-            });
+                areas.forEach(area => {
+                    var areaId = areas.indexOf(area) + 3;
+                    var tiempoProduccion = produccionMap[areaId] || 0;
+                    var tiempoMuerto = finalResultMap[areaId] || 0;
 
-            var option = {
-                title: [
-                    {
-                        text: 'Cantidad de Piezas Registradas: ' + data.TotalPiezas,
-                        left: 'center', // Centrar el título
-                        top: '2%',
-                        textStyle: {
-                            fontSize: 14,
-                            fontWeight: 'bold',
-                            color: '#333'
+                    tiemposProduccionData.push(tiempoProduccion);
+                    tiemposMuertosData.push(tiempoMuerto);
+                });
+
+                var option = {
+                    title: [
+                        {
+                            text: 'Cantidad de Piezas Registradas: ' + data.TotalPiezas,
+                            left: 'center', // Centrar el título
+                            top: '2%',
+                            textStyle: {
+                                fontSize: 14,
+                                fontWeight: 'bold',
+                                color: '#333'
+                            }
+                        },
+                        {
+                            text: 'Tiempo de Producción vs Tiempo Muerto',
+                            left: 'center', // Centrar subtítulo
+                            top: '6%',
+                            textStyle: {
+                                fontSize: 12,
+                                fontWeight: 'bold'
+                            }
+                        }
+                    ],
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: { type: 'shadow' },
+                        formatter: function (params) {
+                            return params.map(item => `${item.seriesName}: ${convertirSegundosAHMS(item.value)}`).join('<br>');
                         }
                     },
-                    {
-                        text: 'Tiempo de Producción vs Tiempo Muerto',
-                        left: 'center', // Centrar subtítulo
-                        top: '6%',
-                        textStyle: {
+                    legend: {
+                        data: ['Tiempo Muerto', 'Tiempo de Producción'],
+                        left: 'center', // Centrar la leyenda
+                        top: '12%',
+                        textStyle: { fontSize: 10 }
+                    },
+                    grid: {
+                        left: '1%',   // Margen izquierdo mayor para evitar cortes
+                        right: '20%',  // Margen derecho mayor
+                        bottom: '10%',
+                        top: '20%',    // Más espacio en la parte superior
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'value',
+                        axisLabel: {
+                            formatter: convertirSegundosAHMS,
                             fontSize: 12,
-                            fontWeight: 'bold'
+                        },
+                        splitLine: {
+                            show: true,
+                            lineStyle: { type: 'dashed', color: '#ccc' }
+                        }
+                    },
+                    yAxis: {
+                        type: 'category',
+                        data: areas,
+                        axisLabel: { fontSize: 12, margin: 50 },
+                        axisTick: { show: false },
+                        axisLine: { show: true, lineStyle: { color: '#000', width: 2 } }
+                    },
+                    series: [
+                        {
+                            name: 'Tiempo Muerto',
+                            type: 'bar',
+                            stack: 'total',
+                            label: {
+                                show: true,
+                                position: 'inside',
+                                formatter: params => convertirSegundosAHMS(params.value),
+                                fontSize: 10
+                            },
+                            itemStyle: { color: '#FF6F61' },
+                            data: tiemposMuertosData
+                        },
+                        {
+                            name: 'Tiempo de Producción',
+                            type: 'bar',
+                            stack: 'total',
+                            label: {
+                                show: true,
+                                position: 'inside',
+                                formatter: params => convertirSegundosAHMS(params.value),
+                                fontSize: 10
+                            },
+                            itemStyle: { color: '#3B8F82' },
+                            data: tiemposProduccionData
+                        },
+                    ],
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {
+                                name: 'tiempos_de_produccion_' + new Date().toLocaleDateString().replace(/\//g, '_'),
+                                type: 'png'
+                            }
                         }
                     }
-                ],
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: function (params) {
-                        return params.map(item => `${item.seriesName}: ${convertirSegundosAHMS(item.value)}`).join('<br>');
-                    }
-                },
-                legend: {
-                    data: ['Tiempo Muerto', 'Tiempo de Producción'],
-                    left: 'center', // Centrar la leyenda
-                    top: '12%',
-                    textStyle: { fontSize: 10 }
-                },
-                grid: {
-                    left: '1%',   // Margen izquierdo mayor para evitar cortes
-                    right: '20%',  // Margen derecho mayor
-                    bottom: '10%',
-                    top: '20%',    // Más espacio en la parte superior
-                    containLabel: true
-                },
-                xAxis: {
-                    type: 'value',
-                    axisLabel: {
-                        formatter: convertirSegundosAHMS,
-                        fontSize: 12,
-                    },
-                    splitLine: {
-                        show: true,
-                        lineStyle: { type: 'dashed', color: '#ccc' }
-                    }
-                },
-                yAxis: {
-                    type: 'category',
-                    data: areas,
-                    axisLabel: { fontSize: 12, margin: 50 },
-                    axisTick: { show: false },
-                    axisLine: { show: true, lineStyle: { color: '#000', width: 2 } }
-                },
-                series: [
-                    {
-                        name: 'Tiempo Muerto',
-                        type: 'bar',
-                        stack: 'total',
-                        label: {
-                            show: true,
-                            position: 'inside',
-                            formatter: params => convertirSegundosAHMS(params.value),
-                            fontSize: 10
-                        },
-                        itemStyle: { color: '#FF6F61' },
-                        data: tiemposMuertosData
-                    },
-                    {
-                        name: 'Tiempo de Producción',
-                        type: 'bar',
-                        stack: 'total',
-                        label: {
-                            show: true,
-                            position: 'inside',
-                            formatter: params => convertirSegundosAHMS(params.value),
-                            fontSize: 10
-                        },
-                        itemStyle: { color: '#3B8F82' },
-                        data: tiemposProduccionData
-                    },
-                ],
-                toolbox: {
-                    feature: {
-                        saveAsImage: {
-                            name: 'tiempos_de_produccion_' + new Date().toLocaleDateString().replace(/\//g, '_'),
-                            type: 'png'
-                        }
-                    }
-                }
-            };
+                };
 
-            myChart.setOption(option);
-            window.addEventListener('resize', () => myChart.resize()); // Redimensionar la gráfica si cambia el tamaño de la pantalla
-        })
-        .catch(error => console.log('Error al cargar los datos del gráfico:', error));
-}
-
-crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
-
-
-
+                myChart.setOption(option);
+                window.addEventListener('resize', () => myChart.resize()); // Redimensionar la gráfica si cambia el tamaño de la pantalla
+            })
+            .catch(error => console.log('Error al cargar los datos del gráfico:', error));
+    }
+    crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
 
     function PorcentajeLlenadas(){
         fecha=$('#FiltroOF_Fecha_table2').val();
@@ -1549,98 +1542,94 @@ crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
     document.getElementById("click-mes").addEventListener("click", function() {
         activarBoton("click-mes");
     });
-
 </script>
-
-
 <script>
-fetch("{{ route('lineas.indicador') }}")
-    .then(response => response.json())
-    .then(data => {
-        const container = document.getElementById('lineas-container');
-        container.innerHTML = ''; 
-        data.lineas.forEach(linea => {
-            // Valores por defecto
-            const cantidadPersonas = linea.cantidad_personas ?? 0;
-            const estimadoPiezas = linea.estimado_piezas ?? 0;
-            const piezasCompletadas = linea.piezas_completadas ?? 0;
-            const piezasFaltantes = linea.piezas_faltantes ?? 0;
-            const porcentajeCompletadas = linea.porcentaje_completadas ?? 0;
-            const porcentajeFaltantes = linea.porcentaje_faltantes ?? 0;
+    fetch("{{ route('lineas.indicador') }}")
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('lineas-container');
+            container.innerHTML = ''; 
+            data.lineas.forEach(linea => {
+                // Valores por defecto
+                const cantidadPersonas = linea.cantidad_personas ?? 0;
+                const estimadoPiezas = linea.estimado_piezas ?? 0;
+                const piezasCompletadas = linea.piezas_completadas ?? 0;
+                const piezasFaltantes = linea.piezas_faltantes ?? 0;
+                const porcentajeCompletadas = linea.porcentaje_completadas ?? 0;
+                const porcentajeFaltantes = linea.porcentaje_faltantes ?? 0;
 
-            const card = document.createElement('div');
-            card.classList.add('col-md-4', 'mb-4');
-            card.innerHTML = `
-                <div class="col-sm-12 bg-white mb-4">
-                    <div class="accordion-body bg-white pt-0">
-                        <div class="card-body bg-white p-1">
-                            <h5 class="p-1">Línea ${linea.id}</h5>
-                            <div class="d-flex justify-content-between">
-                                <div class="row">
-                                    <h6 class="text-700 col-6">Cantidad personas: <span>${cantidadPersonas}</span></h6>
-                                    <h6 class="text-700 col-6">Estimado de piezas por día: <span>${estimadoPiezas}</span></h6>
-                                    <h6 class="text-700 col-6">Piezas Completadas: <span>${piezasCompletadas}</span></h6>
-                                    <h6 class="text-700 col-6">Piezas faltantes: <span>${piezasFaltantes}</span></h6>
+                const card = document.createElement('div');
+                card.classList.add('col-md-4', 'mb-4');
+                card.innerHTML = `
+                    <div class="col-sm-12 bg-white mb-4">
+                        <div class="accordion-body bg-white pt-0">
+                            <div class="card-body bg-white p-1">
+                                <h5 class="p-1">Línea ${linea.id}</h5>
+                                <div class="d-flex justify-content-between">
+                                    <div class="row">
+                                        <h6 class="text-700 col-6">Cantidad personas: <span>${cantidadPersonas}</span></h6>
+                                        <h6 class="text-700 col-6">Estimado de piezas por día: <span>${estimadoPiezas}</span></h6>
+                                        <h6 class="text-700 col-6">Piezas Completadas: <span>${piezasCompletadas}</span></h6>
+                                        <h6 class="text-700 col-6">Piezas faltantes: <span>${piezasFaltantes}</span></h6>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
-                                <div class="p-0" id="lineasprocentaje${linea.id}" style="width: 9rem; height: 9rem"></div>
-                            </div>
-                            <div>
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="bullet-item bg-primary me-2"></div>
-                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Completadas</h6>
-                                    <h6 class="text-900 fw-semi-bold mb-0"><span>${porcentajeCompletadas}</span>%</h6>
+                                <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
+                                    <div class="p-0" id="lineasprocentaje${linea.id}" style="width: 9rem; height: 9rem"></div>
                                 </div>
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="bullet-item bg-primary-200 me-2"></div>
-                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Faltantes</h6>
-                                    <h6 class="text-900 fw-semi-bold mb-0"><span>${porcentajeFaltantes}</span>%</h6>
+                                <div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="bullet-item bg-primary me-2"></div>
+                                        <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Completadas</h6>
+                                        <h6 class="text-900 fw-semi-bold mb-0"><span>${porcentajeCompletadas}</span>%</h6>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="bullet-item bg-primary-200 me-2"></div>
+                                        <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Faltantes</h6>
+                                        <h6 class="text-900 fw-semi-bold mb-0"><span>${porcentajeFaltantes}</span>%</h6>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
-            container.appendChild(card);
+                `;
+                container.appendChild(card);
 
-            // Configuración de la gráfica
-            var myChart = echarts.init(document.getElementById(`lineasprocentaje${linea.id}`));
-            var option = {
-                tooltip: { trigger: 'item' },
-                legend: { show: false },
-                series: [
-                    {
-                        name: 'Planeación',
-                        type: 'pie',
-                        radius: ['60%', '70%'],
-                        avoidLabelOverlap: false,
-                        itemStyle: {
-                            borderRadius: 10,
-                            borderColor: '#fff',
-                            borderWidth: 2
-                        },
-                        label: {
-                            show: true,
-                            position: 'center',
-                            formatter: `${porcentajeCompletadas.toFixed(2)}%`,
-                            fontSize: 20,
-                            fontWeight: 'bold'
-                        },
-                        labelLine: { show: false },
-                        data: [
-                            { value: piezasCompletadas, name: 'Completadas', itemStyle: { color: "#007BFF" } },
-                            { value: piezasFaltantes, name: 'Faltantes', itemStyle: { color: '#D3D3D3' } }
-                        ]
-                    }
-                ]
-            };
-            myChart.setOption(option);
-        });
-    })
+                // Configuración de la gráfica
+                var myChart = echarts.init(document.getElementById(`lineasprocentaje${linea.id}`));
+                var option = {
+                    tooltip: { trigger: 'item' },
+                    legend: { show: false },
+                    series: [
+                        {
+                            name: 'Planeación',
+                            type: 'pie',
+                            radius: ['60%', '70%'],
+                            avoidLabelOverlap: false,
+                            itemStyle: {
+                                borderRadius: 10,
+                                borderColor: '#fff',
+                                borderWidth: 2
+                            },
+                            label: {
+                                show: true,
+                                position: 'center',
+                                formatter: `${porcentajeCompletadas.toFixed(2)}%`,
+                                fontSize: 20,
+                                fontWeight: 'bold'
+                            },
+                            labelLine: { show: false },
+                            data: [
+                                { value: piezasCompletadas, name: 'Completadas', itemStyle: { color: "#007BFF" } },
+                                { value: piezasFaltantes, name: 'Faltantes', itemStyle: { color: '#D3D3D3' } }
+                            ]
+                        }
+                    ]
+                };
+                myChart.setOption(option);
+            });
+        })
     .catch(error => console.error("Error al cargar los datos:", error));
 
-   
     document.addEventListener("DOMContentLoaded", function() {
         fetch("{{ route('tiempopromedio') }}")
             .then(response => response.json())
@@ -1712,7 +1701,6 @@ fetch("{{ route('lineas.indicador') }}")
         let remainingSeconds = seconds % 60;
         return `${hours} horas ${minutes} minutos ${remainingSeconds.toFixed(0)} segundos`;
     }
-
 </script>
     
 @endsection
