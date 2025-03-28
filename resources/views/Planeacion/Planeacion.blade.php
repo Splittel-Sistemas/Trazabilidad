@@ -294,7 +294,7 @@
                         <div class="col-6">
                             <!-- Área de Dropzone -->
                             <div class="row">
-                                <div class="col-4 mb-1 pt-1">
+                                <div class="col-4 mb-0 pt-0">
                                     <label for="lineaModal" >Selecciona línea</label>
                                     <select name="lineaModal" id="lineaModal" class="form-select form-select-sm border-primary w-100" onchange="RecargarTablaOF();">
                                         <option value="">Selecciona una línea</option>
@@ -305,7 +305,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-8 mb-2 pt-1">
+                                <div class="col-8 m-0">
                                     <div class="form-row">
                                         <div class="col-12 mb-3">
                                             <label for="Filtrofecha_table2">Selecciona la fecha de planeaci&oacute;n:</label>

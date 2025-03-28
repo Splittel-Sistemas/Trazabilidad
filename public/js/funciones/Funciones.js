@@ -68,11 +68,16 @@ function SumarDia(fecha){
   return nuevaFecha;  // Salida: 2024-12-08
 }
 function FormatoFecha(Fecha){
-  const fechaObjeto = new Date(Fecha);
-  const dia = String(fechaObjeto.getDate()).padStart(2, '0');
-  const mes = String(fechaObjeto.getMonth() + 1).padStart(2, '0'); // Los meses comienzan en 0
-  const año = fechaObjeto.getFullYear();
-  return dia+"/"+mes+"/"+año;
+  const anio = Fecha.slice(0, 4); // Primeras 4 cifras (año)
+  const mes = Fecha.slice(5, 7);  // Las siguientes 2 cifras (mes)
+  const dia = Fecha.slice(8, 10); // Últimas 2 cifras (día)
+  return fechaFormateada = `${dia}/${mes}/${anio}`; // Combina la fecha en el formato deseado
+  /*const fechaObjeto = new Date(Fecha);
+  const dia = String(fechaObjeto.getUTCDate() + 1).padStart(2, '0');
+  const mes = String(fechaObjeto.getUTCMonth() + 1).padStart(2, '0'); // Los meses comienzan en 0
+  const año = fechaObjeto.getUTCFullYear();
+  console.log(dia+"  "+mes+"   "+año);
+  return dia + "/" + mes + "/" + año;*/
 }
 function RegexNumeros(datos){
 

@@ -92,13 +92,13 @@
     color: #ffffff;
    }
    #ImgSinAvisos{
-    margin-top: 3rem;
+    margin-top: 2rem;
     display: flex;
     justify-content: center; /* Centra horizontalmente */
     align-items: center;     /* Centra verticalmente */
    }
    #ImgSinAvisos img{
-    width: 50%;
+    width: 40%;
    }
    .Div-centrar{
     display: flex;
@@ -139,7 +139,7 @@
     </div> 
     @if($avisos->count()==0)
     <div id="ImgSinAvisos">
-        <img id="" src="{{asset('imagenes/splittel.png') }}" alt="Splittel">
+        <img class="" src="{{asset('imagenes/splittel.png') }}" alt="Splittel">
     </div>
     @else
     <h4 class="text-center mt-2">Avisos</h4>
