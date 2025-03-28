@@ -1,10 +1,16 @@
 #container_table_OV,#container_table_OV_Vencidas{
     height: 35rem;
-    overflow-y: scroll;
+    border: solid 1px;
+    border-color: #f0f0f0;
+    border-radius: 5px;
+    overflow-y: auto;
 }
 #container_table_OF_migrados,#container_table_OF_migrados_vencidos{
-    height: 24rem;
-    overflow-y: scroll;
+    height: 23rem;
+    border: solid 1px;
+    border-color: #f0f0f0;
+    border-radius: 5px;
+    overflow-y: auto;
 }
 #container_table_OV::-webkit-scrollbar,#container_table_OF_migrados::-webkit-scrollbar,#container_table_OF_migrados_vencidos::-webkit-scrollbar,#container_table_OV_Vencidas::-webkit-scrollbar {
     width: 6px; /* Ajusta el ancho de la barra de desplazamiento */
