@@ -1314,19 +1314,16 @@
         chartDom.style.width = "70vw";  
         chartDom.style.height = "450px"; 
         var myChart = echarts.init(chartDom);
-
         fetch(url)
             .then(response => response.json())
             .then(data => {
                 var tiemposProduccionData = [];
                 var tiemposMuertosData = [];
                 var areas = Object.entries(data.numeroPRO).map(([nombre, valor]) => `${nombre} 'No'${valor}`);
-
                 var produccionMap = {};
                 data.produccion.forEach(item => {
                     produccionMap[item.Areas_id] = parseInt(item.tiempoProduccionActual, 10);
                 });
-
                 var finalResultMap = {};
                 data.finalResult.forEach(item => {
                     var areasId = item.Areas_id.split(',').map(area => parseInt(area, 10));
@@ -1334,7 +1331,6 @@
                         finalResultMap[id] = item.TiempoMuerto;
                     });
                 });
-
                 areas.forEach(area => {
                     var areaId = areas.indexOf(area) + 3;
                     var tiempoProduccion = produccionMap[areaId] || 0;
@@ -1343,7 +1339,6 @@
                     tiemposProduccionData.push(tiempoProduccion);
                     tiemposMuertosData.push(tiempoMuerto);
                 });
-
                 var option = {
                     title: [
                         {
@@ -1448,7 +1443,6 @@
             .catch(error => console.log('Error al cargar los datos del gráfico:', error));
     }
     crearGrafico("{{ route('graficastiempoMuerto') }}", 'grafica-tiempoD');
-
     function PorcentajeLlenadas(){
         fecha=$('#FiltroOF_Fecha_table2').val();
         $.ajax({
@@ -1508,7 +1502,6 @@
                             fontWeight: 'bold'
                            
                         },
-                        
                         labelLine: {
                             show: false
                         },
@@ -1519,13 +1512,11 @@
                         }
                     ]
                     };
-
                     // 3. Aplicar la configuración al gráfico
                     myChart.setOption(option);
                 }
         });
     }
-    
     function activarBoton(id) {
         document.querySelectorAll('.d-flex').forEach(function(button) {
             button.classList.remove('activebtn');
@@ -1557,7 +1548,6 @@
                 const piezasFaltantes = linea.piezas_faltantes ?? 0;
                 const porcentajeCompletadas = linea.porcentaje_completadas ?? 0;
                 const porcentajeFaltantes = linea.porcentaje_faltantes ?? 0;
-
                 const card = document.createElement('div');
                 card.classList.add('col-md-4', 'mb-4');
                 card.innerHTML = `
@@ -1593,7 +1583,6 @@
                     </div>
                 `;
                 container.appendChild(card);
-
                 // Configuración de la gráfica
                 var myChart = echarts.init(document.getElementById(`lineasprocentaje${linea.id}`));
                 var option = {
@@ -1633,12 +1622,9 @@
         fetch("{{ route('tiempopromedio') }}")
             .then(response => response.json())
             .then(data => {
-               
-
                 if (data.TiempoCortes && data.TiempoCortes.length > 0) {
                     let tiempoCortes = data.TiempoCortes[0];
                     let tiempoFormateado = formatTime(tiempoCortes.SegundosPorUnidad);
-                   
                     let cortesElement = document.querySelector('#Cortes + p');
                     if (cortesElement) {
                         cortesElement.innerHTML = `Tiempo Promedio: ${tiempoFormateado}`;
@@ -1646,7 +1632,6 @@
                 } else {
                     console.log('No hay datos de TiempoCortes disponibles');
                 }
-
                 let areaMapping = {
                     3: "Suministro", 
                     4: "Preparado", 
@@ -1656,16 +1641,13 @@
                     8: "Visualizacion", 
                     9: "Empaquetado"
                 };
-
                 let finalResultData = {};
-
                 data.finalResult.forEach(item => {
                     finalResultData[item.Areas] = {
                         tiempoEscaneado: item.tiempopiezas ?? 0,
                         tiempoNoEscaneado: null
                     };
                 });
-
                 data.result.forEach(itemGroup => {
                     itemGroup.forEach(item => {
                         let areaId = item.Areas;
@@ -1676,9 +1658,6 @@
                         }
                     });
                 });
-
-               
-
                 Object.keys(finalResultData).forEach(areaId => {
                     let area = finalResultData[areaId];
                     let areaIdName = areaMapping[areaId];
