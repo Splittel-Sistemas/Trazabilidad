@@ -1118,6 +1118,7 @@ class HomeController extends Controller
     }
     public function Dasboardindicadordia()
     {
+        
         $NumeroPersonas = DB::table('porcentajeplaneacion')
             ->join('linea', 'porcentajeplaneacion.Linea_id', '=', 'linea.id')
             ->whereDate('porcentajeplaneacion.FechaPlaneacion', today())
@@ -1184,6 +1185,8 @@ class HomeController extends Controller
             'PorcentajeCompletadas' => round($porcentajeCompletadas, 2),
             'porcentajeCerradas' => round($porcentajeCerradas, 2),
         ]);
+
+       
 
     }
     public function tiempopromedio() 
@@ -1800,79 +1803,90 @@ class HomeController extends Controller
         
     }
     public function lineas(Request $request)
-    {
-        $personal = DB::table('porcentajeplaneacion')
-            ->join('linea', 'porcentajeplaneacion.Linea_id', '=', 'linea.id')
-            ->whereDate('porcentajeplaneacion.FechaPlaneacion', today())
-            ->where('linea.active', 1)
-            ->select('linea.id as LineaId', 'linea.Nombre', 'porcentajeplaneacion.NumeroPersonas', 'porcentajeplaneacion.CantidadPlaneada')
-            ->get();
-        $TotalOfTotal = DB::table('porcentajeplaneacion')
-            ->join('linea', 'porcentajeplaneacion.Linea_id', '=', 'linea.id')
-            ->whereDate('FechaPlaneacion', today())
-            ->where('linea.active', 1)
-            ->select(
-                'Linea_id',
-                DB::raw('COALESCE(NumeroPersonas, 20) as NumeroPersonas'),
-                DB::raw('COALESCE(CantidadPlaneada, 100) as CantidadTotal')
-            )
-            ->get();
-        $indicador = DB::table('ordenfabricacion')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-            ->whereDate('ordenfabricacion.FechaEntrega', today())
-            ->where('partidasof_areas.Areas_id', 9)
-            ->select(
-                'ordenfabricacion.Linea_id',
-                'OrdenFabricacion',
-                'OrdenVenta_id',
-                'partidasof_areas.Cantidad',
-                'ordenfabricacion.Cerrada',
-                'partidasof_areas.Areas_id',
-                DB::raw('SUM(partidasof_areas.Cantidad) as SumaCantidad')
-            )
-            ->groupBy('OrdenFabricacion', 'OrdenVenta_id', 'partidasof_areas.Cantidad', 'ordenfabricacion.Cerrada', 'partidasof_areas.Areas_id', 'ordenfabricacion.Linea_id')
-            ->get();
-        $linea = DB::table('linea')
-            ->where('active', 1)
-            ->get();
-        $totalOFcompletadas = 0;
-        $totalSumaCantidad = 0;
-        $totalFaltante = 0;
-        $lineas = [];
-        foreach ($TotalOfTotal as $lineaTotal) {
-            $lineaId = $lineaTotal->Linea_id;
-            $personalLinea = $personal->firstWhere('LineaId', $lineaId);
-            $cantidadPersonas = $personalLinea ? ($personalLinea->NumeroPersonas ?? 20) : 20;
-            $cantidadPlaneada = $personalLinea ? ($personalLinea->CantidadPlaneada ?? 100) : 100;
-            $indicadorLinea = $indicador->where('Linea_id', $lineaId);
-            $totalOFcompletadasLinea = $indicadorLinea->where('Cerrada', 1)->sum('SumaCantidad');
-            $totalSumaCantidadLinea = $indicadorLinea->sum('SumaCantidad');
-            $faltanteTotalLinea = $lineaTotal->CantidadTotal - $totalSumaCantidadLinea;
-            $totalOFcompletadas += $totalOFcompletadasLinea;
-            $totalSumaCantidad += $totalSumaCantidadLinea;
-            $totalFaltante += $faltanteTotalLinea;
-            $lineas[] = [
-                'id' => $lineaId,
-                'cantidad_personas' => $cantidadPersonas,
-                'estimado_piezas' => $cantidadPlaneada,
-                'piezas_completadas' => $totalOFcompletadasLinea,
-                'piezas_faltantes' => $faltanteTotalLinea,
-                'porcentaje_completadas' => $lineaTotal->CantidadTotal > 0 ? round(($totalOFcompletadasLinea / $lineaTotal->CantidadTotal) * 100, 2) : 0,
-                'porcentaje_faltantes' => $lineaTotal->CantidadTotal > 0 ? round(($faltanteTotalLinea / $lineaTotal->CantidadTotal) * 100, 2) : 0
-            ];
-        }
-        $porcentajeCompletadas = $totalSumaCantidad > 0 ? round(($totalOFcompletadas / $totalSumaCantidad) * 100, 2) : 0;
-        $porcentajeCerradas = $totalSumaCantidad > 0 ? round(($totalFaltante / $totalSumaCantidad) * 100, 2) : 0;
-        return response()->json([
-            'lineas' => $lineas,
-            'TotalOFcompletadas' => $totalOFcompletadas,
-            'TotalOfTotal' => (int) $totalSumaCantidad,
-            'faltanteTotal' => $totalFaltante,
-            'PorcentajeCompletadas' => $porcentajeCompletadas,
-            'porcentajeCerradas' => $porcentajeCerradas
-        ]);
+{
+    $personal = DB::table('porcentajeplaneacion')
+        ->join('linea', 'porcentajeplaneacion.Linea_id', '=', 'linea.id')
+        ->whereDate('porcentajeplaneacion.FechaPlaneacion', today())
+        ->where('linea.active', 1)
+        ->select('linea.id as LineaId', 'linea.Nombre', 'porcentajeplaneacion.NumeroPersonas', 'porcentajeplaneacion.CantidadPlaneada')
+        ->get();
+
+    $TotalOfTotal = DB::table('porcentajeplaneacion')
+        ->join('linea', 'porcentajeplaneacion.Linea_id', '=', 'linea.id')
+        ->whereDate('FechaPlaneacion', today())
+        ->where('linea.active', 1)
+        ->select(
+            'Linea_id',
+            DB::raw('COALESCE(NumeroPersonas, 20) as NumeroPersonas'),
+            DB::raw('COALESCE(CantidadPlaneada, 100) as CantidadTotal')
+        )
+        ->get();
+
+    $indicador = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->whereDate('ordenfabricacion.FechaEntrega', today())
+        ->where('partidasof_areas.Areas_id', 9)
+        ->select(
+            'ordenfabricacion.Linea_id',
+            'OrdenFabricacion',
+            'OrdenVenta_id',
+            'partidasof_areas.Cantidad',
+            'ordenfabricacion.Cerrada',
+            'partidasof_areas.Areas_id',
+            DB::raw('COALESCE(SUM(partidasof_areas.Cantidad), 0) as SumaCantidad')
+        )
+        ->groupBy('OrdenFabricacion', 'OrdenVenta_id', 'partidasof_areas.Cantidad', 'ordenfabricacion.Cerrada', 'partidasof_areas.Areas_id', 'ordenfabricacion.Linea_id')
+        ->get();
+
+    $lineas = DB::table('linea')
+        ->where('active', 1)
+        ->get();
+
+    $totalOFcompletadas = 0;
+    $totalSumaCantidad = 0;
+    $totalFaltante = 0;
+    $lineasData = [];
+
+    foreach ($lineas as $linea) {
+        $lineaId = $linea->id;
+        $personalLinea = $personal->firstWhere('LineaId', $lineaId);
+        $cantidadPersonas = $personalLinea->NumeroPersonas ?? 20;
+        $cantidadPlaneada = $personalLinea->CantidadPlaneada ?? 100;
+
+        $indicadorLinea = $indicador->where('Linea_id', $lineaId);
+        $totalOFcompletadasLinea = $indicadorLinea->where('Cerrada', 1)->sum('SumaCantidad') ?? 0;
+        $totalSumaCantidadLinea = $indicadorLinea->sum('SumaCantidad') ?? 0;
+        $faltanteTotalLinea = max(($cantidadPlaneada - $totalSumaCantidadLinea), 0);
+
+        $totalOFcompletadas += $totalOFcompletadasLinea;
+        $totalSumaCantidad += $totalSumaCantidadLinea;
+        $totalFaltante += $faltanteTotalLinea;
+
+        $lineasData[] = [
+            'id' => $lineaId,
+            'cantidad_personas' => $cantidadPersonas,
+            'estimado_piezas' => $cantidadPlaneada,
+            'piezas_completadas' => $totalOFcompletadasLinea,
+            'piezas_faltantes' => $faltanteTotalLinea,
+            'porcentaje_completadas' => $cantidadPlaneada > 0 ? round(($totalOFcompletadasLinea / $cantidadPlaneada) * 100, 2) : 0,
+            'porcentaje_faltantes' => $cantidadPlaneada > 0 ? round(($faltanteTotalLinea / $cantidadPlaneada) * 100, 2) : 0
+        ];
     }
+
+    $porcentajeCompletadas = $totalSumaCantidad > 0 ? round(($totalOFcompletadas / $totalSumaCantidad) * 100, 2) : 0;
+    $porcentajeCerradas = $totalSumaCantidad > 0 ? round(($totalFaltante / $totalSumaCantidad) * 100, 2) : 0;
+
+    return response()->json([
+        'lineas' => $lineasData,
+        'TotalOFcompletadas' => $totalOFcompletadas,
+        'TotalOfTotal' => (int) $totalSumaCantidad,
+        'faltanteTotal' => $totalFaltante,
+        'PorcentajeCompletadas' => $porcentajeCompletadas,
+        'porcentajeCerradas' => $porcentajeCerradas
+    ]);
+}
+
     public function guardarAviso(Request $request)
     {
         // Valida la entrada del usuario
