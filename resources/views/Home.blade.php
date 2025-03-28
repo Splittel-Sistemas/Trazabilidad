@@ -1303,7 +1303,6 @@
         })
         .catch(error => console.error("Error al obtener los datos:", error));
 });
-    // Función para convertir segundos a formato H:M:S
     function convertirSegundosAHMS(segundos) {
         var horas = Math.floor(segundos / 3600);
         var minutos = Math.floor((segundos % 3600) / 60);
@@ -1312,8 +1311,8 @@
     }
     function crearGrafico(url, chartDomId) {
         var chartDom = document.getElementById(chartDomId);
-        chartDom.style.width = "70vw";  // Ajusta el ancho al 80% de la pantalla
-        chartDom.style.height = "450px"; // Ajusta la altura de la gráfica
+        chartDom.style.width = "70vw";  
+        chartDom.style.height = "450px"; 
         var myChart = echarts.init(chartDom);
 
         fetch(url)
@@ -1525,7 +1524,7 @@
                 }
         });
     }
-    // Función para activar el botón
+    
     function activarBoton(id) {
         document.querySelectorAll('.d-flex').forEach(function(button) {
             button.classList.remove('activebtn');
@@ -1629,7 +1628,6 @@
             });
         })
     .catch(error => console.error("Error al cargar los datos:", error));
-
     document.addEventListener("DOMContentLoaded", function() {
         fetch("{{ route('tiempopromedio') }}")
             .then(response => response.json())

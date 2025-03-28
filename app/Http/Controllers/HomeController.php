@@ -1415,15 +1415,18 @@ class HomeController extends Controller
         ];
         $TotalPiezas = DB::table('ordenfabricacion')
             ->whereDate('FechaEntrega', '=', $hoy)
+            ->where('ordenfabricacion.Escaner', 1)
             ->sum('CantidadTotal');
 
         $piezasinicadas= DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->where('ordenfabricacion.Escaner', 1)
             ->whereDate('FechaComienzo', '=', $hoy)
             ->sum('partidasof.cantidad_partida');
         
         $produccioncortes = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+            ->where('ordenfabricacion.Escaner', 1)
             ->whereDate('partidasof.FechaComienzo', '=', $hoy)
             ->select(
                 'partidasof.OrdenFabricacion_id',
@@ -1442,6 +1445,7 @@ class HomeController extends Controller
         $produccion = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->where('ordenfabricacion.Escaner', 1)
             ->whereIn('partidasof_areas.Areas_id', array_keys($areas))
             ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy)
             ->select(
@@ -1456,6 +1460,7 @@ class HomeController extends Controller
         $piezas = DB::table('ordenfabricacion')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->where('ordenfabricacion.Escaner', 1)
             ->whereIn('partidasof_areas.Areas_id', array_keys($areas))
             ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy)
             ->where('partidasof_areas.TipoPartida', 'N')
@@ -1481,6 +1486,7 @@ class HomeController extends Controller
         }
         $TiemposMuertos = DB::table('ordenfabricacion')
         ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->where('ordenfabricacion.Escaner', 1)
         ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
         ->whereIn('partidasof_areas.Areas_id', array_keys($areas))
         ->where('partidasof_areas.TipoPartida', 'N')
@@ -1526,6 +1532,7 @@ class HomeController extends Controller
         $numeroPRO = DB::table('ordenfabricacion')
         ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
         ->leftJoin('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->where('ordenfabricacion.Escaner', 1)
         ->whereIn('partidasof_areas.Areas_id', array_keys($areas))
         ->where('partidasof_areas.TipoPartida', 'N')
         ->whereDate('partidasof_areas.FechaComienzo', '=', $hoy)
