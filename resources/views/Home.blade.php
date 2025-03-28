@@ -871,8 +871,6 @@
             <div id="chart-month" class="chart-container"></div>
         </div>
 </div>
-
-
 <hr class="hr">
 @endsection
 @section('scripts')
