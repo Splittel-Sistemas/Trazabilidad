@@ -645,7 +645,7 @@ class AreasController extends Controller
                 $TotalPendiente = 0;
                 $NumeroPartidasTodas = 0;
                 $banderaSinRegistros=0;
-                return$AreaAnterior=$this->AreaAnteriorregistros($AreaOriginal, $OrdenFabricacion->OrdenFabricacion);
+                $AreaAnterior=$this->AreaAnteriorregistros($AreaOriginal, $OrdenFabricacion->OrdenFabricacion);
                 foreach ($OrdenFabricacion->PartidasOF as $Partidas) {
                     if($OrdenFabricacion->Escaner==1){
                         $TotalActual += $Partidas->Areas()->where('Areas_id', $AreaOriginal)->where('TipoPartida', 'N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad') 
@@ -670,9 +670,9 @@ class AreasController extends Controller
                 $registro['TotalPendiente'] = $TotalPendiente;
                 $registro['Linea'] = $Linea->NumeroLinea;
                 $registro['ColorLinea'] = $Linea->ColorLinea;
-                if($TotalPendiente==0){
+                /*if($TotalPendiente==0){
                     unset($Registros[$key]);
-                }
+                }*/
                 if ($TotalActual == $OrdenFabricacion->CantidadTotal AND $banderaSinRegistros==0) {
                     unset($Registros[$key]);
                 }
@@ -2215,9 +2215,9 @@ class AreasController extends Controller
             $TotalPendiente = 0;
             $NumeroPartidasTodas = 0;
             $banderaSinRegistros=0;
+            $AreaAnterior=$this->AreaAnteriorregistros($Area+1, $OrdenFabricacion->OrdenFabricacion);
             if($Area+1==4 && $registro->Escaner==0){//Aplica para el Area 4 y que sea no Escaneado
                 foreach ($OrdenFabricacion->PartidasOF as $Partidas) {
-                    $AreaAnterior=$this->AreaAnteriorregistros($Area+1, $Partidas->id);
                     //$banderaSinRegistros=0;
                         //Sacamos la cantidad total de las piezas que ya pasaron
                         $TotalActual +=$Partidas->Areas()->where('Areas_id', $Area+1)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
@@ -2242,7 +2242,6 @@ class AreasController extends Controller
                 }
             }elseif($Area+1!=4 && $registro->Escaner==0){//Aplica para el Area diferente a 4 y que sea no Escaneado
                 foreach ($OrdenFabricacion->PartidasOF as $Partidas) {
-                    $AreaAnterior=$this->AreaAnteriorregistros($Area+1, $Partidas->id);
                         if($AreaAnterior==3){
                             $TotalActual +=$Partidas->Areas()->where('Areas_id', $Area+1)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
                             ($Partidas->Areas()->where('Areas_id', $Area+1)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
@@ -2278,7 +2277,6 @@ class AreasController extends Controller
                 }
             }else{//Aplica para todos los Escaneados
                 foreach($OrdenFabricacion->PartidasOF as $Partidas){
-                    $AreaAnterior=$this->AreaAnteriorregistros($Area+1, $Partidas->id);
                         $TotalActual+=$Partidas->Areas()->where('Areas_id',$Area+1)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
                                         $Partidas->Areas()->where('Areas_id',$Area+1)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
                         $TotalPendiente+=$Partidas->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
@@ -3048,6 +3046,7 @@ class AreasController extends Controller
             ]);
         }
     }
+    //Verifica cual area anterior tiene ordenes de cada Orden de Fabricación
     public function AreaAnteriorregistros($Area,$OrdenFabricacion){
         $OF=OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
         $PartidasActuales=0;
@@ -3057,26 +3056,16 @@ class AreasController extends Controller
         foreach($OF->PartidasOF as $Partidas){
             $parti=$Partidas->Areas()->where('Areas_id','<',$Area)->OrderBy('Areas_id','Desc')->first();
             if($parti!=""){
-                $Area=$parti->Areas_id;
+                if($parti->pivot->Areas_id>$AreaRetornar){
+                    $AreaRetornar=$parti->pivot->Areas_id;
+                }
             }
             $PartidasActuales+=$Partidas->Areas()->where('Areas_id',$Area)->get()->count();
             $PartidasPosteriores+=$Partidas->Areas()->where('Areas_id','>',$Area)->get()->count();
         }
-        return$PartidasAnteriores;
         if($PartidasActuales== 0 AND $PartidasPosteriores>0){
-            $Area=1;
+            $AreaRetornar=1;
         }
-        return $Area;
-       /*$PartidasAnteriores = Partidasof_Areas::where('PartidasOF_id',$IdPartidaOF)->get();//->where('Areas_id','<',$Area)->OrderBy('Areas_id','Desc')->get();
-        $PartidasActuales = Partidasof_Areas::where('PartidasOF_id',$IdPartidaOF)->where('Areas_id',$Area)->get()->count();
-        $PartidasPosteriores = Partidasof_Areas::where('PartidasOF_id',$IdPartidaOF)->where('Areas_id','>',$Area)->get()->count();
-        $Area=$Area-1;
-        if($PartidasAnteriores->count()>0){
-            $Area=$PartidasAnteriores->first()->Areas_id;
-        }
-        if($PartidasActuales== 0 AND $PartidasPosteriores>0){
-            $Area=1;
-        }
-        return $Area;*/
+        return$AreaRetornar;
     }
 }
