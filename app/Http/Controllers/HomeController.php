@@ -1859,8 +1859,8 @@ class HomeController extends Controller
         foreach ($lineas as $linea) {
             $lineaId = $linea->id;
             $personalLinea = $personal->firstWhere('LineaId', $lineaId);
-            $cantidadPersonas = $personalLinea->NumeroPersonas ?? 20;
-            $cantidadPlaneada = $personalLinea->CantidadPlaneada ?? 100;
+            $cantidadPersonas = $personalLinea->NumeroPersonas ?? 0;
+            $cantidadPlaneada = $personalLinea->CantidadPlaneada ?? 0;
 
             $indicadorLinea = $indicador->where('Linea_id', $lineaId);
             $totalOFcompletadasLinea = $indicadorLinea->where('Cerrada', 1)->sum('SumaCantidad') ?? 0;
