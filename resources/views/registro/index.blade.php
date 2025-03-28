@@ -267,7 +267,6 @@
             }
         });
     });*/
-
         // Manejar el envío del formulario a través de AJAX
         $(document).on('submit', '#userEditForm', function(event) {
             event.preventDefault();

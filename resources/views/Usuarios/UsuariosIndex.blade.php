@@ -44,9 +44,7 @@
             width: 100%;
             margin: 2px auto;
     }
-    .form-control:disabled {
-        color: #000000; /* Color de texto gris */
-    }
+    
 </style>
 @endsection
 @section('content')

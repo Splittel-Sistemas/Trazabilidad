@@ -33,6 +33,7 @@ class PermissionSeeder extends Seeder
             'Activar/Desactivar Linea',
             'Crear Rol',
             'Editar Rol',
+            'Enviar Avisos',
         ];        
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
