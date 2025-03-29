@@ -721,6 +721,8 @@
             cells = IdRow.getElementsByTagName("td");
             var checkbox = cells[8].querySelector('input[type="checkbox"]');
             let isChecked = checkbox.checked;
+            var checkboxCorte = cells[10].querySelector('input[type="checkbox"]');
+            let isCheckedCorte = checkboxCorte.checked;
             if(CadenaVacia(cells[1].innerHTML)){
                 error("Ocurrio un error!","Orden de fabricación no valida");
                 return 0;
@@ -744,6 +746,7 @@
                 Linea:cells[9].innerHTML,
                 Fecha_planeada:inputFecha.value,
                 Escanner:isChecked,
+                Corte:isCheckedCorte,
                 Linea: lineaSeleccionada,
             });
             IdRow.remove();
@@ -790,7 +793,7 @@
                     error("Ocurrio un error!....","Los datos no pudieron ser procesados correctamente");
                 }
             },
-            error: function(xhr, status, error) {
+            error: function(xhr, status) {
                 error("Ocurrio un error!","Los datos no pudieron ser guardados");
             }
         });
@@ -934,18 +937,16 @@
                 // You can display a loading spinner here
             },
             success: function(response) {
-                //DetallesOrdenFabricacion(id);
-                /*if(response.status=="success"){
-                    Cuerpo.html(response.tabla);
-                    Titulo.html('Detalles Orden de Fabricación '+response.OF);
-                }else{
-                    Cuerpo.html(response.tabla);
-                }*/
-                //$('#table-2-content').html(response.tabla);
-                //$('#ModalOrdenesFabricacionLabel').html('Titulo');
+                if(response.status=='success'){
+                    if(response.valor=='false'){
+                        success('Guardado correctamente!','Escáner desactivado!')
+                    }else{
+                        success('Guardado correctamente!','Escáner Activado!')
+                    }
+                }
             },
             error: function(xhr, status, error) {
-                //errorBD();
+                error('Ocurrio un erro!', 'El Tipo Escaner no se pudo actualizar')
             }
         }); 
     }

@@ -222,8 +222,8 @@
                                 $('#ContentTabla').show();
                                 $('#CantidadDivSalida').fadeIn();
                                 $('#IniciarBtnSalida').fadeIn();
-                                $('#CodigoEscanerEntrada').val(Codigo);
-                                $('#CodigoEscanerSalida').val(Codigo);
+                                //$('#CodigoEscanerEntrada').val(Codigo);
+                                //$('#CodigoEscanerSalida').val(Codigo);
 
                             return 0;
                         }

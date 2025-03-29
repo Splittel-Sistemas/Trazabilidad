@@ -184,6 +184,7 @@ class PlaneacionController extends Controller
                         <th style="display:none;"></th>
                         <th style="display:none;"></th>
                         <th>Escáner</th>
+                        <th>Cort&eacute;</th>
                         <th style="display:none;"></th>
                     </tr>
                 </thead>
@@ -219,6 +220,7 @@ class PlaneacionController extends Controller
                             <td style="display:none;">' . $cliente. '</td>
                             <td class="text-center"><input type="checkbox" class="Escaner'.$ordenventa.'" onclick="SeleccionarFila(event, this)"></td>
                             <td style="display:none;">' . $partida['LineNum']. '</td>
+                            <td class="text-center"><input type="checkbox" class="Corte'.$ordenventa.'" onclick="SeleccionarFila(event, this)"></td>
                         </tr>';
             }
         }
@@ -234,7 +236,7 @@ class PlaneacionController extends Controller
                 'message' => $html
             ]);
     }
-    public function  PlaneacionFF(Request $request){
+    public function PlaneacionFF(Request $request){
         $FechaInicio=$request->input('startDate');
         $FechaInicio_consulta=str_replace("-","",$FechaInicio);
         $FechaFin=$request->input('endDate');
@@ -275,7 +277,7 @@ class PlaneacionController extends Controller
                 'fechaAyer' => $FechaFin
             ]);
     }
-    public function  PlaneacionFOV(Request $request){
+    public function PlaneacionFOV(Request $request){
         $NumOV=$request->input('OV');
         $tablaOrdenes="";
             $datos=$this->OrdenesVenta("","",$NumOV);
@@ -321,7 +323,6 @@ class PlaneacionController extends Controller
                 'status' => "errordate",
             ]);
         }
-       
         $bandera="";
         $NumOV="";
         $NumOF=[];
@@ -354,11 +355,13 @@ class PlaneacionController extends Controller
                     $respuestaOF->Descripcion=$DatosPlaneacion[$i]->Descripcion;
                     $respuestaOF->CantidadTotal=$DatosPlaneacion[$i]->Cantidad;
                     $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
-                    $respuestaOF->EstatusEntrega=0;
+                    if($respuestaOF->Corte==0){
+                        $respuestaOF->EstatusEntrega=1;
+                    }else{$respuestaOF->EstatusEntrega=0;}
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
                     $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
                     $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;//christian
-
+                    $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
                     $respuestaOF->save();
                 }
                 else{
@@ -380,13 +383,27 @@ class PlaneacionController extends Controller
                     $respuestaOF->Descripcion=$DatosPlaneacion[$i]->Descripcion;
                     $respuestaOF->CantidadTotal=$DatosPlaneacion[$i]->Cantidad;
                     $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
-                    $respuestaOF->EstatusEntrega=0;
+                    if($respuestaOF->Corte==0){
+                        $respuestaOF->EstatusEntrega=1;
+                    }else{$respuestaOF->EstatusEntrega=0;}
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
                     $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
                     $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;//christian
-
+                    $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
                     $respuestaOF->save();
                 }
+            }
+            if($respuestaOF->Corte==0){
+                $PartidasOF = new PartidasOF();
+                $PartidasOF->OrdenFabricacion_id=$respuestaOF->id;
+                $PartidasOF->cantidad_partida=$respuestaOF->CantidadTotal;
+                $PartidasOF->NumeroPartida=1;
+                $PartidasOF->TipoPartida='N';
+                $PartidasOF->FechaFabricacion=Now();
+                $PartidasOF->EstatusPartidaOF=0;
+                $PartidasOF->FechaComienzo=Now();
+                $PartidasOF->FechaFinalizacion=Now();
+                $PartidasOF->save();
             }
         }
         if (!empty($NumOF)) {

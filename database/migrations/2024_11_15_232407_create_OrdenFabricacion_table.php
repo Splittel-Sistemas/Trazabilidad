@@ -10,7 +10,6 @@ class CreateOrdenFabricacionTable extends Migration
     {
         Schema::create('OrdenFabricacion', function (Blueprint $table) {
             $table->id();
-            $table->boolean('Escaner')->default(false);
             $table->unsignedBigInteger('Linea_id');
             $table->unsignedBigInteger('OrdenVenta_id')->nullable();
             $table->string('OrdenFabricacion');
@@ -22,6 +21,8 @@ class CreateOrdenFabricacionTable extends Migration
             $table->boolean('Cerrada')->default(true);
             $table->date('FechaEntregaSAP');
             $table->date('FechaEntrega');
+            $table->boolean('Escaner')->default(false);
+            $table->boolean('Corte')->default(false);
             $table->timestamps();
         
             // Definir la clave foránea correctamente
