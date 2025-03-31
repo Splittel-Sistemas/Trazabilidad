@@ -884,20 +884,35 @@
 
                 if (response.Estatus && response.Estatus.length > 0) {
                     var porcentaje = response.Porcentaje;
-                    $('#progressBar').css('width', porcentaje + '%').text(porcentaje + '%');
+                    var progressBar = $('#progressBar');
+                    
+                    // Resetear clases de color
+                    progressBar.removeClass('bg-danger bg-warning bg-primary bg-info bg-success');
+
+                    // Aplicar clase de color según el progreso
+                    if (porcentaje >= 0 && porcentaje < 20) {
+                        progressBar.addClass('bg-danger');  // Rojo
+                    } else if (porcentaje >= 20 && porcentaje < 40) {
+                        progressBar.addClass('bg-warning');  // Naranja
+                    } else if (porcentaje >= 40 && porcentaje < 70) {
+                        progressBar.addClass('bg-primary');  // Azul
+                    } else if (porcentaje >= 70 && porcentaje < 90) {
+                        progressBar.addClass('bg-info');  // Celeste
+                    } else {
+                        progressBar.addClass('bg-success');  // Verde
+                    }
+
+                    progressBar.css('width', porcentaje + '%').text(porcentaje + '%');
                     $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
 
                     // Verificar si todas las órdenes están cerradas
                     var todasCerradas = response.Estatus.every(est => est.Estado === 'Cerrada');
-
                     var estadoDeVenta = todasCerradas ? 'Cerrada' : 'Abierta';
-
-                    console.log('Estado calculado:', estadoDeVenta);  
-                    $('#exampleModal').modal('show'); 
+                    console.log('Estado calculado:', estadoDeVenta);
+                    $('#exampleModal').modal('show');
                     $('#Estatus1').removeClass('badge bg-success bg-danger bg-secondary').addClass('badge');
-
+                    
                     var icono = '';
-
                     if (estadoDeVenta === 'Abierta') {
                         $('#Estatus1').removeClass('bg-danger bg-secondary').addClass('bg-success');
                         icono = '<i class="fas fa-lock-open"></i>'; 
@@ -915,13 +930,12 @@
                     $('#progressBar').css('width', '0%').text('0%');
                     $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
                 }
-
-
             },
             error: function () {
                 console.log('Error al obtener los datos de la venta');
             }
         });
+
         const endpoints = [
             { tipo: 'cortes', id: 'corte' },
             { tipo: 'suministros', id: 'suministro' },
@@ -1499,6 +1513,7 @@ function formatTiempo(totalSegundos) {
                     progressWrapper.append(progressBar);
 
                     // Si el progreso es mayor a 100%, agregar una barra para el "Retrabajo"
+                    
                     if (progressPercentage > 100) {
                         var retrabajoPercentage = (progressPercentage - 100).toFixed(2);
                         var retrabajoBar = $('<div>', { class: 'task-progress-bar retrabajo', id: 'task-retrabajo' + (index + 1) });
