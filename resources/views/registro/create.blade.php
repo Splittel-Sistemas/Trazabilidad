@@ -157,7 +157,6 @@
             document.getElementById("form_operador").style.display = "block";
         }
     }
-        
 </script>
 
 
