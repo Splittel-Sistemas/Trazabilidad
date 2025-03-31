@@ -15,5 +15,10 @@ class UserSeeder extends Seeder
             'created_at' => now(), 
             'updated_at' => now()
         ]);
+        User::create([
+            'name' => 'Operador',
+            'created_at' => now(), 
+            'updated_at' => now()
+        ]);
     }
 }

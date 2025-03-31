@@ -359,7 +359,6 @@ class BusquedaController extends Controller
                 6 => 'plemasPulidodia',
                 7 => 'plemasMediciondia',
                 8 => 'plemasVisualizaciondia',
-                9 => 'plemasEmpaque',
             ];
             $estacionArea2 = [
                 2 => 'plemasCorte',
@@ -368,6 +367,10 @@ class BusquedaController extends Controller
                 3 => 'plemasSuministrodia',
 
             ];
+            $estacionArea9 = [
+                9 => 'plemasEmpaque',
+            ];
+            
             // Procesar las estaciones del primer conjunto (estacionesAreas)
             foreach ($estacionesAreas as $areaId => $areaName) {
                 // Obtener la cantidad total de la orden
@@ -449,6 +452,91 @@ class BusquedaController extends Controller
                     }
                 }
             }
+
+            foreach ($estacionArea9 as $areaId => $areaName) {
+                // Obtener la cantidad total de la orden
+                $total = DB::table('ordenfabricacion')
+                    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                    ->select('ordenfabricacion.CantidadTotal')
+                    ->first();
+                $cantidadTotal = $total ? (int)$total->CantidadTotal : 0;
+    
+                // Obtener el total de partidas finales (TipoPartida = 'F')
+                $resultOF = DB::table('ordenfabricacion')
+                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+                    ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+                    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                    ->where('partidasof_areas.Areas_id', $areaId)
+                    ->where('partidasof_areas.TipoPartida', 'N')
+                    ->select(DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'))
+                    ->first();
+                $totalN = $resultOF ? (int)$resultOF->TotalPartidas : 0;
+    
+                // Obtener los datos de retrabajo (TipoPartida = 'R')
+                $resultadosR_F = DB::table('ordenfabricacion')
+                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+                    ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+                    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+                    ->where('partidasof_areas.Areas_id', $areaId)
+                    ->whereIn('partidasof_areas.TipoPartida', ['R']) 
+                    ->select(
+                        DB::raw('SUM(partidasof_areas.cantidad) as TotalPartidas'),
+                        DB::raw('SUM(CASE WHEN partidasof_areas.FechaTermina IS NOT NULL THEN partidasof_areas.cantidad ELSE 0 END) as TotalPartidasTerminadas'),
+                        DB::raw('SUM(CASE WHEN partidasof_areas.FechaTermina IS NULL THEN partidasof_areas.cantidad ELSE 0 END) as TotalPartidasPendientes'),
+                        DB::raw('MIN(partidasof_areas.FechaComienzo) as FechaComienzo'),
+                        DB::raw('MAX(partidasof_areas.FechaTermina) as FechaTermina')
+                    )
+                    ->groupBy('partidasof_areas.Areas_id')
+                    ->first();
+    
+                $result[$areaName] = [];
+
+                if (!$resultadosR_F) {
+                    $result[$areaName][] = [
+                        'nombre' => $areaName,
+                        'diferencia' => $totalF,
+                        'totalN' => $totalN,
+                        'totalR' => 0,
+                        'cantidadTotal' => $cantidadTotal,
+                        'porcentaje' => $cantidadTotal > 0 ? ($totalN / $cantidadTotal) * 100 : 0,
+                        'FechaComienzo' => null,
+                        'FechaTermina' => null
+                    ];
+                } else {
+                    $totalR = (int)$resultadosR_F->TotalPartidas;
+                    $totalTerminadas = (int)$resultadosR_F->TotalPartidasTerminadas;
+                    $totalPendientes = (int)$resultadosR_F->TotalPartidasPendientes;
+                    $diferencia = $totalPendientes;
+                    $porcentaje = $cantidadTotal > 0 ? (($totalF - $totalPendientes) / $cantidadTotal) * 100 : 0;
+                    $result[$areaName][] = [
+                        'nombre' => $areaName,
+                        'diferencia' => $diferencia,
+                        'totalN' => $totalN,
+                        'totalR' => $totalR,
+                        'cantidadTotal' => $cantidadTotal,
+                        'porcentaje' => $porcentaje,
+                        'FechaComienzo' => $resultadosR_F->FechaComienzo,
+                        'FechaTermina' => $resultadosR_F->FechaTermina ?? null
+                    ];
+    
+                    if ($totalPendientes > 0) {
+                        $result[$areaName][] = [
+                            'nombre' => $areaName,
+                            'diferencia' => $totalPendientes,
+                            'totalN' => $totalN,
+                            'totalR' => $totalR,
+                            'cantidadTotal' => $cantidadTotal,
+                            'porcentaje' => $porcentaje,
+                            'FechaComienzo' => $resultadosR_F->FechaComienzo,
+                            'FechaTermina' => null
+                        ];
+                    }
+                }
+            }
+            
+           
+            
+            
             foreach ($estacionArea2 as $areaId => $areaName) {
                 $area2 = DB::table('ordenfabricacion')
                     ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
@@ -671,7 +759,7 @@ class BusquedaController extends Controller
                     ->first();
         
                 $result[$areaName] = [];
-        
+                //return $result;
                 if (!$area2) {
                     $result[$areaName][] = [
                         'nombre' => $areaName,
@@ -693,6 +781,7 @@ class BusquedaController extends Controller
                         'FechaTermina' => $area2->FechaFinalizacion
                     ];
                 }
+                
             }
         }
         return response()->json(['estaciones' => $result]);
