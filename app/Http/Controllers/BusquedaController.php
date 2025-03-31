@@ -51,7 +51,6 @@ class BusquedaController extends Controller
 
         return response()->json($ordenesVenta);
     }
-
     //boton detalles de la orden de venta        
     public function detallesventa(Request $request)
     {
@@ -103,7 +102,6 @@ class BusquedaController extends Controller
         
 
     }
-
     
     //progreso de stage
     public function GraficarOROF(Request $request)
@@ -116,6 +114,7 @@ class BusquedaController extends Controller
             ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
             ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->where('partidasof_areas.TipoPartida', 'N')
             ->select(
                 'ordenventa.OrdenVenta',
                 'ordenfabricacion.CantidadTotal',
@@ -172,7 +171,6 @@ class BusquedaController extends Controller
 
         return response()->json($OR);
     }
-
     //graficadores
     public function Graficador(Request $request)
     {
@@ -272,7 +270,6 @@ class BusquedaController extends Controller
 
         return response()->json($ordenesFabricacion);
     }
-
     //detalles OF
     public function DetallesOF(Request $request)
     {
