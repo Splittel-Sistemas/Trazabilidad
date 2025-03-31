@@ -37,7 +37,7 @@
                 font-size: 18px;
                 margin: 0 auto;
             }
-            /*133884  12c72a*/
+           
 
             .stage span {
                 display: block;
