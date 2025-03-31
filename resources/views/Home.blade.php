@@ -643,7 +643,7 @@
 
     <div class="card">
        
-        <div id="grafica-tiempoD"" class="chart-container"></div>
+        <div id="grafica-tiempoD" class="chart-container"></div>
     </div>
     
 
@@ -1533,89 +1533,105 @@
     });
 </script>
 <script>
-    fetch("{{ route('lineas.indicador') }}")
-        .then(response => response.json())
-        .then(data => {
-            const container = document.getElementById('lineas-container');
-            container.innerHTML = ''; 
-            data.lineas.forEach(linea => {
-                // Valores por defecto
-                const cantidadPersonas = linea.cantidad_personas ?? 0;
-                const estimadoPiezas = linea.estimado_piezas ?? 0;
-                const piezasCompletadas = linea.piezas_completadas ?? 0;
-                const piezasFaltantes = linea.piezas_faltantes ?? 0;
-                const porcentajeCompletadas = linea.porcentaje_completadas ?? 0;
-                const porcentajeFaltantes = linea.porcentaje_faltantes ?? 0;
-                const card = document.createElement('div');
-                card.classList.add('col-md-4', 'mb-4');
-                card.innerHTML = `
-                    <div class="col-sm-12 bg-white mb-4">
-                        <div class="accordion-body bg-white pt-0">
-                            <div class="card-body bg-white p-1">
-                                <h5 class="p-1">Línea ${linea.id}</h5>
-                                <div class="d-flex justify-content-between">
-                                    <div class="row">
-                                        <h6 class="text-700 col-6">Cantidad personas: <span>${cantidadPersonas}</span></h6>
-                                        <h6 class="text-700 col-6">Estimado de piezas por día: <span>${estimadoPiezas}</span></h6>
-                                        <h6 class="text-700 col-6">Piezas Completadas: <span>${piezasCompletadas}</span></h6>
-                                        <h6 class="text-700 col-6">Piezas faltantes: <span>${piezasFaltantes}</span></h6>
-                                    </div>
+fetch("{{ route('lineas.indicador') }}")
+    .then(response => response.json())
+    .then(data => {
+        const container = document.getElementById('lineas-container');
+        container.innerHTML = ''; 
+        data.lineas.forEach(linea => {
+            // Valores por defecto
+            const cantidadPersonas = linea.cantidad_personas ?? 0;
+            const estimadoPiezas = linea.estimado_piezas ?? 0;
+            const piezasCompletadas = linea.piezas_completadas ?? 0;
+            const piezasFaltantes = linea.piezas_faltantes ?? 0;
+            const porcentajeCompletadas = linea.porcentaje_completadas ?? 0;
+            const porcentajeFaltantes = linea.porcentaje_faltantes ?? 0;
+
+            const card = document.createElement('div');
+            card.classList.add('col-md-4', 'mb-4');
+            card.innerHTML = `
+                <div class="col-sm-12 bg-white mb-4">
+                    <div class="accordion-body bg-white pt-0">
+                        <div class="card-body bg-white p-1">
+                            <h5 class="p-1">Línea ${linea.id}</h5>
+                            <div class="d-flex justify-content-between">
+                                <div class="row">
+                                    <h6 class="text-700 col-6">Cantidad personas: <span>${cantidadPersonas}</span></h6>
+                                    <h6 class="text-700 col-6">Estimado de piezas por día: <span>${estimadoPiezas}</span></h6>
+                                    <h6 class="text-700 col-6">Piezas Completadas: <span>${piezasCompletadas}</span></h6>
+                                    <h6 class="text-700 col-6">Piezas faltantes: <span>${piezasFaltantes}</span></h6>
                                 </div>
-                                <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
-                                    <div class="p-0" id="lineasprocentaje${linea.id}" style="width: 9rem; height: 9rem"></div>
+                            </div>
+                            <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
+                                <div class="p-0" id="lineasprocentaje${linea.id}" style="width: 9rem; height: 9rem"></div>
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="bullet-item bg-primary me-2"></div>
+                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Completadas</h6>
+                                    <h6 class="text-900 fw-semi-bold mb-0"><span>${porcentajeCompletadas}</span>%</h6>
                                 </div>
-                                <div>
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="bullet-item bg-primary me-2"></div>
-                                        <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Completadas</h6>
-                                        <h6 class="text-900 fw-semi-bold mb-0"><span>${porcentajeCompletadas}</span>%</h6>
-                                    </div>
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="bullet-item bg-primary-200 me-2"></div>
-                                        <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Faltantes</h6>
-                                        <h6 class="text-900 fw-semi-bold mb-0"><span>${porcentajeFaltantes}</span>%</h6>
-                                    </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="bullet-item bg-primary-200 me-2"></div>
+                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Faltantes</h6>
+                                    <h6 class="text-900 fw-semi-bold mb-0"><span>${porcentajeFaltantes}</span>%</h6>
                                 </div>
                             </div>
                         </div>
                     </div>
-                `;
-                container.appendChild(card);
-                // Configuración de la gráfica
-                var myChart = echarts.init(document.getElementById(`lineasprocentaje${linea.id}`));
-                var option = {
-                    tooltip: { trigger: 'item' },
-                    legend: { show: false },
-                    series: [
-                        {
-                            name: 'Planeación',
-                            type: 'pie',
-                            radius: ['60%', '70%'],
-                            avoidLabelOverlap: false,
-                            itemStyle: {
-                                borderRadius: 10,
-                                borderColor: '#fff',
-                                borderWidth: 2
-                            },
-                            label: {
-                                show: true,
-                                position: 'center',
-                                formatter: `${porcentajeCompletadas.toFixed(2)}%`,
-                                fontSize: 20,
-                                fontWeight: 'bold'
-                            },
-                            labelLine: { show: false },
-                            data: [
-                                { value: piezasCompletadas, name: 'Completadas', itemStyle: { color: "#007BFF" } },
-                                { value: piezasFaltantes, name: 'Faltantes', itemStyle: { color: '#D3D3D3' } }
-                            ]
-                        }
-                    ]
-                };
-                myChart.setOption(option);
-            });
-        })
+                </div>
+            `;
+            container.appendChild(card);
+
+            // Configuración de la gráfica
+            var myChart = echarts.init(document.getElementById(`lineasprocentaje${linea.id}`));
+
+            let chartData = [];
+            let labelText = "0%";
+
+            if (piezasCompletadas > 0 || piezasFaltantes > 0) {
+                chartData = [
+                    { value: piezasCompletadas, name: 'Completadas', itemStyle: { color: "#007BFF" } },
+                    { value: piezasFaltantes, name: 'Faltantes', itemStyle: { color: '#D3D3D3' } }
+                ];
+                labelText = `${porcentajeCompletadas.toFixed(2)}%`;
+            } else {
+                // Si todo es 0, solo mostrar gris
+                chartData = [{ value: 1, name: 'Sin Datos', itemStyle: { color: '#D3D3D3' } }];
+                labelText = "N/A";
+            }
+
+            var option = {
+                tooltip: { trigger: 'item' },
+                legend: { show: false },
+                series: [
+                    {
+                        name: 'Planeación',
+                        type: 'pie',
+                        radius: ['60%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: true,
+                            position: 'center',
+                            formatter: labelText,
+                            fontSize: 20,
+                            fontWeight: 'bold'
+                        },
+                        labelLine: { show: false },
+                        data: chartData
+                    }
+                ]
+            };
+            myChart.setOption(option);
+        });
+    })
     .catch(error => console.error("Error al cargar los datos:", error));
+
     document.addEventListener("DOMContentLoaded", function() {
         fetch("{{ route('tiempopromedio') }}")
             .then(response => response.json())

@@ -277,6 +277,13 @@ class BusquedaController extends Controller
     public function DetallesOF(Request $request)
     {
             $idFabricacion = $request->input('id');
+            $estatus = DB::table('ordenfabricacion')
+            ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+            ->select(
+                'ordenfabricacion.OrdenFabricacion',
+                DB::raw("CASE WHEN ordenfabricacion.Cerrada = 1 THEN 'Abierta' ELSE 'Cerrada' END as Estado")
+            )
+            ->get();
             
             // Obtener las partidas y sus estados
             $ordenfabricacion = DB::table('ordenfabricacion')
@@ -330,7 +337,8 @@ class BusquedaController extends Controller
             // Asegúrate de que la respuesta siempre incluya una propiedad, incluso si no hay datos
             return response()->json([
                 'partidasAreas' => $partidasAreas,
-                'progreso' => $progresoValor
+                'progreso' => $progresoValor,
+                "Estatus" => $estatus,
             ]);
     }
     // Graficador OF
@@ -1229,18 +1237,16 @@ class BusquedaController extends Controller
             }*/
     }
     //tiempos de orden de fabricacion
+
     public function tiempoS(Request $request)
     {
         $idFabricacion = $request->input('id');
-      //dd($idFabricacion);
-        
-     // Tiempo de cortes
-        $tiemposcortes = DB::table('ordenfabricacion')
+    
+        $duracionFinalCortes =  DB::table('ordenfabricacion')
         ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
         ->select(
             'ordenfabricacion.OrdenFabricacion',
             'partidasof.FechaComienzo',
-            'partidasof.FechaFinalizacion', 
             DB::raw('GROUP_CONCAT(partidasof.OrdenFabricacion_id) as ids'),
             DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'),
             DB::raw('MAX(partidasof.FechaFinalizacion) as FechaTermina'),
@@ -1248,27 +1254,11 @@ class BusquedaController extends Controller
         )
         ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
         ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
-        ->get()
-        ->map(function ($item) {
-            if ($item->TotalMinutos == 0) {
-                $item->Duracion = "0 días, 0 horas, 0 minutos";
-            } else {
-                $FechaComienzo = Carbon::parse($item->FechaComienzo);
-                $FechaFinalizacion = Carbon::parse($item->FechaFinalizacion);
-                
-                $diffDias = floor($FechaComienzo->diffInHours($FechaFinalizacion) / 24);
-                $diffHoras = $FechaComienzo->diffInHours($FechaFinalizacion) % 24;
-                $diffMinutos = $FechaComienzo->diffInMinutes($FechaFinalizacion) % 60;
-
-                $item->Duracion = "{$diffDias} días, {$diffHoras} horas, {$diffMinutos} minutos";
-            }
-            return $item;
-        });
-
-        // Tiempo por áreas
-        $tiemposareas = DB::table('ordenfabricacion')
+        ->get();
+        $duracionFinal9 = DB::table('ordenfabricacion')
         ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
         ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->where('partidasof_areas.Areas_id', 9)
         ->select(
             'ordenfabricacion.OrdenFabricacion',
             'partidasof_areas.PartidasOf_id',
@@ -1299,30 +1289,161 @@ class BusquedaController extends Controller
             $item->ids = explode(',', $item->ids);
             return $item;
         });
+        
+        $fechaComienzoTotal = $duracionFinalCortes->pluck('FechaComienzo')->min();
+        $fechaTerminaTotal = $duracionFinal9->pluck('FechaTermina')->max();
 
-        return response()->json([
-        'tiemposcortes' => $tiemposcortes,
-        'tiemposareas' => $tiemposareas
-        ]);
+        $fechaComienzoCarbon = Carbon::parse($fechaComienzoTotal);
+        $fechaTerminaCarbon = Carbon::parse($fechaTerminaTotal);
+        $diferencia = $fechaComienzoCarbon->diff($fechaTerminaCarbon);
 
+        $duracion = [];
+
+        if ($diferencia->d > 0) $duracion[] = "{$diferencia->d} días";
+        if ($diferencia->h > 0) $duracion[] = "{$diferencia->h} horas";
+        if ($diferencia->i > 0) $duracion[] = "{$diferencia->i} minutos";
+
+        // Si no hay diferencia de tiempo, mostrar "0 minutos"
+        $DuracionTotal = !empty($duracion) ? implode(", ", $duracion) : "0 minutos";
+
+        $tiempototal = [
+            'FechaComienzo' => $fechaComienzoCarbon->format('Y-m-d H:i'),
+            'FechaTermina' => $fechaTerminaCarbon->format('Y-m-d H:i'),
+            'DuracionTotal' => $DuracionTotal,
+        ];
+
+        // Tiempo de cortes
+        $tiemposcortes = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            'partidasof.FechaComienzo',
+            'partidasof.FechaFinalizacion', 
+            DB::raw('GROUP_CONCAT(partidasof.OrdenFabricacion_id) as ids'),
+            DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'),
+            DB::raw('MAX(partidasof.FechaFinalizacion) as FechaTermina'),
+            DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof.FechaComienzo, partidasof.FechaFinalizacion)) as TotalMinutos'),
+            DB::raw('SUM(TIMESTAMPDIFF(SECOND, partidasof.FechaComienzo, partidasof.FechaFinalizacion)) as TotalSegundos')
+        )
+        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
+        ->get()
+        ->map(function ($item) {
+            if ($item->TotalSegundos == 0) {
+                $item->Duracion = "0 minutos";
+            } else {
+                $FechaComienzo = Carbon::parse($item->FechaComienzo);
+                $FechaFinalizacion = Carbon::parse($item->FechaFinalizacion);
+                
+                $diffDias = floor($FechaComienzo->diffInHours($FechaFinalizacion) / 24);
+                $diffHoras = $FechaComienzo->diffInHours($FechaFinalizacion) % 24;
+                $diffMinutos = $FechaComienzo->diffInMinutes($FechaFinalizacion) % 60;
+                $diffSegundos = $FechaComienzo->diffInSeconds($FechaFinalizacion) % 60;
+    
+                $duracion = [];
+    
+                if ($diffDias > 0) $duracion[] = "{$diffDias} días";
+                if ($diffHoras > 0) $duracion[] = "{$diffHoras} horas";
+                if ($diffMinutos > 0) $duracion[] = "{$diffMinutos} minutos";
+                if ($diffSegundos > 0) $duracion[] = "{$diffSegundos} segundos";
+    
+                $item->Duracion = !empty($duracion) ? implode(", ", $duracion) : "0 minutos";
+            }
+            return $item;
+        });
+    
+        // Tiempo por áreas
+        $tiemposareas = DB::table('ordenfabricacion')
+    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+    ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+    ->select(
+        'ordenfabricacion.OrdenFabricacion',
+        'partidasof_areas.PartidasOf_id',
+        'partidasof_areas.Areas_id',
+        DB::raw('GROUP_CONCAT(partidasof_areas.id) as ids'),
+        DB::raw('MIN(partidasof_areas.FechaComienzo) as FechaComienzo'), // Primer FechaComienzo
+        DB::raw('MAX(partidasof_areas.FechaTermina) as FechaTermina') // Último FechaTermina
+    )
+    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+    ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.PartidasOf_id', 'partidasof_areas.Areas_id')
+    ->get()
+    ->map(function ($item) {
+        // Si no hay FechaTermina, utilizamos FechaComienzo como valor de referencia
+        $fechaTermina = $item->FechaTermina ? $item->FechaTermina : $item->FechaComienzo;
+
+        // Cálculo de la diferencia en minutos y segundos
+        $fechaInicio = new \Carbon\Carbon($item->FechaComienzo);
+        $fechaFin = new \Carbon\Carbon($fechaTermina);
+        
+        // Calcular la duración en minutos y segundos
+        $totalMinutos = $fechaInicio->diffInMinutes($fechaFin);
+        $totalSegundos = $fechaInicio->diffInSeconds($fechaFin);
+
+        // Guardar los valores calculados
+        $item->TotalMinutos = $totalMinutos;
+        $item->TotalSegundos = $totalSegundos;
+
+        // Calcular la duración total en formato legible
+        if ($totalSegundos == 0) {
+            $item->DuracionTotal = "0 minutos";
+        } else {
+            $dias = floor($totalMinutos / (60 * 24));
+            $horas = floor(($totalMinutos % (60 * 24)) / 60);
+            $minutos = $totalMinutos % 60;
+            $segundos = $totalSegundos % 60;
+
+            $duracion = [];
+            if ($dias > 0) $duracion[] = "{$dias} días";
+            if ($horas > 0) $duracion[] = "{$horas} horas";
+            if ($minutos > 0) $duracion[] = "{$minutos} minutos";
+            if ($segundos > 0) $duracion[] = "{$segundos} segundos";
+
+            $item->DuracionTotal = !empty($duracion) ? implode(", ", $duracion) : "0 minutos";
+        }
+        $item->ids = explode(',', $item->ids);
+        return $item;
+    });
+
+
+            // Sumar los segundos de ambos conjuntos de datos
+            $totalSegundosCortes = $tiemposcortes->pluck('TotalSegundos')->map(function($segundos) {
+                return (int) $segundos; // Convertir los segundos a enteros
+            })->sum();
+            $totalSegundosAreas = $tiemposareas->pluck('TotalSegundos')->map(function($segundos) {
+                return (int) $segundos; // Convertir los segundos a enteros
+            })->sum();
+            $totalSegundos = $totalSegundosCortes + $totalSegundosAreas;
+            $duracionTotalSegundos = ($diferencia->d * 86400) + ($diferencia->h * 3600) + ($diferencia->i * 60); 
+
+            $TiempoMuerto = $duracionTotalSegundos - $totalSegundos;
+            
+            // Convertir los segundos restantes en días, horas, minutos y segundos
+            $diasMuertos = floor($TiempoMuerto / 86400);
+            $horasMuertas = floor(($TiempoMuerto % 86400) / 3600);
+            $minutosMuertos = floor(($TiempoMuerto % 3600) / 60);
+            $segundosMuertos = $TiempoMuerto % 60;
+            
+            // Construir la duración omitiendo valores en 0
+            $duracion = [];
+            
+            if ($diasMuertos > 0) $duracion[] = "{$diasMuertos} días";
+            if ($horasMuertas > 0) $duracion[] = "{$horasMuertas} horas";
+            if ($minutosMuertos > 0) $duracion[] = "{$minutosMuertos} minutos";
+            if ($segundosMuertos > 0) $duracion[] = "{$segundosMuertos} segundos";
+            
+            // Si no hay tiempo muerto, mostrar "0 segundos"
+            $TiempoMuertoFormato = !empty($duracion) ? implode(", ", $duracion) : "0 segundos";
+            
+            return response()->json([
+                'tiemposcortes' => $tiemposcortes,
+                'tiemposareas' => $tiemposareas,
+                'tiempototal' => $tiempototal,
+                'totalSegundos' => $totalSegundos . ' segundos',
+                'TiempoMuertoFormato' => $TiempoMuertoFormato
+            ]);
+            
     } 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* public function tiemposOrden(Request $request)
 {
     $ordenfabricacion = $request->input('ordenfabricacion');
