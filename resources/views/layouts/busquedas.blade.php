@@ -311,29 +311,37 @@
                 padding: -100px; 
             }
             .status-box {
+                position: relative;  /* Hacer que se pueda mover */
+                left: 160px; /* Mover el elemento hacia la izquierda */
                 display: flex;
-                
-                width: 72px;
-                height: 25px;
-                border-radius: 50%;
-                background-color: gray; /* Color por defecto */
-            }
-            .status-box.bg-success {
-                background-color: green; /* Verde cuando está abierta */
-            }
-            .status-box.bg-danger {
-                background-color: red; /* Rojo cuando está cerrada */
-            }
-            .status-box.bg-secondary {
-                background-color: gray; /* Gris para estado desconocido */
-            }
-            #Estatus1 {
-                display: block;
-                text-align: center;
-                margin: 0 auto;
+                align-items: center;
+                justify-content: center;
+                width: 100px;
+                height: 30px;
+                border-radius: 12px;
+                background-color: gray;
+                font-weight: bold;
+                font-size: 14px;
+                color: white;
+                gap: 6px;
+                transition: all 0.3s ease-in-out;
             }
 
-            
+            .status-box i {
+                font-size: 1rem;
+            }
+
+            .status-box.bg-success {
+                background-color: green;
+            }
+
+            .status-box.bg-danger {
+                background-color: red;
+            }
+
+            .status-box.bg-secondary {
+                background-color: gray;
+            }
 
     </style>
 @endsection
@@ -443,6 +451,7 @@
                             Detalles De Orden Fabricacion:
                             <span id="ordenFabricacionNumero" class="ms-3 text-muted"></span>
                         </h5>
+                        <span id="EstatusFabricacion"class="status-box">Estado</span> 
                         
                         <button type="button" class="btn p-1" data-bs-dismiss="modal" aria-label="Close">
                             <svg class="svg-inline--fa fa-xmark fs--1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
@@ -451,7 +460,6 @@
                         </button>
                     </div>
                     <div class="modal-body ">
-                        
                         <!-- Barra de progreso -->
                         <div class="progress" style="height: 22px; border-radius: 10px; box-shadow: 0px 3px 6px rgba(0,0,0,0.2); overflow: hidden; width: 90%; margin-left: 5%;">
                             <div id="plemasProgressBar" class="progress-bar text-white fw-bold progress-animated" role="progressbar" 
@@ -460,6 +468,48 @@
                                 0%
                             </div>
                         </div>
+                        <div style="height:25px;"></div>
+                        <div class="row justify-content-center">
+                            <!-- Primera fila (4 elementos) -->
+                            <div class="row">
+                                <div class="col-12 col-md-4 mb-3">
+                                    <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #d4edda;">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <span class="fa-stack fa-1x">
+                                                <i class="fas fa-circle fa-stack-2x text-success"></i>
+                                                <i class="fas fa-stopwatch fa-stack-1x text-white "></i>
+                                            </span>
+                                        </div>
+                                        <h5 class="mt-2">Productivo</h5>
+                                        <p id="Produccion"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4 mb-3">
+                                    <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #cce5ff;">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <span class="fa-stack fa-1x">
+                                                <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                                                <i class="fas fa-clock fa-stack-1x text-white"></i>
+                                            </span>
+                                        </div>
+                                        <h5 class="mt-2">Tiempo Total</h5>
+                                        <p id="TiempoTotal"  class="text-muted fs--1 mb-0">Tiempo Total de la Orden</p>
+                                    </div>
+                                </div>
+                            
+                                <div class="col-12 col-md-4 mb-3">
+                                    <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #f8d7da;">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <span class="fa-stack fa-1x">
+                                                <i class="fas fa-circle fa-stack-2x text-danger"></i>
+                                                <i class="fas fa-hourglass-empty fa-stack-1x text-white"></i>
+                                            </span>
+                                        </div>
+                                        <h5 class="mt-2">Tiempo Muerto</h5>
+                                        <p id="Muerto"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
+                                    </div>
+                                </div>
+                            </div>
                         <br>
                          <div class="card p-3">
                             <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
@@ -478,8 +528,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                
-                    
                                 <!-- Estación Suministros -->
                                 <div class="grid-item">
                                     <h1 class="small-title">Suministros</h1>
@@ -574,6 +622,7 @@
                                 </div>
                             </div>
                         </div>
+                        
 
                         <!--
                         <div style="height: 30px;"></div>
@@ -582,11 +631,6 @@
                                 <i class="fa fa-clock"></i> Más
                             </button>
                         </div>--->
-
-
-
-                        
-                        
                         <!-- Contenedor colapsable -->
                         <div class="collapse mt-3" id="collapseContent">
                             <div class="card">
@@ -606,8 +650,8 @@
                     </div>
                 </div>
             </div>
+            </div>
         </div>
-
         <!--modal principal-->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-xl">
@@ -618,6 +662,8 @@
                             <span id="ordenVentaNumero" class="ms-3 text-muted"></span>
                         </h5>
                         <span id="Estatus1"class="status-box">Estado</span> 
+                      
+                          
                         <button type="button" class="btn p-1" data-bs-dismiss="modal" aria-label="Close">
                             <svg class="svg-inline--fa fa-xmark fs--1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
                                 <path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"></path>
@@ -756,8 +802,7 @@
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-       
+<script>   
     $(document).on('click', '.ver-detalles', function (e) {
         var ordenVenta = $(this).data('ordenventa');
         
@@ -841,25 +886,27 @@
                     $('#progressBar').css('width', porcentaje + '%').text(porcentaje + '%');
                     $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
 
-                    var estadoDeVenta = response.Estatus.length > 0 ? response.Estatus[0].Estado : 'Desconocido';
+                    // Verificar si todas las órdenes están cerradas
+                    var todasCerradas = response.Estatus.every(est => est.Estado === 'Cerrada');
 
-                    console.log('Estado recibido:', estadoDeVenta);  // Verifica el estado recibido
+                    var estadoDeVenta = todasCerradas ? 'Cerrada' : 'Abierta';
 
-                    // Muestra el modal
+                    console.log('Estado calculado:', estadoDeVenta);  
                     $('#exampleModal').modal('show'); 
-
-                    // Elimina todas las clases de estado anteriores
                     $('#Estatus1').removeClass('badge bg-success bg-danger bg-secondary').addClass('badge');
 
+                    var icono = '';
+
                     if (estadoDeVenta === 'Abierta') {
-                        $('#Estatus1').removeClass('bg-danger bg-secondary').addClass('bg-success').text('Abierta');
+                        $('#Estatus1').removeClass('bg-danger bg-secondary').addClass('bg-success');
+                        icono = '<i class="fas fa-lock-open"></i>'; 
+                        $('#Estatus1').html(icono + ' Abierta');
                         console.log('Estado: Abierta, Clases: bg-success');
-                    } else if (estadoDeVenta === 'Cerrada') {
-                        $('#Estatus1').removeClass('bg-success bg-secondary').addClass('bg-danger').text('Cerrada');
-                        console.log('Estado: Cerrada, Clases: bg-danger');
                     } else {
-                        $('#Estatus1').removeClass('bg-success bg-danger').addClass('bg-secondary').text('Estado desconocido');
-                        console.log('Estado desconocido, Clases: bg-secondary');
+                        $('#Estatus1').removeClass('bg-success bg-secondary').addClass('bg-danger');
+                        icono = '<i class="fas fa-lock"></i>'; 
+                        $('#Estatus1').html(icono + ' Cerrada');
+                        console.log('Estado: Cerrada, Clases: bg-danger');
                     }
                 } else {
                     console.log('No se encontró el estado de la venta');
@@ -867,6 +914,8 @@
                     $('#progressBar').css('width', '0%').text('0%');
                     $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
                 }
+
+
             },
             error: function () {
                 console.log('Error al obtener los datos de la venta');
@@ -973,15 +1022,10 @@
                 }
             });
         }
-
-
         //detalles de la orden de fabricacion
             $(document).on('click', '.ver-fabricacion', function (e) {
                 var ordenfabricacion = $(this).data('ordenfabricacion');
-            
-
-                console.log(ordenfabricacion);  // Para depuración
-
+                console.log(ordenfabricacion);  
                 $.ajax({
                     url: '{{ route("Detalles.Fabricacion") }}',
                     type: 'GET',
@@ -992,34 +1036,48 @@
                             var progreso = response.progreso;
                             // Actualizar la barra de progreso con animación
                             progressBar.css('width', progreso + '%').text(progreso + '%');
-
-                            // Quitar clases de color antes de agregar la nueva
                             progressBar.removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
-
                             // Asignar color según el porcentaje
                             if (progreso >= 0 && progreso < 20) {
                                 progressBar.addClass('bg-danger');  // Rojo
                             } else if (progreso >= 20 && progreso < 40) {
                                 progressBar.addClass('bg-warning');  // Naranja
                             } else if (progreso >= 40 && progreso < 70) {
-                                progressBar.addClass('bg-primary');  // Azul para una transición más agradable
+                                progressBar.addClass('bg-primary');  // Azul
                             } else if (progreso >= 70 && progreso < 90) {
-                                progressBar.addClass('bg-info');  // Celeste/Azul claro
+                                progressBar.addClass('bg-info');  // Celeste
                             } else {
                                 progressBar.addClass('bg-success');  // Verde
                             }
-
-                            // Actualizar el número de orden de fabricación
                             $('#ordenFabricacionNumero').removeClass('text-muted').addClass('text-info').text(ordenfabricacion);
+                            if (response.Estatus && response.Estatus.length > 0) {
+                                var estadoFabricacion = response.Estatus[0].Estado || 'Desconocido';
+                                var $estatusElem = $('#EstatusFabricacion');
+                                var icono = '';
+                                $estatusElem.removeClass('bg-success bg-danger bg-secondary').addClass('badge');
+
+                                if (estadoFabricacion === 'Abierta') {
+                                    $estatusElem.removeClass('bg-danger bg-secondary').addClass('bg-success');
+                                    icono = '<i class="fas fa-lock-open"></i>';  // Ícono de "Abierta"
+                                    $estatusElem.html(icono + ' Abierta');
+                                    console.log('Estado: Abierta, Clases: bg-success');
+                                } else if (estadoFabricacion === 'Cerrada') {
+                                    $estatusElem.removeClass('bg-success bg-secondary').addClass('bg-danger');
+                                    icono = '<i class="fas fa-lock"></i>';  // Ícono de "Cerrada"
+                                    $estatusElem.html(icono + ' Cerrada');
+                                    console.log('Estado: Cerrada, Clases: bg-danger');
+                                } else {
+                                    $estatusElem.removeClass('bg-success bg-danger').addClass('bg-secondary');
+                                    icono = '<i class="fas fa-question-circle"></i>';  // Ícono de "Desconocido"
+                                    $estatusElem.html(icono + ' Estado desconocido');
+                                    console.log('Estado desconocido, Clases: bg-secondary');
+                                }
+                            }
                         } else {
-                            // Reiniciar la barra si no hay datos
                             progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
-
-                            // Actualizar el número de orden de fabricación con la clase 'text-muted'
                             $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
+                            $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
                         }
-
-                        // Mostrar el modal
                         $('#example2Modal').modal('show');
                     },
                     error: function () {
@@ -1066,156 +1124,162 @@
                 }
             });
             $.ajax({
-            url: '{{ route("tiempos.hrs") }}',
-            method: 'GET',
-            data: { 
-                id: ordenfabricacion,
-            },
-            success: function(response) {
-                // Verificar si la respuesta tiene tiempos de cortes
-                if (response.tiemposcortes.length > 0) {
-                    $('#titulo-cortes')
-                        .text('Duración: ' + response.tiemposcortes[0].Duracion)
-                        .css({
-                            'font-size': '10px',
-                            'color': 'black',
-                            'font-weight': 'bold'
-                        });
-                } else {
-                    $('#titulo-cortes')
-                        .text('Sin datos de duración')
-                        .css({
-                            'font-size': '10px',
-                            'color': 'red',
-                            'font-weight': 'bold'
-                        });
-                }
+                url: '{{ route("tiempos.hrs") }}',
+                method: 'GET',
+                data: { 
+                    id: ordenfabricacion,
+                },
+                success: function(response) {
+                    // Asigna el tiempo total
+                    document.getElementById("TiempoTotal").textContent = response.tiempototal.DuracionTotal;
+                    document.getElementById("Muerto").textContent = response.TiempoMuertoFormato;
+                    document.getElementById("Produccion").textContent = response.totalSegundos;
 
-                // Verificar si tiemposareas tiene datos
-                let hasData = false;
+                    // Verificar si la respuesta tiene tiempos de cortes
+                    if (response.tiemposcortes.length > 0) {
+                        $('#titulo-cortes')
+                            .text('Duración: ' + response.tiemposcortes[0].Duracion)
+                            .css({
+                                'font-size': '10px',
+                                'color': 'black',
+                                'font-weight': 'bold'
+                            });
+                    } else {
+                        $('#titulo-cortes')
+                            .text('Sin datos de duración')
+                            .css({
+                                'font-size': '10px',
+                                'color': 'red',
+                                'font-weight': 'bold'
+                            });
+                    }
 
-                if (response.tiemposareas.length > 0) {
-                    response.tiemposareas.forEach(function(item) {
-                        hasData = true;
-                        switch (item.Areas_id) {
-                            case 3:
-                                $('#titulo-suministro')
-                                    .text('Duración: ' + item.DuracionTotal)
-                                    .css({
-                                        'font-size': '10px',
-                                        'color': 'black',
-                                        'font-weight': 'bold'
-                                    });
-                                break;
-                            case 4:
-                                $('#titulo-preparado')
-                                    .text('Duración: ' + item.DuracionTotal)
-                                    .css({
-                                        'font-size': '10px',
-                                        'color': 'black',
-                                        'font-weight': 'bold'
-                                    });
-                                break;
-                            case 5:
-                                $('#titulo-ensamble')
-                                    .text('Duración: ' + item.DuracionTotal)
-                                    .css({
-                                        'font-size': '10px',
-                                        'color': 'black',
-                                        'font-weight': 'bold'
-                                    });
-                                break;
-                            case 6:
-                                $('#titulo-pulido')
-                                    .text('Duración: ' + item.DuracionTotal)
-                                    .css({
-                                        'font-size': '10px',
-                                        'color': 'black',
-                                        'font-weight': 'bold'
-                                    });
-                                break;
-                            case 7:
-                                $('#titulo-medicion')
-                                    .text('Duración: ' + item.DuracionTotal)
-                                    .css({
-                                        'font-size': '10px',
-                                        'color': 'black',
-                                        'font-weight': 'bold'
-                                    });
-                                break;
-                            case 8:
-                                $('#titulo-visualizacion')
-                                    .text('Duración: ' + item.DuracionTotal)
-                                    .css({
-                                        'font-size': '10px',
-                                        'color': 'black',
-                                        'font-weight': 'bold'
-                                    });
-                                break;
-                            case 9:
-                                $('#titulo-empaque')
-                                    .text('Duración: ' + item.DuracionTotal)
-                                    .css({
-                                        'font-size': '10px',
-                                        'color': 'black',
-                                        'font-weight': 'bold'
-                                    });
-                                break;
-                            default:
-                                console.warn('Área no reconocida:', item.Areas_id);
-                        }
-                    });
-                }
+                    // Verificar si tiemposareas tiene datos
+                    let hasData = false;
 
-                if (!hasData) {
-                    $('#titulo-suministro').text('Sin datos de duración').css({
-                        'font-size': '10px',
-                        'color': 'red',
-                        'font-weight': 'bold'
-                    });
-
-                    $('#titulo-preparado').text('Sin datos de duración').css({
-                        'font-size': '10px',
-                        'color': 'red',
-                        'font-weight': 'bold'
-                    });
-
-                    $('#titulo-ensamble').text('Sin datos de duración').css({
-                        'font-size': '10px',
-                        'color': 'red',
-                        'font-weight': 'bold'
-                    });
-
-                    $('#titulo-pulido').text('Sin datos de duración').css({
-                        'font-size': '10px',
-                        'color': 'red',
-                        'font-weight': 'bold'
-                    });
-
-                    $('#titulo-medicion').text('Sin datos de duración').css({
-                        'font-size': '10px',
-                            'color': 'red',
-                            'font-weight': 'bold'
-                        });
-
-                        $('#titulo-visualizacion').text('Sin datos de duración').css({
-                            'font-size': '10px',
-                            'color': 'red',
-                            'font-weight': 'bold'
-                        });
-
-                        $('#titulo-empaque').text('Sin datos de duración').css({
-                            'font-size': '10px',
-                            'color': 'red',
-                            'font-weight': 'bold'
+                    if (response.tiemposareas.length > 0) {
+                        response.tiemposareas.forEach(function(item) {
+                            hasData = true;
+                            switch (item.Areas_id) {
+                                case 3:
+                                    $('#titulo-suministro')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 4:
+                                    $('#titulo-preparado')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 5:
+                                    $('#titulo-ensamble')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 6:
+                                    $('#titulo-pulido')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 7:
+                                    $('#titulo-medicion')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 8:
+                                    $('#titulo-visualizacion')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 9:
+                                    $('#titulo-empaque')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                default:
+                                    console.warn('Área no reconocida:', item.Areas_id);
+                            }
                         });
                     }
-                },
-                error: function() {
-                    console.error('Error al obtener los datos');
-                }
-            });
-    });
+
+                    if (!hasData) {
+                        $('#titulo-suministro').text('Sin datos de duración').css({
+                            'font-size': '10px',
+                            'color': 'red',
+                            'font-weight': 'bold'
+                        });
+
+                        $('#titulo-preparado').text('Sin datos de duración').css({
+                            'font-size': '10px',
+                            'color': 'red',
+                            'font-weight': 'bold'
+                        });
+
+                        $('#titulo-ensamble').text('Sin datos de duración').css({
+                            'font-size': '10px',
+                            'color': 'red',
+                            'font-weight': 'bold'
+                        });
+
+                        $('#titulo-pulido').text('Sin datos de duración').css({
+                            'font-size': '10px',
+                            'color': 'red',
+                            'font-weight': 'bold'
+                        });
+
+                        $('#titulo-medicion').text('Sin datos de duración').css({
+                            'font-size': '10px',
+                                'color': 'red',
+                                'font-weight': 'bold'
+                            });
+
+                            $('#titulo-visualizacion').text('Sin datos de duración').css({
+                                'font-size': '10px',
+                                'color': 'red',
+                                'font-weight': 'bold'
+                            });
+
+                            $('#titulo-empaque').text('Sin datos de duración').css({
+                                'font-size': '10px',
+                                'color': 'red',
+                                'font-weight': 'bold'
+                            });
+                        }
+                    },
+                    error: function() {
+                        console.error('Error al obtener los datos');
+                    }
+                });
+
+        });
     //Cargar Ventas
     function cargarDatosVenta(search) {
         $('#tablaFabricacion').hide(100);
@@ -1434,10 +1498,9 @@
         var ordenfabricacion = $(this).data('ordenfabricacion');  
         console.log('Orden de fabricación seleccionada:', ordenfabricacion);  
 
-        // Asignar ese valor al botón VerMas
+        
         $('.VerMas').data('ordenfabricacion', ordenfabricacion);  
-      //  console.log('Valor asignado al botón VerMas:', $('.VerMas').data('ordenfabricacion')); 
-
+        //  console.log('Valor asignado al botón VerMas:', $('.VerMas').data('ordenfabricacion')); 
         // Si deseas que el texto del botón también cambie para indicar la orden seleccionada:
        // $('.VerMas').text(` Orden ${ordenfabricacion} +`);
     });
