@@ -4,18 +4,18 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
+use App\Models\Role;
 
 class RolSeeder extends Seeder
 {
     public function run()
     {
-        User::create([
+        Role::create([
             'name' => 'Administrador',
             'created_at' => now(), 
             'updated_at' => now()
         ]);
-        User::create([
+        Role::create([
             'name' => 'Operador',
             'created_at' => now(), 
             'updated_at' => now()
