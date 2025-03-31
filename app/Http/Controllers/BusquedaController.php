@@ -353,7 +353,6 @@ class BusquedaController extends Controller
         // Verificar el valor de Escaner
         if ($escaner == 0) {
             $estacionesAreas = [
-              
                 4 => 'plemasPreparadodia',
                 5 => 'plemasEnsambledia',
                 6 => 'plemasPulidodia',
@@ -452,7 +451,6 @@ class BusquedaController extends Controller
                     }
                 }
             }
-
             foreach ($estacionArea9 as $areaId => $areaName) {
                 // Obtener la cantidad total de la orden
                 $total = DB::table('ordenfabricacion')
@@ -533,10 +531,6 @@ class BusquedaController extends Controller
                     }
                 }
             }
-            
-           
-            
-            
             foreach ($estacionArea2 as $areaId => $areaName) {
                 $area2 = DB::table('ordenfabricacion')
                     ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
@@ -582,7 +576,6 @@ class BusquedaController extends Controller
                     ->select('ordenfabricacion.CantidadTotal')
                     ->first();
                 $cantidadTotal = $total ? (int)$total->CantidadTotal : 0;
-    
                 // Obtener el total de partidas finales (TipoPartida = 'F')
                 $resultOF = DB::table('ordenfabricacion')
                     ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
@@ -698,9 +691,7 @@ class BusquedaController extends Controller
                     )
                     ->groupBy('partidasof_areas.Areas_id')
                     ->first();
-    
                 $result[$areaName] = [];
-    
                 if (!$resultadosR) {
                     $result[$areaName][] = [
                         'nombre' => $areaName,
@@ -1628,11 +1619,8 @@ class BusquedaController extends Controller
 
     return Response::json($resultados);
 }
-
-
 */
-////
-    
+////   
 /*
     public function GraficadorFabricacion(Request $request)
     {
@@ -1782,4 +1770,3 @@ class BusquedaController extends Controller
     }
 
 */
-   
