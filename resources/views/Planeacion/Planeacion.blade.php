@@ -152,8 +152,10 @@
                                             <td>No existen Ordenes de Venta <br> para el periodo <br>{{$FechaFin}} - {{$FechaInicio}}</td>
                                         </tr>
                                     @elseif($status=="success")
+                                    @php $bandera=0; @endphp
                                         @foreach ($datos as $orden)
                                             @if($orden['Estatus']>0)
+                                            @php $bandera=1; @endphp
                                                 <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true">
                                                     <td role="button" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}" onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, `{{ $orden['Cliente'] }}`)">
                                                         {{ $orden['OV']." - ".$orden['Cliente']}}
@@ -166,6 +168,11 @@
                                                 </tr>
                                             @endif
                                         @endforeach
+                                        @if($bandera==0)
+                                            <tr class="text-center mt-4">
+                                                <td>No existen Ordenes de Venta para el periodo <br>{{$FechaFin}} - {{$FechaInicio}}</td>
+                                            </tr>
+                                        @endif
                                     @else
                                     <tr class="text-center mt-4"><td>Ocurrio un error!, No fue posible cargar los datos</td></tr>
                                     @endif
@@ -751,9 +758,7 @@
             });
             IdRow.remove();
         });
-        console.log("Datos a enviar:", Datosenviar);
-
-
+        //console.log("Datos a enviar:", Datosenviar);
         $.ajax({
             url: "{{route('PartidasOFGuardar')}}", 
             type: 'POST',
@@ -787,13 +792,22 @@
                     success("Guardado!","Las ordenes de fabricación "+OrdenFabricacion+" se guardaron correctamente!");
                 } else if(response.status==="empty") {
                 } else if(response.status==='errordate'){
+                    for(i=0;i<Datosenviar.length;i++){
+                        loadContent('details21',Datosenviar[i]['OV'], `Error`);
+                    }
                     error("Ocurrio un error!....","Los datos no pudieron ser procesados correctamente, la fecha de planeación tiene que ser igual o mayor a la fecha de Actual");
                 }else{
+                    for(i=0;i<Datosenviar.length;i++){
+                        loadContent('details21',Datosenviar[i]['OV'], `Error`);
+                    }
                     $('#Filtro_fecha-btn').trigger('click');
                     error("Ocurrio un error!....","Los datos no pudieron ser procesados correctamente");
                 }
             },
             error: function(xhr, status) {
+                for(i=0;i<Datosenviar.length;i++){
+                        loadContent('details21',Datosenviar[i]['OV'], `Error`);
+                }
                 error("Ocurrio un error!","Los datos no pudieron ser guardados");
             }
         });

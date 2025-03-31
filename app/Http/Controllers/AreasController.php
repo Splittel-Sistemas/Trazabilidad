@@ -290,6 +290,7 @@ class AreasController extends Controller
                                 <th class="text-center">Tipo Partida</th>
                                 <th class="text-center">Estatus</th>
                                 <th class="text-center" colspan="2">Acciones</th>
+                                <th class="text-center" >Etiquetas</th>
                             </tr>
                         </thead>
                         <tbody>';
@@ -388,15 +389,18 @@ class AreasController extends Controller
                                         Finalizar
                                     </button>
                                 </td>
-                                </tr>';
+                                ';
                             }else{
                                 $Ordenfabricacionpartidas .= '<td class="text-center"></td>            
                                 <td></td>            
-                                </tr>';
+                                ';
                             }
                         }
-                        
                     }
+                    if($OrdenFabricacion->Corte==0){
+                        $Ordenfabricacionpartidas.='<td class="text-center"><button class="btn btn-link me-1 mb-1" onclick="etiquetaColor(\''.$this->funcionesGenerales->encrypt($Partida[0]['pivot']->PartidasOF_id).'\')" type="button"><i class="fas fa-download"></i></button></td></tr>';
+                    }
+                    else{$Ordenfabricacionpartidas.='<td></td><tr>';}
                 }
             }
             

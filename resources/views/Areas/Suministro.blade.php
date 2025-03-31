@@ -306,6 +306,23 @@
           </div>
         </div>
     </div>
+    <!--MODAL PDF-->
+    <div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-dark">
+                    <h6 class="modal-title text-white" id="ModalDetalleLabel">Imprimir PDF</h6><button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1 text-white"></span></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Aquí se cargará el PDF en un iframe -->
+                    <iframe id="pdfIframe" src="" width="100%" height="300px"></iframe>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div  id="ContainerToastGuardado"></div>
 @endsection
 @section('scripts')
@@ -676,7 +693,19 @@
         $('#btnGrupoPiezasCorte1').fadeIn(100);
         $('#CantitadpiezasIdOF').val(id)
     }
-
+    function etiquetaColor(id){
+        Coloretiqueta=$('#Coloretiqueta').val();
+        var url = "{{ route('generar.pdf')}}?id=_corteId_";
+        url = url.replace('_corteId_', id);
+        // Asignar la URL al iframe para mostrar el PDF
+    document.getElementById('pdfIframe').src = url;
+    
+    // Abrir el modal con el iframe
+    $('#pdfModal').modal('show');
+        // Abre la URL para descargar el PDF
+        /*var ventana = window.open(url, '_blank');
+        $('#ModalColor').modal('hide');*/
+    }
 
 
     /*function ListaCodigo(Codigo,Contenedor){
