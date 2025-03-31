@@ -313,7 +313,7 @@
             }
             .status-box {
                 position: relative;  /* Hacer que se pueda mover */
-                left: 160px; /* Mover el elemento hacia la izquierda */
+                left: 135px; /* Mover el elemento hacia la izquierda */
                 display: flex;
                 align-items: center;
                 justify-content: center;
