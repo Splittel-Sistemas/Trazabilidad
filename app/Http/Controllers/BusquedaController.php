@@ -368,6 +368,10 @@ class BusquedaController extends Controller
                 3 => 'plemasSuministrodia',
 
             ];
+            $estacionArea9 = [
+                9 => 'plemasEmpaque',
+            ];
+            
             // Procesar las estaciones del primer conjunto (estacionesAreas)
             foreach ($estacionesAreas as $areaId => $areaName) {
                 // Obtener la cantidad total de la orden
@@ -449,6 +453,7 @@ class BusquedaController extends Controller
                     }
                 }
             }
+            
             foreach ($estacionArea2 as $areaId => $areaName) {
                 $area2 = DB::table('ordenfabricacion')
                     ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
