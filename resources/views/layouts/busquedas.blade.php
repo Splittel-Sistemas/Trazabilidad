@@ -37,6 +37,7 @@
                 font-size: 18px;
                 margin: 0 auto;
             }
+            /*133884  12c72a*/
 
             .stage span {
                 display: block;
@@ -1353,7 +1354,7 @@
         if (value <= 20) strokeColor = '#e74c3c'; // Rojo
         else if (value <= 50) strokeColor = '#f39c12'; // Naranja
         else if (value <= 90) strokeColor = '#f1c40f'; // Amarillo
-        else strokeColor = '#1a662c'; // Verde
+        else strokeColor = '#12c72a'; // Verde
 
         // Ajuste para hacer el principio y final del arco un poco cuadrado
         const valueAngle = startAngle + (value / 100) * (endAngle - startAngle);
@@ -1439,7 +1440,7 @@
                     } else if (displayProgress > 50 && displayProgress <= 90) {
                         progressColor = 'yellow'; // Amarillo
                     } else if (displayProgress > 90 && displayProgress <= 100) {
-                        progressColor = '#1a662c'; // Verde
+                        progressColor = '#12c72a'; // Verde
 
                     }
 
