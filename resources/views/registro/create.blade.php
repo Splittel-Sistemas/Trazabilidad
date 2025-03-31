@@ -141,7 +141,8 @@
                     @enderror
                 </div>
                 <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn btn-success btn-lg rounded-pill shadow-lg transition-all hover:bg-success hover:text-white">Registrar</button>
+                    
+                    <button type="submit"class="btn btn-primary btn-lg rounded-pill shadow-lg transition-all hover:bg-success hover:text-white">Registrar</button>
                 </div>   
             </form>
         </div>
