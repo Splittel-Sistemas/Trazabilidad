@@ -1658,7 +1658,7 @@ fetch("{{ route('lineas.indicador') }}")
                 let finalResultData = {};
                 data.finalResult.forEach(item => {
                     finalResultData[item.Areas] = {
-                        tiempoEscaneado: item.tiempopiezas ?? 0,
+                        tiempoEscaneado: item.tiempopiezas ?? 0,  // Asignamos tiempopiezas o 0 si no existe
                         tiempoNoEscaneado: null
                     };
                 });
@@ -1673,26 +1673,39 @@ fetch("{{ route('lineas.indicador') }}")
                     });
                 });
                 Object.keys(finalResultData).forEach(areaId => {
-                    let area = finalResultData[areaId];
-                    let areaIdName = areaMapping[areaId];
-                    if (areaIdName) {
-                        let tiempoEscaneado = area.tiempoEscaneado && area.tiempoEscaneado > 0 ? formatTime(area.tiempoEscaneado) : "No disponible";
-                        let tiempoNoEscaneado = area.tiempoNoEscaneado && area.tiempoNoEscaneado > 0 ? formatTime(area.tiempoNoEscaneado) : "No disponible";
-                        let element = document.querySelector(`#${areaIdName} + p`);
-                        if (element) {
-                            element.innerHTML = `Tiempo Escaneado: ${tiempoEscaneado}<br>Tiempo No Escaneado: ${tiempoNoEscaneado}`;
-                        }
+                let area = finalResultData[areaId];
+                let areaIdName = areaMapping[areaId];  // "Suministro" si areaId = 3
+                if (areaIdName) {
+                    let tiempoEscaneado = area.tiempoEscaneado && area.tiempoEscaneado > 0 ? formatTime(area.tiempoEscaneado) : "No disponible";
+                    let tiempoNoEscaneado = area.tiempoNoEscaneado && area.tiempoNoEscaneado > 0 ? formatTime(area.tiempoNoEscaneado) : "No disponible";
+                    let element = document.querySelector(`#${areaIdName} + p`);  // Verifica que el selector sea correcto
+                    if (element) {
+                        element.innerHTML = `Tiempo Escaneado: ${tiempoEscaneado}<br>Tiempo No Escaneado: ${tiempoNoEscaneado}`;
                     }
-                });
+                }
+            });
+
             })
             .catch(error => console.error('Error cargando los datos:', error));
     });
     function formatTime(seconds) {
-        let hours = Math.floor(seconds / 3600);
-        let minutes = Math.floor((seconds % 3600) / 60);
-        let remainingSeconds = seconds % 60;
-        return `${hours} horas ${minutes} minutos ${remainingSeconds.toFixed(0)} segundos`;
+        if (seconds <= 0) return "No disponible";
+
+        let totalSeconds = Math.floor(seconds * 60); // Convertimos minutos decimales a segundos
+        let hours = Math.floor(totalSeconds / 3600);
+        let minutes = Math.floor((totalSeconds % 3600) / 60);
+        let remainingSeconds = totalSeconds % 60;
+
+        let timeParts = [];
+
+        if (hours > 0) timeParts.push(`${hours} horas`);
+        if (minutes > 0) timeParts.push(`${minutes} minutos`);
+        if (remainingSeconds > 0 || timeParts.length === 0) timeParts.push(`${remainingSeconds} segundos`);
+
+        return timeParts.join(" ");
     }
+
+
 </script>
     
 @endsection

@@ -301,6 +301,7 @@ class BusquedaController extends Controller
                 ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
                 ->join('areas', 'partidasof_areas.Areas_id', '=', 'areas.id') 
                 ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion) 
+               // ->where('ordenfabricacion.Cerrada', 0)
                 ->whereIn('partidasof_areas.Areas_id', [9])
                 ->select(
                     'partidasof_areas.PartidasOF_id',
@@ -1354,20 +1355,20 @@ class BusquedaController extends Controller
     
         // Tiempo por áreas
         $tiemposareas = DB::table('ordenfabricacion')
-    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-    ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-    ->select(
-        'ordenfabricacion.OrdenFabricacion',
-        'partidasof_areas.PartidasOf_id',
-        'partidasof_areas.Areas_id',
-        DB::raw('GROUP_CONCAT(partidasof_areas.id) as ids'),
-        DB::raw('MIN(partidasof_areas.FechaComienzo) as FechaComienzo'), // Primer FechaComienzo
-        DB::raw('MAX(partidasof_areas.FechaTermina) as FechaTermina') // Último FechaTermina
-    )
-    ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-    ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.PartidasOf_id', 'partidasof_areas.Areas_id')
-    ->get()
-    ->map(function ($item) {
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            'partidasof_areas.PartidasOf_id',
+            'partidasof_areas.Areas_id',
+            DB::raw('GROUP_CONCAT(partidasof_areas.id) as ids'),
+            DB::raw('MIN(partidasof_areas.FechaComienzo) as FechaComienzo'), // Primer FechaComienzo
+            DB::raw('MAX(partidasof_areas.FechaTermina) as FechaTermina') // Último FechaTermina
+        )
+        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.PartidasOf_id', 'partidasof_areas.Areas_id')
+        ->get()
+        ->map(function ($item) {
         // Si no hay FechaTermina, utilizamos FechaComienzo como valor de referencia
         $fechaTermina = $item->FechaTermina ? $item->FechaTermina : $item->FechaComienzo;
 
@@ -1402,7 +1403,7 @@ class BusquedaController extends Controller
         }
         $item->ids = explode(',', $item->ids);
         return $item;
-    });
+        });
 
 
             // Sumar los segundos de ambos conjuntos de datos

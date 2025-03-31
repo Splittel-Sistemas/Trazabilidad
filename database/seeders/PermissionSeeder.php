@@ -34,6 +34,7 @@ class PermissionSeeder extends Seeder
             'Crear Rol',
             'Editar Rol',
             'Enviar Avisos',
+            'Finalizar Trazabilidad',
         ];        
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);

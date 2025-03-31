@@ -1134,7 +1134,7 @@
                     // Asigna el tiempo total
                     document.getElementById("TiempoTotal").textContent = response.tiempototal.DuracionTotal;
                     document.getElementById("Muerto").textContent = response.TiempoMuertoFormato;
-                    document.getElementById("Produccion").textContent = response.totalSegundos;
+                    document.getElementById("Produccion").textContent = formatTiempo(response.totalSegundos);
 
                     // Verificar si la respuesta tiene tiempos de cortes
                     if (response.tiemposcortes.length > 0) {
@@ -1281,6 +1281,41 @@
                 });
 
         });
+
+
+        
+function formatTiempo(totalSegundos) {
+    // Asegurarse de que totalSegundos sea un número entero
+    totalSegundos = parseInt(totalSegundos);
+
+    // Calcular horas, minutos y segundos
+    const horas = Math.floor(totalSegundos / 3600);
+    totalSegundos %= 3600;
+    const minutos = Math.floor(totalSegundos / 60);
+    const segundos = totalSegundos % 60;
+
+    // Crear una cadena con el formato adecuado
+    let tiempoFormateado = "";
+
+    // Si hay horas, las añadimos al resultado
+    if (horas > 0) {
+        tiempoFormateado += `${horas} hora${horas > 1 ? 's' : ''}`;
+    }
+
+    // Si hay minutos, las añadimos
+    if (minutos > 0) {
+        if (tiempoFormateado !== "") tiempoFormateado += " ";
+        tiempoFormateado += `${minutos} minuto${minutos > 1 ? 's' : ''}`;
+    }
+
+    // Siempre añadimos los segundos si son mayores a 0
+    if (segundos > 0 || tiempoFormateado === "") {
+        if (tiempoFormateado !== "") tiempoFormateado += " ";
+        tiempoFormateado += `${segundos} segundo${segundos > 1 ? 's' : ''}`;
+    }
+
+    return tiempoFormateado;
+}
     //Cargar Ventas
     function cargarDatosVenta(search) {
         $('#tablaFabricacion').hide(100);
