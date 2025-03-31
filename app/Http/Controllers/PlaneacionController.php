@@ -435,7 +435,7 @@ class PlaneacionController extends Controller
                     $PartidasSinCorte=$countdatosOrdenFabricacion->partidasOF;
                     $countPartidasSinCortes=0;
                     foreach($PartidasSinCorte as $PartidasSinC){
-                        $countPartidasSinCortes=$PartidasSinC->Areas()->where('Areas_id', 4)->get()->count();
+                        $countPartidasSinCortes=$PartidasSinC->Areas()->where('Areas_id', 3)->get()->count();
                     }
                     if ($countPartidas == 0 AND $countdatosOrdenFabricacion->Corte == 1) { 
                         $tabla .= '<tr>
@@ -812,6 +812,11 @@ class PlaneacionController extends Controller
                     ->first();
                 if ($countdatosOrdenFabricacion) {
                     $countPartidas = $countdatosOrdenFabricacion->partidasOF()->count();
+                    $PartidasSinCorte=$countdatosOrdenFabricacion->partidasOF;
+                    $countPartidasSinCortes=0;
+                    foreach($PartidasSinCorte as $PartidasSinC){
+                        $countPartidasSinCortes=$PartidasSinC->Areas()->where('Areas_id', 3)->get()->count();
+                    }
                     if ($countPartidas == 0 AND $countdatosOrdenFabricacion->Corte == 1) { 
                         $tabla .= '<tr>
                             <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
@@ -825,6 +830,19 @@ class PlaneacionController extends Controller
                                 </button>
                             </td>
                         </tr>';
+                    }else if($countPartidasSinCortes == 0 AND $countdatosOrdenFabricacion->Corte == 0){
+                        $tabla .= '<tr>
+                        <td class="text-center">'.$datos['OrdenVenta'].'</td>
+                        <td class="text-center">'.$datos['OrdenFabricacion'].'</td>
+                        <td class="text-center">
+                            <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
+                                <i class="fa fa-arrow-left"></i> Cancelar
+                            </button>
+                            <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary">
+                                <i class="fa fa-eye"></i> Detalles
+                            </button>
+                        </td>
+                    </tr>';
                     } else {
                         $tabla .= '<tr>
                             <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
