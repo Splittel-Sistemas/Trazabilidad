@@ -102,7 +102,6 @@ class BusquedaController extends Controller
         
 
     }
-    
     //progreso de stage
     public function GraficarOROF(Request $request)
     {

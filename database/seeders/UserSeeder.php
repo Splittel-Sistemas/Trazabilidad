@@ -20,14 +20,13 @@ class UserSeeder extends Seeder
             'created_at' => now(), 
             'updated_at' => now()
         ]);
-          // Nuevo usuario
           User::create([
             'name' => 'Carlos',
             'Apellido' => 'González',
             'email' => '2222a@gmail.com',
-            'password' => Hash::make('12345678'), // Otra contraseña encriptada
+            'password' => Hash::make('12345678'), 
             'active' => '1',
-            'role' => 'O', // Otro rol
+            'role' => 'O', 
             'created_at' => now(), 
             'updated_at' => now()
         ]);
