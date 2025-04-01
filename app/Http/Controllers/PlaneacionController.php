@@ -519,12 +519,25 @@ class PlaneacionController extends Controller
         try{
             $NumOF_id=$this->funcionesGenerales->decrypt($request->input('NumOF'));
             $OF = OrdenFabricacion::where('id','=',$NumOF_id)->first();
+            if($OF->Corte==1){
             $numero_partidas=$OF->PartidasOF->count();
-            if($numero_partidas>0){
-                return response()->json([
-                    'status' => "iniciado",
-                    'OF' => ""
-                ]);
+                if($numero_partidas>0){
+                    return response()->json([
+                        'status' => "iniciado",
+                        'OF' => ""
+                    ]);
+                }
+            }else{
+                $countPartidasSinCortes=0;
+                foreach($OF->PartidasOF as $PartidasSinC){
+                    $countPartidasSinCortes=$PartidasSinC->Areas()->where('Areas_id', 4)->get()->count();
+                }
+                if($countPartidasSinCortes>0){
+                    return response()->json([
+                        'status' => "iniciado",
+                        'OF' => ""
+                    ]);
+                }
             }
             //Comprobar si ya esta iniciada
             if (!empty($OF)) {
@@ -539,7 +552,7 @@ class PlaneacionController extends Controller
                 $RegistrosBuffer->NumeroLineaB=$datos_partida;
                 $OF_OrdenFabricacion=$OF->OrdenFabricacion;
                 $RegistrosBuffer->save();
-            $bandera_borrar=$OF->delete();
+                $bandera_borrar=$OF->delete();
                 if ($bandera_borrar) {
                     return response()->json([
                         'status' => "success",
@@ -835,10 +848,10 @@ class PlaneacionController extends Controller
                         <td class="text-center">'.$datos['OrdenVenta'].'</td>
                         <td class="text-center">'.$datos['OrdenFabricacion'].'</td>
                         <td class="text-center">
-                            <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
+                            <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
                                 <i class="fa fa-arrow-left"></i> Cancelar
                             </button>
-                            <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary">
+                            <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary">
                                 <i class="fa fa-eye"></i> Detalles
                             </button>
                         </td>
