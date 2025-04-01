@@ -1614,7 +1614,6 @@ class AreasController extends Controller
                                         }
                                     }
                                     $menu.='<td class="align-middle Linea text-center">'.$Partidas->Areas()->first()->pivot->Linea_id.'</td>
-                                        
                                         </tr>';
                                 }
                             }
