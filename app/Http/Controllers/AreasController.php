@@ -845,15 +845,28 @@ class AreasController extends Controller
                                     <div class="col-auto px-3">
                                     <h6 class="text-center">Orden de Fabricación '.$datos->OrdenFabricacion.'</h6>
                                     <div class="badge badge-phoenix fs--4 badge-phoenix-secondary"><span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span></div>
-                                    </div>
+                                     </div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="row justify-content-end g-0">
                                     <div class="col-auto px-3">
+                                        <div class="dropdown font-sans-serif d-inline-block">
+                                            <button class="btn btn-phoenix-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Partidas <i class="fas fa-grip-horizontal"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto px-3">
                                         <select class="form-select form-select-sm mb-3" data-list-filter="data-list-filter">
                                         '.$Opciones.'
                                         </select>
+                                    </div>
+                                    <div class="collapse p-1" id="collapseExample">
+                                        <ul class="list-group">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">Messages<span class="badge badge-light-primary rounded-pill">14</span></li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">Events<span class="badge badge-light-primary rounded-pill">2</span></li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">Groups<span class="badge badge-light-primary rounded-pill">1</span></li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">Pages<span class="badge badge-light-primary rounded-pill">9</span></li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -1637,9 +1650,22 @@ class AreasController extends Controller
                         </div>
                         <div class="row justify-content-end g-0">
                             <div class="col-auto px-3">
-                            <select class="form-select form-select-sm mb-3" data-list-filter="data-list-filter">
-                            '.$Opciones.'
-                            </select>
+                                <div class="dropdown font-sans-serif d-inline-block">
+                                    <button class="btn btn-phoenix-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Partidas <i class="fas fa-grip-horizontal"></i></button>
+                                </div>
+                            </div>
+                            <div class="col-auto px-3">
+                                <select class="form-select form-select-sm mb-3" data-list-filter="data-list-filter">
+                                '.$Opciones.'
+                                </select>
+                            </div>
+                            <div class="collapse p-1" id="collapseExample">
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">Messages<span class="badge badge-light-primary rounded-pill">14</span></li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">Events<span class="badge badge-light-primary rounded-pill">2</span></li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">Groups<span class="badge badge-light-primary rounded-pill">1</span></li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">Pages<span class="badge badge-light-primary rounded-pill">9</span></li>
+                                </ul>
                             </div>
                         </div>
                         <div class="table-responsive scrollbar mb-3">
