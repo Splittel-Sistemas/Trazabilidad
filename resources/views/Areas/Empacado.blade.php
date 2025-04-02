@@ -130,7 +130,10 @@
 </script>
 <script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
+    let timeout;
     function ListaCodigo(Codigo,Contenedor,Accion){
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
         if (CadenaVacia(Codigo)) {
             return 0;
@@ -337,6 +340,7 @@
                 $('#IniciarBtn').hide();
             }
         }); 
+        },800);
     }
     function TraerDatos(id,OF){
         $('#CodigoEscaner').val(OF+"-"+id);
