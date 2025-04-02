@@ -24,7 +24,6 @@ class AreasController extends Controller
     public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
     }
-    
     //Area 3 Suministro
     public function Suministro(){
         //EstatusEntrega==0 aun no iniciado; 1 igual a terminado
