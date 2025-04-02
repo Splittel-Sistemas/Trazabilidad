@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('permissions', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
+            $table->integer('groups');
             $table->timestamps(); 
         });
     }
