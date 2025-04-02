@@ -610,6 +610,11 @@
                     }, 3500); 
                     $('#CodigoEscanerEntrada').val('');
                     $('#CodigoEscanerSalida').val('');
+                    if(Inicio==1){
+                        $('#Cantidad').focus();
+                    }else{
+                        $('#CantidadSalida').focus();
+                    }
                     $('#Cantidad').val(1);
                     $('#CantidadSalida').val(1);
                 }else if(response.status=='SurplusFin'){
@@ -653,6 +658,11 @@
                     }, 3000);
             }
         });
+        if(Inicio==1){
+            $('#CodigoEscanerEntrada').focus();
+        }else if(Inicio==0){
+            $('#CodigoEscanerSalida').focus();
+        }
     }
     function MostrarRetrabajo(tipo) {
         const Retrabajo = document.getElementById('Retrabajo');

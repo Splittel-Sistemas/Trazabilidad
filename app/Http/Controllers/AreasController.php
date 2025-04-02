@@ -398,9 +398,10 @@ class AreasController extends Controller
                         }
                     }
                     if($OrdenFabricacion->Corte==0){
-                        $Ordenfabricacionpartidas.='<td class="text-center"><button class="btn btn-link me-1 mb-1" onclick="etiquetaColor(\''.$this->funcionesGenerales->encrypt($Partida[0]['pivot']->PartidasOF_id).'\')" type="button"><i class="fas fa-download"></i></button></td></tr>';
+                        $Ordenfabricacionpartidas.='<td class="text-center"><button class="btn btn-link me-1 mb-1" onclick="etiquetaColor(\''.$this->funcionesGenerales->encrypt($Partida[0]['pivot']->PartidasOF_id).'\')" type="button"><i class="fas fa-download"></i></button></td>';
                     }
-                    else{$Ordenfabricacionpartidas.='<td></td><tr>';}
+                    else{$Ordenfabricacionpartidas.='<td></td>';}
+                    $Ordenfabricacionpartidas.='</tr>';
                 }
             }
             

@@ -612,6 +612,11 @@
                     $('#CodigoEscanerSalida').val('');
                     $('#Cantidad').val(1);
                     $('#CantidadSalida').val(1);
+                    if(Inicio==1){
+                        $('#Cantidad').focus();
+                    }else{
+                        $('#CantidadSalida').focus();
+                    }
                 }else if(response.status=='SurplusFin'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('Error no guardado, la cantidad de salidas supera el total de la cantidad las partidas registradas!');

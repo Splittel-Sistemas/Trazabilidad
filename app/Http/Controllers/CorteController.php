@@ -567,8 +567,8 @@ class CorteController extends Controller
             $pdf = new TCPDF();
             
             // Ajustar márgenes
-            $pdf->SetMargins(1, 3, 1); 
-            $pdf->SetFont('helvetica', 'B', 4);  
+            $pdf->SetMargins(0, 3, 0); 
+            $pdf->SetFont('helvetica', 'B', 4.5);  
             $pdf->SetAutoPageBreak(TRUE, 0.5);  
     
             $counter = 0;  // Contador para saber cuántas etiquetas se han colocado en la página
@@ -589,26 +589,30 @@ class CorteController extends Controller
                 // Definir el contenido del texto para cada etiqueta
                 if ($TipoPartida == 'N') {
                     $content = 
-                    'Número Cable: ' . strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal . "\n" .
+                    //'Número Cable: ' . strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal . "\n" .
                     'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" .
                     'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
+                    $NumCable=strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal;
                 } else {
                     $content = 
-                    'Número Cable: ' . strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal . " R \n" . 
+                    //'Número Cable: ' . strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal . " R \n" . 
                     'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" . 
                     'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
+                    $NumCable=strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal;
                 }
     
                 // Añadir el contenido de texto
-                $pdf->SetXY($posX + 1, 3);  // Colocamos el texto un poco desplazado desde el borde
-                $pdf->MultiCell(35, 0.5, $content, 0, 'L', 0, 1);  // Ajustamos la celda para que se ajuste al ancho de la etiqueta
+                $pdf->SetXY($posX+2, 3);  // Colocamos el texto un poco desplazado desde el borde
+                $pdf->MultiCell(28, 0.5, $content, 0, 'L', 0, 1);  // Ajustamos la celda para que se ajuste al ancho de la etiqueta
                 
                 // Generar y colocar el código de barras
                 $CodigoBarras = strip_tags($partida['Codigo']);
-                $pdf->SetXY($posX + 7, $pdf->GetY() + 2);  // Ajuste de la posición del código de barras
+                $pdf->SetXY($posX + 7, $pdf->GetY() + 1);  // Ajuste de la posición del código de barras
                 $pdf->write1DBarcode($CodigoBarras, 'C128', '', '', 20, 5, 0.4, array(), 'N');
-                $pdf->SetXY($posX + 7, $pdf->GetY() + 1);  // Ajustar la posición para el texto debajo del código de barras
+                $pdf->SetXY($posX + 7, $pdf->GetY() );  // Ajustar la posición para el texto debajo del código de barras
                 $pdf->Cell(17.5, 1, $CodigoBarras, 0, 1, 'C'); // Código de barras centrado
+                $pdf->SetXY($posX + 7, $pdf->GetY() );  
+                $pdf->Cell(17.5, 1, $NumCable, 0, 1, 'C'); // Código de barras centrado
     
                 $counter++;  // Incrementar el contador de etiquetas colocadas
             }
