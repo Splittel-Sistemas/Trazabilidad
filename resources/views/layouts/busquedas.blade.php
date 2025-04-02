@@ -512,6 +512,7 @@
                                 </div>
                             </div>
                         <br>
+                        <!---->
                          <!--<div class="card p-3">-->
                             <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
                             <div class="grid-container" id="plemasCanvases">

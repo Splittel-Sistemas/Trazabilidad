@@ -21,6 +21,7 @@ use Carbon\Carbon as CarbonClass;
 
 class BusquedaController extends Controller
 {
+    ///
     //vista
     public function index(Request $request)
     {
