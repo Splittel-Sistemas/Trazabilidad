@@ -11,22 +11,23 @@ class UserSeeder extends Seeder
     public function run()
     {
         User::create([
-            'name' => 'Leobardo',
-            'Apellido' => 'Pérez',
-            'email' => '123@gmail.com',
+            'name' => 'Administrador',
+            'Apellido' => 'Splittel',
+            'email' => 'AdministradorSplittel@gmail.com',
             'password' => Hash::make('12345678'), // Encriptar la contraseña
             'active' => '1',
             'role' => 'A', // Puedes asignar un rol, como 'A' o 'O'
             'created_at' => now(), 
             'updated_at' => now()
         ]);
+          // Nuevo usuario
           User::create([
-            'name' => 'Carlos',
-            'Apellido' => 'González',
-            'email' => '2222a@gmail.com',
-            'password' => Hash::make('12345678'), 
+            'name' => 'Operador',
+            'Apellido' => 'Splittel',
+            'email' => 'OperadorSplittel@gmail.com',
+            'password' => Hash::make('12345678'), // Otra contraseña encriptada
             'active' => '1',
-            'role' => 'O', 
+            'role' => 'O', // Otro rol
             'created_at' => now(), 
             'updated_at' => now()
         ]);

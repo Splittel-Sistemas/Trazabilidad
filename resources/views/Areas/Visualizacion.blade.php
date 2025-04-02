@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col-6">
             <div class="card shadow-sm">
-                <div class="card-header p-2" id="filtroEntrada" style="background: #8dff33;">
+                <div class="card-header p-2" id="filtroEntrada" style="background: #01914f;">
                     <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Entrada <i class="fas fa-arrow-down"></i></h3>
               </div>
               <div class="card-body row" id="filtroEntrada">
@@ -59,7 +59,7 @@
         </div>
         <div class="col-6">
             <div class="card shadow-sm">
-                <div class="card-header p-2" id="filtroEntrada" style="background:#ff4633;">
+                <div class="card-header p-2" id="filtroEntrada" style="background:#dd4b39;">
                     <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Salida <i class="fas fa-arrow-up"></i></h3>
                 </div>
                 <div class="card-body row" id="filtroSalida">
@@ -136,7 +136,10 @@
 @section('scripts')
 <script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
+    let timeout;
     function ListaCodigo(Codigo,Contenedor,TipoEntrada){
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
         if (CadenaVacia(Codigo)) {
             return 0;
@@ -348,6 +351,7 @@
                 $('#IniciarBtnSalida').hide();
             }
         }); 
+        },800);
     }
     function TraerDatos(id,OF){
         $('#CodigoEscaner').val(OF+"-"+id);
@@ -423,6 +427,14 @@
         });
     }
     $(document).ready(function() {
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                $('#CodigoEscanerEntrada').focus();
+            }
+            if (event.key === 'ArrowRight') {
+                $('#CodigoEscanerSalida').focus();
+            }
+        });
         $('#Cantidad').on('input', function() {
             RegexNumeros(document.getElementById('Cantidad'));
         });
@@ -600,6 +612,11 @@
                     $('#CodigoEscanerSalida').val('');
                     $('#Cantidad').val(1);
                     $('#CantidadSalida').val(1);
+                    if(Inicio==1){
+                        $('#Cantidad').focus();
+                    }else{
+                        $('#CantidadSalida').focus();
+                    }
                 }else if(response.status=='SurplusFin'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('Error no guardado, la cantidad de salidas supera el total de la cantidad las partidas registradas!');

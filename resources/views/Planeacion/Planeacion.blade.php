@@ -169,9 +169,9 @@
                                             @endif
                                         @endforeach
                                         @if($bandera==0)
-                                            <tr class="text-center mt-4">
-                                                <td>No existen Ordenes de Venta para el periodo <br>{{$FechaFin}} - {{$FechaInicio}}</td>
-                                            </tr>
+                                        <tr class="text-center mt-4">
+                                            <td>No existen Ordenes de Venta <br> para el periodo <br>{{$FechaFin}} - {{$FechaInicio}}</td>
+                                        </tr>
                                         @endif
                                     @else
                                     <tr class="text-center mt-4"><td>Ocurrio un error!, No fue posible cargar los datos</td></tr>

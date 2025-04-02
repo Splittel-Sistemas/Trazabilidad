@@ -510,47 +510,49 @@ class CorteController extends Controller
                 throw new \Exception('ID no recibido');
             }
             $colores = [
-                1 => ['nombre' => 'Azul Claro', 'rgb' => [14, 14, 231]], // Azul más claro y más fuerte
-                2 => ['nombre' => 'Rojo Claro', 'rgb' => [241, 48, 48]], // Rojo más claro y más fuerte
-                3 => ['nombre' => 'Rosa Mexicano Claro', 'rgb' => [236, 42, 104]], // Rosa Mexicano más claro y más fuerte
-                4 => ['nombre' => 'Café Claro', 'rgb' => [150, 115, 90]], // Café más claro y más fuerte
-                5 => ['nombre' => 'Verde Bandera Claro', 'rgb' => [5, 112, 62]], // Verde Bandera más claro y más fuerte
-                6 => ['nombre' => 'Amarillo Claro', 'rgb' => [252, 252, 44]], // Amarillo más claro y más fuerte
-                7 => ['nombre' => 'Verde Limón Claro', 'rgb' => [230, 252, 122]], // Verde Limón más claro y más fuerte
-                8 => ['nombre' => 'Rosa Claro', 'rgb' => [255, 210, 220]], // Rosa más claro y más fuerte
-                9 => ['nombre' => 'Naranja Claro', 'rgb' => [255, 168, 53]] // Naranja más claro y más fuerte
+                1 => ['nombre' => 'Azul Claro', 'rgb' => [14, 14, 231]],
+                2 => ['nombre' => 'Rojo Claro', 'rgb' => [241, 48, 48]],
+                3 => ['nombre' => 'Rosa Mexicano Claro', 'rgb' => [236, 42, 104]],
+                4 => ['nombre' => 'Café Claro', 'rgb' => [150, 115, 90]],
+                5 => ['nombre' => 'Verde Bandera Claro', 'rgb' => [5, 112, 62]],
+                6 => ['nombre' => 'Amarillo Claro', 'rgb' => [252, 252, 44]],
+                7 => ['nombre' => 'Verde Limón Claro', 'rgb' => [230, 252, 122]],
+                8 => ['nombre' => 'Rosa Claro', 'rgb' => [255, 210, 220]],
+                9 => ['nombre' => 'Naranja Claro', 'rgb' => [255, 168, 53]]
             ];
             $R= isset($colores[$Coloretiqueta])?$colores[$Coloretiqueta]['rgb'][0]:255;
             $G= isset($colores[$Coloretiqueta])?$colores[$Coloretiqueta]['rgb'][1]:255;
             $B= isset($colores[$Coloretiqueta])?$colores[$Coloretiqueta]['rgb'][2]:255;
+    
             // Buscar la partida por ID
             $PartidaOF = PartidasOF::find($partidaId);
             if (is_null($PartidaOF) || is_null($PartidaOF->ordenFabricacion()->first())) {
                 throw new \Exception('No se encontraron datos para este ID.');
             }
             $OrdenFabricacion = $PartidaOF->ordenFabricacion;
-            $PartidasOFEtiq=$OrdenFabricacion->partidasOF()->get();
-            $inicio=0;
-            $inicio=0;
-            $fin=0;
-            //Asignamos el numero de inicio y fin de la etiqueta para la partida seleccionada
-            $TipoPartida="N";
+            $PartidasOFEtiq = $OrdenFabricacion->partidasOF()->get();
+            $inicio = 0;
+            $fin = 0;
+    
+            // Asignamos el número de inicio y fin de la etiqueta para la partida seleccionada
+            $TipoPartida = "N";
             foreach($PartidasOFEtiq as $PartidaOFEtiq){
-                $fin+=$PartidaOFEtiq->cantidad_partida;
-                if($PartidaOFEtiq->id==$partidaId){
-                    $TipoPartida=$PartidaOFEtiq->TipoPartida;
-                    if($TipoPartida=='R'){
-                        $fin=$PartidaOFEtiq->cantidad_partida;
-                        $inicio=0;
+                $fin += $PartidaOFEtiq->cantidad_partida;
+                if($PartidaOFEtiq->id == $partidaId){
+                    $TipoPartida = $PartidaOFEtiq->TipoPartida;
+                    if($TipoPartida == 'R'){
+                        $fin = $PartidaOFEtiq->cantidad_partida;
+                        $inicio = 0;
                     }
                     break;
                 }
-                $inicio+=$PartidaOFEtiq->cantidad_partida;
+                $inicio += $PartidaOFEtiq->cantidad_partida;
             }
+    
             // Preparar las partidas relacionadas solo para la partida seleccionada
             $partidasData = [];
-            $contador = $inicio+1; 
-            $partidaId=$PartidaOF->NumeroPartida;
+            $contador = $inicio + 1;
+            $partidaId = $PartidaOF->NumeroPartida;
             for ($i = $inicio; $i < $fin; $i++) {
                 $partidasData[] = [
                     'cantidad' => $contador, 
@@ -560,43 +562,182 @@ class CorteController extends Controller
                 ];
                 $contador++; // Incrementar el contador
             }
+    
             // Crear PDF
             $pdf = new TCPDF();
-            $pdf->SetMargins(3, 3, 3);
-            $pdf->SetFont('helvetica', 'B', 10);
-
-            foreach ($partidasData as $partida) {
-                //Color de la pagina
-                $pdf->AddPage('L', array(70, 100)); // Añadir una nueva página de 50mm x 100mm
-                $pdf->SetFillColor($R, $G, $B); 
-                $pdf->Rect(0, 0, $pdf->GetPageWidth(),3, 'F');
-                $pdf->SetTextColor(0, 0, 0);  // Color de texto negro
-                if($TipoPartida=='N'){
-                    $content = 
-                    'Número Cable: ' . strip_tags($partida['cantidad']) . " / ".$OrdenFabricacion->CantidadTotal."\n" .
-                    'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" .
-                    'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
-                }else{
-                    $content = 
-                    'Número Cable: ' . strip_tags($partida['cantidad']) . " / ".$OrdenFabricacion->CantidadTotal." R \n" .
-                    'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" .
-                    'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
+            
+            // Ajustar márgenes
+            $pdf->SetMargins(0, 3, 0); 
+            $pdf->SetFont('helvetica', 'B', 4.5);  
+            $pdf->SetAutoPageBreak(TRUE, 0.5);  
+    
+            $counter = 0;  // Contador para saber cuántas etiquetas se han colocado en la página
+            foreach ($partidasData as $key=>$partida) {
+                // Si ya hemos colocado tres etiquetas en la fila, añadimos una nueva página
+                if ($key % 3 == 0 || $key == 0) {
+                    $pdf->AddPage('L', array(112, 25));  // Nueva página
                 }
-                // Añadir el contenido a la página
-                $pdf->MultiCell(0, 5, $content, 0, 'L', 0, 1);
+                
+                // Calcular la posición X para cada etiqueta
+                $posX = ($counter % 3) * 37.33; // Esto distribuye las etiquetas horizontalmente (3 por fila)
+                
+                // Añadir el color de fondo en la parte superior de la etiqueta
+                $pdf->SetFillColor($R, $G, $B); 
+                $pdf->Rect($posX, 0, 37.33, 3, 'F');  // Color de fondo en la parte superior de la etiqueta
+                $pdf->SetTextColor(0, 0, 0);  // Color de texto en negro
+    
+                // Definir el contenido del texto para cada etiqueta
+                if ($TipoPartida == 'N') {
+                    $content = 
+                    //'Número Cable: ' . strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal . "\n" .
+                    'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" .
+                    'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
+                    $NumCable=strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal;
+                } else {
+                    $content = 
+                    //'Número Cable: ' . strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal . " R \n" . 
+                    'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" . 
+                    'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
+                    $NumCable=strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal;
+                }
+    
+                // Añadir el contenido de texto
+                $pdf->SetXY($posX+2, 3);  // Colocamos el texto un poco desplazado desde el borde
+                $pdf->MultiCell(28, 0.5, $content, 0, 'L', 0, 1);  // Ajustamos la celda para que se ajuste al ancho de la etiqueta
+                
+                // Generar y colocar el código de barras
                 $CodigoBarras = strip_tags($partida['Codigo']);
-                $pdf->SetXY(30, $pdf->GetY() + 5);
-                $pdf->write1DBarcode($CodigoBarras, 'C128', '', '', 40, 10, 0.4, array(), 'N');
-                $pdf->Cell(0,5, $CodigoBarras, 0, 1, 'C');
+                $pdf->SetXY($posX + 7, $pdf->GetY() + 1);  // Ajuste de la posición del código de barras
+                $pdf->write1DBarcode($CodigoBarras, 'C128', '', '', 20, 5, 0.4, array(), 'N');
+                $pdf->SetXY($posX + 7, $pdf->GetY() );  // Ajustar la posición para el texto debajo del código de barras
+                $pdf->Cell(17.5, 1, $CodigoBarras, 0, 1, 'C'); // Código de barras centrado
+                $pdf->SetXY($posX + 7, $pdf->GetY() );  
+                $pdf->Cell(17.5, 1, $NumCable, 0, 1, 'C'); // Código de barras centrado
+    
+                $counter++;  // Incrementar el contador de etiquetas colocadas
             }
+    
             ob_end_clean();
             // Generar el archivo PDF y devolverlo al navegador
-            return $pdf->Output('orden_fabricacion_'.$OrdenFabricacion->OrdenFabricacion.'_' . $partidaId . '.pdf', 'I');//D descarga, I devolver
+            return $pdf->Output('orden_fabricacion_'.$OrdenFabricacion->OrdenFabricacion.'_' . $partidaId . '.pdf', 'I'); // 'I' para devolver el PDF al navegador
         } catch (\Exception $e) {
-            //Log::error('Error al generar PDF: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    
+    /*public function generarPDF(Request $request){
+        try {
+            $partidaId = $this->funcionesGenerales->decrypt($request->input('id'));
+            $Coloretiqueta = rand(1, 9);
+            if (!$partidaId) {
+                throw new \Exception('ID no recibido');
+            }
+            $colores = [
+                1 => ['nombre' => 'Azul Claro', 'rgb' => [14, 14, 231]],
+                2 => ['nombre' => 'Rojo Claro', 'rgb' => [241, 48, 48]],
+                3 => ['nombre' => 'Rosa Mexicano Claro', 'rgb' => [236, 42, 104]],
+                4 => ['nombre' => 'Café Claro', 'rgb' => [150, 115, 90]],
+                5 => ['nombre' => 'Verde Bandera Claro', 'rgb' => [5, 112, 62]],
+                6 => ['nombre' => 'Amarillo Claro', 'rgb' => [252, 252, 44]],
+                7 => ['nombre' => 'Verde Limón Claro', 'rgb' => [230, 252, 122]],
+                8 => ['nombre' => 'Rosa Claro', 'rgb' => [255, 210, 220]],
+                9 => ['nombre' => 'Naranja Claro', 'rgb' => [255, 168, 53]]
+            ];
+            $R= isset($colores[$Coloretiqueta])?$colores[$Coloretiqueta]['rgb'][0]:255;
+            $G= isset($colores[$Coloretiqueta])?$colores[$Coloretiqueta]['rgb'][1]:255;
+            $B= isset($colores[$Coloretiqueta])?$colores[$Coloretiqueta]['rgb'][2]:255;
+            
+            // Buscar la partida por ID
+            $PartidaOF = PartidasOF::find($partidaId);
+            if (is_null($PartidaOF) || is_null($PartidaOF->ordenFabricacion()->first())) {
+                throw new \Exception('No se encontraron datos para este ID.');
+            }
+            $OrdenFabricacion = $PartidaOF->ordenFabricacion;
+            $PartidasOFEtiq = $OrdenFabricacion->partidasOF()->get();
+            $inicio = 0;
+            $fin = 0;
+            
+            // Asignamos el número de inicio y fin de la etiqueta para la partida seleccionada
+            $TipoPartida = "N";
+            foreach($PartidasOFEtiq as $PartidaOFEtiq){
+                $fin += $PartidaOFEtiq->cantidad_partida;
+                if($PartidaOFEtiq->id == $partidaId){
+                    $TipoPartida = $PartidaOFEtiq->TipoPartida;
+                    if($TipoPartida == 'R'){
+                        $fin = $PartidaOFEtiq->cantidad_partida;
+                        $inicio = 0;
+                    }
+                    break;
+                }
+                $inicio += $PartidaOFEtiq->cantidad_partida;
+            }
+            
+            // Preparar las partidas relacionadas solo para la partida seleccionada
+            $partidasData = [];
+            $contador = $inicio + 1; 
+            $partidaId = $PartidaOF->NumeroPartida;
+            for ($i = $inicio; $i < $fin; $i++) {
+                $partidasData[] = [
+                    'cantidad' => $contador, 
+                    'descripcion' => $OrdenFabricacion->Descripcion ?? 'Sin Descripción',
+                    'OrdenFabricacion' => $OrdenFabricacion->OrdenFabricacion ?? 'Sin Orden de Fabricación',
+                    'Codigo'=> $OrdenFabricacion->OrdenFabricacion.'-'.$partidaId.'-'.$contador,
+                ];
+                $contador++; // Incrementar el contador
+            }
+    
+            // Crear PDF
+            $pdf = new TCPDF();
+            
+            // Ajustar márgenes
+            $pdf->SetMargins(1, 3, 1); 
+            $pdf->SetFont('helvetica', 'B', 4);  
+            $pdf->SetAutoPageBreak(TRUE, 0.5);  
+            
+            foreach ($partidasData as $key=>$partida) {
+                // Añadir una nueva página de 35x25 mm en formato horizontal
+                $pdf->AddPage('L', array(112, 25)); 
+                $pdf->SetFillColor($R, $G, $B); 
+                $pdf->Rect(0, 0, $pdf->GetPageWidth(), 3, 'F');  // Color de fondo en la parte superior
+                $pdf->SetTextColor(0, 0, 0);  // Color de texto en negro
+    
+                if ($TipoPartida == 'N') {
+                    $content = 
+                    'Número Cable: ' . strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal . "\n" .
+                    'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" .
+                    'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
+                } else {
+                    $content = 
+                    'Número Cable: ' . strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal . " R \n" . 
+                    'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" . 
+                    'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
+                }
+    
+                // Añadir el contenido de texto
+                $pdf->MultiCell(35, 0.5, $content, 0, 'L', 0, 1);  // Reduciendo la altura de las celdas
+                // Generar y colocar el código de barras
+                $CodigoBarras = strip_tags($partida['Codigo']);
+                $pdf->SetXY(7, $pdf->GetY() + 3);
+                $pdf->write1DBarcode($CodigoBarras, 'C128', '', '', 20, 5, 0.4, array(), 'N');
+                $pdf->Cell(35, 4, $CodigoBarras, 0, 1, 'C');
+                // Añadir el contenido de texto
+                $pdf->MultiCell(35, 0.5, $content, 0, 'L', 0, 1);  // Reduciendo la altura de las celdas
+                // Generar y colocar el código de barras
+                $CodigoBarras = strip_tags($partida['Codigo']);
+                $pdf->SetXY(7, $pdf->GetY() + 3);
+                $pdf->write1DBarcode($CodigoBarras, 'C128', '', '', 20, 5, 0.4, array(), 'N');
+                $pdf->Cell(35, 4, $CodigoBarras, 0, 1, 'C');
+                
+            }
+    
+            ob_end_clean();
+            // Generar el archivo PDF y devolverlo al navegador
+            return $pdf->Output('orden_fabricacion_'.$OrdenFabricacion->OrdenFabricacion.'_' . $partidaId . '.pdf', 'I'); // 'I' para devolver el PDF al navegador
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }*/
+    
 
 
 

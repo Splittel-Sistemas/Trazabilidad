@@ -20,3 +20,4 @@ yarn-error.log
 /database/database.sqlite
 /storage/logs/laravel.log
 /vendor
+storage/logs/laravel.log
