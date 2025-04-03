@@ -370,7 +370,7 @@ class AreasController extends Controller
                         }
                         if ($request->has('detalles')) {
                             $Ordenfabricacionpartidas.='<td class="text-center"></td><td></td>
-                            </tr>';
+                            ';
                         }else{
                             // Mostrar botones solo si FechaTermina es NULL o está vacío
                             if($parti['pivot']->FechaTermina == '' || $parti['pivot']->FechaTermina == null){
