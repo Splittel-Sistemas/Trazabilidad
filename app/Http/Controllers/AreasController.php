@@ -691,7 +691,7 @@ class AreasController extends Controller
     //Preparado 5
     public function Preparado(){
         $user= Auth::user();
-        if($user->hasPermission('Vista Ensamble')){
+        if ($user->hasPermission('Vista Preparado')) {
         $AreaOriginal=5;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
             $Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
