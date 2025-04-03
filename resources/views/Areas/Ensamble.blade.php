@@ -158,6 +158,11 @@
             Inicio=0;
             Finalizar=1;
         }
+        if(Inicio==1){
+            $('#CodigoEscanerEntrada').focus();
+        }else if(Inicio==0){
+            $('#CodigoEscanerSalida').focus();
+        }
         regexCodigo = /^\d+-\d+-\d+$/;
         regexCodigoOF = /^\d+-\d+$/;
         if(!(regexCodigo.test(Codigo) || regexCodigoOF.test(Codigo))) {
@@ -193,6 +198,11 @@
                     $('#CantidadPartidasOF').html('<span class="badge bg-light text-dark">Piezas procesadas '+response.CantidadCompletada+"/"+response.CantidadTotal+'</span>');
                     $('#TituloPartidasOF').html(response.OF);
                     if(response.Escaner==0){
+                        if(Inicio==1){
+                            $('#CodigoEscanerEntrada').focus();
+                        }else if(Inicio==0){
+                            $('#CodigoEscanerSalida').focus();
+                        }
                         if((response.tabla).includes('<td')){
                             TablaList(DivCointainerTableSuministro);
                         }
@@ -234,6 +244,11 @@
                         $('#ContentTabla').show();
                         Mensaje="";
                         if(response.Inicio==1){
+                            if(Inicio==1){
+                                $('#CodigoEscanerEntrada').focus();
+                            }else if(Inicio==0){
+                                $('#CodigoEscanerSalida').focus();
+                            }
                             switch (response.TipoEscanerrespuesta) {
                                 case 1:
                                 //$('#CodigoEscaner').val('');
@@ -283,6 +298,11 @@
 
                         }
                         if(response.Finalizar==1){
+                            if(Inicio==1){
+                                $('#CodigoEscanerEntrada').focus();
+                            }else if(Inicio==0){
+                                $('#CodigoEscanerSalida').focus();
+                            }
                             switch (response.TipoEscanerrespuesta) {
                                 case 1:
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> Finalizado!';
@@ -326,6 +346,11 @@
                         }, 2500);
                     }
                 }else if(response.status=="empty"){
+                        if(Inicio==1){
+                            $('#CodigoEscanerEntrada').focus();
+                        }else if(Inicio==0){
+                            $('#CodigoEscanerSalida').focus();
+                        }
                     //if(response.Escaner!=0){
                         $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
                         $('#ToastGuardadoBody').html('El codigo No existe!  ');
@@ -335,6 +360,11 @@
                         }, 4000);
                     //}
                 }else if(response.status=="NoExiste"){
+                        if(Inicio==1){
+                            $('#CodigoEscanerEntrada').focus();
+                        }else if(Inicio==0){
+                            $('#CodigoEscanerSalida').focus();
+                        }
                         $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
                         $('#ToastGuardadoBody').html('El codigo No existe!  ');
                         $('#ToastGuardado').fadeIn();
@@ -349,15 +379,21 @@
                 $('#IniciarBtn').hide();
                 $('#CantidadDivSalida').hide();
                 $('#IniciarBtnSalida').hide();
+                if(Inicio==1){
+                    $('#CodigoEscanerEntrada').focus();
+                }else if(Inicio==0){
+                    $('#CodigoEscanerSalida').focus();
+                }
             }
         }); 
-        }, 800);
+    }, 800);
     }
     function TraerDatos(id,OF){
         $('#CodigoEscaner').val(OF+"-"+id);
         $('#CodigoEscanerSuministro').html('');
     }
     function Retrabajo(Codigo){
+        $('#CodigoEscanerEntrada').focus();
         $.ajax({
             url: "{{route('PreparadoBuscar')}}", 
             type: 'POST',
@@ -610,13 +646,13 @@
                     }, 3500); 
                     $('#CodigoEscanerEntrada').val('');
                     $('#CodigoEscanerSalida').val('');
-                    $('#Cantidad').val(1);
-                    $('#CantidadSalida').val(1);
                     if(Inicio==1){
                         $('#Cantidad').focus();
                     }else{
                         $('#CantidadSalida').focus();
                     }
+                    $('#Cantidad').val(1);
+                    $('#CantidadSalida').val(1);
                 }else if(response.status=='SurplusFin'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('Error no guardado, la cantidad de salidas supera el total de la cantidad las partidas registradas!');
