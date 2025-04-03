@@ -779,7 +779,7 @@ class AreasController extends Controller
                 }
                 
             }
-        return view('Areas.Ensamble',compact('Area','Registros'));
+        return view('Areas.Preparado',compact('Area','Registros'));
         }else{
             return redirect()->route('error.');
         }
