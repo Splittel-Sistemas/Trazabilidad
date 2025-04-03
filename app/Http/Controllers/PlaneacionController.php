@@ -213,7 +213,7 @@ class PlaneacionController extends Controller
                             <td>' . ($partida['Orden de F.'] ?? 'No disponible') . '</td>
                             <td>' . ($partida['Articulo'] ?? 'No disponible') . '</td>
                             <td>' . ($partida['Descripcion'] ?? 'No disponible') . '</td>
-                            <td>' . ($cantidadOF ?: 'No disponible') . '</td>
+                            <td class="text-center">' . ($cantidadOF ?: 'No disponible') . '</td>
                             <td>' . ($fechaEntrega ?: 'No disponible') . '</td>
                             <td style="display:none;">' . $ordenventa. '</td>
                             <td style="display:none;">' . $cliente. '</td>

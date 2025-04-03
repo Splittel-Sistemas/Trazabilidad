@@ -66,6 +66,7 @@ Route::post('/Area/Suministro/Cancelar', [AreasController::class,'SuministroCanc
 Route::post('/Area/Suministro/Finalizar', [AreasController::class,'SuministroFinalizar'])->name('SuministroFinalizar')->middleware('auth');
 Route::post('/Area/Suministro/Buscar', [AreasController::class,'BuscarSuministro'])->name('BuscarSuministro')->middleware('auth');
 //Preparado
+Route::get('/Area/Transicion', [AreasController::class,'Transicion'])->name('Transicion')->middleware('auth');
 Route::get('/Area/Preparado', [AreasController::class,'Preparado'])->name('Preparado')->middleware('auth');
 Route::post('/Area/Preparado/buscar', [AreasController::class,'PreparadoBuscar'])->name('PreparadoBuscar')->middleware('auth');
 Route::get('/Area/Suministro/buscar', [AreasController::class,'SuministroBuscar'])->name('SuministroBuscar')->middleware('auth');
@@ -75,6 +76,7 @@ Route::get('/Area/Pulido', [AreasController::class,'Pulido'])->name('Pulido')->m
 Route::get('/Area/Medicion', [AreasController::class,'Medicion'])->name('Medicion')->middleware('auth');
 Route::get('/Area/Visualizacion', [AreasController::class,'Visualizacion'])->name('Visualizacion')->middleware('auth');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas')->middleware('auth');
+Route::get('/Area/Montaje', [AreasController::class,'Montaje'])->name('Montaje')->middleware('auth');
 Route::post('/Area/Tabla/Pendientes', [AreasController::class,'AreaTablaPendientes'])->name('AreaTablaPendientes')->middleware('auth');
 
 

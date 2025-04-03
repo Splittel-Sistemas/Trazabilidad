@@ -18,11 +18,14 @@ class CreateAreasTable extends Migration
             ['nombre' => 'planeacion'],
             ['nombre' => 'corte'],
             ['nombre' => 'suministro'],
+            ['nombre' => 'transición'],
             ['nombre' => 'preparado'],
             ['nombre' => 'ensamble'],
             ['nombre' => 'pulido'],
-            ['nombre' => 'medicion'],
-            ['nombre' => 'visualizacion'],
+            ['nombre' => 'medición'],
+            ['nombre' => 'visualización'],
+            ['nombre' => 'montaje'],
+            ['nombre' => 'empaque'],
         ]);
     }
 

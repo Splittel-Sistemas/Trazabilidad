@@ -244,6 +244,12 @@
                                             </li>
                                         @endif
                                         @if(Auth::user()->hasPermission("Vista Preparado"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Transicion') ? 'nav-tabs active' : '' }}" href="{{route('Transicion')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Transici&oacute;n</span></div>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if(Auth::user()->hasPermission("Vista Preparado"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Preparado') ? 'nav-tabs active' : '' }}" href="{{route('Preparado')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Preparado</span></div>
                                                 </a>
@@ -271,6 +277,12 @@
                                         @if(Auth::user()->hasPermission("Vista Visualizacion"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Visualizacion') ? 'nav-tabs active' : '' }}" href="{{route('Visualizacion')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Visualizaci&oacute;n</span></div>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if(Auth::user()->hasPermission("Vista Preparado"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Montaje') ? 'nav-tabs active' : '' }}" href="{{route('Montaje')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Montaje</span></div>
                                                 </a>
                                             </li>
                                         @endif
