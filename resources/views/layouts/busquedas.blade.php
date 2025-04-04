@@ -4,52 +4,52 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!--estilos-->
     <style>
-        .progress-scroll-container {
-    margin-top: 20px;
-    max-height: 300px;
-    overflow-y: auto;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-}
+        
+    .progress-scroll-container {
+        margin-top: 20px;
+        max-height: 300px;
+        overflow-y: auto;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
 
-.task-progress-bar {
-    margin-bottom: 15px;
-    background-color: #e0e0e0;
-    border-radius: 4px;
-    position: relative;
-    padding: 5px;
-}
+    .task-progress-bar {
+        margin-bottom: 15px;
+        background-color: #e0e0e0;
+        border-radius: 4px;
+        position: relative;
+        padding: 5px;
+    }
 
-.task-label {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
+    .task-label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
 
-.task-progress {
-    height: 24px;
-    line-height: 24px;
-    color: #fff;
-    text-align: right;
-    padding-right: 8px;
-    border-radius: 4px;
-    font-weight: bold;
-    transition: width 0.3s ease;
-}
+    .task-progress {
+        height: 24px;
+        line-height: 24px;
+        color: #fff;
+        text-align: right;
+        padding-right: 8px;
+        border-radius: 4px;
+        font-weight: bold;
+        transition: width 0.3s ease;
+    }
 
-.progress-text {
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    font-size: 12px;
-    color: #000;
-}
+    .progress-text {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        font-size: 12px;
+        color: #000;
+    }
 
-.retrabajo .task-progress {
-    background-color: blue !important;
-}
-
+    .retrabajo .task-progress {
+        background-color: blue !important;
+    }
 
 
 
@@ -117,16 +117,13 @@
             background: #a0d2e9;
             border-radius: 4px;
         }
-
-
-/*
             #progress-wrapper {
                 padding: 10px;
                
                 border-radius: 8px;
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            }*/
-/*
+            }
+
             .task-progress-bar {
                 margin-bottom: 15px;
                 padding: 5px;
@@ -169,21 +166,21 @@
                 color: rgba(255, 255, 255, 0.596);
             }
 
-            /*.btn-primary {
+            .btn-primary {
                 background-color: #007bff;
                 color: rgba(255, 255, 255, 0.459);
-            }*/
-        /* Estilos de los botones */
+            }
+        
         .btn-primary, .btn-secondary {
-            /*padding: 10px 20px;
+            padding: 10px 20px;
             font-size: 16px;
             border-radius: 25px;
             transition: background-color 0.3s ease, transform 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);*/
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
     
         /* Barra de progreso */
-        /*
+        
         .task-progress-bar {
                 margin-bottom: 15px; 
                 position: relative;
@@ -191,17 +188,17 @@
                 border-radius: 10px;
                 box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
                 padding: 8px; 
-                font-size: 12px; 
+                font-size:  
             }
 
-           
+            
             .task-label {
                 font-weight: normal; 
                 text-align: center;
                 margin-bottom: 5px; 
             }
 
-           
+         
             .task-progress {
                 height: 20px; 
                 border-radius: 10px;
@@ -215,11 +212,11 @@
           
             .progress-text {
                 color: rgb(0, 0, 0);
-                font-size: 12px;
+                font-size: 12px; 
                 font-weight: normal; 
             }
 
-            
+          
             .task-progress-bar .task-progress {
                 font-size: 10px; 
             }
@@ -228,13 +225,12 @@
                 font-size: 10px; 
         }
 
-       
+      
         .selected-stage .stage-circle,
             .selected-stage span {
                 background-color:#299ae6 ; 
                 color: white; 
             }
-            */
 
         /* Estilos generales */
         .grid-container {
@@ -593,9 +589,6 @@
                         <!---->
                          <!--<div class="card p-3">-->
                             <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
-                            
-                            
-                            
                             <div class="grid-container" id="plemasCanvases">
                                
                                 <div class="card">
@@ -956,47 +949,104 @@
                         
                         <br> 
                         <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
+                        
                         <div class="grid-container card p-2" id="canvases">
                             <!-- Estación Cortes -->
                             <div class="grid-item">
-                              <h1 class="small-title"> Cortes</h1>
-                              <canvas id="corte" width="300" height="300"></canvas>
+                                <h1 class="small-title">Cortes</h1>
+                                <canvas id="Corte" width="300" height="300"></canvas>
                             </div>
+                            
                             <!-- Estación Suministros -->
                             <div class="grid-item">
-                              <h1 class="small-title"> Suministros</h1>
-                              <canvas id="suministro" width="300" height="300"></canvas>
+                                <h1 class="small-title">Suministros</h1>
+                                <canvas id="Suministro" width="300" height="300"></canvas>
                             </div>
+                            
+                            <!-- Estación Transición -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Transición</h1>
+                                <canvas id="Transicion" width="300" height="300"></canvas>
+                            </div>
+                            
                             <!-- Estación Preparado -->
                             <div class="grid-item">
-                              <h1 class="small-title"> Preparado</h1>
-                              <canvas id="preparado" width="300" height="300"></canvas>
+                                <h1 class="small-title">Preparado</h1>
+                                <canvas id="Preparado" width="300" height="300"></canvas>
                             </div>
+                            
+                            <!-- Estación Ribonizado -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Ribonizado</h1>
+                                <canvas id="Ribonizado" width="300" height="300"></canvas>
+                            </div>
+                            
                             <!-- Estación Ensamble -->
                             <div class="grid-item">
-                              <h1 class="small-title">Ensamble</h1>
-                              <canvas id="ensamble" width="300" height="300"></canvas>
+                                <h1 class="small-title">Ensamble</h1>
+                                <canvas id="Ensamble" width="300" height="300"></canvas>
                             </div>
+                            
+                            <!-- Estación Corte de Fibra -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Corte de Fibra</h1>
+                                <canvas id="CorteFibra" width="300" height="300"></canvas>
+                            </div>
+                            
                             <!-- Estación Pulido -->
                             <div class="grid-item">
-                              <h1 class="small-title"> Pulido</h1>
-                              <canvas id="pulido" width="300" height="300"></canvas>
+                                <h1 class="small-title">Pulido</h1>
+                                <canvas id="Pulido" width="300" height="300"></canvas>
                             </div>
+                            
+                            <!-- Estación Armado -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Armado</h1>
+                                <canvas id="Armado" width="300" height="300"></canvas>
+                            </div>
+                            
+                            <!-- Estación Inspección -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Inspección</h1>
+                                <canvas id="Inspeccion" width="300" height="300"></canvas>
+                            </div>
+                            
+                            <!-- Estación Polaridad -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Polaridad</h1>
+                                <canvas id="Polaridad" width="300" height="300"></canvas>
+                            </div>
+                            
+                            <!-- Estación Crimpado -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Crimpado</h1>
+                                <canvas id="Crimpado" width="300" height="300"></canvas>
+                            </div>
+                            
                             <!-- Estación Medición -->
                             <div class="grid-item">
-                              <h1 class="small-title"> Medición</h1>
-                              <canvas id="medicion" width="300" height="300"></canvas>
+                                <h1 class="small-title">Medición</h1>
+                                <canvas id="Medicion" width="300" height="300"></canvas>
                             </div>
+                            
                             <!-- Estación Visualización -->
                             <div class="grid-item">
-                              <h1 class="small-title"> Visualización</h1>
-                              <canvas id="visualizacion" width="300" height="300"></canvas>
+                                <h1 class="small-title">Visualización</h1>
+                                <canvas id="Visualizacion" width="300" height="300"></canvas>
                             </div>
+                            
+                            <!-- Estación Montaje -->
+                            <div class="grid-item">
+                                <h1 class="small-title">Montaje</h1>
+                                <canvas id="Montaje" width="300" height="300"></canvas>
+                            </div>
+                            
                             <!-- Estación Empaque -->
                             <div class="grid-item">
-                              <h1 class="small-title">Empaque</h1>
-                              <canvas id="empaque" width="300" height="300"></canvas>
+                                <h1 class="small-title">Empaque</h1>
+                                <canvas id="Empaque" width="300" height="300"></canvas>
                             </div>
+       
                         </div>
                     <div class="modal-footer">
                         <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">cerrar</button>
@@ -1090,9 +1140,7 @@
             type: 'GET',
             data: { id: ordenVenta },
             success: function (response) {
-                console.log('Respuesta de la API:', response); 
-                const ordenVenta = $('#ordenVentaInput').val();
- // Verifica la respuesta completa
+                console.log('Respuesta de la API:', response);  // Verifica la respuesta completa
 
                 if (response.Estatus && response.Estatus.length > 0) {
                     var porcentaje = response.Porcentaje;
@@ -1147,6 +1195,24 @@
                 console.log('Error al obtener los datos de la venta');
             }
         });
+        const endpoints = [
+                { tipo: 'Corte', id: 'corte', areaId: 2 },
+                { tipo: 'Suministro', id: 'suministro', areaId: 3 },
+                { tipo: 'Transicion', id: 'transicion', areaId: 4 },
+                { tipo: 'Preparado', id: 'preparado', areaId: 5 },
+                { tipo: 'Ribonizado', id: 'ribonizado', areaId: 6 },
+                { tipo: 'Ensamble', id: 'ensamble', areaId: 7 },
+                { tipo: 'CortesFibra', id: 'corteFibra', areaId: 8 },
+                { tipo: 'Pulido', id: 'pulido', areaId: 9 },
+                { tipo: 'Armado', id: 'armado', areaId: 10 },
+                { tipo: 'Inspeccion', id: 'inspeccion', areaId: 11 },
+                { tipo: 'Polaridad', id: 'polaridad', areaId: 12 },
+                { tipo: 'Crimpado', id: 'crimpado', areaId: 13 },
+                { tipo: 'Medicion', id: 'medicion', areaId: 14 },
+                { tipo: 'Visualizacion', id: 'visualizacion', areaId: 15 },
+                { tipo: 'Montaje', id: 'montaje', areaId: 16 },
+                { tipo: 'Empaque', id: 'empaque', areaId: 17 },
+            ];
         const endpoints = [
             { tipo: 'cortes', id: 'corte' },
             { tipo: 'suministros', id: 'suministro' },
@@ -1789,20 +1855,138 @@ function formatTiempo(totalSegundos) {
         //la posición
     }
     //para el clic de .stage
-    $(document).ready(function () {
-        $('.stage').on('click', function () {
-            const stageId = $(this).attr('id');
-            const ordenVenta = $('#ordenVentaInput').val(); // Asegúrate que este input tenga el ID de orden
+    /*
+    $(document).ready(function() {
+        $('.stage').on('click', function() {
+            var stageId = $(this).attr('id');
+            var ordenVenta = $(this).data('ordenventa');
+            var progressWrapperId = '#progress-wrapper-' + stageId.replace('stage', '');
+            $(progressWrapperId).collapse('toggle'); // Muestra u oculta el contenedor de progreso
 
-            // Log para verificar los datos enviados
-            console.log('Clic en stage:', stageId);
-            console.log('Orden de venta:', ordenVenta);
+            // Agregar o quitar la clase 'selected-stage' para resaltar el ícono y el texto
+            $('.stage').removeClass('selected-stage');
+            $(this).addClass('selected-stage');
 
-            loadProgressData(ordenVenta, stageId);
+            var ordenVenta = $(this).data('ordenventa'); // Obtiene la orden de venta asociada
+
+            loadProgressData(ordenVenta, stageId); // Llamada unificada
         });
     });
+    // Función para cargar los datos de progreso combinados
+    function loadProgressData(ordenVenta, stageId) {
+        console.log('Enviando datos al controlador:');
+    console.log('Orden de venta:', ordenVenta);
+        $.ajax({
+            url: '{{ route("graficarOR.OF") }}', // Ruta al controlador
+            method: 'GET',
+            data: {
+                id: ordenVenta,
+                stage: stageId, // Pasamos el identificador de la etapa
+                _token: $('meta[name="csrf-token"]').attr('content') // Token de seguridad
+            },
+            success: function(response) {
+                var progressWrapper = $('#progress-wrapper-' + stageId.replace('stage', ''));
+                progressWrapper.empty(); // Limpiar el contenido anterior
+
+                // Generar las barras de progreso dinámicamente
+                response.forEach(function(item, index) {
+                    var progressPercentage = item.Progreso;
+                    var displayProgress = progressPercentage > 100 ? 100 : progressPercentage;
+                    var progressBar = $('<div>', { class: 'task-progress-bar', id: 'task-progress' + (index + 1) });
+                    var progressLabel = $('<div>', { class: 'task-label', text: 'Orden ' + item.OrdenesFabricacion });
+
+                    // Lógica para asignar colores según el progreso
+                    var progressColor;
+                    if (displayProgress >= 0 && displayProgress <= 30) {
+                        progressColor = 'red'; // Rojo
+                    } else if (displayProgress > 30 && displayProgress <= 50) {
+                        progressColor = 'orange'; // Naranja
+                    } else if (displayProgress > 50 && displayProgress <= 90) {
+                        progressColor = 'yellow'; // Amarillo
+                    } else if (displayProgress > 90 && displayProgress <= 100) {
+                        progressColor = '#12c72a'; // Verde
+
+                    }
+
+                    // Crear la barra de progreso con el porcentaje
+                    var progress = $('<div>', {
+                        class: 'task-progress',
+                        text: displayProgress + '%',
+                        css: {
+                            width: displayProgress + '%',
+                            backgroundColor: progressColor // Aplicar el color
+                        }
+                    });
+
+                    // Agregar el texto de la orden y el progreso dentro de la barra
+                    var progressText = $('<div>', {
+                        class: 'progress-text',
+                        text: displayProgress + '%'
+                    });
+
+                    progressBar.append(progressLabel).append(progress).append(progressText);
+                    progressWrapper.append(progressBar);
+
+                    // Si el progreso es mayor a 100%, agregar una barra para el "Retrabajo"
+                    
+                    if (progressPercentage > 100) {
+                        var retrabajoPercentage = (progressPercentage - 100).toFixed(2);
+                        var retrabajoBar = $('<div>', { class: 'task-progress-bar retrabajo', id: 'task-retrabajo' + (index + 1) });
+                        var retrabajoLabel = $('<div>', { class: 'task-label', text: 'Retrabajo ' + item.OrdenesFabricacion });
+
+                        var retrabajoProgress = $('<div>', {
+                            class: 'task-progress',
+                            text: retrabajoPercentage + '%',
+                            css: {
+                                width: retrabajoPercentage + '%',
+                                backgroundColor: 'blue' // Color para retrabajo
+                            }
+                        });
+
+                        var retrabajoText = $('<div>', {
+                            class: 'progress-text',
+                            text: retrabajoPercentage + '%'
+                        });
+
+
+                        retrabajoBar.append(retrabajoLabel).append(retrabajoProgress).append(retrabajoText);
+                        progressWrapper.append(retrabajoBar);
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error en la solicitud AJAX:', error);
+            }
+        });
+    }*/
+    let currentStageOpen = null; // <- para rastrear la etapa activa
+
+$(document).ready(function () {
+    $('.stage').on('click', function () {
+        const stageId = $(this).attr('id');
+        const ordenVenta = $(this).data('ordenventa');
+        const progressWrapper = $('#progress-wrapper-container');
+
+        // Si el mismo stage se clickea otra vez, lo cerramos
+        if (currentStageOpen === stageId) {
+            currentStageOpen = null;
+            progressWrapper.slideUp().empty(); // Oculta y limpia
+            $('.stage').removeClass('selected-stage');
+            return; // Detener ejecución
+        }
+
+        currentStageOpen = stageId; // Guardamos la nueva etapa abierta
+        $('.stage').removeClass('selected-stage');
+        $(this).addClass('selected-stage');
+
+        progressWrapper.slideDown(); // Mostrar el contenedor
+        loadProgressData(ordenVenta, stageId);
+    });
+});
 
 function loadProgressData(ordenVenta, stageId) {
+    console.log('Enviando datos al controlador:', ordenVenta, stageId);
+
     $.ajax({
         url: '{{ route("graficarOR.OF") }}',
         method: 'GET',
@@ -1812,45 +1996,62 @@ function loadProgressData(ordenVenta, stageId) {
             _token: $('meta[name="csrf-token"]').attr('content')
         },
         success: function (response) {
-            const container = $('#progress-wrapper-container');
-            container.empty();
+            const data = response.flat(); // Aplanar si viene doble array
+            const progressWrapper = $('#progress-wrapper-container');
+            progressWrapper.empty(); // Limpiar contenido anterior
 
-            if (!response || response.length === 0) return; // Si no hay datos, no muestra nada
+            data.forEach(function (item, index) {
+                const progressPercentage = parseFloat(item.Progreso);
+                const displayProgress = Math.min(progressPercentage, 100);
 
-            const stageNum = stageId.replace('stage', '');
-            container.append(`<h4>Progreso de la etapa ${stageNum}</h4>`);
+                let progressColor = 'red';
+                if (displayProgress > 30) progressColor = 'orange';
+                if (displayProgress > 50) progressColor = 'yellow';
+                if (displayProgress > 90) progressColor = '#12c72a';
 
-            response.forEach((item, index) => {
-                const progreso = item.Progreso;
-                if (!progreso || isNaN(progreso)) return;
+                const progressBar = $('<div>', { class: 'task-progress-bar' });
+                const progressLabel = $('<div>', { class: 'task-label', text: 'Orden ' + item.OrdenesFabricacion });
 
-                const displayProgress = Math.min(progreso, 100);
-                const retrabajo = progreso > 100 ? (progreso - 100).toFixed(2) : null;
+                const progress = $('<div>', {
+                    class: 'task-progress',
+                    text: displayProgress + '%',
+                    css: {
+                        width: displayProgress + '%',
+                        backgroundColor: progressColor
+                    }
+                });
 
-                let color = 'gray';
-                if (displayProgress <= 30) color = 'red';
-                else if (displayProgress <= 50) color = 'orange';
-                else if (displayProgress <= 90) color = 'yellow';
-                else color = '#12c72a';
+                const progressText = $('<div>', {
+                    class: 'progress-text',
+                    text: displayProgress + '%'
+                });
 
-                const bar = $(`
-                    <div class="task-progress-bar">
-                        <div class="task-label">Orden ${item.OrdenesFabricacion}</div>
-                        <div class="task-progress" style="width: ${displayProgress}%; background-color: ${color};">${displayProgress}%</div>
-                        <div class="progress-text">${displayProgress}%</div>
-                    </div>
-                `);
-                container.append(bar);
+                progressBar.append(progressLabel, progress, progressText);
+                progressWrapper.append(progressBar);
 
-                if (retrabajo) {
-                    const retrabajoBar = $(`
-                        <div class="task-progress-bar retrabajo">
-                            <div class="task-label">Retrabajo ${item.OrdenesFabricacion}</div>
-                            <div class="task-progress" style="width: ${retrabajo}%; background-color: blue;">${retrabajo}%</div>
-                            <div class="progress-text">${retrabajo}%</div>
-                        </div>
-                    `);
-                    container.append(retrabajoBar);
+                // Retrabajo
+                if (progressPercentage > 100) {
+                    const retrabajoPercentage = (progressPercentage - 100).toFixed(2);
+
+                    const retrabajoBar = $('<div>', { class: 'task-progress-bar retrabajo' });
+                    const retrabajoLabel = $('<div>', { class: 'task-label', text: 'Retrabajo ' + item.OrdenesFabricacion });
+
+                    const retrabajoProgress = $('<div>', {
+                        class: 'task-progress',
+                        text: retrabajoPercentage + '%',
+                        css: {
+                            width: retrabajoPercentage + '%',
+                            backgroundColor: 'blue'
+                        }
+                    });
+
+                    const retrabajoText = $('<div>', {
+                        class: 'progress-text',
+                        text: retrabajoPercentage + '%'
+                    });
+
+                    retrabajoBar.append(retrabajoLabel, retrabajoProgress, retrabajoText);
+                    progressWrapper.append(retrabajoBar);
                 }
             });
         },
@@ -1859,6 +2060,7 @@ function loadProgressData(ordenVenta, stageId) {
         }
     });
 }
+
 
     // Cuando se haga clic en una fila para seleccionar la OrdenFabricacion
     $(document).on('click', '.ver-fabricacion', function () {
@@ -1954,9 +2156,5 @@ function loadProgressData(ordenVenta, stageId) {
             estatusElement.textContent = 'Cerrado';
         }
     }
-</script>
-
-<script>
-    
 </script>
 @endsection
