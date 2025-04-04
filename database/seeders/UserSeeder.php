@@ -164,7 +164,7 @@ class UserSeeder extends Seeder
             'name' => $userData['name'],
             'Apellido' => $userData['apellido'],
             'email' => $userData['name'].$password.'@splitel.com',
-            'password' => Hash::make($password), // Encriptar la contraseña
+            'password' => $password, // Encriptar la contraseña
             'active' => '1',
             'role' => $userData['role'], // Asignamos el rol
             'created_at' => now(),

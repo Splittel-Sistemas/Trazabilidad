@@ -370,7 +370,7 @@ class AreasController extends Controller
                         }
                         if ($request->has('detalles')) {
                             $Ordenfabricacionpartidas.='<td class="text-center"></td><td></td>
-                            </tr>';
+                            ';
                         }else{
                             // Mostrar botones solo si FechaTermina es NULL o está vacío
                             if($parti['pivot']->FechaTermina == '' || $parti['pivot']->FechaTermina == null){
@@ -691,7 +691,7 @@ class AreasController extends Controller
     //Preparado 5
     public function Preparado(){
         $user= Auth::user();
-        if($user->hasPermission('Vista Ensamble')){
+        if ($user->hasPermission('Vista Preparado')) {
         $AreaOriginal=5;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
             $Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
