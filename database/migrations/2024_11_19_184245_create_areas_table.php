@@ -15,17 +15,23 @@ class CreateAreasTable extends Migration
         });
         // Insertar los datos de las áreas
         DB::table('areas')->insert([
-            ['nombre' => 'planeacion'],
-            ['nombre' => 'corte'],
-            ['nombre' => 'suministro'],
-            ['nombre' => 'transición'],
-            ['nombre' => 'preparado'],
-            ['nombre' => 'ensamble'],
-            ['nombre' => 'pulido'],
-            ['nombre' => 'medición'],
-            ['nombre' => 'visualización'],
-            ['nombre' => 'montaje'],
-            ['nombre' => 'empaque'],
+            ['nombre' => 'Planeacion'],
+            ['nombre' => 'Corte'],
+            ['nombre' => 'Suministro'],
+            ['nombre' => 'Transición'],
+            ['nombre' => 'Preparado'],
+            ['nombre' => 'Ribonizado'],
+            ['nombre' => 'Ensamble'],
+            ['nombre' => 'Corte de fibra'],
+            ['nombre' => 'Pulido'],
+            ['nombre' => 'Armado'],
+            ['nombre' => 'Inspeccion'],
+            ['nombre' => 'Polaridad'],
+            ['nombre' => 'Crimpado'],
+            ['nombre' => 'Medición'],
+            ['nombre' => 'Visualización'],
+            ['nombre' => 'Montaje'],
+            ['nombre' => 'Empaque'],
         ]);
     }
 

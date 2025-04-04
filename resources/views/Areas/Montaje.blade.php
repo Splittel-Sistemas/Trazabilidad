@@ -40,7 +40,7 @@
                         <div class="col-4" id="CantidadDiv" style="display: none">
                             <div class="form-group">
                                 <label for="Cantidad">Cantidad</label>
-                                <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
+                                <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" placeholder="0">
                                 <div class="invalid-feedback" id="error_Cantidad"></div>
                             </div>
                         </div>
@@ -78,7 +78,7 @@
                         <div class="col-4" id="CantidadDivSalida" style="display: none">
                             <div class="form-group">
                                 <label for="Cantidad">Cantidad</label>
-                                <input type="text" class="form-control form-control-sm" id="CantidadSalida" aria-describedby="Cantidad" value="1" oninput="RegexNumeros(this);" placeholder="Ingresa cantidad recibida.">
+                                <input type="text" class="form-control form-control-sm" id="CantidadSalida" aria-describedby="Cantidad" oninput="RegexNumeros(this);" placeholder="0">
                                 <div class="invalid-feedback" id="error_CantidadSalida"></div>
                             </div>
                         </div>
@@ -189,6 +189,11 @@
                 $('#IniciarBtnSalida').hide();
                 document.getElementById('Retrabajo').checked = false;
                 if(response.status=="success"){
+                    if(Inicio==1){
+                        $('#CodigoEscanerEntrada').focus();
+                    }else if(Inicio==0){
+                        $('#CodigoEscanerSalida').focus();
+                    }
                     $('#DivCointainerTableSuministro').html(response.tabla);
                     if(response.Escaner==1){
                         if((response.tabla).includes('<td')){
@@ -198,11 +203,6 @@
                     $('#CantidadPartidasOF').html('<span class="badge bg-light text-dark">Piezas procesadas '+response.CantidadCompletada+"/"+response.CantidadTotal+'</span>');
                     $('#TituloPartidasOF').html(response.OF);
                     if(response.Escaner==0){
-                        if(Inicio==1){
-                            $('#CodigoEscanerEntrada').focus();
-                        }else if(Inicio==0){
-                            $('#CodigoEscanerSalida').focus();
-                        }
                         if((response.tabla).includes('<td')){
                             TablaList(DivCointainerTableSuministro);
                         }
@@ -237,8 +237,17 @@
                                 $('#IniciarBtnSalida').fadeIn();
                                 //$('#CodigoEscanerEntrada').val(Codigo);
                                 //$('#CodigoEscanerSalida').val(Codigo);
-
+                                if(Inicio==1){
+                                    $('#Cantidad').focus();
+                                }else if(Inicio==0){
+                                    $('#CantidadSalida').focus();
+                                }
                             return 0;
+                        }
+                        if(Inicio==1){
+                            $('#Cantidad').focus();
+                        }else if(Inicio==0){
+                            $('#CantidadSalida').focus();
                         }
                     }else{
                         $('#ContentTabla').show();

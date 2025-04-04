@@ -76,7 +76,7 @@
                         <div class="col-4" id="CantidadDiv" style="display: none">
                             <div class="form-group">
                                 <label for="Cantidad">Cantidad</label>
-                                <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
+                                <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" placeholder="0">
                                 <div class="invalid-feedback" id="error_Cantidad"></div>
                             </div>
                         </div>

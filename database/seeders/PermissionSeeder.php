@@ -113,6 +113,39 @@ class PermissionSeeder extends Seeder
             'name' =>'Finalizar Trazabilidad',
             'groups' => 11, 
         ]);
+        //Nuevas Areas
+        Permission::create([
+            'name' =>'Vista Transición',
+            'groups' => 16, 
+        ]);
+        Permission::create([
+            'name' =>'Vista Ribonizado',
+            'groups' => 17, 
+        ]);
+        Permission::create([
+            'name' =>'Vista Corte de fibra',
+            'groups' => 18, 
+        ]);
+        Permission::create([
+            'name' =>'Vista Armado',
+            'groups' => 19, 
+        ]);
+        Permission::create([
+            'name' =>'Vista Inspeccion',
+            'groups' => 20, 
+        ]);
+        Permission::create([
+            'name' =>'Vista Polaridad',
+            'groups' => 21, 
+        ]);
+        Permission::create([
+            'name' =>'Vista Crimpado',
+            'groups' => 22, 
+        ]);
+        Permission::create([
+            'name' =>'Vista Montaje',
+            'groups' => 22, 
+        ]);
 
 
 
