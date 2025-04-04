@@ -1337,7 +1337,6 @@ class BusquedaController extends Controller
     public function tiempoS(Request $request)
     {
         $idFabricacion = $request->input('id');
-    
         $duracionFinalCortes =  DB::table('ordenfabricacion')
         ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
         ->select(

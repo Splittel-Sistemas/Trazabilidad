@@ -599,7 +599,7 @@
                                     <h1 class="small-title"> Corte de Fibra</h1>
 
                                     <div class="canvas-container">
-                                        <canvas id="plemasCorteF" width="300" height="300"></canvas>
+                                        <canvas id="plemasCorteFibra" width="300" height="300"></canvas>
                                     </div>
 
                                     <div class="title-container">
@@ -1243,19 +1243,19 @@
                 const endpoints = [
                 { tipo: 'plemasCorte', id: 'plemasCorte', areaId: 2 },
                 { tipo: 'plemasSuministrodia', id: 'plemasSuministro', areaId: 3 },
-                { tipo: 'plemasTransicion', id: 'plemasTransicion', areaId: 4 },
+                { tipo: 'plemasTransiciondia', id: 'plemasTransicion', areaId: 4 },
                 { tipo: 'plemasPreparadodia', id: 'plemasPreparado', areaId: 5 },
-                { tipo: 'plemasRibonizado', id: 'plemasRibonizado', areaId: 6 },
+                { tipo: 'plemasRibonizadodia', id: 'plemasRibonizado', areaId: 6 },
                 { tipo: 'plemasEnsambledia', id: 'plemasEnsamble', areaId: 7 },
-                { tipo: 'plemasCorteFibra', id: 'plemasCorteFibra', areaId: 8 },
+                { tipo: 'plemasCorteFibradia', id: 'plemasCorteFibra', areaId: 8 },
                 { tipo: 'plemasPulidodia', id: 'plemasPulido', areaId: 9 },
-                { tipo: 'plemasArmado', id: 'plemasArmado', areaId: 10 },
-                { tipo: 'plemasArmado', id: 'plemasInspeccion', areaId: 11 },
-                { tipo: 'plemasArmado', id: 'plemasPolaridad', areaId: 12 },
-                { tipo: 'plemasCrimpado', id: 'plemasCrimpado', areaId: 13 },
+                { tipo: 'plemasArmadodia', id: 'plemasArmado', areaId: 10 },
+                { tipo: 'plemasArmadodia', id: 'plemasInspeccion', areaId: 11 },
+                { tipo: 'plemasArmadodia', id: 'plemasPolaridad', areaId: 12 },
+                { tipo: 'plemasCrimpadodia', id: 'plemasCrimpado', areaId: 13 },
                 { tipo: 'plemasMediciondia', id: 'plemasMedicion', areaId: 14 },
                 { tipo: 'plemasVisualizaciondia', id: 'plemasVisualizacion', areaId: 15 },
-                { tipo: 'plemasMontaje', id: 'plemasMontaje', areaId: 16 },
+                { tipo: 'plemasMontajedia', id: 'plemasMontaje', areaId: 16 },
                 { tipo: 'plemasEmpaque', id: 'plemasEmpaque', areaId: 17 },
             ];
             $.ajax({
