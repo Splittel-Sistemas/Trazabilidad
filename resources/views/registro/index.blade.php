@@ -70,21 +70,31 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-    <div class="card p-4" style="display:block;" id="tableExample3" data-list="{&quot;valueNames&quot;:[&quot;apellido&quot;,&quot;nombre&quot;,&quot;email&quot;,&quot;roles&quot;,&quot;estatus&quot;],&quot;page&quot;:5,&quot;pagination&quot;:true}">
-        <div class="search-box mb-3 mx-auto">
+    <div class="card p-4" style="display:block;" id="tableExample3" data-list="{&quot;valueNames&quot;:[&quot;apellido&quot;,&quot;nombre&quot;,&quot;email&quot;,&quot;roles&quot;,&quot;estatus&quot;],&quot;page&quot;:10,&quot;pagination&quot;:true}">
+        <!--<div class="row justify-content-end g-0">
+            <div class="col-auto px-3">
+                <span>Registros</span>
+                <select id="NumeroRegistros" class="form-select form-select-sm">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="50">50</option>
+              </select>
+            </div>
+        </div>
+        <div class="search-box mb-2 mx-auto">
             <form class="position-relative d-flex align-items-center" data-bs-toggle="search" data-bs-display="static">
                 <input class="form-control search-input search form-control-sm rounded-pill pe-5" 
-                       type="search" 
-                       placeholder="Buscar" 
-                       aria-label="Buscar">
+                    type="search" 
+                    placeholder="Buscar" 
+                    aria-label="Buscar">
                 <svg class="position-absolute end-0 me-3 search-box-icon" width="16" height="16" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
                     <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8 8-3.58 8-8S12.42 0 8 0zm0 14C4.69 14 2 11.31 2 8s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path>
                 </svg>
             </form>
-            
-        </div>
-        <div class=" table-responsive">
-                <table class="table table-striped table-sm fs--1 mb-0">
+        </div>-->
+        <div class="table-responsive">
+                <table id="Tabla-Usuarios" class="table table-striped table-sm fs--1 mb-0">
                     <thead class="bg-primary text-white">
                         <tr>
                             <th class="sort border-top ps-3" data-sort="nombre">Nombre</th>
@@ -102,7 +112,7 @@
                             <td class="align-middle nombre ps-3">{{ $registro->name }}</td>
                             <td class="align-middle apellido ps-3">{{ $registro->apellido }}</td>
                            <td class="align-middle email ps-3">
-                                {{ Str::mask($registro->email, '*', 0, strpos($registro->email, '@') - 2) }}
+                                {{ $registro->email }}
                             </td>
                             <td class="align-middle contraseña ps-3">
                                 @if (Str::startsWith($registro->password, ['$2y$', '$2b$', '$2a$']) && strlen($registro->password) === 60)
@@ -127,19 +137,17 @@
                                 </div>
                                 @endif
                             </td>
-                            
-                            <td class=" text-center pe-0">
+                            <td class=" text-center pe-2 m-0">
                                 @if(Auth::user()->hasPermission("Editar Usuario"))
-                                    <button type="button" class="btn btn-outline-warning btn-sm" onclick="EditarUsuario(this);" data-bs-toggle="modal" data-bs-target="#userModal" data-id="{{ $registro->id }}"><i class="fas fa-edit"></i> Editar</button>
+                                    <button type="button" class="btn btn-outline-warning btn-sm d-inline-flex align-items-center" onclick="EditarUsuario(this);" data-bs-toggle="modal" data-bs-target="#userModal" data-id="{{ $registro->id }}"><i class="fas fa-edit"></i> Editar</button>
                                 @endif
                             </td>
-                           
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
         </div>
-        <div class="d-flex justify-content-between mt-3">
+        <!--<div class="d-flex justify-content-between mt-3">
             <span class="d-none d-sm-inline-block" data-list-info="data-list-info">1 a 5 artículos de 43</span>
             <div class="d-flex">
                 <button class="page-link disabled" data-list-pagination="prev" disabled><svg class="svg-inline--fa fa-chevron-left" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M224 480c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25l192-192c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L77.25 256l169.4 169.4c12.5 12.5 12.5 32.75 0 45.25C240.4 476.9 232.2 480 224 480z"></path></svg></button>
@@ -152,8 +160,7 @@
                     <button class="page-link" data-list-pagination="next"><svg class="svg-inline--fa fa-chevron-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M96 480c8.188 0 16.38-3.125 22.62-9.375l192-192c12.5-12.5 12.5-32.75 0-45.25l-192-192c-12.5-12.5-32.75-12.5-45.25 0s-12.5 32.75 0 45.25l169.4 169.4l-169.4 169.4c-12.5 12.5-12.5 32.75 0 45.25C79.62 476.9 87.81 480 96 480z"></path></svg></button>
                 
             </div>
-        </div>
-    </div>
+        </div>-->
 </div>
 <!-- Modal -->
 <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
@@ -224,49 +231,7 @@
 @endsection
 @section('scripts')
 <script>
-  $(document).ready(function() {
-    // Cargar datos del modal
-    /*$('button[data-bs-toggle="modal"]').on('click', function() {
-        alert();
-        return 0;
-        var userId = $(this).data('id');  
-        var url = "{{ route('registro.show', ['id' => '__userId__']) }}".replace('__userId__', userId);
-        $.ajax({
-            url: url,
-            method: 'GET',
-            success: function(response) {
-                console.log(response);  // Verifica la respuesta en la consola
-
-                // Rellenar campos del formulario con los datos del usuario
-                $('#apellido').val(response.apellido);
-                $('#email').val(response.email);  
-                $('#name').val(response.name);
-                $('#password').val('');  // Reseteamos el campo de contraseña
-                $('#password_confirmation').val('');  // Reseteamos el campo de confirmación de contraseña
-                
-                // Actualiza la acción del formulario con la URL de actualización
-                $('#userEditForm').attr('action', '{{ route('registro.update', '__userId__') }}'.replace('__userId__', userId));
-
-                // Agregar los roles al formulario
-                var roles = response.roles;
-                var rolesContainer = $('#roles');
-                rolesContainer.empty();  // Limpiar cualquier rol previamente cargado
-
-                @foreach ($roles as $role)
-                    var isChecked = roles.includes({{ $role->id }}) ? 'checked' : '';
-                    rolesContainer.append(
-                        '<div class="form-check">' +
-                            '<input type="radio" class="form-check-input" id="role-{{ $role->id }}" name="roles[]" value="{{ $role->id }}" ' + isChecked + '>' +
-                            '<label class="form-check-label" for="role-{{ $role->id }}">{{ $role->name }}</label>' +
-                        '</div>'
-                    );
-                @endforeach
-
-                // Mostrar el modal
-                $('#userModal').modal('show');
-            }
-        });
-    });*/
+    $(document).ready(function() {
         // Manejar el envío del formulario a través de AJAX
         $(document).on('submit', '#userEditForm', function(event) {
             event.preventDefault();
@@ -292,38 +257,6 @@
                 }
             });
         });
-        // Cambio de estado de usuario (activar/desactivar)
-        /*$('.toggle-status').on('click', function () {
-            var button = $(this); 
-            var userId = button.data('id'); 
-            var isActive = button.data('active') == '1'; 
-
-            // Usar Laravel route() para obtener la URL
-            var url = isActive ? "{{ route('users.desactivar') }}" : "{{ route('users.activar') }}";
-            var newState = isActive ? 0 : 1;
-
-            $.ajax({
-                url: url,
-                method: 'POST',
-                data: {
-                    user_id: userId,
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                },
-                success: function (response) {
-                    button.data('active', newState);
-                    if (newState) {
-                        button.removeClass('inactive').addClass('active');
-                        button.find('i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
-                    } else {
-                        button.removeClass('active').addClass('inactive');
-                        button.find('i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
-                    }
-                },
-                error: function () {
-                    alert('Hubo un error al cambiar el estado.');
-                }
-            });
-        });*/
     });
     function EditarUsuario(registro){
         var userId = $(registro).data('id');  
@@ -363,28 +296,44 @@
         });
     }
     $(document).ready(function () {
-    $('.toggle-status').on('change', function () {
-        var checkbox = $(this);
-        var userId = checkbox.data('id');
-        var isActive = checkbox.is(':checked'); 
-        var url = isActive ? "{{ route('users.activar') }}" : "{{ route('users.desactivar') }}";
-        $.ajax({
-            url: url,
-            method: 'POST',
-            data: {
-                user_id: userId,
-                _token: $('meta[name="csrf-token"]').attr('content'),
-            },
-            success: function (response) {
-                checkbox.data('active', isActive ? '1' : '0');
-            },
-            error: function () {
-                checkbox.prop('checked', !isActive);
-                alert('Hubo un error al cambiar el estado.');
-            }
+        $('.toggle-status').on('change', function () {
+            var checkbox = $(this);
+            var userId = checkbox.data('id');
+            var isActive = checkbox.is(':checked'); 
+            var url = isActive ? "{{ route('users.activar') }}" : "{{ route('users.desactivar') }}";
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    user_id: userId,
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                },
+                success: function (response) {
+                    checkbox.data('active', isActive ? '1' : '0');
+                },
+                error: function () {
+                    checkbox.prop('checked', !isActive);
+                    alert('Hubo un error al cambiar el estado.');
+                }
+            });
         });
     });
-});
-
+    new DataTable('#Tabla-Usuarios', {
+        "language": {
+            "sProcessing": "Procesando...",
+            "sLengthMenu": "Mostrar _MENU_ registros",
+            "sZeroRecords": "No se encontraron resultados",
+            "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+            "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+            "sInfoFiltered": "(filtrado de _MAX_ entradas en total)",
+            "sSearch": "Buscar:",
+            "oPaginate": {
+                "sFirst": "Primero",
+                "sPrevious": "Anterior",
+                "sNext": "Siguiente",
+                "sLast": "Último"
+            }
+        }
+        });
 </script>
 @endsection

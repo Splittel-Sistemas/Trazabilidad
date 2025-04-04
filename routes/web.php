@@ -66,15 +66,21 @@ Route::post('/Area/Suministro/Cancelar', [AreasController::class,'SuministroCanc
 Route::post('/Area/Suministro/Finalizar', [AreasController::class,'SuministroFinalizar'])->name('SuministroFinalizar')->middleware('auth');
 Route::post('/Area/Suministro/Buscar', [AreasController::class,'BuscarSuministro'])->name('BuscarSuministro')->middleware('auth');
 //Preparado
-Route::get('/Area/Transicion', [AreasController::class,'Transicion'])->name('Transicion')->middleware('auth');
+Route::get('/Area/Transición', [AreasController::class,'Transicion'])->name('Transicion')->middleware('auth');
 Route::get('/Area/Preparado', [AreasController::class,'Preparado'])->name('Preparado')->middleware('auth');
 Route::post('/Area/Preparado/buscar', [AreasController::class,'PreparadoBuscar'])->name('PreparadoBuscar')->middleware('auth');
 Route::get('/Area/Suministro/buscar', [AreasController::class,'SuministroBuscar'])->name('SuministroBuscar')->middleware('auth');
 Route::post('/Area/Suministro/NoEscaner', [AreasController::class,'TipoNoEscaner'])->name('TipoNoEscaner')->middleware('auth');
+Route::get('/Area/Ribonizado', [AreasController::class,'Ribonizado'])->name('Ribonizado')->middleware('auth');
 Route::get('/Area/Ensamble', [AreasController::class,'Ensamble'])->name('Ensamble')->middleware('auth');
+Route::get('/Area/Corte/fibra', [AreasController::class,'Cortedefibra'])->name('Cortedefibra')->middleware('auth');
 Route::get('/Area/Pulido', [AreasController::class,'Pulido'])->name('Pulido')->middleware('auth');
-Route::get('/Area/Medicion', [AreasController::class,'Medicion'])->name('Medicion')->middleware('auth');
-Route::get('/Area/Visualizacion', [AreasController::class,'Visualizacion'])->name('Visualizacion')->middleware('auth');
+Route::get('/Area/Armado', [AreasController::class,'Armado'])->name('Armado')->middleware('auth');
+Route::get('/Area/Inspección', [AreasController::class,'Inspeccion'])->name('Inspeccion')->middleware('auth');
+Route::get('/Area/Polaridad', [AreasController::class,'Polaridad'])->name('Polaridad')->middleware('auth');
+Route::get('/Area/Crimpado', [AreasController::class,'Crimpado'])->name('Crimpado')->middleware('auth');
+Route::get('/Area/Medición', [AreasController::class,'Medicion'])->name('Medicion')->middleware('auth');
+Route::get('/Area/Visualización', [AreasController::class,'Visualizacion'])->name('Visualizacion')->middleware('auth');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas')->middleware('auth');
 Route::get('/Area/Montaje', [AreasController::class,'Montaje'])->name('Montaje')->middleware('auth');
 Route::post('/Area/Tabla/Pendientes', [AreasController::class,'AreaTablaPendientes'])->name('AreaTablaPendientes')->middleware('auth');
@@ -182,7 +188,7 @@ Route::get('/dashboard/indicadordia',[HomeController::class, 'Dasboardindicadord
 Route::post('/guardar-dashboard', [HomeController::class, 'guardarDasboard'])->name('guardar.Dasboard')->middleware('auth');
 
 //area empaquetado
-Route::get('/Area/Empacado',[AreasController::class,'Empaquetado'])->name('Empacado');
+Route::get('/Area/Empaquetado',[AreasController::class,'Empaquetado'])->name('Empacado')->middleware('auth');
 Route::get('/Tabla/principal',[AreasController::class,'tablaEmpacado'])->name('tabla.principal');
 Route::post('/Area/Empaquetado/buscar', [AreasController::class,'EmpaquetadoBuscar'])->name('EmpaquetadoBuscar')->middleware('auth');
 Route::get('/fin/Proceso',[AreasController::class,'finProcesoEmpaque'])->name('finProceso.empacado')->middleware('auth');

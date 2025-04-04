@@ -15,23 +15,23 @@ class CreateAreasTable extends Migration
         });
         // Insertar los datos de las áreas
         DB::table('areas')->insert([
-            ['nombre' => 'Planeacion'],
-            ['nombre' => 'Corte'],
-            ['nombre' => 'Suministro'],
-            ['nombre' => 'Transición'],
-            ['nombre' => 'Preparado'],
-            ['nombre' => 'Ribonizado'],
-            ['nombre' => 'Ensamble'],
-            ['nombre' => 'Corte de fibra'],
-            ['nombre' => 'Pulido'],
-            ['nombre' => 'Armado'],
-            ['nombre' => 'Inspeccion'],
-            ['nombre' => 'Polaridad'],
-            ['nombre' => 'Crimpado'],
-            ['nombre' => 'Medición'],
-            ['nombre' => 'Visualización'],
-            ['nombre' => 'Montaje'],
-            ['nombre' => 'Empaque'],
+            ['nombre' => 'Planeacion'],//1
+            ['nombre' => 'Corte'],//2
+            ['nombre' => 'Suministro'],//3
+            ['nombre' => 'Transición'],//4
+            ['nombre' => 'Preparado'],//5
+            ['nombre' => 'Ribonizado'],//6
+            ['nombre' => 'Ensamble'],//7
+            ['nombre' => 'Corte de fibra'],//8
+            ['nombre' => 'Pulido'],//9
+            ['nombre' => 'Armado'],//10
+            ['nombre' => 'Inspeccion'],//11
+            ['nombre' => 'Polaridad'],//12
+            ['nombre' => 'Crimpado'],//13
+            ['nombre' => 'Medición'],//14
+            ['nombre' => 'Visualización'],//15
+            ['nombre' => 'Montaje'],//16 //AreaFinal
+            ['nombre' => 'Empaque'],//17 //AreaFinal
         ]);
     }
 

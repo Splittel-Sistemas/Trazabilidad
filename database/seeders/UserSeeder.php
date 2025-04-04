@@ -10,7 +10,7 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
-        /*User::create([
+        User::create([
             'name' => 'Administrador',
             'Apellido' => 'Splittel',
             'email' => 'AdministradorSplittel@gmail.com',
@@ -19,9 +19,9 @@ class UserSeeder extends Seeder
             'role' => 'A', // Puedes asignar un rol, como 'A' o 'O'
             'created_at' => now(), 
             'updated_at' => now()
-        ]);*/
+        ]);
           // Nuevo usuario
-          /*User::create([
+          User::create([
             'name' => 'Operador',
             'Apellido' => 'Splittel',
             'email' => 'OperadorSplittel@gmail.com',
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
             'role' => 'O', // Otro rol
             'created_at' => now(), 
             'updated_at' => now()
-        ]);*/
+        ]);
 
         $users = [
             ['name' => 'VANESSA GUADALUPE', 'apellido' => 'ENRIQUEZ GONZALEZ', 'role' => 'O'],

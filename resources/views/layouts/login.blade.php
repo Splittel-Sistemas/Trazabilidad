@@ -180,7 +180,7 @@
                 <form method="POST" action="{{ route('operador.login') }}" class="form" id="formOperador" style="display: none;">
                     @csrf
                     <div id="administrativoFields mt-4">
-                        <input name="clave" type="text" placeholder="Clave" required class="input-field">
+                        <input name="clave" type="password" placeholder="Clave" required class="input-field" autocomplete="new-password">
                         <button type="submit" class="mt-4" id="login-operador">Ingresar</button>
                     </div>
                 </form>

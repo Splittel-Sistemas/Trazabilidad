@@ -1,5 +1,5 @@
 @extends('layouts.menu2')
-@section('title', 'Transición')
+@section('title', 'Corte de fibra')
 @section('styles')
 <link rel="stylesheet" href="{{asset('css/Suministro.css')}}">
 <style>
@@ -15,7 +15,7 @@
 @section('content')
     <div class="row gy-3 mb-2 justify-content-between">
         <div class="col-md-9 col-auto">
-        <h4 class="mb-2 text-1100">Transición</h4>
+        <h4 class="mb-2 text-1100">Corte de fibra</h4>
         </div>
     </div>
     <div class="row">
