@@ -124,8 +124,10 @@ class BusquedaController extends Controller
                 DB::raw('SUM(partidasof_areas.cantidad) as SumaTotalPartidas'),
                 DB::raw('ROUND((SUM(partidasof_areas.cantidad) / NULLIF(ordenfabricacion.CantidadTotal, 0)) * 100, 2) as Progreso')
             )
-            ->groupBy('partidasof.id', 'ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.OrdenFabricacion');
+            ->groupBy('partidasof.id', 'ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.OrdenFabricacion')
+            ->get();
            // dd($query);
+        return[ $query];
 
         // Consulta para los cortes
         $cortes = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
@@ -142,6 +144,8 @@ class BusquedaController extends Controller
         )
         ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.CantidadTotal', 'ordenfabricacion.OrdenFabricacion','ordenfabricacion.CantidadTotal');
         //->get();
+        return[  $cortes];
+
     
             //dd($cortes);
 
@@ -160,7 +164,24 @@ class BusquedaController extends Controller
             $query->where('partidasof_areas.Areas_id', 8);
         } elseif ($stage == 'stage9') {
             $query->where('partidasof_areas.Areas_id', 9);
+        } elseif ($stage == 'stage10') {
+            $query->where('partidasof_areas.Areas_id', 10);
+        } elseif ($stage == 'stage11') {
+            $query->where('partidasof_areas.Areas_id', 11);
+        } elseif ($stage == 'stage12') {
+            $query->where('partidasof_areas.Areas_id', 12);
+        } elseif ($stage == 'stage13') {
+            $query->where('partidasof_areas.Areas_id', 13);
+        } elseif ($stage == 'stage14') {
+            $query->where('partidasof_areas.Areas_id', 14);
+        } elseif ($stage == 'stage15') {
+            $query->where('partidasof_areas.Areas_id', 15);
+        } elseif ($stage == 'stage16') {
+            $query->where('partidasof_areas.Areas_id', 16);
+        } elseif ($stage == 'stage17') {
+            $query->where('partidasof_areas.Areas_id', 17);
         }
+
 
         // Obtener resultados
         if ($stage == 'stage2') {
@@ -175,7 +196,8 @@ class BusquedaController extends Controller
     public function Graficador(Request $request)
     {
         $idVenta = $request->input('id');
-        $tipo = $request->input('tipo');
+
+        // Definir los IDs de las áreas
         $areaIds = [
             'cortes' => 0,
             'suministros' => 3,
@@ -186,9 +208,8 @@ class BusquedaController extends Controller
             'visualizacion' => 8,
             'empaque' => 9,
         ];
-        if (!isset($areaIds[$tipo])) {
-            return response()->json(['error' => 'Tipo inválido'], 400);
-        }
+
+        // Obtener las órdenes de fabricación
         $ordenesfabricacion = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
             ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
             ->select(
@@ -197,6 +218,16 @@ class BusquedaController extends Controller
             )
             ->groupBy('ordenventa.id')
             ->get();
+
+        // Si no hay órdenes de fabricación, devolvemos una respuesta vacía
+        if ($ordenesfabricacion->isEmpty()) {
+            return response()->json([
+                'ordenesfabricacion' => [],
+                'Progreso' => ['OrdenVenta' => null, 'Progreso' => 0],
+            ]);
+        }
+
+        // Obtener los datos de 'cortes' por separado porque tiene una estructura diferente
         $cortesorden = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
             ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
             ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
@@ -208,45 +239,53 @@ class BusquedaController extends Controller
             )
             ->groupBy('ordenventa.id', 'ordenventa.OrdenVenta')
             ->get();
-        $result = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
-            ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
-            ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-            ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-            ->where('partidasof_areas.Areas_id', $areaIds[$tipo])
-            ->select(
-                'ordenventa.OrdenVenta',
-                'ordenfabricacion.OrdenFabricacion',
-                DB::raw('SUM(partidasof_areas.Cantidad) as SumaTotalPartidas'),
-                'ordenfabricacion.CantidadTotal',
-                DB::raw('GROUP_CONCAT(partidasof_areas.id) as id')
-            )
-            ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
-            ->get();
-        $data = ($tipo === 'cortes') ? $cortesorden : $result;
-        if ($ordenesfabricacion->isNotEmpty() && $data->isNotEmpty()) {
-            $totalCantidad = (int) $ordenesfabricacion->sum('SumaTotalCantidadTotal') ?? 0;
-            $totalPartidas = ($tipo === 'cortes') 
-                ? (int) $cortesorden->sum('SumaCantidadPartidaTotal') ?? 0
-                : (int) $result->sum('SumaTotalPartidas') ?? 0;
-            $Progreso = ($totalCantidad > 0) ? ($totalPartidas / $totalCantidad) * 100 : 0;
-            $progresoConOrdenVenta = [
-                'OrdenVenta' => $idVenta,
-                'Progreso' => round($Progreso, 2),
-            ];
-            $response = [
-                'result' => $data,
-                'ordenesfabricacion' => $ordenesfabricacion,
-                'Progreso' => $progresoConOrdenVenta,
-            ];
-        } else {
-            $response = [
-                'result' => [],
-                'ordenesfabricacion' => [],
-                'Progreso' => ['OrdenVenta' => null, 'Progreso' => 0],
+
+        // Calcular el progreso para cada tipo
+        $data = [];
+
+        foreach ($areaIds as $tipo => $areaId) {
+            if ($tipo === 'cortes') {
+                // Calcular progreso para 'cortes'
+                $totalCantidad = (int) $ordenesfabricacion->sum('SumaTotalCantidadTotal') ?? 0;
+                $totalPartidas = (int) $cortesorden->sum('SumaCantidadPartidaTotal') ?? 0;
+            } else {
+                // Obtener datos de otras áreas
+                $result = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
+                    ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
+                    ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+                    ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+                    ->where('partidasof_areas.Areas_id', $areaId)
+                    ->select(
+                        'ordenventa.OrdenVenta',
+                        'ordenfabricacion.OrdenFabricacion',
+                        DB::raw('SUM(partidasof_areas.Cantidad) as SumaTotalPartidas'),
+                        'ordenfabricacion.CantidadTotal',
+                        DB::raw('GROUP_CONCAT(partidasof_areas.id) as id')
+                    )
+                    ->groupBy('ordenventa.OrdenVenta', 'ordenfabricacion.OrdenFabricacion', 'ordenfabricacion.CantidadTotal')
+                    ->get();
+
+                // Calcular progreso
+                $totalCantidad = (int) $ordenesfabricacion->sum('SumaTotalCantidadTotal') ?? 0;
+                $totalPartidas = (int) $result->sum('SumaTotalPartidas') ?? 0;
+            }
+
+            $progreso = ($totalCantidad > 0) ? ($totalPartidas / $totalCantidad) * 100 : 0;
+
+            // Guardar en la respuesta
+            $data[$tipo] = [
+                'result' => ($tipo === 'cortes') ? $cortesorden : $result,
+                'Progreso' => round($progreso, 2),
             ];
         }
-        return response()->json($response);
+
+        // Respuesta final
+        return response()->json([
+            'ordenesfabricacion' => $ordenesfabricacion,
+            'data' => $data,
+        ]);
     }
+
     // Controlador para las órdenes de fabricación
     public function obtenerOrdenesFabricacion(Request $request)
     {
@@ -288,7 +327,7 @@ class BusquedaController extends Controller
                 ->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
                 ->join('areas', 'partidasOF_areas.Areas_id', '=', 'areas.id') 
                 ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion) 
-                ->whereIn('partidasof_areas.Areas_id', [9])
+                ->whereIn('partidasof_areas.Areas_id', [17])
                 ->select('partidasof_areas.PartidasOF_id', 'areas.nombre as Estado', 'ordenfabricacion.OrdenFabricacion') 
                 ->get();
             
@@ -299,7 +338,7 @@ class BusquedaController extends Controller
                 ->join('areas', 'partidasof_areas.Areas_id', '=', 'areas.id') 
                 ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion) 
                // ->where('ordenfabricacion.Cerrada', 0)
-                ->whereIn('partidasof_areas.Areas_id', [9])
+                ->whereIn('partidasof_areas.Areas_id', [17])
                 ->select(
                     'partidasof_areas.PartidasOF_id',
                     'partidasof_areas.id',
@@ -359,10 +398,10 @@ class BusquedaController extends Controller
                 10 => 'plemasArmadodia',
                 11 => 'plemasInspecciondia',
                 12 => 'plemasPolaridaddia',
-                13 => 'plemasCrimpadoddia',
+                13 => 'plemasCrimpadodia',
                 14 => 'plemasMediciondia',
                 15 => 'plemasVisualizaciondia',
-                16 => 'plemasMontaje',
+                16 => 'plemasMontajedia',
                
             ];
             $estacionArea2 = [
@@ -1353,7 +1392,7 @@ class BusquedaController extends Controller
         $duracionFinal9 = DB::table('ordenfabricacion')
         ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
         ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-        ->where('partidasof_areas.Areas_id', 9)
+        ->where('partidasof_areas.Areas_id', 17)
         ->select(
             'ordenfabricacion.OrdenFabricacion',
             'partidasof_areas.PartidasOf_id',

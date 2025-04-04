@@ -4,6 +4,58 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!--estilos-->
     <style>
+        .progress-scroll-container {
+    margin-top: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.task-progress-bar {
+    margin-bottom: 15px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    position: relative;
+    padding: 5px;
+}
+
+.task-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.task-progress {
+    height: 24px;
+    line-height: 24px;
+    color: #fff;
+    text-align: right;
+    padding-right: 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 12px;
+    color: #000;
+}
+
+.retrabajo .task-progress {
+    background-color: blue !important;
+}
+
+
+
+
+
+
+
         /*estilo de boton detalles*/
         .ver-detalles:hover {
             background-color: #0c705f; /
@@ -11,46 +63,70 @@
         }
 
         /*estilo de barrade progreso*/
+        .card {
+            overflow-x: auto; /* Permite scroll horizontal */
+            padding: 10px; /* Espaciado opcional */
+            border: 1px solid #ccc; /* Estilo de borde opcional */
+            border-radius: 8px; /* Bordes redondeados */
+            max-width: 100%; /* Que no se pase del contenedor padre */
+        }
+
         .progress-bar-stages {
-                list-style: none;
-                display: flex;
-                justify-content: space-between;
-                padding: 0;
-                margin: 0;
-            }
+            list-style: none;
+            display: flex;
+            gap: 10px; /* Espacio entre elementos */
+            width: max-content; /* Que se adapte al contenido interno */
+            padding: 0;
+            margin: 0;
+        }
 
-            .stage {
-                text-align: center;
-                cursor: pointer;
-                flex: 1;
-            }
+        .stage {
+            text-align: center;
+            cursor: pointer;
+            flex: 0 0 auto; /* No se estira, conserva su tamaño */
+            min-width: 80px; /* Tamaño mínimo para que se vea bien en scroll */
+        }
 
-            .stage-circle {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                background-color: #a0d2e9;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-size: 18px;
-                margin: 0 auto;
-            }
-           
+        .stage-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #a0d2e9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin: 0 auto;
+        }
 
-            .stage span {
-                display: block;
-                margin-top: 5px;
-            }
+        .stage span {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+        .card::-webkit-scrollbar {
+            height: 8px;
+        }
 
+        .card::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .card::-webkit-scrollbar-thumb {
+            background: #a0d2e9;
+            border-radius: 4px;
+        }
+
+
+/*
             #progress-wrapper {
                 padding: 10px;
                
                 border-radius: 8px;
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            }
-
+            }*/
+/*
             .task-progress-bar {
                 margin-bottom: 15px;
                 padding: 5px;
@@ -75,7 +151,7 @@
                 line-height: 20px;
                 font-weight: bold;
                 transition: width 2s ease-in-out;
-            }
+            }*/
 
             .wizard-buttons {
                 text-align: center;
@@ -107,56 +183,58 @@
         }
     
         /* Barra de progreso */
+        /*
         .task-progress-bar {
-                margin-bottom: 15px; /* Mayor espacio entre barras */
+                margin-bottom: 15px; 
                 position: relative;
                 background-color: #f1f1f1;
                 border-radius: 10px;
                 box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-                padding: 8px; /* Menos padding */
-                font-size: 12px; /* Reducir tamaño de la fuente en el contenedor */
+                padding: 8px; 
+                font-size: 12px; 
             }
 
-            /* Etiqueta de la tarea (orden) */
+           
             .task-label {
-                font-weight: normal; /* Reducir peso de la fuente */
+                font-weight: normal; 
                 text-align: center;
-                margin-bottom: 5px; /* Reducir margen debajo de la etiqueta */
+                margin-bottom: 5px; 
             }
 
-            /* Barra de progreso */
+           
             .task-progress {
-                height: 20px; /* Reducir altura de la barra */
+                height: 20px; 
                 border-radius: 10px;
                 position: relative;
                 overflow: hidden;
                 display: flex;
-                align-items: center; /* Centrar el texto dentro de la barra */
+                align-items: center; 
                 justify-content: center;
             }
 
-            /* Texto que muestra el porcentaje */
+          
             .progress-text {
                 color: rgb(0, 0, 0);
-                font-size: 12px; /* Reducir tamaño de texto */
-                font-weight: normal; /* Reducir peso de la fuente */
+                font-size: 12px;
+                font-weight: normal; 
             }
 
-            /* Ajustar la apariencia de la barra cuando se pasa el progreso */
+            
             .task-progress-bar .task-progress {
-                font-size: 10px; /* Reducir tamaño de texto en la barra */
+                font-size: 10px; 
             }
 
             .task-progress-bar .task-progress span {
-                font-size: 10px; /* Reducir aún más el tamaño del porcentaje */
+                font-size: 10px; 
         }
 
-        /* Clase para resaltar solo el ícono y el texto */
+       
         .selected-stage .stage-circle,
             .selected-stage span {
                 background-color:#299ae6 ; 
                 color: white; 
             }
+            */
 
         /* Estilos generales */
         .grid-container {
@@ -554,7 +632,7 @@
                                     </div>
 
                                     <div class="title-container">
-                                        <h1 class="small-title" id="titulo-Transicion"></h1>
+                                        <h1 class="small-title" id="titulo-transicion"></h1>
                                     </div>
                                 </div>
             
@@ -579,7 +657,7 @@
                                     </div>
 
                                     <div class="title-container">
-                                        <h1 class="small-title" id="titulo-Ribonizado"></h1>
+                                        <h1 class="small-title" id="titulo-ribonizado"></h1>
                                     </div>
                                 </div>
             
@@ -603,7 +681,7 @@
                                     </div>
 
                                     <div class="title-container">
-                                        <h1 class="small-title" id="titulo-CorteF"></h1>
+                                        <h1 class="small-title" id="titulo-corteFibra"></h1>
                                     </div>
                                 </div>
             
@@ -625,7 +703,7 @@
                                         <canvas id="plemasArmado" width="300" height="300"></canvas>
                                     </div>
                                     <div class="title-container">
-                                        <h1 class="small-title" id="titulo-Armado"></h1>
+                                        <h1 class="small-title" id="titulo-armado"></h1>
                                     </div>
                                 </div>
                                 <div class="grid-item">
@@ -636,7 +714,7 @@
                                     </div>
 
                                     <div class="title-container">
-                                        <h1 class="small-title" id="titulo-Inspeccion"></h1>
+                                        <h1 class="small-title" id="titulo-inspeccion"></h1>
                                     </div>
                                 </div>
                                 <div class="grid-item">
@@ -647,7 +725,7 @@
                                     </div>
 
                                     <div class="title-container">
-                                        <h1 class="small-title" id="titulo-Polaridad"></h1>
+                                        <h1 class="small-title" id="titulo-polaridad"></h1>
                                     </div>
                                 </div>
             
@@ -659,7 +737,7 @@
                                     </div>
 
                                     <div class="title-container">
-                                        <h1 class="small-title" id="titulo-Crimpado"></h1>
+                                        <h1 class="small-title" id="titulo-crimpado"></h1>
                                     </div>
                                 </div>
             
@@ -698,7 +776,7 @@
                                     </div>
 
                                     <div class="title-container">
-                                        <h1 class="small-title" id="titulo-Montaje"></h1>
+                                        <h1 class="small-title" id="titulo-montaje"></h1>
                                     </div>
 
                                 </div>
@@ -772,72 +850,110 @@
                         </div>
                         <br>
                         <!-- Lista de etapas -->
-                        <ul class="progress-bar-stages">
-                            <li class="stage" id="stage2" >
-                                <div class="stage-circle">
-                                    <i class="fas fa-cut"></i>
-                                </div>
-                                <span>2. Corte</span>
-                                <div id="progress-wrapper-2" class="collapse" style="margin-top: 10px;">
-                                </div>
-                            </li>
-                            <li class="stage" id="stage3" >
-                                <div class="stage-circle">
-                                    <i class="fas fa-cut"></i>
-                                </div>
-                                <span>3. Suministro</span>
-                                <div id="progress-wrapper-3" class="collapse" style="margin-top: 10px;">
-                                </div>
-                            </li>
-                            <li class="stage" id="stage4">
-                                <div class="stage-circle">
-                                    <i class="fas fa-tools"></i>
-                                </div>
-                                <span>4. Preparado</span>
-                                <div id="progress-wrapper-4" class="collapse" style="margin-top: 10px;">
-                                </div>
-                            </li>
-                            <li class="stage" id="stage5">
-                                <div class="stage-circle">
-                                    <i class="fas fa-tools"></i>
-                                </div>
-                                <span>5. Ensamble</span>
-                                <div id="progress-wrapper-5" class="collapse" style="margin-top: 10px;">
-                                </div>
-                            </li>
-                            <li class="stage" id="stage6">
-                                <div class="stage-circle">
-                                    <i class="fas fa-tools"></i>
-                                </div>
-                                <span>6. Pulido</span>
-                                <div id="progress-wrapper-6" class="collapse" style="margin-top: 10px;">
-                                </div>
-                            </li>
-                            <li class="stage" id="stage7">
-                                <div class="stage-circle">
-                                    <i class="fas fa-tools"></i>
-                                </div>
-                                <span>7. Medición</span>
-                                <div id="progress-wrapper-7" class="collapse" style="margin-top: 10px;">
-                                </div>
-                            </li>
-                            <li class="stage" id="stage8">
-                                <div class="stage-circle">
-                                    <i class="fas fa-tools"></i>
-                                </div>
-                                <span>8. Visualización</span>
-                                <div id="progress-wrapper-8" class="collapse" style="margin-top: 10px;">
-                                </div>
-                            </li>
-                            <li class="stage" id="stage9">
-                                <div class="stage-circle">
-                                    <i class="fas fa-tools"></i>
-                                </div>
-                                <span>9. Empaque</span>
-                                <div id="progress-wrapper-9" class="collapse" style="margin-top: 10px;">
-                                </div>
-                            </li>
-                        </ul>
+                        <div class="card">
+                            <ul class="progress-bar-stages">
+                                <li class="stage" id="stage2">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-cut"></i>
+                                    </div>
+                                    <span>2. Corte</span>
+                                </li>
+                                <li class="stage" id="stage3">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-box"></i>
+                                    </div>
+                                    <span>3. Suministro</span>
+                                </li>
+                                <li class="stage" id="stage4">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-random"></i>
+                                    </div>
+                                    <span>4. Transición</span>
+                                </li>
+                                <li class="stage" id="stage5">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-wrench"></i>
+                                    </div>
+                                    <span>5. Preparado</span>
+                                </li>
+                                <li class="stage" id="stage6">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-align-left"></i>
+                                    </div>
+                                    <span>6. Ribonizado</span>
+                                </li>
+                                <li class="stage" id="stage7">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-cogs"></i>
+                                    </div>
+                                    <span>7. Ensamble</span>
+                                </li>
+                                <li class="stage" id="stage8">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-cut"></i>
+                                    </div>
+                                    <span>8. Corte de Fibra</span>
+                                </li>
+                                <li class="stage" id="stage9">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-gem"></i>
+                                    </div>
+                                    <span>9. Pulido</span>
+                                </li>
+                                <li class="stage" id="stage10">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-screwdriver"></i>
+                                    </div>
+                                    <span>10. Armado</span>
+                                </li>
+                                <li class="stage" id="stage11">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                    <span>11. Inspección</span>
+                                </li>
+                                <li class="stage" id="stage12">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-bolt"></i>
+                                    </div>
+                                    <span>12. Polaridad</span>
+                                </li>
+                                <li class="stage" id="stage13">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-link"></i>
+                                    </div>
+                                    <span>13. Crimpado</span>
+                                </li>
+                                <li class="stage" id="stage14">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-ruler"></i>
+                                    </div>
+                                    <span>14. Medición</span>
+                                </li>
+                                <li class="stage" id="stage15">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-eye"></i>
+                                    </div>
+                                    <span>15. Visualización</span>
+                                </li>
+                                <li class="stage" id="stage16">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-hammer"></i>
+                                    </div>
+                                    <span>16. Montaje</span>
+                                </li>
+                                <li class="stage" id="stage17">
+                                    <div class="stage-circle">
+                                        <i class="fas fa-box-open"></i>
+                                    </div>
+                                    <span>17. Empaque</span>
+                                </li>
+
+                            </ul>
+                            <div id="progress-wrapper-container" class="progress-scroll-container"></div>
+
+                        </div>
+                        
                         <br> 
                         <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
                         <div class="grid-container card p-2" id="canvases">
@@ -974,7 +1090,9 @@
             type: 'GET',
             data: { id: ordenVenta },
             success: function (response) {
-                console.log('Respuesta de la API:', response);  // Verifica la respuesta completa
+                console.log('Respuesta de la API:', response); 
+                const ordenVenta = $('#ordenVentaInput').val();
+ // Verifica la respuesta completa
 
                 if (response.Estatus && response.Estatus.length > 0) {
                     var porcentaje = response.Porcentaje;
@@ -1029,7 +1147,6 @@
                 console.log('Error al obtener los datos de la venta');
             }
         });
-
         const endpoints = [
             { tipo: 'cortes', id: 'corte' },
             { tipo: 'suministros', id: 'suministro' },
@@ -1040,37 +1157,44 @@
             { tipo: 'visualizacion', id: 'visualizacion' },
             { tipo: 'empaque', id: 'empaque' },
         ];
+
         // Verifica si la variable ordenVenta está definida
         if (typeof ordenVenta === "undefined" || ordenVenta === null) {
             console.error("Error: ordenVenta no está definida.");
         } else {
-            endpoints.forEach(endpoint => {
-                $.ajax({
-                    url: @json(route("graficador")), // Corrige la forma de obtener la URL en Blade
-                    type: 'GET',
-                    data: { 
-                        id: ordenVenta,  
-                        tipo: endpoint.tipo
-                    },
-                    success: function(response) {
-                       // console.log(`Respuesta de ${endpoint.tipo}:`, response); // Depuración
-                        
-                        if (response.result && response.result.length > 0) {
-                            const progreso = Math.min(response.Progreso.Progreso, 100); // Acceder correctamente
-                            
-                            drawGauge(endpoint.id, progreso, ''); 
-                        } else {
-                            //console.log(`No hay datos para ${endpoint.tipo}`);
-                            drawGauge(endpoint.id, 0, 'Sin Datos'); 
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(`Error al obtener los datos de ${endpoint.tipo}:`, error);
-                        drawGauge(endpoint.id, 0, 'Error'); 
-                    }
-                });
-            });
+            // Solo una llamada AJAX
+            $.ajax({
+    url: @json(route("graficador")), 
+    type: 'GET',
+    data: { id: ordenVenta }, // Solo pasamos el ID
+    success: function(response) {
+        // Verificamos si 'data' está presente en la respuesta
+        if (!response.data) {
+            console.error("Error: No se encontraron datos en la respuesta.");
+            return;
         }
+
+        endpoints.forEach(endpoint => {
+            const datos = response.data[endpoint.tipo]; // Ahora accedemos correctamente
+            if (datos && typeof datos.Progreso !== "undefined") {
+                const progreso = Math.min(datos.Progreso, 100);
+                drawGauge(endpoint.id, progreso, '');
+            } else {
+                drawGauge(endpoint.id, 0, 'Sin Datos');
+            }
+        });
+    },
+    error: function(xhr, status, error) {
+        console.error("Error al obtener los datos:", error);
+        // Si falla todo, pinta todos los gauges con error
+        endpoints.forEach(endpoint => {
+            drawGauge(endpoint.id, 0, 'Error');
+        });
+    }
+});
+
+        }
+
     });
     // Cargar datos de la tabla de orden de fabricación
     $('#Btn-BuscarOrden').on('click', function () {
@@ -1240,18 +1364,18 @@
 
                 
                 
-                const endpoints = [
+            const endpoints = [
                 { tipo: 'plemasCorte', id: 'plemasCorte', areaId: 2 },
                 { tipo: 'plemasSuministrodia', id: 'plemasSuministro', areaId: 3 },
                 { tipo: 'plemasTransiciondia', id: 'plemasTransicion', areaId: 4 },
                 { tipo: 'plemasPreparadodia', id: 'plemasPreparado', areaId: 5 },
                 { tipo: 'plemasRibonizadodia', id: 'plemasRibonizado', areaId: 6 },
                 { tipo: 'plemasEnsambledia', id: 'plemasEnsamble', areaId: 7 },
-                { tipo: 'plemasCorteFibradia', id: 'plemasCorteFibra', areaId: 8 },
+                { tipo: 'plemasCortesFibradia', id: 'plemasCorteFibra', areaId: 8 },
                 { tipo: 'plemasPulidodia', id: 'plemasPulido', areaId: 9 },
                 { tipo: 'plemasArmadodia', id: 'plemasArmado', areaId: 10 },
-                { tipo: 'plemasArmadodia', id: 'plemasInspeccion', areaId: 11 },
-                { tipo: 'plemasArmadodia', id: 'plemasPolaridad', areaId: 12 },
+                { tipo: 'plemasInspecciondia', id: 'plemasInspeccion', areaId: 11 },
+                { tipo: 'plemasPolaridaddia', id: 'plemasPolaridad', areaId: 12 },
                 { tipo: 'plemasCrimpadodia', id: 'plemasCrimpado', areaId: 13 },
                 { tipo: 'plemasMediciondia', id: 'plemasMedicion', areaId: 14 },
                 { tipo: 'plemasVisualizaciondia', id: 'plemasVisualizacion', areaId: 15 },
@@ -1334,8 +1458,8 @@
                                             'font-weight': 'bold'
                                         });
                                     break;
-                                case 4:
-                                    $('#titulo-preparado')
+                                    case 4:
+                                    $('#titulo-transicion')
                                         .text('Duración: ' + item.DuracionTotal)
                                         .css({
                                             'font-size': '10px',
@@ -1344,7 +1468,7 @@
                                         });
                                     break;
                                 case 5:
-                                    $('#titulo-ensamble')
+                                    $('#titulo-preparado')
                                         .text('Duración: ' + item.DuracionTotal)
                                         .css({
                                             'font-size': '10px',
@@ -1352,8 +1476,8 @@
                                             'font-weight': 'bold'
                                         });
                                     break;
-                                case 6:
-                                    $('#titulo-pulido')
+                                    case 6:
+                                    $('#titulo-ribonizado')
                                         .text('Duración: ' + item.DuracionTotal)
                                         .css({
                                             'font-size': '10px',
@@ -1362,7 +1486,7 @@
                                         });
                                     break;
                                 case 7:
-                                    $('#titulo-medicion')
+                                    $('#titulo-ensamble')
                                         .text('Duración: ' + item.DuracionTotal)
                                         .css({
                                             'font-size': '10px',
@@ -1370,8 +1494,8 @@
                                             'font-weight': 'bold'
                                         });
                                     break;
-                                case 8:
-                                    $('#titulo-visualizacion')
+                                    case 8:
+                                    $('#titulo-corteFibra')
                                         .text('Duración: ' + item.DuracionTotal)
                                         .css({
                                             'font-size': '10px',
@@ -1380,6 +1504,78 @@
                                         });
                                     break;
                                 case 9:
+                                    $('#titulo-pulido')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                    case 10:
+                                    $('#titulo-armado')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                    case 11:
+                                    $('#titulo-inspeccion')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                    case 12:
+                                    $('#titulo-polaridad')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 13:
+                                    $('#titulo-crimpado')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                    case 14:
+                                    $('#titulo-medicion')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 15:
+                                    $('#titulo-visualizacion')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                    case 16:
+                                    $('#titulo-montaje')
+                                        .text('Duración: ' + item.DuracionTotal)
+                                        .css({
+                                            'font-size': '10px',
+                                            'color': 'black',
+                                            'font-weight': 'bold'
+                                        });
+                                    break;
+                                case 17:
                                     $('#titulo-empaque')
                                         .text('Duración: ' + item.DuracionTotal)
                                         .css({
@@ -1593,106 +1789,77 @@ function formatTiempo(totalSegundos) {
         //la posición
     }
     //para el clic de .stage
-    $(document).ready(function() {
-        $('.stage').on('click', function() {
-            var stageId = $(this).attr('id');
-            var progressWrapperId = '#progress-wrapper-' + stageId.replace('stage', '');
-            $(progressWrapperId).collapse('toggle'); // Muestra u oculta el contenedor de progreso
+    $(document).ready(function () {
+        $('.stage').on('click', function () {
+            const stageId = $(this).attr('id');
+            const ordenVenta = $('#ordenVentaInput').val(); // Asegúrate que este input tenga el ID de orden
 
-            // Agregar o quitar la clase 'selected-stage' para resaltar el ícono y el texto
-            $('.stage').removeClass('selected-stage');
-            $(this).addClass('selected-stage');
+            // Log para verificar los datos enviados
+            console.log('Clic en stage:', stageId);
+            console.log('Orden de venta:', ordenVenta);
 
-            var ordenVenta = $(this).data('ordenventa'); // Obtiene la orden de venta asociada
-
-            loadProgressData(ordenVenta, stageId); // Llamada unificada
+            loadProgressData(ordenVenta, stageId);
         });
     });
-    // Función para cargar los datos de progreso combinados
-    function loadProgressData(ordenVenta, stageId) {
-        $.ajax({
-            url: '{{ route("graficarOR.OF") }}', // Ruta al controlador
-            method: 'GET',
-            data: {
-                id: ordenVenta,
-                stage: stageId, // Pasamos el identificador de la etapa
-                _token: $('meta[name="csrf-token"]').attr('content') // Token de seguridad
-            },
-            success: function(response) {
-                var progressWrapper = $('#progress-wrapper-' + stageId.replace('stage', ''));
-                progressWrapper.empty(); // Limpiar el contenido anterior
 
-                // Generar las barras de progreso dinámicamente
-                response.forEach(function(item, index) {
-                    var progressPercentage = item.Progreso;
-                    var displayProgress = progressPercentage > 100 ? 100 : progressPercentage;
-                    var progressBar = $('<div>', { class: 'task-progress-bar', id: 'task-progress' + (index + 1) });
-                    var progressLabel = $('<div>', { class: 'task-label', text: 'Orden ' + item.OrdenesFabricacion });
+function loadProgressData(ordenVenta, stageId) {
+    $.ajax({
+        url: '{{ route("graficarOR.OF") }}',
+        method: 'GET',
+        data: {
+            id: ordenVenta,
+            stage: stageId,
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (response) {
+            const container = $('#progress-wrapper-container');
+            container.empty();
 
-                    // Lógica para asignar colores según el progreso
-                    var progressColor;
-                    if (displayProgress >= 0 && displayProgress <= 30) {
-                        progressColor = 'red'; // Rojo
-                    } else if (displayProgress > 30 && displayProgress <= 50) {
-                        progressColor = 'orange'; // Naranja
-                    } else if (displayProgress > 50 && displayProgress <= 90) {
-                        progressColor = 'yellow'; // Amarillo
-                    } else if (displayProgress > 90 && displayProgress <= 100) {
-                        progressColor = '#12c72a'; // Verde
+            if (!response || response.length === 0) return; // Si no hay datos, no muestra nada
 
-                    }
+            const stageNum = stageId.replace('stage', '');
+            container.append(`<h4>Progreso de la etapa ${stageNum}</h4>`);
 
-                    // Crear la barra de progreso con el porcentaje
-                    var progress = $('<div>', {
-                        class: 'task-progress',
-                        text: displayProgress + '%',
-                        css: {
-                            width: displayProgress + '%',
-                            backgroundColor: progressColor // Aplicar el color
-                        }
-                    });
+            response.forEach((item, index) => {
+                const progreso = item.Progreso;
+                if (!progreso || isNaN(progreso)) return;
 
-                    // Agregar el texto de la orden y el progreso dentro de la barra
-                    var progressText = $('<div>', {
-                        class: 'progress-text',
-                        text: displayProgress + '%'
-                    });
+                const displayProgress = Math.min(progreso, 100);
+                const retrabajo = progreso > 100 ? (progreso - 100).toFixed(2) : null;
 
-                    progressBar.append(progressLabel).append(progress).append(progressText);
-                    progressWrapper.append(progressBar);
+                let color = 'gray';
+                if (displayProgress <= 30) color = 'red';
+                else if (displayProgress <= 50) color = 'orange';
+                else if (displayProgress <= 90) color = 'yellow';
+                else color = '#12c72a';
 
-                    // Si el progreso es mayor a 100%, agregar una barra para el "Retrabajo"
-                    
-                    if (progressPercentage > 100) {
-                        var retrabajoPercentage = (progressPercentage - 100).toFixed(2);
-                        var retrabajoBar = $('<div>', { class: 'task-progress-bar retrabajo', id: 'task-retrabajo' + (index + 1) });
-                        var retrabajoLabel = $('<div>', { class: 'task-label', text: 'Retrabajo ' + item.OrdenesFabricacion });
+                const bar = $(`
+                    <div class="task-progress-bar">
+                        <div class="task-label">Orden ${item.OrdenesFabricacion}</div>
+                        <div class="task-progress" style="width: ${displayProgress}%; background-color: ${color};">${displayProgress}%</div>
+                        <div class="progress-text">${displayProgress}%</div>
+                    </div>
+                `);
+                container.append(bar);
 
-                        var retrabajoProgress = $('<div>', {
-                            class: 'task-progress',
-                            text: retrabajoPercentage + '%',
-                            css: {
-                                width: retrabajoPercentage + '%',
-                                backgroundColor: 'blue' // Color para retrabajo
-                            }
-                        });
+                if (retrabajo) {
+                    const retrabajoBar = $(`
+                        <div class="task-progress-bar retrabajo">
+                            <div class="task-label">Retrabajo ${item.OrdenesFabricacion}</div>
+                            <div class="task-progress" style="width: ${retrabajo}%; background-color: blue;">${retrabajo}%</div>
+                            <div class="progress-text">${retrabajo}%</div>
+                        </div>
+                    `);
+                    container.append(retrabajoBar);
+                }
+            });
+        },
+        error: function (xhr, status, error) {
+            console.error('Error en la solicitud AJAX:', error);
+        }
+    });
+}
 
-                        var retrabajoText = $('<div>', {
-                            class: 'progress-text',
-                            text: retrabajoPercentage + '%'
-                        });
-
-
-                        retrabajoBar.append(retrabajoLabel).append(retrabajoProgress).append(retrabajoText);
-                        progressWrapper.append(retrabajoBar);
-                    }
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error('Error en la solicitud AJAX:', error);
-            }
-        });
-    }
     // Cuando se haga clic en una fila para seleccionar la OrdenFabricacion
     $(document).on('click', '.ver-fabricacion', function () {
         var ordenfabricacion = $(this).data('ordenfabricacion');  
@@ -1787,5 +1954,9 @@ function formatTiempo(totalSegundos) {
             estatusElement.textContent = 'Cerrado';
         }
     }
+</script>
+
+<script>
+    
 </script>
 @endsection
