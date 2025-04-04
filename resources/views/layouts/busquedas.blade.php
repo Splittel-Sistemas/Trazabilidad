@@ -515,8 +515,11 @@
                         <!---->
                          <!--<div class="card p-3">-->
                             <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
+                            
+                            
+                            
                             <div class="grid-container" id="plemasCanvases">
-                                <!-- Estación Cortes -->
+                               
                                 <div class="card">
                                     <div class="grid-item">
                                         <h1 class="small-title">Cortes</h1>
@@ -530,7 +533,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Estación Suministros -->
+                               
                                 <div class="grid-item">
                                     <h1 class="small-title">Suministros</h1>
 
@@ -542,10 +545,22 @@
                                         <h1 class="small-title" id="titulo-suministro"></h1>
                                     </div>
                                 </div>
-            
-                                <!-- Estación Preparado -->
+
                                 <div class="grid-item">
-                                    <h1 class="small-title"> Preparado</h1>
+                                    <h1 class="small-title">Transicion</h1>
+
+                                    <div class="canvas-container">
+                                        <canvas id="plemasTransicion" width="300" height="300"></canvas>
+                                    </div>
+
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-Transicion"></h1>
+                                    </div>
+                                </div>
+            
+                               
+                                <div class="grid-item">
+                                    <h1 class="small-title">Preparado</h1>
 
                                     <div class="canvas-container">
                                         <canvas id="plemasPreparado" width="300" height="300"></canvas>
@@ -555,8 +570,20 @@
                                         <h1 class="small-title" id="titulo-preparado"></h1>
                                     </div>
                                 </div>
+
+                                <div class="grid-item">
+                                    <h1 class="small-title">Ribonizado</h1>
+
+                                    <div class="canvas-container">
+                                        <canvas id="plemasRibonizado" width="300" height="300"></canvas>
+                                    </div>
+
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-Ribonizado"></h1>
+                                    </div>
+                                </div>
             
-                                <!-- Estación Ensamble -->
+                               
                                 <div class="grid-item">
                                     <h1 class="small-title"> Ensamble</h1>
 
@@ -568,8 +595,19 @@
                                         <h1 class="small-title" id="titulo-ensamble"></h1>
                                     </div>
                                 </div>
+                                <div class="grid-item">
+                                    <h1 class="small-title"> Corte de Fibra</h1>
+
+                                    <div class="canvas-container">
+                                        <canvas id="plemasCorteFibra" width="300" height="300"></canvas>
+                                    </div>
+
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-CorteF"></h1>
+                                    </div>
+                                </div>
             
-                                <!-- Estación Pulido -->
+                                
                                 <div class="grid-item">
                                     <h1 class="small-title"> Pulido</h1>
                                     
@@ -581,8 +619,52 @@
                                         <h1 class="small-title" id="titulo-pulido"></h1>
                                     </div>
                                 </div>
+                                <div class="grid-item">
+                                    <h1 class="small-title">Armado</h1>
+                                    <div class="canvas-container">
+                                        <canvas id="plemasArmado" width="300" height="300"></canvas>
+                                    </div>
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-Armado"></h1>
+                                    </div>
+                                </div>
+                                <div class="grid-item">
+                                    <h1 class="small-title">Inspeccion</h1>
+                                    
+                                    <div class="canvas-container">
+                                        <canvas id="plemasInspeccion" width="300" height="300"></canvas>
+                                    </div>
+
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-Inspeccion"></h1>
+                                    </div>
+                                </div>
+                                <div class="grid-item">
+                                    <h1 class="small-title">Polaridad</h1>
+                                    
+                                    <div class="canvas-container">
+                                        <canvas id="plemasPolaridad" width="300" height="300"></canvas>
+                                    </div>
+
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-Polaridad"></h1>
+                                    </div>
+                                </div>
             
-                                <!-- Estación Medición -->
+                                <div class="grid-item">
+                                    <h1 class="small-title">Crimpado</h1>
+                                    
+                                    <div class="canvas-container">
+                                        <canvas id="plemasCrimpado" width="300" height="300"></canvas>
+                                    </div>
+
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-Crimpado"></h1>
+                                    </div>
+                                </div>
+            
+            
+                               
                                 <div class="grid-item">
                                     <h1 class="small-title"> Medición</h1>
 
@@ -595,7 +677,7 @@
                                     </div>
                                 </div>
             
-                                <!-- Estación Visualización -->
+                                
                                 <div class="grid-item">
                                     <h1 class="small-title"> Visualización</h1>
                                 
@@ -608,8 +690,19 @@
                                     </div>
 
                                 </div>
+                                <div class="grid-item">
+                                    <h1 class="small-title"> Montaje</h1>
+
+                                    <div class="canvas-container">
+                                        <canvas id="plemasMontaje" width="300" height="300"></canvas>
+                                    </div>
+
+                                    <div class="title-container">
+                                        <h1 class="small-title" id="titulo-Montaje"></h1>
+                                    </div>
+
+                                </div>
             
-                                <!-- Estación Empaque -->
                                 <div class="grid-item">
                                     <h1 class="small-title"> Empaque</h1>
 
@@ -1100,15 +1193,70 @@
                         alert('Error al obtener los datos de la fabricación.');
                     }
                 });
+/*
+                $.ajax({
+                    url: '{{ route("graficadoOF") }}',
+                    type: 'GET',
+                    data: { id: ordenfabricacion },
+                    success: function(response) {
+                        if (response && response.estaciones) {
+                            Object.keys(response.estaciones).forEach(tipo => {
+                                let estacion = response.estaciones[tipo];
+
+                                if (estacion && estacion.length > 0) {
+                                    let datos = estacion[0]; 
+                                    let porcentaje = datos.porcentaje ? Math.floor(datos.porcentaje) : 0;
+                                    let label = datos.totalR > 0 ? `Retrabajo: ${datos.totalR}` : '';
+
+                                    // Verifica si ya existe el contenedor, si no, lo crea dinámicamente
+                                    if (!$(`#${tipo}`).length) {
+                                        $(".grid-container").append(`
+                                            <div class="grid-item">
+                                                <h1 class="small-title">${tipo.replace('plemas', '')}</h1>
+                                                <div class="canvas-container">
+                                                    <canvas id="${tipo}" width="300" height="300"></canvas>
+                                                </div>
+                                                <div class="title-container">
+                                                    <h1 class="small-title" id="titulo-${tipo}"></h1>
+                                                </div>
+                                            </div>
+                                        `);
+                                    }
+
+                                    drawGauge(tipo, porcentaje, label);
+                                } else {
+                                    console.log(`No hay datos para ${tipo}`);
+                                    drawGauge(tipo, 0, 'Sin Datos');
+                                }
+                            });
+                        } else {
+                            console.log('No hay datos para mostrar.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al obtener los datos:', error);
+                    }
+                });*/
+
+                
+                
                 const endpoints = [
                 { tipo: 'plemasCorte', id: 'plemasCorte', areaId: 2 },
                 { tipo: 'plemasSuministrodia', id: 'plemasSuministro', areaId: 3 },
-                { tipo: 'plemasPreparadodia', id: 'plemasPreparado', areaId: 4 },
-                { tipo: 'plemasEnsambledia', id: 'plemasEnsamble', areaId: 5 },
-                { tipo: 'plemasPulidodia', id: 'plemasPulido', areaId: 6 },
-                { tipo: 'plemasMediciondia', id: 'plemasMedicion', areaId: 7 },
-                { tipo: 'plemasVisualizaciondia', id: 'plemasVisualizacion', areaId: 8 },
-                { tipo: 'plemasEmpaque', id: 'plemasEmpaque', areaId: 9 },
+                { tipo: 'plemasTransiciondia', id: 'plemasTransicion', areaId: 4 },
+                { tipo: 'plemasPreparadodia', id: 'plemasPreparado', areaId: 5 },
+                { tipo: 'plemasRibonizadodia', id: 'plemasRibonizado', areaId: 6 },
+                { tipo: 'plemasEnsambledia', id: 'plemasEnsamble', areaId: 7 },
+                { tipo: 'plemasCorteFibradia', id: 'plemasCorteFibra', areaId: 8 },
+                { tipo: 'plemasPulidodia', id: 'plemasPulido', areaId: 9 },
+                { tipo: 'plemasArmadodia', id: 'plemasArmado', areaId: 10 },
+                { tipo: 'plemasArmadodia', id: 'plemasInspeccion', areaId: 11 },
+                { tipo: 'plemasArmadodia', id: 'plemasPolaridad', areaId: 12 },
+                { tipo: 'plemasCrimpadodia', id: 'plemasCrimpado', areaId: 13 },
+                { tipo: 'plemasMediciondia', id: 'plemasMedicion', areaId: 14 },
+                { tipo: 'plemasVisualizaciondia', id: 'plemasVisualizacion', areaId: 15 },
+                { tipo: 'plemasMontajedia', id: 'plemasMontaje', areaId: 16 },
+                { tipo: 'plemasEmpaque', id: 'plemasEmpaque', areaId: 17 },
             ];
             $.ajax({
                 url: '{{ route("graficadoOF") }}',

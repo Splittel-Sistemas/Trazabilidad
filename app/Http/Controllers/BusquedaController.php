@@ -350,11 +350,20 @@ class BusquedaController extends Controller
         // Verificar el valor de Escaner
         if ($escaner == 0) {
             $estacionesAreas = [
-                4 => 'plemasPreparadodia',
-                5 => 'plemasEnsambledia',
-                6 => 'plemasPulidodia',
-                7 => 'plemasMediciondia',
-                8 => 'plemasVisualizaciondia',
+                4 => 'plemasTransiciondia',
+                5 => 'plemasPreparadodia',
+                6 => 'plemasRibonizadodia',
+                7 => 'plemasEnsambledia',
+                8 => 'plemasCortesFibradia',
+                9 => 'plemasPulidodia',
+                10 => 'plemasArmadodia',
+                11 => 'plemasInspecciondia',
+                12 => 'plemasPolaridaddia',
+                13 => 'plemasCrimpadoddia',
+                14 => 'plemasMediciondia',
+                15 => 'plemasVisualizaciondia',
+                16 => 'plemasMontaje',
+               
             ];
             $estacionArea2 = [
                 2 => 'plemasCorte',
@@ -364,7 +373,7 @@ class BusquedaController extends Controller
 
             ];
             $estacionArea9 = [
-                9 => 'plemasEmpaque',
+                17 => 'plemasEmpaque',
             ];
             
             // Procesar las estaciones del primer conjunto (estacionesAreas)
@@ -648,12 +657,20 @@ class BusquedaController extends Controller
         } elseif ($escaner == 1) {
             $estacionesAreas = [
                 3 => 'plemasSuministrodia',
-                4 => 'plemasPreparadodia',
-                5 => 'plemasEnsambledia',
-                6 => 'plemasPulidodia',
-                7 => 'plemasMediciondia',
-                8 => 'plemasVisualizaciondia',
-                9 => 'plemasEmpaque',
+                4 => 'plemasTransiciondia',
+                5 => 'plemasPreparadodia',
+                6 => 'plemasRibonizadodia',
+                7 => 'plemasEnsambledia',
+                8 => 'plemasCortesFibradia',
+                9 => 'plemasPulidodia',
+                10 => 'plemasArmadodia',
+                11 => 'plemasInspecciondia',
+                12 => 'plemasPolaridaddia',
+                13 => 'plemasCrimpadoddia',
+                14 => 'plemasMediciondia',
+                15 => 'plemasVisualizaciondia',
+                16 => 'plemasMontaje',
+                17 => 'plemasEmpaque',
             ];
             $estacionArea2 = [
                 2 => 'plemasCorte',
@@ -773,6 +790,7 @@ class BusquedaController extends Controller
             }
         }
         return response()->json(['estaciones' => $result]);
+
         // Graficador OF
         /*
         {
@@ -1319,7 +1337,6 @@ class BusquedaController extends Controller
     public function tiempoS(Request $request)
     {
         $idFabricacion = $request->input('id');
-    
         $duracionFinalCortes =  DB::table('ordenfabricacion')
         ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
         ->select(
