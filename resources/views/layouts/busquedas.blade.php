@@ -1195,69 +1195,61 @@
                 console.log('Error al obtener los datos de la venta');
             }
         });
+       
         const endpoints = [
-                { tipo: 'Corte', id: 'corte', areaId: 2 },
-                { tipo: 'Suministro', id: 'suministro', areaId: 3 },
-                { tipo: 'Transicion', id: 'transicion', areaId: 4 },
-                { tipo: 'Preparado', id: 'preparado', areaId: 5 },
-                { tipo: 'Ribonizado', id: 'ribonizado', areaId: 6 },
-                { tipo: 'Ensamble', id: 'ensamble', areaId: 7 },
-                { tipo: 'CortesFibra', id: 'corteFibra', areaId: 8 },
-                { tipo: 'Pulido', id: 'pulido', areaId: 9 },
-                { tipo: 'Armado', id: 'armado', areaId: 10 },
-                { tipo: 'Inspeccion', id: 'inspeccion', areaId: 11 },
-                { tipo: 'Polaridad', id: 'polaridad', areaId: 12 },
-                { tipo: 'Crimpado', id: 'crimpado', areaId: 13 },
-                { tipo: 'Medicion', id: 'medicion', areaId: 14 },
-                { tipo: 'Visualizacion', id: 'visualizacion', areaId: 15 },
-                { tipo: 'Montaje', id: 'montaje', areaId: 16 },
-                { tipo: 'Empaque', id: 'empaque', areaId: 17 },
-            ];
-        const endpoints = [
-            { tipo: 'cortes', id: 'corte' },
-            { tipo: 'suministros', id: 'suministro' },
-            { tipo: 'preparado', id: 'preparado' },
-            { tipo: 'ensamble', id: 'ensamble' },
-            { tipo: 'pulido', id: 'pulido' },
-            { tipo: 'medicion', id: 'medicion' },
-            { tipo: 'visualizacion', id: 'visualizacion' },
-            { tipo: 'empaque', id: 'empaque' },
+            { tipo: 'Cortes', id: 'corte' },
+            { tipo: 'Suministros', id: 'suministro' },
+            { tipo: 'Transicion', id: 'transicion' },
+            { tipo: 'Preparado', id: 'preparado' },
+            { tipo: 'Ribonizado', id: 'ribonizado' },
+            { tipo: 'Ensamble', id: 'ensamble' },
+            { tipo: 'CorteF', id: 'cortef' },
+            { tipo: 'Pulido', id: 'pulido' },
+            { tipo: 'Armado', id: 'armado' },
+            { tipo: 'Inspeccion', id: 'inspeccion' },
+            { tipo: 'Polaridad', id: 'polaridad' },
+            { tipo: 'Crimpado', id: 'crimpado' },
+            { tipo: 'Medicion', id: 'medicion' },
+            { tipo: 'Visualizacion', id: 'visualizacion' },
+            { tipo: 'Montaje', id: 'montaje' },
+            { tipo: 'Empaque', id: 'empaque' },
         ];
 
-        // Verifica si la variable ordenVenta está definida
+       
         if (typeof ordenVenta === "undefined" || ordenVenta === null) {
             console.error("Error: ordenVenta no está definida.");
         } else {
             // Solo una llamada AJAX
             $.ajax({
-    url: @json(route("graficador")), 
-    type: 'GET',
-    data: { id: ordenVenta }, // Solo pasamos el ID
-    success: function(response) {
-        // Verificamos si 'data' está presente en la respuesta
-        if (!response.data) {
-            console.error("Error: No se encontraron datos en la respuesta.");
-            return;
-        }
+                url: '{{ route("Buscar.Venta.Detalle") }}',
+                url: 'route("graficador")), 
+                type: 'GET',
+                data: { id: ordenVenta }, // Solo pasamos el ID
+                success: function(response) {
+                    // Verificamos si 'data' está presente en la respuesta
+                    if (!response.data) {
+                        console.error("Error: No se encontraron datos en la respuesta.");
+                        return;
+                    }
 
-        endpoints.forEach(endpoint => {
-            const datos = response.data[endpoint.tipo]; // Ahora accedemos correctamente
-            if (datos && typeof datos.Progreso !== "undefined") {
-                const progreso = Math.min(datos.Progreso, 100);
-                drawGauge(endpoint.id, progreso, '');
-            } else {
-                drawGauge(endpoint.id, 0, 'Sin Datos');
-            }
-        });
-    },
-    error: function(xhr, status, error) {
-        console.error("Error al obtener los datos:", error);
-        // Si falla todo, pinta todos los gauges con error
-        endpoints.forEach(endpoint => {
-            drawGauge(endpoint.id, 0, 'Error');
-        });
-    }
-});
+                    endpoints.forEach(endpoint => {
+                        const datos = response.data[endpoint.tipo]; // Ahora accedemos correctamente
+                        if (datos && typeof datos.Progreso !== "undefined") {
+                            const progreso = Math.min(datos.Progreso, 100);
+                            drawGauge(endpoint.id, progreso, '');
+                        } else {
+                            drawGauge(endpoint.id, 0, 'Sin Datos');
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error al obtener los datos:", error);
+                    // Si falla todo, pinta todos los gauges con error
+                    endpoints.forEach(endpoint => {
+                        drawGauge(endpoint.id, 0, 'Error');
+                    });
+                }
+            });
 
         }
 
