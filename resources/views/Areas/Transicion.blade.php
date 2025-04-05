@@ -1,5 +1,5 @@
 @extends('layouts.menu2')
-@section('title', 'Preparado')
+@section('title', 'Transición')
 @section('styles')
 <link rel="stylesheet" href="{{asset('css/Suministro.css')}}">
 <style>
@@ -157,17 +157,22 @@
         if(TipoEntrada=="Salida"){
             Inicio=0;
             Finalizar=1;
+            $('#CodigoEscanerEntrada').val('');
         }
         if(Inicio==1){
             $('#CodigoEscanerEntrada').focus();
+            $('#CodigoEscanerSalida').val('');
         }else if(Inicio==0){
             $('#CodigoEscanerSalida').focus();
+            $('#CodigoEscanerEntrada').val('');
         }
         regexCodigo = /^\d+-\d+-\d+$/;
         regexCodigoOF = /^\d+-\d+$/;
         if(!(regexCodigo.test(Codigo) || regexCodigoOF.test(Codigo))) {
             return 0;
         }
+        $('#Cantidad').val('');
+        $('#CantidadSalida').val('');
         $.ajax({
             url: "{{route('PreparadoBuscar')}}", 
             type: 'POST',

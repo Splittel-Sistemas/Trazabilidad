@@ -243,7 +243,7 @@
                                                 <hr class="p-0 m-1">
                                             </li>
                                         @endif
-                                        @if(Auth::user()->hasPermission("Vista Preparado"))
+                                        @if(Auth::user()->hasPermission("Vista Transición"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Transicion') ? 'nav-tabs active' : '' }}" href="{{route('Transicion')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Transici&oacute;n</span></div>
                                                 </a>
@@ -255,19 +255,57 @@
                                                 </a>
                                             </li>
                                         @endif
+                                        @if(Auth::user()->hasPermission("Vista Ribonizado"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Ribonizado') ? 'nav-tabs active' : '' }}" href="{{route('Ribonizado')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Ribonizado</span></div>
+                                                </a>
+                                            </li>
+                                        @endif
                                         @if(Auth::user()->hasPermission("Vista Ensamble"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Ensamble') ? 'nav-tabs active' : '' }}" href="{{route('Ensamble')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Ensamble</span></div>
                                                 </a>
                                             </li>
                                         @endif
+                                        @if(Auth::user()->hasPermission("Vista Corte de fibra"))
+                                        <li class="nav-item"><a class="nav-link {{ Route::is('Cortedefibra') ? 'nav-tabs active' : '' }}" href="{{route('Cortedefibra')}}" data-bs-toggle="" aria-expanded="false">
+                                            <div class="d-flex align-items-center"><span class="nav-link-text">Corte de fibra</span></div>
+                                            </a>
+                                        </li>
+                                        @endif
                                         @if(Auth::user()->hasPermission("Vista Pulido"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Pulido') ? 'nav-tabs active' : '' }}" href="{{route('Pulido')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Pulido</span></div>
                                                 </a>
+                                            </li>
+                                        @endif
+                                        
+                                        @if(Auth::user()->hasPermission("Vista Armado"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Armado') ? 'nav-tabs active' : '' }}" href="{{route('Armado')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Armado</span></div>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if(Auth::user()->hasPermission("Vista Inspección"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Inspeccion') ? 'nav-tabs active' : '' }}" href="{{route('Inspeccion')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Inspecci&oacute;n</span></div>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if(Auth::user()->hasPermission("Vista Polaridad"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Polaridad') ? 'nav-tabs active' : '' }}" href="{{route('Polaridad')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Polaridad</span></div>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if(Auth::user()->hasPermission("Vista Crimpado"))
+                                            <li class="nav-item"><a class="nav-link {{ Route::is('Crimpado') ? 'nav-tabs active' : '' }}" href="{{route('Crimpado')}}" data-bs-toggle="" aria-expanded="false">
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Crimpado</span></div>
+                                                </a>
                                                 <hr class="p-0 m-1">
                                             </li>
                                         @endif
+
                                         @if(Auth::user()->hasPermission("Vista Medicion"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Medicion') ? 'nav-tabs active' : '' }}" href="{{route('Medicion')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Medici&oacute;n</span></div>

@@ -1,5 +1,5 @@
 @extends('layouts.menu2')
-@section('title', 'Visualización')
+@section('title', 'Polaridad')
 @section('styles')
 <link rel="stylesheet" href="{{asset('css/Suministro.css')}}">
 <style>
@@ -15,46 +15,46 @@
 @section('content')
     <div class="row gy-3 mb-2 justify-content-between">
         <div class="col-md-9 col-auto">
-        <h4 class="mb-2 text-1100">Visualizaci&oacute;n</h4>
+        <h4 class="mb-2 text-1100">Polaridad</h4>
         </div>
     </div>
     <div class="row">
         <div class="col-6">
-            <div class="card shadow-sm">
-                <div class="card-header p-2" id="filtroEntrada" style="background: #01914f;">
+              <div class="card shadow-sm">
+                <div class="card-header p-2" id="filtroEntrada" style="background: #01914f">
                     <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Entrada <i class="fas fa-arrow-down"></i></h3>
-              </div>
-              <div class="card-body row" id="filtroEntrada">
-                  <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
-                      <div class="col-8" id="CodigoDiv">
-                          <div class="">
-                              <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
-                              <div class="input-group">
-                                  <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro','Entrada')" id="CodigoEscanerEntrada" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
-                                  <div class="invalid-feedback" id="error_CodigoEscaner"></div>
-                              </div>
-                              <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-4" id="CantidadDiv" style="display: none">
-                          <div class="form-group">
-                              <label for="Cantidad">Cantidad</label>
-                              <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" placeholder="0">
-                              <div class="invalid-feedback" id="error_Cantidad"></div>
-                          </div>
-                      </div>
-                      <div class="col-6 mt-2" id="RetrabajoDiv" style="display: none">
-                          <div class="form-check">
-                              <input class="form-check-input" id="Retrabajo" type="checkbox" />
-                              <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
-                          </div>
-                      </div>
-                      <div class="col-6 mt-2" id="IniciarBtn" style="display: none">
-                          <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i> Iniciar</button>
-                      </div>
-                  </form>
-              </div>
+                </div>
+                <div class="card-body row" id="filtroEntrada">
+                    <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
+                        <div class="col-8" id="CodigoDiv">
+                            <div class="">
+                                <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro','Entrada')" id="CodigoEscanerEntrada" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
+                                    <div class="invalid-feedback" id="error_CodigoEscaner"></div>
+                                </div>
+                                <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4" id="CantidadDiv" style="display: none">
+                            <div class="form-group">
+                                <label for="Cantidad">Cantidad</label>
+                                <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad"  placeholder="0">
+                                <div class="invalid-feedback" id="error_Cantidad"></div>
+                            </div>
+                        </div>
+                        <div class="col-6 mt-2" id="RetrabajoDiv" style="display: none">
+                            <div class="form-check">
+                                <input class="form-check-input" id="Retrabajo" type="checkbox" />
+                                <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
+                            </div>
+                        </div>
+                        <div class="col-6 mt-2" id="IniciarBtn" style="display: none">
+                            <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i> Iniciar</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
         <div class="col-6">
@@ -78,7 +78,7 @@
                         <div class="col-4" id="CantidadDivSalida" style="display: none">
                             <div class="form-group">
                                 <label for="Cantidad">Cantidad</label>
-                                <input type="text" class="form-control form-control-sm" id="CantidadSalida" aria-describedby="Cantidad" oninput="RegexNumeros(this);"  placeholder="0">
+                                <input type="text" class="form-control form-control-sm" id="CantidadSalida" aria-describedby="Cantidad"  oninput="RegexNumeros(this);" placeholder="0">
                                 <div class="invalid-feedback" id="error_CantidadSalida"></div>
                             </div>
                         </div>
@@ -95,7 +95,7 @@
         </div>
         <div id="ContentTablaPendientes" class="col-12 mt-2">
             <div class="card" id="DivCointainerTablePendientes">
-                <h4 class="text-center mt-2 p-0">Ordenes Pendientes</h4>
+                <h4 class="text-center mt-2 p-0">Ordenes de Fabricaci&oacute;n Pendientes</h4>
                 <div class="table-responsive">
                     <table id="TablaPreparadoPendientes" class="table table-sm fs--1 mb-1">
                         <thead>
