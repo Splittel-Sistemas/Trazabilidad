@@ -344,7 +344,6 @@
                                             <th>&Oacute;rden Venta</th>
                                             <th>&Oacute;rden Fabrici&oacute;n</th>
                                             <th>Acciones</th>
-                                           
                                         </tr>
                                     </thead>
                                     <tbody id="table-2-content_vencidos">

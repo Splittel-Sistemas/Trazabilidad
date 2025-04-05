@@ -152,6 +152,8 @@
             Inicio=0;
             Finalizar=1;
         }
+        $('#Cantidad').val('');
+        $('#CantidadSalida').val('');
         $.ajax({
             url: "{{route('EmpaquetadoBuscar')}}", 
             type: 'POST',
