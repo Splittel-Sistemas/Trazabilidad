@@ -463,7 +463,7 @@
                     }
         };
         userList = new List(TableName, options);
-        userList.sort('Inicio', { order: 'desc' });
+        //userList.sort('Inicio', { order: 'desc' });
         document.querySelector('[data-list-filter="data-list-filter"]').addEventListener('change', function() {
             var filterValue = this.value; // Obtener el valor seleccionado
             if (filterValue === "") {

@@ -464,7 +464,7 @@
                     }
         };
         userList = new List(TableName, options);
-        userList.sort('Inicio', { order: 'desc' });
+        //userList.sort('Inicio', { order: 'desc' });
         document.querySelector('[data-list-filter="data-list-filter"]').addEventListener('change', function() {
             var filterValue = this.value; // Obtener el valor seleccionado
             if (filterValue === "") {
@@ -523,22 +523,20 @@
             Cantidad=$('#CantidadSalida').val();
             TipoNoEscaner('Salida');
         });
-        $('#TablaPreparadoPendientes').DataTable(
-            {"language": {
-                    "sProcessing":     "Procesando...",
-                    "sLengthMenu":     "Mostrar _MENU_ registros",
-                    "sZeroRecords":    "No se encontraron resultados",
-                    "sInfo":           "Mostrando de _START_ a _END_ de _TOTAL_ registros",
-                    "sInfoEmpty":      "Mostrando de 0 a 0 de 0 registros",
-                    "sInfoFiltered":   "(filtrado de _MAX_ registros en total)",
-                    "sSearch":         "Buscar:",
-                    "sUrl":            "",
-                }
+        $('#TablaPreparadoPendientes').DataTable({
+            "language": {
+                "sProcessing":     "Procesando...",
+                "sLengthMenu":     "Mostrar _MENU_ registros",
+                "sZeroRecords":    "No se encontraron resultados",
+                "sInfo":           "Mostrando de _START_ a _END_ de _TOTAL_ registros",
+                "sInfoEmpty":      "Mostrando de 0 a 0 de 0 registros",
+                "sInfoFiltered":   "(filtrado de _MAX_ registros en total)",
+                "sSearch":         "Buscar:",
+                "sUrl":            "",
             }
-        );
+        });
         setInterval(RecargarTablaPendientes,180000);//180000
-
-    })
+    });
     function TipoNoEscaner(TipoEntrada) {
         CodigoEscaner=$('#CodigoEscanerEntrada').val();
         Cantidad=$('#Cantidad').val();

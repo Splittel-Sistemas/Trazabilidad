@@ -26,6 +26,10 @@ class AreasController extends Controller
     }
     //Area 3 Suministro
     public function Suministro(){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         //EstatusEntrega==0 aun no iniciado; 1 igual a terminado
         $fecha = date('Y-m-d');
         $fechaAtras=date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
@@ -94,6 +98,10 @@ class AreasController extends Controller
         }
     }
     public function SuministroGuardar(Request $request){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         //Verificar si todo corre de acuerdo a lo planeado, si no modificar esta funcion
         $id=$this->funcionesGenerales->decrypt($request->id);
         $emision=$request->emision;
@@ -180,6 +188,10 @@ class AreasController extends Controller
         ], 200);
     }
     public function SuministroRecargarTabla(){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         //PartidasOF->EstatusPartidaOF==0 aun no iniciado; 1 igual a terminado
         try {
             $PartidasOF=PartidasOF::where('EstatusPartidaOF','=','0')
@@ -235,6 +247,10 @@ class AreasController extends Controller
         }
     }
     public function SuministroRecargarTablaCerrada(Request $request){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         //PartidasOF->EstatusPartidaOF==0 aun no iniciado; 1 igual a terminado
         $fechaAtras=$request->fechainicio;
         $fecham=$request->fechafin;
@@ -273,6 +289,10 @@ class AreasController extends Controller
         }
     }
     public function SuministroDatosModal(Request $request){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         //Partidas->Estatus==1 aun no iniciado; 2 igual a terminado
         $id=$this->funcionesGenerales->decrypt($request->id);
         $Area=3;
@@ -421,6 +441,10 @@ class AreasController extends Controller
         ], 200);
     }
     public function SuministroEmision(Request $request){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         $id=$this->funcionesGenerales->decrypt($request->id);
         $OrdenFabricacion=OrdenFabricacion::where('id','=',$id)->first();
         if($OrdenFabricacion==""){
@@ -447,6 +471,10 @@ class AreasController extends Controller
         }
     }
     public function SuministroCancelar(Request $request){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         $id=$this->funcionesGenerales->decrypt($request->id);
         $PartidaOF_Areas=DB::table('partidasof_areas')->where('id', $id)->first();
         if($PartidaOF_Areas==""){
@@ -488,6 +516,10 @@ class AreasController extends Controller
         ], 200);
     }
     public function SuministroFinalizar(Request $request){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         $id=$this->funcionesGenerales->decrypt($request->id);
         $PartidaOF_Areas=Partidasof_Areas::where('id', $id)->first();
         if($PartidaOF_Areas==""){
@@ -527,6 +559,10 @@ class AreasController extends Controller
         ], 200);
     }
     public function BuscarSuministro(Request $request){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         $OF=$request->OF;
         if(!$OF==""){
             $BuscarSuministro = OrdenFabricacion::where('OrdenFabricacion', 'LIKE', '%'.$OF.'%')->get();
@@ -618,7 +654,10 @@ class AreasController extends Controller
     }*/
     //Transicion 4
     public function Transicion(){
-        $user = Auth::user();
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         // Verifica si el usuario tiene el permiso necesario
         if ($user->hasPermission('Vista Transición')) {
             $AreaOriginal = 4;
@@ -691,6 +730,9 @@ class AreasController extends Controller
     //Preparado 5
     public function Preparado(){
         $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if ($user->hasPermission('Vista Preparado')) {
         $AreaOriginal=5;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
@@ -856,6 +898,10 @@ class AreasController extends Controller
         }
     }*/
     public function PreparadoBuscar(Request $request){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if ($request->has('Confirmacion')) {
             $confirmacion=1;
         }else{
@@ -872,6 +918,7 @@ class AreasController extends Controller
         $Escaner="";
         $CantidadCompletada=0;
         $EscanerExiste=0;
+        $PartidasFaltantesList='';
         //Valida si el codigo es aceptado tiene que ser mayor a 2
         //if(($CodigoTam==3 && !($CodigoPartes[2]=="" || $CodigoPartes[2]==0)) || $CodigoTam==2){
         if($CodigoTam==3 || $CodigoTam==2){
@@ -953,7 +1000,10 @@ class AreasController extends Controller
                     //Mostrar las partidas    
                     $partidas = $datos->partidasOF;
                             foreach( $partidas as $PartidasordenFabricacion){
-                                $PartdaArea=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->get();
+                                $PartdaArea=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)
+                                        ->addSelect(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01")) AS FechaMayor'))
+                                        ->orderBy(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01"))'), 'desc')
+                                        ->get();
                                 foreach($PartdaArea as $PartdaAr){
                                     $menu.='<tr>
                                             <td class="align-middle ps-3 NumParte">'.$datos->OrdenFabricacion.'-'.$PartidasordenFabricacion->NumeroPartida.'-'.$PartdaAr['pivot']->NumeroEtiqueta.'</td>
@@ -972,22 +1022,21 @@ class AreasController extends Controller
                                     $Linea = Linea::find($PartdaAr['pivot']->Linea_id);
                                             $menu.='<td class="align-middle text-center Linea"><h5 class="text-light text-center p-0 mx-1" style="background:'.$Linea->ColorLinea.'">'.$Linea->NumeroLinea.'</h5></td></tr>';
                                 }
+                                $CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad')
+                                                            -$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('TipoPartida','R')->SUM('Cantidad');
+                                $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center">'.$datos->OrdenFabricacion."-".$PartidasordenFabricacion->NumeroPartida.'<span class="badge badge-light-danger rounded-pill">'.$PartidasordenFabricacion->cantidad_partida-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$PartidasordenFabricacion->cantidad_partida.'</span></li>';
                             }
                 }else{
-                    /*$Opciones='<option selected="" value="">Todos</option>
-                        <option value="Iniciado">Iniciado</option>
-                        <option value="Retrabajo">Retrabajo</option>
-                        <option value="Finalizado">Finalizado</option>';*/
                     $Opciones='<option selected="" value="">Todos</option>
                         <option value="Iniciado">Iniciado</option>
                         <option value="Finalizado">Finalizado</option>';
                         //Mostrar las partidas    
                     $partidas = $datos->partidasOF;
                         foreach( $partidas as $PartidasordenFabricacion){
-                            $PartdaArea=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->get();
+                                $PartdaArea=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->OrderBy('pivot_id','desc')->get();
                             foreach($PartdaArea as $PartdaAr){
                                 $menu.='<tr>
-                                        <td class="align-middle ps-3 NumParte">'.$datos->OrdenFabricacion.'-'.$PartidasordenFabricacion->NumeroPartida.'-'.$PartdaAr['pivot']->NumeroEtiqueta.'</td>
+                                        <td class="align-middle ps-3 NumParte">'.$datos->OrdenFabricacion.'-'.$PartidasordenFabricacion->NumeroPartida.'-0'.'</td>
                                         <td class="align-middle text-center Cantidad">'.$PartdaAr['pivot']->Cantidad.'</td>';
                                         if($PartdaAr['pivot']->TipoPartida=="R"){
                                             $menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Retrabajo</span><span class="ms-1 fas fa-cogs"></span></div></td>';
@@ -1003,6 +1052,10 @@ class AreasController extends Controller
                                 $Linea = Linea::find($PartdaAr['pivot']->Linea_id);
                                         $menu.='<td class="align-middle text-center Linea"><h5 class="text-light text-center p-0 mx-1" style="background:'.$Linea->ColorLinea.'">'.$Linea->NumeroLinea.'</h5></td></tr>';
                             }
+                        $CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id', $Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
+                                                ($PartidasordenFabricacion->Areas()->where('Areas_id', $Area)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
+                                                - $PartidasordenFabricacion->Areas()->where('Areas_id', $Area)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad'));
+                        $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center">'.$datos->OrdenFabricacion."-".$PartidasordenFabricacion->NumeroPartida.'<span class="badge badge-light-danger rounded-pill">'.$PartidasordenFabricacion->cantidad_partida-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$PartidasordenFabricacion->cantidad_partida.'</span></li>';
                     }
                 }
                 $menu='<div class="card-body">
@@ -1030,10 +1083,7 @@ class AreasController extends Controller
                                     </div>
                                     <div class="collapse p-1" id="collapseExample">
                                         <ul class="list-group">
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">Messages<span class="badge badge-light-primary rounded-pill">14</span></li>
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">Events<span class="badge badge-light-primary rounded-pill">2</span></li>
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">Groups<span class="badge badge-light-primary rounded-pill">1</span></li>
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">Pages<span class="badge badge-light-primary rounded-pill">9</span></li>
+                                        '.$PartidasFaltantesList.'    
                                         </ul>
                                     </div>
                                 </div>
@@ -1091,6 +1141,10 @@ class AreasController extends Controller
         }
     }
     public function CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
         $PartidasOF=$OrdenFabricacion->PartidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
         $PartidasOFAreas=$PartidasOF->Areas()->where('Areas_id','<',$Area)->whereNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->count();
@@ -1101,6 +1155,10 @@ class AreasController extends Controller
         }
     }
     public function CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
         $PartidasOF=$OrdenFabricacion->PartidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
         $PartidasOFAreas=$PartidasOF->Areas()->where('Areas_id','>',$Area)->whereNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->count();
@@ -1111,6 +1169,10 @@ class AreasController extends Controller
         }
     }
     public function GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
 
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
         $PartidasOF=$OrdenFabricacion->PartidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
@@ -1168,6 +1230,10 @@ class AreasController extends Controller
         }
     }
     public function FinalizarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
         if($OrdenFabricacion==""){
             return 3;
@@ -1184,6 +1250,10 @@ class AreasController extends Controller
         return 1; 
     }
     public function NumeroCompletadas($CodigoPartes,$Area){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
         $PartidasOF=$OrdenFabricacion->PartidasOF;
         $Suma=0;
@@ -1211,6 +1281,10 @@ class AreasController extends Controller
         return $Suma;
     }
     public function TipoNoEscaner(Request $request){ 
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         //N= Normal, R = Retrabajo, F = Finalizada
         $request->validate([
             'Codigo' => 'required|string',
@@ -1566,6 +1640,10 @@ class AreasController extends Controller
             }
     }
     public function ValidarPasoUnaVezAA($Area,$CodigoPartes){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$CodigoPartes[0])->first();
         return$AreaAnterior = $this->AreaAnteriorregistros($Area,$OrdenFabricacion->OrdenFabricacion);
         $PartidasOF=$OrdenFabricacion->PartidasOF->where('NumeroPartida',$CodigoPartes[1])->first();
@@ -1576,6 +1654,10 @@ class AreasController extends Controller
         return $PasoUnaVezAA;
     }
     public function ComprobarNumEtiqueta($CodigoPartes,$Area){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         //Return 0:No es el codigo; 1:Si es el codigo; 2:Aun no ha pasado por el area Anterior
         //Comprueba si los datos que vienen en el codigo Existen
         $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
@@ -1616,6 +1698,10 @@ class AreasController extends Controller
 
     //Estaciones metodos generales
     public function SuministroBuscar(Request $request){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if ($request->has('Confirmacion')) {
             $confirmacion=1;
         }else{
@@ -1646,6 +1732,7 @@ class AreasController extends Controller
         
                 ]);
             }else{
+                $PartidasFaltantesList='';
                 $CantidadTotal=$datos->CantidadTotal;
                 //Variable  guarad el valor de Escaner para saber si es no 0=No escaner 1=escaner
                 $Escaner=$datos->Escaner;
@@ -1731,6 +1818,7 @@ class AreasController extends Controller
                 }else{
                     $ArrayNumParte=[];
                     if($Escaner==1){
+                        $PartidasFaltantesList="";
                         $partidas = $datos->partidasOF()
                         ->join('partidas', 'partidasOF.id', '=', 'partidas.PartidasOF_id')  // JOIN entre PartidasOF y Partidas
                         ->join('partidas_areas', 'partidas.id', '=', 'partidas_areas.Partidas_id')  // JOIN con la tabla pivote (ajustar nombre de la tabla)
@@ -1757,10 +1845,10 @@ class AreasController extends Controller
                                         }
                                     }
                                     $menu.='<td class="align-middle text-center Linea">'.$PartidasordenFabricacion->Linea.'</td></tr>';
-                                    
+                            $PartidasFaltantesList.='<li class="p-0 m-0 list-group-item d-flex justify-content-between align-items-center">'.$CodigoPartes[0]-$CodigoPartes[1].'<span class="badge badge-light-primary rounded-pill">14</span></li>';         
                         }
-                    }
-                    else{
+                    }else{
+                        $PartidasFaltantesList="";
                         foreach( $datos->partidasOF()->orderBy('id', 'desc')->get() as $PartidasordenFabricacion){
                             foreach( $PartidasordenFabricacion->Partidas()->orderBy('id', 'desc')->get() as $Partidas){
                                 if(!($Partidas->Areas()->where('Areas_id','=',$Area)->first() =="" || $Partidas->Areas()->where('Areas_id','=',$Area)->first() == null )){
@@ -1785,6 +1873,7 @@ class AreasController extends Controller
                                         </tr>';
                                 }
                             }
+                            $PartidasFaltantesList.='<li class="p-0 m-0 list-group-item d-flex justify-content-between align-items-center">'.$CodigoPartes[0]-$CodigoPartes[1].'<span class="badge badge-light-primary rounded-pill">14</span></li>';
                         }
                     }
                     $ArrayNumParte=array_count_values($ArrayNumParte);
@@ -1828,10 +1917,7 @@ class AreasController extends Controller
                             </div>
                             <div class="collapse p-1" id="collapseExample">
                                 <ul class="list-group">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">Messages<span class="badge badge-light-primary rounded-pill">14</span></li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">Events<span class="badge badge-light-primary rounded-pill">2</span></li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">Groups<span class="badge badge-light-primary rounded-pill">1</span></li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">Pages<span class="badge badge-light-primary rounded-pill">9</span></li>
+                                '.$PartidasFaltantesList.'    
                                 </ul>
                             </div>
                         </div>
@@ -1886,6 +1972,10 @@ class AreasController extends Controller
         }
     }
     public function TablaOrdenesActivasEstacion($Area){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if($Area==4){
             $NumeroArea4=0;
             $ordenes4 = OrdenFabricacion::with('PartidasOF')
@@ -1905,6 +1995,10 @@ class AreasController extends Controller
     //Area 6 Ribonizado
     public function Ribonizado(){
         $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
         if($user->hasPermission('Vista Ribonizado')){
         $AreaOriginal=6;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
@@ -2001,6 +2095,9 @@ class AreasController extends Controller
     //Area 7 Ensamble
     public function Ensamble(){
         $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if($user->hasPermission('Vista Ensamble')){
         $AreaOriginal=7;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
@@ -2096,7 +2193,10 @@ class AreasController extends Controller
     }
     //Area 8 Pulido
     public function Cortedefibra(){
-        $user=Auth::user();
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if($user->haspermission('Vista Corte de fibra')){
         $AreaOriginal=8;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
@@ -2189,7 +2289,10 @@ class AreasController extends Controller
     }
     //Area 9 Pulido
     public function Pulido(){
-        $user=Auth::user();
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if($user->haspermission('Vista Pulido')){
         $AreaOriginal=9;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
@@ -2282,7 +2385,10 @@ class AreasController extends Controller
     }
     //Area 10 Pulido
     public function Armado(){
-        $user=Auth::user();
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if($user->haspermission('Vista Armado')){
         $AreaOriginal=10;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
@@ -2375,7 +2481,10 @@ class AreasController extends Controller
     }
     //Area 11 Inspeccion
     public function Inspeccion(){
-        $user=Auth::user();
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if($user->haspermission('Vista Inspección')){
         $AreaOriginal=11;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
@@ -2468,7 +2577,10 @@ class AreasController extends Controller
     }
     //Area 12 Polaridad
     public function Polaridad(){
-        $user=Auth::user();
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if($user->haspermission('Vista Polaridad')){
         $AreaOriginal=12;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
@@ -2561,7 +2673,10 @@ class AreasController extends Controller
     }
     //Area 13 Crimpado
     public function Crimpado(){
-        $user=Auth::user();
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if($user->haspermission('Vista Crimpado')){
         $AreaOriginal=13;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
@@ -2654,7 +2769,10 @@ class AreasController extends Controller
     }
     //Area 14 Medicion
     public function Medicion(){
-        $user=Auth::user();
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if($user->hasPermission('Vista Medicion')){
         $AreaOriginal=14;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
@@ -2748,7 +2866,10 @@ class AreasController extends Controller
     }
     //Area 15 Visualizacion
     public function Visualizacion(){
-        $user=Auth::user();
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if($user->hasPermission('Vista Visualizacion')){
         $AreaOriginal=15;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
@@ -2840,7 +2961,10 @@ class AreasController extends Controller
     }
     //Area 16 Montaje
     public function Montaje(){
-        $user=Auth::user();
+       $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if($user->hasPermission('Vista Montaje')){
         $AreaOriginal=16;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
@@ -2932,7 +3056,10 @@ class AreasController extends Controller
     }
     //Area 17 Empaquetado
     public function Empaquetado(){
-        $user=Auth::user();
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
         if($user->hasPermission('Vista Empaquetado')){
           $Area=$this->funcionesGenerales->encrypt(11);
           return view('Areas.Empacado',compact('Area')); 
