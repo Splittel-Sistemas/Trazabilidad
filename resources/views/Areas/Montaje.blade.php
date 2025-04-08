@@ -157,6 +157,7 @@
         if(TipoEntrada=="Salida"){
             Inicio=0;
             Finalizar=1;
+            $('#CodigoEscanerEntrada').val('');
         }
         if(Inicio==1){
             $('#CodigoEscanerEntrada').focus();
@@ -343,7 +344,41 @@
                                     Color='bg-danger';
                                     break;
                             }
+                            BanderaFinalizar=response.CantidadTotal-response.CantidadCompletada;
+                            //alert(BanderaFinalizar);
+                            if(BanderaFinalizar==0){
+                                confirmacionesss(
+                                    "Finalizar Orden de Fabricación", 
+                                    "¿Estás seguro de que deseas finalizar esta orden de Fabricación?", 
+                                    "Confirmar", 
+                                    function () {
+                                        $.ajax({
+                                            url: '{{ route("finProceso.empacado") }}',
+                                            type: "GET",
+                                            data: {
+                                                id: id,
+                                                _token: '{{ csrf_token() }}'
+                                            },
+                                            success: function (response) {
+                                                if (response.codigo=='Success') {
+                                                    success('Orden de Fabricacion Finalizada',response.message);
+                                                }else{
+                                                    error('Ocurrio un error',response.message);
+                                                }
+                                                setTimeout(function() {
+                                                    console.log("Recargando la tabla...");
+                                                    cargarTablaEmpacado();
+                                                }, 500);
+                                            },
+                                            error: function (xhr) {
+                                                console.error("Error:", xhr);
+                                                alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
+                                            }
+                                        });
 
+                                    }
+                                );
+                            }
                         }
                             $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
                             $('#ToastGuardadoBody').html(Mensaje);
@@ -456,8 +491,8 @@
     function TablaList(TableName){
         var options = {
             valueNames: ['NumParte', 'Cantidad', 'Inicio', 'Fin', 'Estatus'],
-                page: 5,  
-                pagination: true,
+                //page: 5,  
+                //pagination: false,
                 filter: {
                             key: 'Estatus' 
                     }
@@ -522,22 +557,20 @@
             Cantidad=$('#CantidadSalida').val();
             TipoNoEscaner('Salida');
         });
-        $('#TablaPreparadoPendientes').DataTable(
-            {"language": {
-                    "sProcessing":     "Procesando...",
-                    "sLengthMenu":     "Mostrar _MENU_ registros",
-                    "sZeroRecords":    "No se encontraron resultados",
-                    "sInfo":           "Mostrando de _START_ a _END_ de _TOTAL_ registros",
-                    "sInfoEmpty":      "Mostrando de 0 a 0 de 0 registros",
-                    "sInfoFiltered":   "(filtrado de _MAX_ registros en total)",
-                    "sSearch":         "Buscar:",
-                    "sUrl":            "",
-                }
+        $('#TablaPreparadoPendientes').DataTable({
+            "language": {
+                "sProcessing":     "Procesando...",
+                "sLengthMenu":     "Mostrar _MENU_ registros",
+                "sZeroRecords":    "No se encontraron resultados",
+                "sInfo":           "Mostrando de _START_ a _END_ de _TOTAL_ registros",
+                "sInfoEmpty":      "Mostrando de 0 a 0 de 0 registros",
+                "sInfoFiltered":   "(filtrado de _MAX_ registros en total)",
+                "sSearch":         "Buscar:",
+                "sUrl":            "",
             }
-        );
+        });
         setInterval(RecargarTablaPendientes,180000);//180000
-
-    })
+    });
     function TipoNoEscaner(TipoEntrada) {
         CodigoEscaner=$('#CodigoEscanerEntrada').val();
         Cantidad=$('#Cantidad').val();
@@ -666,6 +699,40 @@
                     }
                     $('#Cantidad').val(1);
                     $('#CantidadSalida').val(1);
+                    if(response.BanderaFinalizar==0){
+                        id=response.OF;
+                        confirmacionesss(
+                            "Finalizar Orden de Fabricación", 
+                            "La Orden de Fabricación ha sido completada, ¿Deseas finalizar esta orden de Fabricación?", 
+                            "Confirmar", 
+                            function () {
+                                $.ajax({
+                                    url: '{{ route("finProceso.empacado") }}',
+                                    type: "GET",
+                                    data: {
+                                        id: id,
+                                        Area: "montaje",
+                                        _token: '{{ csrf_token() }}'
+                                    },
+                                    success: function (response) {
+                                        if (response.codigo=='Success') {
+                                            success('Orden de Fabricacion Finalizada',response.message);
+                                        }else{
+                                            error('Ocurrio un error',response.message);
+                                        }
+                                        setTimeout(function() {
+                                            console.log("Recargando la tabla...");
+                                            cargarTablaEmpacado();
+                                        }, 500);
+                                    },
+                                    error: function (xhr) {
+                                        console.error("Error:", xhr);
+                                        alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
+                                    }
+                                });
+                            }
+                        );
+                    }
                 }else if(response.status=='SurplusFin'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
                     $('#ToastGuardadoBody').html('Error no guardado, la cantidad de salidas supera el total de la cantidad las partidas registradas!');
@@ -752,5 +819,59 @@
             }
         });
     }
+    function confirmacionesss(titulo, mensaje, confirmButtonText, funcion) {
+        return Swal.fire({
+            title: titulo,
+            text: mensaje,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            cancelButtonText: "Cancelar",
+            confirmButtonText: confirmButtonText,
+        }).then((result) => {
+            console.log("Resultado de confirmación: ", result); // Verifica el resultado
+            if (result.isConfirmed) {
+                console.log("Usuario ha confirmado");
+                funcion();  // Ejecuta la función pasada como argumento
+                return true;
+            } else {
+                console.log("Usuario ha cancelado");
+                return false;
+            }
+        });
+    }
+    /*
+confirmacionesss(
+    "Finalizar Orden de Fabricación", 
+    "¿Estás seguro de que deseas finalizar esta orden de Fabricación?", 
+    "Confirmar", 
+    function () {
+        $.ajax({
+            url: '{{ route("finProceso.empacado") }}',
+            type: "GET",
+            data: {
+                id: id,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function (response) {
+                if (response.codigo=='Success') {
+                    success('Orden de Fabricacion Finalizada',response.message);
+                }else{
+                    error('Ocurrio un error',response.message);
+                }
+                setTimeout(function() {
+                    console.log("Recargando la tabla...");
+                    cargarTablaEmpacado();
+                }, 500);
+            },
+            error: function (xhr) {
+                console.error("Error:", xhr);
+                alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
+            }
+        });
+
+    }
+);*/
 </script>
 @endsection

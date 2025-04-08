@@ -21,8 +21,15 @@ use Illuminate\Support\Facades\Log;
 class AreasController extends Controller
 {
     protected $funcionesGenerales;
+    //Estas Areas se tratan de Manera diferente, por lo cual se definen aquí
+    protected $AreaEspecial4;
+    protected $AreaEspecial16;
+    protected $AreaEspecial17;
     public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
+        $this->AreaEspecial4 = 4;//Transición
+        $this->AreaEspecial16 = 16;//Montaje
+        $this->AreaEspecial17 = 17;//Empaque
     }
     //Area 3 Suministro
     public function Suministro(){
@@ -918,7 +925,7 @@ class AreasController extends Controller
         $Escaner="";
         $CantidadCompletada=0;
         $EscanerExiste=0;
-        $PartidasFaltantesList='';
+        $PartidasFaltantesList='<li class="list-group-item d-flex justify-content-between align-items-center">Partida<span class="badge badge-light-danger rounded-pill">Faltantes</span><span class="badge badge-light-success rounded-pill">Completadas</span><span class="badge badge-light-primary rounded-pill">Total</span></li>';
         //Valida si el codigo es aceptado tiene que ser mayor a 2
         //if(($CodigoTam==3 && !($CodigoPartes[2]=="" || $CodigoPartes[2]==0)) || $CodigoTam==2){
         if($CodigoTam==3 || $CodigoTam==2){
@@ -971,6 +978,7 @@ class AreasController extends Controller
                                 }else{
                                     $retrabajo=$request->Retrabajo;
                                     $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo);
+
                                 }
                             }
                         }else{
@@ -998,7 +1006,7 @@ class AreasController extends Controller
                         <option value="Abierta">Abiertas</option>
                         <option value="Cerrada">Cerradas</option>';
                     //Mostrar las partidas    
-                    $partidas = $datos->partidasOF;
+                    $partidas = $datos->partidasOF()->OrderBy('id','desc')->get();
                             foreach( $partidas as $PartidasordenFabricacion){
                                 $PartdaArea=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)
                                         ->addSelect(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01")) AS FechaMayor'))
@@ -1024,14 +1032,14 @@ class AreasController extends Controller
                                 }
                                 $CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad')
                                                             -$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('TipoPartida','R')->SUM('Cantidad');
-                                $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center">'.$datos->OrdenFabricacion."-".$PartidasordenFabricacion->NumeroPartida.'<span class="badge badge-light-danger rounded-pill">'.$PartidasordenFabricacion->cantidad_partida-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$PartidasordenFabricacion->cantidad_partida.'</span></li>';
+                                $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span style="font-size:0.8em;">'.$datos->OrdenFabricacion."-".$PartidasordenFabricacion->NumeroPartida.'</span><span class="badge badge-light-danger rounded-pill">'.$PartidasordenFabricacion->cantidad_partida-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$PartidasordenFabricacion->cantidad_partida.'</span></li>';
                             }
                 }else{
                     $Opciones='<option selected="" value="">Todos</option>
                         <option value="Iniciado">Iniciado</option>
                         <option value="Finalizado">Finalizado</option>';
                         //Mostrar las partidas    
-                    $partidas = $datos->partidasOF;
+                    $partidas = $datos->partidasOF()->OrderBy('id','desc')->get();
                         foreach( $partidas as $PartidasordenFabricacion){
                                 $PartdaArea=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->OrderBy('pivot_id','desc')->get();
                             foreach($PartdaArea as $PartdaAr){
@@ -1055,7 +1063,7 @@ class AreasController extends Controller
                         $CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id', $Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
                                                 ($PartidasordenFabricacion->Areas()->where('Areas_id', $Area)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
                                                 - $PartidasordenFabricacion->Areas()->where('Areas_id', $Area)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad'));
-                        $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center">'.$datos->OrdenFabricacion."-".$PartidasordenFabricacion->NumeroPartida.'<span class="badge badge-light-danger rounded-pill">'.$PartidasordenFabricacion->cantidad_partida-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$PartidasordenFabricacion->cantidad_partida.'</span></li>';
+                        $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span style="font-size:0.8em;">'.$datos->OrdenFabricacion."-".$PartidasordenFabricacion->NumeroPartida.'</span><span class="badge badge-light-danger rounded-pill">'.$PartidasordenFabricacion->cantidad_partida-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$PartidasordenFabricacion->cantidad_partida.'</span></li>';
                     }
                 }
                 $menu='<div class="card-body">
@@ -1184,7 +1192,7 @@ class AreasController extends Controller
 
         $PartidasOFAreasCerrada=$PartidasOF->Areas()->where('Areas_id',$Area)->whereNotNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->first();
         //Verifica si ya existe
-        if($Area!=11){
+        if($Area!=17){
             if($PartidasOFAreasCerrada==""){
                 $data = [
                     'Cantidad' => 1,
@@ -1264,7 +1272,7 @@ class AreasController extends Controller
                 $Suma+=$PartidasOFAreasCompN-$PartidasOFAreasCompRI;
             }
         }else{
-            if($Area!=11){
+            if($Area!=17){
                 foreach($PartidasOF as $Partidas){
                     $Suma +=$Partidas->Areas()->where('Areas_id', $Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
                             ($Partidas->Areas()->where('Areas_id', $Area)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
@@ -1408,7 +1416,7 @@ class AreasController extends Controller
                             'OF' => $CodigoPartes[0],       
                         ]);
                     }
-                }elseif($Area==11){
+                }elseif($Area==17){
                     //Total que paso del area anterior
                     $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
                                             -$partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida', '=','F')->get()->SUM('pivot.Cantidad');
@@ -1449,7 +1457,7 @@ class AreasController extends Controller
                         'OrdenFabricacion'=>$datos->OrdenFabricacion,
                         'OF' => $CodigoPartes[0],       
                     ]);
-                }else{//Todas las Areas excepto 4 y 11
+                }else{//Todas las Areas excepto 4 y 17
                     if($AreaAnterior==3){
                         if($Retrabajo=="false"){
                             $NumeroPartidasTodasAnterior = $partidasOF->cantidad_partida;
@@ -1540,7 +1548,8 @@ class AreasController extends Controller
                                 'Inicio'=>$Inicio,
                                 'Fin'=>$Fin,
                                 'status' => "success",
-                                'OF' => $CodigoPartes[0],       
+                                'OF' => $CodigoPartes[0],   
+                                'EstatusFinalizar'=> 'Hola22'    
                             ]);
                         }else{
                             //Numero actual de terminados
@@ -1604,6 +1613,39 @@ class AreasController extends Controller
                         'Fin'=>$Fin,
                         'status' => "success",
                         'OF' => $CodigoPartes[0],       
+                    ]);
+                }else if($Area==$this->AreaEspecial16){
+                    $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->whereNull('Fechatermina')->get();
+                    $NumeroPartidasAbiertas = $NumeroPartidasAbiertas->SUM('pivot.Cantidad');
+                    $NumeroPartidasCerradas = $partidasOF->Areas()->where('Areas_id',$Area)->whereNotNull('Fechatermina')->get();
+                    $NumeroPartidasCerradas = $NumeroPartidasCerradas->SUM('pivot.Cantidad');
+                    $NumeroPartidasAbiertas = $NumeroPartidasAbiertas-$NumeroPartidasCerradas;
+                    if($NumeroPartidasAbiertas<$Cantidad){
+                        return response()->json([
+                            'Inicio'=>$Inicio,
+                            'Fin'=>$Fin,
+                            'status' => "SurplusFin",
+                            'CantidadTotal' => "",
+                            'CantidadCompletada' => "",
+                            'OF' => $CodigoPartes[0],       
+                        ]);
+                    }
+                    $data = [
+                        'Cantidad' => $Cantidad,
+                        'TipoPartida' => 'F', // F = Finalizada
+                        'FechaTermina' => now(),
+                        'NumeroEtiqueta' =>0,
+                        'Linea_id' => $datos->Linea_id,
+                        'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                    ];
+                    $partidasOF->Areas()->attach($Area, $data);
+                    $CantidadCompletada=($datos->CantidadTotal)-($this->NumeroCompletadas($CodigoPartes,$Area));
+                    return response()->json([
+                        'Inicio'=>$Inicio,
+                        'Fin'=>$Fin,
+                        'status' => "success",
+                        'OF' => $CodigoPartes[0],   
+                        'BanderaFinalizar'=>  $CantidadCompletada,  
                     ]);
                 }else{
                     $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->whereNull('Fechatermina')->get();
@@ -3061,7 +3103,7 @@ class AreasController extends Controller
             return redirect()->route('login');
         }
         if($user->hasPermission('Vista Empaquetado')){
-          $Area=$this->funcionesGenerales->encrypt(11);
+          $Area=$this->funcionesGenerales->encrypt(17);
           return view('Areas.Empacado',compact('Area')); 
         }else{
             return redirect()->route('error.');
@@ -3094,10 +3136,10 @@ class AreasController extends Controller
             ->get()
             ->groupBy(fn($item) => $item->OrdenVenta . '-' . $item->OrdenFabricacion)
             ->map(function ($items) {
-                $area11 = $items->firstWhere('Areas_id', 11);
+                $area17 = $items->firstWhere('Areas_id', 17);
     
-                if ($area11) {
-                    return $area11;
+                if ($area17) {
+                    return $area17;
                 } else {
                     $base = $items->first();
                     return (object) [
@@ -4057,14 +4099,17 @@ class AreasController extends Controller
         }
         $PartidasOF=$OrdenFabricacion->PartidasOF()->get();
         $Totalcompletadas=0;
-        foreach($PartidasOF as $Partida){
-            $Totalcompletadas+=$Partida->Areas()->where('Areas_id','11')->get()->SUM('pivot.Cantidad');
-        }
-        if($OrdenFabricacion->CantidadTotal > $Totalcompletadas){
-            return response()->json([
-                'message' => 'No se puede cerrar la orden porque no se ha completado',
-                'codigo' => 'Error', //Cuando es error
-            ], 200);
+        //Aplica para diferenciar a Empaque de Montaje 
+        if (!$request->has('Area')) {
+            foreach($PartidasOF as $Partida){
+                $Totalcompletadas+=$Partida->Areas()->where('Areas_id','17')->get()->SUM('pivot.Cantidad');
+            }
+            if($OrdenFabricacion->CantidadTotal > $Totalcompletadas){
+                return response()->json([
+                    'message' => 'No se puede cerrar la orden porque no se ha completado',
+                    'codigo' => 'Error', //Cuando es error
+                ], 200);
+            }
         }
         $OrdenFabricacion->Cerrada = 0; 
         $OrdenFabricacion->save();

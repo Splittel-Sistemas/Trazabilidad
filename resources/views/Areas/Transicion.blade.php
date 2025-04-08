@@ -457,8 +457,8 @@
     function TablaList(TableName){
         var options = {
             valueNames: ['NumParte', 'Cantidad', 'Inicio', 'Fin', 'Estatus'],
-                page: 5,  
-                pagination: true,
+                //page: 5,  
+                //pagination: false,
                 filter: {
                             key: 'Estatus' 
                     }

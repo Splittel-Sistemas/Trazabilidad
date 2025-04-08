@@ -157,6 +157,7 @@
         if(TipoEntrada=="Salida"){
             Inicio=0;
             Finalizar=1;
+            $('#CodigoEscanerEntrada').val('');
         }
         if(Inicio==1){
             $('#CodigoEscanerEntrada').focus();
@@ -456,8 +457,8 @@
     function TablaList(TableName){
         var options = {
             valueNames: ['NumParte', 'Cantidad', 'Inicio', 'Fin', 'Estatus'],
-                page: 5,  
-                pagination: true,
+                //page: 5,  
+                //pagination: false,
                 filter: {
                             key: 'Estatus' 
                     }
@@ -522,22 +523,20 @@
             Cantidad=$('#CantidadSalida').val();
             TipoNoEscaner('Salida');
         });
-        $('#TablaPreparadoPendientes').DataTable(
-            {"language": {
-                    "sProcessing":     "Procesando...",
-                    "sLengthMenu":     "Mostrar _MENU_ registros",
-                    "sZeroRecords":    "No se encontraron resultados",
-                    "sInfo":           "Mostrando de _START_ a _END_ de _TOTAL_ registros",
-                    "sInfoEmpty":      "Mostrando de 0 a 0 de 0 registros",
-                    "sInfoFiltered":   "(filtrado de _MAX_ registros en total)",
-                    "sSearch":         "Buscar:",
-                    "sUrl":            "",
-                }
+        $('#TablaPreparadoPendientes').DataTable({
+            "language": {
+                "sProcessing":     "Procesando...",
+                "sLengthMenu":     "Mostrar _MENU_ registros",
+                "sZeroRecords":    "No se encontraron resultados",
+                "sInfo":           "Mostrando de _START_ a _END_ de _TOTAL_ registros",
+                "sInfoEmpty":      "Mostrando de 0 a 0 de 0 registros",
+                "sInfoFiltered":   "(filtrado de _MAX_ registros en total)",
+                "sSearch":         "Buscar:",
+                "sUrl":            "",
             }
-        );
+        });
         setInterval(RecargarTablaPendientes,180000);//180000
-
-    })
+    });
     function TipoNoEscaner(TipoEntrada) {
         CodigoEscaner=$('#CodigoEscanerEntrada').val();
         Cantidad=$('#Cantidad').val();
