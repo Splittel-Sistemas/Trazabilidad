@@ -591,8 +591,8 @@
 
                     data.forEach((item) => {
                         // Usamos la cantidad sumada correctamente desde la consulta SQL
-                        let cantidad = item.Areas_id == 9 ? item.CantidadTotalArea : "0";
-
+                        //Si se cambia el area Empaque se tiene que cambiar el 17 de esta línea
+                        let cantidad = item.Areas_id == 17 ? item.CantidadTotalArea : "0";
                         let botonFinalizar = (puedeFinalizar) 
                             ? `<button class="btn btn-sm btn-danger finalizar-btn p-1" data-id="${item.OrdenFabricacion}">Finalizar</button>`
                             : '';
