@@ -780,6 +780,7 @@ class PlaneacionController extends Controller
                                             </div>
                                         </div>
                                     </div>
+                                    <p class="text-center text-danger" id="Error_'.$datos->OrdenFabricacion.'" style="display:none;">Error</p>
                                 </td>
                             </tr>
                             <tr>
@@ -960,35 +961,30 @@ class PlaneacionController extends Controller
         }
         return "Datos guardados correctamente::".$fecha;
     }
-    public function ActualizarPlaneacion(Request $request){
+    public function ActualizarFechaPlaneacion(Request $request){
         try {
             $ordenFabricacion = $request->input('OrdenFabricacion');
             $fechaEntrega = $request->input('fecha_entrega');
-    
             // Validación básica
             if (!$ordenFabricacion || !$fechaEntrega) {
                 return response()->json(['message' => 'Datos incompletos'], 400);
             }
-    
             // Convertir la fecha de entrega a un objeto Carbon
-            return$fechaEntregaCarbon = Carbon::parse($fechaEntrega);
+            $fechaEntregaCarbon = Carbon::parse($fechaEntrega);
             $fechaActual = Carbon::today();
     
             // Validar que la fecha de entrega no sea menor a la fecha actual
             if ($fechaEntregaCarbon->lt($fechaActual)) {
                 return response()->json(['message' => 'La fecha de entrega no puede ser menor a la fecha actual'], 400);
             }
-    
             // Buscar la orden en la base de datos
             $orden = ordenfabricacion::where('OrdenFabricacion', $ordenFabricacion)->first();
             if (!$orden) {
                 return response()->json(['message' => 'Orden no encontrada'], 404);
             }
-    
             // Actualizar la fecha de entrega
             $orden->FechaEntrega = $fechaEntrega;
             $orden->save();
-    
             return response()->json(['message' => 'Fecha actualizada correctamente']);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);

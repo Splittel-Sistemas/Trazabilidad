@@ -1185,7 +1185,6 @@
         $('#ParametrosPorcentaje').modal('hide');
     }
     function LlenarModalPorcentajes(){
-        
         Cantidadpersonas=$('#Cantidadpersonas').html();
         Estimadopiezas=$('#Estimadopiezas').html();
         Linea_id=$('#linea').html();
@@ -1204,15 +1203,14 @@
         errorCantidadPersona.hide(); 
         errorPiezaspersona.hide(); 
     }
-</script>
-<script>
     function mostrarCalendario(OrdenFabricacion) {
-    
         document.getElementById('btnEditar_' + OrdenFabricacion).classList.add('d-none');
         $('#fechaSeleccionada_' + OrdenFabricacion).prop('disabled',false);
         document.getElementById('btnGuardar_' + OrdenFabricacion).classList.remove('d-none');
     }
     function guardarFecha(OrdenFabricacion) {
+        $('#Error_'+OrdenFabricacion).hide();
+        $('#Error_'+OrdenFabricacion).html('');
         let fecha = document.getElementById('fechaSeleccionada_' + OrdenFabricacion).value;
         if (!fecha) {
             Swal.fire({
@@ -1223,23 +1221,17 @@
             });
             return;
         }
-
         // Obtener la fecha actual en formato YYYY-MM-DD
         let fechaActual = new Date().toISOString().split('T')[0];
-
         // Validar si la fecha seleccionada es menor a la actual
         if (fecha < fechaActual) {
-            Swal.fire({
-                title: 'Error',
-                text: 'La fecha no puede ser menor a la fecha actual.',
-                icon: 'error',
-                confirmButtonText: 'Cerrar'
-            });
-            return;
+            $('#Error_'+OrdenFabricacion).show();
+            $('#Error_'+OrdenFabricacion).html('*La fecha de planeación no puede ser menor a la fecha actual');
+            return 0;
         }
         Swal.fire({
-            title: '¿Estás seguro?',
-            text: 'Estás a punto de actualizar la fecha de entrega.',
+            title: 'Actualizar',
+            text: '¿Estás Seguro que deseas actualizar la fecha de Planeación?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Sí, actualizar',
@@ -1250,7 +1242,7 @@
                 if (csrfTokenMeta) {
                     let csrfToken = csrfTokenMeta.getAttribute('content');
                     $.ajax({
-                        url: "{{ route('ActualizarPlaneacion') }}",
+                        url: "{{ route('ActualizarFechaPlaneacion') }}",
                         type: "PUT",
                         data: {
                             OrdenFabricacion: OrdenFabricacion,
@@ -1258,6 +1250,7 @@
                             _token: csrfToken 
                         },
                         success: function(data) {
+                            RecargarTablaOF();
                             Swal.fire({
                                 title: 'Éxito',
                                 text: 'La fecha fue actualizada correctamente.',

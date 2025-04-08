@@ -217,7 +217,7 @@ Route::get('/Dashboard/operador',[HomeController::class, 'indexoperador'])->name
 
 
 Route::post('/guardar-aviso', [HomeController::class, 'guardarAviso'])->name('guardarAviso');
-Route::put('/actualizar/entrega',[PlaneacionController:: class,'ActualizarPlaneacion'])->name('ActualizarPlaneacion');
+Route::put('/Planeacion/actualizar/fecha',[PlaneacionController:: class,'ActualizarFechaPlaneacion'])->name('ActualizarFechaPlaneacion');
 Route::get('/tiempo/promedio',[HomeController::class,'tiempopromedio'])->name('tiempopromedio');
 
 
