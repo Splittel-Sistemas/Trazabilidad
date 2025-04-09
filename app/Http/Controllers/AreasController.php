@@ -729,7 +729,8 @@ class AreasController extends Controller
                     unset($Registros[$key]);
                 }
             }
-            return view('Areas.Transicion', compact('Area', 'Registros'));
+            $Lineas=Linea::get();
+            return view('Areas.Transicion', compact('Area', 'Registros','Lineas'));
         } else {
             return redirect()->route('error.');
         }
@@ -828,7 +829,8 @@ class AreasController extends Controller
                 }
                 
             }
-        return view('Areas.Preparado',compact('Area','Registros'));
+            $Lineas=Linea::get();
+        return view('Areas.Preparado',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2149,7 +2151,8 @@ class AreasController extends Controller
                 }
                 
             }
-        return view('Areas.Ribonizado',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Ribonizado',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2248,7 +2251,8 @@ class AreasController extends Controller
                 }
                 
             }
-        return view('Areas.Ensamble',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Ensamble',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2344,7 +2348,8 @@ class AreasController extends Controller
             }
             
         }
-        return view('Areas.Cortedefibra',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Cortedefibra',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2440,7 +2445,8 @@ class AreasController extends Controller
             }
             
         }
-        return view('Areas.Pulido',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Pulido',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2536,7 +2542,8 @@ class AreasController extends Controller
             }
             
         }
-        return view('Areas.Armado',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Armado',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2632,7 +2639,8 @@ class AreasController extends Controller
             }
             
         }
-        return view('Areas.Inspeccion',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Inspeccion',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2728,7 +2736,8 @@ class AreasController extends Controller
             }
             
         }
-        return view('Areas.Polaridad',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Polaridad',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2824,7 +2833,8 @@ class AreasController extends Controller
             }
             
         }
-        return view('Areas.Crimpado',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Crimpado',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2921,7 +2931,8 @@ class AreasController extends Controller
                     unset($Registros[$key]);
                 }
             }
-        return view('Areas.Medicion',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Medicion',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -3016,7 +3027,8 @@ class AreasController extends Controller
                     unset($Registros[$key]);
                 }
             }
-        return view('Areas.Visualizacion',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Visualizacion',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -3111,7 +3123,8 @@ class AreasController extends Controller
                     unset($Registros[$key]);
                 }
             }
-        return view('Areas.Montaje',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Montaje',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }

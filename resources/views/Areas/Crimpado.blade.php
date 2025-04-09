@@ -96,6 +96,20 @@
         <div id="ContentTablaPendientes" class="col-12 mt-2">
             <div class="card" id="DivCointainerTablePendientes">
                 <h4 class="text-center mt-2 p-0">Ordenes de Fabricaci&oacute;n Pendientes</h4>
+                <div class="d-flex justify-content-start">
+                    <div class="col-3 mx-2">
+                        <div class="input-group input-group-sm mb-1">
+                            <span class="input-group-text" id="inputGroup-sizing-sm">Núm. L&iacute;nea:</span>
+                            <select class="form-select form-select-sm" aria-label="FiltroLinea" id="FiltroLinea">
+                                <option selected="" disabled>Selecciona L&iacute;nea</option>
+                                <option value="-1">Todas</option>
+                                @foreach($Lineas as $Linea)
+                                    <option value="{{$Linea->NumeroLinea}}">{{$Linea->Nombre}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table id="TablaPreparadoPendientes" class="table table-sm fs--1 mb-1">
                         <thead>
@@ -523,7 +537,7 @@
             Cantidad=$('#CantidadSalida').val();
             TipoNoEscaner('Salida');
         });
-        $('#TablaPreparadoPendientes').DataTable({
+        var table = $('#TablaPreparadoPendientes').DataTable({
             "language": {
                 "sProcessing":     "Procesando...",
                 "sLengthMenu":     "Mostrar _MENU_ registros",
@@ -534,6 +548,14 @@
                 "sSearch":         "Buscar:",
                 "sUrl":            "",
             }
+        });
+        $('#FiltroLinea').on('change', function() {
+                var val = $(this).val();
+                if(val == -1) {
+                    table.column(8).search('').draw();
+                } else {
+                    table.column(8).search(val).draw();
+                }
         });
         setInterval(RecargarTablaPendientes,180000);//180000
     });
@@ -732,7 +754,7 @@
                     $('#TablaPreparadoPendientes').DataTable().clear().destroy();
                 }
                 $('#TablaPreparadoPendientesBody').html(response);
-                $('#TablaPreparadoPendientes').DataTable(
+                table = $('#TablaPreparadoPendientes').DataTable(
                     {"language": {
                             "sProcessing":     "Procesando...",
                             "sLengthMenu":     "Mostrar _MENU_ registros",
@@ -745,6 +767,15 @@
                         }
                     }
                 );
+                $('#FiltroLinea').on('change', function() {
+                    var val = $(this).val();
+                    if(val == -1) {
+                        table.column(8).search('').draw();
+                    } else {
+                        table.column(8).search(val).draw();
+                    }
+                });
+                $('#FiltroLinea').trigger('change');
             },
             error: function(xhr, status, error) {
                console.log('Ocurrio un error al traer las Ordenes Pendientes' ); 
