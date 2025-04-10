@@ -14,6 +14,8 @@ use App\Models\RegistrosBuffer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Linea;
+use App\Models\Permission;
+use App\Models\User;
 class PlaneacionController extends Controller
 {
     protected $funcionesGenerales;
@@ -47,8 +49,14 @@ class PlaneacionController extends Controller
             // Ajustar formato de las fechas para la vista
             $FechaInicio = date('Y-m-d');
             $FechaFin = date('Y-m-d');
+            //Traer a los usuarios para asignar cortes
+            $UsuariosCortes =  User::whereHas('roles.permissions', function ($query) {
+                    $query->where('name', 'Vista Corte');
+            })
+            ->where('role','O')
+            ->get();
             // Retornar la vista con los datos
-            return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status','VerificarSAP', 'linea'));
+            return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status','VerificarSAP', 'linea', 'UsuariosCortes'));
     
         } else {
     

@@ -137,18 +137,19 @@
             </div>
         </div>
     </div>
+    <!--Modal Editar Linea-->
     <div class="modal fade" id="lineaModal" tabindex="-1" role="dialog" aria-labelledby="lineaModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h5 class="modal-title text-white" id="userModalLabel">Editar Linea</h5>
+                    <h5 class="modal-title text-white" id="userModalLabel">Editar L&iacute;nea</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <form id="userEditForm" action="" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
-                        <div class="row mb-4">
+                        <div class="row mb-1">
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="Nombre">Nombre</label>
@@ -168,19 +169,30 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group my-1">
                             <label for="Descripcion">Descripción</label>
                             <textarea name="Descripcion" id="Descripcion" class="form-control form-control-sm"></textarea>
-                        </div>                        
+                        </div>  
+                        <div class="form-group my-1">
+                            <label for="Descripcion">Selecciona &Aacute;reas</label><br>
+                            <small class="mb-1">Presiona la tecla Ctrl o Shift para seleccionar m&aacute;s de una opci&oacute;n.</small>
+                            <select class="form-select form-select-sm" aria-label=".form-select-sm example" size="4" name="AreasPosiblesEditar" id="AreasPosibles" multiple>
+                                {{--<option selected="" disabled>Selecciona Areas</option>--}}
+                                @foreach($Areas as $Area)
+                                        <option value="{{$Area->id}}" selected>{{$Area->nombre}}</option>
+                                @endforeach
+                            </select>
+                        </div>                   
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn -sm btn-primary">Guardar cambios</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+    <!--Modal Crear Linea-->
     <div class="modal fade" id="crearModal" tabindex="-1" role="dialog" aria-labelledby="crearModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -218,7 +230,16 @@
                             </div>
                         </div>
                     </div>
-    
+                    <div class="form-group my-1">
+                        <label for="Descripcion">Selecciona &Aacute;reas</label><br>
+                        <small class="mb-1">Presiona la tecla Ctrl o Shift para seleccionar m&aacute;s de una opci&oacute;n.</small>
+                        <select class="form-select form-select-sm" aria-label=".form-select-sm example" size="4" name="AreasPosibles" id="AreasPosiblesCrear" multiple>
+                            {{--<option selected="" disabled>Selecciona Areas</option>--}}
+                            @foreach($Areas as $Area)
+                                    <option value="{{$Area->id}}">{{$Area->nombre}}</option>
+                            @endforeach
+                        </select>
+                    </div> 
                     <!-- Verifica si hay un mensaje de error -->
                     @if(session('error'))
                         <div class="alert alert-danger mt-2" role="alert">
@@ -226,8 +247,8 @@
                         </div>
                     @endif
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-sm btn-primary btn-lg">
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-sm btn-primary">
                            Guardar
                         </button>
                     </div> 
@@ -254,13 +275,16 @@
                 url: url,
                 method: 'GET',
                 success: function(response) {
-                    console.log(response);
                     $('#Nombre').val(response.Nombre);
                     $('#Descripcion').val(response.Descripcion);
                     $('#NumeroLinea').val(response.NumeroLinea);
                     $('#ColorLinea').val(response.ColorLinea);
                     $('#userEditForm').attr('action', '{{ route('linea.update', 'lineaId') }}'.replace('lineaId', lineaId));
                     $('#lineaModal').modal('show');
+                    AreasPosibles=(response.AreasPosibles).split(',').map(Number);
+                    AreasPosibles.forEach(area => {
+                        
+                    });
                 },
                 error: function() {
                     Swal.fire('Error', 'No se pudo cargar la información del servidor', 'error');
@@ -336,6 +360,11 @@
                 }
             });
         };
+        // Limpia los campos del formulario dentro del modal
+        $('#crearModal').on('show.bs.modal', function () {
+            $('#createLineForm')[0].reset();
+            $('#AreasPosibles').prop('selectedIndex', -1);
+        });
     });
     $(document).ready(function() {
         $('#createLineForm').on('submit', function(e) {

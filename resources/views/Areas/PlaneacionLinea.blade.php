@@ -60,7 +60,7 @@
                 </div>
               </div>
         </div>
-        <!--<div class="col-6">
+        <div class="col-6">
             <div class="col-sm-12">
                 <div class="card border border-light ">
                     <div class="card-body p-2">
@@ -116,7 +116,7 @@
                     </div>
                 </div>
             </div>
-        </div>-->
+        </div>
     </div>
     <!-- Contenedor de las tablas -->
     <div class="card p-3">
@@ -186,18 +186,18 @@
                 <!-- Área de Dropzone -->
                 <!--Christian-->
                 <div class="row">
-                    <div class="col-5 mb-1 pt-1">
-                        <label for="linea" >Selecciona Operador</label>
+                    <div class="col-4 mb-1 pt-1">
+                        <label for="linea" >Selecciona línea</label>
                         <select name="linea" id="linea" class="form-select form-select-sm border-primary w-100" onchange="RecargarTablaOF();">
-                            <option value="" disabled>Selecciona operador</option>
-                            @foreach($UsuariosCortes as $key=>$l)
-                                <option value="{{ $l->id }}" {{ $key == 0 ? 'selected' : '' }}>
-                                    {{$l->name}} {{ $l->apellido }}
+                            <option value="">Selecciona una línea</option>
+                            @foreach($linea as $l)
+                                <option value="{{ $l->id }}" {{ $l->NumeroLinea == 1 ? 'selected' : '' }}>
+                                    {{ $l->Nombre }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-7 mb-1 pt-1">
+                    <div class="col-8 mb-1 pt-1">
                         <label for="Filtrofecha_table2">Selecciona fecha de planeación</label>
                         <div class="input-group">
                             <input type="date" name="FiltroOF_Fecha_table2" id="FiltroOF_Fecha_table2" class="form-control form-control-sm border-primary" placeholder="Ingresa Orden de fabricación" value="{{$FechaFin}}">
@@ -301,18 +301,18 @@
                         <div class="col-6">
                             <!-- Área de Dropzone -->
                             <div class="row">
-                                <div class="col-5 mb-0 pt-0">
-                                    <label for="lineaModal" >Selecciona Operador</label>
+                                <div class="col-4 mb-0 pt-0">
+                                    <label for="lineaModal" >Selecciona línea</label>
                                     <select name="lineaModal" id="lineaModal" class="form-select form-select-sm border-primary w-100" onchange="RecargarTablaOF();">
-                                        <option value="" disabled>Selecciona operador</option>
-                                        @foreach($UsuariosCortes as $key=>$l)
-                                            <option value="{{ $l->id }}" {{ $key == 0 ? 'selected' : '' }}>
-                                                {{ $l->name }}
+                                        <option value="">Selecciona una línea</option>
+                                        @foreach($linea as $l)
+                                            <option value="{{ $l->id }}" {{ $l->NumeroLinea == 1 ? 'selected' : '' }}>
+                                                {{ $l->Nombre }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-7 m-0">
+                                <div class="col-8 m-0">
                                     <div class="form-row">
                                         <div class="col-12 mb-3">
                                             <label for="Filtrofecha_table2">Selecciona la fecha de planeaci&oacute;n:</label>
@@ -492,7 +492,7 @@
             RegexNumeros(document.getElementById('FiltroOF_table2'));
             FiltroOF_table2=$('#FiltroOF_table2').val();
             $('#FiltroOF_text').html('<p>Filtro: '+FiltroOF_table2+'</p>');
-            FiltroLinea = 1;//$('#linea').val();//christian
+            FiltroLinea = $('#linea').val();//christian
             /*if(CadenaVacia(FiltroOF_table2)){
                 return 0;
             }*/
@@ -607,6 +607,7 @@
         @if($VerificarSAP==0)
             error("Error SAP", "El servidor SAP no esta disponible en este momento, estamos trabajando en ello.");
         @endif
+        PorcentajeLlenadas();
     });
     function loadContent(idcontenedor, docNum, cliente) {
         let elemento = document.getElementById(idcontenedor + "cerrar");
@@ -704,10 +705,10 @@
         const data = event.dataTransfer.getData("text");
         var inputFecha = document.getElementById('FiltroOF_Fecha_table2');
         var modal = $('#ModalPlaneacionVencidos');
-        var lineaSeleccionada = 1;//$('#linea').val();
+        var lineaSeleccionada = $('#linea').val();
         if (modal.is(':visible')) {
             inputFecha = document.getElementById('FiltroOF_Fecha_table2_vencidas');
-            lineaSeleccionada = 1;//$('#lineaModal').val();
+            lineaSeleccionada = $('#lineaModal').val();
         }
         //chris
         /*var selectLinea = document.getElementById("linea");
@@ -783,6 +784,7 @@
                         LlenarTablaVencidas();
                     }else{
                         TablaOrdenFabricacion(inputFecha.value);
+                        PorcentajeLlenadas();
                     }
                     $('#Filtro_fecha-btn').trigger('click');
                     success("Guardado!","Las ordenes de fabricación "+OrdenFabricacion+" se guardaron correctamente!");
@@ -815,10 +817,11 @@
         const año = fechaObjeto.getFullYear();
         document.getElementById('FiltroOF_text').innerHTML= "Fecha: "+dia+"/"+mes+"/"+año;
         TablaOrdenFabricacion(document.getElementById('FiltroOF_Fecha_table2').value);
+        PorcentajeLlenadas();
     });
     function TablaOrdenFabricacion(fecha){
         var modal = $('#ModalPlaneacionVencidos');
-        var Linea_id = 1;$('#linea').val();//chris
+        var Linea_id = $('#linea').val();//chris
         $.ajax({
             url: "{{route('PartidasOFFiltroFechas_Tabla')}}", 
             type: 'POST',
@@ -914,6 +917,7 @@
                     }else{
                         $fecha=document.getElementById('FiltroOF_Fecha_table2').value;
                         TablaOrdenFabricacion($fecha);
+                        PorcentajeLlenadas();
                     }
                     $('#Filtro_fecha-btn').trigger('click');
                     success("Guardado","Orden de Fabricación  "+response.OF+" regresada correctamente");
@@ -976,10 +980,12 @@
                     Cuerpo.html(response.data);
                     $('#FiltroOF_vencidos_text').html(fecha);
                     TablaOrdenFabricacion(fecha);
+                    PorcentajeLlenadas();
                     //Titulo.html('Detalles Orden de Fabricación '+response.OF);
                 }else{
                     Cuerpo.html(response.data);
                     TablaOrdenFabricacion(fecha);
+                    PorcentajeLlenadas();
                 }
                 //$('#table-2-content').html(response.tabla);
                 //$('#ModalOrdenesFabricacionLabel').html('Titulo');
@@ -993,12 +999,14 @@
     function RecargarTablaOF(){
         fecha=$('#FiltroOF_Fecha_table2').val();
         TablaOrdenFabricacion(fecha);
+        PorcentajeLlenadas();
     }
     function MostrarBtnFaltantes(boton){
         $('#'+boton).fadeIn(1000);
     }
     function PartidasOF_modal(fecha){
         TablaOrdenFabricacion(fecha.value);
+        PorcentajeLlenadas();
     }
     // Función para buscar una palabra en una tabla con clase 'table-light'
     function buscarPalabraEnTabla(palabra) {
@@ -1040,6 +1048,160 @@
                 }
             }
         });
+    }
+    //christian
+    $(document).ready(function() {
+        $('#linea').change(function() {
+            PorcentajeLlenadas(); 
+        });
+    });
+    //fin
+    function PorcentajeLlenadas() {
+        let fecha = $('#FiltroOF_Fecha_table2').val();
+        //chris
+        let lineaSeleccionada = $('#linea').val() || 1; 
+        let textoSeleccionado = $('#linea option:selected').text(); 
+        let numeroLinea = textoSeleccionado.split('-')[0].trim(); //
+
+        //chris
+        $('#NumeroLinea').text(lineaSeleccionada);
+        $('#NumeroLinea1').text(lineaSeleccionada);
+
+        $.ajax({
+            url: "{{ route('PorcentajesPlaneacion') }}",
+            type: 'GET',
+            data: {
+                fecha: fecha,
+                Linea_id: lineaSeleccionada, // chris
+                _token: '{{ csrf_token() }}'
+            },
+            beforeSend: function () {},
+            success: function (response) {
+                let color = "#007BFF";
+                let PorcentajeFaltante = 0;
+
+                if (response.PorcentajePlaneada > 80) color = '#FFFF00';
+                if (response.PorcentajePlaneada > 90) color = '#FFA500';
+                if (response.PorcentajePlaneada > 100) color = '#FF0000';
+                if (response.PorcentajeFaltante > 0) PorcentajeFaltante = response.PorcentajeFaltante;
+
+                // Actualizar la interfaz con los datos de la respuesta
+                $("#Cantidadpersonas").html(response.NumeroPersonas);
+                $("#Estimadopiezas").html(response.CantidadEstimadaDia);
+                $("#Piezasplaneadas").html(response.PlaneadoPorDia);
+                $("#Porcentajefaltante").html(PorcentajeFaltante);
+                $("#Porcentajeplaneada").html(response.PorcentajePlaneada);
+                $('#Fecha_Grafica').html(response.Fecha_Grafica);
+                $('#Piezasfaltantes').html(response.Piezasfaltantes);
+
+                //chis
+                if (response.Linea_id) {
+                let lineaTexto = $(`#linea option[value="${response.Linea_id}"]`).text(); 
+                let lineaNumero = lineaTexto.split('-')[0].trim(); 
+                $('#NumeroLinea').text(lineaNumero);
+                $('#NumeroLinea1').text(lineaNumero);//
+            }
+
+                var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
+                var option = {
+                    tooltip: { trigger: 'item' },
+                    legend: { show: false },
+                    series: [
+                        {
+                            name: 'Planeación',
+                            type: 'pie',
+                            radius: ['60%', '70%'],
+                            avoidLabelOverlap: false,
+                            itemStyle: {
+                                borderRadius: 10,
+                                borderColor: '#fff',
+                                borderWidth: 2
+                            },
+                            label: {
+                                show: true,
+                                position: 'center',
+                                formatter: response.PorcentajePlaneada + '%',
+                                fontSize: 20,
+                                fontWeight: 'bold'
+                            },
+                            labelLine: { show: false },
+                            data: [
+                                { value: response.PorcentajePlaneada, name: 'Total Planeado', itemStyle: { color: color } },
+                                { value: PorcentajeFaltante, name: 'Total faltante estimado', itemStyle: { color: '#D3D3D3' } }
+                            ]
+                        }
+                    ]
+                };
+                myChart.setOption(option);
+            }
+        });
+    }
+    function GuardarParametrosPorcentajes(){
+        CantidadPersona=$('#CantidadPersona').val();
+        Piezaspersona=$('#Piezaspersona').val();
+        Fecha=$('#FiltroOF_Fecha_table2').val();
+        Linea = $('#linea').val();//chris
+        errorCantidadPersona=$('#error_CantidadPersona');
+        errorPiezaspersona=$('#error_Piezaspersona');
+        if(CantidadPersona==0 || CantidadPersona==""){
+            errorCantidadPersona.text('Por favor, ingresa un número valido, mayor a 0.');
+            errorCantidadPersona.show();
+            return 0; 
+        }else{
+            errorCantidadPersona.text('');
+            errorCantidadPersona.hide(); 
+        }
+        if(Piezaspersona==0 || Piezaspersona==""){
+            errorPiezaspersona.text('Por favor, ingresa un número valido, mayor a 0.');
+            errorPiezaspersona.show();
+            return 0; 
+        }else{
+            errorPiezaspersona.text('');
+            errorPiezaspersona.hide(); 
+        }
+        $.ajax({
+                url: "{{route('GuardarParametrosPorcentajes')}}", 
+                type: 'POST',
+                data: {
+                    CantidadPersona:CantidadPersona,
+                    Piezaspersona: Piezaspersona,
+                    Fecha:Fecha,
+                    Linea: Linea, //chris
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+                },
+                success: function(response) {
+                    if(response==0){
+                        error('Error con la Línea','El número de linea no existe o esta desactivada');
+                        return 0;
+                    }
+                    PorcentajeLlenadas();
+                },
+                error: function(xhr, status, error) {
+                    errorBD();
+                }
+        }); 
+        $('#ParametrosPorcentaje').modal('hide');
+    }
+    function LlenarModalPorcentajes(){
+        Cantidadpersonas=$('#Cantidadpersonas').html();
+        Estimadopiezas=$('#Estimadopiezas').html();
+        Linea_id=$('#linea').html();
+        if(Cantidadpersonas==0 || Estimadopiezas==0){
+            Cantidadpersonas=0;
+            Estimadopiezas=0;
+        }else{
+            Estimadopiezas=Estimadopiezas/Cantidadpersonas;
+        }
+        $('#CantidadPersona').val(Cantidadpersonas);
+        $('#Piezaspersona').val(Estimadopiezas);
+        $('#NumeroLinea1').val( Linea_id);//chris
+
+        errorCantidadPersona=$('#error_CantidadPersona');
+        errorPiezaspersona=$('#error_Piezaspersona');
+        errorCantidadPersona.hide(); 
+        errorPiezaspersona.hide(); 
     }
     function mostrarCalendario(OrdenFabricacion) {
         document.getElementById('btnEditar_' + OrdenFabricacion).classList.add('d-none');

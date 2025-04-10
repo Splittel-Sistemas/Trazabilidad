@@ -875,37 +875,5 @@
             }*/
         });
     }
-    /*
-confirmacionesss(
-    "Finalizar Orden de Fabricación", 
-    "¿Estás seguro de que deseas finalizar esta orden de Fabricación?", 
-    "Confirmar", 
-    function () {
-        $.ajax({
-            url: '{{ route("finProceso.empacado") }}',
-            type: "GET",
-            data: {
-                id: id,
-                _token: '{{ csrf_token() }}'
-            },
-            success: function (response) {
-                if (response.codigo=='Success') {
-                    success('Orden de Fabricacion Finalizada',response.message);
-                }else{
-                    error('Ocurrio un error',response.message);
-                }
-                setTimeout(function() {
-                    console.log("Recargando la tabla...");
-                    cargarTablaEmpacado();
-                }, 500);
-            },
-            error: function (xhr) {
-                console.error("Error:", xhr);
-                alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
-            }
-        });
-
-    }
-);*/
 </script>
 @endsection

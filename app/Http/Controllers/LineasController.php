@@ -4,6 +4,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Linea;
+use App\Models\Areas;
 use Illuminate\Support\Facades\Auth;
 class LineasController extends Controller
 {
@@ -13,7 +14,8 @@ class LineasController extends Controller
         $user = Auth::user();
         if ($user->hasPermission('Vista Lineas')) {
             $linea = Linea::orderBy('NumeroLinea', 'asc')->get();
-            return view('Lineas.Lineaindex', compact('linea'));
+            $Areas=Areas::whereBetween('id', [1, 17])->get();
+            return view('Lineas.Lineaindex', compact('linea','Areas'));
         } else {
             return redirect()->route('error.');
         }
@@ -82,6 +84,7 @@ class LineasController extends Controller
                 'Descripcion' => $linea->Descripcion,
                 'NumeroLinea' => $linea->NumeroLinea,
                 'ColorLinea' => $linea->ColorLinea,
+                'AreasPosibles' => $linea->AreasPosibles,
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Línea no encontrada'], 404);

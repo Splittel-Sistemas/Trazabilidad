@@ -21,7 +21,6 @@ use Carbon\Carbon as CarbonClass;
 
 class BusquedaController extends Controller
 {
-    ///
     //vista
     public function index(Request $request)
     {
@@ -36,6 +35,35 @@ class BusquedaController extends Controller
         return redirect()->route('error.');
     
     }
+//Nuevos Metodos
+    public function TipoOrden(Request $request){
+        $NumeroOrden = $request->NumeroOrden;
+        $TipoOrden = $request->TipoOrden;
+        $Ordenes = '';
+        $Lista = '';
+        if($TipoOrden == 'OF'){
+            $Ordenes=OrdenFabricacion::where('OrdenFabricacion', 'like', '%' . $NumeroOrden . '%')->orderBy('OrdenFabricacion', 'asc')->get();
+            foreach($Ordenes as $key=>$Orden){
+                if($key==0){
+                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 active" onclick="SeleccionarNumOrden('.$Orden->OrdenFabricacion.')">'.$Orden->OrdenFabricacion.'</a>';
+                }else{
+                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 " onclick="SeleccionarNumOrden('.$Orden->OrdenFabricacion.')">'.$Orden->OrdenFabricacion.'</a>';
+                }
+            }
+        }else{
+            $Ordenes=OrdenVenta::where('OrdenVenta', 'like', '%' . $NumeroOrden . '%')->orderBy('OrdenVenta', 'asc')->get();
+            foreach($Ordenes as $key=>$Orden){
+                if($key==0){
+                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 active" onclick="SeleccionarNumOrden('.$Orden->OrdenVenta.')">'.$Orden->OrdenVenta.'</a>';
+                }else{
+                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 " onclick="SeleccionarNumOrden('.$Orden->OrdenVenta.')">'.$Orden->OrdenVenta.'</a>';
+                }
+            }
+        }
+        return $Lista;
+
+    }
+//End nuevos metodos
     // Controlador para las órdenes de Venta
     public function obtenerOrdenesVenta(Request $request)
     {

@@ -3,7 +3,7 @@
 @section('styles')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!--estilos-->
-    <style>
+<style>
         
     .progress-scroll-container {
         margin-top: 20px;
@@ -418,6 +418,27 @@
                 background-color: gray;
             }
 
+</style>
+    <style>
+        .lista-busqueda{
+            height:6rem;
+            overflow-y: auto;
+        }
+        .lista-busqueda::-webkit-scrollbar {
+            width: 8px; /* Ancho del scroll */
+        }
+        .lista-busqueda::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 10px;
+            border: 2px solid #fff;
+        }
+        .lista-busqueda::-webkit-scrollbar-thumb:hover {
+            background-color: #555;
+        }
+        .lista-busqueda::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+            border-radius: 10px;
+        }
     </style>
 @endsection
 @section('content')
@@ -449,23 +470,13 @@
                                 Buscar
                             </button>
                         </div>
+                        <div class="list-group lista-busqueda" id="ListaBusquedas" style="display: none;">
+                        </div>
                     </div>
                 </div>
             </div>
             <!-- Tabla 1: Orden de Venta -->
             <div id="tablaVenta" class="card p-4" style="display:none;">
-                <!--<div class="card border border-light mx-auto" style="max-width: 420px; border-radius: 40px; height: 50px; width: 44%;">
-                    <div class="card-body p-0 d-flex align-items-center" style="height: 100%;">
-                        <form id="form-buscar-venta" style="width: 100%;">
-                            <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
-                                <input class="form-control search-input search form-control-sm" type="text" name="search" placeholder="Buscar Por Orden De Venta..." style="flex: 1;border-radius: 20px; padding: 10px;">
-                                <button class="btn btn-outline-primary ml-2" type="button" id="buscarVenta" style="border-radius: 20px;">
-                                    <i class="uil uil-search"></i> Buscar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>-->
                 <div style="margin-top: 20px;"></div>
                 <div class="table-responsive">
                     <div class="card" >
@@ -485,19 +496,6 @@
             </div>
             <!-- Tabla 2: Orden de Fabricación -->
             <div id="tablaFabricacion" class="card p-4" style="display:none;">
-                <!--<div class="card border border-light mx-auto" style="max-width: 420px; border-radius: 40px; height: 50px; width: 44%;">
-                    <div class="card-body p-0 d-flex align-items-center" style="height: 100%;">
-                        <form id="form-buscar-fabricacion" style="width: 100%;">
-                            <div class="d-flex justify-content-between align-items-center" style="width: 100%;">
-                                <input class="form-control search-input search form-control-sm" type="text" id="inputBusquedaFabricacion" name="search" placeholder="Buscar Por Orden De Fabricación..." style="flex: 1; border-radius: 20px; padding: 10px;">
-                                <button class="btn btn-outline-primary ml-2" type="button" id="buscarFabricacion" style="border-radius: 20px;">
-                                    <i class="uil uil-search"></i> Buscar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>-->
-                
                 <div style="margin-top: 20px;"></div>
                 <div class="card">
                     <table class="table table-sm fs--1 mb-0">
@@ -1222,7 +1220,7 @@
             // Solo una llamada AJAX
             $.ajax({
                 url: '{{ route("Buscar.Venta.Detalle") }}',
-                url: 'route("graficador")), 
+                //url: 'route("graficador")), 
                 type: 'GET',
                 data: { id: ordenVenta }, // Solo pasamos el ID
                 success: function(response) {
@@ -1375,7 +1373,7 @@
                         alert('Error al obtener los datos de la fabricación.');
                     }
                 });
-/*
+    /*
                 $.ajax({
                     url: '{{ route("graficadoOF") }}',
                     type: 'GET',
@@ -1701,7 +1699,7 @@
 
 
         
-function formatTiempo(totalSegundos) {
+    function formatTiempo(totalSegundos) {
     // Asegurarse de que totalSegundos sea un número entero
     totalSegundos = parseInt(totalSegundos);
 
@@ -1732,7 +1730,7 @@ function formatTiempo(totalSegundos) {
     }
 
     return tiempoFormateado;
-}
+    }
     //Cargar Ventas
     function cargarDatosVenta(search) {
         $('#tablaFabricacion').hide(100);
@@ -1953,7 +1951,7 @@ function formatTiempo(totalSegundos) {
     }*/
     let currentStageOpen = null; // <- para rastrear la etapa activa
 
-$(document).ready(function () {
+    $(document).ready(function () {
     $('.stage').on('click', function () {
         const stageId = $(this).attr('id');
         const ordenVenta = $(this).data('ordenventa');
@@ -1974,9 +1972,9 @@ $(document).ready(function () {
         progressWrapper.slideDown(); // Mostrar el contenedor
         loadProgressData(ordenVenta, stageId);
     });
-});
+    });
 
-function loadProgressData(ordenVenta, stageId) {
+    function loadProgressData(ordenVenta, stageId) {
     console.log('Enviando datos al controlador:', ordenVenta, stageId);
 
     $.ajax({
@@ -2051,7 +2049,7 @@ function loadProgressData(ordenVenta, stageId) {
             console.error('Error en la solicitud AJAX:', error);
         }
     });
-}
+    }
 
 
     // Cuando se haga clic en una fila para seleccionar la OrdenFabricacion
@@ -2147,6 +2145,52 @@ function loadProgressData(ordenVenta, stageId) {
             estatusElement.classList.remove('open');
             estatusElement.textContent = 'Cerrado';
         }
+    }
+</script>
+<script>
+    $('#TipoOrden1').on('change', function() {
+        $('#ListaBusquedas').html('');
+        $('#ListaBusquedas').hide();
+    });
+    $('#TipoOrden2').on('change', function() {
+        $('#ListaBusquedas').html('');
+        $('#ListaBusquedas').hide();
+    });
+    $('#NumeroOrden').on('input', function() {
+        NumeroOrden = $('#NumeroOrden').val();
+        if(NumeroOrden.length<3){
+            $('#ListaBusquedas').html('');
+            $('#ListaBusquedas').hide();
+            return 0;
+        }
+        OrdenVenta = $('#TipoOrden1').is(':checked');
+        OrdenFabricacion = $('#TipoOrden2').is(':checked');
+        TipoOrden = "OF";
+        if(OrdenVenta == true){
+            TipoOrden = "OV";
+        }
+        $.ajax({
+            url: '{{ route("TipoOrden") }}',
+            type: 'POST',
+            data: { 
+                NumeroOrden:NumeroOrden,
+                TipoOrden:TipoOrden,
+            },
+            success: function (response) {
+                $('#ListaBusquedas').html(response);
+                if(response!=""){
+                    $('#ListaBusquedas').show();
+                }
+            },
+            error: function () {
+                alert('Error al obtener los datos de la venta.');
+            }
+        });
+    });
+    function SeleccionarNumOrden(NumeroOrden){
+        $('#NumeroOrden').val(NumeroOrden);
+        $('#ListaBusquedas').hide();
+        $('#Btn-BuscarOrden').trigger('click');
     }
 </script>
 @endsection
