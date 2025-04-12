@@ -28,27 +28,31 @@ class LineasController extends Controller
     // Guardar una nueva línea en la base de datos
     public function store(Request $request)
     {
-        try {
+       try {
             $validatedData = $request->validate([
                 'Nombre' => 'required|string|max:255',
-                'NumeroLinea' => 'required|integer|unique:linea,NumeroLinea',
+                'NumeroLinea' => 'required|integer|',
                 'Descripcion' => 'nullable|string',
                 'ColorLinea' => 'required',
+                'AreasPosiblesCrear' => 'required',
             ]);
-    
             // Verificar si el NumeroLinea ya existe
             if (Linea::where('NumeroLinea', $request->NumeroLinea)->exists()) {
-                if ($request->ajax()) {
                     return response()->json([
-                        'success' => false,
-                        'message' => 'Número de línea ya existe'
-                    ], 400);
-                }
-                return redirect()->back()->with('error', 'Número de línea ya existe');
+                        'status' =>'LineaExiste',
+                        'message' => 'Número de línea ya existe',
+                        'numlinea' =>$request->NumeroLinea,
+                    ], 200);
             }
-    
-            $linea = Linea::create($validatedData);
-    
+            $Areasposibles = implode(",", $request->AreasPosiblesCrear);
+            $linea = new Linea();
+            $linea->NumeroLinea = $request->NumeroLinea;
+            $linea->Nombre = $request->Nombre;
+            $linea->ColorLinea = $request->ColorLinea;
+            $linea->active = 1;
+            $linea->Descripcion = $request->Descripcion;
+            $linea->Areasposibles = $Areasposibles;
+            $linea->save();
             // Si es una solicitud AJAX, retornar una respuesta JSON
             if ($request->ajax()) {
                 return response()->json([
@@ -57,9 +61,6 @@ class LineasController extends Controller
                     'data' => $linea // Devuelve los datos de la nueva línea
                 ]);
             }
-    
-            // Si no es una solicitud AJAX, redirige con un mensaje de éxito
-            return redirect()->route('linea.index')->with('message', 'Línea creada con éxito');
         } catch (ValidationException $e) {
             // Si ocurre un error de validación
             if ($request->ajax()) {
@@ -91,13 +92,15 @@ class LineasController extends Controller
         }
     }
     // Actualizar los detalles de una línea
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
+        $id=1;
+        return 2;
         try {
+            return $id;
             $linea = Linea::findOrFail($id);
             $validatedData = $request->validate([
-                'Nombre' => 'required|string|max:255',
-                'NumeroLinea' => 'required|integer|unique:linea,NumeroLinea,' . $linea->id, 
+                'Nombre' => 'required|string|max:255', 
                 'Descripcion' => 'nullable|string',
                 'ColorLinea' => 'required|string',
             ]);

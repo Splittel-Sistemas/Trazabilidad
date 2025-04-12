@@ -204,7 +204,7 @@ Route::post('/linea/store',[LineasController::class, 'store'])->name('linea.stor
 Route::post('/lineas/activar', [LineasController::class, 'activar'])->name('lineas.activar')->middleware('auth');
 Route::post('/lineas/desactivar', [LineasController::class, 'desactivar'])->name('lineas.desactivar')->middleware('auth');
 Route::get('/linea/show/{id}', [LineasController::class, 'show'])->name('linea.show')->middleware('auth');
-Route::put('/linea/update/{id}', [LineasController::class, 'update'])->name('linea.update')->middleware('auth');
+Route::put('/linea/update', [LineasController::class, 'update'])->name('linea.update')->middleware('auth');
 
 //perfil usuarios
 Route::get('/index/perfil',[PerfilController::class, 'index'])->name('index.perfil')->middleware('auth'); 

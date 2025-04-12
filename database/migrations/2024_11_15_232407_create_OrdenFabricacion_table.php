@@ -22,8 +22,9 @@ class CreateOrdenFabricacionTable extends Migration
             $table->boolean('Cerrada')->default(true);
             $table->date('FechaEntregaSAP');
             $table->date('FechaEntrega');
-            $table->boolean('Escaner')->default(false);
-            $table->boolean('Corte')->default(false);
+            $table->boolean('Escaner')->default(false);// 1 Si 0 No
+            $table->boolean('Corte')->default(false);// 1 Si 0 No
+            $table->string('Urgencia',1)->default('N');//N normal, U urgente
             $table->foreign('OrdenVenta_id')->references('id')->on('OrdenVenta');
             $table->foreign('ResponsableUser_id')->references('id')->on('users');
             $table->timestamps();
