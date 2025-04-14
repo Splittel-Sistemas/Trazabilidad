@@ -1,5 +1,5 @@
 @extends('layouts.menu2') 
-@section('title', 'Lineas') 
+@section('title', 'Líneas') 
 @section('styles')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
@@ -338,65 +338,48 @@
             if(BanderaEnvioE==1){
                 return 0;
             }
-            const formData = new FormData();
-            formData.append("NombreE", $('#NombreE').val());
-            formData.append("NumeroLineaE", $('#NumeroLineaE').val());
-            formData.append("ColorLineaE", $('#ColorLineaE').val());
-            formData.append("DescripcionE", $('#DescripcionE').val());
-            formData.append("AreasPosiblesE", $('#AreasPosiblesE').val());
-            formData.append("lineaId", lineaId);
+
+            NombreE = $('#NombreE').val();
+            NumeroLineaE = $('#NumeroLineaE').val();
+            ColorLineaE = $('#ColorLineaE').val();
+            DescripcionE = $('#DescripcionE').val();
+            AreasPosiblesE = $('#AreasPosiblesE').val();
+            lineaId = lineaId;
             enviando();
 
             $.ajax({
-                url: route('linea.update') ,
-                method: 'POST',
-                data:formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    alert();
-                    /*if (response.success) {
-                        Swal.fire('Éxito', response.message, 'success').then(() => {
-                            $('#lineaModal').modal('hide');
-                            location.reload(); 
-                        });
-                    } else {
-                        Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
-                    }*/
-                },
-                error: function(xhr, status) {
-                    /*console.log('Error:', error);
-                    console.log('Estado:', status);
-                    console.log('Respuesta:', xhr.responseText);
-                    Swal.fire('Error', 'Hubo un problema en el servidor.', 'error');*/
-                }
-            });
-            /*var actionUrl = '{{ route('linea.update', 'lineaId') }}'.replace('lineaId', lineaId);
-            console.log('Acción URL:', actionUrl);  
-            $('#userEditForm').attr('action', actionUrl);
-            var form = $(this);
-            var formData = form.serialize();
-            $.ajax({
-                url: actionUrl,
+                url: '{{route('linea.update')}}' ,
                 method: 'PUT',
-                data: formData + '&_method=PUT',
+                data:{
+                    NombreE : NombreE,
+                    NumeroLineaE : NumeroLineaE,
+                    ColorLineaE : ColorLineaE,
+                    DescripcionE : DescripcionE,
+                    AreasPosiblesE : AreasPosiblesE,
+                    lineaId : lineaId,
+                },
                 success: function(response) {
-                    if (response.success) {
-                        Swal.fire('Éxito', response.message, 'success').then(() => {
-                            $('#lineaModal').modal('hide');
-                            location.reload(); 
-                        });
+                    if (response.status=='success') {
+                        success('Línea '+response.numlinea+" ",response.message);
+                        $('#lineaModal').modal('hide');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 500); 
                     } else {
-                        Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
+                        if(response.status=='LineaExiste'){
+                            Error_NumeroLineaE.show();
+                            Error_NumeroLineaE.html('*El número de línea '+response.numlinea+' ya existe')
+                            error('Error al Guardar','El numero de Línea tiene que ser único, no se puede repetir');
+                        }else{
+                            error('Ocurrio un Error',response.message);
+                        }
                     }
                 },
-                error: function(xhr, status, error) {
-                    console.log('Error:', error);
-                    console.log('Estado:', status);
-                    console.log('Respuesta:', xhr.responseText);
+                error: function(xhr, status) {
+                    error('Ocurrio un Error',response.message);
                     Swal.fire('Error', 'Hubo un problema en el servidor.', 'error');
                 }
-            });*/
+            });
         });
         //ACTIVAR Y DESACTIVAR LINEA
         window.DesactivarLinea = function(item) {

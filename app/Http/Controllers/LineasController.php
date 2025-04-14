@@ -94,24 +94,46 @@ class LineasController extends Controller
     // Actualizar los detalles de una línea
     public function update(Request $request)
     {
-        $id=1;
-        return 2;
         try {
-            return $id;
-            $linea = Linea::findOrFail($id);
             $validatedData = $request->validate([
-                'Nombre' => 'required|string|max:255', 
-                'Descripcion' => 'nullable|string',
-                'ColorLinea' => 'required|string',
+                'NombreE' => 'required|string|max:255',
+                'NumeroLineaE' => 'required|integer|',
+                'DescripcionE' => 'nullable|string',
+                'ColorLineaE' => 'required',
+                'AreasPosiblesE' => 'required',
+                'lineaId' => 'required'
             ]);
-            $linea->update($validatedData);
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Línea actualizada correctamente'
-                ]);
+            $id=$request->lineaId;
+            $linea = Linea::findOrFail($id);
+            // Verificar si el NumeroLinea ya existe
+            if(!($linea->NumeroLinea == $request->NumeroLineaE)){
+                if (Linea::where('NumeroLinea', $request->NumeroLineaE)->exists()) {
+                        return response()->json([
+                            'status' =>'LineaExiste',
+                            'message' => 'Número de línea ya existe',
+                            'numlinea' =>$request->NumeroLineaE,
+                        ], 200);
+                }
             }
-            return redirect()->route('linea.index')->with('message', 'Línea actualizada con éxito');
+            $AreasposiblesE = implode(",", $request->AreasPosiblesE);
+            $linea->NumeroLinea = $request->NumeroLineaE;
+            $linea->Nombre = $request->NombreE;
+            $linea->ColorLinea = $request->ColorLineaE;
+            $linea->Descripcion = $request->DescripcionE;
+            $linea->Areasposibles = $AreasposiblesE;
+            if ($linea->save()) {
+                return response()->json([
+                    'status' =>'success',
+                    'numlinea' =>$request->NumeroLineaE,
+                    'message' => 'Línea actualizada correctamente'
+                ], 200);
+            }else{
+                return response()->json([
+                    'status' =>'Error',
+                    'numlinea' =>$request->NumeroLineaE,
+                    'message' => 'Ocurrio un error al actualizar la línea'
+                ], 200);
+            }
         } catch (\Exception $e) {
             if ($request->ajax()) {
                 return response()->json([

@@ -320,7 +320,7 @@ class PlaneacionController extends Controller
             ]);
     }
     public function PartidasOFGuardar(Request $request){
-        $DatosPlaneacion=json_decode($request->input('DatosPlaneacion'));
+        return$DatosPlaneacion=json_decode($request->input('DatosPlaneacion'));
         $FechaHoy=date('Y-m-d');
         $Linea_id = $request->Linea_id;
         
