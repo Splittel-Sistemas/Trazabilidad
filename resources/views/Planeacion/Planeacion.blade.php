@@ -307,7 +307,7 @@
                                         <option value="" disabled>Selecciona operador</option>
                                         @foreach($UsuariosCortes as $key=>$l)
                                             <option value="{{ $l->id }}" {{ $key == 0 ? 'selected' : '' }}>
-                                                {{ $l->name }}
+                                                {{ $l->name }}{{$l->apellido}}
                                             </option>
                                         @endforeach
                                     </select>
@@ -492,6 +492,7 @@
             RegexNumeros(document.getElementById('FiltroOF_table2'));
             FiltroOF_table2=$('#FiltroOF_table2').val();
             $('#FiltroOF_text').html('<p>Filtro: '+FiltroOF_table2+'</p>');
+            FiltroUsuario=$('#linea').val();
             FiltroLinea = 1;//$('#linea').val();//christian
             /*if(CadenaVacia(FiltroOF_table2)){
                 return 0;
@@ -504,7 +505,8 @@
                 url: "{{route('PlaneacionFOFOV')}}", 
                 type: 'GET',
                 data: {
-                   FiltroLinea: FiltroLinea, //christian
+                    FiltroLinea: FiltroLinea, //christian
+                    FiltroUsuario: FiltroUsuario,
                     FiltroOF_table2: FiltroOF_table2,
                     _token: '{{ csrf_token() }}'  
                 },
@@ -705,9 +707,11 @@
         var inputFecha = document.getElementById('FiltroOF_Fecha_table2');
         var modal = $('#ModalPlaneacionVencidos');
         var lineaSeleccionada = 1;//$('#linea').val();
+        FiltroUsuario=$('#linea').val();
         if (modal.is(':visible')) {
             inputFecha = document.getElementById('FiltroOF_Fecha_table2_vencidas');
             lineaSeleccionada = 1;//$('#lineaModal').val();
+            FiltroUsuario = $('#lineaModal').val();
         }
         //chris
         /*var selectLinea = document.getElementById("linea");
@@ -752,6 +756,7 @@
                 Escanner:isChecked,
                 Corte:isCheckedCorte,
                 Linea: lineaSeleccionada,
+                FiltroUsuario:FiltroUsuario,
             });
             IdRow.remove();
         });
@@ -818,19 +823,26 @@
     });
     function TablaOrdenFabricacion(fecha){
         var modal = $('#ModalPlaneacionVencidos');
-        var Linea_id = 1;$('#linea').val();//chris
+        var Linea_id = 1;
+        if (modal.is(':visible')) {
+            FiltroUsuario=$('#lineaModal').val();
+        }else{
+            FiltroUsuario=$('#linea').val();
+        }
         $.ajax({
             url: "{{route('PartidasOFFiltroFechas_Tabla')}}", 
             type: 'POST',
             data: {
                 fecha: fecha,
                 Linea_id: Linea_id,//chris
+                FiltroUsuario:FiltroUsuario,
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
                 if (modal.is(':visible')) {
                     fecha2=$('#FiltroOF_Fecha_table2').val();
-                    if(fecha==fecha2){
+                    FiltrosUsuario2=$('#linea').val();
+                    if(fecha==fecha2 && FiltroUsuario==FiltrosUsuario2){
                         $('#table-2-content').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>");
                     }
                         $('#table-2-content_vencidos').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>");
@@ -841,8 +853,10 @@
             },
             success: function(response) {
                 if (modal.is(':visible')) {
+                    fecha2=$('#FiltroOF_Fecha_table2').val();
+                    FiltrosUsuario2=$('#linea').val();
                     tabla=(response.tabla);
-                    if(fecha==fecha2){
+                    if(fecha==fecha2 && FiltroUsuario==FiltrosUsuario2){
                         $('#table-2-content').html(tabla);
                     }
                     /*const regex = /<td class="text-center"><button type="button" onclick="DetallesOrdenFabricacion\('[^']*'\)" class="btn-sm btn-primary"><i class="fa fa-eye"><\/i>\s*Ver<\/button><\/td>/g;
@@ -991,7 +1005,12 @@
         }); 
     }
     function RecargarTablaOF(){
-        fecha=$('#FiltroOF_Fecha_table2').val();
+        var modal = $('#ModalPlaneacionVencidos');
+        if (modal.is(':visible')) {
+            fecha=$('#FiltroOF_Fecha_table2_vencidas').val();
+        }else{
+            fecha=$('#FiltroOF_Fecha_table2').val();
+        }
         TablaOrdenFabricacion(fecha);
     }
     function MostrarBtnFaltantes(boton){

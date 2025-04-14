@@ -54,6 +54,7 @@ class PlaneacionController extends Controller
                     $query->where('name', 'Vista Corte');
             })
             ->where('role','O')
+            ->where('active',1)
             ->get();
             // Retornar la vista con los datos
             return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status','VerificarSAP', 'linea', 'UsuariosCortes'));
@@ -320,7 +321,7 @@ class PlaneacionController extends Controller
             ]);
     }
     public function PartidasOFGuardar(Request $request){
-        return$DatosPlaneacion=json_decode($request->input('DatosPlaneacion'));
+        $DatosPlaneacion=json_decode($request->input('DatosPlaneacion'));
         $FechaHoy=date('Y-m-d');
         $Linea_id = $request->Linea_id;
         
@@ -368,6 +369,7 @@ class PlaneacionController extends Controller
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
                     $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
                     $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;//christian
+                    $respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->FiltroUsuario;
                     $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
                     $respuestaOF->save();
                 }
@@ -396,6 +398,7 @@ class PlaneacionController extends Controller
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
                     $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
                     $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;//christian
+                    $respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->FiltroUsuario;
                     $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
                     $respuestaOF->save();
                 }
@@ -430,15 +433,18 @@ class PlaneacionController extends Controller
     public function PartidasOFFiltroFechas_Tabla(Request $request){
         $Fecha = $request->input('fecha');
         $datos = $this->PartidasOFFiltroFechas($Fecha);
-        $Linea_id = $request->Linea_id;//chris
+        $Linea_id = $request->Linea_id;
+        $Id_responsable = $request->FiltroUsuario;
         $tabla = "";
     
         if (count($datos) > 0) {
+            $ContadorEntradas=0;
             foreach ($datos as $dato) {
                 $countdatosOrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion', '=', $dato['OrdenFabricacion'])
-                    ->where('Linea_id', $Linea_id)//chris
+                    ->where('ResponsableUser_id', $Id_responsable)
                     ->first();
                 if ($countdatosOrdenFabricacion) {
+                    $ContadorEntradas=1;
                     $countPartidas = $countdatosOrdenFabricacion->partidasOF()->count();
                     $PartidasSinCorte=$countdatosOrdenFabricacion->partidasOF;
                     $countPartidasSinCortes=0;
@@ -479,6 +485,12 @@ class PlaneacionController extends Controller
                         </tr>';
                     }
                 }
+            }
+            if($ContadorEntradas==0){
+                return response()->json([
+                    'status' => "empty",
+                    'tabla' => '<tr><td colspan="100%" align="center">No existen registros</td></tr>'
+                ]);
             }
             return response()->json([
                 'status' => "success",
