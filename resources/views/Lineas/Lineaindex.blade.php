@@ -1,5 +1,5 @@
 @extends('layouts.menu2') 
-@section('title', 'Lineas') 
+@section('title', 'Líneas') 
 @section('styles')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
@@ -137,50 +137,66 @@
             </div>
         </div>
     </div>
+    <!--Modal Editar Linea-->
     <div class="modal fade" id="lineaModal" tabindex="-1" role="dialog" aria-labelledby="lineaModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h5 class="modal-title text-white" id="userModalLabel">Editar Linea</h5>
+                    <h5 class="modal-title text-white" id="userModalLabel">Editar L&iacute;nea</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                <form id="userEditForm" action="" method="POST">
+                <form id="userEditForm">
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
-                        <div class="row mb-4">
+                        <div class="row mb-1">
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="Nombre">Nombre</label>
-                                    <input type="text" name="Nombre" id="Nombre" class="form-control form-control-sm" required>
+                                    <input type="text" name="NombreE" id="NombreE" class="form-control form-control-sm">
+                                    <small class="text-danger" id="Error_NombreE" style="display: none"></small>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="NumeroLinea">Número de Línea</label>
-                                    <input type="text" name="NumeroLinea" id="NumeroLinea" class="form-control form-control-sm" required>
+                                    <input type="text" name="NumeroLineaE" id="NumeroLineaE" class="form-control form-control-sm">
+                                    <small class="text-danger" id="Error_NumeroLineaE" style="display: none"></small>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="NumeroLinea">Color</label>
-                                    <input type="color" id="ColorLinea" name="ColorLinea"  class="form-control form-control-color" title="Selecciona un color">
+                                    <input type="color" id="ColorLineaE" name="ColorLineaE"  class="form-control form-control-color" title="Selecciona un color">
+                                    <small class="text-danger" id="Error_ColorLineaE" style="display: none"></small>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group my-1">
                             <label for="Descripcion">Descripción</label>
-                            <textarea name="Descripcion" id="Descripcion" class="form-control form-control-sm"></textarea>
-                        </div>                        
+                            <textarea name="DescripcionE" id="DescripcionE" class="form-control form-control-sm"></textarea>
+                            <small class="text-danger" id="Error_DescripcionE" style="display: none"></small>
+                        </div>  
+                        <div class="form-group my-1">
+                            <label for="Descripcion">Selecciona &Aacute;reas</label><br>
+                            <small class="mb-1">Presiona la tecla Ctrl o Shift para seleccionar m&aacute;s de una opci&oacute;n.</small>
+                            <select class="form-select form-select-sm" aria-label=".form-select-sm example" size="4" name="AreasPosiblesE[]" id="AreasPosiblesE" multiple>
+                                @foreach($Areas as $Area)
+                                        <option value="{{$Area->id}}">{{$Area->nombre}}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-danger" id="Error_AreasPosiblesE" style="display: none"></small>
+                        </div>                   
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button  id="BtnEditarLinea" class="btn btn-sm btn-primary">Guardar cambios</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+    <!--Modal Crear Linea-->
     <div class="modal fade" id="crearModal" tabindex="-1" role="dialog" aria-labelledby="crearModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -194,19 +210,22 @@
                         <div class="col-md-5">
                             <div class="form-group">
                                 <label for="Nombre">Nombre</label>
-                                <input type="text" name="Nombre" id="Nombre" class="form-control form-control-sm" placeholder="Ingrese el nombre" required>
+                                <input type="text" name="Nombre" id="Nombre" class="form-control form-control-sm" placeholder="Ingrese el nombre" >
+                                <small class="text-danger" id="Error_Nombre" style="display: none"></small>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="NumeroLinea">Número de Línea</label>
-                                <input type="text" name="NumeroLinea" id="NumeroLinea" class="form-control form-control-sm" placeholder="Ingrese el número de línea" required>
+                                <input type="text" name="NumeroLinea" id="NumeroLinea" class="form-control form-control-sm" placeholder="Ingrese el número de línea" >
+                                <small class="text-danger" id="Error_NumeroLinea" style="display: none"></small>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="NumeroLinea">Color</label>
                                 <input type="color" id="ColorLinea" name="ColorLinea"  class="form-control form-control-color" title="Selecciona un color">
+                                <small class="text-danger" id="Error_ColorLinea" style="display: none"></small>
                             </div>
                         </div>
                     </div>
@@ -214,11 +233,22 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="Descripcion">Descripción</label>
-                                <textarea name="Descripcion" id="Descripcion" class="form-control form-control-sm" placeholder="Ingrese la descripción" required></textarea>
+                                <textarea name="Descripcion" id="Descripcion" class="form-control form-control-sm" placeholder="Ingrese la descripción" ></textarea>
+                                <small class="text-danger" id="Error_Descripcion" style="display: none"></small>
                             </div>
                         </div>
                     </div>
-    
+                    <div class="form-group my-1">
+                        <label for="Descripcion">Selecciona &Aacute;reas</label><br>
+                        <small class="mb-1">Presiona la tecla Ctrl o Shift para seleccionar m&aacute;s de una opci&oacute;n.</small>
+                        <select class="form-select form-select-sm" aria-label=".form-select-sm example" size="4" name="AreasPosibles[]" id="AreasPosiblesCrear" multiple>
+                            {{--<option selected="" disabled>Selecciona Areas</option>--}}
+                            @foreach($Areas as $Area)
+                                    <option value="{{$Area->id}}">{{$Area->nombre}}</option>
+                            @endforeach
+                        </select>
+                        <small class="text-danger" id="Error_AreasPosiblesCrear" style="display: none"></small>
+                    </div> 
                     <!-- Verifica si hay un mensaje de error -->
                     @if(session('error'))
                         <div class="alert alert-danger mt-2" role="alert">
@@ -226,8 +256,8 @@
                         </div>
                     @endif
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-sm btn-primary btn-lg">
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button id="BtnCrearLinea" class="btn btn-sm btn-primary">
                            Guardar
                         </button>
                     </div> 
@@ -244,6 +274,13 @@
     $(document).ready(function() {
         var lineaId;
         function Editarlinea(linea) {
+            $('#userEditForm')[0].reset();
+            $('#AreasPosiblesE').prop('selectedIndex', -1);
+            $('#Error_NombreE').hide();
+            $('#Error_NumeroLineaE').hide();
+            $('#Error_ColorLineaE').hide();
+            $('#Error_DescripcionE').hide();
+            $('#Error_AreasPosiblesE').hide();
             lineaId = $(linea).data('id');  
             var url = "{{ route('linea.show', ['id' => '__lineaId__']) }}".replace('__lineaId__', lineaId);
             $('#Nombre').val('');
@@ -254,13 +291,20 @@
                 url: url,
                 method: 'GET',
                 success: function(response) {
-                    console.log(response);
-                    $('#Nombre').val(response.Nombre);
-                    $('#Descripcion').val(response.Descripcion);
-                    $('#NumeroLinea').val(response.NumeroLinea);
-                    $('#ColorLinea').val(response.ColorLinea);
+                    $('#NombreE').val(response.Nombre);
+                    $('#DescripcionE').val(response.Descripcion);
+                    $('#NumeroLineaE').val(response.NumeroLinea);
+                    $('#ColorLineaE').val(response.ColorLinea);
                     $('#userEditForm').attr('action', '{{ route('linea.update', 'lineaId') }}'.replace('lineaId', lineaId));
                     $('#lineaModal').modal('show');
+                    if(!(response.AreasPosibles==null || response.AreasPosibles=="")){
+                        AreasPosibles=(response.AreasPosibles).split(',').map(Number);
+                        const SelectAreasPosiblesE = document.getElementById('AreasPosiblesE');
+                        AreasPosibles.forEach(valor => {
+                            const opcion = SelectAreasPosiblesE.querySelector(`option[value="${valor}"]`);
+                            if (opcion) opcion.selected = true;
+                        });
+                    }
                 },
                 error: function() {
                     Swal.fire('Error', 'No se pudo cargar la información del servidor', 'error');
@@ -272,31 +316,67 @@
             Editarlinea(this);  
         });
         // Manejo del formulario de actualización
-        $(document).on('submit', '#userEditForm', function(event) {
+        $('#BtnEditarLinea').on('click', function() {
             event.preventDefault();
-            var actionUrl = '{{ route('linea.update', 'lineaId') }}'.replace('lineaId', lineaId);
-            console.log('Acción URL:', actionUrl);  
-            $('#userEditForm').attr('action', actionUrl);
-            var form = $(this);
-            var formData = form.serialize();
+            Error_NombreE = $('#Error_NombreE');
+            Error_NumeroLineaE = $('#Error_NumeroLineaE');
+            Error_ColorLineaE = $('#Error_ColorLineaE');
+            Error_DescripcionE = $('#Error_DescripcionE');
+            Error_AreasPosiblesE = $('#Error_AreasPosiblesE');
+
+            BanderaEnvioE=0;
+            NombreE = $('#NombreE').val();
+            if(!CadenaVacia(NombreE)){Error_NombreE.html('');Error_NombreE.hide();}else{Error_NombreE.html('*Campo Requerido');Error_NombreE.show();BanderaEnvioE=1;}
+            NumeroLineaE = $('#NumeroLineaE').val();
+            if(!CadenaVacia(NumeroLineaE)){Error_NumeroLineaE.html('');Error_NumeroLineaE.hide();}else{Error_NumeroLineaE.html('*Campo Requerido');Error_NumeroLineaE.show();BanderaEnvioE=1;}
+            ColorLineaE = $('#ColorLineaE').val();
+            if(!CadenaVacia(ColorLineaE)){Error_ColorLineaE.html('');Error_ColorLineaE.hide();}else{Error_ColorLineaE.html('*Campo Requerido');Error_ColorLineaE.show();BanderaEnvioE=1;}
+            DescripcionE = $('#DescripcionE').val();
+            if(!CadenaVacia(DescripcionE)){Error_DescripcionE.html('');Error_DescripcionE.hide();}else{Error_DescripcionE.html('*Campo Requerido');Error_DescripcionE.show();BanderaEnvioE=1;}
+            AreasPosiblesE = $('#AreasPosiblesE').val();
+            if(!CadenaVacia(AreasPosiblesE)){Error_AreasPosiblesE.html('');Error_AreasPosiblesE.hide();}else{Error_AreasPosiblesE.html('*Selecciona minimo una opción');Error_AreasPosiblesE.show();BanderaEnvioE=1;}
+            if(BanderaEnvioE==1){
+                return 0;
+            }
+
+            NombreE = $('#NombreE').val();
+            NumeroLineaE = $('#NumeroLineaE').val();
+            ColorLineaE = $('#ColorLineaE').val();
+            DescripcionE = $('#DescripcionE').val();
+            AreasPosiblesE = $('#AreasPosiblesE').val();
+            lineaId = lineaId;
+            enviando();
+
             $.ajax({
-                url: actionUrl,
+                url: '{{route('linea.update')}}' ,
                 method: 'PUT',
-                data: formData + '&_method=PUT',
+                data:{
+                    NombreE : NombreE,
+                    NumeroLineaE : NumeroLineaE,
+                    ColorLineaE : ColorLineaE,
+                    DescripcionE : DescripcionE,
+                    AreasPosiblesE : AreasPosiblesE,
+                    lineaId : lineaId,
+                },
                 success: function(response) {
-                    if (response.success) {
-                        Swal.fire('Éxito', response.message, 'success').then(() => {
-                            $('#lineaModal').modal('hide');
-                            location.reload(); 
-                        });
+                    if (response.status=='success') {
+                        success('Línea '+response.numlinea+" ",response.message);
+                        $('#lineaModal').modal('hide');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 500); 
                     } else {
-                        Swal.fire('Error', response.message || 'Ocurrió un problema', 'error');
+                        if(response.status=='LineaExiste'){
+                            Error_NumeroLineaE.show();
+                            Error_NumeroLineaE.html('*El número de línea '+response.numlinea+' ya existe')
+                            error('Error al Guardar','El numero de Línea tiene que ser único, no se puede repetir');
+                        }else{
+                            error('Ocurrio un Error',response.message);
+                        }
                     }
                 },
-                error: function(xhr, status, error) {
-                    console.log('Error:', error);
-                    console.log('Estado:', status);
-                    console.log('Respuesta:', xhr.responseText);
+                error: function(xhr, status) {
+                    error('Ocurrio un Error',response.message);
                     Swal.fire('Error', 'Hubo un problema en el servidor.', 'error');
                 }
             });
@@ -336,27 +416,63 @@
                 }
             });
         };
-    });
-    $(document).ready(function() {
-        $('#createLineForm').on('submit', function(e) {
-            e.preventDefault(); 
-            var formData = $(this).serialize();
-            Swal.fire({
-                title: 'Enviando...',
-                text: 'Por favor espere.',
-                icon: 'info',
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
-                }
-            });
+        // Limpia los campos del formulario dentro del modal
+        $('#crearModal').on('show.bs.modal', function () {
+            $('#createLineForm')[0].reset();
+            $('#AreasPosibles').prop('selectedIndex', -1);
+            $('#Error_Nombre').hide();
+            $('#Error_NumeroLinea').hide();
+            $('#Error_ColorLinea').hide();
+            $('#Error_Descripcion').hide();
+            $('#Error_AreasPosiblesCrear').hide();
+        });
+        $('#BtnCrearLinea').on('click', function(e) {
+            e.preventDefault();
+            BanderaEnvio=0;
+            Error_Nombre = $('#Error_Nombre');
+            Error_NumeroLinea = $('#Error_NumeroLinea');
+            Error_ColorLinea = $('#Error_ColorLinea');
+            Error_Descripcion = $('#Error_Descripcion');
+            Error_AreasPosiblesCrear = $('#Error_AreasPosiblesCrear');
 
+            Nombre = $('#Nombre').val();
+            if(!CadenaVacia(Nombre)){Error_Nombre.html('');Error_Nombre.hide();}else{Error_Nombre.html('*Campo Requerido');Error_Nombre.show();BanderaEnvio=1;}
+            NumeroLinea = $('#NumeroLinea').val();
+            if(!CadenaVacia(NumeroLinea)){Error_NumeroLinea.html('');Error_NumeroLinea.hide();}else{Error_NumeroLinea.html('*Campo Requerido');Error_NumeroLinea.show();BanderaEnvio=1;}
+            ColorLinea = $('#ColorLinea').val();
+            if(!CadenaVacia(ColorLinea)){Error_ColorLinea.html('');Error_ColorLinea.hide();}else{Error_ColorLinea.html('*Campo Requerido');Error_ColorLinea.show();BanderaEnvio=1;}
+            Descripcion = $('#Descripcion').val();
+            if(!CadenaVacia(Descripcion)){Error_Descripcion.html('');Error_Descripcion.hide();}else{Error_Descripcion.html('*Campo Requerido');Error_Descripcion.show();BanderaEnvio=1;}
+            AreasPosiblesCrear = $('#AreasPosiblesCrear').val();
+            if(!CadenaVacia(AreasPosiblesCrear)){Error_AreasPosiblesCrear.html('');Error_AreasPosiblesCrear.hide();}else{Error_AreasPosiblesCrear.html('*Selecciona minimo una opción');Error_AreasPosiblesCrear.show();BanderaEnvio=1;}
+            if(BanderaEnvio==1){
+                return 0;
+            }
+            const formData = new FormData();
+            formData.append("Nombre", $('#Nombre').val());
+            formData.append("NumeroLinea", $('#NumeroLinea').val());
+            formData.append("ColorLinea", $('#ColorLinea').val());
+            formData.append("Descripcion", $('#Descripcion').val());
+            formData.append("AreasPosiblesCrear", $('#AreasPosiblesCrear').val());
+            enviando();
             // Enviar los datos por AJAX
             $.ajax({
                 url: '{{ route('linea.store') }}',
                 method: 'POST',
-                data: formData,
+                data: {
+                    Nombre:Nombre,
+                    NumeroLinea:NumeroLinea,
+                    ColorLinea:ColorLinea,
+                    Descripcion:Descripcion,
+                    AreasPosiblesCrear:AreasPosiblesCrear,
+                },
                 success: function(response) {
+                    if(response.status=='LineaExiste')
+                    {
+                        Error_NumeroLinea.html('*El número de línea '+response.numlinea+' ya existe');Error_NumeroLinea.show();
+                        error('Error al Guardar','El numero de Línea tiene que ser único, no se puede repetir');
+                        return 0;
+                    }
                     // Si la respuesta es exitosa, mostrar mensaje
                     Swal.fire({
                         title: 'Éxito',
