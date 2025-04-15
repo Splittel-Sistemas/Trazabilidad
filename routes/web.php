@@ -195,7 +195,7 @@ Route::get('/fin/Proceso',[AreasController::class,'finProcesoEmpaque'])->name('f
 Route::post('/regresar-proceso', [AreasController::class, 'RegresarProceso'])->name('regresar.proceso')->middleware('auth');
 Route::get('/tiempos-GraficaD', [HomeController::class, 'graficastiempo'])->name('graficastiempo')->middleware('auth');
 Route::get('/tiempos muertos',[HomeController::class, 'graficastiempoMuerto'])->name('graficastiempoMuerto')->middleware('auth');
-
+   
 //lineas        
 Route::get('/index/linea',[LineasController::class, 'index'])->name('index.linea')->middleware('auth');    
 Route::get('/lineas/datos', [LineasController::class, 'tablalinea'])->name('lineas.datos')->middleware('auth');
