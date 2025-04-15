@@ -4,6 +4,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Linea;
+use App\Models\Areas;
 use Illuminate\Support\Facades\Auth;
 class LineasController extends Controller
 {
@@ -13,7 +14,8 @@ class LineasController extends Controller
         $user = Auth::user();
         if ($user->hasPermission('Vista Lineas')) {
             $linea = Linea::orderBy('NumeroLinea', 'asc')->get();
-            return view('Lineas.Lineaindex', compact('linea'));
+            $Areas=Areas::whereBetween('id', [1, 17])->get();
+            return view('Lineas.Lineaindex', compact('linea','Areas'));
         } else {
             return redirect()->route('error.');
         }
@@ -26,27 +28,31 @@ class LineasController extends Controller
     // Guardar una nueva línea en la base de datos
     public function store(Request $request)
     {
-        try {
+       try {
             $validatedData = $request->validate([
                 'Nombre' => 'required|string|max:255',
-                'NumeroLinea' => 'required|integer|unique:linea,NumeroLinea',
+                'NumeroLinea' => 'required|integer|',
                 'Descripcion' => 'nullable|string',
                 'ColorLinea' => 'required',
+                'AreasPosiblesCrear' => 'required',
             ]);
-    
             // Verificar si el NumeroLinea ya existe
             if (Linea::where('NumeroLinea', $request->NumeroLinea)->exists()) {
-                if ($request->ajax()) {
                     return response()->json([
-                        'success' => false,
-                        'message' => 'Número de línea ya existe'
-                    ], 400);
-                }
-                return redirect()->back()->with('error', 'Número de línea ya existe');
+                        'status' =>'LineaExiste',
+                        'message' => 'Número de línea ya existe',
+                        'numlinea' =>$request->NumeroLinea,
+                    ], 200);
             }
-    
-            $linea = Linea::create($validatedData);
-    
+            $Areasposibles = implode(",", $request->AreasPosiblesCrear);
+            $linea = new Linea();
+            $linea->NumeroLinea = $request->NumeroLinea;
+            $linea->Nombre = $request->Nombre;
+            $linea->ColorLinea = $request->ColorLinea;
+            $linea->active = 1;
+            $linea->Descripcion = $request->Descripcion;
+            $linea->Areasposibles = $Areasposibles;
+            $linea->save();
             // Si es una solicitud AJAX, retornar una respuesta JSON
             if ($request->ajax()) {
                 return response()->json([
@@ -55,9 +61,6 @@ class LineasController extends Controller
                     'data' => $linea // Devuelve los datos de la nueva línea
                 ]);
             }
-    
-            // Si no es una solicitud AJAX, redirige con un mensaje de éxito
-            return redirect()->route('linea.index')->with('message', 'Línea creada con éxito');
         } catch (ValidationException $e) {
             // Si ocurre un error de validación
             if ($request->ajax()) {
@@ -82,30 +85,55 @@ class LineasController extends Controller
                 'Descripcion' => $linea->Descripcion,
                 'NumeroLinea' => $linea->NumeroLinea,
                 'ColorLinea' => $linea->ColorLinea,
+                'AreasPosibles' => $linea->AreasPosibles,
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Línea no encontrada'], 404);
         }
     }
     // Actualizar los detalles de una línea
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         try {
-            $linea = Linea::findOrFail($id);
             $validatedData = $request->validate([
-                'Nombre' => 'required|string|max:255',
-                'NumeroLinea' => 'required|integer|unique:linea,NumeroLinea,' . $linea->id, 
-                'Descripcion' => 'nullable|string',
-                'ColorLinea' => 'required|string',
+                'NombreE' => 'required|string|max:255',
+                'NumeroLineaE' => 'required|integer|',
+                'DescripcionE' => 'nullable|string',
+                'ColorLineaE' => 'required',
+                'AreasPosiblesE' => 'required',
+                'lineaId' => 'required'
             ]);
-            $linea->update($validatedData);
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Línea actualizada correctamente'
-                ]);
+            $id=$request->lineaId;
+            $linea = Linea::findOrFail($id);
+            // Verificar si el NumeroLinea ya existe
+            if(!($linea->NumeroLinea == $request->NumeroLineaE)){
+                if (Linea::where('NumeroLinea', $request->NumeroLineaE)->exists()) {
+                        return response()->json([
+                            'status' =>'LineaExiste',
+                            'message' => 'Número de línea ya existe',
+                            'numlinea' =>$request->NumeroLineaE,
+                        ], 200);
+                }
             }
-            return redirect()->route('linea.index')->with('message', 'Línea actualizada con éxito');
+            $AreasposiblesE = implode(",", $request->AreasPosiblesE);
+            $linea->NumeroLinea = $request->NumeroLineaE;
+            $linea->Nombre = $request->NombreE;
+            $linea->ColorLinea = $request->ColorLineaE;
+            $linea->Descripcion = $request->DescripcionE;
+            $linea->Areasposibles = $AreasposiblesE;
+            if ($linea->save()) {
+                return response()->json([
+                    'status' =>'success',
+                    'numlinea' =>$request->NumeroLineaE,
+                    'message' => 'Línea actualizada correctamente'
+                ], 200);
+            }else{
+                return response()->json([
+                    'status' =>'Error',
+                    'numlinea' =>$request->NumeroLineaE,
+                    'message' => 'Ocurrio un error al actualizar la línea'
+                ], 200);
+            }
         } catch (\Exception $e) {
             if ($request->ajax()) {
                 return response()->json([
