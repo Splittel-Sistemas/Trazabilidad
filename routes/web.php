@@ -194,7 +194,7 @@ Route::get('/fin/Proceso',[AreasController::class,'finProcesoEmpaque'])->name('f
 Route::post('/regresar-proceso', [AreasController::class, 'RegresarProceso'])->name('regresar.proceso')->middleware('auth');
 Route::get('/tiempos-GraficaD', [HomeController::class, 'graficastiempo'])->name('graficastiempo')->middleware('auth');
 Route::get('/tiempos muertos',[HomeController::class, 'graficastiempoMuerto'])->name('graficastiempoMuerto')->middleware('auth');
-
+   
 //lineas        
 Route::get('/index/linea',[LineasController::class, 'index'])->name('index.linea')->middleware('auth');    
 Route::get('/lineas/datos', [LineasController::class, 'tablalinea'])->name('lineas.datos')->middleware('auth');
@@ -203,7 +203,7 @@ Route::post('/linea/store',[LineasController::class, 'store'])->name('linea.stor
 Route::post('/lineas/activar', [LineasController::class, 'activar'])->name('lineas.activar')->middleware('auth');
 Route::post('/lineas/desactivar', [LineasController::class, 'desactivar'])->name('lineas.desactivar')->middleware('auth');
 Route::get('/linea/show/{id}', [LineasController::class, 'show'])->name('linea.show')->middleware('auth');
-Route::put('/linea/update/{id}', [LineasController::class, 'update'])->name('linea.update')->middleware('auth');
+Route::put('/linea/update', [LineasController::class, 'update'])->name('linea.update')->middleware('auth');
 
 //perfil usuarios
 Route::get('/index/perfil',[PerfilController::class, 'index'])->name('index.perfil')->middleware('auth'); 
