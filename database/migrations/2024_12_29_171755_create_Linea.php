@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('ColorLinea',15);
             $table->boolean('active')->default(true);
             $table->text('Descripcion')->nullable(); 
+            $table->string('AreasPosibles')->nullable(); 
             $table->timestamps();
         });
     }
