@@ -33,15 +33,15 @@
         @endif
         <div class="card shadow-sm border-light col-4 p-3 mb-1">
             <div >
-                <p class="m-0">Selecciona el Tipo de Usuario</p>
+                <p class="m-0">Selecciona el Tipo de Claves</p>
             </div>
             <div class="form-check mt-1">
                 <input class="form-check-input" id="administrador" type="radio" name="usuario_tipo" checked onchange="toggleForm()">
-                <label class="form-check-label" for="administrador">Administrativo</label>
+                <label class="form-check-label" for="administrador">Asignar claves de accesso &#40;Administrativo&#41;</label>
             </div>
             <div class="form-check">
                 <input class="form-check-input" id="operador" type="radio" name="usuario_tipo" onchange="toggleForm()">
-                <label class="form-check-label" for="operador">Operador</label>
+                <label class="form-check-label" for="operador">Generar clave &#40;Operador&#41;</label>
             </div>
         </div>
         <div style="height: 30px;"></div>

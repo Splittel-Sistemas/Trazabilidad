@@ -22,14 +22,14 @@ class AreasController extends Controller
 {
     protected $funcionesGenerales;
     //Estas Areas se tratan de Manera diferente, por lo cual se definen aquí
-    protected $AreaEspecial4;
-    protected $AreaEspecial16;
-    protected $AreaEspecial17;
+    protected $AreaEspecialTransicion;
+    protected $AreaEspecialMontaje;
+    protected $AreaEspecialEmpaque;
     public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
-        $this->AreaEspecial4 = 4;//Transición
-        $this->AreaEspecial16 = 16;//Montaje
-        $this->AreaEspecial17 = 17;//Empaque
+        $this->AreaEspecialTransicion = 4;//Transición
+        $this->AreaEspecialMontaje= 16;//Montaje
+        $this->AreaEspecialEmpaque = 17;//Empaque
     }
     //Area 3 Suministro
     public function Suministro(){
@@ -729,7 +729,8 @@ class AreasController extends Controller
                     unset($Registros[$key]);
                 }
             }
-            return view('Areas.Transicion', compact('Area', 'Registros'));
+            $Lineas=Linea::get();
+            return view('Areas.Transicion', compact('Area', 'Registros','Lineas'));
         } else {
             return redirect()->route('error.');
         }
@@ -828,7 +829,8 @@ class AreasController extends Controller
                 }
                 
             }
-        return view('Areas.Preparado',compact('Area','Registros'));
+            $Lineas=Linea::get();
+        return view('Areas.Preparado',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -966,7 +968,7 @@ class AreasController extends Controller
                                     $TipoEscanerrespuesta=$this->CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
                                     if($TipoEscanerrespuesta != 5){
                                         $retrabajo=$request->Retrabajo;
-                                        if($Area==4){
+                                        if($Area==$this->AreaEspecialTransicion){
                                             $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo);
                                         }else{
                                             $TipoEscanerrespuesta=$this->ValidarPasoUnaVezAA($Area,$CodigoPartes);
@@ -1122,6 +1124,17 @@ class AreasController extends Controller
                             <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
                         </div>
                     </div>';
+                    if($Area==$this->AreaEspecialMontaje){
+                        if($Inicio==1 && $Escaner==1){
+                            $datos->Cerrada = 1; 
+                            $datos->save();
+                        }elseif($Inicio==0 && $Escaner==1){
+                            if(($CantidadTotal-$CantidadCompletada)==0){
+                                $datos->Cerrada = 0; 
+                                $datos->save();
+                            }
+                        }
+                    }
                 return response()->json([
                     'tabla' => $menu,
                     'Escaner' => $Escaner,
@@ -1192,7 +1205,7 @@ class AreasController extends Controller
 
         $PartidasOFAreasCerrada=$PartidasOF->Areas()->where('Areas_id',$Area)->whereNotNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->first();
         //Verifica si ya existe
-        if($Area!=17){
+        if($Area!=$this->AreaEspecialEmpaque ){
             if($PartidasOFAreasCerrada==""){
                 $data = [
                     'Cantidad' => 1,
@@ -1272,7 +1285,7 @@ class AreasController extends Controller
                 $Suma+=$PartidasOFAreasCompN-$PartidasOFAreasCompRI;
             }
         }else{
-            if($Area!=17){
+            if($Area!=$this->AreaEspecialEmpaque ){
                 foreach($PartidasOF as $Partidas){
                     $Suma +=$Partidas->Areas()->where('Areas_id', $Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
                             ($Partidas->Areas()->where('Areas_id', $Area)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
@@ -1351,7 +1364,7 @@ class AreasController extends Controller
             ]);
         }
             if($Inicio==1){
-                if($Area==4){
+                if($Area==$this->AreaEspecialTransicion){
                     if($Retrabajo=="false"){
                         //Numero de piezas Area Anterior
                         /*$NumeroPartidasTodasAnterior = $partidasOF->Areas()->where('Areas_id',$Area-1)->where('TipoPartida','N')->whereNotNull('fechaTermina')->get()->SUM('pivot.Cantidad');
@@ -1416,7 +1429,7 @@ class AreasController extends Controller
                             'OF' => $CodigoPartes[0],       
                         ]);
                     }
-                }elseif($Area==17){
+                }elseif($Area==$this->AreaEspecialEmpaque){
                     //Total que paso del area anterior
                     $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
                                             -$partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida', '=','F')->get()->SUM('pivot.Cantidad');
@@ -1511,6 +1524,11 @@ class AreasController extends Controller
                                 'Users_id' => $this->funcionesGenerales->InfoUsuario(),
                             ];
                             $partidasOF->Areas()->attach($Area, $data);
+                            //Solo para Montaje se reabre la Orden cuando se crea un retrabajo
+                            if($Area==$this->AreaEspecialMontaje){
+                                $datos->Cerrada = 1; 
+                                $datos->save();
+                            }
                             return response()->json([
                                 'Inicio'=>$Inicio,
                                 'Fin'=>$Fin,
@@ -1583,7 +1601,7 @@ class AreasController extends Controller
                     }
                 }
             }else if($Fin==1){
-                if($Area==4){
+                if($Area==$this->AreaEspecialTransicion){
                     $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->whereNull('Fechatermina')->get();
                     $NumeroPartidasAbiertas = $NumeroPartidasAbiertas->SUM('pivot.Cantidad');
                     $NumeroPartidasCerradas = $partidasOF->Areas()->where('Areas_id',$Area)->whereNotNull('Fechatermina')->get();
@@ -1614,7 +1632,7 @@ class AreasController extends Controller
                         'status' => "success",
                         'OF' => $CodigoPartes[0],       
                     ]);
-                }else if($Area==$this->AreaEspecial16){
+                }else if($Area==$this->AreaEspecialMontaje){
                     $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->whereNull('Fechatermina')->get();
                     $NumeroPartidasAbiertas = $NumeroPartidasAbiertas->SUM('pivot.Cantidad');
                     $NumeroPartidasCerradas = $partidasOF->Areas()->where('Areas_id',$Area)->whereNotNull('Fechatermina')->get();
@@ -1640,6 +1658,10 @@ class AreasController extends Controller
                     ];
                     $partidasOF->Areas()->attach($Area, $data);
                     $CantidadCompletada=($datos->CantidadTotal)-($this->NumeroCompletadas($CodigoPartes,$Area));
+                    if($CantidadCompletada==0){
+                        $datos->Cerrada = 0; 
+                        $datos->save();
+                    }
                     return response()->json([
                         'Inicio'=>$Inicio,
                         'Fin'=>$Fin,
@@ -2018,7 +2040,7 @@ class AreasController extends Controller
         if (!$user) {
             return redirect()->route('login');
         }
-        if($Area==4){
+        if($Area==$this->AreaEspecialTransicion){
             $NumeroArea4=0;
             $ordenes4 = OrdenFabricacion::with('PartidasOF')
                             ->where('OrdenFabricacion.Cerrada','1')
@@ -2129,7 +2151,8 @@ class AreasController extends Controller
                 }
                 
             }
-        return view('Areas.Ribonizado',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Ribonizado',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2228,7 +2251,8 @@ class AreasController extends Controller
                 }
                 
             }
-        return view('Areas.Ensamble',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Ensamble',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2324,7 +2348,8 @@ class AreasController extends Controller
             }
             
         }
-        return view('Areas.Cortedefibra',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Cortedefibra',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2420,7 +2445,8 @@ class AreasController extends Controller
             }
             
         }
-        return view('Areas.Pulido',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Pulido',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2516,7 +2542,8 @@ class AreasController extends Controller
             }
             
         }
-        return view('Areas.Armado',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Armado',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2612,7 +2639,8 @@ class AreasController extends Controller
             }
             
         }
-        return view('Areas.Inspeccion',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Inspeccion',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2708,7 +2736,8 @@ class AreasController extends Controller
             }
             
         }
-        return view('Areas.Polaridad',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Polaridad',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2804,7 +2833,8 @@ class AreasController extends Controller
             }
             
         }
-        return view('Areas.Crimpado',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Crimpado',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2901,7 +2931,8 @@ class AreasController extends Controller
                     unset($Registros[$key]);
                 }
             }
-        return view('Areas.Medicion',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Medicion',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2996,7 +3027,8 @@ class AreasController extends Controller
                     unset($Registros[$key]);
                 }
             }
-        return view('Areas.Visualizacion',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Visualizacion',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -3091,7 +3123,8 @@ class AreasController extends Controller
                     unset($Registros[$key]);
                 }
             }
-        return view('Areas.Montaje',compact('Area','Registros'));
+        $Lineas=Linea::get();
+        return view('Areas.Montaje',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -3114,7 +3147,7 @@ class AreasController extends Controller
             ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
             ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
             ->join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
-            ->whereIn('partidasof_areas.Areas_id', [15, 17]) 
+            ->whereIn('partidasof_areas.Areas_id', [15, $this->AreaEspecialEmpaque]) 
             ->where('ordenfabricacion.Cerrada', '!=', 0)
             ->select(
                 'ordenfabricacion.Cerrada',
@@ -3136,7 +3169,7 @@ class AreasController extends Controller
             ->get()
             ->groupBy(fn($item) => $item->OrdenVenta . '-' . $item->OrdenFabricacion)
             ->map(function ($items) {
-                $area17 = $items->firstWhere('Areas_id', 17);
+                $area17 = $items->firstWhere('Areas_id', $this->AreaEspecialEmpaque );
     
                 if ($area17) {
                     return $area17;
@@ -3147,13 +3180,12 @@ class AreasController extends Controller
                         'OrdenFabricacion' => $base->OrdenFabricacion,
                         'CantidadTotal' => $base->CantidadTotal,
                         'FechaEntrega' => $base->FechaEntrega,
-                        'CantidadTotalArea' => 0, 
+                        'CantidadTotalArea' => $base->CantidadTotalArea, 
                         'Cerrada' => $base->Cerrada
                     ];
                 }
             })
             ->values();
-    
         return response()->json($areas);
     }
     //Recargar Tabla de Area Pendiente
@@ -3869,7 +3901,7 @@ class AreasController extends Controller
          if($EMPartidasOF=="" || $EMPartidasOF==null){
             return 'error';
         }
-        if($Area==4){
+        if($Area==$this->AreaEspecialTransicion){
             $EMPartidasOFAreas=$EMPartidasOF->Areas()->where('Areas_id',$Area-1)->get();
             return $EMPartidasOFAreas->where('pivot.TipoPartida','N')->whereNotNull('pivot.FechaTermina');//->SUM('pivot.Cantidad');
         }
@@ -3966,7 +3998,7 @@ class AreasController extends Controller
                                         $TipoEscanerrespuesta=$this->CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
                                         if($TipoEscanerrespuesta != 5){
                                             $retrabajo=$request->Retrabajo;
-                                            if($Area==4){
+                                            if($Area==$this->AreaEspecialTransicion){
                                                 $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo);
                                             }else{
                                                 $TipoEscanerrespuesta=$this->ValidarPasoUnaVezAA($Area,$CodigoPartes);
@@ -4102,7 +4134,7 @@ class AreasController extends Controller
         //Aplica para diferenciar a Empaque de Montaje 
         if (!$request->has('Area')) {
             foreach($PartidasOF as $Partida){
-                $Totalcompletadas+=$Partida->Areas()->where('Areas_id','17')->get()->SUM('pivot.Cantidad');
+                $Totalcompletadas+=$Partida->Areas()->where('Areas_id',$this->AreaEspecialEmpaque)->get()->SUM('pivot.Cantidad');
             }
             if($OrdenFabricacion->CantidadTotal > $Totalcompletadas){
                 return response()->json([

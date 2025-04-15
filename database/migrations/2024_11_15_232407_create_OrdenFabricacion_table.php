@@ -12,6 +12,7 @@ class CreateOrdenFabricacionTable extends Migration
             $table->id();
             $table->unsignedBigInteger('Linea_id');
             $table->unsignedBigInteger('OrdenVenta_id')->nullable();
+            $table->unsignedBigInteger('ResponsableUser_id')->nullable();
             $table->string('OrdenFabricacion');
             $table->string('Articulo');
             $table->string('Descripcion');
@@ -21,10 +22,13 @@ class CreateOrdenFabricacionTable extends Migration
             $table->boolean('Cerrada')->default(true);
             $table->date('FechaEntregaSAP');
             $table->date('FechaEntrega');
-            $table->boolean('Escaner')->default(false);
-            $table->boolean('Corte')->default(false);
+            $table->boolean('Escaner')->default(false);// 1 Si 0 No
+            $table->boolean('Corte')->default(false);// 1 Si 0 No
+            $table->boolean('LLC')->default(false);// 1 Si 0 No
+            $table->string('Urgencia',1)->default('N');//N normal, U urgente
+            $table->foreign('OrdenVenta_id')->references('id')->on('OrdenVenta');
+            $table->foreign('ResponsableUser_id')->references('id')->on('users');
             $table->timestamps();
-        
             // Definir la clave foránea correctamente
             //$table->foreign('Linea_id')->references('id')->on(DB::raw('`Linea`'))->onDelete('cascade');
 

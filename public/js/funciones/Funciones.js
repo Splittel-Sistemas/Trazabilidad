@@ -47,6 +47,17 @@ function errorBD(){
       timer: 10000
     });
 }
+function enviando(){
+  Swal.fire({
+    title: 'Enviando...',
+    text: 'Por favor espere.',
+    icon: 'info',
+    showConfirmButton: false,
+    willOpen: () => {
+        Swal.showLoading();
+    }
+});
+}
 function CadenaVacia(cadena) {
     return /^\s*$/.test(cadena);
 }
