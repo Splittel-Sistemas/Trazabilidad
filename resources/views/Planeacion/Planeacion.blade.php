@@ -944,13 +944,13 @@
             }
         }); 
     }
-    function CambiarUrgencia(urgencia,id){
-        urgencia=urgencia.checked;
+    function CambiarEscaner(escaner,id){
+        escanear=escaner.checked;
         $.ajax({
-            url: "{{route('CambiarEstatusUrgencia')}}", 
+            url: "{{route('CambiarEstatusEscaner')}}", 
             type: 'POST',
             data: {
-                Urgencia: urgencia,
+                Escanear: escanear,
                 Id: id,
                 _token: '{{ csrf_token() }}'  
             },
@@ -961,13 +961,13 @@
             success: function(response) {
                 if(response.status=='success'){
                     if(response.valor=='false'){
-                        success('Guardado correctamente!','Urgencia desactivado!')
+                        success('Guardado correctamente!','Escáner desactivado!')
                     }else{
-                        success('Guardado correctamente!','Urgencia Activado!')
+                        success('Guardado correctamente!','Escáner Activado!')
                     }
                 }
             },
-            error: function(xhr, status) {
+            error: function(xhr, status, error) {
                 error('Ocurrio un erro!', 'El Tipo Escaner no se pudo actualizar')
             }
         }); 
