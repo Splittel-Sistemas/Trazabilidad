@@ -59,7 +59,7 @@ class PlaneacionController extends Controller
             // Retornar la vista con los datos
             return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status','VerificarSAP', 'linea', 'UsuariosCortes'));
     
-        } else {
+        }else {
     
             // Redirigir a una página de error si no tiene permiso
             return redirect()->route('error.');
@@ -598,20 +598,20 @@ class PlaneacionController extends Controller
         }
     }
      //Funcion para cambiar estutus de si se escanea o no
-    public function CambiarEstatusEscaner(Request $request){
+    public function CambiarEstatusUrgencia(Request $request){
         try{
             $NumOF_id=$this->funcionesGenerales->decrypt($request['Id']);
             $OF = OrdenFabricacion::where('id','=',$NumOF_id)->first();
-            $escaner=$request['Escanear'];
-            if($escaner=="true"){
-                $OF->Escaner=1;
+            $urgencia=$request['Urgencia'];
+            if($urgencia=="true"){
+                $OF->Urgencia='U';
                 $OF->save();
                 return response()->json([
                     'status' => "success",
                     'valor' => "true"
                 ]);
             }else{
-                $OF->Escaner=0;
+                $OF->Urgencia='N';
                 $OF->save();
                 return response()->json([
                     'status' => "success",
@@ -808,9 +808,9 @@ class PlaneacionController extends Controller
                                 <td class="text-center">'.Carbon::parse($datos->FechaEntregaSAP)->format('d/m/Y').'</td>
                             </tr>
                             <tr>
-                                <th class="table-active">Escánear</th>
-                                <td class="text-center"><input type="checkbox" style="transform:scale(1.2)" class="Escaner'.$datos->Escaner.'" onclick="CambiarEscaner(this,\''.$this->funcionesGenerales->encrypt($datos->ordenfabricacionid).'\')" ';
-            if($datos->Escaner){
+                                <th class="table-active">Urgente</th>
+                                <td class="text-center"><input type="checkbox" style="transform:scale(1.2)" class="Escaner'.$datos->Urgencia.'" onclick="CambiarUrgencia(this,\''.$this->funcionesGenerales->encrypt($datos->ordenfabricacionid).'\')" ';
+            if($datos->Urgencia=='U'){
                 $cadena.='checked';                
             }
             $cadena.='></td>
