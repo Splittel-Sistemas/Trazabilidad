@@ -1,35 +1,38 @@
 @extends('layouts.menu2') 
 @section('title', 'Crear Rol') 
 <style>
-    /*.permissions-container {
+    .permissions-container {
     display: flex;
-    flex-wrap: wrap; 
-    gap: 10px;      
+    flex-wrap: wrap; /* Permite que los elementos pasen a una nueva línea si no caben */
+    gap: 10px;       /* Espaciado entre elementos */
     }
+
     .form-check {
         display: flex;
-        align-items: center;
+        align-items: center; /* Alinea el checkbox con el texto */
     }
     .sub-permissions {
-        display: none;
+        display: none; /* Inicialmente oculto */
         padding-left: 1px;
         margin-top: 1px;
         font-size: 0.9rem;
-        transition: all 0.3s ease-in-out; 
+        transition: all 0.3s ease-in-out; /* Efecto suave */
     }
+
     .sub-permissions .form-check {
         margin-left: 1px;
     }
+
     .card {
         border: 1px solid #ddd;
         margin-top: 1px;
     }
-*/
+
 </style>
 @section('content')
     <div class="row gy-3 mb-2 justify-content-between">
         <div class="col-md-9 col-auto">
-            <h4 class="mb-2 text-1100">Nuevo Rol</h4>
+        <h4 class="mb-2 text-1100">Nuevo Rol</h4>
         </div>
     </div>
     <div class="row g-0">
@@ -46,7 +49,7 @@
             <form action="{{ route('RolesPermisos.store') }}" method="POST" class="">
                 @csrf
                 <div class="form-row mb-3">
-                    <div class="col-6 col-sm-4">
+                    <div class="col-md-8">
                         <div class="form-group">
                             <label class="font-weight-bold text-dark">Nombre De Rol</label>
                             <input type="text" name="nombre" oninput="RegexMayusculas(this)" id="nombre" class="form-control form-control-sm border-2 border-success" placeholder="nombre" required>
@@ -68,35 +71,7 @@
                             <div class="permissions-container mt-4">
                                 <div class="container">
                                     <div class="row" id="PermisosCheck">
-                                        @foreach($permissions as $permiso)
-                                            <div class="col-3">
-                                                @if($permiso->count()>1)
-                                                    <input onchange="MostrarInput(this,'collapse{{$permiso[0]->id}}')" type="checkbox" name="permissions[]" id="permission_{{ $permiso[0]->id }}" value="{{ $permiso[0]->id }}" class="form-check-input sub-permission" data-parent="permission_{{ $permiso[0]->id }}">
-                                                    <label for="permission_{{ $permiso[0]->id }}" class="form-check-label">
-                                                        {{ $permiso[0]->name }}
-                                                    </label>
-                                                    <div class="collapse collapse-permiso" id="collapse{{$permiso[0]->id}}">
-                                                        @foreach($permiso as $key => $unico)
-                                                            @if($key>0)
-                                                            <div class="col-12">
-                                                                <input type="checkbox" name="permissions[]" id="permission_{{ $unico->id }}" value="{{ $unico->id }}" class="form-check-input sub-permission" data-parent="permission_{{ $unico->id }}">
-                                                                <label for="permission_{{ $unico->id }}" class="form-check-label">
-                                                                    {{ $unico->name }}
-                                                                </label>
-                                                            </div>
-                                                            @endif
-                                                        @endforeach
-                                                        <hr>
-                                                    </div>
-                                                @else
-                                                    <input type="checkbox" data-bs-toggle="collapse" href="#collapse{{$permiso[0]->id}}" name="permissions[]" id="permission_{{ $permiso[0]->id }}" value="{{ $permiso[0]->id }}" class="form-check-input sub-permission" data-parent="permission_{{ $permiso[0]->id }}">
-                                                    <label for="permission_{{ $permiso[0]->id }}" class="form-check-label">
-                                                        {{ $permiso[0]->name }}
-                                                    </label>
-                                                @endif
-                                            </div>
-                                        @endforeach
-                                        {{--@php
+                                        @php
                                             $subPermissions = [
                                                 'Vista Lineas' => ['Crear Linea', 'Editar Linea', 'Activar/Desactivar Linea'],
                                                 'Vista Usuarios' => ['Crear Usuario', 'Editar Usuario', 'Activar/Desactivar Usuario'],
@@ -149,7 +124,8 @@
                                                 </div>
                                             </div>
                                         @endif
-                                        @endforeach--}}
+
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
@@ -169,15 +145,37 @@
 @section('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".toggle-sub").forEach(function (checkbox) {
+        checkbox.addEventListener("change", function () {
+            let target = document.getElementById(this.dataset.target);
+            if (target) {
+                if (this.checked) {
+                    
+                    document.querySelectorAll(".sub-permissions").forEach(function (subPerm) {
+                        if (subPerm !== target) {
+                            subPerm.style.display = "none";
+                            subPerm.previousElementSibling.querySelector("input").checked = false; 
+                        }
+                    });
+
+                    
+                    target.style.display = "block";
+                    setTimeout(function () {
+                        target.style.height = "auto"; 
+                    }, 300);
+                } else {
+                    target.style.display = "none";  
+                }
+            }
+        });
+        let target = document.getElementById(checkbox.dataset.target);
+        if (target && checkbox.checked) {
+            target.style.display = "block";
+        }
+    });
     document.getElementById("MarcarTodoCheck").addEventListener("change", function () {
         let allCheckboxes = document.querySelectorAll("input[name='permissions[]']");
-        var items = document.querySelectorAll('.collapse-permiso');
-                    items.forEach(item => {
-                        $(item).addClass('show');
-                        $(item).slideDown();  
-                        // Solo abrir si está cerrado
-                            //new bootstrap.Collapse(item, {toggle: false}).show();
-                    });
+        
         allCheckboxes.forEach(chk => {
             chk.checked = this.checked;
             let target = document.getElementById(chk.dataset.target);
@@ -192,14 +190,23 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
-    function MostrarInput(checkbox,idcollapse){
-        var collapseElement = $('#'+idcollapse);
-        if(checkbox.checked){
-            collapseElement.show();
-        }else{
-            collapseElement.hide();
-            collapseElement.find('input[type="checkbox"]').prop('checked', false);
-        }
-    }
+</script>
+<script>
+    /*
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('MarcarTodoCheck').addEventListener('change', function(){
+            var estaMarcado = $('#MarcarTodoCheck').prop('checked');
+            var permisos = document.querySelectorAll('#PermisosCheck .form-check-input');
+            if (estaMarcado) {
+                permisos.forEach(checkbox => {
+                    checkbox.checked=true;
+                });
+            }else{
+                permisos.forEach(checkbox => {
+                    checkbox.checked=false;
+                });
+            }
+        });
+    });*/
 </script>
 @endsection

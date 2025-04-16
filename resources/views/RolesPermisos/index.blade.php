@@ -93,6 +93,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
         @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ session('error') }}
@@ -100,7 +106,7 @@
             </div>
         @endif
         @if(Auth::user()->hasPermission("Crear Rol"))
-            <a href="{{ route('RolesPermisos.create') }}" class="btn btn-outline-info mb-3">Crear Rol</a>
+            <a href="{{ route('RolesPermisos.create') }}" class="btn btn-outline-info mb-1">Crear Rol</a>
         @endif
         <div class="card p-4" style="display:block;" id="roles-table" data-list='{"valueNames":["nombreRol","permisos"],"page":5,"pagination":true}'>
             <div class="search-box mb-3 mx-auto">
@@ -109,8 +115,7 @@
               </form>
             </div>
             <div class="table-responsive">
-                <div class="card shadow-sm">
-                    <table class="table table-bordered table-striped table-sm fs--1">
+                <table class="table table-bordered table-striped table-sm fs--1">
                         <thead class="bg-primary text-white">
                             <tr>
                                 <th class="sort border-top ps-3" data-sort="nombreRol" style="width: 15%">Nombre del Rol</th>
@@ -144,8 +149,7 @@
                             </tr>
                             @endforeach
                         </tbody>
-                    </table>
-                </div>
+                </table>
                 <div class="d-flex justify-content-center mt-3"><button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
                     <ul class="mb-0 pagination"></ul><button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
                 </div>
@@ -195,7 +199,6 @@
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
         $(document).ready(function () {
             $.ajaxSetup({
