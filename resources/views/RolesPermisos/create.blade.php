@@ -33,15 +33,24 @@
         </div>
     </div>
     <div class="row g-0">
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        {{--@if ($errors->any())
+            <div class="position-relative mb-4" aria-live="polite" aria-atomic="true" style="min-height: 130px;">
+                <div class="toast show position-absolute top-0 end-0">
+                    <div class="toast-header">
+                        <strong class="me-auto">Bootstrap</strong>
+                        <small class="text-800">11 mins ago</small>
+                        <button class="btn ms-2 p-0" type="button" data-bs-dismiss="toast" aria-label="Close"><span class="uil uil-times fs-1"></span></button>
+                    </div>
+                    <div class="toast-body">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                      </div>
+                    </div>
+                </div>
+        @endif--}}
         <div class='card p-4'>
             <form action="{{ route('RolesPermisos.store') }}" method="POST" class="">
                 @csrf
@@ -51,6 +60,9 @@
                             <label class="font-weight-bold text-dark">Nombre De Rol</label>
                             <input type="text" name="nombre" oninput="RegexMayusculas(this)" id="nombre" class="form-control form-control-sm border-2 border-success" placeholder="nombre" required>
                         </div>
+                        @error('nombre')
+                            <small class="text-danger">*El nombre del rol que intentas crear ya existe</small>
+                        @enderror
                     </div>
                 </div>
                 <hr>
@@ -59,6 +71,9 @@
                         <div class="form-group">
                             <label class="font-weight-bold text-dark">Permisos</label>
                             <small class="form-text text-muted">Seleccione uno o más permisos.</small>
+                            @error('permissions')
+                                <small class="text-danger">*Se requiere seleccionar minimo 1 permiso</small>
+                            @enderror
                             <br>
                             <!-- Checkbox "Marcar Todo" -->
                             <div class="form-check mb-3">
@@ -76,9 +91,10 @@
                                                         {{ $permiso[0]->name }}
                                                     </label>
                                                     <div class="collapse collapse-permiso" id="collapse{{$permiso[0]->id}}">
+                                                        <hr class="m-0 p-0">
                                                         @foreach($permiso as $key => $unico)
                                                             @if($key>0)
-                                                            <div class="col-12">
+                                                            <div class="col-12 mx-3">
                                                                 <input type="checkbox" name="permissions[]" id="permission_{{ $unico->id }}" value="{{ $unico->id }}" class="form-check-input sub-permission" data-parent="permission_{{ $unico->id }}">
                                                                 <label for="permission_{{ $unico->id }}" class="form-check-label">
                                                                     {{ $unico->name }}
@@ -86,7 +102,7 @@
                                                             </div>
                                                             @endif
                                                         @endforeach
-                                                        <hr>
+                                                        <hr class="m-1 p-0">
                                                     </div>
                                                 @else
                                                     <input type="checkbox" data-bs-toggle="collapse" href="#collapse{{$permiso[0]->id}}" name="permissions[]" id="permission_{{ $permiso[0]->id }}" value="{{ $permiso[0]->id }}" class="form-check-input sub-permission" data-parent="permission_{{ $permiso[0]->id }}">
@@ -168,30 +184,30 @@
 @endsection
 @section('scripts')
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("MarcarTodoCheck").addEventListener("change", function () {
-        let allCheckboxes = document.querySelectorAll("input[name='permissions[]']");
-        var items = document.querySelectorAll('.collapse-permiso');
-                    items.forEach(item => {
-                        $(item).addClass('show');
-                        $(item).slideDown();  
-                        // Solo abrir si está cerrado
-                            //new bootstrap.Collapse(item, {toggle: false}).show();
-                    });
-        allCheckboxes.forEach(chk => {
-            chk.checked = this.checked;
-            let target = document.getElementById(chk.dataset.target);
-            if (target) {
-                target.style.display = this.checked ? "block" : "none";
-                if (!this.checked) {
-                    target.querySelectorAll(".sub-permission").forEach(sub => {
-                        sub.checked = false; 
-                    });
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("MarcarTodoCheck").addEventListener("change", function () {
+            let allCheckboxes = document.querySelectorAll("input[name='permissions[]']");
+            var items = document.querySelectorAll('.collapse-permiso');
+                        items.forEach(item => {
+                            $(item).addClass('show');
+                            $(item).slideDown();  
+                            // Solo abrir si está cerrado
+                                //new bootstrap.Collapse(item, {toggle: false}).show();
+                        });
+            allCheckboxes.forEach(chk => {
+                chk.checked = this.checked;
+                let target = document.getElementById(chk.dataset.target);
+                if (target) {
+                    target.style.display = this.checked ? "block" : "none";
+                    if (!this.checked) {
+                        target.querySelectorAll(".sub-permission").forEach(sub => {
+                            sub.checked = false; 
+                        });
+                    }
                 }
-            }
+            });
         });
     });
-});
     function MostrarInput(checkbox,idcollapse){
         var collapseElement = $('#'+idcollapse);
         if(checkbox.checked){

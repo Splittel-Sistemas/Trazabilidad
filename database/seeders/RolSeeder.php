@@ -11,12 +11,12 @@ class RolSeeder extends Seeder
     public function run()
     {
         Role::create([
-            'name' => 'Administrador',
+            'name' => 'ADMINISTRADOR',
             'created_at' => now(), 
             'updated_at' => now()
         ]);
         Role::create([
-            'name' => 'Operador',
+            'name' => 'OPERADOR',
             'created_at' => now(), 
             'updated_at' => now()
         ]);
