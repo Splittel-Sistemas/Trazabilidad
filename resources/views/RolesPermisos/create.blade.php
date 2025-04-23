@@ -58,7 +58,7 @@
                     <div class="col-6 col-sm-4">
                         <div class="form-group">
                             <label class="font-weight-bold text-dark">Nombre De Rol</label>
-                            <input type="text" name="nombre" oninput="RegexMayusculas(this)" id="nombre" class="form-control form-control-sm border-2 border-success" placeholder="nombre" required>
+                            <input type="text" name="nombre" oninput="RegexMayusculas(this)" id="nombre" value="{{old('nombre')}}" class="form-control form-control-sm border-2 border-success" placeholder="nombre" required>
                         </div>
                         @error('nombre')
                             <small class="text-danger">*El nombre del rol que intentas crear ya existe</small>
@@ -66,7 +66,7 @@
                     </div>
                 </div>
                 <hr>
-                <div class="form-row mb-4">
+                <div class="form-row mb-2">
                     <div class="col-md-12">
                         <div class="form-group">
                             <label class="font-weight-bold text-dark">Permisos</label>
@@ -176,7 +176,7 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn btn-primary btn-lg btn-block rounded-pill">Guardar</button>
+                    <button type="submit" class="btn btn-primary  btn-block rounded-pill">Guardar</button>
                 </div>
             </form>
         </div>
