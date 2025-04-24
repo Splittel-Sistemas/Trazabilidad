@@ -39,6 +39,7 @@ Route::post('/Planeacion/partidas', [PlaneacionController::class,'PartidasOFGuar
 Route::delete('/Planeacion/partidas', [PlaneacionController::class,'PartidasOFRegresar'])->name('PartidasOFRegresar')->middleware('auth');
 Route::post('/Planeacion/partidas/FiltroFechas', [PlaneacionController::class,'PartidasOFFiltroFechas_Tabla'])->name('PartidasOFFiltroFechas_Tabla')->middleware('auth');
 Route::post('/Planeacion/partidas/EscanerEstatus', [PlaneacionController::class,'CambiarEstatusEscaner'])->name('CambiarEstatusEscaner')->middleware('auth');
+Route::post('/Planeacion/partidas/UrgenciaEstatus', [PlaneacionController::class,'CambiarEstatusUrgencia'])->name('CambiarEstatusUrgencia')->middleware('auth');
 Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Detalles'])->name('PartidasOF_Detalles')->middleware('auth');
 Route::get('/Planeacion/PorcentajesPlaneacion', [PlaneacionController::class,'PorcentajesPlaneacion'])->name('PorcentajesPlaneacion')->middleware('auth');
 Route::post('/Planeacion/Porcentaje/Guardar', [PlaneacionController::class,'GuardarParametrosPorcentajes'])->name('GuardarParametrosPorcentajes')->middleware('auth');

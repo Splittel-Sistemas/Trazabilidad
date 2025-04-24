@@ -1190,7 +1190,7 @@ class PlaneacionController extends Controller
                         <th>Fecha entrega</th>
                         <th style="display:none;"></th>
                         <th style="display:none;"></th>
-                        <th>Escáner</th>
+                        <th style="display:none;">Escáner</th>
                         <th>Requiere cort&eacute;</th>
                         <th style="display:none;"></th>
                     </tr>
@@ -1225,9 +1225,9 @@ class PlaneacionController extends Controller
                             <td>' . ($fechaEntrega ?: 'No disponible') . '</td>
                             <td style="display:none;">' . $ordenventa. '</td>
                             <td style="display:none;">' . $cliente. '</td>
-                            <td class="text-center"><input type="checkbox" class="Escaner'.$ordenventa.'" onclick="SeleccionarFila(event, this)"></td>
+                            <td class="text-center" style="display:none;"><input type="checkbox" class="Escaner'.$ordenventa.'"></td>
                             <td style="display:none;">' . $partida['LineNum']. '</td>
-                            <td class="text-center"><input type="checkbox" class="Corte'.$ordenventa.'" onclick="SeleccionarFila(event, this)"></td>
+                            <td class="text-center"><input type="checkbox" class="Corte'.$ordenventa.'"></td>
                         </tr>';
             }
         }
@@ -1256,8 +1256,10 @@ class PlaneacionController extends Controller
                     $status="empty";
                 }else{
                     $status="success";
+                    $banderaOV=0;
                     foreach ($datos as $index => $orden) {
                         if($orden['Estatus']>0){
+                            $banderaOV=1;
                             $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)">
                                             <td role="button" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '" onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] .', `' . $orden['Cliente'] . '`)">
                                                 ' . $orden['OV'] . " - " . $orden['Cliente'] . '
@@ -1272,6 +1274,9 @@ class PlaneacionController extends Controller
                                             <td style="display:none"> ' . $orden['OV']. '</td>
                                         </tr>';
                         }
+                    }
+                    if($banderaOV==0){
+                        $status="empty";
                     }
                 }
             }else{
@@ -1322,8 +1327,6 @@ class PlaneacionController extends Controller
     public function PartidasOFGuardar(Request $request){
         $DatosPlaneacion=json_decode($request->input('DatosPlaneacion'));
         $FechaHoy=date('Y-m-d');
-        $Linea_id = $request->Linea_id;
-        
         $Fechaplaneada=$DatosPlaneacion[0]->Fecha_planeada;
         if($Fechaplaneada<$FechaHoy){
             return response()->json([
@@ -1367,7 +1370,8 @@ class PlaneacionController extends Controller
                     }else{$respuestaOF->EstatusEntrega=0;}
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
                     $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
-                    $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;//christian
+                    $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;
+                    $respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->responsablecorte;
                     $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
                     $respuestaOF->save();
                 }
@@ -1395,7 +1399,8 @@ class PlaneacionController extends Controller
                     }else{$respuestaOF->EstatusEntrega=0;}
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
                     $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
-                    $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;//christian
+                    $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;
+                    $respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->responsablecorte;
                     $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
                     $respuestaOF->save();
                 }
@@ -1428,17 +1433,19 @@ class PlaneacionController extends Controller
         }
     }
     public function PartidasOFFiltroFechas_Tabla(Request $request){
+        //return $request;
         $Fecha = $request->input('fecha');
         $datos = $this->PartidasOFFiltroFechas($Fecha);
-        $Linea_id = $request->Linea_id;//chris
+        $ResponsableUser_id = $request->ResponsableUser_id;
         $tabla = "";
-    
         if (count($datos) > 0) {
+            $banderaOFPlaneadas=0;
             foreach ($datos as $dato) {
                 $countdatosOrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion', '=', $dato['OrdenFabricacion'])
-                    ->where('Linea_id', $Linea_id)//chris
+                    ->where('ResponsableUser_id', $ResponsableUser_id)
                     ->first();
-                if ($countdatosOrdenFabricacion) {
+                if ($countdatosOrdenFabricacion!="") {
+                    $banderaOFPlaneadas=1;
                     $countPartidas = $countdatosOrdenFabricacion->partidasOF()->count();
                     $PartidasSinCorte=$countdatosOrdenFabricacion->partidasOF;
                     $countPartidasSinCortes=0;
@@ -1449,6 +1456,11 @@ class PlaneacionController extends Controller
                         $tabla .= '<tr>
                             <td class="text-center">'.$dato['OrdenVenta'].'</td>
                             <td class="text-center">'.$dato['OrdenFabricacion'].'</td>
+                            <td class="text-center"><input type="checkbox" onclick="CambiarUrgencia(this,\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')"';
+                        if($dato['Urgencia']=='U'){
+                            $tabla .=' checked ';
+                        }  
+                        $tabla .= '></td>
                             <td class="text-center">
                                 <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
                                     <i class="fa fa-arrow-left"></i> Cancelar
@@ -1462,6 +1474,11 @@ class PlaneacionController extends Controller
                         $tabla .= '<tr>
                         <td class="text-center">'.$dato['OrdenVenta'].'</td>
                         <td class="text-center">'.$dato['OrdenFabricacion'].'</td>
+                        <td class="text-center"><input type="checkbox" onclick="CambiarUrgencia(this,\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')"';
+                        if($dato['Urgencia']=='U'){
+                            $tabla .=' checked ';
+                        }  
+                        $tabla .= '></td>
                         <td class="text-center">
                             <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
                                 <i class="fa fa-arrow-left"></i> Cancelar
@@ -1479,6 +1496,12 @@ class PlaneacionController extends Controller
                         </tr>';
                     }
                 }
+            }
+            if($banderaOFPlaneadas==0){
+                return response()->json([
+                    'status' => "empty",
+                    'tabla' => '<tr><td colspan="100%" align="center">No existen registros</td></tr>'
+                ]);
             }
             return response()->json([
                 'status' => "success",
@@ -1723,7 +1746,7 @@ class PlaneacionController extends Controller
     public function PartidasOFFiltroFechas($Fecha){
         $datos=OrdenFabricacion::join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
                                 ->where('FechaEntrega','=',$Fecha)
-                                ->select('ordenfabricacion.id as ordenfabricacion_id', 'ordenventa.id as ordenventa_id','OrdenVenta','OrdenFabricacion') 
+                                ->select('ordenfabricacion.id as ordenfabricacion_id','ordenfabricacion.Urgencia as Urgencia', 'ordenventa.id as ordenventa_id','OrdenVenta','OrdenFabricacion') 
                                 ->orderBy('OrdenVenta', 'asc') // Orden descendente
                                 ->get();
         return $datos->toArray();
@@ -1795,14 +1818,6 @@ class PlaneacionController extends Controller
                                 <th class="table-active">Fecha Entrega</th>
                                 <td class="text-center">'.Carbon::parse($datos->FechaEntregaSAP)->format('d/m/Y').'</td>
                             </tr>
-                            <tr>
-                                <th class="table-active">Escánear</th>
-                                <td class="text-center"><input type="checkbox" style="transform:scale(1.2)" class="Escaner'.$datos->Escaner.'" onclick="CambiarEscaner(this,\''.$this->funcionesGenerales->encrypt($datos->ordenfabricacionid).'\')" ';
-            if($datos->Escaner){
-                $cadena.='checked';                
-            }
-            $cadena.='></td>
-                        </tr>
                         </tbody></table>';
                 return response()->json([
                     'status' => "success",
@@ -1819,10 +1834,9 @@ class PlaneacionController extends Controller
     // Funcion filtro por Orden de venta o Orden fabricacion
     public function PlaneacionFOFOV(Request $request){
         $FiltroOF_table2=$request->input('FiltroOF_table2');
-        $Linea_id = $request->Linea_id;
+        //return$Linea_id = $request->Linea_id;
         $datos=OrdenFabricacion::join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
         ->where('ordenfabricacion.OrdenFabricacion', 'like', '%'.$FiltroOF_table2. '%')
-        //->where('Linea_id', $Linea_id)//chris
         ->orWhere('ordenventa.OrdenVenta', 'like', '%'.$FiltroOF_table2. '%')
         ->select('ordenfabricacion.id as ordenfabricacion_id', 'ordenventa.id as ordenventa_id','OrdenVenta','OrdenFabricacion') 
         ->orderBy('OrdenVenta', 'asc') // Orden descendente
@@ -1830,8 +1844,7 @@ class PlaneacionController extends Controller
         $tabla="";
         if(count($datos)>0){
             for ($i=0; $i < count($datos); $i++) { 
-                $countdatosOrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion', '=', $datos[$i]['OrdenFabricacion'])
-                    ->first();
+                $countdatosOrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion', '=', $datos[$i]['OrdenFabricacion'])->first();
                 if ($countdatosOrdenFabricacion) {
                     $countPartidas = $countdatosOrdenFabricacion->partidasOF()->count();
                     $PartidasSinCorte=$countdatosOrdenFabricacion->partidasOF;
@@ -1842,7 +1855,12 @@ class PlaneacionController extends Controller
                     if ($countPartidas == 0 AND $countdatosOrdenFabricacion->Corte == 1) { 
                         $tabla .= '<tr>
                             <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
-                            <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
+                            <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td> 
+                            <td class="text-center"><input type="checkbox" onclick="CambiarUrgencia(this,\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')"';
+                        if($datos[$i]['Urgencia']=='U'){
+                            $tabla .=' checked ';
+                        }  
+                        $tabla .='></td>
                             <td class="text-center">
                                 <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
                                     <i class="fa fa-arrow-left"></i> Cancelar
@@ -1854,13 +1872,18 @@ class PlaneacionController extends Controller
                         </tr>';
                     }else if($countPartidasSinCortes == 0 AND $countdatosOrdenFabricacion->Corte == 0){
                         $tabla .= '<tr>
-                        <td class="text-center">'.$datos['OrdenVenta'].'</td>
-                        <td class="text-center">'.$datos['OrdenFabricacion'].'</td>
+                        <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
+                        <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
+                        <td class="text-center"><input type="checkbox" onclick="CambiarUrgencia(this,\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')"';
+                        if($datos[$i]['Urgencia']=='U'){
+                            $tabla .=' checked ';
+                        }  
+                        $tabla .= '></td>
                         <td class="text-center">
-                            <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
+                            <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
                                 <i class="fa fa-arrow-left"></i> Cancelar
                             </button>
-                            <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary">
+                            <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary">
                                 <i class="fa fa-eye"></i> Detalles
                             </button>
                         </td>
@@ -1869,6 +1892,11 @@ class PlaneacionController extends Controller
                         $tabla .= '<tr>
                             <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
                             <td class="text-center">'.$datos[$i]['OrdenFabricacion'].'</td>
+                            <td class="text-center"><input type="checkbox" onclick="CambiarUrgencia(this,\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')"';
+                            if($datos[$i]['Urgencia']=='U'){
+                                $tabla .=' checked ';
+                            }  
+                            $tabla .= '></td>
                             <td class="text-center"></td>
                         </tr>';
                     }
@@ -1998,7 +2026,32 @@ class PlaneacionController extends Controller
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
     }
-    
+    public function CambiarEstatusUrgencia(Request $request){
+        try{
+            $NumOF_id=$this->funcionesGenerales->decrypt($request['Id']);
+            $OF = OrdenFabricacion::where('id','=',$NumOF_id)->first();
+            $escaner=$request->Urgente;
+            if($escaner=="true"){
+                $OF->Urgencia='U';
+                $OF->save();
+                return response()->json([
+                    'status' => "success",
+                    'valor' => "true"
+                ]);
+            }else{
+                $OF->Urgencia='N';
+                $OF->save();
+                return response()->json([
+                    'status' => "success",
+                    'valor' => "false"
+                ]);
+            }
+        }catch(Exception $e){
+            return response()->json([
+                'status' => "error",
+            ]);
+        }
+    }
     
     
 }    
