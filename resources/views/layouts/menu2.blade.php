@@ -12,7 +12,7 @@
         <!-- ===============================================-->
         <!--    Favicons-->
         <!-- ===============================================-->
-        <link rel="shortcut icon" type="image/x-icon" href="{{asset('imagenes/splittel.png') }}">
+        <link rel="shortcut icon" type="image/x-icon" href="{{asset('imagenes/splittel.png') }}" sizes="10x1">
         <link rel="manifest" href="{{asset('menu2/assets/img/favicons/manifest.json')}}">
         <meta name="msapplication-TileImage" content="{{asset('menu2/assets/img/favicons/mstile-150x150.png')}}">
         <meta name="theme-color" content="#ffffff">

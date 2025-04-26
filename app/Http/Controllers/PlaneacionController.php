@@ -1416,6 +1416,15 @@ class PlaneacionController extends Controller
                 $PartidasOF->FechaComienzo=Now();
                 $PartidasOF->FechaFinalizacion=Now();
                 $PartidasOF->save();
+            }else{
+                $PartidasOF = new PartidasOF();
+                $PartidasOF->OrdenFabricacion_id=$respuestaOF->id;
+                $PartidasOF->cantidad_partida=$respuestaOF->CantidadTotal;
+                $PartidasOF->NumeroPartida=1;
+                $PartidasOF->TipoPartida='N';
+                $PartidasOF->FechaFabricacion=Now();
+                $PartidasOF->EstatusPartidaOF=0;
+                $PartidasOF->save();
             }
         }
         if (!empty($NumOF)) {
@@ -1446,11 +1455,13 @@ class PlaneacionController extends Controller
                     ->first();
                 if ($countdatosOrdenFabricacion!="") {
                     $banderaOFPlaneadas=1;
-                    $countPartidas = $countdatosOrdenFabricacion->partidasOF()->count();
+                    //$countPartidas = $countdatosOrdenFabricacion->partidasOF()->count();
                     $PartidasSinCorte=$countdatosOrdenFabricacion->partidasOF;
                     $countPartidasSinCortes=0;
+                    $countPartidas=0;
                     foreach($PartidasSinCorte as $PartidasSinC){
                         $countPartidasSinCortes=$PartidasSinC->Areas()->where('Areas_id', 3)->get()->count();
+                        $countPartidas=$PartidasSinC->Areas()->where('Areas_id', 2)->get()->count();
                     }
                     if ($countPartidas == 0 AND $countdatosOrdenFabricacion->Corte == 1) { 
                         $tabla .= '<tr>
@@ -1492,6 +1503,11 @@ class PlaneacionController extends Controller
                         $tabla .= '<tr>
                             <td class="text-center">'.$dato['OrdenVenta'].'</td>
                             <td class="text-center">'.$dato['OrdenFabricacion'].'</td>
+                            <td class="text-center"><input type="checkbox" onclick="CambiarUrgencia(this,\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')"';
+                            if($dato['Urgencia']=='U'){
+                                $tabla .=' checked ';
+                            }  
+                            $tabla .= '></td>
                             <td class="text-center"></td>
                         </tr>';
                     }
@@ -1551,7 +1567,10 @@ class PlaneacionController extends Controller
             $NumOF_id=$this->funcionesGenerales->decrypt($request->input('NumOF'));
             $OF = OrdenFabricacion::where('id','=',$NumOF_id)->first();
             if($OF->Corte==1){
-            $numero_partidas=$OF->PartidasOF->count();
+            //$numero_partidas=$OF->PartidasOF->count();
+            foreach($OF->PartidasOF as $PartidasSinC){
+                $numero_partidas=$PartidasSinC->Areas()->where('Areas_id', 3)->get()->count();
+            }
                 if($numero_partidas>0){
                     return response()->json([
                         'status' => "iniciado",
@@ -1846,11 +1865,13 @@ class PlaneacionController extends Controller
             for ($i=0; $i < count($datos); $i++) { 
                 $countdatosOrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion', '=', $datos[$i]['OrdenFabricacion'])->first();
                 if ($countdatosOrdenFabricacion) {
-                    $countPartidas = $countdatosOrdenFabricacion->partidasOF()->count();
+                    //$countPartidas = $countdatosOrdenFabricacion->partidasOF()->count();
                     $PartidasSinCorte=$countdatosOrdenFabricacion->partidasOF;
                     $countPartidasSinCortes=0;
+                    $countPartidas=0;
                     foreach($PartidasSinCorte as $PartidasSinC){
                         $countPartidasSinCortes=$PartidasSinC->Areas()->where('Areas_id', 3)->get()->count();
+                        $countPartidas=$PartidasSinC->Areas()->where('Areas_id', 2)->get()->count();
                     }
                     if ($countPartidas == 0 AND $countdatosOrdenFabricacion->Corte == 1) { 
                         $tabla .= '<tr>
