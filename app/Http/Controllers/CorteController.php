@@ -172,6 +172,8 @@ class CorteController extends Controller
             $PartidasOF=$OrdenFabricacion->partidasOF()->first();
             $PartidasOF = $PartidasOF->Areas()->where('Areas_id',2)->get();
             $RangoEtiquetas=1;
+            $RangoEtiquetasR=$OrdenFabricacion->CantidadTotal+1;
+            //$RangoEtiquetas=$OrdenFabricacion->CantidadTotal;
             if($PartidasOF->count()==0){
                 $Ordenfabricacionpartidas.='<tr>
                                             <td class="text-center" colspan="9">Aún no existen partidas creadas</td>
@@ -184,7 +186,13 @@ class CorteController extends Controller
                     $Ordenfabricacionpartidas.='<td class="text-center">'.$partida['pivot']->Cantidad.'</td>';
                     if($partida['pivot']->TipoPartida=='R'){
                         $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Retrabajo</span></div></td>';
-                        $Ordenfabricacionpartidas.='<td class="text-center">'."1-".($partida['pivot']->Cantidad).'</td>';
+                        if($partida['pivot']->Cantidad==1){
+                            $Ordenfabricacionpartidas.='<td class="text-center">'.( $RangoEtiquetasR+$partida['pivot']->Cantidad-1).'</td>';
+                        }else{
+                            $Ordenfabricacionpartidas.='<td class="text-center">'. $RangoEtiquetasR."-".( $RangoEtiquetasR+$partida['pivot']->Cantidad-1).'</td>';
+                        }
+                        //$Ordenfabricacionpartidas.='<td class="text-center">'."1-".($partida['pivot']->Cantidad).'</td>';
+                        $RangoEtiquetasR+=$partida['pivot']->Cantidad;
                     }else{
                         $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Normal</span></div></td>';
                         if($partida['pivot']->Cantidad==1){
@@ -275,6 +283,7 @@ class CorteController extends Controller
             $id=$this->funcionesGenerales->decrypt($request->id);
             $Cantitadpiezas=$request->Cantitadpiezas;
             $retrabajo=$request->retrabajo;
+            $TipoPartida='N';
             $OrdenFabricacion=OrdenFabricacion::where('id','=',$id)->first();
             //El numero de la etiqueta se va usar como 
             if($OrdenFabricacion==null || $OrdenFabricacion==''){
@@ -283,25 +292,11 @@ class CorteController extends Controller
                     'message' =>'La Orden de Fabricación no existe!',
                 ], 200);
             }else{
-                return$partidasOFsum=$OrdenFabricacion->partidasOF()->where('TipoPartida','=','N')->get()->sum('cantidad_partida');
-                $partidasOFsum+=$Cantitadpiezas;
-                if($partidasOFsum>$OrdenFabricacion->CantidadTotal && $retrabajo=='Normal'){
-                    return response()->json([
-                        'status' => 'errorCantidada',
-                        'message' =>'Partida no guardada, La cantidad total de piezas de las partidas no puede ser mayor al número Total de piezas de la Orden de Fabricación!',
-                    ], 200);
-                }
-                $partidaOF = new PartidasOF();
-                $partidaOF->OrdenFabricacion_id=$id;
-                $partidaOF->cantidad_partida=$Cantitadpiezas;
-                $NumeroPartida=$OrdenFabricacion->partidasOF()->orderBy('id', 'desc')->first();
-                if($NumeroPartida=="" || $NumeroPartida==null){
-                    $partidaOF->NumeroPartida=1;
-                }else{$partidaOF->NumeroPartida=$NumeroPartida->NumeroPartida+1;}
+                $partidasOF=$OrdenFabricacion->partidasOF()->first();
                 if($retrabajo=='Retrabajo'){
-                    $partidaOF->TipoPartida='R';
-                    $Verterminados=$OrdenFabricacion->partidasOF()->where('FechaFinalizacion','!=',"")->get()->sum('cantidad_partida');
-                    $CantidadRetrabajo=$OrdenFabricacion->partidasOF()->where('TipoPartida','=','R')->get()->sum('cantidad_partida');
+                    //$Verterminados=$OrdenFabricacion->partidasOF()->where('FechaFinalizacion','!=',"")->get()->sum('cantidad_partida');
+                    $Verterminados=$partidasOF->Areas()->where('Areas_id',2)->get()->where('pivot.TipoPartida','N')->whereNotNull('pivot.FechaTermina')->sum('pivot.Cantidad');
+                    $CantidadRetrabajo=$partidasOF->Areas()->where('Areas_id',2)->get()->where('pivot.TipoPartida','R')->whereNull('pivot.FechaTermina')->sum('cantidad_partida');
                     $Verterminados-=$CantidadRetrabajo;
                     if($Verterminados<$Cantitadpiezas){
                         return response()->json([
@@ -309,6 +304,7 @@ class CorteController extends Controller
                             'message' =>'Partida no guardada, La cantidad solicitada de piezas para Retrabajo tiene que ser menor o igual al número de Partidas Finalizadas!',
                         ], 200);
                     }
+                    //Detalles de emisiones
                     $ordenemision=$request->emision;
                     if($ordenemision==""){
                         return response()->json([
@@ -329,24 +325,50 @@ class CorteController extends Controller
                             'message' =>'Partida no guardada, La cantidad solicitado no coincide con la cantidad de la Emision de producción!',
                         ], 200);
                     }
-                }elseif($retrabajo=='Normal'){
-                    $partidaOF->TipoPartida='N';
+                    $TipoPartida='R';
+                }else{
+                    $partidasOFsum=$partidasOF->Areas()->where('Areas_id',2)->get()->where('pivot.TipoPartida','N')->sum('pivot.Cantidad');
+                    $partidasOFsum+=$Cantitadpiezas;
+                    if($partidasOFsum>$OrdenFabricacion->CantidadTotal && $retrabajo=='Normal'){
+                        return response()->json([
+                            'status' => 'errorCantidada',
+                            'message' =>'Partida no guardada, La cantidad total de piezas de las partidas no puede ser mayor al número Total de piezas de la Orden de Fabricación!',
+                        ], 200);
+                    }
                 }
-                $partidaOF->FechaFabricacion=$FechaHoy;
-                $partidaOF->FechaComienzo=$FechaHoy;
-                $partidaOF->save();
+                $NumeroPartida=Partidasof_Areas::where('PartidasOF_id',$partidasOF->id)->where('Areas_id', 2)->orderByDesc('id','desc')->first();
+                if($NumeroPartida=="" || $NumeroPartida==null){
+                    $NumeroPartida = 1;
+                    $partidasOF->FechaComienzo=now();
+                    $partidasOF->save();
+                }else{
+                    $NumeroPartida = $NumeroPartida->NumeroEtiqueta+1;
+                }
+                $data = [
+                    'Cantidad' => $Cantitadpiezas,
+                    'TipoPartida' => $TipoPartida, // N = Normal
+                    'FechaComienzo' => now(),
+                    'NumeroEtiqueta' => $NumeroPartida,
+                    'Linea_id' => 1,
+                    'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                ];
+                //Area 2 Corte
+                $partidasOF->Areas()->attach(2, $data);
+                $OrdenFabricacion->EstatusEntrega=0;
+                $OrdenFabricacion->save();
+                $partidasOF->FechaFinalizacion=null;
+                $partidasOF->save();
                 if($retrabajo=='Retrabajo'){
+                    $idEmision=Partidasof_Areas::where('PartidasOF_id',$partidasOF->id)->where('Areas_id', 2)->orderByDesc('id','desc')->first();
                     $emision = new Emision(); 
                     $emision->OrdenFabricacion_id = $OrdenFabricacion->id;
                     $emision->NumEmision = $ordenemision; 
                     $emision->NumEmision = $ordenemision;  
-                    $emision->Etapaid = $partidaOF->id;  
+                    $emision->Etapaid = $idEmision->id;  
                     $emision->EtapaEmision = 'C'; 
                     // Asocias la emisión a la orden de fabricación
                     $emision->save();
                 }
-                $OrdenFabricacion->EstatusEntrega=0;
-                $OrdenFabricacion->save();
                 return response()->json([
                     'status' => 'success',
                     'message' =>'Partida Guardada Correctamente!',
@@ -485,6 +507,8 @@ class CorteController extends Controller
                 if($OrdenFabricacion->CantidadTotal==$SumaPartidas && $PartidasIniciadas->count()==0){
                     $OrdenFabricacion->EstatusEntrega=1;
                     $OrdenFabricacion->save();
+                    $PartidaOF->FechaFinalizacion=now();
+                    $PartidaOF->save();
                 }
                 return response()->json([
                     'status' => 'success',
@@ -535,6 +559,8 @@ class CorteController extends Controller
         if($OrdenFabricacion->CantidadTotal==$SumaPartidas && $PartidasIniciadas->count()==0){
             $OrdenFabricacion->EstatusEntrega=1;
             $OrdenFabricacion->save();
+            $PartidasOF->FechaFinalizacion=now();
+            $PartidasOF->save();
         }
         foreach($OrdenFabricacion->PartidasOF as $partida){
             $partida->EstatusPartidaOF=0;
@@ -643,21 +669,31 @@ class CorteController extends Controller
             $OrdenFabricacion = $PartidaOF->ordenFabricacion;
             //$PartidasOFEtiq = $OrdenFabricacion->partidasOF()->get();
             $PartidasOFEtiq=$PartidaOF->Areas()->where('Areas_id',2)->get();
+            $inicioR = $OrdenFabricacion->CantidadTotal;
             $inicio = 0;
+            $finR = $OrdenFabricacion->CantidadTotal;
             $fin = 0;
             // Asignamos el número de inicio y fin de la etiqueta para la partida seleccionada
             $TipoPartida = "N";
             foreach($PartidasOFEtiq as $PartidaOFEtiq){
-                $fin += $PartidaOFEtiq['pivot']->Cantidad;
+                $TipoPartida = $PartidaOFEtiq['pivot']->TipoPartida;
+                if($TipoPartida == 'R'){
+                    $finR += $PartidaOFEtiq['pivot']->Cantidad;
+                }else{
+                    $fin += $PartidaOFEtiq['pivot']->Cantidad;
+                }
                 if($PartidaOFEtiq['pivot']->id == $partidaId){
-                    $TipoPartida = $PartidaOFEtiq['pivot']->TipoPartida;
                     if($TipoPartida == 'R'){
-                        $fin = $PartidaOFEtiq['pivot']->Cantidad;
-                        $inicio = 0;
+                        $inicio =$inicioR;
+                        $fin = $finR;
                     }
                     break;
                 }
-                $inicio += $PartidaOFEtiq['pivot']->Cantidad;
+                if($TipoPartida == 'R'){
+                    $inicioR += $PartidaOFEtiq['pivot']->Cantidad;
+                }else{
+                    $inicio += $PartidaOFEtiq['pivot']->Cantidad;
+                }
             }
             // Preparar las partidas relacionadas solo para la partida seleccionada
             $partidasData = [];
@@ -709,11 +745,9 @@ class CorteController extends Controller
                     'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" . 
                     'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
                 }
-    
                 // Añadir el contenido de texto
                 $pdf->SetXY($posX + 4, 3);  // Colocamos el texto un poco desplazado desde el borde
                 $pdf->MultiCell(28, 0, $content, 0, 'L', 0, 1);  // Ajustamos la celda para que se ajuste al ancho de la etiqueta
-                
                 // Generar y colocar el código de barras
                 $CodigoBarras = strip_tags($partida['Codigo']);
                 $pdf->SetXY($posX + 7, $pdf->GetY() + 2);  // Ajuste de la posición del código de barras
@@ -724,7 +758,6 @@ class CorteController extends Controller
                 $pdf->Cell(17.5, 1, $NumeroCable, 0, 1, 'C'); 
                 $counter++;  // Incrementar el contador de etiquetas colocadas
             }
-    
             ob_end_clean();
             // Generar el archivo PDF y devolverlo al navegador
             return $pdf->Output('orden_fabricacion_'.$OrdenFabricacion->OrdenFabricacion.'_' . $partidaId . '.pdf', 'I'); // 'I' para devolver el PDF al navegador

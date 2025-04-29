@@ -42,11 +42,18 @@ class AreasController extends Controller
         $fechaAtras=date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
         $fecham = Carbon::parse($fecha)->addDay();
         $Area=3;
-        $PartidasOFA=PartidasOF::where('EstatusPartidaOF','=','0')
-            ->where('FechaFinalizacion','!=','')
-            ->orderBy('FechaFinalizacion')
+        $PartidasOFA=PartidasOF::with('OrdenFabricacion')->get()->where('ordenfabricacion.Cerrada','1');
+        /*$PartidasOFA=PartidasOF::orderBy('FechaFinalizacion')
             ->get()
             ->unique('OrdenFabricacion_id');
+            /*foreach($PartidasOFA as $key1 =>$orden) {
+                $PartidasAreasCantidad=$orden->Areas()->where('Areas_id','3')->get()->whereNotNull('pivot.Fechatermina')->where('TipoPartida','N')->SUM('Cantidad');
+                $PartidasAreasCantidadAb=$orden->Areas()->where('Areas_id','3')->get()->whereNull('pivot.Fechatermina')->SUM('Cantidad');
+                if($PartidasAreasCantidad==$orden->CantidadTotal AND $PartidasAreasCantidadAb==0){
+                    unset($PartidasOFA[$key1]);
+                }
+            }
+            ->where('OrdenFabricacion.Cerrada','1')*/
         foreach($PartidasOFA as $orden) {
             $ordenFabri=$orden->ordenFabricacion;
             $ordenesSAP1=$this->funcionesGenerales->Emisiones($ordenFabri->OrdenFabricacion);
@@ -65,7 +72,9 @@ class AreasController extends Controller
             $orden['OrdenFaltantes']=count($ordenesSAP);
             $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
             $orden['OrdenFabricacion']=$ordenFabri->OrdenFabricacion;
-            $orden['TotalPartida']=$ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida')-$ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida');
+            $orden['Urgencia']=$ordenFabri->Urgencia;
+            //$orden['TotalPartida']=$ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida')-$ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida');
+            $orden['TotalPartida']=$ordenFabri->CantidadTotal;
             $Normal=0;
             $Retrabajo=0;
             $ordenFabri->PartidasOF;
@@ -129,22 +138,22 @@ class AreasController extends Controller
             }
         }
         $contartotal=0;
-        foreach($OrdenFabricacion->PartidasOF()->whereNotNull('FechaFinalizacion')->get() as $PartidasOF){
+        $PartidasOF = $OrdenFabricacion->PartidasOF()->first();
+        foreach($OrdenFabricacion->PartidasOF()->get() as $PartidasOF){
             $Partidas=$PartidasOF->Areas()->where('Areas_id',3)->get();
             $contartotal+=$Partidas->where('pivot.TipoPartida','N')->SUM('pivot.Cantidad');
-            //($Partidas->count()!=0)?$contartotal+=(($Partidas->where('pivot.TipoPartida','N')->SUM('pivot.Cantidad'))-($Partidas->where('pivot.TipoPartida','R')->SUM('pivot.Cantidad'))):$contartotal+=0;   
         }
         $contartotal+=$Cantitadpiezas;
-        if($retrabajo=="false"){
+        if($retrabajo=="false"){//Normal
             //Comprueba que no sobrepase el numero de piezas a de la PartidaOF solo si es Normal
-            if($contartotal>$OrdenFabricacion->PartidasOF()->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida')){
+            if($contartotal>$OrdenFabricacion->CantidadTotal){//->PartidasOF()->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida')){
                 return response()->json([
                     'status' => 'errorCantidada',
                     'message' =>'Partida no guardada, Cantidad solicitada no disponible!',
                 ], 200);
             }
             $TipoPartida='N';
-        }else{
+        }else{//Retrabajo
             //Comprueba que no sobrepase el numero de piezas terminadas actualmente a de la PartidaOF solo si es Retrabajo
             $TipoPartida='R';
             $contartotalR=0;
@@ -201,9 +210,7 @@ class AreasController extends Controller
         }
         //PartidasOF->EstatusPartidaOF==0 aun no iniciado; 1 igual a terminado
         try {
-            $PartidasOF=PartidasOF::where('EstatusPartidaOF','=','0')
-                                ->where('FechaFinalizacion','!=','')
-                                ->orderBy('FechaFinalizacion')
+            $PartidasOF=PartidasOF::orderBy('FechaFinalizacion')
                                 ->get()
                                 ->unique('OrdenFabricacion_id');
             $tabla="";
@@ -222,8 +229,12 @@ class AreasController extends Controller
                         }
                     }
                 }
-                $TotalPartida=($ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida'))-($ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida'));
-                $tabla.='<tr>
+                $TotalPartida=$ordenFabri->CantidadTotal;//($ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida'))-($ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida'));
+                $tabla.='<tr';
+                if($ordenFabri->Urgencia=='U'){
+                 $tabla.=' style="background:#FFDCDB;" ';   
+                }
+                $tabla.='>
                         <td>'. $ordenFabri->OrdenFabricacion .'</td>
                         <td>'. $ordenFabri->Articulo .'</td>
                         <td>'. $ordenFabri->Descripcion.'</td>

@@ -129,18 +129,18 @@
                                     </thead>
                                     <tbody id="TablaSuministroAbiertasBody" class="list">
                                         @foreach($PartidasOFA as $partida)
-                                        <tr>
-                                            <td class="text-center">{{$partida->OrdenFabricacion }}</td>
-                                            <td>{{$partida->Articulo }}</td>
-                                            <td>{{$partida->Descripcion }}</td>
-                                            <td>{{$partida->OrdenFaltantes}}</td>
-                                            <td>{{$partida->Normal }}</td>
-                                            <td>{{$partida->Retrabajo }}</td>
-                                            <td class="text-center">{{$partida->TotalPartida }}</td>
-                                            <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                                            <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Planear('{{$partida->idEncript}}')">Detalles</button></td>
-                                        </tr>
-                                    @endforeach
+                                            <tr style="@if($partida->Urgencia=='U'){{'background:#FFDCDB';}}@endif">
+                                                <td class="text-center">{{$partida->OrdenFabricacion }}</td>
+                                                <td>{{$partida->Articulo }}</td>
+                                                <td>{{$partida->Descripcion }}</td>
+                                                <td>{{$partida->OrdenFaltantes}}</td>
+                                                <td>{{$partida->Normal }}</td>
+                                                <td>{{$partida->Retrabajo }}</td>
+                                                <td class="text-center">{{$partida->TotalPartida }}</td>
+                                                <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                                                <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Planear('{{$partida->idEncript}}')">Detalles</button></td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>

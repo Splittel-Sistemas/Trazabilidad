@@ -1416,6 +1416,17 @@ class PlaneacionController extends Controller
                 $PartidasOF->FechaComienzo=Now();
                 $PartidasOF->FechaFinalizacion=Now();
                 $PartidasOF->save();
+                $data = [
+                    'Cantidad' => $respuestaOF->CantidadTotal,
+                    'TipoPartida' => 'N', // N = Normal
+                    'FechaComienzo' => now(),
+                    'FechaTermina' => now(),
+                    'NumeroEtiqueta' => 1,
+                    'Linea_id' => 1,
+                    'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                ];
+                //Area 2 Corte
+                $PartidasOF->Areas()->attach(2, $data);
             }else{
                 $PartidasOF = new PartidasOF();
                 $PartidasOF->OrdenFabricacion_id=$respuestaOF->id;
