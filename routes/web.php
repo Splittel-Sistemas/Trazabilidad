@@ -83,6 +83,7 @@ Route::get('/Area/Medición', [AreasController::class,'Medicion'])->name('Medici
 Route::get('/Area/Visualización', [AreasController::class,'Visualizacion'])->name('Visualizacion')->middleware('auth');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas')->middleware('auth');
 Route::get('/Area/Montaje', [AreasController::class,'Montaje'])->name('Montaje')->middleware('auth');
+Route::get('/Area/Clasificación', [AreasController::class,'Clasificacion'])->name('Clasificacion')->middleware('auth');
 Route::post('/Area/Tabla/Pendientes', [AreasController::class,'AreaTablaPendientes'])->name('AreaTablaPendientes')->middleware('auth');
 
 

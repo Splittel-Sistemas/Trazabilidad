@@ -243,6 +243,12 @@
                                                 <hr class="p-0 m-1">
                                             </li>
                                         @endif
+                                        @if(Auth::user()->hasPermission("Vista Clasificación"))
+                                        <li class="nav-item"><a class="nav-link {{ Route::is('Clasificacion') ? 'nav-tabs active' : '' }}" href="{{route('Clasificacion')}}" data-bs-toggle="" aria-expanded="false">
+                                            <div class="d-flex align-items-center"><span class="nav-link-text">Clasificaci&oacute;n</span></div>
+                                            </a>
+                                        </li>
+                                        @endif
                                         @if(Auth::user()->hasPermission("Vista Transición"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Transicion') ? 'nav-tabs active' : '' }}" href="{{route('Transicion')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Transici&oacute;n</span></div>
@@ -318,7 +324,7 @@
                                                 </a>
                                             </li>
                                         @endif
-                                        @if(Auth::user()->hasPermission("Vista Preparado"))
+                                        @if(Auth::user()->hasPermission("Vista Montaje"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Montaje') ? 'nav-tabs active' : '' }}" href="{{route('Montaje')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Montaje</span></div>
                                                 </a>

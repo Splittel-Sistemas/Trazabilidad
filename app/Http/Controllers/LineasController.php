@@ -13,7 +13,7 @@ class LineasController extends Controller
     {
         $user = Auth::user();
         if ($user->hasPermission('Vista Lineas')) {
-            $linea = Linea::orderBy('NumeroLinea', 'asc')->get();
+            $linea = Linea::orderBy('NumeroLinea', 'asc')->where('id','!=',1)->get();
             $Areas=Areas::whereBetween('id', [1, 17])->get();
             return view('Lineas.Lineaindex', compact('linea','Areas'));
         } else {

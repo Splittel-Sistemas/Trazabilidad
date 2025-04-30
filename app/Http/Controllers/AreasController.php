@@ -42,18 +42,8 @@ class AreasController extends Controller
         $fechaAtras=date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
         $fecham = Carbon::parse($fecha)->addDay();
         $Area=3;
-        $PartidasOFA=PartidasOF::with('OrdenFabricacion')->get()->where('ordenfabricacion.Cerrada','1');
-        /*$PartidasOFA=PartidasOF::orderBy('FechaFinalizacion')
-            ->get()
-            ->unique('OrdenFabricacion_id');
-            /*foreach($PartidasOFA as $key1 =>$orden) {
-                $PartidasAreasCantidad=$orden->Areas()->where('Areas_id','3')->get()->whereNotNull('pivot.Fechatermina')->where('TipoPartida','N')->SUM('Cantidad');
-                $PartidasAreasCantidadAb=$orden->Areas()->where('Areas_id','3')->get()->whereNull('pivot.Fechatermina')->SUM('Cantidad');
-                if($PartidasAreasCantidad==$orden->CantidadTotal AND $PartidasAreasCantidadAb==0){
-                    unset($PartidasOFA[$key1]);
-                }
-            }
-            ->where('OrdenFabricacion.Cerrada','1')*/
+         //Consulta traer Ordenes abiertas en esta estacion
+        $PartidasOFA=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
         foreach($PartidasOFA as $orden) {
             $ordenFabri=$orden->ordenFabricacion;
             $ordenesSAP1=$this->funcionesGenerales->Emisiones($ordenFabri->OrdenFabricacion);
@@ -88,20 +78,31 @@ class AreasController extends Controller
             $orden['Descripcion']=$ordenFabri->Descripcion;
             $orden->id="";
         }
-        $PartidasOFC=PartidasOF::where('EstatusPartidaOF','=','1')
-            ->whereNotNull('FechaFinalizacion')
-            ->whereBetween('FechaFinalizacion', [$fechaAtras.' 00:00:00', $fecham.' 00:00:00'])
-            ->orderBy('FechaFinalizacion')
-            ->get()
-            ->unique('OrdenFabricacion_id');
+        //Consulta traer Ordenes cerradas en esta estacion
+        $PartidasOFC = PartidasOF::Join('partidasof_areas','partidasof.id','=','partidasof_areas.PartidasOF_id')
+                        ->select('partidasof_areas.*','partidasof.*')
+                        ->where('partidasof_areas.Areas_id', 3)
+                        ->where('EstatusPartidaOFSuministro','1')
+                        ->orderByDesc('partidasof_areas.FechaTermina')
+                        ->whereBetween('FechaTermina', [$fechaAtras.' 00:00:00', $fecham.' 00:00:00'])
+                        ->get()
+                        ->unique('PartidasOF_id');
         foreach($PartidasOFC as $orden) {
             $ordenFabri=$orden->ordenFabricacion;
             $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
             $orden['OrdenFabricacion']=$ordenFabri->OrdenFabricacion;
-            $orden['TotalPartida']=$ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida')-$ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida');
+            $orden['TotalPartida']=$ordenFabri->CantidadTotal;//PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida')-$ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida');
             $orden['Articulo']=$ordenFabri->Articulo;
             $orden['Descripcion']=$ordenFabri->Descripcion;
             $orden->id="";
+            $Normal=0;
+            $Retrabajo=0;
+            foreach($ordenFabri->PartidasOF as $partidasOF){
+                $Normal+=$partidasOF->Areas()->where('Areas_id',3)->where('TipoPartida','N')->SUM('Cantidad');
+                $Retrabajo+=$partidasOF->Areas()->where('Areas_id',3)->where('TipoPartida','R')->SUM('Cantidad');
+            }
+            $orden['Normal']=$Normal;
+            $orden['Retrabajo']=$Retrabajo;
         }
         $Area=$this->funcionesGenerales->encrypt(3);
         $user = Auth::user();
@@ -197,6 +198,8 @@ class AreasController extends Controller
             $partida->EstatusPartidaOF=0;
             $partida->save();
         }
+        $PartidasOF->EstatusPartidaOFSuministro=0;
+        $PartidasOF->save();
         return response()->json([
             'status' => 'success',
             'message' =>'Partida guardada correctamente!',
@@ -210,9 +213,7 @@ class AreasController extends Controller
         }
         //PartidasOF->EstatusPartidaOF==0 aun no iniciado; 1 igual a terminado
         try {
-            $PartidasOF=PartidasOF::orderBy('FechaFinalizacion')
-                                ->get()
-                                ->unique('OrdenFabricacion_id');
+            $PartidasOF=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
             $tabla="";
             foreach($PartidasOF as $orden) {
                 $ordenFabri=$orden->ordenFabricacion;
@@ -274,21 +275,34 @@ class AreasController extends Controller
         $fecham=$request->fechafin;
         $fecham = Carbon::parse($fecham)->addDay();
         try {
-            $PartidasOF=PartidasOF::where('EstatusPartidaOF','=','1')
-                        ->whereNotNull('FechaFinalizacion')
-                        ->whereBetween('FechaFinalizacion', [$fechaAtras.' 00:00:00', $fecham.' 00:00:00'])
-                        ->orderBy('FechaFinalizacion')
-                        ->get()
-                        ->unique('OrdenFabricacion_id');
+            //Consulta traer Ordenes cerradas en esta estacion
+            $PartidasOF = PartidasOF::Join('partidasof_areas','partidasof.id','=','partidasof_areas.PartidasOF_id')
+                ->select('partidasof_areas.*','partidasof.*')
+                ->where('partidasof_areas.Areas_id', 3)
+                ->where('EstatusPartidaOFSuministro','1')
+                ->orderByDesc('partidasof_areas.FechaTermina')
+                ->whereBetween('FechaTermina', [$fechaAtras.' 00:00:00', $fecham.' 00:00:00'])
+                ->get()
+                ->unique('PartidasOF_id');
             $tabla="";
             foreach($PartidasOF as $orden) {
                 $ordenFabri=$orden->ordenFabricacion;
-                $TotalPartida=$ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida')-$ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida');
+                $Normal=0;
+                $Retrabajo=0;
+                foreach($ordenFabri->PartidasOF as $partidasOF){
+                    $Normal+=$partidasOF->Areas()->where('Areas_id',3)->where('TipoPartida','N')->SUM('Cantidad');
+                    $Retrabajo+=$partidasOF->Areas()->where('Areas_id',3)->where('TipoPartida','R')->SUM('Cantidad');
+                }
+                $orden['Normal']=$Normal;
+                $orden['Retrabajo']=$Retrabajo;
+                $TotalPartida=$ordenFabri->CantidadTotal;//$ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida')-$ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida');
                 $tabla.='<tr>
                         <td>'. $ordenFabri->OrdenFabricacion .'</td>
                         <td>'. $ordenFabri->NumeroPartida.'</td>
                         <td>'. $ordenFabri->Articulo .'</td>
                         <td>'. $ordenFabri->Descripcion.'</td>
+                        <td>'. $Normal.'</td>
+                        <td>'. $Retrabajo.'</td>
                         <td>'. $TotalPartida .'</td>
                         <td>'. $orden->FechaFinalizacion.'</td>
                         <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Cerrada</span></div></td>
@@ -327,7 +341,7 @@ class AreasController extends Controller
                                 <th class="text-center">Tipo Partida</th>
                                 <th class="text-center">Estatus</th>
                                 <th class="text-center" colspan="2">Acciones</th>
-                                <th class="text-center" >Etiquetas</th>
+                                <th class="text-center">Etiquetas</th>
                             </tr>
                         </thead>
                         <tbody>';
@@ -387,7 +401,7 @@ class AreasController extends Controller
         
             if($PartidasContar==0){
                 $Ordenfabricacionpartidas.='<tr>
-                                            <td class="text-center" colspan="5">Aún no existen partidas creadas</td>
+                                            <td class="text-center" colspan="7">Aún no existen partidas creadas</td>
                                         </tr>';
             }else{
                 foreach($OrdenFabricacion->PartidasOF as $Partida){
@@ -407,8 +421,7 @@ class AreasController extends Controller
                             $Ordenfabricacionpartidas.='<td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>';
                         }
                         if ($request->has('detalles')) {
-                            $Ordenfabricacionpartidas.='<td class="text-center"></td><td></td>
-                            ';
+                            $Ordenfabricacionpartidas.=' <td class="text-center"></td><td></td>';
                         }else{
                             // Mostrar botones solo si FechaTermina es NULL o está vacío
                             if($parti['pivot']->FechaTermina == '' || $parti['pivot']->FechaTermina == null){
@@ -428,26 +441,23 @@ class AreasController extends Controller
                                 </td>
                                 ';
                             }else{
-                                $Ordenfabricacionpartidas .= '<td class="text-center"></td>            
-                                <td></td>            
-                                ';
+                                $Ordenfabricacionpartidas .= ' <td class="text-center"></td><td></td>';
                             }
                         }
+                        if($OrdenFabricacion->Corte==0){
+                            $Ordenfabricacionpartidas.='<td class="text-center"><button class="btn btn-link me-1 mb-1" onclick="etiquetaColor(\''.$this->funcionesGenerales->encrypt($Partida[0]['pivot']->PartidasOF_id).'\')" type="button"><i class="fas fa-download"></i></button></td>';
+                        }else{$Ordenfabricacionpartidas.='<td class="text-center"></td>';}
+                        $Ordenfabricacionpartidas.='</tr>';
                     }
-                    if($OrdenFabricacion->Corte==0){
-                        $Ordenfabricacionpartidas.='<td class="text-center"><button class="btn btn-link me-1 mb-1" onclick="etiquetaColor(\''.$this->funcionesGenerales->encrypt($Partida[0]['pivot']->PartidasOF_id).'\')" type="button"><i class="fas fa-download"></i></button></td>';
-                    }
-                    else{$Ordenfabricacionpartidas.='<td></td>';}
-                    $Ordenfabricacionpartidas.='</tr>';
                 }
             }
             
         }else{
             $Ordenfabricacioninfo.='<tr>
-                                        <td class="text-center" colspan="4">Datos no encontrados</td>
+                                        <td class="text-center" colspan="7">Datos no encontrados</td>
                                     </tr>';
             $Ordenfabricacionpartidas.='<tr>
-                                        <td class="text-center" colspan="6">Aún no existen partidas creadas</td>
+                                        <td class="text-center" colspan="7">Aún no existen partidas creadas</td>
                                     </tr>';
         }
         $Ordenfabricacioninfo.='</tbody></table>';
@@ -526,6 +536,10 @@ class AreasController extends Controller
                 $partida->EstatusPartidaOF=1;
                 $partida->save();
             }
+            $PartidasOF = $OrdenFabricacion->PartidasOF->first();
+            $PartidasOF->EstatusPartidaOFSuministro = '1';
+            $PartidasOF->save();
+
         }
         return response()->json([
             'status' => 'success',
@@ -569,6 +583,9 @@ class AreasController extends Controller
                 $partida->EstatusPartidaOF=1;
                 $partida->save();
             }
+            $PartidasOF=$OrdenFabricacion->PartidasOF->first();
+            $PartidasOF->EstatusPartidaOFSuministro = '1';
+            $PartidasOF->save();
         }
         return response()->json([
             'status' => 'success',
@@ -590,7 +607,7 @@ class AreasController extends Controller
             $opciones.='<a class="list-group-item list-group-item-action">Orden de Fabricacion no encontrada</a>';
         }else{
             foreach($BuscarSuministro as $ofSuministro){
-                $ofNumPartida=$ofSuministro->PartidasOF->whereNotNull('FechaFinalizacion')->unique('OrdenFabricacion_id');
+                $ofNumPartida=$ofSuministro->PartidasOF->unique('OrdenFabricacion_id');
                     foreach($ofNumPartida as $key=>$NumPartida){
                         if($key==0){
                             $opciones.='<a href="#" class="m-0 p-0 list-group-item list-group-item-action active" onclick="RetrabajoMostrarOFBuscarModal(\''.$this->funcionesGenerales->encrypt($NumPartida->id).'\')">'.$ofSuministro->OrdenFabricacion.'</a>';
@@ -3152,6 +3169,26 @@ class AreasController extends Controller
             return redirect()->route('error.');
         }
     }
+    // Area Clasificacion
+    public function Clasificacion(){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+        if($user->hasPermission('Vista Clasificación')){
+        //Cerrada = 1 es abierta
+        $OrdenFabricacion = OrdenFabricacion::where('Cerrada','1')->where('Linea_id','1')->get();
+        foreach($OrdenFabricacion as $OrdenFab){
+            $Partida = $OrdenFabricacion->PartidasOF->first();
+            $ContarPartidas = 
+
+        }
+        $Lineas = Linea::where('active','1')->where('id','!=',1)->orderBy('Nombre', 'asc')->get();
+        return view('Areas.Clasificacion',compact('OrdenFabricacion','Lineas')); 
+        }else{
+            return redirect()->route('error.');
+        }
+    }
     public function tablaEmpacado(){
         $areas = DB::table('partidasof_areas')
             ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
@@ -3206,6 +3243,7 @@ class AreasController extends Controller
             ->join('partidasof_Areas', 'partidasOF.id', '=', 'partidasof_Areas.PartidasOF_id') // Relación entre partidasOF y partidasof_Areas
             ->where('OrdenFabricacion.Cerrada', 1) // Filtra las órdenes que aún están abiertas
             ->where('partidasof_Areas.Areas_id','<=', $Area) // Filtra por el área 3 (Suministro)
+            ->where('OrdenFabricacion.Linea_id','!=','1')
             ->whereNotNull('partidasof_Areas.FechaTermina') // Asegura que la columna FechaTermina no sea NULL
             ->get()
             ->unique('partidasOF_id')
@@ -3317,6 +3355,7 @@ class AreasController extends Controller
         ->join('partidasof_Areas', 'partidasOF.id', '=', 'partidasof_Areas.PartidasOF_id') // Relación entre partidasOF y partidasof_Areas
         ->where('OrdenFabricacion.Cerrada', 1) // Filtra las órdenes que aún están abiertas
         ->where('partidasof_Areas.Areas_id','<=', $Area) // Filtra por el área 3 (Suministro)
+        ->where('OrdenFabricacion.Linea_id','!=','1')
         ->whereNotNull('partidasof_Areas.FechaTermina') // Asegura que la columna FechaTermina no sea NULL
         ->get()
         ->unique('partidasOF_id')
