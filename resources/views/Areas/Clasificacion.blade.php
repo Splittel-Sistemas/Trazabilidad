@@ -65,12 +65,13 @@
                                                 <td>{{$partida->Descripcion }}</td>
                                                 <td class="text-center">{{$partida->CantidadTotal }}</td>
                                                 <td>
-                                                    <select onclick="" class="form-select form-select-sm" aria-label="">
+                                                    <button class="btn btn-sm btn-outline-info px-3 py-2" onclick="AsignarLinea('{{$partida->idEncript}}')">Asignar</button>
+                                                    {{--<select onclick="" class="form-select form-select-sm" aria-label="">
                                                         <option selected="">Selecciona una L&iacute;nea</option>
                                                             @foreach($Lineas as $L)
                                                                 <option value="{{$L->id}}">{{$L->Nombre}}</option>
                                                             @endforeach
-                                                      </select>
+                                                      </select>--}}
                                                 </td>
                                             </tr>
                                         @endforeach

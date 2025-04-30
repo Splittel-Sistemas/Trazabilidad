@@ -3178,10 +3178,13 @@ class AreasController extends Controller
         if($user->hasPermission('Vista Clasificación')){
         //Cerrada = 1 es abierta
         $OrdenFabricacion = OrdenFabricacion::where('Cerrada','1')->where('Linea_id','1')->get();
-        foreach($OrdenFabricacion as $OrdenFab){
-            $Partida = $OrdenFabricacion->PartidasOF->first();
-            $ContarPartidas = 
-
+        foreach($OrdenFabricacion as $key=>$OrdenFab){
+            $Partida = $OrdenFab->PartidasOF->first();
+            $ContarPartidas = $Partida->Areas()->where('Areas_id',3)->get()->sum('pivot.Cantidad');
+            $OrdenFab['CantidadSuministro'] = $ContarPartidas;
+            if($ContarPartidas == 0){
+                unset($OrdenFabricacion[$key]);
+            }
         }
         $Lineas = Linea::where('active','1')->where('id','!=',1)->orderBy('Nombre', 'asc')->get();
         return view('Areas.Clasificacion',compact('OrdenFabricacion','Lineas')); 

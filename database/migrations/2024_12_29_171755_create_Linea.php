@@ -22,11 +22,10 @@ return new class extends Migration
             $table->string('AreasPosibles')->nullable(); 
             $table->timestamps();
         });
-        DB::table('lineas_produccion')->insert([
+        DB::table('Linea')->insert([
             'NumeroLinea' => 0,
             'Nombre' => 'En espera',
             'ColorLinea' => '#FFFF',
-            'active' => true,
             'Descripcion' => null,
             'AreasPosibles' => null,
             'created_at' => now(),
