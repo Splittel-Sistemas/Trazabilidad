@@ -39,8 +39,89 @@
             <h4 class="mb-2 text-1100">Clasificaci&oacute;n</h4>
         </div>
     </div>
+    <div class="row">
+        <div class="col-6 mb-2 ">
+            <div class="col-sm-12">
+                <div class="card border border-light ">
+                    <div class="card-body p-2">
+                        <div class="accordion" id="accordionFiltroOV">
+                            <div class="accordion-item border-top border-300 p-0">
+                                <h4 class="accordion-header" id="headingOne">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroOV" aria-expanded="true" aria-controls="collapseFiltroOV">
+                                        Porcentaje de planeaci&oacute;n &nbsp;<span id="Fecha_Grafica"> {{\Carbon\Carbon::parse($FechaFin)->translatedFormat('d \d\e F \d\e Y')}}</span>
+                                    </button>
+                                </h4>
+                                <div class="accordion-collapse collapse show" id="collapseFiltroOV" aria-labelledby="headingOne" data-bs-parent="#accordionFiltroOV">
+                                    <div class="accordion-body pt-0">
+                                        <div class="card-body p-1">
+                                            <div class="d-flex justify-content-between">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <h6 class="text-700">Cantidad personas: <span id="Cantidadpersonas">0</span></h6>
+                                                        <h6 class="text-700">Estimado de piezas por d&iacute;a: <span id="Estimadopiezas">0</span></h6>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <h6 class="text-700 ">Linea <span id="NumeroLinea">0</span></h6> 
+                                                        <h6 class="text-700">Piezas Asignadas: <span id="Piezasplaneadas">0</span></h6>
+                                                        <h6 class="text-700">Piezas faltantes: <span id="Piezasfaltantes">0</span></h6>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <button class="btn btn-link mx-5 p-0" type="button" data-bs-toggle="modal" onclick="LlenarModalPorcentajes()" data-bs-target="#ParametrosPorcentaje">
+                                                            <i class="far fa-edit"></i> Capacidad productiva
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class=" d-flex justify-content-center aling-items-center">
+                                                   <div class="p-0" id="PrcentajePlaneacion" style="width: 9rem;height:9rem"></div>
+                                            </div>
+                                            <div>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <div class="bullet-item bg-primary me-2"></div>
+                                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Planeadas</h6>
+                                                    <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajeplaneada">0</span>%</h6>
+                                                </div>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <div class="bullet-item bg-primary-200 me-2"></div>
+                                                    <h6 class="text-900 fw-semi-bold flex-1 mb-0">Porcentaje Faltantes</h6>
+                                                    <h6 class="text-900 fw-semi-bold mb-0"><span id="Porcentajefaltante">0</span>%</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="card">
         <div class="card-body">
+            <div class="row">
+                <div class="col-4 mb-0 pt-0 ms-auto">
+                    <label for="lineaModal" >Selecciona línea</label>
+                    <select name="lineaModal" id="lineaModal" class="form-select form-select-sm border-primary w-100">
+                        @foreach($Lineas as $L)
+                            <option value="{{$L->id}}">{{$L->Nombre}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-4 m-0">
+                    <div class="form-row">
+                        <div class="col-12 mb-1">
+                            <label for="Filtrofecha_table2">Selecciona la fecha de planeaci&oacute;n:</label>
+                            <div class="input-group">
+                                <input type="date" name="FiltroOF_Fecha_table2"  id="FiltroOF_Fecha_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{\Carbon\Carbon::parse($FechaFin)->translatedFormat('Y-m-d')}}">
+                                <button id="buscarOV_vencidas" class="btn btn-primary btn-sm">
+                                    Mostrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="tab-content mt-4" id="myTabContent">
                 <div class="tab-pane fade show active" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab">
                     <div id="ContentTabla" class="col-12 mt-2">
@@ -99,6 +180,31 @@
             <div class="modal-footer" id="ModalDetalleFooter">
                 <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
             </div>
+          </div>
+        </div>
+    </div>
+    <!--Modal Parametros-->
+    <div class="modal fade" id="ParametrosPorcentaje" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="ParametrosPorcentajeLabel">Modificar Par&aacute;metros L&iacute;nea <span id="NumeroLinea1">0</span></h5><button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1"></span></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="mb-1 col-6">
+                        <label class="form-label" for="CantidadPersona">Cantidad de personas:</label>
+                        <input class="form-control" id="CantidadPersona" oninput="RegexNumeros(this)" type="text" placeholder="Ingresa una cantidad" />
+                        <div class="invalid-feedback" id="error_CantidadPersona"></div>
+                    </div>
+                    <div class="mb-1 col-6">
+                        <label class="form-label" for="Piezaspersona">Piezas por persona:</label>
+                        <input class="form-control" id="Piezaspersona" oninput="RegexNumeros(this)" type="text" placeholder="Ingresa una cantidad" />
+                        <div class="invalid-feedback" id="error_Piezaspersona"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-primary" onclick="GuardarParametrosPorcentajes()">Guardar</button><button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cancelar</button></div>
           </div>
         </div>
     </div>
@@ -213,6 +319,160 @@
                 $('#'+tabla).css('font-size', '0.7rem');
             }
         });
+    }
+    $(document).ready(function() {
+        PorcentajeLlenadas(); 
+        $('#linea').change(function() {
+            PorcentajeLlenadas(); 
+        });
+        $('#FiltroOF_Fecha_table2').change(function() {
+            PorcentajeLlenadas(); 
+        });
+    });
+    //fin
+    function PorcentajeLlenadas() {
+        let fecha = $('#FiltroOF_Fecha_table2').val();
+        //chris
+        let lineaSeleccionada = $('#lineaModal').val();
+
+        $.ajax({
+            url: "{{ route('PorcentajesPlaneacion') }}",
+            type: 'GET',
+            data: {
+                fecha: fecha,
+                Linea_id: lineaSeleccionada, // chris
+                _token: '{{ csrf_token() }}'
+            },
+            beforeSend: function () {},
+            success: function (response) {
+                let color = "#007BFF";
+                let PorcentajeFaltante = 0;
+
+                if (response.PorcentajePlaneada > 80) color = '#FFFF00';
+                if (response.PorcentajePlaneada > 90) color = '#FFA500';
+                if (response.PorcentajePlaneada > 100) color = '#FF0000';
+                if (response.PorcentajeFaltante > 0) PorcentajeFaltante = response.PorcentajeFaltante;
+
+                // Actualizar la interfaz con los datos de la respuesta
+                $("#Cantidadpersonas").html(response.NumeroPersonas);
+                $("#Estimadopiezas").html(response.CantidadEstimadaDia);
+                $("#Piezasplaneadas").html(response.PlaneadoPorDia);
+                $("#Porcentajefaltante").html(PorcentajeFaltante);
+                $("#Porcentajeplaneada").html(response.PorcentajePlaneada);
+                $('#Fecha_Grafica').html(response.Fecha_Grafica);
+                $('#Piezasfaltantes').html(response.Piezasfaltantes);
+
+                //chis
+                if (response.Linea_id) {
+                    let lineaTexto = $(`#linea option[value="${response.Linea_id}"]`).text(); 
+                    let lineaNumero = lineaTexto.split('-')[0].trim(); 
+                    NumeroLinea = response.Linea_id;
+                    $('#NumeroLinea').html(response.Linea);
+                    $('#NumeroLinea1').html(response.Linea);//
+                }
+
+                var myChart = echarts.init(document.getElementById('PrcentajePlaneacion'));
+                var option = {
+                    tooltip: { trigger: 'item' },
+                    legend: { show: false },
+                    series: [
+                        {
+                            name: 'Planeación',
+                            type: 'pie',
+                            radius: ['60%', '70%'],
+                            avoidLabelOverlap: false,
+                            itemStyle: {
+                                borderRadius: 10,
+                                borderColor: '#fff',
+                                borderWidth: 2
+                            },
+                            label: {
+                                show: true,
+                                position: 'center',
+                                formatter: response.PorcentajePlaneada + '%',
+                                fontSize: 20,
+                                fontWeight: 'bold'
+                            },
+                            labelLine: { show: false },
+                            data: [
+                                { value: response.PorcentajePlaneada, name: 'Total Planeado', itemStyle: { color: color } },
+                                { value: PorcentajeFaltante, name: 'Total faltante estimado', itemStyle: { color: '#D3D3D3' } }
+                            ]
+                        }
+                    ]
+                };
+                myChart.setOption(option);
+            }
+        });
+    }
+    function GuardarParametrosPorcentajes(){
+        CantidadPersona=$('#CantidadPersona').val();
+        Piezaspersona=$('#Piezaspersona').val();
+        Fecha=$('#FiltroOF_Fecha_table2').val();
+        Linea = $('#lineaModal').val();
+        errorCantidadPersona=$('#error_CantidadPersona');
+        errorPiezaspersona=$('#error_Piezaspersona');
+        if(CantidadPersona==0 || CantidadPersona==""){
+            errorCantidadPersona.text('Por favor, ingresa un número valido, mayor a 0.');
+            errorCantidadPersona.show();
+            return 0; 
+        }else{
+            errorCantidadPersona.text('');
+            errorCantidadPersona.hide(); 
+        }
+        if(Piezaspersona==0 || Piezaspersona==""){
+            errorPiezaspersona.text('Por favor, ingresa un número valido, mayor a 0.');
+            errorPiezaspersona.show();
+            return 0; 
+        }else{
+            errorPiezaspersona.text('');
+            errorPiezaspersona.hide(); 
+        }
+        $.ajax({
+                url: "{{route('GuardarParametrosPorcentajes')}}", 
+                type: 'POST',
+                data: {
+                    CantidadPersona:CantidadPersona,
+                    Piezaspersona: Piezaspersona,
+                    Fecha:Fecha,
+                    Linea: Linea, //chris
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+                },
+                success: function(response) {
+                    if(response==0){
+                        error('Error con la Línea','El número de linea no existe o esta desactivada');
+                        return 0;
+                    }else{
+                        success('Guardado correctamente!','Capacidad productiva guardado.');
+                    }
+                    PorcentajeLlenadas();
+                },
+                error: function(xhr, status, error) {
+                    errorBD();
+                }
+        }); 
+        $('#ParametrosPorcentaje').modal('hide');
+    }
+    function LlenarModalPorcentajes(){
+        Cantidadpersonas=$('#Cantidadpersonas').html();
+        Estimadopiezas=$('#Estimadopiezas').html();
+        Linea_id=$('#linea').html();
+        if(Cantidadpersonas==0 || Estimadopiezas==0){
+            Cantidadpersonas=0;
+            Estimadopiezas=0;
+        }else{
+            Estimadopiezas=Estimadopiezas/Cantidadpersonas;
+        }
+        $('#CantidadPersona').val(Cantidadpersonas);
+        $('#Piezaspersona').val(Estimadopiezas);
+        $('#NumeroLinea1').val( Linea_id);//chris
+
+        errorCantidadPersona=$('#error_CantidadPersona');
+        errorPiezaspersona=$('#error_Piezaspersona');
+        errorCantidadPersona.hide(); 
+        errorPiezaspersona.hide(); 
     }
 </script>
 @endsection

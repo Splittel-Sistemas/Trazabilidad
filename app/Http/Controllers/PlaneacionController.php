@@ -1011,6 +1011,7 @@ use App\Models\OrdenFabricacion;
 use App\Models\PorcentajePlaneacion;
 use App\Models\FechasBuffer;
 use App\Models\RegistrosBuffer;
+use App\Models\Partidasof_Areas;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Linea;
@@ -1070,7 +1071,6 @@ class PlaneacionController extends Controller
         $PorcentajePlaneacion = PorcentajePlaneacion::where('FechaPlaneacion', $fecha)
             ->where('Linea_id', $Linea_id)//chris
             ->first();
-
         if (!$PorcentajePlaneacion) {
             $NumeroPersonas = 20;  
             $PiezasPorPersona = 50; 
@@ -1078,10 +1078,11 @@ class PlaneacionController extends Controller
             $NumeroPersonas = $PorcentajePlaneacion->NumeroPersonas;
             $PiezasPorPersona = $PorcentajePlaneacion->CantidadPlaneada / max($NumeroPersonas, 1); 
         }
-        $PlaneadoPorDia = OrdenFabricacion::where('FechaEntrega', $fecha)
-            ->where('Linea_id', $Linea_id)
-            ->sum('CantidadTotal');
-
+        $PlaneadoPorDia = Partidasof_Areas::where('FechaComienzo','>=',$fecha.' 00:00:00')
+                            ->where('FechaComienzo','<=',$fecha.' 23:59:59')
+                            ->where('Areas_id','18')
+                            ->where('Linea_id',$Linea_id)->get()->SUM('Cantidad');
+        $Linea=Linea::find($Linea_id);
         $CantidadEstimadaDia = $NumeroPersonas * $PiezasPorPersona;
         $PorcentajePlaneada = $CantidadEstimadaDia > 0 
             ? number_format($PlaneadoPorDia / $CantidadEstimadaDia * 100, 2) 
@@ -1090,7 +1091,8 @@ class PlaneacionController extends Controller
         $PorcentajeFaltante = number_format(100 - $PorcentajePlaneada, 2);
 
         return response()->json([
-            'Linea_id' => $Linea_id,//chris
+            'Linea_id' => $Linea_id,
+            'Linea' => $Linea->Nombre,
             'PorcentajePlaneada' => $PorcentajePlaneada,
             'PorcentajeFaltante' => $PorcentajeFaltante,
             'NumeroPersonas' => $NumeroPersonas,

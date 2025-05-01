@@ -719,7 +719,6 @@ class AreasController extends Controller
                     }
                 }
             }*/
-            //return$Registros;
             foreach ($Registros as $key => $registro) {
                 $OrdenFabricacion = OrdenFabricacion::find($registro->OrdenFabricacion_id);
                 $PartidasOF = $OrdenFabricacion->PartidasOF->first();
@@ -3175,6 +3174,7 @@ class AreasController extends Controller
     // Area Clasificacion
     public function Clasificacion(){
         $user= Auth::user();
+        $FechaFin= date('d-m-Y');
         if (!$user) {
             return redirect()->route('login');
         }
@@ -3192,7 +3192,7 @@ class AreasController extends Controller
             }
         }
         $Lineas = Linea::where('active','1')->where('id','!=',1)->orderBy('Nombre', 'asc')->get();
-        return view('Areas.Clasificacion',compact('OrdenFabricacion','Lineas')); 
+        return view('Areas.Clasificacion',compact('OrdenFabricacion','Lineas','FechaFin')); 
         }else{
             return redirect()->route('error.');
         }
