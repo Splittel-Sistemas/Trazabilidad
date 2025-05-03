@@ -96,10 +96,56 @@
                 </div>
             </div>
         </div>
+        <div class="col-6 mb-2 ">
+            <div class="col-sm-12">
+                <div class="card border border-light ">
+                    <div class="card-body p-2">
+                        <div class="accordion" id="accordionFiltroOV">
+                            <div class="accordion-item border-top border-300 p-0">
+                                <h4 class="accordion-header" id="headingOne">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroOV" aria-expanded="true" aria-controls="collapseFiltroOV">
+                                    <span>Parametros</span>
+                                    </button>
+                                </h4>
+                                <div class="accordion-collapse collapse show" id="collapseFiltroOV" aria-labelledby="headingOne" data-bs-parent="#accordionFiltroOV">
+                                    <div class="accordion-body pt-0">
+                                        <div class="card-body p-1">
+                                            <div class="row">
+                                                <div class="col-6 mb-0 pt-0">
+                                                    <label for="lineaModal" >Línea</label>
+                                                    <select name="lineaModal" id="lineaModal" class="form-select form-select-sm border-primary w-100">
+                                                        @foreach($Lineas as $L)
+                                                            <option value="{{$L->id}}">{{$L->Nombre}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="col-6 m-0">
+                                                    <div class="form-row">
+                                                        <div class="col-12 mb-1">
+                                                            <label for="Filtrofecha_table2">Fecha de asignaci&oacute;n:</label>
+                                                            <div class="input-group">
+                                                                <input type="date" name="FiltroOF_Fecha_table2"  id="FiltroOF_Fecha_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{\Carbon\Carbon::parse($FechaFin)->translatedFormat('Y-m-d')}}">
+                                                                <button id="buscarOV_vencidas" class="btn btn-primary btn-sm">
+                                                                    Mostrar
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="card">
         <div class="card-body">
-            <div class="row">
+            {{--<div class="row">
                 <div class="col-4 mb-0 pt-0 ms-auto">
                     <label for="lineaModal" >Selecciona línea</label>
                     <select name="lineaModal" id="lineaModal" class="form-select form-select-sm border-primary w-100">
@@ -121,7 +167,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>--}}
             <div class="tab-content mt-4" id="myTabContent">
                 <div class="tab-pane fade show active" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab">
                     <div id="ContentTabla" class="col-12 mt-2">
@@ -322,7 +368,7 @@
     }
     $(document).ready(function() {
         PorcentajeLlenadas(); 
-        $('#linea').change(function() {
+        $('#lineaModal').change(function() {
             PorcentajeLlenadas(); 
         });
         $('#FiltroOF_Fecha_table2').change(function() {
@@ -364,7 +410,7 @@
 
                 //chis
                 if (response.Linea_id) {
-                    let lineaTexto = $(`#linea option[value="${response.Linea_id}"]`).text(); 
+                    let lineaTexto = $(`#lineaModal option[value="${response.Linea_id}"]`).text(); 
                     let lineaNumero = lineaTexto.split('-')[0].trim(); 
                     NumeroLinea = response.Linea_id;
                     $('#NumeroLinea').html(response.Linea);
@@ -458,7 +504,7 @@
     function LlenarModalPorcentajes(){
         Cantidadpersonas=$('#Cantidadpersonas').html();
         Estimadopiezas=$('#Estimadopiezas').html();
-        Linea_id=$('#linea').html();
+        Linea_id=$('#lineaModal').html();
         if(Cantidadpersonas==0 || Estimadopiezas==0){
             Cantidadpersonas=0;
             Estimadopiezas=0;

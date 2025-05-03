@@ -127,18 +127,20 @@
                         </thead>
                         <tbody id="TablaPreparadoPendientesBody" class="list">
                             @foreach($Registros as $partida)
-                            <tr>
-                                <td class="text-center">{{$partida->OrdenFabricacion }}</td>
-                                <td>{{$partida->Articulo }}</td>
-                                <td>{{$partida->Descripcion }}</td>
-                                <td class="text-center">{{$partida->NumeroActuales}}</td>
-                                <td class="text-center">{{$partida->TotalPendiente-$partida->NumeroActuales }}</td>
-                                <td class="text-center">{{$partida->TotalPendiente }}</td>
-                                <td class="text-center">{{$partida->CantidadTotal }}</td>
-                                <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                                <td><h5 class="text-light text-center p-0" style="background: {{$partida->ColorLinea }};">{{$partida->Linea }}</h5></td>
-                            </tr>
-                        @endforeach
+                                @foreach($partida->POFAreas as $PartidaArea)
+                                    <tr>
+                                        <td class="text-center">{{$partida->OrdenFabricacion }}</td>
+                                        <td>{{$partida->Articulo }}</td>
+                                        <td>{{$partida->Descripcion }}</td>
+                                        <td class="text-center">{{$PartidaArea->CantidadActual}}</td>
+                                        <td class="text-center">{{$PartidaArea->CantidadPendiente-$PartidaArea->CantidadActual }}</td>
+                                        <td class="text-center">{{$PartidaArea->CantidadPendiente}}</td>
+                                        <td class="text-center">{{$partida->CantidadTotal }}</td>
+                                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                                        <td><h5 class="text-light text-center p-0" style="background: {{$PartidaArea->ColorLinea }};">{{$PartidaArea->Linea }}</h5></td>
+                                    </tr>
+                                @endforeach
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

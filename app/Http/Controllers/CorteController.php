@@ -7,6 +7,7 @@ use App\Models\PartidasOF;
 use App\Models\Emision;
 use App\Models\OrdenFabricacion;
 use App\Models\Partidasof_Areas;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
 use TCPDF;
@@ -24,7 +25,25 @@ class CorteController extends Controller
             $fecha = date('Y-m-d');
             $fechaAtras = date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
             $OrdenesFabricacionAbiertas = $this->OrdenesFabricacionAbiertas();
+            foreach($OrdenesFabricacionAbiertas as $key=>$OFA){
+                $Usuario=isset($OrdenesFabricacionAbiertas->ResponsableUser_id)?User::find($OrdenesFabricacionAbiertas->ResponsableUser_id):"";
+                if($Usuario==""){
+                    $Nombre="";
+                }else{
+                    $Nombre = $Usuario->name."  ".$Usuario->apellido;
+                }
+                $OrdenesFabricacionAbiertas[$key]['responsable'] = $Nombre;
+            }
             $OrdenesFabricacionCerradas = $this->OrdenesFabricacionCerradas($fechaAtras, $fecha);
+            foreach($OrdenesFabricacionCerradas as $key=>$OFC){
+                $Usuario=isset($OrdenesFabricacionCerradas->ResponsableUser_id)?User::find($OrdenesFabricacionCerradas->ResponsableUser_id):"";
+                if($Usuario==""){
+                    $Nombre="";
+                }else{
+                    $Nombre = $Usuario->name."  ".$Usuario->apellido;
+                }
+                $OrdenesFabricacionCerradas[$key]['responsable'] = $Nombre;
+            }
             return view('Areas.Cortes', compact('OrdenesFabricacionAbiertas', 'OrdenesFabricacionCerradas', 'fecha', 'fechaAtras'));
         } else {
             return redirect()->route('error.');
@@ -37,12 +56,19 @@ class CorteController extends Controller
             $OrdenFabricacion=$this->OrdenesFabricacionAbiertas();
             $tabla="";
             foreach($OrdenFabricacion as $orden) {
+                $Usuario=isset($OrdenesFabricacionAbiertas->ResponsableUser_id)?User::find($OrdenesFabricacionAbiertas->ResponsableUser_id):"";
+                if($Usuario==""){
+                    $Nombre="";
+                }else{
+                    $Nombre = $Usuario->name."  ".$Usuario->apellido;
+                }
                 $tabla.='<tr ';
                 if($orden->Urgencia=='U'){
                     $tabla.='style="background:#FFDCDB"';
                 }
                 $tabla.='>
                         <td>'. $orden->OrdenFabricacion .'</td>
+                        <td class="text-center"><span class="badge badge-phoenix badge-phoenix-primary">'.$Nombre.'</span></td>
                         <td>'. $orden->Articulo .'</td>
                         <td>'. $orden->Descripcion .'</td>
                         <td>'. $orden->Piezascortadas.'</td>
