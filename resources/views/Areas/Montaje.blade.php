@@ -127,18 +127,20 @@
                         </thead>
                         <tbody id="TablaPreparadoPendientesBody" class="list">
                             @foreach($Registros as $partida)
-                            <tr>
-                                <td class="text-center">{{$partida->OrdenFabricacion }}</td>
-                                <td>{{$partida->Articulo }}</td>
-                                <td>{{$partida->Descripcion }}</td>
-                                <td class="text-center">{{$partida->NumeroActuales}}</td>
-                                <td class="text-center">{{$partida->TotalPendiente-$partida->NumeroActuales }}</td>
-                                <td class="text-center">{{$partida->TotalPendiente }}</td>
-                                <td class="text-center">{{$partida->CantidadTotal }}</td>
-                                <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                                <td><h5 class="text-light text-center p-0" style="background: {{$partida->ColorLinea }};">{{$partida->Linea }}</h5></td>
-                            </tr>
-                        @endforeach
+                                @foreach($partida->PartidasOFFaltantes as $PartidaArea)
+                                    <tr>
+                                        <td class="text-center">{{$partida->OrdenFabricacion }}</td>
+                                        <td>{{$partida->Articulo }}</td>
+                                        <td>{{$partida->Descripcion }}</td>
+                                        <td class="text-center">{{$PartidaArea->Actual}}</td>
+                                        <td class="text-center">{{$PartidaArea->Anterior-$PartidaArea->Actual}}</td>
+                                        <td class="text-center">{{$PartidaArea->Anterior }}</td>
+                                        <td class="text-center">{{$partida->CantidadTotal }}</td>
+                                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                                        <td><h5 class="text-light text-center p-0" style="background: {{$PartidaArea->ColorLinea}};">{{$PartidaArea->Linea}}</h5></td>
+                                    </tr>
+                                @endforeach
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -187,6 +189,18 @@
         }
         $('#Cantidad').val('');
         $('#CantidadSalida').val('');
+        FiltroLinea = $('#FiltroLinea').val();
+        if(FiltroLinea == null || FiltroLinea=="" || FiltroLinea<0){
+            Mensaje='Para comenzar, en el campo Núm. Línea selecciona la línea en la que vas a trabajar!';
+                            Color='bg-danger';
+                            $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                            $('#ToastGuardadoBody').html(Mensaje);
+                            $('#ToastGuardado').fadeIn();
+                            setTimeout(function(){
+                                $('#ToastGuardado').fadeOut();
+                            }, 3500);
+            return 0;
+        }
         $.ajax({
             url: "{{route('PreparadoBuscar')}}", 
             type: 'POST',
@@ -194,6 +208,7 @@
                 Codigo: Codigo,
                 Retrabajo: 'no',
                 Inicio:Inicio,
+                Linea:FiltroLinea,
                 Finalizar:Finalizar,
                 Area:'{{$Area}}'
             },
@@ -457,12 +472,25 @@
     }
     function Retrabajo(Codigo){
         $('#CodigoEscanerEntrada').focus();
+        FiltroLinea = $('#FiltroLinea').val();
+        if(FiltroLinea == null || FiltroLinea=="" || FiltroLinea<0){
+            Mensaje='Para comenzar, en el campo Núm. Línea selecciona la línea en la que vas a trabajar!';
+                            Color='bg-danger';
+                            $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                            $('#ToastGuardadoBody').html(Mensaje);
+                            $('#ToastGuardado').fadeIn();
+                            setTimeout(function(){
+                                $('#ToastGuardado').fadeOut();
+                            }, 3500);
+            return 0;
+        }
         $.ajax({
             url: "{{route('PreparadoBuscar')}}", 
             type: 'POST',
             data: {
                 Codigo: Codigo,
                 Inicio:1,
+                Linea:FiltroLinea,
                 Finalizar:0,
                 Retrabajo: 'si',
                 Area:'{{$Area}}' 
@@ -598,6 +626,18 @@
         CodigoEscaner=$('#CodigoEscanerEntrada').val();
         Cantidad=$('#Cantidad').val();
         Retrabajo=document.getElementById('Retrabajo').checked;
+        FiltroLinea = $('#FiltroLinea').val();
+        if(FiltroLinea == null || FiltroLinea=="" || FiltroLinea<0){
+            Mensaje='Para comenzar, en el campo Núm. Línea selecciona la línea en la que vas a trabajar!';
+                            Color='bg-danger';
+                            $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                            $('#ToastGuardadoBody').html(Mensaje);
+                            $('#ToastGuardado').fadeIn();
+                            setTimeout(function(){
+                                $('#ToastGuardado').fadeOut();
+                            }, 3500);
+            return 0;
+        }
         if (TipoEntrada=="Entrada") {
             Inicio = 1;
             Fin = 0;
@@ -670,6 +710,7 @@
                 Cantidad: Cantidad,
                 Inicio: Inicio,
                 Fin: Fin,
+                Linea:FiltroLinea,
                 Retrabajo: Retrabajo,
                 Area: '{{$Area}}'
             },

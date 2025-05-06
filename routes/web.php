@@ -65,6 +65,7 @@ Route::post('/Area/Suministro/Guardar', [AreasController::class,'SuministroGuard
 Route::post('/Area/Suministro/Cancelar', [AreasController::class,'SuministroCancelar'])->name('SuministroCancelar')->middleware('auth');
 Route::post('/Area/Suministro/Finalizar', [AreasController::class,'SuministroFinalizar'])->name('SuministroFinalizar')->middleware('auth');
 Route::post('/Area/Suministro/Buscar', [AreasController::class,'BuscarSuministro'])->name('BuscarSuministro')->middleware('auth');
+Route::get('/Area/Corte/GenerarPDF/Suministro', [CorteController::class, 'generarPDFSuministro'])->name('generarPDFSuministro')->middleware('auth');//Generar PDF
 //Preparado
 Route::get('/Area/Transición', [AreasController::class,'Transicion'])->name('Transicion')->middleware('auth');
 Route::get('/Area/Preparado', [AreasController::class,'Preparado'])->name('Preparado')->middleware('auth');

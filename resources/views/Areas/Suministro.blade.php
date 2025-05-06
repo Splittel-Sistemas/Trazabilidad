@@ -699,7 +699,7 @@
     }
     function etiquetaColor(id){
         Coloretiqueta=$('#Coloretiqueta').val();
-        var url = "{{ route('generar.pdf')}}?id=_corteId_";
+        var url = "{{ route('generarPDFSuministro')}}?id=_corteId_";
         url = url.replace('_corteId_', id);
         // Asignar la URL al iframe para mostrar el PDF
     document.getElementById('pdfIframe').src = url;

@@ -179,7 +179,7 @@
                                             <th>Orden Fabricación</th>
                                             <th>Artículo</th>
                                             <th>Descripción</th>
-                                            <th>Cantidad Entrante</th>
+                                            <th>Cantidad Pendiente de asignar</th>
                                             <th>Cantidad Total Orden de Fabricacion</th>
                                             <th>Asignar l&iacute;nea</th>
                                         </tr>
