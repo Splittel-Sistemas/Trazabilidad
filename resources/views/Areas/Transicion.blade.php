@@ -15,7 +15,7 @@
         transform: scale(2);
         top: 5rem;
         left: 16%;
-    }
+    }*/
     .Apuntarbox{
         border: 4px solid transparent;
         border-radius:0.5rem;
@@ -32,7 +32,7 @@
         100% {
             border-color: transparent;
         }
-    }*/
+    }
 </style>
 @endsection
 @section('content')
@@ -607,9 +607,11 @@
         $('#FiltroLinea').on('change', function() {
             var val = $(this).val();
             if(val == -1) {
+                $('#Apuntarbox').addClass('Apuntarbox');
                 table.column(8).search('').draw();
             } else {
                 table.column(8).search(val).draw();
+                $('#Apuntarbox').removeClass('Apuntarbox');
             }
         });
     });

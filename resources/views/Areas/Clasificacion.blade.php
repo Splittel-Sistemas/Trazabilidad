@@ -181,6 +181,7 @@
                                             <th>Descripción</th>
                                             <th>Cantidad Pendiente de asignar</th>
                                             <th>Cantidad Total Orden de Fabricacion</th>
+                                            <th>Esc&aacute;ner</th>
                                             <th>Asignar l&iacute;nea</th>
                                         </tr>
                                     </thead>
@@ -192,14 +193,9 @@
                                                 <td>{{$partida->Descripcion }}</td>
                                                 <td class="text-center">{{$partida->CantidadSuministro }}</td>
                                                 <td class="text-center">{{$partida->CantidadTotal }}</td>
+                                                <td class="text-center"><input type="checkbox" onchange="Escaner(this,'{{$partida->idEncriptOF}}')" class="Corte67869" @if($partida->Escaner == 1) checked @endif></td>
                                                 <td>
                                                     <button class="btn btn-sm btn-outline-info px-3 py-2" onclick="AsignarLinea('{{$partida->idEncriptOF}}')">Asignar</button>
-                                                    {{--<select onclick="" class="form-select form-select-sm" aria-label="">
-                                                        <option selected="">Selecciona una L&iacute;nea</option>
-                                                            @foreach($Lineas as $L)
-                                                                <option value="{{$L->id}}">{{$L->Nombre}}</option>
-                                                            @endforeach
-                                                      </select>--}}
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -338,6 +334,7 @@
                 if(response.status=='success'){
                     success('Guardado correctamente!','Asignación de linea generada correctamente.');
                     AsignarLinea(response.idOF);
+                    PorcentajeLlenadas();
                 }else{
                     error('Error al cargar los datos!', response.message);
                 }
@@ -374,6 +371,7 @@
         $('#FiltroOF_Fecha_table2').change(function() {
             PorcentajeLlenadas(); 
         });
+        setInterval(RecargarTabla, 180000);
     });
     //fin
     function PorcentajeLlenadas() {
@@ -519,6 +517,27 @@
         errorPiezaspersona=$('#error_Piezaspersona');
         errorCantidadPersona.hide(); 
         errorPiezaspersona.hide(); 
+    }
+    function Escaner(Escanear, id){
+        Escaneado=Escanear.checked;
+        $.ajax({
+            url: "{{route('CambiarEstatusEscaner')}}", 
+            type: 'POST',
+            data: {
+                Escanear: Escaneado,
+                Id: id,
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+            },
+            success: function(response) {
+                //RecargarTabla();
+            },
+            error: function(xhr, status, error) {
+                RecargarTabla();
+                error('Ocurrio un erro!', 'El Tipo Escáner no se pudo actualizar')
+            }
+        }); 
     }
 </script>
 @endsection

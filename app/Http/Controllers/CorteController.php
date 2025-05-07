@@ -372,6 +372,7 @@ class CorteController extends Controller
                 }
                 $data = [
                     'Cantidad' => $Cantitadpiezas,
+                    'Areas_id' => 2,
                     'TipoPartida' => $TipoPartida, // N = Normal
                     'FechaComienzo' => now(),
                     'NumeroEtiqueta' => $NumeroPartida,
@@ -590,6 +591,7 @@ class CorteController extends Controller
         }
         foreach($OrdenFabricacion->PartidasOF as $partida){
             $partida->EstatusPartidaOF=0;
+            $partida->EstatusPartidaOFSuministro=0;
             $partida->save();
         }
         return response()->json([
@@ -833,6 +835,7 @@ class CorteController extends Controller
             // Asignamos el número de inicio y fin de la etiqueta para la partida seleccionada
             $TipoPartida = "N";
             foreach($PartidasOFEtiq as $key=>$PartidaOFEtiq){
+                $TipoPartida = $PartidaOFEtiq['pivot']->TipoPartida;
                 if($TipoPartida == 'R'){
                     $finR += $PartidaOFEtiq['pivot']->Cantidad;
                 }else{
@@ -847,6 +850,7 @@ class CorteController extends Controller
                 }
                 if($TipoPartida == 'R'){
                     $inicioR += $PartidaOFEtiq['pivot']->Cantidad;
+
                 }else{
                     $inicio += $PartidaOFEtiq['pivot']->Cantidad;
                 }

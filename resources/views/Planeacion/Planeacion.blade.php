@@ -648,6 +648,7 @@
             let isChecked = checkbox.checked;
             var checkboxCorte = cells[10].querySelector('input[type="checkbox"]');
             let isCheckedCorte = checkboxCorte.checked;
+            var LLC = cells[11].querySelector('input[type="hidden"]').value;
             if(CadenaVacia(cells[1].innerHTML)){
                 error("Ocurrio un error!","Orden de fabricación no valida");
                 return 0;
@@ -673,6 +674,7 @@
                 Escanner:isChecked,
                 Corte:isCheckedCorte,
                 responsablecorte: responsablecorte,
+                LLC:LLC,
             });
             IdRow.remove();
         });
