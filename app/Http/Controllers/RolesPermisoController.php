@@ -34,7 +34,9 @@ class RolesPermisoController extends Controller
      */
     public function create()
     {
-        $permissions = Permission::all();
+        $permissions = Permission::orderBy('name','desc')->get()->groupBy('groups');
+        //$permissions = Permission::orderBy('name','desc')->get();
+
         return view('RolesPermisos.create', compact('permissions'));
     }
 
@@ -45,16 +47,13 @@ class RolesPermisoController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|unique:roles,name', 
-            'permissions' => 'array|exists:permissions,id', 
+            'permissions' => 'required|array|exists:permissions,id', 
         ]);
-        
         $role = Role::create(['name' => $request->nombre]); 
-
         if ($request->has('permissions') && is_array($request->permissions)) {
             $role->permissions()->sync($request->permissions); 
         }
-
-        return redirect()->route('RolesPermisos.index')->with('success', 'Rol creado con éxito.');
+        return redirect()->route('RolesPermisos.index')->with('success', 'Rol '.$request->nombre.' creado con éxito.');
     }
 
     /**
@@ -63,7 +62,8 @@ class RolesPermisoController extends Controller
     public function edit($id)
     {
         $role = Role::with('permissions')->find($id); 
-        $allPermissions = Permission::OrderBy('name')->get(); 
+        $allPermissions = Permission::orderBy('name','desc')->get()->groupBy('groups');
+        //return$allPermissions = Permission::OrderBy('name')->get(); 
         return response()->json([
             'id' => $role->id,
             'name' => $role->name,

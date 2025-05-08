@@ -32,6 +32,7 @@ class CreateAreasTable extends Migration
             ['nombre' => 'Visualización'],//15
             ['nombre' => 'Montaje'],//16 //AreaFinal
             ['nombre' => 'Empaque'],//17 //AreaFinal
+            ['nombre' => 'Clasificación'],//18 //AreaFinal
         ]);
     }
 

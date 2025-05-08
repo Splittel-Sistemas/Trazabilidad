@@ -87,30 +87,17 @@
 
     <!-- Contenido principal -->
     <div class="container my-4">
-        @if (session('status'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('status') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
         @if(Auth::user()->hasPermission("Crear Rol"))
-            <a href="{{ route('RolesPermisos.create') }}" class="btn btn-outline-info mb-3">Crear Rol</a>
+            <a href="{{ route('RolesPermisos.create') }}" class="btn btn-outline-info mb-1">Crear Rol</a>
         @endif
-        <div class="card p-4" style="display:block;" id="roles-table" data-list='{"valueNames":["nombreRol","permisos"],"page":5,"pagination":true}'>
+        <div class="card p-4" style="display:block;" id="roles-table" data-list='{"valueNames":["nombreRol","permisos"],"page":10,"pagination":true}'>
             <div class="search-box mb-3 mx-auto">
               <form class="position-relative" data-bs-toggle="search" data-bs-display="static"><input class="form-control search-input search form-control-sm" type="search" placeholder="Search" aria-label="Search" />
                 <span class="fas fa-search search-box-icon"></span>
               </form>
             </div>
             <div class="table-responsive">
-                <div class="card shadow-sm">
-                    <table class="table table-bordered table-striped table-sm fs--1">
+                <table class="table table-bordered table-striped table-sm fs--1">
                         <thead class="bg-primary text-white">
                             <tr>
                                 <th class="sort border-top ps-3" data-sort="nombreRol" style="width: 15%">Nombre del Rol</th>
@@ -144,8 +131,7 @@
                             </tr>
                             @endforeach
                         </tbody>
-                    </table>
-                </div>
+                </table>
                 <div class="d-flex justify-content-center mt-3"><button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
                     <ul class="mb-0 pagination"></ul><button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
                 </div>
@@ -158,22 +144,23 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="roleModalLabel">Editar Rol</h5>
+                    <h5 class="modal-title" id="roleModalLabel">Editar Rol <span id="EditarNombreAdministrador"></span></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <form id="roleEditForm" action="{{ route('RolesPermisos.update', '__roleId__') }}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
-                        <div class="form-group mb-2">
+                        <div class="form-group mb-2 col-6">
                             <label for="roleName">Nombre del Rol</label>
                             <input type="text" class="form-control form-control-sm" id="roleName" name="name" required>
                         </div>
                         <div class="form-group">
                             <label for="rolePermissions" class="mb-1">Permisos</label>
-                            <div class="form-check mr-3 mb-2 col-6 mb-2">
+                            <small class="form-text text-muted">Seleccione uno o más permisos.</small>
+                            <div class="form-check">
                                 <input type="checkbox" id="MarcarTodoCheck" class="form-check-input">
-                                <label for="MarcarTodo" class="form-check-label">Marcar todo</label>
+                                <label for="MarcarTodo" class="form-check-label font-weight-bold mt-1">Marcar todo</label>
                             </div>
                             <div class="container">
                                 <div id="rolePermissions"  class="row">
@@ -195,7 +182,6 @@
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
         $(document).ready(function () {
             $.ajaxSetup({
@@ -208,76 +194,57 @@
             var roleId = $(this).data('id');
             var formAction = "{{ route('RolesPermisos.update', '__roleId__') }}".replace('__roleId__', roleId);
             $('#roleEditForm').attr('action', formAction);
+            $('#EditarNombreAdministrador').html('');
             $.ajax({
                 url: "{{ route('RolesPermisos.edit', '__roleId__') }}".replace('__roleId__', roleId),
                 method: 'GET',
                 success: function(data) {
-                    $('#roleName').val(data.name);
                     var permissionsContainer = $('#rolePermissions');
                     permissionsContainer.empty(); // Limpiar contenedor de permisos
-
-                    // Definir los sub-permisos
-                    var subPermissions = {
-                        'Vista Lineas': ['Crear Linea', 'Editar Linea', 'Activar/Desactivar Linea'],
-                        'Vista Usuarios': ['Crear Usuario', 'Editar Usuario', 'Activar/Desactivar Usuario'],
-                        'Vista Roles y permisos': ['Crear Rol', 'Editar Rol'],
-                    };
-
-                    // Recorrer los permisos principales
-                    data.available_permissions.forEach(function(permission) {
-                        var hasSubPermissions = subPermissions[permission.name]; // Verificar si tiene sub-permisos
-                        var targetID = permission.name.replace(/\s+/g, '_').toLowerCase(); // Crear ID único
-
-                        // Verificar si el permiso ya fue agregado
-                        if (!permissionsContainer.find(`#permission-${permission.id}`).length) {
-                            // Agregar el checkbox principal
-                            permissionsContainer.append(`
-                                <div class="form-check col-4 col-sm-3 mb-2">
-                                    <input type="checkbox" class="form-check-input toggle-sub" id="permission-${permission.id}" 
-                                        name="permissions[]" value="${permission.id}" ${data.permissions.includes(permission.id) ? 'checked' : ''} 
-                                        data-target="${targetID}">
-                                    <label class="form-check-label" for="permission-${permission.id}">${permission.name}</label>
-                                </div>
-                            `);
-
-                            // Si el permiso tiene sub-permisos, agregarlos debajo
-                            if (hasSubPermissions) {
-                                permissionsContainer.append(`
-                                    <div id="${targetID}" class="sub-permissions col-12 ml-4 pl-3" style="display: none;">
-                                        <div class="card p-2">
-                                            ${subPermissions[permission.name].map(function(subPermission) {
-                                                // Verificar si el sub-permiso ya fue agregado
-                                                return `
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input sub-permission" 
-                                                            id="subpermission-${subPermission}" name="permissions[]" value="${subPermission}" 
-                                                            data-parent="permission-${permission.id}">
-                                                        <label class="form-check-label" for="subpermission-${subPermission}">
-                                                            ${subPermission}
-                                                        </label>
-                                                    </div>
-                                                `;
-                                            }).join('')}
-                                        </div>
-                                    </div>
-                                `);
+                    $('#roleName').val(data.name);
+                    $('#EditarNombreAdministrador').html(data.name);
+                    if(data.name=="ADMINISTRADOR"){
+                        $('#roleName').prop('disabled', true);
+                    }else{
+                        $('#roleName').prop('disabled', false);
+                    }
+                    var checks="";
+                    Object.entries(data.available_permissions).forEach(function(permission) {
+                        checks+='<div class="col-3">';
+                            if(permission[1].length>1){
+                                checks+='<input onchange="MostrarInput(this,\'collapse'+permission[1][0]['id']+'\')" type="checkbox" name="permissions[]" id="permission_'+ permission[1][0]['id'] +'" value="'+permission[1][0]['id']+'" class="form-check-input sub-permission" data-parent="permission_'+permission[1][0]['id'] +'">'+
+                                                    '<label for="permission_'+ permission[1][0]['id'] +'" class="form-check-label">'+
+                                                        permission[1][0]['name'] +
+                                                    '</label><div class="collapse collapse-permiso" id="collapse'+permission[1][0]['id']+'" style="display: block;">'+
+                                                    '<hr class="m-0 p-0">';
+                                BanderaContador=0;
+                                permission[1].forEach(function(unico){
+                                    if(BanderaContador>0){
+                                        checks+='<div class="col-12 mx-3">'+
+                                                    '<input type="checkbox" name="permissions[]" id="permission_'+ unico.id  +'" value="'+unico.id +'" class="form-check-input sub-permission" data-parent="permission_'+unico.id+'">'+
+                                                    '<label for="permission_'+unico.id +'" class="form-check-label">'+
+                                                                    unico.name +
+                                                    '</label></div>';
+                                    }
+                                    BanderaContador++;
+                                });
+                                checks+='<hr class="m-1 p-0"></div>';
+                            }else{
+                                checks+='<input type="checkbox" name="permissions[]" id="permission_'+ permission[1][0]['id'] +'" value="'+permission[1][0]['id']+'" class="form-check-input sub-permission" data-parent="permission_'+permission[1][0]['id']+'">'+
+                                                    '<label for="permission_'+ permission[1][0]['id'] +'" class="form-check-label">'+
+                                                        permission[1][0]['name']+
+                                                    '</label>';
                             }
-                        }
+                        checks+='</div>';
                     });
-
-                    // Manejar el cambio del checkbox principal
-                    $(".toggle-sub").on('change', function() {
-                        let target = $("#" + $(this).data('target'));
-                        if ($(this).is(':checked')) {
-                            target.fadeIn(); // Mostrar sub-permisos
-                        } else {
-                            target.fadeOut(); // Ocultar sub-permisos
-                            target.find('.sub-permission').prop('checked', false); // Desmarcar sub-permisos
-                        }
-                    });
+                    permissionsContainer.html(checks);
+                    PermisosRol=data.permissions;
+                    for(i=0;i<PermisosRol.length;i++){
+                        $('#permission_'+PermisosRol[i]).prop('checked', true);
+                    }
                 },
-                error: function(xhr, status, error) {
-                    Swal.fire('Error', 'Hubo un error al cargar los datos del rol.', 'error');
+                error: function(xhr, status, errorjs) {
+                    error('Error', 'Hubo un error al cargar los datos del rol \n'+errorjs);
                 }
             });
 
@@ -291,6 +258,14 @@
                     permisos.forEach(checkbox => {
                         checkbox.checked=true;
                     });
+                    let allCheckboxes = document.querySelectorAll("input[name='permissions[]']");
+                    var items = document.querySelectorAll('.collapse-permiso');
+                                items.forEach(item => {
+                                    $(item).addClass('show');
+                                    $(item).slideDown();  
+                                    // Solo abrir si está cerrado
+                                        //new bootstrap.Collapse(item, {toggle: false}).show();
+                                });
                 }else{
                     permisos.forEach(checkbox => {
                         checkbox.checked=false;
@@ -298,6 +273,15 @@
                 }
             });
         });
+        function MostrarInput(checkbox,idcollapse){
+            var collapseElement = $('#'+idcollapse);
+            if(checkbox.checked){
+                collapseElement.show();
+            }else{
+                collapseElement.hide();
+                collapseElement.find('input[type="checkbox"]').prop('checked', false);
+            }
+        }
         function MostrarPermisos(NumRole){
             if ($('#'+NumRole).hasClass('Permisos-Colapse')) {
                 $('#'+NumRole).removeClass('Permisos-Colapse');
@@ -307,5 +291,14 @@
                 $('#Btn'+NumRole).html('Ver más...');
             }
         }
+        @if (session('status'))
+                success('Guardado corectamente!','{{ session('status')}}')
+        @endif
+        @if (session('success'))
+            success('Guardado corectamente!','{{ session('success')}}')
+        @endif
+        @if (session('error'))
+            error('Guardado corectamente!','{{ session('error')}}')
+        @endif
     </script>
 @endsection

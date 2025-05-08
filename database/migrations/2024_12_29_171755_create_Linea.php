@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -21,6 +22,15 @@ return new class extends Migration
             $table->string('AreasPosibles')->nullable(); 
             $table->timestamps();
         });
+        DB::table('Linea')->insert([
+            'NumeroLinea' => 0,
+            'Nombre' => 'En espera',
+            'ColorLinea' => '#FFFF',
+            'Descripcion' => null,
+            'AreasPosibles' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     /**

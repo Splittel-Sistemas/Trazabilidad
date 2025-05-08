@@ -65,64 +65,56 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-    <div class="card p-4" style="display:block;" id="tableExample3" data-list="{&quot;valueNames&quot;:[&quot;apellido&quot;,&quot;nombre&quot;,&quot;email&quot;,&quot;roles&quot;,&quot;estatus&quot;],&quot;page&quot;:10,&quot;pagination&quot;:true}">
+    <div class="card p-4" style="display:block;" id="tableExample3" data-list="{&quot;valueNames&quot;:[&quot;numero&quot;,&quot;nombre&quot;,&quot;descripcion&quot;],&quot;page&quot;:10,&quot;pagination&quot;:true}">
         <div class="search-box mb-3 mx-auto">
             <form class="position-relative d-flex align-items-center" data-bs-toggle="search" data-bs-display="static">
-                <input class="form-control search-input search form-control-sm rounded-pill pe-5" 
-                       type="search" 
-                       placeholder="Buscar" 
-                       aria-label="Buscar">
-                <svg class="position-absolute end-0 me-3 search-box-icon" width="16" height="16" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8 8-3.58 8-8S12.42 0 8 0zm0 14C4.69 14 2 11.31 2 8s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path>
-                </svg>
+                <input class="form-control search-input search form-control-sm rounded-pill pe-5" type="search" placeholder="Buscar" aria-label="Buscar">
+                <span class="fas fa-search search-box-icon"></span>
             </form>
         </div>
         <div class=" table-responsive">
-                <table class="table table-striped table-sm fs--1 mb-0">
-                    <thead class="bg-primary text-white">
-                        <tr>
-                            <th class="sort border-top text-center ps-3" data-sort="numero">Número de línea</th>
-                            <th class="sort border-top ps-3" data-sort="nombre">Nombre</th>
-                            <th class="sort border-top ps-3" data-sort="descripcion">Descripción</th>
-                            <th class="sort border-top ps-3" data-sort="activacion">Activar</th>    
-                            <th class="sort border-top ps-3" data-sort="activacion">Color</th>
-                            <th class="sort border-top text-center ps-3">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody class="list">
-                        @foreach ($linea as $linea)
-                        <tr>
-                            <td class="align-middle text-center numero ps-3">{{ $linea->NumeroLinea }}</td>
-                            <td class="align-middle nombre ps-3">{{ $linea->Nombre }}</td>
-                            <td class="align-middle descripcion ps-3">{{ $linea->Descripcion }}</td>
-                            <td class="align-center estatus ps-8">
-                                @if(Auth::user()->hasPermission("Activar/Desactivar Linea"))
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input toggle-status" style="transform:scale(1.5);" 
-                                            type="checkbox" 
-                                            id="ActivarUsuario{{ $linea->id }}" 
-                                            data-id="{{ $linea->id }}" 
-                                            data-active="{{ $linea->active ? '1' : '0' }}" 
-                                            {{ $linea->active ? 'checked' : '' }} 
-                                            onclick="DesactivarLinea(this)">
-                                    </div>
-                                @endif
-                            </td>
-                            <td><div class="p-3" style="background: {{ $linea->ColorLinea }};"></div></td>
-                                <td class="text-center pe-0">
-                                    @if(Auth::user()->hasPermission("Editar Linea"))
-                                        <button type="button" class="btn btn-outline-warning btn-sm" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#lineaModal" 
-                                            data-id="{{ $linea->id }}">
-                                            <i class="fas fa-edit"></i> Editar
-                                        </button>
-                                    @endif
-                                </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <table class="table table-striped table-sm fs--1 mb-0">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th class="sort border-top text-center ps-3" data-sort="numero">Número de línea</th>
+                        <th class="sort border-top ps-3" data-sort="nombre">Nombre</th>
+                        <th class="sort border-top ps-3" data-sort="descripcion">Descripción</th>
+                        <th class="sort border-top ps-3" data-sort="activacion">Activar</th>    
+                        <th class="sort border-top ps-3" data-sort="color">Color</th>
+                        <th class="sort border-top text-center ps-3">Acción</th>
+                    </tr>
+                </thead>
+                <tbody class="list">
+                    @foreach ($linea as $linea)
+                    <tr>
+                        <td class="align-middle text-center numero ps-3">{{ $linea->NumeroLinea }}</td>
+                        <td class="align-middle nombre ps-3">{{ $linea->Nombre }}</td>
+                        <td class="align-middle descripcion ps-3">{{ $linea->Descripcion }}</td>
+                        <td class="align-center activacion ps-8">
+                            @if(Auth::user()->hasPermission("Activar/Desactivar Linea"))
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input toggle-status" style="transform:scale(1.5);" type="checkbox" id="ActivarUsuario{{ $linea->id }}" data-id="{{ $linea->id }}" 
+                                        data-active="{{ $linea->active ? '1' : '0' }}" 
+                                        {{ $linea->active ? 'checked' : '' }} 
+                                        onclick="DesactivarLinea(this)">
+                                </div>
+                            @endif
+                        </td>
+                        <td class="align-center color ps-8"><div class="p-3" style="background: {{ $linea->ColorLinea }};"></div></td>
+                        <td class="text-center pe-0">
+                            @if(Auth::user()->hasPermission("Editar Linea"))
+                                <button type="button" class="btn btn-outline-warning btn-sm" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#lineaModal" 
+                                    data-id="{{ $linea->id }}">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                            @endif
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
         <div class="d-flex justify-content-between mt-3">
             <span class="d-none d-sm-inline-block" data-list-info="data-list-info">1 a 5 artículos de 43</span>

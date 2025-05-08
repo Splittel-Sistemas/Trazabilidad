@@ -39,6 +39,7 @@ Route::post('/Planeacion/partidas', [PlaneacionController::class,'PartidasOFGuar
 Route::delete('/Planeacion/partidas', [PlaneacionController::class,'PartidasOFRegresar'])->name('PartidasOFRegresar')->middleware('auth');
 Route::post('/Planeacion/partidas/FiltroFechas', [PlaneacionController::class,'PartidasOFFiltroFechas_Tabla'])->name('PartidasOFFiltroFechas_Tabla')->middleware('auth');
 Route::post('/Planeacion/partidas/EscanerEstatus', [PlaneacionController::class,'CambiarEstatusEscaner'])->name('CambiarEstatusEscaner')->middleware('auth');
+Route::post('/Planeacion/partidas/UrgenciaEstatus', [PlaneacionController::class,'CambiarEstatusUrgencia'])->name('CambiarEstatusUrgencia')->middleware('auth');
 Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Detalles'])->name('PartidasOF_Detalles')->middleware('auth');
 Route::get('/Planeacion/PorcentajesPlaneacion', [PlaneacionController::class,'PorcentajesPlaneacion'])->name('PorcentajesPlaneacion')->middleware('auth');
 Route::post('/Planeacion/Porcentaje/Guardar', [PlaneacionController::class,'GuardarParametrosPorcentajes'])->name('GuardarParametrosPorcentajes')->middleware('auth');
@@ -64,6 +65,7 @@ Route::post('/Area/Suministro/Guardar', [AreasController::class,'SuministroGuard
 Route::post('/Area/Suministro/Cancelar', [AreasController::class,'SuministroCancelar'])->name('SuministroCancelar')->middleware('auth');
 Route::post('/Area/Suministro/Finalizar', [AreasController::class,'SuministroFinalizar'])->name('SuministroFinalizar')->middleware('auth');
 Route::post('/Area/Suministro/Buscar', [AreasController::class,'BuscarSuministro'])->name('BuscarSuministro')->middleware('auth');
+Route::get('/Area/Corte/GenerarPDF/Suministro', [CorteController::class, 'generarPDFSuministro'])->name('generarPDFSuministro')->middleware('auth');//Generar PDF
 //Preparado
 Route::get('/Area/Transición', [AreasController::class,'Transicion'])->name('Transicion')->middleware('auth');
 Route::get('/Area/Preparado', [AreasController::class,'Preparado'])->name('Preparado')->middleware('auth');
@@ -83,7 +85,11 @@ Route::get('/Area/Visualización', [AreasController::class,'Visualizacion'])->na
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas')->middleware('auth');
 Route::get('/Area/Montaje', [AreasController::class,'Montaje'])->name('Montaje')->middleware('auth');
 Route::post('/Area/Tabla/Pendientes', [AreasController::class,'AreaTablaPendientes'])->name('AreaTablaPendientes')->middleware('auth');
-
+//Clasificacion
+Route::get('/Area/Clasificación', [AreasController::class,'Clasificacion'])->name('Clasificacion')->middleware('auth');
+Route::get('/Area/Clasificación/RecargarTabla', [AreasController::class,'ClasificacionRecargarTabla'])->name('ClasificacionRecargarTabla')->middleware('auth');
+Route::post('/Area/Clasificación/InfoModal', [AreasController::class,'ClasificacionInfoModal'])->name('ClasificacionInfoModal')->middleware('auth');
+Route::post('/Area/Clasificación/Asignar', [AreasController::class,'ClasificacionAsignar'])->name('ClasificacionAsignar')->middleware('auth');
 
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden')->middleware('auth');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida')->middleware('auth');

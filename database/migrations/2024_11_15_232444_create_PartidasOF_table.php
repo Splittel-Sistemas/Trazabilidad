@@ -19,13 +19,13 @@ class CreatePartidasOFTable extends Migration
             $table->integer('NumeroPartida')->nullable();
             $table->string('TipoPartida',1)->nullable();
             $table->dateTime('FechaFabricacion');
-            $table->string('EstatusPartidaOF')->default(0)->nullable(); //cerrado= 0 abierto=1
+            $table->string('EstatusPartidaOF')->default(0)->nullable(); //cerrado= 1 abierto=0 Estatus de Corte
+            $table->string('EstatusPartidaOFSuministro')->default(0)->nullable(); //cerrado= 1 abierto=0 Estatus de Suministro
             $table->datetime('FechaComienzo')->nullable();
             $table->datetime('FechaFinalizacion')->nullable();
             $table->timestamps();
         });
     }
-
     public function down()
     {
         Schema::dropIfExists('PartidasOF');

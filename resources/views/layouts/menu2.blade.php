@@ -12,7 +12,7 @@
         <!-- ===============================================-->
         <!--    Favicons-->
         <!-- ===============================================-->
-        <link rel="shortcut icon" type="image/x-icon" href="{{asset('imagenes/splittel.png') }}">
+        <link rel="shortcut icon" type="image/x-icon" href="{{asset('imagenes/splittel.png') }}" sizes="10x1">
         <link rel="manifest" href="{{asset('menu2/assets/img/favicons/manifest.json')}}">
         <meta name="msapplication-TileImage" content="{{asset('menu2/assets/img/favicons/mstile-150x150.png')}}">
         <meta name="theme-color" content="#ffffff">
@@ -38,6 +38,25 @@
         <link href="{{asset('menu2/assets/css/user-rtl.min.css')}}" type="text/css" rel="stylesheet" id="user-style-rtl">
         <link href="{{asset('menu2/assets/css/user.min.css')}}" type="text/css" rel="stylesheet" id="user-style-default">
         @yield('styles')
+        <style>
+            .Apuntarbox{
+                border: 4px solid transparent;
+                border-radius:0.5rem;
+                padding: 3px;
+                animation: borderBlink 1s infinite alternate;
+            }
+            @keyframes borderBlink {
+                0% {
+                    border-color: transparent;
+                }
+                50% {
+                    border-color: #0000ff;
+                }
+                100% {
+                    border-color: transparent;
+                }
+            }
+        </style>
         <script>
             var phoenixIsRTL = window.config.config.phoenixIsRTL;
             if (phoenixIsRTL) {
@@ -243,6 +262,12 @@
                                                 <hr class="p-0 m-1">
                                             </li>
                                         @endif
+                                        @if(Auth::user()->hasPermission("Vista Clasificación"))
+                                        <li class="nav-item"><a class="nav-link {{ Route::is('Clasificacion') ? 'nav-tabs active' : '' }}" href="{{route('Clasificacion')}}" data-bs-toggle="" aria-expanded="false">
+                                            <div class="d-flex align-items-center"><span class="nav-link-text">Clasificaci&oacute;n</span></div>
+                                            </a>
+                                        </li>
+                                        @endif
                                         @if(Auth::user()->hasPermission("Vista Transición"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Transicion') ? 'nav-tabs active' : '' }}" href="{{route('Transicion')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Transici&oacute;n</span></div>
@@ -318,7 +343,7 @@
                                                 </a>
                                             </li>
                                         @endif
-                                        @if(Auth::user()->hasPermission("Vista Preparado"))
+                                        @if(Auth::user()->hasPermission("Vista Montaje"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Montaje') ? 'nav-tabs active' : '' }}" href="{{route('Montaje')}}" data-bs-toggle="" aria-expanded="false">
                                                 <div class="d-flex align-items-center"><span class="nav-link-text">Montaje</span></div>
                                                 </a>

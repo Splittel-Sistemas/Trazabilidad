@@ -97,7 +97,7 @@
             <div class="card" id="DivCointainerTablePendientes">
                 <h4 class="text-center mt-2 p-0">Ordenes de Fabricaci&oacute;n Pendientes</h4>
                 <div class="d-flex justify-content-start">
-                    <div class="col-3 mx-2">
+                    <div class="col-3 mx-2 Apuntarbox" id="Apuntarbox">
                         <div class="input-group input-group-sm mb-1">
                             <span class="input-group-text" id="inputGroup-sizing-sm">Núm. L&iacute;nea:</span>
                             <select class="form-select form-select-sm" aria-label="FiltroLinea" id="FiltroLinea">
@@ -127,18 +127,20 @@
                         </thead>
                         <tbody id="TablaPreparadoPendientesBody" class="list">
                             @foreach($Registros as $partida)
-                            <tr>
-                                <td class="text-center">{{$partida->OrdenFabricacion }}</td>
-                                <td>{{$partida->Articulo }}</td>
-                                <td>{{$partida->Descripcion }}</td>
-                                <td class="text-center">{{$partida->NumeroActuales}}</td>
-                                <td class="text-center">{{$partida->TotalPendiente-$partida->NumeroActuales }}</td>
-                                <td class="text-center">{{$partida->TotalPendiente }}</td>
-                                <td class="text-center">{{$partida->CantidadTotal }}</td>
-                                <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                                <td><h5 class="text-light text-center p-0" style="background: {{$partida->ColorLinea }};">{{$partida->Linea }}</h5></td>
-                            </tr>
-                        @endforeach
+                                @foreach($partida->PartidasOFFaltantes as $PartidaArea)
+                                    <tr>
+                                        <td class="text-center">{{$partida->OrdenFabricacion }}</td>
+                                        <td>{{$partida->Articulo }}</td>
+                                        <td>{{$partida->Descripcion }}</td>
+                                        <td class="text-center">{{$PartidaArea->Actual}}</td>
+                                        <td class="text-center">{{$PartidaArea->Anterior-$PartidaArea->Actual}}</td>
+                                        <td class="text-center">{{$PartidaArea->Anterior }}</td>
+                                        <td class="text-center">{{$partida->CantidadTotal }}</td>
+                                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                                        <td><h5 class="text-light text-center p-0" style="background: {{$PartidaArea->ColorLinea}};">{{$PartidaArea->Linea}}</h5></td>
+                                    </tr>
+                                @endforeach
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -148,7 +150,6 @@
     <div  id="ContainerToastGuardado"></div>
 @endsection
 @section('scripts')
-<script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
     let timeout;
     function ListaCodigo(Codigo,Contenedor,TipoEntrada){
@@ -185,6 +186,18 @@
         if(!(regexCodigo.test(Codigo) || regexCodigoOF.test(Codigo))) {
             return 0;
         }
+        FiltroLinea = $('#FiltroLinea').val();
+        if(FiltroLinea == null || FiltroLinea=="" || FiltroLinea<0){
+            Mensaje='Para comenzar, en el campo Núm. Línea selecciona la línea en la que vas a trabajar!';
+                            Color='bg-danger';
+                            $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                            $('#ToastGuardadoBody').html(Mensaje);
+                            $('#ToastGuardado').fadeIn();
+                            setTimeout(function(){
+                                $('#ToastGuardado').fadeOut();
+                            }, 3500);
+            return 0;
+        }
         $('#Cantidad').val('');
         $('#CantidadSalida').val('');
         $.ajax({
@@ -194,6 +207,7 @@
                 Codigo: Codigo,
                 Retrabajo: 'no',
                 Inicio:Inicio,
+                Linea:FiltroLinea,
                 Finalizar:Finalizar,
                 Area:'{{$Area}}'
             },
@@ -399,7 +413,41 @@
                         setTimeout(function(){
                             $('#ToastGuardado').fadeOut();
                         }, 4000);
+                }else if(response.status == "ErrorLineaComplete"){
+                    if(Inicio==1){
+                        $('#CodigoEscanerEntrada').focus();
+                    }else if(Inicio==0){
+                        $('#CodigoEscanerSalida').focus();
+                    }
+                    $('#DivCointainerTableSuministro').html(response.tabla);
+                    if(response.Escaner==1){
+                        if((response.tabla).includes('<td')){
+                            TablaList(DivCointainerTableSuministro);
+                        }
+                    }
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                    $('#ToastGuardadoBody').html('La linea '+FiltroLinea+' Ya se encuentra completada!');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 4000);
+                    
+                }else if(response.status == "ErrorLinea"){
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                    $('#ToastGuardadoBody').html('Error de Línea, el retrabajo tiene que ser en la misma Linea que se inicio normal!');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 5000);
+                }else if(response.status == "ErrorLineaCodigo"){
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                    $('#ToastGuardadoBody').html('Error de Línea, Este Codigo No pertenece a la Línea '+FiltroLinea +'!,\n seleccione correctamente su Línea');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 5000);
                 }
+                $('#ContentTabla').show();
                 RecargarTablaPendientes();
             },
             error: function(xhr, status, error) {
@@ -414,7 +462,7 @@
                 }
             }
         }); 
-    }, 800);
+        }, 800);
     }
     function TraerDatos(id,OF){
         $('#CodigoEscaner').val(OF+"-"+id);
@@ -422,12 +470,25 @@
     }
     function Retrabajo(Codigo){
         $('#CodigoEscanerEntrada').focus();
+        FiltroLinea = $('#FiltroLinea').val();
+        if(FiltroLinea == null || FiltroLinea=="" || FiltroLinea<0){
+            Mensaje='Para comenzar, en el campo Núm. Línea selecciona la línea en la que vas a trabajar!';
+                            Color='bg-danger';
+                            $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                            $('#ToastGuardadoBody').html(Mensaje);
+                            $('#ToastGuardado').fadeIn();
+                            setTimeout(function(){
+                                $('#ToastGuardado').fadeOut();
+                            }, 3500);
+            return 0;
+        }
         $.ajax({
             url: "{{route('PreparadoBuscar')}}", 
             type: 'POST',
             data: {
                 Codigo: Codigo,
                 Inicio:1,
+                Linea:FiltroLinea,
                 Finalizar:0,
                 Retrabajo: 'si',
                 Area:'{{$Area}}' 
@@ -547,21 +608,36 @@
                 "sInfoFiltered":   "(filtrado de _MAX_ registros en total)",
                 "sSearch":         "Buscar:",
                 "sUrl":            "",
-            }
-        });
-        $('#FiltroLinea').on('change', function() {
-                    var val = $(this).val();
-                    if(val == -1) {
-                        table.column(8).search('').draw();
-                    } else {
-                        table.column(8).search(val).draw();
-                    }
+            },
         });
         setInterval(RecargarTablaPendientes,180000);//180000
+        //Filtro por Linea
+        $('#FiltroLinea').on('change', function() {
+            var val = $(this).val();
+            if(val == -1) {
+                $('#Apuntarbox').addClass('Apuntarbox');
+                table.column(8).search('').draw();
+            } else {
+                table.column(8).search(val).draw();
+                $('#Apuntarbox').removeClass('Apuntarbox');
+            }
+        });
     });
     function TipoNoEscaner(TipoEntrada) {
         CodigoEscaner=$('#CodigoEscanerEntrada').val();
         Cantidad=$('#Cantidad').val();
+        FiltroLinea = $('#FiltroLinea').val();
+        if(FiltroLinea == null || FiltroLinea=="" || FiltroLinea<0){
+            Mensaje='Para comenzar, en el campo Núm. Línea selecciona la línea en la que vas a trabajar!';
+                            Color='bg-danger';
+                            $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                            $('#ToastGuardadoBody').html(Mensaje);
+                            $('#ToastGuardado').fadeIn();
+                            setTimeout(function(){
+                                $('#ToastGuardado').fadeOut();
+                            }, 3500);
+            return 0;
+        }
         Retrabajo=document.getElementById('Retrabajo').checked;
         if (TipoEntrada=="Entrada") {
             Inicio = 1;
@@ -635,6 +711,7 @@
                 Cantidad: Cantidad,
                 Inicio: Inicio,
                 Fin: Fin,
+                Linea:FiltroLinea,
                 Retrabajo: Retrabajo,
                 Area: '{{$Area}}'
             },

@@ -91,7 +91,6 @@ function FormatoFecha(Fecha){
   return dia + "/" + mes + "/" + año;*/
 }
 function RegexNumeros(datos){
-
     let valor = datos.value;
     // Reemplaza cualquier cosa que no sea un número (elimina letras, espacios y caracteres especiales)
     valor = valor.replace(/[^0-9]/g, '');

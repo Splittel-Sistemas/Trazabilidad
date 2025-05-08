@@ -2192,5 +2192,6 @@
         $('#ListaBusquedas').hide();
         $('#Btn-BuscarOrden').trigger('click');
     }
+    
 </script>
 @endsection

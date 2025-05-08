@@ -129,18 +129,18 @@
                                     </thead>
                                     <tbody id="TablaSuministroAbiertasBody" class="list">
                                         @foreach($PartidasOFA as $partida)
-                                        <tr>
-                                            <td class="text-center">{{$partida->OrdenFabricacion }}</td>
-                                            <td>{{$partida->Articulo }}</td>
-                                            <td>{{$partida->Descripcion }}</td>
-                                            <td>{{$partida->OrdenFaltantes}}</td>
-                                            <td>{{$partida->Normal }}</td>
-                                            <td>{{$partida->Retrabajo }}</td>
-                                            <td class="text-center">{{$partida->TotalPartida }}</td>
-                                            <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                                            <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Planear('{{$partida->idEncript}}')">Detalles</button></td>
-                                        </tr>
-                                    @endforeach
+                                            <tr style="@if($partida->Urgencia=='U'){{'background:#FFDCDB';}}@endif">
+                                                <td class="text-center">{{$partida->OrdenFabricacion }}</td>
+                                                <td>{{$partida->Articulo }}</td>
+                                                <td>{{$partida->Descripcion }}</td>
+                                                <td>{{$partida->OrdenFaltantes}}</td>
+                                                <td>{{$partida->Normal }}</td>
+                                                <td>{{$partida->Retrabajo }}</td>
+                                                <td class="text-center">{{$partida->TotalPartida }}</td>
+                                                <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                                                <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Planear('{{$partida->idEncript}}')">Detalles</button></td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -195,7 +195,9 @@
                                             <th>N&uacute;mero Partida</th>
                                             <th>Artículo</th>
                                             <th>Descripción</th>
-                                            <th>Cantidad Cortes</th>
+                                            <th>Normal</th>
+                                            <th>Retrabajo</th>
+                                            <th>Cortes Suministrados</th>
                                             <th>Fecha Finalizacion</th>
                                             <th>Estatus</th>
                                             <th>Acciones</th>
@@ -208,8 +210,10 @@
                                             <td class="text-center">{{$partida->NumeroPartida }}</td>
                                             <td>{{$partida->Articulo }}</td>
                                             <td>{{$partida->Descripcion }}</td>
+                                            <td>{{$partida->Normal }}</td>
+                                            <td>{{$partida->Retrabajo }}</td>
                                             <td class="text-center">{{$partida->TotalPartida }}</td>
-                                            <td class="text-center">{{$partida->FechaFinalizacion }}</td>
+                                            <td class="text-center">{{$partida->FechaTermina }}</td>
                                             <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Cerrada</span></div></td>
                                             <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Detalles('{{$partida->idEncript}}')">Detalles</button></td>
                                         </tr>
@@ -441,7 +445,7 @@
             var cantidad = selectedOption.data('cantidad');
             $('#Cantitadpiezas').val(cantidad);
         });
-        setInterval(RecargarTabla, 60000);
+        setInterval(RecargarTabla, 180000);
     });
     function Detalles(id){
         $('#ModalDetalle').modal('show');
@@ -695,7 +699,7 @@
     }
     function etiquetaColor(id){
         Coloretiqueta=$('#Coloretiqueta').val();
-        var url = "{{ route('generar.pdf')}}?id=_corteId_";
+        var url = "{{ route('generarPDFSuministro')}}?id=_corteId_";
         url = url.replace('_corteId_', id);
         // Asignar la URL al iframe para mostrar el PDF
     document.getElementById('pdfIframe').src = url;

@@ -180,11 +180,7 @@ class RegistroController extends Controller
             'password' => Hash::make($validatedData['password']),
             'role' => 'A', 
         ]);
-         
-      
         $user->roles()->sync($validatedData['roles']); 
-         
-
         return redirect()->route('registro.index')->with('status', 'Usuario creado exitosamente.');
 }
     
