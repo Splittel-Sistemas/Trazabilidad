@@ -396,6 +396,8 @@ class CorteController extends Controller
                     // Asocias la emisión a la orden de fabricación
                     $emision->save();
                 }
+                $OrdenFabricacion->cerrada=1;
+                $OrdenFabricacion->save();
                 return response()->json([
                     'status' => 'success',
                     'message' =>'Partida Guardada Correctamente!',

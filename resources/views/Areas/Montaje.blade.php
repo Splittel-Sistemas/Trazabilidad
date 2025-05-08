@@ -350,6 +350,16 @@
                                 case 1:
                                     Mensaje='Codigo <strong>'+Codigo+'</strong> Finalizado!';
                                     Color='bg-success';
+                                    if(response.BanderaFinalizar==0){
+                                        confirmacionesss(
+                                            "¡Orden de Fabricación finalizada!", 
+                                            "La orden de Fabricación se encuentra completada", 
+                                            "Aceptar", 
+                                            function () {
+                                                console.log('Orde de Fabricacion Cerrada');
+                                            }
+                                        );
+                                    }
                                     CoincidenciasCodigo = Codigo.match(/-/g);
                                     if(CoincidenciasCodigo.length==2){
                                         $('#CodigoEscanerSalida').val('');
@@ -767,37 +777,13 @@
                     if(response.BanderaFinalizar==0){
                         id=response.OF;
                         confirmacionesss(
-                                    "¡Orden de Fabricación finalizada!", 
-                                    "La orden de Fabricación se encuentra completada", 
-                                    "Aceptar", 
-                                    function () {
-                                        console.log('Orde de Fabricacion Cerrada');
-                                        /*$.ajax({
-                                            url: '{{ route("finProceso.empacado") }}',
-                                            type: "GET",
-                                            data: {
-                                                id: id,
-                                                _token: '{{ csrf_token() }}'
-                                            },
-                                            success: function (response) {
-                                                if (response.codigo=='Success') {
-                                                    success('Orden de Fabricacion Finalizada',response.message);
-                                                }else{
-                                                    error('Ocurrio un error',response.message);
-                                                }
-                                                setTimeout(function() {
-                                                    console.log("Recargando la tabla...");
-                                                    cargarTablaEmpacado();
-                                                }, 500);
-                                            },
-                                            error: function (xhr) {
-                                                console.error("Error:", xhr);
-                                                alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
-                                            }
-                                        });*/
-
-                                    }
-                                );
+                            "¡Orden de Fabricación finalizada!", 
+                            "La orden de Fabricación se encuentra completada", 
+                            "Aceptar", 
+                            function () {
+                                console.log('Orde de Fabricacion Cerrada');
+                            }
+                        );
                     }
                 }else if(response.status=='SurplusFin'){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>'); 
