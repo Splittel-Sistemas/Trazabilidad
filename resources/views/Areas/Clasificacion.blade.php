@@ -192,8 +192,8 @@
                                                 <td>{{$partida->Articulo }}</td>
                                                 <td>{{$partida->Descripcion }}</td>
                                                 <td class="text-center">{{$partida->CantidadSuministro }}</td>
-                                                <td class="text-center">{{$partida->CantidadTotal }}</td>
-                                                <td class="text-center"><input type="checkbox" onchange="Escaner(this,'{{$partida->idEncriptOF}}')" class="Corte67869" @if($partida->Escaner == 1) checked @endif></td>
+                                                <td class="text-center">{{$partida->CantidadTotal }} </td>
+                                                <td class="text-center"><input type="checkbox" @if ($partida->EscanerDisabled == 0 ) onchange="Escaner(this,'{{$partida->idEncriptOF}}')" @else disabled @endif class="Corte67869" @if($partida->Escaner == 1) checked @endif></td>
                                                 <td>
                                                     <button class="btn btn-sm btn-outline-info px-3 py-2" onclick="AsignarLinea('{{$partida->idEncriptOF}}')">Asignar</button>
                                                 </td>
