@@ -152,7 +152,7 @@
     <div class="wrapper">
         <div class="container">
                 <img class="img" src="{{asset('imagenes/splittel.png') }}" alt="Splittel" width="100" height="40">
-                <h1 class="m-0 p-0">Trazabilidad</h1>
+                <h1 class="m-0 p-0">Trazabilidad1</h1>
                 <div class="text-center mb-4 bg-select">
                     <button class="btn-select active" id="toggleAdministrativo">Administrativo</button>
                     <button class="btn-select " id="toggleOperadores">Operadores</button>
