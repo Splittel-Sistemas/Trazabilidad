@@ -97,7 +97,7 @@
             <div class="card" id="DivCointainerTablePendientes">
                 <h4 class="text-center mt-2 p-0">Ordenes de Fabricaci&oacute;n Pendientes</h4>
                 <div class="d-flex justify-content-start">
-                    <div class="col-3 mx-2">
+                    <div class="col-3 mx-2 Apuntarbox" id="Apuntarbox">
                         <div class="input-group input-group-sm mb-1">
                             <span class="input-group-text" id="inputGroup-sizing-sm">Núm. L&iacute;nea:</span>
                             <select class="form-select form-select-sm" aria-label="FiltroLinea" id="FiltroLinea">
@@ -151,7 +151,7 @@
 @endsection
 @section('scripts')
 <script>
-     let timeout;
+    let timeout;
     function ListaCodigo(Codigo,Contenedor,TipoEntrada){
         clearTimeout(timeout);
         timeout = setTimeout(() => {
@@ -413,7 +413,41 @@
                         setTimeout(function(){
                             $('#ToastGuardado').fadeOut();
                         }, 4000);
+                }else if(response.status == "ErrorLineaComplete"){
+                    if(Inicio==1){
+                        $('#CodigoEscanerEntrada').focus();
+                    }else if(Inicio==0){
+                        $('#CodigoEscanerSalida').focus();
+                    }
+                    $('#DivCointainerTableSuministro').html(response.tabla);
+                    if(response.Escaner==1){
+                        if((response.tabla).includes('<td')){
+                            TablaList(DivCointainerTableSuministro);
+                        }
+                    }
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                    $('#ToastGuardadoBody').html('La linea '+FiltroLinea+' Ya se encuentra completada!');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 4000);
+                    
+                }else if(response.status == "ErrorLinea"){
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                    $('#ToastGuardadoBody').html('Error de Línea, el retrabajo tiene que ser en la misma Linea que se inicio normal!');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 5000);
+                }else if(response.status == "ErrorLineaCodigo"){
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                    $('#ToastGuardadoBody').html('Error de Línea, Este Codigo No pertenece a la Línea '+FiltroLinea +'!,\n seleccione correctamente su Línea');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 5000);
                 }
+                $('#ContentTabla').show();
                 RecargarTablaPendientes();
             },
             error: function(xhr, status, error) {
@@ -428,7 +462,7 @@
                 }
             }
         }); 
-    }, 800);
+        }, 800);
     }
     function TraerDatos(id,OF){
         $('#CodigoEscaner').val(OF+"-"+id);
@@ -581,9 +615,11 @@
         $('#FiltroLinea').on('change', function() {
             var val = $(this).val();
             if(val == -1) {
+                $('#Apuntarbox').addClass('Apuntarbox');
                 table.column(8).search('').draw();
             } else {
                 table.column(8).search(val).draw();
+                $('#Apuntarbox').removeClass('Apuntarbox');
             }
         });
     });

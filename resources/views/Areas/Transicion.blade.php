@@ -10,29 +10,6 @@
         right: 20px; /* Distance from the right */
         z-index: 1050; /* Ensure it's above other content */
     }
-    /*.Apuntar{
-        position: absolute;
-        transform: scale(2);
-        top: 5rem;
-        left: 16%;
-    }*/
-    .Apuntarbox{
-        border: 4px solid transparent;
-        border-radius:0.5rem;
-        padding: 3px;
-        animation: borderBlink 1s infinite alternate;
-    }
-    @keyframes borderBlink {
-        0% {
-            border-color: transparent;
-        }
-        50% {
-            border-color: #0000ff;
-        }
-        100% {
-            border-color: transparent;
-        }
-    }
 </style>
 @endsection
 @section('content')
@@ -439,7 +416,41 @@
                         setTimeout(function(){
                             $('#ToastGuardado').fadeOut();
                         }, 4000);
+                }else if(response.status == "ErrorLineaComplete"){
+                    if(Inicio==1){
+                        $('#CodigoEscanerEntrada').focus();
+                    }else if(Inicio==0){
+                        $('#CodigoEscanerSalida').focus();
+                    }
+                    $('#DivCointainerTableSuministro').html(response.tabla);
+                    if(response.Escaner==1){
+                        if((response.tabla).includes('<td')){
+                            TablaList(DivCointainerTableSuministro);
+                        }
+                    }
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                    $('#ToastGuardadoBody').html('La linea '+FiltroLinea+' Ya se encuentra completada!');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 4000);
+                    
+                }else if(response.status == "ErrorLinea"){
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                    $('#ToastGuardadoBody').html('Error de Línea, el retrabajo tiene que ser en la misma Linea que se inicio normal!');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 5000);
+                }else if(response.status == "ErrorLineaCodigo"){
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                    $('#ToastGuardadoBody').html('Error de Línea, Este Codigo No pertenece a la Línea '+FiltroLinea +'!,\n seleccione correctamente su Línea');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 5000);
                 }
+                $('#ContentTabla').show();
                 RecargarTablaPendientes();
             },
             error: function(xhr, status, error) {

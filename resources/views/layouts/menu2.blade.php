@@ -38,6 +38,25 @@
         <link href="{{asset('menu2/assets/css/user-rtl.min.css')}}" type="text/css" rel="stylesheet" id="user-style-rtl">
         <link href="{{asset('menu2/assets/css/user.min.css')}}" type="text/css" rel="stylesheet" id="user-style-default">
         @yield('styles')
+        <style>
+            .Apuntarbox{
+                border: 4px solid transparent;
+                border-radius:0.5rem;
+                padding: 3px;
+                animation: borderBlink 1s infinite alternate;
+            }
+            @keyframes borderBlink {
+                0% {
+                    border-color: transparent;
+                }
+                50% {
+                    border-color: #0000ff;
+                }
+                100% {
+                    border-color: transparent;
+                }
+            }
+        </style>
         <script>
             var phoenixIsRTL = window.config.config.phoenixIsRTL;
             if (phoenixIsRTL) {

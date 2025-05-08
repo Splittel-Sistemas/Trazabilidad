@@ -1098,7 +1098,7 @@ class AreasController extends Controller
         $Escaner="";
         $CantidadCompletada=0;
         $EscanerExiste=0;
-        $PartidasFaltantesList='<li class="list-group-item d-flex justify-content-between align-items-center">Partida<span class="badge badge-light-danger rounded-pill">Faltantes</span><span class="badge badge-light-success rounded-pill">Completadas</span><span class="badge badge-light-primary rounded-pill">Total</span></li>';
+        $PartidasFaltantesList='<li class="list-group-item d-flex justify-content-between align-items-center">Núm. Línea<span class="badge badge-light-danger rounded-pill">Faltantes</span><span class="badge badge-light-success rounded-pill">Completadas</span><span class="badge badge-light-primary rounded-pill">Total</span></li>';
         //Valida si el codigo es aceptado tiene que ser mayor a 2
         //if(($CodigoTam==3 && !($CodigoPartes[2]=="" || $CodigoPartes[2]==0)) || $CodigoTam==2){
         if($CodigoTam==3 || $CodigoTam==2){
@@ -1114,13 +1114,14 @@ class AreasController extends Controller
         
                 ]);
             }else{
+                $status = 'success'; 
                 $CantidadTotal=$datos->CantidadTotal;
                 //Variable  guarda el valor de Escaner para saber si es no 0=No escaner 1=escaner
                 $Escaner=$datos->Escaner;
                 if($CodigoTam==3 || $CodigoTam==2){
                     //Comprobamos que la etiqueta si coincida con su numero de parte
                     if($Escaner==1 && isset($CodigoPartes[2])){
-                        return$CodigoValido=$this->ComprobarNumEtiqueta($CodigoPartes,$Area);
+                        $CodigoValido=$this->ComprobarNumEtiqueta($CodigoPartes,$Area);
                         if($CodigoValido==0){
                             return response()->json([
                                 'tabla' => $menu,
@@ -1132,9 +1133,31 @@ class AreasController extends Controller
                 
                             ]);
                         }
-                        if($Inicio==1){
+                        if($Inicio==1){ 
                             $TipoEscanerrespuesta=$this->CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
-                            if($TipoEscanerrespuesta!=6){
+                            $CantidadArea=$this->ComprobarCantidadArea($CodigoPartes,$Area,$NumeroLinea);
+                            if($CantidadArea=='ErrorLinea'){
+                                return response()->json([
+                                    'tabla' => $menu,
+                                    'Escaner' => "",
+                                    'status' => "ErrorLinea",
+                                    'CantidadTotal' => "",
+                                    'CantidadCompletada' => "",
+                                    'OF' => $CodigoPartes[0]
+                    
+                                ]);
+                            }elseif($CantidadArea=='ErrorLineaCodigo'){
+                                return response()->json([
+                                    'tabla' => $menu,
+                                    'Escaner' => "",
+                                    'status' => "ErrorLineaCodigo",
+                                    'CantidadTotal' => "",
+                                    'CantidadCompletada' => "",
+                                    'OF' => $CodigoPartes[0],
+                                    'Linea' => $NumeroLinea
+                                ]);
+                            }
+                            if($TipoEscanerrespuesta!=6 AND $CantidadArea>=1){
                                 if($Area!=4){//Si el area es diferente de Suministro 4
                                     $TipoEscanerrespuesta=$this->CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
                                     if($TipoEscanerrespuesta != 5){
@@ -1151,8 +1174,10 @@ class AreasController extends Controller
                                 }else{
                                     $retrabajo=$request->Retrabajo;
                                     $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo,$NumeroLinea);
-
                                 }
+                            }
+                            if($CantidadArea<1){
+                                    $status = 'ErrorLineaComplete'; 
                             }
                         }else{
                                 $TipoEscanerrespuesta=$this->FinalizarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
@@ -1203,9 +1228,16 @@ class AreasController extends Controller
                                     $Linea = Linea::find($PartdaAr['pivot']->Linea_id);
                                             $menu.='<td class="align-middle text-center Linea"><h5 class="text-light text-center p-0 mx-1" style="background:'.$Linea->ColorLinea.'">'.$Linea->NumeroLinea.'</h5></td></tr>';
                                 }
-                                $CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad')
-                                                            -$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('TipoPartida','R')->SUM('Cantidad');
-                                $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span style="font-size:0.8em;">'.$datos->OrdenFabricacion."-".$PartidasordenFabricacion->NumeroPartida.'</span><span class="badge badge-light-danger rounded-pill">'.$PartidasordenFabricacion->cantidad_partida-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$PartidasordenFabricacion->cantidad_partida.'</span></li>';
+                                //Mostrar Partidas
+                                $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
+                                foreach($registrosporLinea as $MostrarPartidas){
+                                    $LineaMostrar = Linea::find($MostrarPartidas['pivot']->Linea_id)->NumeroLinea;
+                                    $TotalMostrar = Partidasof_Areas::where('PartidasOF_id',$MostrarPartidas['pivot']->PartidasOF_id)->where('Areas_id', $this->AreaEspecialClasificacion)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->get()->SUM('Cantidad');
+                                    $CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad')
+                                    -$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('TipoPartida','R')->SUM('Cantidad');
+
+                                    $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span class="text" style="font-size:0.8em;">'.$LineaMostrar.'</span><span class="badge badge-light-danger rounded-pill">'.$TotalMostrar-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$TotalMostrar.'</span></li>';
+                                }
                             }
                 }else{
                     $Opciones='<option selected="" value="">Todos</option>
@@ -1233,10 +1265,16 @@ class AreasController extends Controller
                                 $Linea = Linea::find($PartdaAr['pivot']->Linea_id);
                                         $menu.='<td class="align-middle text-center Linea"><h5 class="text-light text-center p-0 mx-1" style="background:'.$Linea->ColorLinea.'">'.$Linea->NumeroLinea.'</h5></td></tr>';
                             }
-                        $CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id', $Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
-                                                ($PartidasordenFabricacion->Areas()->where('Areas_id', $Area)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
-                                                - $PartidasordenFabricacion->Areas()->where('Areas_id', $Area)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad'));
-                        $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span style="font-size:0.8em;">'.$datos->OrdenFabricacion."-".$PartidasordenFabricacion->NumeroPartida.'</span><span class="badge badge-light-danger rounded-pill">'.$PartidasordenFabricacion->cantidad_partida-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$PartidasordenFabricacion->cantidad_partida.'</span></li>';
+                        //Mostrar Partidas
+                        $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
+                        foreach($registrosporLinea as $MostrarPartidas){
+                            $CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('Areas_id', $Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
+                            ($PartidasordenFabricacion->Areas()->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('Areas_id', $Area)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
+                            - $PartidasordenFabricacion->Areas()->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('Areas_id', $Area)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad'));
+                            $LineaMostrar = Linea::find($MostrarPartidas['pivot']->Linea_id)->NumeroLinea;
+                            $TotalMostrar = Partidasof_Areas::where('PartidasOF_id',$MostrarPartidas['pivot']->PartidasOF_id)->where('Areas_id', $this->AreaEspecialClasificacion)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->get()->SUM('Cantidad');
+                            $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span class="text" style="font-size:0.8em;">'.$LineaMostrar.'</span><span class="badge badge-light-danger rounded-pill">'.$TotalMostrar.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$TotalMostrar.'</span></li>';
+                        }
                     }
                 }
                 $menu='<div class="card-body">
@@ -1310,7 +1348,7 @@ class AreasController extends Controller
                     'tabla' => $menu,
                     'Escaner' => $Escaner,
                     'EscanerExiste' => $EscanerExiste,
-                    'status' => "success",
+                    'status' => $status,
                     'CantidadTotal' => $CantidadTotal,
                     'Inicio' => $Inicio,
                     'Finalizar' =>$Finalizar,
@@ -1547,18 +1585,12 @@ class AreasController extends Controller
                 'OF' => $CodigoPartes[0],       
             ]);
         }
-        return 1;
             if($Inicio==1){
                 if($Area==$this->AreaEspecialTransicion){
                     if($Retrabajo=="false"){
-                        //Numero de piezas Area Anterior
-                        /*$NumeroPartidasTodasAnterior = $partidasOF->Areas()->where('Areas_id',$Area-1)->where('TipoPartida','N')->whereNotNull('fechaTermina')->get()->SUM('pivot.Cantidad');
-                        $NumeroPartidasRetrabajoAnterior = $partidasOF->Areas()->where('Areas_id',$Area-1)->where('TipoPartida','R')->whereNull('fechaTermina')->get()->SUM('pivot.Cantidad');
-                        $NumeroPartidasTodasAnterior = $NumeroPartidasTodasAnterior - $NumeroPartidasRetrabajoAnterior;*/
-                        //Se compara con la cantidad de la Partida solo Area 4
-                        $NumeroPartidasTodasAnterior = $partidasOF->cantidad_partida;
+                        $NumeroPartidasTodasAnterior = $partidasOF->Areas()->where('Linea_id',$NumeroLinea)->where('Areas_id',$this->AreaEspecialClasificacion)->get()->SUM('pivot.Cantidad');
                         //Numero de piezasen Area actual
-                        $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','N')->whereNull('Fechatermina')->get()->SUM('pivot.Cantidad');
+                        $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Linea_id',$NumeroLinea)->where('Areas_id',$Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad');
                         $NumeroPartidasAbiertas=$NumeroPartidasAbiertas+$Cantidad;
                         if($NumeroPartidasAbiertas>$NumeroPartidasTodasAnterior){
                             return response()->json([
@@ -1587,9 +1619,10 @@ class AreasController extends Controller
                         ]);
                     }else{
                         //Numero actual de terminados
-                        $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
-                                                    -$partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida', '=','F')->get()->SUM('pivot.Cantidad');
-                        $NumeroPartidasTodasFinalizadas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-$NumeroPartidasTodas;
+                        $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
+                                                    -$partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->where('TipoPartida', '=','F')->get()->SUM('pivot.Cantidad');
+
+                        $NumeroPartidasTodasFinalizadas = $partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-$NumeroPartidasTodas;
                         if($NumeroPartidasTodasFinalizadas<$Cantidad){
                             return response()->json([
                                 'Inicio'=>$Inicio,
@@ -1658,6 +1691,66 @@ class AreasController extends Controller
                 }else{//Todas las Areas excepto 4 y 17
                     if($AreaAnterior==3){
                         if($Retrabajo=="false"){
+                            $NumeroPartidasTodasAnterior = $partidasOF->Areas()->where('Linea_id',$NumeroLinea)->where('Areas_id',$this->AreaEspecialClasificacion)->get()->SUM('pivot.Cantidad');
+                            //Numero de piezasen Area actual
+                            $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Linea_id',$NumeroLinea)->where('Areas_id',$Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad');
+                            $NumeroPartidasAbiertas=$NumeroPartidasAbiertas+$Cantidad;
+                            if($NumeroPartidasAbiertas>$NumeroPartidasTodasAnterior){
+                                return response()->json([
+                                    'Inicio'=>$Inicio,
+                                    'Fin'=>$Fin,
+                                    'status' => "PasBackerror",
+                                    'CantidadTotal' => "",
+                                    'CantidadCompletada' => "",
+                                    'OF' => $CodigoPartes[0],       
+                                ]);
+                            }
+                            $data = [
+                                'Cantidad' => $Cantidad,
+                                'TipoPartida' => 'N', // N = Normal
+                                'FechaComienzo' => now(),
+                                'NumeroEtiqueta' =>0,
+                                'Linea_id' => $NumeroLinea,
+                                'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                            ];
+                            $partidasOF->Areas()->attach($Area, $data);
+                            return response()->json([
+                                'Inicio'=>$Inicio,
+                                'Fin'=>$Fin,
+                                'status' => "success",
+                                'OF' => $CodigoPartes[0],       
+                            ]);
+                        }else{
+                            //Numero actual de terminados
+                            $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
+                                                        -$partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->where('TipoPartida', '=','F')->get()->SUM('pivot.Cantidad');
+    
+                            $NumeroPartidasTodasFinalizadas = $partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-$NumeroPartidasTodas;
+                            if($NumeroPartidasTodasFinalizadas<$Cantidad){
+                                return response()->json([
+                                    'Inicio'=>$Inicio,
+                                    'Fin'=>$Fin,
+                                    'status' => "SurplusRetrabajo",
+                                    'OF' => $CodigoPartes[0],       
+                                ]);  
+                            }
+                            $data = [
+                                'Cantidad' => $Cantidad,
+                                'TipoPartida' => 'R', // N = Normal
+                                'FechaComienzo' => now(),
+                                'NumeroEtiqueta' =>0,
+                                'Linea_id' => $NumeroLinea,
+                                'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                            ];
+                            $partidasOF->Areas()->attach($Area, $data);
+                            return response()->json([
+                                'Inicio'=>$Inicio,
+                                'Fin'=>$Fin,
+                                'status' => "success",
+                                'OF' => $CodigoPartes[0],       
+                            ]);
+                        }
+                        /*if($Retrabajo=="false"){
                             $NumeroPartidasTodasAnterior = $partidasOF->cantidad_partida;
                             //Numero de piezasen Area actual
                             $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','N')->whereNull('Fechatermina')->get()->SUM('pivot.Cantidad');
@@ -1689,7 +1782,7 @@ class AreasController extends Controller
                             ]);
                         }else{
                             //Numero actual de terminados
-                            $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
+                            return$NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
                                                         -$partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida', '=','F')->get()->SUM('pivot.Cantidad');
                             $NumeroPartidasTodasFinalizadas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-$NumeroPartidasTodas;
                             if($NumeroPartidasTodasFinalizadas<$Cantidad){
@@ -1720,13 +1813,13 @@ class AreasController extends Controller
                                 'status' => "success",
                                 'OF' => $CodigoPartes[0],       
                             ]);
-                        }
+                        }*/
                     }else{
                         if($Retrabajo=="false"){
-                            $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
-                                                        -$partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida', '=','F')->get()->SUM('pivot.Cantidad');
-                            $NumeroPartidasTodasAnterior = $partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-$NumeroPartidasTodas;
-                            $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','N')->whereNull('Fechatermina')->get()->SUM('pivot.Cantidad');
+                            $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('Linea_id',$NumeroLinea)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
+                                                        -$partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('Linea_id',$NumeroLinea)->where('TipoPartida', '=','F')->get()->SUM('pivot.Cantidad');
+                            $NumeroPartidasTodasAnterior = $partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('Linea_id',$NumeroLinea)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-$NumeroPartidasTodas;
+                            $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->where('TipoPartida','N')->whereNull('Fechatermina')->get()->SUM('pivot.Cantidad');
                             $NumeroPartidasAbiertas=$NumeroPartidasAbiertas+$Cantidad;
                             if($NumeroPartidasAbiertas>$NumeroPartidasTodasAnterior){
                                 return response()->json([
@@ -1756,9 +1849,9 @@ class AreasController extends Controller
                             ]);
                         }else{
                             //Numero actual de terminados
-                            $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
-                                                        -$partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida', '=','F')->get()->SUM('pivot.Cantidad');
-                            $NumeroPartidasTodasFinalizadas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-$NumeroPartidasTodas;
+                            $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
+                                                        -$partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->where('TipoPartida', '=','F')->get()->SUM('pivot.Cantidad');
+                            $NumeroPartidasTodasFinalizadas = $partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-$NumeroPartidasTodas;
                             if($NumeroPartidasTodasFinalizadas<$Cantidad){
                                 return response()->json([
                                     'Inicio'=>$Inicio,
@@ -1787,9 +1880,9 @@ class AreasController extends Controller
                 }
             }else if($Fin==1){
                 if($Area==$this->AreaEspecialTransicion){
-                    $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->whereNull('Fechatermina')->get();
+                    $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->whereNull('Fechatermina')->get();
                     $NumeroPartidasAbiertas = $NumeroPartidasAbiertas->SUM('pivot.Cantidad');
-                    $NumeroPartidasCerradas = $partidasOF->Areas()->where('Areas_id',$Area)->whereNotNull('Fechatermina')->get();
+                    $NumeroPartidasCerradas = $partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->whereNotNull('Fechatermina')->get();
                     $NumeroPartidasCerradas = $NumeroPartidasCerradas->SUM('pivot.Cantidad');
                     $NumeroPartidasAbiertas = $NumeroPartidasAbiertas-$NumeroPartidasCerradas;
                     if($NumeroPartidasAbiertas<$Cantidad){
@@ -1818,9 +1911,9 @@ class AreasController extends Controller
                         'OF' => $CodigoPartes[0],       
                     ]);
                 }else if($Area==$this->AreaEspecialMontaje){
-                    $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->whereNull('Fechatermina')->get();
+                    $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->where()->where('Linea_id',$NumeroLinea)->whereNull('Fechatermina')->get();
                     $NumeroPartidasAbiertas = $NumeroPartidasAbiertas->SUM('pivot.Cantidad');
-                    $NumeroPartidasCerradas = $partidasOF->Areas()->where('Areas_id',$Area)->whereNotNull('Fechatermina')->get();
+                    $NumeroPartidasCerradas = $partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->whereNotNull('Fechatermina')->get();
                     $NumeroPartidasCerradas = $NumeroPartidasCerradas->SUM('pivot.Cantidad');
                     $NumeroPartidasAbiertas = $NumeroPartidasAbiertas-$NumeroPartidasCerradas;
                     if($NumeroPartidasAbiertas<$Cantidad){
@@ -1855,9 +1948,9 @@ class AreasController extends Controller
                         'BanderaFinalizar'=>  $CantidadCompletada,  
                     ]);
                 }else{
-                    $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->whereNull('Fechatermina')->get();
+                    $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->where('TipoPartida','!=','F')->get();//->whereNull('Fechatermina')->get();
                     $NumeroPartidasAbiertas = $NumeroPartidasAbiertas->SUM('pivot.Cantidad');
-                    $NumeroPartidasCerradas = $partidasOF->Areas()->where('Areas_id',$Area)->whereNotNull('Fechatermina')->get();
+                    $NumeroPartidasCerradas = $partidasOF->Areas()->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->where('TipoPartida','=','F')->get();
                     $NumeroPartidasCerradas = $NumeroPartidasCerradas->SUM('pivot.Cantidad');
                     $NumeroPartidasAbiertas = $NumeroPartidasAbiertas-$NumeroPartidasCerradas;
                     if($NumeroPartidasAbiertas<$Cantidad){
@@ -1902,6 +1995,7 @@ class AreasController extends Controller
         }
         return $PasoUnaVezAA;
     }
+    //Comprueba si el codigo proporcionado se encuentra dentro del Rango de etiquetas
     public function ComprobarNumEtiqueta($CodigoPartes,$Area){
         $user= Auth::user();
         if (!$user) {
@@ -1914,12 +2008,49 @@ class AreasController extends Controller
         $partidasOF=$datos->partidasOF()->first();
         //Return 0:No es el codigo; 1:Si es el codigo; 2:Aun no ha pasado por el area Anterior
         //Comprueba si los datos que vienen en el codigo Existen
-        return$NumeroEtiquetas = $partidasOF->Areas()->where('Areas_id',$this->AreaEspecialCorte)->get()->SUM('pivot.Cantidad');//->where('Areas_id',$this->AreaEspecialCorte)->sum('pivot.Cantidad');
+        //$NumeroEtiquetas = $partidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get()->sum('pivot.Cantidad');
+        $NumeroEtiquetas = $partidasOF->Areas()->where('Areas_id',$this->AreaEspecialCorte)->get()->sum('pivot.Cantidad');
         if($CodigoPartes[2]>$NumeroEtiquetas){
             return 0;
         }else{
             return 1;
         }
+    }
+    //Comprueba que la cantidad por Linea, Si es un retrabajo y tambien si el retrabajo lo quieren realizar en la misma linea
+    public function ComprobarCantidadArea($CodigoPartes,$Area,$NumeroLinea){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+        $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
+        if($datos==""){
+            return 0;
+        }
+        $partidasOF=$datos->partidasOF()->first();
+        //Return 0:No es el codigo; 1:Si es el codigo; 2:Aun no ha pasado por el area Anterior
+        //Comprueba si los datos que vienen en el codigo Existen
+        $NumeroMaximo = $partidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->where('Linea_id',$NumeroLinea)->get()->SUM('pivot.Cantidad');//->where('Areas_id',$this->AreaEspecialCorte)->sum('pivot.Cantidad');
+        $NumeroActual =$partidasOF->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('Linea_id',$NumeroLinea)->where('TipoPartida','N')->SUM('Cantidad')
+                            +$partidasOF->Areas()->where('Areas_id',$Area)->whereNotNull('FechaTermina')->where('Linea_id',$NumeroLinea)->where('TipoPartida','N')->SUM('Cantidad')
+                            -$partidasOF->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('Linea_id',$NumeroLinea)->where('TipoPartida','R')->SUM('Cantidad');
+        $ExisteRegistro = $partidasOF->Areas()->where('Areas_id',$Area)->get()->where('pivot.NumeroEtiqueta',$CodigoPartes[2]);
+        if($ExisteRegistro->count()>0){
+            if($ExisteRegistro[0]['pivot']->Linea_id==$NumeroLinea){
+                return $ExisteRegistro->count(); 
+            }else{
+                return 'ErrorLinea'; 
+            }
+        }
+        $ExisteRegistroAnterior = $partidasOF->Areas()->where('Areas_id','<',$Area)->where('Areas_id','!=',$this->AreaEspecialCorte)
+                ->where('Areas_id','!=',$this->AreaEspecialSuministro)
+                ->where('Areas_id','!=',$this->AreaEspecialClasificacion)
+                ->where('TipoPartida','N')->get()->where('pivot.NumeroEtiqueta',$CodigoPartes[2])->first();
+        if($ExisteRegistroAnterior!= ""){
+            if($ExisteRegistroAnterior['pivot']->Linea_id != $NumeroLinea){
+                return 'ErrorLineaCodigo'; 
+            }
+        }
+        return $NumeroMaximo-$NumeroActual;
     }
     //Estaciones metodos generales
     public function SuministroBuscar(Request $request){
@@ -4587,7 +4718,7 @@ class AreasController extends Controller
     }
     Public function AreaTablaPendientes(Request $request){
         $Area=$this->funcionesGenerales->decrypt($request->Area);
-        return$OrdenFabricacionPendiente=$this->OrdenFabricacionPendienteTabla($Area-1);
+        $OrdenFabricacionPendiente=$this->OrdenFabricacionPendienteTabla($Area-1);
         $tabla='';
         foreach($OrdenFabricacionPendiente as $partida){
             foreach($partida->PartidasOFFaltantes as $PartidaArea){
