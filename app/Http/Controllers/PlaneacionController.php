@@ -20,8 +20,10 @@ use App\Models\User;
 class PlaneacionController extends Controller
 {
     protected $funcionesGenerales;
+    protected $CantidadParaEscanner;//Variable para ver apartir de cuantas piezas es Escaneado o masivo
     public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
+        $this->CantidadParaEscanner = 10;
     }
     public function index(){
         // Obtener el usuario autenticado
@@ -379,7 +381,11 @@ class PlaneacionController extends Controller
                         $respuestaOF->EstatusEntrega=1;
                     }else{$respuestaOF->EstatusEntrega=0;}
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
-                    $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
+                    if($DatosPlaneacion[$i]->Cantidad>$this->CantidadParaEscanner){
+                        $respuestaOF->Escaner=0;
+                    }else{
+                        $respuestaOF->Escaner=1;
+                    }
                     $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;
                     $respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->responsablecorte;
                     $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
@@ -409,7 +415,11 @@ class PlaneacionController extends Controller
                         $respuestaOF->EstatusEntrega=1;
                     }else{$respuestaOF->EstatusEntrega=0;}
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
-                    $respuestaOF->Escaner=$DatosPlaneacion[$i]->Escanner;
+                    if($DatosPlaneacion[$i]->Cantidad>$this->CantidadParaEscanner){
+                        $respuestaOF->Escaner=0;
+                    }else{
+                        $respuestaOF->Escaner=1;
+                    }
                     $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;
                     $respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->responsablecorte;
                     $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;

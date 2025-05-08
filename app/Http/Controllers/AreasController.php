@@ -1661,13 +1661,12 @@ class AreasController extends Controller
                         ]);
                     }
                 }elseif($Area==$this->AreaEspecialEmpaque){
-                    //Total que paso del area anterior
-                    $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida', '!=','F')->get()->SUM('pivot.Cantidad')
-                                            -$partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida', '=','F')->get()->SUM('pivot.Cantidad');
-                    $NumeroPartidasTodasAnterior = $partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-$NumeroPartidasTodas;
-                    $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','N')->whereNotNull('Fechatermina')->get()->SUM('pivot.Cantidad');
+                    //Total Finalizadas que paso del area anterior
+                    $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad');
+                    $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad');
+                                            -$partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida', '=','F')->get()->SUM('pivot.Cantidad');
                     $NumeroPartidasAbiertas=$NumeroPartidasAbiertas+$Cantidad;
-                    if($NumeroPartidasAbiertas>$NumeroPartidasTodasAnterior){
+                    if($NumeroPartidasAbiertas>$NumeroPartidasTodas){
                         return response()->json([
                             'Inicio'=>$Inicio,
                             'Fin'=>$Fin,
@@ -4147,6 +4146,201 @@ class AreasController extends Controller
             return redirect()->route('error.');
         }
     }
+    //Empaquetado
+    public function EmpaquetadoBuscar(Request $request){
+        if ($request->has('Confirmacion')) {
+            $confirmacion=1;
+        }else{
+            $confirmacion=0;
+        }
+        $Codigo = $request->Codigo;
+        $Inicio = $request->Inicio;
+        $Finalizar = $request->Finalizar;
+        $Area = $this->funcionesGenerales->decrypt($request->Area);
+        $CodigoPartes = explode("-", $Codigo);
+        $CodigoTam = count($CodigoPartes);
+        $TipoEscanerrespuesta=0;
+        $menu="";
+        $Escaner="";
+        $CantidadCompletada=0;
+        $EscanerExiste=0;
+        $Terminada=1;
+        $NumeroLinea = $request->Linea;
+        $NumeroLinea = Linea::where('NumeroLinea',$NumeroLinea)->first();
+        if($NumeroLinea == ""){
+            return response()->json([
+                'tabla' => "",
+                'Escaner' => "",
+                'status' => "ErrorLínea",
+                'CantidadTotal' => "",
+                'CantidadCompletada' => 4,
+                'OF' => ''
+
+            ]);
+        }
+        $NumeroLinea = $NumeroLinea->id;
+        //Valida si el codigo es aceptado tiene que ser mayor a 2
+        if($CodigoTam<=3 && $CodigoTam>=2){
+            $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
+            if($datos=="" OR $datos==null){
+                return response()->json([
+                    'tabla' => $menu,
+                    'Escaner' => $Escaner,
+                    'status' => "empty",
+                    'CantidadTotal' => "",
+                    'CantidadCompletada' => $CantidadCompletada,
+                    'OF' => $CodigoPartes[0]
+        
+                ]);
+            }else{
+                $Escaner=$datos->Escaner;
+                $CantidadTotal=$datos->CantidadTotal;
+                //Variable  guarda el valor de Escaner para saber si es no 0=No escaner 1=escaner
+                if($CodigoTam<=3 && $CodigoTam>=2){
+                    //Comprobamos que la etiqueta si coincida con su numero de parte
+                    if($Escaner==1){
+                        $CodigoValido=$this->ComprobarNumEtiqueta($CodigoPartes,$Area);
+                        if($CodigoValido==0){
+                            return response()->json([
+                                'tabla' => $menu,
+                                'Escaner' => "",
+                                'status' => "NoExiste",
+                                'CantidadTotal' => "",
+                                'CantidadCompletada' => 4,
+                                'OF' => $CodigoPartes[0]
+                
+                            ]);
+                        }
+                        if($request->has('Accion') && $request->Accion!="Cancelar"){
+                            if($Inicio==1){
+                                $TipoEscanerrespuesta=$this->CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                                if($TipoEscanerrespuesta!=6){
+                                    if($Area!=4){//Si el area es diferente de Suministro 4
+                                        $TipoEscanerrespuesta=$this->CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                                        if($TipoEscanerrespuesta != 5){
+                                            $retrabajo=$request->Retrabajo;
+                                            if($Area==$this->AreaEspecialTransicion){
+                                                $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo,$NumeroLinea);
+                                            }else{
+                                                $TipoEscanerrespuesta=$this->ValidarPasoUnaVezAA($Area,$CodigoPartes);
+                                                if($TipoEscanerrespuesta>0){
+                                                    $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo,$NumeroLinea);
+                                                }else{$TipoEscanerrespuesta=5;}
+                                            }
+                                        }
+                                    }else{
+                                        $retrabajo=$request->Retrabajo;
+                                        $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo,$NumeroLinea);
+                                    }
+                                }
+                            }else{
+                                    $TipoEscanerrespuesta=$this->FinalizarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                            }
+                        }
+                        $SumarActual=0;
+                        $Partidastodas = $datos->PartidasOF()->get();
+                        foreach($Partidastodas as $CantidadTotal){
+                            $SumarActual += $CantidadTotal->Areas()->where('Areas_id',$Area)->get()->SUM('pivot.Cantidad');
+                        }
+                        $Terminada= $datos->CantidadTotal-$SumarActual;
+                        $CantidadTotal=$datos->CantidadTotal;
+                    }else if($Escaner==0){
+                        $TipoManualrespuesta=$datos->partidasOF()->where('NumeroPartida','=',$CodigoPartes[1])->first();
+                        if(!($TipoManualrespuesta=="" || $TipoManualrespuesta==null)){
+                            $EscanerExiste = 1;
+                        }else{
+                            $EscanerExiste = 0;
+                        }
+                    }
+                }
+                $CantidadCompletada=$this->NumeroCompletadas($CodigoPartes,$Area);
+                if($CantidadCompletada<0){
+                    $CantidadCompletada=0; 
+                }
+                if($Escaner==1){
+                    //Mostrar las partidas    
+                    $partidas = $datos->partidasOF;
+                    foreach ($partidas as $PartidasordenFabricacion) {
+                        $PartdaArea = $PartidasordenFabricacion->Areas()->where('Areas_id', $Area)->get();
+                        foreach ($PartdaArea as $PartdaAr) {
+                            $menu .= '<tr>
+                                        <td class=" ps-3 NumParte">' . $datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '</td>
+                                        <td class="ps-3   Cantidad">' . $PartdaAr['pivot']->Cantidad . '</td>
+                                       <td class="ps-3 Regresar">
+                                            <button class="btn btn-primary btn-sm m-0 p-1" onclick="CancelarPartida('.$PartdaAr['pivot']->id.',\''.$datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '\')">Cancelar</button>
+                                        </td>
+                                    </tr>';
+                            }
+                        }
+                }else{
+                    $partidas = $datos->partidasOF;
+                    foreach ($partidas as $PartidasordenFabricacion) {
+                        $PartdaArea = $PartidasordenFabricacion->Areas()->where('Areas_id', $Area)->get();
+                        foreach ($PartdaArea as $PartdaAr) {
+                            $menu .= '<tr>
+                                        <td class=" ps-3 NumParte">' . $datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '</td>
+                                        <td class="ps-3   Cantidad">' . $PartdaAr['pivot']->Cantidad . '</td>
+                                        <td class="ps-3 Regresar">
+                                            <button class="btn btn-primary btn-sm m-0 p-1" onclick="CancelarPartida('.$PartdaAr['pivot']->id.',\''.$datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '\')">Cancelar</button>
+                                        </td>
+                                    </tr>';
+                            }
+                    }
+                }
+                $menu = '<div class="card-body">
+                    <div id="ContainerTableSuministros" class="table-list">
+                        <div class="row justify-content-start g-0">
+                            <div class="col-auto px-0">
+                                <h6 class="">Orden de Fabricación <strong>' . $datos->OrdenFabricacion . '</strong></h6>
+                                <div class="badge badge-phoenix fs--4 badge-phoenix-secondary">
+                                    <span class="fw-bold">Piezas Completadas </span>' . $CantidadCompletada . '/' . $CantidadTotal . '<span class="ms-1 fas fa-stream"></span>
+                                </div>
+                            </div>
+                        </div>
+                         <div id="ContainerTableEmpaque" class="table-responsive scrollbar">
+                            <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
+                                <thead>
+                                    <tr class="bg-light">
+                                        <th class="sort border-top ps-3" data-sort="NumParte">Codigo</th>
+                                        <th class="sort border-top" data-sort="Cantidad">Cantidad</th>
+                                        <th class="sort border-top" data-sort="Regresar">Accion</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="list" id="TablaBody">
+                                    '.$menu.'
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    </div>';
+                return response()->json([
+                    'tabla' => $menu,
+                    'Escaner' => $Escaner,
+                    'EscanerExiste' => $EscanerExiste,
+                    'status' => "success",
+                    'Terminada'=> $Terminada,
+                    'CantidadTotal' => $CantidadTotal,
+                    'Inicio' => $Inicio,
+                    'Finalizar' =>$Finalizar,
+                    'OrdenFabricacion'=>$datos->OrdenFabricacion,
+                    'TipoEscanerrespuesta'=>$TipoEscanerrespuesta,
+                    'CantidadCompletada' => $CantidadCompletada,
+                    'OF' => $CodigoPartes[0]
+        
+                ]);
+            }
+        }else{
+            return response()->json([
+                'tabla' => $menu,
+                'Escaner' => "",
+                'status' => "NoExiste",
+                'CantidadTotal' => "",
+                'CantidadCompletada' => 4,
+                'OF' => $CodigoPartes[0]
+
+            ]);
+        }
+    }
     public function ClasificacionRecargarTabla(Request $request){
         $user= Auth::user();
         if (!$user) {
@@ -5199,200 +5393,6 @@ class AreasController extends Controller
         return $TipoEscanerrespuesta;
     }
     //Consultas a SAP
-    public function EmpaquetadoBuscar(Request $request){
-        if ($request->has('Confirmacion')) {
-            $confirmacion=1;
-        }else{
-            $confirmacion=0;
-        }
-        $Codigo = $request->Codigo;
-        $Inicio = $request->Inicio;
-        $Finalizar = $request->Finalizar;
-        $Area = $this->funcionesGenerales->decrypt($request->Area);
-        $CodigoPartes = explode("-", $Codigo);
-        $CodigoTam = count($CodigoPartes);
-        $TipoEscanerrespuesta=0;
-        $menu="";
-        $Escaner="";
-        $CantidadCompletada=0;
-        $EscanerExiste=0;
-        $Terminada=1;
-        $NumeroLinea = $request->Linea;
-        $NumeroLinea = Linea::where('NumeroLinea',$NumeroLinea)->first();
-        if($NumeroLinea == ""){
-            return response()->json([
-                'tabla' => "",
-                'Escaner' => "",
-                'status' => "NoExiste",
-                'CantidadTotal' => "",
-                'CantidadCompletada' => 4,
-                'OF' => ''
-
-            ]);
-        }
-        $NumeroLinea = $NumeroLinea->id;
-        //Valida si el codigo es aceptado tiene que ser mayor a 2
-        if($CodigoTam<=3 && $CodigoTam>=2){
-            $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
-            if($datos=="" OR $datos==null){
-                return response()->json([
-                    'tabla' => $menu,
-                    'Escaner' => $Escaner,
-                    'status' => "empty",
-                    'CantidadTotal' => "",
-                    'CantidadCompletada' => $CantidadCompletada,
-                    'OF' => $CodigoPartes[0]
-        
-                ]);
-            }else{
-                $CantidadTotal=$datos->CantidadTotal;
-                //Variable  guarda el valor de Escaner para saber si es no 0=No escaner 1=escaner
-                $Escaner=$datos->Escaner;
-                if($CodigoTam<=3 && $CodigoTam>=2){
-                    //Comprobamos que la etiqueta si coincida con su numero de parte
-                    if($Escaner==1){
-                        $CodigoValido=$this->ComprobarNumEtiqueta($CodigoPartes,$Area);
-                        if($CodigoValido==0){
-                            return response()->json([
-                                'tabla' => $menu,
-                                'Escaner' => "",
-                                'status' => "NoExiste",
-                                'CantidadTotal' => "",
-                                'CantidadCompletada' => 4,
-                                'OF' => $CodigoPartes[0]
-                
-                            ]);
-                        }
-                        if($request->has('Accion') && $request->Accion!="Cancelar"){
-                            if($Inicio==1){
-                                $TipoEscanerrespuesta=$this->CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
-                                if($TipoEscanerrespuesta!=6){
-                                    if($Area!=4){//Si el area es diferente de Suministro 4
-                                        $TipoEscanerrespuesta=$this->CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
-                                        if($TipoEscanerrespuesta != 5){
-                                            $retrabajo=$request->Retrabajo;
-                                            if($Area==$this->AreaEspecialTransicion){
-                                                $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo,$NumeroLinea);
-                                            }else{
-                                                $TipoEscanerrespuesta=$this->ValidarPasoUnaVezAA($Area,$CodigoPartes);
-                                                if($TipoEscanerrespuesta>0){
-                                                    $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo,$NumeroLinea);
-                                                }else{$TipoEscanerrespuesta=5;}
-                                            }
-                                        }
-                                    }else{
-                                        $retrabajo=$request->Retrabajo;
-                                        $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo,$NumeroLinea);
-                                    }
-                                }
-                            }else{
-                                    $TipoEscanerrespuesta=$this->FinalizarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
-                            }
-                        }
-                        $SumarActual=0;
-                        $Partidastodas = $datos->PartidasOF()->get();
-                        foreach($Partidastodas as $CantidadTotal){
-                            $SumarActual += $CantidadTotal->Areas()->where('Areas_id',$Area)->get()->SUM('pivot.Cantidad');
-                        }
-                        $Terminada= $datos->CantidadTotal-$SumarActual;
-                        $CantidadTotal=$datos->CantidadTotal;
-                    }else if($Escaner==0){
-                        $TipoManualrespuesta=$datos->partidasOF()->where('NumeroPartida','=',$CodigoPartes[1])->first();
-                        if(!($TipoManualrespuesta=="" || $TipoManualrespuesta==null)){
-                            $EscanerExiste = 1;
-                        }else{
-                            $EscanerExiste = 0;
-                        }
-                    }
-                }
-                $CantidadCompletada=$this->NumeroCompletadas($CodigoPartes,$Area);
-                if($CantidadCompletada<0){
-                    $CantidadCompletada=0; 
-                }
-                if($Escaner==1){
-                    //Mostrar las partidas    
-                    $partidas = $datos->partidasOF;
-                    foreach ($partidas as $PartidasordenFabricacion) {
-                        $PartdaArea = $PartidasordenFabricacion->Areas()->where('Areas_id', $Area)->get();
-                        foreach ($PartdaArea as $PartdaAr) {
-                            $menu .= '<tr>
-                                        <td class=" ps-3 NumParte">' . $datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '</td>
-                                        <td class="ps-3   Cantidad">' . $PartdaAr['pivot']->Cantidad . '</td>
-                                       <td class="ps-3 Regresar">
-                                            <button class="btn btn-primary btn-sm m-0 p-1" onclick="CancelarPartida('.$PartdaAr['pivot']->id.',\''.$datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '\')">Cancelar</button>
-                                        </td>
-                                    </tr>';
-                            }
-                        }
-                }else{
-                    $partidas = $datos->partidasOF;
-                    foreach ($partidas as $PartidasordenFabricacion) {
-                        $PartdaArea = $PartidasordenFabricacion->Areas()->where('Areas_id', $Area)->get();
-                        foreach ($PartdaArea as $PartdaAr) {
-                            $menu .= '<tr>
-                                        <td class=" ps-3 NumParte">' . $datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '</td>
-                                        <td class="ps-3   Cantidad">' . $PartdaAr['pivot']->Cantidad . '</td>
-                                        <td class="ps-3 Regresar">
-                                            <button class="btn btn-primary btn-sm m-0 p-1" onclick="CancelarPartida('.$PartdaAr['pivot']->id.',\''.$datos->OrdenFabricacion . '-' . $PartidasordenFabricacion->NumeroPartida . '-' . $PartdaAr['pivot']->NumeroEtiqueta . '\')">Cancelar</button>
-                                        </td>
-                                    </tr>';
-                            }
-                    }
-                }
-                $menu = '<div class="card-body">
-                    <div id="ContainerTableSuministros" class="table-list">
-                        <div class="row justify-content-start g-0">
-                            <div class="col-auto px-0">
-                                <h6 class="">Orden de Fabricación <strong>' . $datos->OrdenFabricacion . '</strong></h6>
-                                <div class="badge badge-phoenix fs--4 badge-phoenix-secondary">
-                                    <span class="fw-bold">Piezas Completadas </span>' . $CantidadCompletada . '/' . $CantidadTotal . '<span class="ms-1 fas fa-stream"></span>
-                                </div>
-                            </div>
-                        </div>
-                         <div id="ContainerTableEmpaque" class="table-responsive scrollbar">
-                            <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
-                                <thead>
-                                    <tr class="bg-light">
-                                        <th class="sort border-top ps-3" data-sort="NumParte">Codigo</th>
-                                        <th class="sort border-top" data-sort="Cantidad">Cantidad</th>
-                                        <th class="sort border-top" data-sort="Regresar">Accion</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="list" id="TablaBody">
-                                    '.$menu.'
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>';
-                return response()->json([
-                    'tabla' => $menu,
-                    'Escaner' => $Escaner,
-                    'EscanerExiste' => $EscanerExiste,
-                    'status' => "success",
-                    'Terminada'=> $Terminada,
-                    'CantidadTotal' => $CantidadTotal,
-                    'Inicio' => $Inicio,
-                    'Finalizar' =>$Finalizar,
-                    'OrdenFabricacion'=>$datos->OrdenFabricacion,
-                    'TipoEscanerrespuesta'=>$TipoEscanerrespuesta,
-                    'CantidadCompletada' => $CantidadCompletada,
-                    'OF' => $CodigoPartes[0]
-        
-                ]);
-            }
-        }else{
-            return response()->json([
-                'tabla' => $menu,
-                'Escaner' => "",
-                'status' => "NoExiste",
-                'CantidadTotal' => "",
-                'CantidadCompletada' => 4,
-                'OF' => $CodigoPartes[0]
-
-            ]);
-        }
-    }
     public function finProcesoEmpaque(Request $request){   
         $idFabricacion = $request->input('id'); 
         $OrdenFabricacion = Ordenfabricacion::where('OrdenFabricacion',$idFabricacion)->first(); 

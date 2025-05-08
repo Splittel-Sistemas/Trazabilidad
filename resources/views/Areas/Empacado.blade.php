@@ -163,6 +163,7 @@
                 Inicio:Inicio,
                 Accion:Accion,
                 Finalizar:Finalizar,
+                Linea : 1, //Linea por default solo en Empaquetado, para que entre al metodo
                 Area:'{{$Area}}',
                 _token: '{{ csrf_token() }}'  
             },
@@ -457,6 +458,7 @@
                 Inicio: Inicio,
                 Fin: Fin,
                 Retrabajo: Retrabajo,
+                Linea : 1, //Linea por default solo en Empaquetado, para que entre al metodo
                 Area: '{{$Area}}',
                 _token: '{{ csrf_token() }}'
             },
