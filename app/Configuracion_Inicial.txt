@@ -1,0 +1,13 @@
+//Migrar la base de datos
+php artisan migrate:refresh  
+
+//Comondos para agregar la información de los seeders
+1.php artisan db:seed --class=UserSeeder
+2.php artisan db:seed --class=RolSeeder
+3.php artisan db:seed --class=PermissionSeeder
+4.php artisan db:seed --class=PermissionRoleSeeder
+
+//Manualmente agregamos el rol con el Usuario Admin
+
+//Direcciones 
+http://170.247.226.28:8181/login desarrollo
