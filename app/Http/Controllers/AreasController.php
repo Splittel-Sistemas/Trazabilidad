@@ -1114,6 +1114,19 @@ class AreasController extends Controller
         
                 ]);
             }else{
+                if($Area != $this->AreaEspecialMontaje){
+                    if($datos->Cerrada == 0){//Valida que la Orden de fabricacion no se encuentre cerrada
+                        return response()->json([
+                            'tabla' => $menu,
+                            'Escaner' => "",
+                            'status' => "Cerrada",
+                            'CantidadTotal' => "",
+                            'CantidadCompletada' => 4,
+                            'OF' => $CodigoPartes[0]
+            
+                        ]);
+                    }
+                }
                 $status = 'success'; 
                 $CantidadTotal=$datos->CantidadTotal;
                 //Variable  guarda el valor de Escaner para saber si es no 0=No escaner 1=escaner

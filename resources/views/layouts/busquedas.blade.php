@@ -540,9 +540,10 @@
                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                 0%
                             </div>
-                            <h6 class="mx-2 mt-2">0%</h6>
+                            <h6 class="mx-2 mt-2" id="Bloque0porciento">0%</h6>
                         </div>
-                        <div style="height:25px;"></div>
+                        <div style="height:12px;"></div>
+                        <h6 id="TiempoDuracion" class="m-2 text-center"></h6>
                         <div class="row justify-content-center">
                                 <!-- Primera fila (4 elementos) -->
                                 <div class="row">
@@ -1421,7 +1422,7 @@
                     }
                 });
                 $.ajax({
-                    url: '{{ route("tiempos.hrs") }}',
+                    
                     method: 'GET',
                     data: { 
                         id: ordenfabricacion,
@@ -1840,7 +1841,6 @@
                 data.forEach(function (item, index) {
                     const progressPercentage = parseFloat(item.Progreso);
                     const displayProgress = Math.min(progressPercentage, 100);
-
                     let progressColor = 'red';
                     if (displayProgress > 30) progressColor = 'orange';
                     if (displayProgress > 50) progressColor = 'yellow';
@@ -2042,15 +2042,50 @@
 <script>
     //Nuevos Metodos
     $(document).on('click', '.ver-fabricacion', function (e) {
-        var ordenfabricacion = $(this).data('ordenfabricacion'); 
+        var ordenfabricacion = $(this).data('ordenfabricacion');
+        var Bloque0porciento = $('#Bloque0porciento'); 
+        var TiempoDuracion = $('#TiempoDuracion');
+        var Produccion = $('#Produccion');
+        var TiempoTotal = $('#TiempoTotal');
+        var Muerto = $('#Muerto')
+        TiempoTotal.html('Tiempo Total')
+        Produccion.html('Tiempo Total');
+        Muerto.html('Tiempo Total');
+        CadenaTiempo="Aún no ha comenzado el proceso";
         $.ajax({
             url: '{{ route("Detalles.Fabricacion") }}',
             type: 'GET',
             data: { id: ordenfabricacion },
             success: function (response) {
                 var progressBar = $('#plemasProgressBar');
-                if (response.progreso !== undefined) {
+                if (response.Estatus !== 'Error') {
                     var progreso = response.progreso;
+                    if(progreso==0){
+                        Bloque0porciento.show();
+                    }else{
+                        Bloque0porciento.hide();
+                    }
+                    if(response.Produccion != 0){
+                        Produccion.html('Tiempo total<br>'+response.TiempoProductivo);
+                    }
+                    if(response.TiempoTotal != 0){
+                        TiempoTotal.html('Tiempo total<br>'+response.TiempoTotal);
+                    }
+                    if(response.TiempoMuerto != 0){
+                        Muerto.html('Tiempo total<br>'+response.TiempoMuerto);
+                    }
+                    if(!response.TiempoDuracion==0){
+                        CadenaTiempo="Duración Total: ";
+                        if(response.TiempoDuracion.y!=0){CadenaTiempo+=response.TiempoDuracion.y+" Años "}
+                        if(response.TiempoDuracion.m!=0){CadenaTiempo+=response.TiempoDuracion.m+" Meses "}
+                        if(response.TiempoDuracion.d!=0){CadenaTiempo+=response.TiempoDuracion.d+" Días "}
+                        if(response.TiempoDuracion.h!=0){CadenaTiempo+=response.TiempoDuracion.h+" Horas "}
+                        if(response.TiempoDuracion.i!=0){CadenaTiempo+=response.TiempoDuracion.i+" Minutos "}
+                        if(response.TiempoDuracion.s!=0){CadenaTiempo+=response.TiempoDuracion.s+" Segundos"}
+                    }else{
+                        CadenaTiempo="";
+                    }
+                    TiempoDuracion.html(CadenaTiempo);
                     // Actualizar la barra de progreso con animación
                     progressBar.css('width', progreso + '%').text(progreso + '%');
                     progressBar.removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
@@ -2067,8 +2102,8 @@
                         progressBar.addClass('bg-success');  // Verde
                     }
                     $('#ordenFabricacionNumero').removeClass('text-muted').addClass('text-info').text(ordenfabricacion);
-                    if (response.Estatus && response.Estatus.length > 0) {
-                        var estadoFabricacion = response.Estatus[0].Estado || 'Desconocido';
+                    if (response.Estatus != "") {
+                        var estadoFabricacion = response.Estatus || 'Desconocido';
                         var $estatusElem = $('#EstatusFabricacion');
                         var icono = '';
                         $estatusElem.removeClass('bg-success bg-danger bg-secondary').addClass('badge');
@@ -2090,14 +2125,22 @@
                         }
                     }
                 } else {
-                    rogressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
+                    TiempoDuracion.html("");
+                    error('Error de la Orden de Fabricación',response.Message);
+                    Bloque0porciento.show();
+                    progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
                     $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
                     $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
                 }
                 $('#example2Modal').modal('show');
             },
             error: function () {
-                alert('Error al obtener los datos de la fabricación.');
+                var progressBar = $('#plemasProgressBar');
+                TiempoDuracion.html("");
+                progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
+                $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
+                $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
+                errorBD();
             }
         });  /*
                 const endpoints = [
@@ -2148,7 +2191,7 @@
                     }
                 });
                 $.ajax({
-                    url: '{{ route("tiempos.hrs") }}',
+                    
                     method: 'GET',
                     data: { 
                         id: ordenfabricacion,
