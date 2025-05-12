@@ -1932,13 +1932,13 @@
                         if(area.PorcentajeActual<25){
                             ColorProgress = ' bg-danger ';
                         }
-                        if(area.PorcentajeActual<50){
+                        if(area.PorcentajeActual>=25 && area.PorcentajeActual<50){
                             ColorProgress = ' bg-info ';
                         }
-                        if(area.PorcentajeActual<75){
+                        if(area.PorcentajeActual>=50 && area.PorcentajeActual<75){
                             ColorProgress = ' bg-warning ';
                         }
-                        if(area.PorcentajeActual<=100){
+                        if(area.PorcentajeActual>=75 && area.PorcentajeActual<=100){
                             ColorProgress = ' bg-success ';
                         }
                         if(area.AP != 1){
