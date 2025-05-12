@@ -4,8 +4,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!--estilos-->
 <style>
-        
-    .progress-scroll-container {
+   /* .progress-scroll-container {
         margin-top: 20px;
         max-height: 300px;
         overflow-y: auto;
@@ -50,9 +49,7 @@
     .retrabajo .task-progress {
         background-color: blue !important;
     }
-
-
-
+*/
 
 
 
@@ -588,206 +585,9 @@
                             <br>
                             <!---->
                             <!--<div class="card p-3">-->
-                                <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
-                                <div class="grid-container" id="plemasCanvases">
-                                
-                                    <div class="card">
-                                        <div class="grid-item">
-                                            <h1 class="small-title">Cortes</h1>
-
-                                            <div class="canvas-container">
-                                                <canvas id="plemasCorte" width="300" height="300"></canvas> 
-                                            </div>
-                                            
-                                            <div class="title-container">
-                                                <h1 class="small-title" id="titulo-cortes"></h1>
-                                            </div>
-                                        </div>
-                                    </div>
-                                
-                                    <div class="grid-item">
-                                        <h1 class="small-title">Suministros</h1>
-
-                                        <div class="canvas-container">
-                                            <canvas id="plemasSuministro" width="300" height="300"></canvas>
-                                        </div>
-
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-suministro"></h1>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid-item">
-                                        <h1 class="small-title">Transicion</h1>
-
-                                        <div class="canvas-container">
-                                            <canvas id="plemasTransicion" width="300" height="300"></canvas>
-                                        </div>
-
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-transicion"></h1>
-                                        </div>
-                                    </div>
-                
-                                
-                                    <div class="grid-item">
-                                        <h1 class="small-title">Preparado</h1>
-
-                                        <div class="canvas-container">
-                                            <canvas id="plemasPreparado" width="300" height="300"></canvas>
-                                        </div>
-
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-preparado"></h1>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid-item">
-                                        <h1 class="small-title">Ribonizado</h1>
-
-                                        <div class="canvas-container">
-                                            <canvas id="plemasRibonizado" width="300" height="300"></canvas>
-                                        </div>
-
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-ribonizado"></h1>
-                                        </div>
-                                    </div>
-                
-                                
-                                    <div class="grid-item">
-                                        <h1 class="small-title"> Ensamble</h1>
-
-                                        <div class="canvas-container">
-                                            <canvas id="plemasEnsamble" width="300" height="300"></canvas>
-                                        </div>
-
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-ensamble"></h1>
-                                        </div>
-                                    </div>
-                                    <div class="grid-item">
-                                        <h1 class="small-title"> Corte de Fibra</h1>
-
-                                        <div class="canvas-container">
-                                            <canvas id="plemasCorteFibra" width="300" height="300"></canvas>
-                                        </div>
-
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-corteFibra"></h1>
-                                        </div>
-                                    </div>
-                
-                                    
-                                    <div class="grid-item">
-                                        <h1 class="small-title"> Pulido</h1>
-                                        
-                                        <div class="canvas-container">
-                                            <canvas id="plemasPulido" width="300" height="300"></canvas>
-                                        </div>
-
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-pulido"></h1>
-                                        </div>
-                                    </div>
-                                    <div class="grid-item">
-                                        <h1 class="small-title">Armado</h1>
-                                        <div class="canvas-container">
-                                            <canvas id="plemasArmado" width="300" height="300"></canvas>
-                                        </div>
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-armado"></h1>
-                                        </div>
-                                    </div>
-                                    <div class="grid-item">
-                                        <h1 class="small-title">Inspeccion</h1>
-                                        
-                                        <div class="canvas-container">
-                                            <canvas id="plemasInspeccion" width="300" height="300"></canvas>
-                                        </div>
-
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-inspeccion"></h1>
-                                        </div>
-                                    </div>
-                                    <div class="grid-item">
-                                        <h1 class="small-title">Polaridad</h1>
-                                        
-                                        <div class="canvas-container">
-                                            <canvas id="plemasPolaridad" width="300" height="300"></canvas>
-                                        </div>
-
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-polaridad"></h1>
-                                        </div>
-                                    </div>
-                
-                                    <div class="grid-item">
-                                        <h1 class="small-title">Crimpado</h1>
-                                        
-                                        <div class="canvas-container">
-                                            <canvas id="plemasCrimpado" width="300" height="300"></canvas>
-                                        </div>
-
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-crimpado"></h1>
-                                        </div>
-                                    </div>
-                
-                
-                                
-                                    <div class="grid-item">
-                                        <h1 class="small-title"> Medición</h1>
-
-                                        <div class="canvas-container">
-                                            <canvas id="plemasMedicion" width="300" height="300"></canvas>
-                                        </div>
-
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-medicion"></h1>
-                                        </div>
-                                    </div>
-                
-                                    
-                                    <div class="grid-item">
-                                        <h1 class="small-title"> Visualización</h1>
-                                    
-                                        <div class="canvas-container">
-                                            <canvas id="plemasVisualizacion" width="300" height="300"></canvas>
-                                        </div>
-
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-visualizacion"></h1>
-                                        </div>
-
-                                    </div>
-                                    <div class="grid-item">
-                                        <h1 class="small-title"> Montaje</h1>
-
-                                        <div class="canvas-container">
-                                            <canvas id="plemasMontaje" width="300" height="300"></canvas>
-                                        </div>
-
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-montaje"></h1>
-                                        </div>
-
-                                    </div>
-                
-                                    <div class="grid-item">
-                                        <h1 class="small-title"> Empaque</h1>
-
-                                        <div class="canvas-container">
-                                            <canvas id="plemasEmpaque" width="300" height="300"></canvas>
-                                        </div>
-
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-empaque"></h1>
-                                        </div>
-
-                                    </div>
-                                </div>
-                        </div>
+                            <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
+                            <div  class="row" id="plemasCanvases">
+                            </div>
                         
 
                         <!--
@@ -2048,6 +1848,8 @@
         var Produccion = $('#Produccion');
         var TiempoTotal = $('#TiempoTotal');
         var Muerto = $('#Muerto')
+        var plemasCanvases = $('#plemasCanvases');
+        plemasCanvases.html('');
         TiempoTotal.html('Tiempo Total')
         Produccion.html('Tiempo Total');
         Muerto.html('Tiempo Total');
@@ -2124,6 +1926,27 @@
                             console.log('Estado desconocido, Clases: bg-secondary');
                         }
                     }
+                    EstacionesGraficas ='';
+                    (response.Estaciones).forEach(area => {
+                        ColorProgress="";
+                        if(area.PorcentajeActual<25){
+                            ColorProgress = ' bg-danger ';
+                        }
+                        if(area.PorcentajeActual<50){
+                            ColorProgress = ' bg-info ';
+                        }
+                        if(area.PorcentajeActual<75){
+                            ColorProgress = ' bg-warning ';
+                        }
+                        if(area.PorcentajeActual<=100){
+                            ColorProgress = ' bg-success ';
+                        }
+                        if(area.AP != 1){
+                            EstacionesGraficas+='<div class="col-4 my-2"> <div class="card rounded border-0" style="box-shadow: 3px 3px 3px 2px rgba(0.1, 0.1, 0.1, 0.2);"><h5 class="text-center">'+area.NombreArea+'</h5><div class="progress progress-container" style="height:15px">'
+                                            +'<div class="progress-bar '+ColorProgress+' rounded-3" role="progressbar" style="width: '+area.PorcentajeActual+'%" aria-valuenow="'+area.PorcentajeActual+'" aria-valuemin="0" aria-valuemax="100">'+area.PorcentajeActual+'%</div></div><small>Piezas retrabajo:'+area.Retrabajo+'</small><small>Piezas Normales:'+area.Normales+'</small></div></div>';
+                        }
+                    });
+                    plemasCanvases.html(EstacionesGraficas);
                 } else {
                     TiempoDuracion.html("");
                     error('Error de la Orden de Fabricación',response.Message);

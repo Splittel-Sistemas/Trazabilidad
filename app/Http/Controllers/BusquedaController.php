@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
 use TCPDF;
 use App\Models\Role;
 use App\Models\Linea;
+use App\Models\Areas;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
@@ -1494,9 +1495,10 @@ class BusquedaController extends Controller
                         if($MayorFecha != "" AND $MenorFecha!=""){
                             $FechaPrimera=Carbon::parse($MenorFecha['pivot']->FechaComienzo);
                             $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
-                            $TiempoTotalEstacion=$FechaPrimera->diffInSeconds($FechaTermina);
+                            $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
                         }
                     }
+                    //return $TiempoTotalEstacion;
                     if($TiempoTotalEstacion >0){
                         $horas = floor($TiempoTotalEstacion / 3600);
                         $minutos = floor(($TiempoTotalEstacion % 3600) / 60);
@@ -1507,12 +1509,14 @@ class BusquedaController extends Controller
                         else{$TiempoTotalEstacion = 0;}
                     }
                     $TiempoOrdenes=$TiempoTotalEstacion;
-                    $Estaciones[$index] = ['PorcentajeActual' => $PorcentajeActual, 'Retrabajo' => $Retrabajo, 'Normales' => $Normales, 'TiempoOrdenes' => $TiempoOrdenes, 'AP' => $AP];
+                    $AreaDatos=Areas::find($AreaPosible);
+                        $Estaciones[$index] = ['PorcentajeActual' => $PorcentajeActual, 'Retrabajo' => $Retrabajo, 'Normales' => $Normales, 'TiempoOrdenes' => $TiempoOrdenes, 'AP' => $AP
+                                                ,'NombreArea'=>$AreaDatos->nombre];
                 }
             }else{
 
             }
-            return$Estaciones;
+           //return$Estaciones;
         // Asegúrate de que la respuesta siempre incluya una propiedad, incluso si no hay datos
         return response()->json([
             'progreso' => round($Progreso,2),
@@ -1521,7 +1525,8 @@ class BusquedaController extends Controller
             "TiempoDuracion" => $TiempoDuracion,
             "TiempoProductivo" => $TiempoProductivo,
             "TiempoTotal" => $TiempoTotal,
-            "TiempoMuerto"=> $TiempoMuerto
+            "TiempoMuerto"=> $TiempoMuerto,
+            "Estaciones"=>$Estaciones,
         ]);
     }
     public function tiempoS(Request $request)
