@@ -26,7 +26,7 @@ class CorteController extends Controller
             $fechaAtras = date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
             $OrdenesFabricacionAbiertas = $this->OrdenesFabricacionAbiertas();
             foreach($OrdenesFabricacionAbiertas as $key=>$OFA){
-                $Usuario=isset($OrdenesFabricacionAbiertas->ResponsableUser_id)?User::find($OrdenesFabricacionAbiertas->ResponsableUser_id):"";
+                $Usuario=isset($OFA->ResponsableUser_id)?User::find($OFA->ResponsableUser_id):"";
                 if($Usuario==""){
                     $Nombre="";
                 }else{
@@ -36,7 +36,7 @@ class CorteController extends Controller
             }
             $OrdenesFabricacionCerradas = $this->OrdenesFabricacionCerradas($fechaAtras, $fecha);
             foreach($OrdenesFabricacionCerradas as $key=>$OFC){
-                $Usuario=isset($OrdenesFabricacionCerradas->ResponsableUser_id)?User::find($OrdenesFabricacionCerradas->ResponsableUser_id):"";
+                $Usuario=isset($OFC->ResponsableUser_id)?User::find($OFC->ResponsableUser_id):"";
                 if($Usuario==""){
                     $Nombre="";
                 }else{
@@ -56,7 +56,7 @@ class CorteController extends Controller
             $OrdenFabricacion=$this->OrdenesFabricacionAbiertas();
             $tabla="";
             foreach($OrdenFabricacion as $orden) {
-                $Usuario=isset($OrdenesFabricacionAbiertas->ResponsableUser_id)?User::find($OrdenesFabricacionAbiertas->ResponsableUser_id):"";
+                $Usuario=isset($orden->ResponsableUser_id)?User::find($orden->ResponsableUser_id):"";
                 if($Usuario==""){
                     $Nombre="";
                 }else{

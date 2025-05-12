@@ -120,7 +120,7 @@ class PermissionSeeder extends Seeder
         //Nuevas Areas
         Permission::create([
             'name' =>'Vista Transición',
-            'groups' => 16, 
+            'groups' => 24, 
         ]);
         Permission::create([
             'name' =>'Vista Ribonizado',
