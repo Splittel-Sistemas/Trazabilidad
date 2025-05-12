@@ -4,8 +4,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!--estilos-->
 <style>
-        
-    .progress-scroll-container {
+   /* .progress-scroll-container {
         margin-top: 20px;
         max-height: 300px;
         overflow-y: auto;
@@ -50,9 +49,7 @@
     .retrabajo .task-progress {
         background-color: blue !important;
     }
-
-
-
+*/
 
 
 
@@ -522,11 +519,10 @@
                     <div class="modal-header">
                         <h5 class="modal-title text-info" id="exampleModalLabel">
                             Detalles De Orden Fabricacion:
-                            <span id="ordenFabricacionNumero" class="ms-3 text-muted"></span>
+                            <span id="ordenFabricacionNumero" class="text-muted"></span>
                         </h5>
-                        <span id="EstatusFabricacion"class="status-box">Estado</span> 
-                        
-                        <button type="button" class="btn p-1" data-bs-dismiss="modal" aria-label="Close">
+                        <span id="EstatusFabricacion"class="" style="position: absolute;right:4rem;">Estatus</span> 
+                        <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">
                             <svg class="svg-inline--fa fa-xmark fs--1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
                                 <path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"></path>
                             </svg>
@@ -534,258 +530,64 @@
                     </div>
                     <div class="modal-body ">
                         <!-- Barra de progreso -->
+                        <h6 class="text-center">Progreso de piezas completadas</h6>
                         <div class="progress" style="height: 22px; border-radius: 10px; box-shadow: 0px 3px 6px rgba(0,0,0,0.2); overflow: hidden; width: 90%; margin-left: 5%;">
                             <div id="plemasProgressBar" class="progress-bar text-white fw-bold progress-animated" role="progressbar" 
-                                 style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;" 
-                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;" 
+                                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                 0%
                             </div>
+                            <h6 class="mx-2 mt-2" id="Bloque0porciento">0%</h6>
                         </div>
-                        <div style="height:25px;"></div>
+                        <div style="height:12px;"></div>
+                        <h6 id="TiempoDuracion" class="m-2 text-center"></h6>
                         <div class="row justify-content-center">
-                            <!-- Primera fila (4 elementos) -->
-                            <div class="row">
-                                <div class="col-12 col-md-4 mb-3">
-                                    <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #d4edda;">
-                                        <div class="d-flex align-items-center justify-content-center">
-                                            <span class="fa-stack fa-1x">
-                                                <i class="fas fa-circle fa-stack-2x text-success"></i>
-                                                <i class="fas fa-stopwatch fa-stack-1x text-white "></i>
-                                            </span>
+                                <!-- Primera fila (4 elementos) -->
+                                <div class="row">
+                                    <div class="col-12 col-md-4 mb-3">
+                                        <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #d4edda;">
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <span class="fa-stack fa-1x">
+                                                    <i class="fas fa-circle fa-stack-2x text-success"></i>
+                                                    <i class="fas fa-stopwatch fa-stack-1x text-white "></i>
+                                                </span>
+                                            </div>
+                                            <h5 class="mt-2">Productivo</h5>
+                                            <p id="Produccion"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
                                         </div>
-                                        <h5 class="mt-2">Productivo</h5>
-                                        <p id="Produccion"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
+                                    </div>
+                                    <div class="col-12 col-md-4 mb-3">
+                                        <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #cce5ff;">
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <span class="fa-stack fa-1x">
+                                                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                                                    <i class="fas fa-clock fa-stack-1x text-white"></i>
+                                                </span>
+                                            </div>
+                                            <h5 class="mt-2">Tiempo Total</h5>
+                                            <p id="TiempoTotal"  class="text-muted fs--1 mb-0">Tiempo Total de la Orden</p>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="col-12 col-md-4 mb-3">
+                                        <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #f8d7da;">
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <span class="fa-stack fa-1x">
+                                                    <i class="fas fa-circle fa-stack-2x text-danger"></i>
+                                                    <i class="fas fa-hourglass-empty fa-stack-1x text-white"></i>
+                                                </span>
+                                            </div>
+                                            <h5 class="mt-2">Tiempo Muerto</h5>
+                                            <p id="Muerto"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-md-4 mb-3">
-                                    <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #cce5ff;">
-                                        <div class="d-flex align-items-center justify-content-center">
-                                            <span class="fa-stack fa-1x">
-                                                <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                                                <i class="fas fa-clock fa-stack-1x text-white"></i>
-                                            </span>
-                                        </div>
-                                        <h5 class="mt-2">Tiempo Total</h5>
-                                        <p id="TiempoTotal"  class="text-muted fs--1 mb-0">Tiempo Total de la Orden</p>
-                                    </div>
-                                </div>
-                            
-                                <div class="col-12 col-md-4 mb-3">
-                                    <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #f8d7da;">
-                                        <div class="d-flex align-items-center justify-content-center">
-                                            <span class="fa-stack fa-1x">
-                                                <i class="fas fa-circle fa-stack-2x text-danger"></i>
-                                                <i class="fas fa-hourglass-empty fa-stack-1x text-white"></i>
-                                            </span>
-                                        </div>
-                                        <h5 class="mt-2">Tiempo Muerto</h5>
-                                        <p id="Muerto"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
-                                    </div>
-                                </div>
-                            </div>
-                        <br>
-                        <!---->
-                         <!--<div class="card p-3">-->
+                            <br>
+                            <!---->
+                            <!--<div class="card p-3">-->
                             <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
-                            <div class="grid-container" id="plemasCanvases">
-                               
-                                <div class="card">
-                                    <div class="grid-item">
-                                        <h1 class="small-title">Cortes</h1>
-
-                                        <div class="canvas-container">
-                                            <canvas id="plemasCorte" width="300" height="300"></canvas> 
-                                        </div>
-                                        
-                                        <div class="title-container">
-                                            <h1 class="small-title" id="titulo-cortes"></h1>
-                                        </div>
-                                    </div>
-                                </div>
-                               
-                                <div class="grid-item">
-                                    <h1 class="small-title">Suministros</h1>
-
-                                    <div class="canvas-container">
-                                        <canvas id="plemasSuministro" width="300" height="300"></canvas>
-                                    </div>
-
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-suministro"></h1>
-                                    </div>
-                                </div>
-
-                                <div class="grid-item">
-                                    <h1 class="small-title">Transicion</h1>
-
-                                    <div class="canvas-container">
-                                        <canvas id="plemasTransicion" width="300" height="300"></canvas>
-                                    </div>
-
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-transicion"></h1>
-                                    </div>
-                                </div>
-            
-                               
-                                <div class="grid-item">
-                                    <h1 class="small-title">Preparado</h1>
-
-                                    <div class="canvas-container">
-                                        <canvas id="plemasPreparado" width="300" height="300"></canvas>
-                                    </div>
-
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-preparado"></h1>
-                                    </div>
-                                </div>
-
-                                <div class="grid-item">
-                                    <h1 class="small-title">Ribonizado</h1>
-
-                                    <div class="canvas-container">
-                                        <canvas id="plemasRibonizado" width="300" height="300"></canvas>
-                                    </div>
-
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-ribonizado"></h1>
-                                    </div>
-                                </div>
-            
-                               
-                                <div class="grid-item">
-                                    <h1 class="small-title"> Ensamble</h1>
-
-                                    <div class="canvas-container">
-                                        <canvas id="plemasEnsamble" width="300" height="300"></canvas>
-                                    </div>
-
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-ensamble"></h1>
-                                    </div>
-                                </div>
-                                <div class="grid-item">
-                                    <h1 class="small-title"> Corte de Fibra</h1>
-
-                                    <div class="canvas-container">
-                                        <canvas id="plemasCorteFibra" width="300" height="300"></canvas>
-                                    </div>
-
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-corteFibra"></h1>
-                                    </div>
-                                </div>
-            
-                                
-                                <div class="grid-item">
-                                    <h1 class="small-title"> Pulido</h1>
-                                    
-                                    <div class="canvas-container">
-                                        <canvas id="plemasPulido" width="300" height="300"></canvas>
-                                    </div>
-
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-pulido"></h1>
-                                    </div>
-                                </div>
-                                <div class="grid-item">
-                                    <h1 class="small-title">Armado</h1>
-                                    <div class="canvas-container">
-                                        <canvas id="plemasArmado" width="300" height="300"></canvas>
-                                    </div>
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-armado"></h1>
-                                    </div>
-                                </div>
-                                <div class="grid-item">
-                                    <h1 class="small-title">Inspeccion</h1>
-                                    
-                                    <div class="canvas-container">
-                                        <canvas id="plemasInspeccion" width="300" height="300"></canvas>
-                                    </div>
-
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-inspeccion"></h1>
-                                    </div>
-                                </div>
-                                <div class="grid-item">
-                                    <h1 class="small-title">Polaridad</h1>
-                                    
-                                    <div class="canvas-container">
-                                        <canvas id="plemasPolaridad" width="300" height="300"></canvas>
-                                    </div>
-
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-polaridad"></h1>
-                                    </div>
-                                </div>
-            
-                                <div class="grid-item">
-                                    <h1 class="small-title">Crimpado</h1>
-                                    
-                                    <div class="canvas-container">
-                                        <canvas id="plemasCrimpado" width="300" height="300"></canvas>
-                                    </div>
-
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-crimpado"></h1>
-                                    </div>
-                                </div>
-            
-            
-                               
-                                <div class="grid-item">
-                                    <h1 class="small-title"> Medición</h1>
-
-                                    <div class="canvas-container">
-                                        <canvas id="plemasMedicion" width="300" height="300"></canvas>
-                                    </div>
-
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-medicion"></h1>
-                                    </div>
-                                </div>
-            
-                                
-                                <div class="grid-item">
-                                    <h1 class="small-title"> Visualización</h1>
-                                
-                                    <div class="canvas-container">
-                                        <canvas id="plemasVisualizacion" width="300" height="300"></canvas>
-                                    </div>
-
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-visualizacion"></h1>
-                                    </div>
-
-                                </div>
-                                <div class="grid-item">
-                                    <h1 class="small-title"> Montaje</h1>
-
-                                    <div class="canvas-container">
-                                        <canvas id="plemasMontaje" width="300" height="300"></canvas>
-                                    </div>
-
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-montaje"></h1>
-                                    </div>
-
-                                </div>
-            
-                                <div class="grid-item">
-                                    <h1 class="small-title"> Empaque</h1>
-
-                                    <div class="canvas-container">
-                                        <canvas id="plemasEmpaque" width="300" height="300"></canvas>
-                                    </div>
-
-                                    <div class="title-container">
-                                        <h1 class="small-title" id="titulo-empaque"></h1>
-                                    </div>
-
-                                </div>
+                            <div  class="row" id="plemasCanvases">
                             </div>
-                        </div>
                         
 
                         <!--
@@ -1052,7 +854,6 @@
                 </div>
             </div>
         </div>
-        <!--modal fabricacion-->
         <input type="hidden" id="idVenta" value="">
         <input type="hidden" id="idFabricacion" value="">     
     </div>
@@ -1312,390 +1113,343 @@
             });
         }
         //detalles de la orden de fabricacion
-            $(document).on('click', '.ver-fabricacion', function (e) {
-                var ordenfabricacion = $(this).data('ordenfabricacion');
-                console.log(ordenfabricacion);  
-                $.ajax({
-                    url: '{{ route("Detalles.Fabricacion") }}',
-                    type: 'GET',
-                    data: { id: ordenfabricacion },
-                    success: function (response) {
-                        var progressBar = $('#plemasProgressBar');
-                        if (response.progreso !== undefined) {
-                            var progreso = response.progreso;
-                            // Actualizar la barra de progreso con animación
-                            progressBar.css('width', progreso + '%').text(progreso + '%');
-                            progressBar.removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
-                            // Asignar color según el porcentaje
-                            if (progreso >= 0 && progreso < 20) {
-                                progressBar.addClass('bg-danger');  // Rojo
-                            } else if (progreso >= 20 && progreso < 40) {
-                                progressBar.addClass('bg-warning');  // Naranja
-                            } else if (progreso >= 40 && progreso < 70) {
-                                progressBar.addClass('bg-primary');  // Azul
-                            } else if (progreso >= 70 && progreso < 90) {
-                                progressBar.addClass('bg-info');  // Celeste
-                            } else {
-                                progressBar.addClass('bg-success');  // Verde
-                            }
-                            $('#ordenFabricacionNumero').removeClass('text-muted').addClass('text-info').text(ordenfabricacion);
-                            if (response.Estatus && response.Estatus.length > 0) {
-                                var estadoFabricacion = response.Estatus[0].Estado || 'Desconocido';
-                                var $estatusElem = $('#EstatusFabricacion');
-                                var icono = '';
-                                $estatusElem.removeClass('bg-success bg-danger bg-secondary').addClass('badge');
-
-                                if (estadoFabricacion === 'Abierta') {
-                                    $estatusElem.removeClass('bg-danger bg-secondary').addClass('bg-success');
-                                    icono = '<i class="fas fa-lock-open"></i>';  // Ícono de "Abierta"
-                                    $estatusElem.html(icono + ' Abierta');
-                                    console.log('Estado: Abierta, Clases: bg-success');
-                                } else if (estadoFabricacion === 'Cerrada') {
-                                    $estatusElem.removeClass('bg-success bg-secondary').addClass('bg-danger');
-                                    icono = '<i class="fas fa-lock"></i>';  // Ícono de "Cerrada"
-                                    $estatusElem.html(icono + ' Cerrada');
-                                    console.log('Estado: Cerrada, Clases: bg-danger');
+    /*$(document).on('click', '.ver-fabricacion', function (e) {
+                    var ordenfabricacion = $(this).data('ordenfabricacion');
+                    console.log(ordenfabricacion);  
+                    $.ajax({
+                        url: '{{ route("Detalles.Fabricacion") }}',
+                        type: 'GET',
+                        data: { id: ordenfabricacion },
+                        success: function (response) {
+                            var progressBar = $('#plemasProgressBar');
+                            if (response.progreso !== undefined) {
+                                var progreso = response.progreso;
+                                // Actualizar la barra de progreso con animación
+                                progressBar.css('width', progreso + '%').text(progreso + '%');
+                                progressBar.removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
+                                // Asignar color según el porcentaje
+                                if (progreso >= 0 && progreso < 20) {
+                                    progressBar.addClass('bg-danger');  // Rojo
+                                } else if (progreso >= 20 && progreso < 40) {
+                                    progressBar.addClass('bg-warning');  // Naranja
+                                } else if (progreso >= 40 && progreso < 70) {
+                                    progressBar.addClass('bg-primary');  // Azul
+                                } else if (progreso >= 70 && progreso < 90) {
+                                    progressBar.addClass('bg-info');  // Celeste
                                 } else {
-                                    $estatusElem.removeClass('bg-success bg-danger').addClass('bg-secondary');
-                                    icono = '<i class="fas fa-question-circle"></i>';  // Ícono de "Desconocido"
-                                    $estatusElem.html(icono + ' Estado desconocido');
-                                    console.log('Estado desconocido, Clases: bg-secondary');
+                                    progressBar.addClass('bg-success');  // Verde
                                 }
+                                $('#ordenFabricacionNumero').removeClass('text-muted').addClass('text-info').text(ordenfabricacion);
+                                if (response.Estatus && response.Estatus.length > 0) {
+                                    var estadoFabricacion = response.Estatus[0].Estado || 'Desconocido';
+                                    var $estatusElem = $('#EstatusFabricacion');
+                                    var icono = '';
+                                    $estatusElem.removeClass('bg-success bg-danger bg-secondary').addClass('badge');
+
+                                    if (estadoFabricacion === 'Abierta') {
+                                        $estatusElem.removeClass('bg-danger bg-secondary').addClass('bg-success');
+                                        icono = '<i class="fas fa-lock-open"></i>';  // Ícono de "Abierta"
+                                        $estatusElem.html(icono + ' Abierta');
+                                        console.log('Estado: Abierta, Clases: bg-success');
+                                    } else if (estadoFabricacion === 'Cerrada') {
+                                        $estatusElem.removeClass('bg-success bg-secondary').addClass('bg-danger');
+                                        icono = '<i class="fas fa-lock"></i>';  // Ícono de "Cerrada"
+                                        $estatusElem.html(icono + ' Cerrada');
+                                        console.log('Estado: Cerrada, Clases: bg-danger');
+                                    } else {
+                                        $estatusElem.removeClass('bg-success bg-danger').addClass('bg-secondary');
+                                        icono = '<i class="fas fa-question-circle"></i>';  // Ícono de "Desconocido"
+                                        $estatusElem.html(icono + ' Estado desconocido');
+                                        console.log('Estado desconocido, Clases: bg-secondary');
+                                    }
+                                }
+                            } else {
+                                progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
+                                $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
+                                $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
                             }
-                        } else {
-                            progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
-                            $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
-                            $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
+                            $('#example2Modal').modal('show');
+                        },
+                        error: function () {
+                            alert('Error al obtener los datos de la fabricación.');
                         }
-                        $('#example2Modal').modal('show');
-                    },
-                    error: function () {
-                        alert('Error al obtener los datos de la fabricación.');
-                    }
-                });
-    /*
+                    });  
+                const endpoints = [
+                    { tipo: 'plemasCorte', id: 'plemasCorte', areaId: 2 },
+                    { tipo: 'plemasSuministrodia', id: 'plemasSuministro', areaId: 3 },
+                    { tipo: 'plemasTransiciondia', id: 'plemasTransicion', areaId: 4 },
+                    { tipo: 'plemasPreparadodia', id: 'plemasPreparado', areaId: 5 },
+                    { tipo: 'plemasRibonizadodia', id: 'plemasRibonizado', areaId: 6 },
+                    { tipo: 'plemasEnsambledia', id: 'plemasEnsamble', areaId: 7 },
+                    { tipo: 'plemasCortesFibradia', id: 'plemasCorteFibra', areaId: 8 },
+                    { tipo: 'plemasPulidodia', id: 'plemasPulido', areaId: 9 },
+                    { tipo: 'plemasArmadodia', id: 'plemasArmado', areaId: 10 },
+                    { tipo: 'plemasInspecciondia', id: 'plemasInspeccion', areaId: 11 },
+                    { tipo: 'plemasPolaridaddia', id: 'plemasPolaridad', areaId: 12 },
+                    { tipo: 'plemasCrimpadodia', id: 'plemasCrimpado', areaId: 13 },
+                    { tipo: 'plemasMediciondia', id: 'plemasMedicion', areaId: 14 },
+                    { tipo: 'plemasVisualizaciondia', id: 'plemasVisualizacion', areaId: 15 },
+                    { tipo: 'plemasMontajedia', id: 'plemasMontaje', areaId: 16 },
+                    { tipo: 'plemasEmpaque', id: 'plemasEmpaque', areaId: 17 },
+                ];
                 $.ajax({
                     url: '{{ route("graficadoOF") }}',
                     type: 'GET',
                     data: { id: ordenfabricacion },
                     success: function(response) {
                         if (response && response.estaciones) {
-                            Object.keys(response.estaciones).forEach(tipo => {
-                                let estacion = response.estaciones[tipo];
-
+                            endpoints.forEach(endpoint => {
+                                let estacion = response.estaciones[endpoint.tipo];
                                 if (estacion && estacion.length > 0) {
                                     let datos = estacion[0]; 
                                     let porcentaje = datos.porcentaje ? Math.floor(datos.porcentaje) : 0;
+
                                     let label = datos.totalR > 0 ? `Retrabajo: ${datos.totalR}` : '';
-
-                                    // Verifica si ya existe el contenedor, si no, lo crea dinámicamente
-                                    if (!$(`#${tipo}`).length) {
-                                        $(".grid-container").append(`
-                                            <div class="grid-item">
-                                                <h1 class="small-title">${tipo.replace('plemas', '')}</h1>
-                                                <div class="canvas-container">
-                                                    <canvas id="${tipo}" width="300" height="300"></canvas>
-                                                </div>
-                                                <div class="title-container">
-                                                    <h1 class="small-title" id="titulo-${tipo}"></h1>
-                                                </div>
-                                            </div>
-                                        `);
-                                    }
-
-                                    drawGauge(tipo, porcentaje, label);
+                                    drawGauge(endpoint.id, porcentaje, label);
                                 } else {
-                                    console.log(`No hay datos para ${tipo}`);
-                                    drawGauge(tipo, 0, 'Sin Datos');
+                                    console.log(`No hay datos para ${endpoint.tipo}`);
+                                    drawGauge(endpoint.id, 0, 'Sin Datos');
                                 }
                             });
                         } else {
                             console.log('No hay datos para mostrar.');
+                            endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Sin Datos'));
                         }
                     },
                     error: function(xhr, status, error) {
                         console.error('Error al obtener los datos:', error);
-                    }
-                });*/
-
-                
-                
-            const endpoints = [
-                { tipo: 'plemasCorte', id: 'plemasCorte', areaId: 2 },
-                { tipo: 'plemasSuministrodia', id: 'plemasSuministro', areaId: 3 },
-                { tipo: 'plemasTransiciondia', id: 'plemasTransicion', areaId: 4 },
-                { tipo: 'plemasPreparadodia', id: 'plemasPreparado', areaId: 5 },
-                { tipo: 'plemasRibonizadodia', id: 'plemasRibonizado', areaId: 6 },
-                { tipo: 'plemasEnsambledia', id: 'plemasEnsamble', areaId: 7 },
-                { tipo: 'plemasCortesFibradia', id: 'plemasCorteFibra', areaId: 8 },
-                { tipo: 'plemasPulidodia', id: 'plemasPulido', areaId: 9 },
-                { tipo: 'plemasArmadodia', id: 'plemasArmado', areaId: 10 },
-                { tipo: 'plemasInspecciondia', id: 'plemasInspeccion', areaId: 11 },
-                { tipo: 'plemasPolaridaddia', id: 'plemasPolaridad', areaId: 12 },
-                { tipo: 'plemasCrimpadodia', id: 'plemasCrimpado', areaId: 13 },
-                { tipo: 'plemasMediciondia', id: 'plemasMedicion', areaId: 14 },
-                { tipo: 'plemasVisualizaciondia', id: 'plemasVisualizacion', areaId: 15 },
-                { tipo: 'plemasMontajedia', id: 'plemasMontaje', areaId: 16 },
-                { tipo: 'plemasEmpaque', id: 'plemasEmpaque', areaId: 17 },
-            ];
-            $.ajax({
-                url: '{{ route("graficadoOF") }}',
-                type: 'GET',
-                data: { id: ordenfabricacion },
-                success: function(response) {
-                    if (response && response.estaciones) {
-                        endpoints.forEach(endpoint => {
-                            let estacion = response.estaciones[endpoint.tipo];
-                            if (estacion && estacion.length > 0) {
-                                let datos = estacion[0]; 
-                                let porcentaje = datos.porcentaje ? Math.floor(datos.porcentaje) : 0;
-
-                                let label = datos.totalR > 0 ? `Retrabajo: ${datos.totalR}` : '';
-                                drawGauge(endpoint.id, porcentaje, label);
-                            } else {
-                                console.log(`No hay datos para ${endpoint.tipo}`);
-                                drawGauge(endpoint.id, 0, 'Sin Datos');
-                            }
-                        });
-                    } else {
-                        console.log('No hay datos para mostrar.');
-                        endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Sin Datos'));
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error al obtener los datos:', error);
-                    endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Error'));
-                }
-            });
-            $.ajax({
-                url: '{{ route("tiempos.hrs") }}',
-                method: 'GET',
-                data: { 
-                    id: ordenfabricacion,
-                },
-                success: function(response) {
-                    // Asigna el tiempo total
-                    document.getElementById("TiempoTotal").textContent = response.tiempototal.DuracionTotal;
-                    document.getElementById("Muerto").textContent = response.TiempoMuertoFormato;
-                    document.getElementById("Produccion").textContent = formatTiempo(response.totalSegundos);
-
-                    // Verificar si la respuesta tiene tiempos de cortes
-                    if (response.tiemposcortes.length > 0) {
-                        $('#titulo-cortes')
-                            .text('Duración: ' + response.tiemposcortes[0].Duracion)
-                            .css({
-                                'font-size': '10px',
-                                'color': 'black',
-                                'font-weight': 'bold'
-                            });
-                    } else {
-                        $('#titulo-cortes')
-                            .text('Sin datos de duración')
-                            .css({
-                                'font-size': '10px',
-                                'color': 'red',
-                                'font-weight': 'bold'
-                            });
-                    }
-
-                    // Verificar si tiemposareas tiene datos
-                    let hasData = false;
-
-                    if (response.tiemposareas.length > 0) {
-                        response.tiemposareas.forEach(function(item) {
-                            hasData = true;
-                            switch (item.Areas_id) {
-                                case 3:
-                                    $('#titulo-suministro')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                    case 4:
-                                    $('#titulo-transicion')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                case 5:
-                                    $('#titulo-preparado')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                    case 6:
-                                    $('#titulo-ribonizado')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                case 7:
-                                    $('#titulo-ensamble')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                    case 8:
-                                    $('#titulo-corteFibra')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                case 9:
-                                    $('#titulo-pulido')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                    case 10:
-                                    $('#titulo-armado')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                    case 11:
-                                    $('#titulo-inspeccion')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                    case 12:
-                                    $('#titulo-polaridad')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                case 13:
-                                    $('#titulo-crimpado')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                    case 14:
-                                    $('#titulo-medicion')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                case 15:
-                                    $('#titulo-visualizacion')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                    case 16:
-                                    $('#titulo-montaje')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                case 17:
-                                    $('#titulo-empaque')
-                                        .text('Duración: ' + item.DuracionTotal)
-                                        .css({
-                                            'font-size': '10px',
-                                            'color': 'black',
-                                            'font-weight': 'bold'
-                                        });
-                                    break;
-                                default:
-                                    console.warn('Área no reconocida:', item.Areas_id);
-                            }
-                        });
-                    }
-
-                    if (!hasData) {
-                        $('#titulo-suministro').text('Sin datos de duración').css({
-                            'font-size': '10px',
-                            'color': 'red',
-                            'font-weight': 'bold'
-                        });
-
-                        $('#titulo-preparado').text('Sin datos de duración').css({
-                            'font-size': '10px',
-                            'color': 'red',
-                            'font-weight': 'bold'
-                        });
-
-                        $('#titulo-ensamble').text('Sin datos de duración').css({
-                            'font-size': '10px',
-                            'color': 'red',
-                            'font-weight': 'bold'
-                        });
-
-                        $('#titulo-pulido').text('Sin datos de duración').css({
-                            'font-size': '10px',
-                            'color': 'red',
-                            'font-weight': 'bold'
-                        });
-
-                        $('#titulo-medicion').text('Sin datos de duración').css({
-                            'font-size': '10px',
-                                'color': 'red',
-                                'font-weight': 'bold'
-                            });
-
-                            $('#titulo-visualizacion').text('Sin datos de duración').css({
-                                'font-size': '10px',
-                                'color': 'red',
-                                'font-weight': 'bold'
-                            });
-
-                            $('#titulo-empaque').text('Sin datos de duración').css({
-                                'font-size': '10px',
-                                'color': 'red',
-                                'font-weight': 'bold'
-                            });
-                        }
-                    },
-                    error: function() {
-                        console.error('Error al obtener los datos');
+                        endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Error'));
                     }
                 });
+                $.ajax({
+                    
+                    method: 'GET',
+                    data: { 
+                        id: ordenfabricacion,
+                    },
+                    success: function(response) {
+                        // Asigna el tiempo total
+                        document.getElementById("TiempoTotal").textContent = response.tiempototal.DuracionTotal;
+                        document.getElementById("Muerto").textContent = response.TiempoMuertoFormato;
+                        document.getElementById("Produccion").textContent = formatTiempo(response.totalSegundos);
 
-        });
+                        // Verificar si la respuesta tiene tiempos de cortes
+                        if (response.tiemposcortes.length > 0) {
+                            $('#titulo-cortes')
+                                .text('Duración: ' + response.tiemposcortes[0].Duracion)
+                                .css({
+                                    'font-size': '10px',
+                                    'color': 'black',
+                                    'font-weight': 'bold'
+                                });
+                        } else {
+                            $('#titulo-cortes')
+                                .text('Sin datos de duración')
+                                .css({
+                                    'font-size': '10px',
+                                    'color': 'red',
+                                    'font-weight': 'bold'
+                                });
+                        }
+
+                        // Verificar si tiemposareas tiene datos
+                        let hasData = false;
+
+                        if (response.tiemposareas.length > 0) {
+                            response.tiemposareas.forEach(function(item) {
+                                hasData = true;
+                                switch (item.Areas_id) {
+                                    case 3:
+                                        $('#titulo-suministro')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 4:
+                                        $('#titulo-transicion')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                    case 5:
+                                        $('#titulo-preparado')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 6:
+                                        $('#titulo-ribonizado')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                    case 7:
+                                        $('#titulo-ensamble')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 8:
+                                        $('#titulo-corteFibra')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                    case 9:
+                                        $('#titulo-pulido')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 10:
+                                        $('#titulo-armado')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 11:
+                                        $('#titulo-inspeccion')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 12:
+                                        $('#titulo-polaridad')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                    case 13:
+                                        $('#titulo-crimpado')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 14:
+                                        $('#titulo-medicion')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                    case 15:
+                                        $('#titulo-visualizacion')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 16:
+                                        $('#titulo-montaje')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                    case 17:
+                                        $('#titulo-empaque')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                    default:
+                                        console.warn('Área no reconocida:', item.Areas_id);
+                                }
+                            });
+                        }
+
+                        if (!hasData) {
+                            $('#titulo-suministro').text('Sin datos de duración').css({
+                                'font-size': '10px',
+                                'color': 'red',
+                                'font-weight': 'bold'
+                            });
+
+                            $('#titulo-preparado').text('Sin datos de duración').css({
+                                'font-size': '10px',
+                                'color': 'red',
+                                'font-weight': 'bold'
+                            });
+
+                            $('#titulo-ensamble').text('Sin datos de duración').css({
+                                'font-size': '10px',
+                                'color': 'red',
+                                'font-weight': 'bold'
+                            });
+
+                            $('#titulo-pulido').text('Sin datos de duración').css({
+                                'font-size': '10px',
+                                'color': 'red',
+                                'font-weight': 'bold'
+                            });
+
+                            $('#titulo-medicion').text('Sin datos de duración').css({
+                                'font-size': '10px',
+                                    'color': 'red',
+                                    'font-weight': 'bold'
+                                });
+
+                                $('#titulo-visualizacion').text('Sin datos de duración').css({
+                                    'font-size': '10px',
+                                    'color': 'red',
+                                    'font-weight': 'bold'
+                                });
+
+                                $('#titulo-empaque').text('Sin datos de duración').css({
+                                    'font-size': '10px',
+                                    'color': 'red',
+                                    'font-weight': 'bold'
+                                });
+                            }
+                        },
+                        error: function() {
+                            console.error('Error al obtener los datos');
+                        }
+                    });
+
+    });*/
 
 
         
@@ -1844,111 +1598,6 @@
         ctx.fillText('100', centerX + radius, centerY + 20); // Ajusta la posición vertical
         //la posición
     }
-    //para el clic de .stage
-    /*
-    $(document).ready(function() {
-        $('.stage').on('click', function() {
-            var stageId = $(this).attr('id');
-            var ordenVenta = $(this).data('ordenventa');
-            var progressWrapperId = '#progress-wrapper-' + stageId.replace('stage', '');
-            $(progressWrapperId).collapse('toggle'); // Muestra u oculta el contenedor de progreso
-
-            // Agregar o quitar la clase 'selected-stage' para resaltar el ícono y el texto
-            $('.stage').removeClass('selected-stage');
-            $(this).addClass('selected-stage');
-
-            var ordenVenta = $(this).data('ordenventa'); // Obtiene la orden de venta asociada
-
-            loadProgressData(ordenVenta, stageId); // Llamada unificada
-        });
-    });
-    // Función para cargar los datos de progreso combinados
-    function loadProgressData(ordenVenta, stageId) {
-        console.log('Enviando datos al controlador:');
-    console.log('Orden de venta:', ordenVenta);
-        $.ajax({
-            url: '{{ route("graficarOR.OF") }}', // Ruta al controlador
-            method: 'GET',
-            data: {
-                id: ordenVenta,
-                stage: stageId, // Pasamos el identificador de la etapa
-                _token: $('meta[name="csrf-token"]').attr('content') // Token de seguridad
-            },
-            success: function(response) {
-                var progressWrapper = $('#progress-wrapper-' + stageId.replace('stage', ''));
-                progressWrapper.empty(); // Limpiar el contenido anterior
-
-                // Generar las barras de progreso dinámicamente
-                response.forEach(function(item, index) {
-                    var progressPercentage = item.Progreso;
-                    var displayProgress = progressPercentage > 100 ? 100 : progressPercentage;
-                    var progressBar = $('<div>', { class: 'task-progress-bar', id: 'task-progress' + (index + 1) });
-                    var progressLabel = $('<div>', { class: 'task-label', text: 'Orden ' + item.OrdenesFabricacion });
-
-                    // Lógica para asignar colores según el progreso
-                    var progressColor;
-                    if (displayProgress >= 0 && displayProgress <= 30) {
-                        progressColor = 'red'; // Rojo
-                    } else if (displayProgress > 30 && displayProgress <= 50) {
-                        progressColor = 'orange'; // Naranja
-                    } else if (displayProgress > 50 && displayProgress <= 90) {
-                        progressColor = 'yellow'; // Amarillo
-                    } else if (displayProgress > 90 && displayProgress <= 100) {
-                        progressColor = '#12c72a'; // Verde
-
-                    }
-
-                    // Crear la barra de progreso con el porcentaje
-                    var progress = $('<div>', {
-                        class: 'task-progress',
-                        text: displayProgress + '%',
-                        css: {
-                            width: displayProgress + '%',
-                            backgroundColor: progressColor // Aplicar el color
-                        }
-                    });
-
-                    // Agregar el texto de la orden y el progreso dentro de la barra
-                    var progressText = $('<div>', {
-                        class: 'progress-text',
-                        text: displayProgress + '%'
-                    });
-
-                    progressBar.append(progressLabel).append(progress).append(progressText);
-                    progressWrapper.append(progressBar);
-
-                    // Si el progreso es mayor a 100%, agregar una barra para el "Retrabajo"
-                    
-                    if (progressPercentage > 100) {
-                        var retrabajoPercentage = (progressPercentage - 100).toFixed(2);
-                        var retrabajoBar = $('<div>', { class: 'task-progress-bar retrabajo', id: 'task-retrabajo' + (index + 1) });
-                        var retrabajoLabel = $('<div>', { class: 'task-label', text: 'Retrabajo ' + item.OrdenesFabricacion });
-
-                        var retrabajoProgress = $('<div>', {
-                            class: 'task-progress',
-                            text: retrabajoPercentage + '%',
-                            css: {
-                                width: retrabajoPercentage + '%',
-                                backgroundColor: 'blue' // Color para retrabajo
-                            }
-                        });
-
-                        var retrabajoText = $('<div>', {
-                            class: 'progress-text',
-                            text: retrabajoPercentage + '%'
-                        });
-
-
-                        retrabajoBar.append(retrabajoLabel).append(retrabajoProgress).append(retrabajoText);
-                        progressWrapper.append(retrabajoBar);
-                    }
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error('Error en la solicitud AJAX:', error);
-            }
-        });
-    }*/
     let currentStageOpen = null; // <- para rastrear la etapa activa
 
     $(document).ready(function () {
@@ -1973,85 +1622,81 @@
         loadProgressData(ordenVenta, stageId);
     });
     });
-
     function loadProgressData(ordenVenta, stageId) {
-    console.log('Enviando datos al controlador:', ordenVenta, stageId);
+        console.log('Enviando datos al controlador:', ordenVenta, stageId);
 
-    $.ajax({
-        url: '{{ route("graficarOR.OF") }}',
-        method: 'GET',
-        data: {
-            id: ordenVenta,
-            stage: stageId,
-            _token: $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function (response) {
-            const data = response.flat(); // Aplanar si viene doble array
-            const progressWrapper = $('#progress-wrapper-container');
-            progressWrapper.empty(); // Limpiar contenido anterior
+        $.ajax({
+            url: '{{ route("graficarOR.OF") }}',
+            method: 'GET',
+            data: {
+                id: ordenVenta,
+                stage: stageId,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+                const data = response.flat(); // Aplanar si viene doble array
+                const progressWrapper = $('#progress-wrapper-container');
+                progressWrapper.empty(); // Limpiar contenido anterior
 
-            data.forEach(function (item, index) {
-                const progressPercentage = parseFloat(item.Progreso);
-                const displayProgress = Math.min(progressPercentage, 100);
+                data.forEach(function (item, index) {
+                    const progressPercentage = parseFloat(item.Progreso);
+                    const displayProgress = Math.min(progressPercentage, 100);
+                    let progressColor = 'red';
+                    if (displayProgress > 30) progressColor = 'orange';
+                    if (displayProgress > 50) progressColor = 'yellow';
+                    if (displayProgress > 90) progressColor = '#12c72a';
 
-                let progressColor = 'red';
-                if (displayProgress > 30) progressColor = 'orange';
-                if (displayProgress > 50) progressColor = 'yellow';
-                if (displayProgress > 90) progressColor = '#12c72a';
+                    const progressBar = $('<div>', { class: 'task-progress-bar' });
+                    const progressLabel = $('<div>', { class: 'task-label', text: 'Orden ' + item.OrdenesFabricacion });
 
-                const progressBar = $('<div>', { class: 'task-progress-bar' });
-                const progressLabel = $('<div>', { class: 'task-label', text: 'Orden ' + item.OrdenesFabricacion });
-
-                const progress = $('<div>', {
-                    class: 'task-progress',
-                    text: displayProgress + '%',
-                    css: {
-                        width: displayProgress + '%',
-                        backgroundColor: progressColor
-                    }
-                });
-
-                const progressText = $('<div>', {
-                    class: 'progress-text',
-                    text: displayProgress + '%'
-                });
-
-                progressBar.append(progressLabel, progress, progressText);
-                progressWrapper.append(progressBar);
-
-                // Retrabajo
-                if (progressPercentage > 100) {
-                    const retrabajoPercentage = (progressPercentage - 100).toFixed(2);
-
-                    const retrabajoBar = $('<div>', { class: 'task-progress-bar retrabajo' });
-                    const retrabajoLabel = $('<div>', { class: 'task-label', text: 'Retrabajo ' + item.OrdenesFabricacion });
-
-                    const retrabajoProgress = $('<div>', {
+                    const progress = $('<div>', {
                         class: 'task-progress',
-                        text: retrabajoPercentage + '%',
+                        text: displayProgress + '%',
                         css: {
-                            width: retrabajoPercentage + '%',
-                            backgroundColor: 'blue'
+                            width: displayProgress + '%',
+                            backgroundColor: progressColor
                         }
                     });
 
-                    const retrabajoText = $('<div>', {
+                    const progressText = $('<div>', {
                         class: 'progress-text',
-                        text: retrabajoPercentage + '%'
+                        text: displayProgress + '%'
                     });
 
-                    retrabajoBar.append(retrabajoLabel, retrabajoProgress, retrabajoText);
-                    progressWrapper.append(retrabajoBar);
-                }
-            });
-        },
-        error: function (xhr, status, error) {
-            console.error('Error en la solicitud AJAX:', error);
-        }
-    });
+                    progressBar.append(progressLabel, progress, progressText);
+                    progressWrapper.append(progressBar);
+
+                    // Retrabajo
+                    if (progressPercentage > 100) {
+                        const retrabajoPercentage = (progressPercentage - 100).toFixed(2);
+
+                        const retrabajoBar = $('<div>', { class: 'task-progress-bar retrabajo' });
+                        const retrabajoLabel = $('<div>', { class: 'task-label', text: 'Retrabajo ' + item.OrdenesFabricacion });
+
+                        const retrabajoProgress = $('<div>', {
+                            class: 'task-progress',
+                            text: retrabajoPercentage + '%',
+                            css: {
+                                width: retrabajoPercentage + '%',
+                                backgroundColor: 'blue'
+                            }
+                        });
+
+                        const retrabajoText = $('<div>', {
+                            class: 'progress-text',
+                            text: retrabajoPercentage + '%'
+                        });
+
+                        retrabajoBar.append(retrabajoLabel, retrabajoProgress, retrabajoText);
+                        progressWrapper.append(retrabajoBar);
+                    }
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error en la solicitud AJAX:', error);
+            }
+        });
     }
-
-
     // Cuando se haga clic en una fila para seleccionar la OrdenFabricacion
     $(document).on('click', '.ver-fabricacion', function () {
         var ordenfabricacion = $(this).data('ordenfabricacion');  
@@ -2193,5 +1838,409 @@
         $('#Btn-BuscarOrden').trigger('click');
     }
     
+</script>
+<script>
+    //Nuevos Metodos
+    $(document).on('click', '.ver-fabricacion', function (e) {
+        var ordenfabricacion = $(this).data('ordenfabricacion');
+        var Bloque0porciento = $('#Bloque0porciento'); 
+        var TiempoDuracion = $('#TiempoDuracion');
+        var Produccion = $('#Produccion');
+        var TiempoTotal = $('#TiempoTotal');
+        var Muerto = $('#Muerto')
+        var plemasCanvases = $('#plemasCanvases');
+        plemasCanvases.html('');
+        TiempoTotal.html('Tiempo Total')
+        Produccion.html('Tiempo Total');
+        Muerto.html('Tiempo Total');
+        CadenaTiempo="Aún no ha comenzado el proceso";
+        $.ajax({
+            url: '{{ route("Detalles.Fabricacion") }}',
+            type: 'GET',
+            data: { id: ordenfabricacion },
+            success: function (response) {
+                var progressBar = $('#plemasProgressBar');
+                if (response.Estatus !== 'Error') {
+                    var progreso = response.progreso;
+                    if(progreso==0){
+                        Bloque0porciento.show();
+                    }else{
+                        Bloque0porciento.hide();
+                    }
+                    if(response.Produccion != 0){
+                        Produccion.html('Tiempo total<br>'+response.TiempoProductivo);
+                    }
+                    if(response.TiempoTotal != 0){
+                        TiempoTotal.html('Tiempo total<br>'+response.TiempoTotal);
+                    }
+                    if(response.TiempoMuerto != 0){
+                        Muerto.html('Tiempo total<br>'+response.TiempoMuerto);
+                    }
+                    if(!response.TiempoDuracion==0){
+                        CadenaTiempo="Duración Total: ";
+                        if(response.TiempoDuracion.y!=0){CadenaTiempo+=response.TiempoDuracion.y+" Años "}
+                        if(response.TiempoDuracion.m!=0){CadenaTiempo+=response.TiempoDuracion.m+" Meses "}
+                        if(response.TiempoDuracion.d!=0){CadenaTiempo+=response.TiempoDuracion.d+" Días "}
+                        if(response.TiempoDuracion.h!=0){CadenaTiempo+=response.TiempoDuracion.h+" Horas "}
+                        if(response.TiempoDuracion.i!=0){CadenaTiempo+=response.TiempoDuracion.i+" Minutos "}
+                        if(response.TiempoDuracion.s!=0){CadenaTiempo+=response.TiempoDuracion.s+" Segundos"}
+                    }else{
+                        CadenaTiempo="";
+                    }
+                    TiempoDuracion.html(CadenaTiempo);
+                    // Actualizar la barra de progreso con animación
+                    progressBar.css('width', progreso + '%').text(progreso + '%');
+                    progressBar.removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
+                    // Asignar color según el porcentaje
+                    if (progreso >= 0 && progreso < 20) {
+                        progressBar.addClass('bg-danger');  // Rojo
+                    } else if (progreso >= 20 && progreso < 40) {
+                        progressBar.addClass('bg-warning');  // Naranja
+                    } else if (progreso >= 40 && progreso < 70) {
+                        progressBar.addClass('bg-primary');  // Azul
+                    } else if (progreso >= 70 && progreso < 90) {
+                        progressBar.addClass('bg-info');  // Celeste
+                    } else {
+                        progressBar.addClass('bg-success');  // Verde
+                    }
+                    $('#ordenFabricacionNumero').removeClass('text-muted').addClass('text-info').text(ordenfabricacion);
+                    if (response.Estatus != "") {
+                        var estadoFabricacion = response.Estatus || 'Desconocido';
+                        var $estatusElem = $('#EstatusFabricacion');
+                        var icono = '';
+                        $estatusElem.removeClass('bg-success bg-danger bg-secondary').addClass('badge');
+                        if (estadoFabricacion === 'Abierta') {
+                            $estatusElem.removeClass('bg-danger bg-secondary').addClass('bg-success');
+                            icono = '<i class="fas fa-lock-open"></i>';  // Ícono de "Abierta"
+                            $estatusElem.html(icono + ' Abierta');
+                            console.log('Estado: Abierta, Clases: bg-success');
+                        } else if (estadoFabricacion === 'Cerrada') {
+                            $estatusElem.removeClass('bg-success bg-secondary').addClass('bg-danger');
+                            icono = '<i class="fas fa-lock"></i>';  // Ícono de "Cerrada"
+                            $estatusElem.html(icono + ' Cerrada');
+                            console.log('Estado: Cerrada, Clases: bg-danger');
+                        } else {
+                            $estatusElem.removeClass('bg-success bg-danger').addClass('bg-secondary');
+                            icono = '<i class="fas fa-question-circle"></i>';  // Ícono de "Desconocido"
+                            $estatusElem.html(icono + ' Estado desconocido');
+                            console.log('Estado desconocido, Clases: bg-secondary');
+                        }
+                    }
+                    EstacionesGraficas ='';
+                    (response.Estaciones).forEach(area => {
+                        ColorProgress="";
+                        if(area.PorcentajeActual<25){
+                            ColorProgress = ' bg-danger ';
+                        }
+                        if(area.PorcentajeActual<50){
+                            ColorProgress = ' bg-info ';
+                        }
+                        if(area.PorcentajeActual<75){
+                            ColorProgress = ' bg-warning ';
+                        }
+                        if(area.PorcentajeActual<=100){
+                            ColorProgress = ' bg-success ';
+                        }
+                        if(area.AP != 1){
+                            EstacionesGraficas+='<div class="col-4 my-2"> <div class="card rounded border-0" style="box-shadow: 3px 3px 3px 2px rgba(0.1, 0.1, 0.1, 0.2);"><h5 class="text-center">'+area.NombreArea+'</h5><div class="progress progress-container" style="height:15px">'
+                                            +'<div class="progress-bar '+ColorProgress+' rounded-3" role="progressbar" style="width: '+area.PorcentajeActual+'%" aria-valuenow="'+area.PorcentajeActual+'" aria-valuemin="0" aria-valuemax="100">'+area.PorcentajeActual+'%</div></div><small>Piezas Retrabajo:'+area.Retrabajo+'</small><small>Piezas Normales:'+area.Normales+'</small></div></div>';
+                        }
+                    });
+                    plemasCanvases.html(EstacionesGraficas);
+                } else {
+                    TiempoDuracion.html("");
+                    error('Error de la Orden de Fabricación',response.Message);
+                    Bloque0porciento.show();
+                    progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
+                    $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
+                    $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
+                }
+                $('#example2Modal').modal('show');
+            },
+            error: function () {
+                var progressBar = $('#plemasProgressBar');
+                TiempoDuracion.html("");
+                progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
+                $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
+                $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
+                errorBD();
+            }
+        });  /*
+                const endpoints = [
+                    { tipo: 'plemasCorte', id: 'plemasCorte', areaId: 2 },
+                    { tipo: 'plemasSuministrodia', id: 'plemasSuministro', areaId: 3 },
+                    { tipo: 'plemasTransiciondia', id: 'plemasTransicion', areaId: 4 },
+                    { tipo: 'plemasPreparadodia', id: 'plemasPreparado', areaId: 5 },
+                    { tipo: 'plemasRibonizadodia', id: 'plemasRibonizado', areaId: 6 },
+                    { tipo: 'plemasEnsambledia', id: 'plemasEnsamble', areaId: 7 },
+                    { tipo: 'plemasCortesFibradia', id: 'plemasCorteFibra', areaId: 8 },
+                    { tipo: 'plemasPulidodia', id: 'plemasPulido', areaId: 9 },
+                    { tipo: 'plemasArmadodia', id: 'plemasArmado', areaId: 10 },
+                    { tipo: 'plemasInspecciondia', id: 'plemasInspeccion', areaId: 11 },
+                    { tipo: 'plemasPolaridaddia', id: 'plemasPolaridad', areaId: 12 },
+                    { tipo: 'plemasCrimpadodia', id: 'plemasCrimpado', areaId: 13 },
+                    { tipo: 'plemasMediciondia', id: 'plemasMedicion', areaId: 14 },
+                    { tipo: 'plemasVisualizaciondia', id: 'plemasVisualizacion', areaId: 15 },
+                    { tipo: 'plemasMontajedia', id: 'plemasMontaje', areaId: 16 },
+                    { tipo: 'plemasEmpaque', id: 'plemasEmpaque', areaId: 17 },
+                ];
+                $.ajax({
+                    url: '{{ route("graficadoOF") }}',
+                    type: 'GET',
+                    data: { id: ordenfabricacion },
+                    success: function(response) {
+                        if (response && response.estaciones) {
+                            endpoints.forEach(endpoint => {
+                                let estacion = response.estaciones[endpoint.tipo];
+                                if (estacion && estacion.length > 0) {
+                                    let datos = estacion[0]; 
+                                    let porcentaje = datos.porcentaje ? Math.floor(datos.porcentaje) : 0;
+
+                                    let label = datos.totalR > 0 ? `Retrabajo: ${datos.totalR}` : '';
+                                    drawGauge(endpoint.id, porcentaje, label);
+                                } else {
+                                    console.log(`No hay datos para ${endpoint.tipo}`);
+                                    drawGauge(endpoint.id, 0, 'Sin Datos');
+                                }
+                            });
+                        } else {
+                            console.log('No hay datos para mostrar.');
+                            endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Sin Datos'));
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al obtener los datos:', error);
+                        endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Error'));
+                    }
+                });
+                $.ajax({
+                    
+                    method: 'GET',
+                    data: { 
+                        id: ordenfabricacion,
+                    },
+                    success: function(response) {
+                        // Asigna el tiempo total
+                        document.getElementById("TiempoTotal").textContent = response.tiempototal.DuracionTotal;
+                        document.getElementById("Muerto").textContent = response.TiempoMuertoFormato;
+                        document.getElementById("Produccion").textContent = formatTiempo(response.totalSegundos);
+
+                        // Verificar si la respuesta tiene tiempos de cortes
+                        if (response.tiemposcortes.length > 0) {
+                            $('#titulo-cortes')
+                                .text('Duración: ' + response.tiemposcortes[0].Duracion)
+                                .css({
+                                    'font-size': '10px',
+                                    'color': 'black',
+                                    'font-weight': 'bold'
+                                });
+                        } else {
+                            $('#titulo-cortes')
+                                .text('Sin datos de duración')
+                                .css({
+                                    'font-size': '10px',
+                                    'color': 'red',
+                                    'font-weight': 'bold'
+                                });
+                        }
+
+                        // Verificar si tiemposareas tiene datos
+                        let hasData = false;
+
+                        if (response.tiemposareas.length > 0) {
+                            response.tiemposareas.forEach(function(item) {
+                                hasData = true;
+                                switch (item.Areas_id) {
+                                    case 3:
+                                        $('#titulo-suministro')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 4:
+                                        $('#titulo-transicion')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                    case 5:
+                                        $('#titulo-preparado')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 6:
+                                        $('#titulo-ribonizado')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                    case 7:
+                                        $('#titulo-ensamble')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 8:
+                                        $('#titulo-corteFibra')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                    case 9:
+                                        $('#titulo-pulido')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 10:
+                                        $('#titulo-armado')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 11:
+                                        $('#titulo-inspeccion')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 12:
+                                        $('#titulo-polaridad')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                    case 13:
+                                        $('#titulo-crimpado')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 14:
+                                        $('#titulo-medicion')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                    case 15:
+                                        $('#titulo-visualizacion')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                        case 16:
+                                        $('#titulo-montaje')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                    case 17:
+                                        $('#titulo-empaque')
+                                            .text('Duración: ' + item.DuracionTotal)
+                                            .css({
+                                                'font-size': '10px',
+                                                'color': 'black',
+                                                'font-weight': 'bold'
+                                            });
+                                        break;
+                                    default:
+                                        console.warn('Área no reconocida:', item.Areas_id);
+                                }
+                            });
+                        }
+
+                        if (!hasData) {
+                            $('#titulo-suministro').text('Sin datos de duración').css({
+                                'font-size': '10px',
+                                'color': 'red',
+                                'font-weight': 'bold'
+                            });
+
+                            $('#titulo-preparado').text('Sin datos de duración').css({
+                                'font-size': '10px',
+                                'color': 'red',
+                                'font-weight': 'bold'
+                            });
+
+                            $('#titulo-ensamble').text('Sin datos de duración').css({
+                                'font-size': '10px',
+                                'color': 'red',
+                                'font-weight': 'bold'
+                            });
+
+                            $('#titulo-pulido').text('Sin datos de duración').css({
+                                'font-size': '10px',
+                                'color': 'red',
+                                'font-weight': 'bold'
+                            });
+
+                            $('#titulo-medicion').text('Sin datos de duración').css({
+                                'font-size': '10px',
+                                    'color': 'red',
+                                    'font-weight': 'bold'
+                                });
+
+                                $('#titulo-visualizacion').text('Sin datos de duración').css({
+                                    'font-size': '10px',
+                                    'color': 'red',
+                                    'font-weight': 'bold'
+                                });
+
+                                $('#titulo-empaque').text('Sin datos de duración').css({
+                                    'font-size': '10px',
+                                    'color': 'red',
+                                    'font-weight': 'bold'
+                                });
+                            }
+                        },
+                        error: function() {
+                            console.error('Error al obtener los datos');
+                        }
+                    });
+
+    */});
 </script>
 @endsection

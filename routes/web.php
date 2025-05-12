@@ -184,7 +184,6 @@ Route::get('/ordenes-completada', [HomeController::class, 'tablasCompletadas'])-
 Route::get('/tabla-semana', [HomeController::class,'tablasemana'])->name('tablas.semana')->middleware('auth');
 Route::get('/tabla-mes',[HomeController::class, 'tablasMes'])->name('tablas.mes')->middleware('auth');
 Route::get('/tabla-horas',[HomeController::class, 'tablasHoras'])->name('tablas.hora')->middleware('auth');
-Route::get('/tiempos',[BusquedaController::class, 'tiempoS'])->name('tiempos.hrs')->middleware('auth');
 Route::get('/wizarp', [HomeController::class, 'wizarp'])->name('wizarp.dashboard');
 Route::get('/wizarpdia', [HomeController::class, 'wizarpdia'])->name('wizarpdia.dashboard');
 Route::get('/wizarpmes', [HomeController::class, 'wizarpmes'])->name('wizarpmes.dashboard');
