@@ -1927,25 +1927,29 @@
                         }
                     }
                     EstacionesGraficas ='';
-                    (response.Estaciones).forEach(area => {
-                        ColorProgress="";
-                        if(area.PorcentajeActual<25){
-                            ColorProgress = ' bg-danger ';
-                        }
-                        if(area.PorcentajeActual>=25 && area.PorcentajeActual<50){
-                            ColorProgress = ' bg-info ';
-                        }
-                        if(area.PorcentajeActual>=50 && area.PorcentajeActual<75){
-                            ColorProgress = ' bg-warning ';
-                        }
-                        if(area.PorcentajeActual>=75 && area.PorcentajeActual<=100){
-                            ColorProgress = ' bg-success ';
-                        }
-                        if(area.AP != 1){
-                            EstacionesGraficas+='<div class="col-4 my-2"> <div class="card rounded border-0" style="box-shadow: 3px 3px 3px 2px rgba(0.1, 0.1, 0.1, 0.2);"><h5 class="text-center">'+area.NombreArea+'</h5><div class="progress progress-container" style="height:15px">'
-                                            +'<div class="progress-bar '+ColorProgress+' rounded-3" role="progressbar" style="width: '+area.PorcentajeActual+'%" aria-valuenow="'+area.PorcentajeActual+'" aria-valuemin="0" aria-valuemax="100">'+area.PorcentajeActual+'%</div></div><small>Piezas Retrabajo:'+area.Retrabajo+'</small><small>Piezas Normales:'+area.Normales+'</small><small>Timpo total en estación:'+area.TiempoOrdenes+'</small></div></div>';
-                        }
-                    });
+                    if((response.Estaciones).length!=0){
+                        (response.Estaciones).forEach(area => {
+                            ColorProgress="";
+                            if(area.PorcentajeActual<25){
+                                ColorProgress = ' bg-danger ';
+                            }
+                            if(area.PorcentajeActual>=25 && area.PorcentajeActual<50){
+                                ColorProgress = ' bg-info ';
+                            }
+                            if(area.PorcentajeActual>=50 && area.PorcentajeActual<75){
+                                ColorProgress = ' bg-warning ';
+                            }
+                            if(area.PorcentajeActual>=75 && area.PorcentajeActual<=100){
+                                ColorProgress = ' bg-success ';
+                            }
+                            if(area.AP != 1){
+                                EstacionesGraficas+='<div class="col-4 my-2"> <div class="card rounded border-0" style="box-shadow: 3px 3px 3px 2px rgba(0.1, 0.1, 0.1, 0.2);"><h5 class="text-center">'+area.NombreArea+'</h5><div class="progress progress-container" style="height:15px">'
+                                                +'<div class="progress-bar '+ColorProgress+' rounded-3" role="progressbar" style="width: '+area.PorcentajeActual+'%" aria-valuenow="'+area.PorcentajeActual+'" aria-valuemin="0" aria-valuemax="100">'+area.PorcentajeActual+'%</div></div><small>Piezas Retrabajo:'+area.Retrabajo+'</small><small>Piezas Normales:'+area.Normales+'</small><small>Timpo total en estación:'+area.TiempoOrdenes+'</small></div></div>';
+                            }
+                        });
+                    }else{
+                        EstacionesGraficas = '<h5 class="text-center">Aún no se asigna una Línea</h5>';
+                    }
                     plemasCanvases.html(EstacionesGraficas);
                 } else {
                     TiempoDuracion.html("");

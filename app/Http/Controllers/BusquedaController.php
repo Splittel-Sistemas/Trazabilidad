@@ -1350,13 +1350,13 @@ class BusquedaController extends Controller
                 return response()->json([], 204); 
             }*/
     }
-     //detalles OF
-     public function DetallesOF(Request $request){
-        
+    //detalles OF
+    public function DetallesOF(Request $request){
         $idFabricacion = $request->input('id');
         $OrdenFabricacion = $request->input('id');
         $OrdenFabricacion = Ordenfabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
         $PartidasOF = $OrdenFabricacion->PartidasOF->first();
+        $Estaciones=[];
         if($OrdenFabricacion == "" || $PartidasOF==""){
             return response()->json([
                 'Areas' => "",
@@ -1381,6 +1381,7 @@ class BusquedaController extends Controller
                     "TiempoProductivo" => 0,
                     "TiempoTotal" => 0,
                     "TiempoMuerto"=> 0,
+                    "Estaciones"=>$Estaciones,
                     "Estatus" => $estatus,
                 ]);
             }
@@ -1395,6 +1396,7 @@ class BusquedaController extends Controller
                     'progreso' => 0,
                     "TiempoTotal" => 0,
                     "TiempoMuerto"=> 0,
+                    "Estaciones"=>$Estaciones,
                     "Estatus" => $estatus,
                 ]);
             }
@@ -1427,20 +1429,10 @@ class BusquedaController extends Controller
             $TiempoTotal=0;
             $TiempoProductivo=0;
             $TiempoMuerto=0;
-
             if($OrdenFabricacion->Escaner == 1){
+                 //Tiempo Productivo
                 $PartidasTiempoProductivo=$PartidasOF->Areas()->whereNotNull('FechaComienzo')->whereNotNull('FechaTermina') 
                                 ->get();
-                //Numero de Etiquetas
-                $NumEtiquetas = $PartidasOF->Areas()->where('Areas_id',$this->AreaClasificacion)->get()->SUM('pivot.Cantidad');
-                for($i=0;$i<$NumEtiquetas;$i++){
-                    $MayorFecha=$PartidasOF->Areas()->OrderBy('FechaTermina', 'desc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
-                    if($MayorFecha != ""){
-                        $FechaPrimera=Carbon::parse($FechaPrimera);
-                        $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
-                        $TiempoTotalS=$TiempoTotal+=$FechaPrimera->diffInSeconds($FechaTermina);
-                    }
-                }
                 foreach($PartidasTiempoProductivo as $PTT){
                     $FechaPrimera=Carbon::parse($PTT['pivot']->FechaComienzo);
                     $FechaTermina=Carbon::parse($PTT['pivot']->FechaTermina);
@@ -1454,6 +1446,19 @@ class BusquedaController extends Controller
                     elseif($minutos!=0){$TiempoProductivo = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
                     elseif($segundos!=0){$TiempoProductivo = sprintf("%02d Segundos",$segundos);}
                     else{$TiempoProductivo = 0;}
+                }
+                //END Tiempo Productivo
+                //Tiempo Total
+                $TiempoTotalS=0;
+                $NumEtiquetas = $PartidasOF->Areas()->where('Areas_id',$this->AreaClasificacion)->get()->SUM('pivot.Cantidad');
+                for($i=0;$i<$NumEtiquetas;$i++){
+                    $MayorFecha=$PartidasOF->Areas()->OrderBy('FechaTermina', 'desc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
+                    if($MayorFecha != ""){
+                        $FechaPrimera=Carbon::parse($FechaPrimera);
+                        $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
+                        $TiempoTotal+=$FechaPrimera->diffInSeconds($FechaTermina);
+                        $TiempoTotalS+=$TiempoTotal;
+                    }
                 }
                 if($TiempoTotal !=0){
                     $horas = floor($TiempoTotal / 3600);
@@ -1476,9 +1481,8 @@ class BusquedaController extends Controller
                 }
             }else{
                 $PartidasTiempoProductivo=$PartidasOF->Areas()->whereNotNull('FechaComienzo')->whereNotNull('FechaTermina')->get();
-            }
-        //Estaciones 
-            $Estaciones = [];
+            }$Estaciones=[];
+            //Tiempo Total
             if($OrdenFabricacion->Escaner == 1){
                 foreach($Area as $index => $AreaPosible){
                     $Retrabajo=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
@@ -1514,7 +1518,6 @@ class BusquedaController extends Controller
                                                 ,'NombreArea'=>$AreaDatos->nombre];
                 }
             }else{
-
             }
            //return$Estaciones;
         // Asegúrate de que la respuesta siempre incluya una propiedad, incluso si no hay datos
