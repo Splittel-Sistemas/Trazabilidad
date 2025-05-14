@@ -186,7 +186,8 @@ class AreasController extends Controller
             'Cantidad' => $Cantitadpiezas,
             'TipoPartida' => $TipoPartida, // N = Normal
             'FechaComienzo' => now(),
-            'Linea_id' => $OrdenFabricacion->Linea_id,
+            'Linea_id' => 1,
+            'NumeroEtiqueta' => 1,
             'Users_id' => $this->funcionesGenerales->InfoUsuario(),
         ];
         $PartidasOF->Areas()->attach(3, $data);
@@ -245,7 +246,7 @@ class AreasController extends Controller
                 $TotalPartida=$ordenFabri->CantidadTotal;//($ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida'))-($ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida'));
                 $tabla.='<tr';
                 if($ordenFabri->Urgencia=='U'){
-                 $tabla.=' style="background:#FFDCDB;" ';   
+                 $tabla.=' style="background:#8be0fc;" ';   
                 }
                 $tabla.='>
                         <td>'. $ordenFabri->OrdenFabricacion .'</td>
@@ -4183,7 +4184,7 @@ class AreasController extends Controller
             foreach($OrdenFabricacion as $key=>$OrdenFab){
                 $TablaBody.=' <tr ';
                 if($OrdenFab->Urgencia=='U'){
-                    $TablaBody.=' style="background:#FFDCDB;"';
+                    $TablaBody.=' style="background:#8be0fc;"';
                 }
                 $TablaBody.=' id="Fila_'.$OrdenFab->OrdenFabricacion.'">
                             <td class="text-center">'.$OrdenFab->OrdenFabricacion.'</td>

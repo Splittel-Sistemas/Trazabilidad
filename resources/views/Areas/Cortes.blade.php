@@ -74,7 +74,7 @@
                                 </thead>
                                 <tbody id="procesoTableBody">
                                 @foreach($OrdenesFabricacionAbiertas as $orden)
-                                    <tr style="@if($orden->Urgencia == 'U'){{'background:#FFDCDB';}}@endif">
+                                    <tr style="@if($orden->Urgencia == 'U'){{'background:#8be0fc;'}} @endif">
                                         <td>{{ $orden->OrdenFabricacion }}</td>
                                         <td class="text-center"><span class="badge badge-phoenix badge-phoenix-primary">{{$orden->responsable}}</span></td>
                                         <td>{{ $orden->Articulo }}</td>

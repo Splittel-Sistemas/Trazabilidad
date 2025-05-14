@@ -49,7 +49,7 @@
     .retrabajo .task-progress {
         background-color: blue !important;
     }
-*/
+    */
 
 
 
@@ -435,6 +435,36 @@
         .lista-busqueda::-webkit-scrollbar-track {
             background-color: #f1f1f1;
             border-radius: 10px;
+        }
+        .progress-Porcentaje{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 100%;
+            width: 4.8rem;
+            height: 4.8rem;
+            display: flex;
+            justify-content: center;
+        }
+        .progress-circle {
+            position: relative;
+            left: 35%;
+            width: 6rem;
+            height: 6rem;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1),
+            inset 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .progress-Porcentaje h5{
+            font-size: 1.3rem; /* Ajusta según sea necesario */
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
     </style>
 @endsection
@@ -1867,7 +1897,7 @@
                     }else{
                         Bloque0porciento.hide();
                     }
-                    if(response.Produccion != 0){
+                    if(response.TiempoProductivo != 0){
                         Produccion.html('Tiempo total<br>'+response.TiempoProductivo);
                     }
                     if(response.TiempoTotal != 0){
@@ -1931,20 +1961,29 @@
                         (response.Estaciones).forEach(area => {
                             ColorProgress="";
                             if(area.PorcentajeActual<25){
-                                ColorProgress = ' bg-danger ';
+                                ColorProgress = ' #D32F2F ';
                             }
                             if(area.PorcentajeActual>=25 && area.PorcentajeActual<50){
-                                ColorProgress = ' bg-info ';
+                                ColorProgress = ' #FF7043 '; 
                             }
                             if(area.PorcentajeActual>=50 && area.PorcentajeActual<75){
-                                ColorProgress = ' bg-warning ';
+                                ColorProgress = ' #FFEB3B ';
                             }
                             if(area.PorcentajeActual>=75 && area.PorcentajeActual<=100){
-                                ColorProgress = ' bg-success ';
+                                ColorProgress = ' #38f41a ';
                             }
                             if(area.AP != 1){
-                                EstacionesGraficas+='<div class="col-4 my-2"> <div class="card rounded border-0" style="box-shadow: 3px 3px 3px 2px rgba(0.1, 0.1, 0.1, 0.2);"><h5 class="text-center">'+area.NombreArea+'</h5><div class="progress progress-container" style="height:15px">'
-                                                +'<div class="progress-bar '+ColorProgress+' rounded-3" role="progressbar" style="width: '+area.PorcentajeActual+'%" aria-valuenow="'+area.PorcentajeActual+'" aria-valuemin="0" aria-valuemax="100">'+area.PorcentajeActual+'%</div></div><small>Piezas Retrabajo:'+area.Retrabajo+'</small><small>Piezas Normales:'+area.Normales+'</small><small>Timpo total en estación:'+area.TiempoOrdenes+'</small></div></div>';
+                                EstacionesGraficas+='<div class="col-12 col-sm-3 col-md-4 my-2">'+
+                                                        '<div class="card rounded border-0" style="box-shadow: 3px 3px 3px 2px rgba(0.1, 0.1, 0.1, 0.2);">'+
+                                                            '<h5 class="text-center">'+area.NombreArea+'</h5>'+
+                                                            '<div class="progress-container">'+
+                                                                '<div class="progress-circle" style="background: conic-gradient('+ColorProgress+' 0% '+area.PorcentajeActual+'%, #e0e0e0 '+area.PorcentajeActual+'% 100%);">'+
+                                                                    '<div class="progress-Porcentaje"><h5>'+area.PorcentajeActual+'%</h5></div>'+   
+                                                                '</div>'+
+                                                            '</div>'+
+                                                            '<small class="float-start"><span class="float-start">Piezas Normales:'+area.Normales+'</span><span class="float-end"> Piezas Retrabajo:'+area.Retrabajo+'</span></small><h6 class="text-center mt-2">Tiempos</h6><small>Total: '+area.TiempoOrdenes+'</small><small>Productivo: '+area.TiempoProductivoEstacion+'</small>'+
+                                                        '</div>'+
+                                                    '</div>';
                             }
                         });
                     }else{

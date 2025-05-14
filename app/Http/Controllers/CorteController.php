@@ -64,7 +64,7 @@ class CorteController extends Controller
                 }
                 $tabla.='<tr ';
                 if($orden->Urgencia=='U'){
-                    $tabla.='style="background:#FFDCDB"';
+                    $tabla.='style="background:#8be0fc"';
                 }
                 $tabla.='>
                         <td>'. $orden->OrdenFabricacion .'</td>

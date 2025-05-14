@@ -129,7 +129,7 @@
                                     </thead>
                                     <tbody id="TablaSuministroAbiertasBody" class="list">
                                         @foreach($PartidasOFA as $partida)
-                                            <tr style="@if($partida->Urgencia=='U'){{'background:#FFDCDB';}}@endif">
+                                            <tr style="@if($partida->Urgencia=='U'){{'background:#8be0fc';}}@endif">
                                                 <td class="text-center">{{$partida->OrdenFabricacion }}</td>
                                                 <td>{{$partida->Articulo }}</td>
                                                 <td>{{$partida->Descripcion }}</td>

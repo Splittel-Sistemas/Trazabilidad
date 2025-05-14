@@ -187,7 +187,7 @@
                                     </thead>
                                     <tbody id="TablaCalsificacionAbiertasBody" class="list">
                                         @foreach($OrdenFabricacion as $partida)
-                                            <tr style="@if($partida->Urgencia=='U'){{'background:#FFDCDB';}}@endif" id="Fila_$partida->OrdenFabricacion">
+                                            <tr style="@if($partida->Urgencia=='U'){{'background:#8be0fc';}}@endif" id="Fila_$partida->OrdenFabricacion">
                                                 <td class="text-center">{{$partida->OrdenFabricacion }}</td>
                                                 <td>{{$partida->Articulo }}</td>
                                                 <td>{{$partida->Descripcion }}</td>

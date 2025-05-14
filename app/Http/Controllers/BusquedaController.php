@@ -1430,67 +1430,77 @@ class BusquedaController extends Controller
             $TiempoProductivo=0;
             $TiempoMuerto=0;
             if($OrdenFabricacion->Escaner == 1){
-                 //Tiempo Productivo
-                $PartidasTiempoProductivo=$PartidasOF->Areas()->whereNotNull('FechaComienzo')->whereNotNull('FechaTermina') 
-                                ->get();
-                foreach($PartidasTiempoProductivo as $PTT){
-                    $FechaPrimera=Carbon::parse($PTT['pivot']->FechaComienzo);
-                    $FechaTermina=Carbon::parse($PTT['pivot']->FechaTermina);
-                    $TiempoProductivoS=$TiempoProductivo+=$FechaPrimera->diffInSeconds($FechaTermina);
-                }
-                if($TiempoProductivo!=0){
-                    $horas = floor($TiempoProductivo / 3600);
-                    $minutos = floor(($TiempoProductivo % 3600) / 60);
-                    $segundos = $TiempoProductivo % 60;
-                    if($horas!=0){$TiempoProductivo = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
-                    elseif($minutos!=0){$TiempoProductivo = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
-                    elseif($segundos!=0){$TiempoProductivo = sprintf("%02d Segundos",$segundos);}
-                    else{$TiempoProductivo = 0;}
-                }
+                //Tiempo Productivo
+                    $PartidasTiempoProductivo=$PartidasOF->Areas()->whereNotNull('FechaComienzo')->whereNotNull('FechaTermina') 
+                                    ->get();
+                    foreach($PartidasTiempoProductivo as $PTT){
+                        $FechaPrimera=Carbon::parse($PTT['pivot']->FechaComienzo);
+                        $FechaTermina=Carbon::parse($PTT['pivot']->FechaTermina);
+                        $TiempoProductivo+=$FechaPrimera->diffInSeconds($FechaTermina);
+                    }
+                    $TiempoProductivoS=$TiempoProductivo;
+                    if($TiempoProductivo!=0){
+                        $horas = floor($TiempoProductivo / 3600);
+                        $minutos = floor(($TiempoProductivo % 3600) / 60);
+                        $segundos = $TiempoProductivo % 60;
+                        if($horas!=0){$TiempoProductivo = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
+                        elseif($minutos!=0){$TiempoProductivo = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
+                        elseif($segundos!=0){$TiempoProductivo = sprintf("%02d Segundos",$segundos);}
+                        else{$TiempoProductivo = 0;}
+                    }
                 //END Tiempo Productivo
                 //Tiempo Total
-                $TiempoTotalS=0;
-                $NumEtiquetas = $PartidasOF->Areas()->where('Areas_id',$this->AreaClasificacion)->get()->SUM('pivot.Cantidad');
-                for($i=0;$i<$NumEtiquetas;$i++){
-                    $MayorFecha=$PartidasOF->Areas()->OrderBy('FechaTermina', 'desc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
-                    if($MayorFecha != ""){
-                        $FechaPrimera=Carbon::parse($FechaPrimera);
-                        $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
-                        $TiempoTotal+=$FechaPrimera->diffInSeconds($FechaTermina);
-                        $TiempoTotalS+=$TiempoTotal;
+                    $TiempoTotalS=0;
+                    $FechaPrimera = $OrdenFabricacion->created_at;
+                    $NumEtiquetas = $PartidasOF->Areas()->where('Areas_id',$this->AreaClasificacion)->get()->SUM('pivot.Cantidad');
+                    for($i=0;$i<$NumEtiquetas;$i++){
+                        $MayorFecha=$PartidasOF->Areas()->whereNotNull('FechaTermina')->OrderBy('FechaTermina', 'desc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
+                        if($MayorFecha != ""){
+                            $FechaPrimera=Carbon::parse($FechaPrimera);
+                            $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
+                            $TiempoTotal+=$FechaPrimera->diffInSeconds($FechaTermina);
+                        }
                     }
-                }
-                if($TiempoTotal !=0){
-                    $horas = floor($TiempoTotal / 3600);
-                    $minutos = floor(($TiempoTotal % 3600) / 60);
-                    $segundos = $TiempoTotal % 60;
-                    if($horas!=0){$TiempoTotal = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
-                    elseif($minutos!=0){$TiempoTotal = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
-                    elseif($segundos!=0){$TiempoTotal = sprintf("%02d Segundos",$segundos);}
-                    else{$TiempoTotal = 0;}
-                }
-                $TiempoMuerto=$TiempoTotalS-$TiempoProductivoS;
-                if($TiempoMuerto >0){
-                    $horas = floor($TiempoMuerto / 3600);
-                    $minutos = floor(($TiempoMuerto % 3600) / 60);
-                    $segundos = $TiempoMuerto % 60;
-                    if($horas!=0){$TiempoMuerto = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
-                    elseif($minutos!=0){$TiempoMuerto = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
-                    elseif($segundos!=0){$TiempoMuerto = sprintf("%02d Segundos",$segundos);}
-                    else{$TiempoMuerto = 0;}
-                }
+                    $TiempoTotalS=$TiempoTotal;
+                    if($TiempoTotal !=0){
+                        $horas = floor($TiempoTotal / 3600);
+                        $minutos = floor(($TiempoTotal % 3600) / 60);
+                        $segundos = $TiempoTotal % 60;
+                        if($horas!=0){$TiempoTotal = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
+                        elseif($minutos!=0){$TiempoTotal = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
+                        elseif($segundos!=0){$TiempoTotal = sprintf("%02d Segundos",$segundos);}
+                        else{$TiempoTotal = 0;}
+                    }
+                //END Tiempo Total
+                //Tiempo Muerto
+                    $TiempoMuerto=$TiempoTotalS-$TiempoProductivoS;
+                    if($TiempoMuerto >0){
+                        $horas = floor($TiempoMuerto / 3600);
+                        $minutos = floor(($TiempoMuerto % 3600) / 60);
+                        $segundos = $TiempoMuerto % 60;
+                        if($horas!=0){$TiempoMuerto = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
+                        elseif($minutos!=0){$TiempoMuerto = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
+                        elseif($segundos!=0){$TiempoMuerto = sprintf("%02d Segundos",$segundos);}
+                        else{$TiempoMuerto = 0;}
+                    }
+                //END Tiempo Muerto 
             }else{
                 $PartidasTiempoProductivo=$PartidasOF->Areas()->whereNotNull('FechaComienzo')->whereNotNull('FechaTermina')->get();
             }$Estaciones=[];
-            //Tiempo Total
+            //Tiempo Productivo por estacion
+            $TiempoTotalEstacion=0;
+            $TiempoProductivoEstacion=0;
             if($OrdenFabricacion->Escaner == 1){
                 foreach($Area as $index => $AreaPosible){
+                    //Tipo de Trabajo
                     $Retrabajo=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
                     $Normales=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad');
+                    //Porcentaje Actual por Area
                     $AP=$AreaPosible;
                     $PorcentajeActual=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNotNull('FechaTermina')->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')
                                         -$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNull('FechaTermina')->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
                     $PorcentajeActual =($PorcentajeActual/$OrdenFabricacion->CantidadTotal)*100;
+                    //Tiempo Total
                     $NumEtiquetas = $PartidasOF->Areas()->where('Areas_id',$this->AreaClasificacion)->get()->SUM('pivot.Cantidad');
                     $TiempoTotalEstacion=0;
                     for($i=0;$i<$NumEtiquetas;$i++){
@@ -1502,25 +1512,34 @@ class BusquedaController extends Controller
                             $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
                         }
                     }
-                    //return $TiempoTotalEstacion;
                     if($TiempoTotalEstacion >0){
-                        $horas = floor($TiempoTotalEstacion / 3600);
-                        $minutos = floor(($TiempoTotalEstacion % 3600) / 60);
-                        $segundos = $TiempoTotalEstacion % 60;
-                        if($horas!=0){$TiempoTotalEstacion = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
-                        elseif($minutos!=0){$TiempoTotalEstacion = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
-                        elseif($segundos!=0){$TiempoTotalEstacion = sprintf("%02d Segundos",$segundos);}
-                        else{$TiempoTotalEstacion = 0;}
+                        $TiempoTotalEstacion=$this->Fechas($TiempoTotalEstacion);
+                    }
+                    //Tiempo Productivo por Estacion
+                    $TiempoProductivoEstacionAreas = $PartidasOF->Areas()->whereNotNull('FechaTermina')->where('Areas_id',$AreaPosible)->get();
+                    $TiempoProductivoEstacion=0;
+                    foreach($TiempoProductivoEstacionAreas as $TPEA){
+                        $FechaPrimera=Carbon::parse($TPEA['pivot']->FechaComienzo);
+                        $FechaTermina=Carbon::parse($TPEA['pivot']->FechaTermina);
+                        $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
+                    }
+                    if($TiempoProductivoEstacion>0){
+                        $TiempoProductivoEstacion=$this->Fechas($TiempoProductivoEstacion);
                     }
                     $TiempoOrdenes=$TiempoTotalEstacion;
                     $AreaDatos=Areas::find($AreaPosible);
-                        $Estaciones[$index] = ['PorcentajeActual' => $PorcentajeActual, 'Retrabajo' => $Retrabajo, 'Normales' => $Normales, 'TiempoOrdenes' => $TiempoOrdenes, 'AP' => $AP
-                                                ,'NombreArea'=>$AreaDatos->nombre];
+                    $Estaciones[$index] = ['PorcentajeActual' => $PorcentajeActual, 'Retrabajo' => $Retrabajo, 'Normales' => $Normales, 'TiempoOrdenes' => $TiempoOrdenes, 'AP' => $AP
+                                        ,'NombreArea'=>$AreaDatos->nombre,"TiempoProductivoEstacion"=>$TiempoProductivoEstacion];
                 }
             }else{
             }
            //return$Estaciones;
         // Asegúrate de que la respuesta siempre incluya una propiedad, incluso si no hay datos
+        if($estatus =="Abierta"){
+            $TiempoTotal = 0;
+            $TiempoProductivo = 0;
+            $TiempoMuerto = 0;
+        }
         return response()->json([
             'progreso' => round($Progreso,2),
             "Estatus" => $estatus,
@@ -1531,6 +1550,16 @@ class BusquedaController extends Controller
             "TiempoMuerto"=> $TiempoMuerto,
             "Estaciones"=>$Estaciones,
         ]);
+    }
+    function Fechas($TiempoTotalEstacion){
+        $horas = floor($TiempoTotalEstacion / 3600);
+        $minutos = floor(($TiempoTotalEstacion % 3600) / 60);
+        $segundos = $TiempoTotalEstacion % 60;
+        if($horas!=0){$TiempoTotalEstacion = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
+        elseif($minutos!=0){$TiempoTotalEstacion = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
+        elseif($segundos!=0){$TiempoTotalEstacion = sprintf("%02d Segundos",$segundos);}
+        else{$TiempoTotalEstacion = 0;}
+        return $TiempoTotalEstacion;
     }
     public function tiempoS(Request $request)
     {
