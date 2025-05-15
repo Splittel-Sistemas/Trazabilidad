@@ -196,7 +196,7 @@ class PlaneacionController extends Controller
                         <th style="display:none;"></th>
                         <th style="display:none;"></th>
                         <th style="display:none;">Escáner</th>
-                        <th>Requiere cort&eacute;</th>
+                        <th>Requiere corte</th>
                         <th style="display:none;"></th>
                         <th style="display:none;"></th>
                     </tr>
@@ -379,7 +379,7 @@ class PlaneacionController extends Controller
                     $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
                     if(!($DatosPlaneacion[$i]->Corte==1)){
                         $respuestaOF->EstatusEntrega=1;
-                    }else{$respuestaOF->EstatusEntrega=0;}
+                    }else{$respuestaOF->EstatusEntrega=0;$respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->responsablecorte;}
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
                     if($DatosPlaneacion[$i]->Cantidad>$this->CantidadParaEscanner){
                         $respuestaOF->Escaner=0;
@@ -387,7 +387,6 @@ class PlaneacionController extends Controller
                         $respuestaOF->Escaner=1;
                     }
                     $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;
-                    $respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->responsablecorte;
                     $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
                     $respuestaOF->LLC = $LLC;// 1 si 0 no
                     $respuestaOF->save();
@@ -413,7 +412,7 @@ class PlaneacionController extends Controller
                     $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
                     if(!($DatosPlaneacion[$i]->Corte==1)){
                         $respuestaOF->EstatusEntrega=1;
-                    }else{$respuestaOF->EstatusEntrega=0;}
+                    }else{$respuestaOF->EstatusEntrega=0;$respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->responsablecorte;}
                     $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
                     if($DatosPlaneacion[$i]->Cantidad>$this->CantidadParaEscanner){
                         $respuestaOF->Escaner=0;
@@ -421,7 +420,6 @@ class PlaneacionController extends Controller
                         $respuestaOF->Escaner=1;
                     }
                     $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;
-                    $respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->responsablecorte;
                     $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
                     $respuestaOF->LLC = $LLC; // 1 si 0 no
                     $respuestaOF->save();
@@ -479,6 +477,9 @@ class PlaneacionController extends Controller
         $Fecha = $request->input('fecha');
         $datos = $this->PartidasOFFiltroFechas($Fecha);
         $ResponsableUser_id = $request->ResponsableUser_id;
+        if($ResponsableUser_id=="OSC"){
+            $ResponsableUser_id=null;
+        }
         $tabla = "";
         if (count($datos) > 0) {
             $banderaOFPlaneadas=0;

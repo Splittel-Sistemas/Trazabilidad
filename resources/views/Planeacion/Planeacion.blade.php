@@ -133,6 +133,7 @@
                         <label for="EncargadoCorte" >Selecciona Operador</label>
                         <select name="EncargadoCorte" id="EncargadoCorte" class="form-select form-select-sm border-primary w-100" onchange="RecargarTablaOF();">
                             <option value="" disabled>Selecciona operador</option>
+                            <option value="OSC">Ordenes sin Corte</option>
                             @foreach($UsuariosCortes as $key=>$l)
                                 <option value="{{ $l->id }}" {{ $key == 0 ? 'selected' : '' }}>
                                     {{$l->name}} {{ $l->apellido }}
@@ -249,6 +250,7 @@
                                     <label for="EncargadoCorteModal" >Selecciona Operador</label>
                                     <select name="EncargadoCorteModal" id="EncargadoCorteModal" class="form-select form-select-sm border-primary w-100" onchange="RecargarTablaOF();">
                                         <option value="" disabled>Selecciona operador</option>
+                                        <option value="OSC" >Ordenes sin Corte</option>
                                         @foreach($UsuariosCortes as $key=>$l)
                                             <option value="{{ $l->id }}" {{ $key == 0 ? 'selected' : '' }}>
                                                 {{ $l->name }}

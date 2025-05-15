@@ -18,6 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('Users_id');
             $table->unsignedBigInteger('Linea_id');
             $table->integer('Cantidad');
+            $table->integer('NumeroBloque')->nullable();//Numero de Bloque
+            $table->integer('CerrarBloque',1)->nullable();//Cerrar Bloque null = no ; 1 = si
             $table->integer('NumeroEtiqueta')->nullable();
             $table->string('TipoPartida',1)->nullable();//R retrabajo=R Normal=N
             $table->foreign('PartidasOF_id')->references('id')->on('PartidasOF')->onDelete('cascade')->onUpdate('cascade');

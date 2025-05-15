@@ -22,17 +22,19 @@ class AreasController extends Controller
 {
     protected $funcionesGenerales;
     //Estas Areas se tratan de Manera diferente, por lo cual se definen aquí
+    protected $AreaEspecialCorte;
+    protected $AreaEspecialSuministro;
     protected $AreaEspecialTransicion;
+    protected $AreaEspecialPulido;
     protected $AreaEspecialMontaje;
     protected $AreaEspecialEmpaque;
-    protected $AreaEspecialSuministro;
-    protected $AreaEspecialCorte;
     protected $AreaEspecialClasificacion;
     public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
         $this->AreaEspecialCorte = 2;//Corte
         $this->AreaEspecialSuministro = 3;//Suministro
         $this->AreaEspecialTransicion = 4;//Transición
+        $this->AreaEspecialPulido = 9;//Pulido
         $this->AreaEspecialMontaje= 16;//Montaje
         $this->AreaEspecialEmpaque = 17;//Empaque
         $this->AreaEspecialClasificacion = 18;//Empaque
@@ -1429,10 +1431,19 @@ class AreasController extends Controller
         if($PartidasOFAreasAbierto!=""){
             return 2;
         }
-
         $PartidasOFAreasCerrada=$PartidasOF->Areas()->where('Areas_id',$Area)->whereNotNull('FechaTermina')->where('NumeroEtiqueta',$CodigoPartes[2])->first();
         //Verifica si ya existe
         if($Area!=$this->AreaEspecialEmpaque ){
+            if($Area != $this->AreaEspecialPulido){
+                $NumeroBloque = null;
+            }else{//Esto solo aplica a Pulido
+                $NumeroBloque = Partidasof_areas::whereNotNull('NumeroBloque')->OrderBy('NumeroBloque','desc')->first();
+                if($NumeroBloque==""){
+                    $NumeroBloque = 1;
+                }else{
+                    $NumeroBloque = $this->NumeroBloque();
+                }
+            }
             if($PartidasOFAreasCerrada==""){
                 $data = [
                     'Cantidad' => 1,
@@ -1440,6 +1451,7 @@ class AreasController extends Controller
                     'FechaComienzo' => now(),
                     'NumeroEtiqueta' =>$CodigoPartes[2],
                     'Linea_id' => $Lineaid,
+                    "NumeroBloque" => $NumeroBloque,
                     'Users_id' => $this->funcionesGenerales->InfoUsuario(),
                 ];
                 $PartidasOF->Areas()->attach($Area, $data);
@@ -1456,6 +1468,7 @@ class AreasController extends Controller
                         'FechaComienzo' => now(),
                         'NumeroEtiqueta' =>$CodigoPartes[2],
                         'Linea_id' => $Lineaid,
+                        "NumeroBloque" => $NumeroBloque,
                         'Users_id' => $this->funcionesGenerales->InfoUsuario(),
                     ];
                     $PartidasOF->Areas()->attach($Area, $data);
@@ -5487,6 +5500,25 @@ class AreasController extends Controller
                 $AreaRetornar=1;
         }
         return$AreaRetornar;
+    }
+    //Valida el Numero de Bloque para el Area de Pulido
+    public function NumeroBloque(){
+        $NumeroBloque = Partidasof_areas::whereNotNull('NumeroBloque')->OrderBy('NumeroBloque','desc')->first();
+        if($NumeroBloque==""){
+            $NumeroBloque = 1;
+        }else{
+            $NumeroBloqueUsuario = Partidasof_areas::whereNotNull('NumeroBloque')->where('Users_id',$this->funcionesGenerales->InfoUsuario())->OrderBy('NumeroBloque','desc')->first();
+            if($NumeroBloqueUsuario != ""){
+                if($NumeroBloqueUsuario->CerrarBloque == null || $NumeroBloqueUsuario->CerrarBloque == ""){
+                    $NumeroBloque = $NumeroBloque->NumeroBloque;
+                }else{
+                    $NumeroBloque = $NumeroBloque->NumeroBloque+1;
+                }
+            }else{
+                $NumeroBloque = $NumeroBloque->NumeroBloque+1;
+            }
+        }
+        return $NumeroBloque;
     }
     /*public function AreaAnteriorregistros($Area,$OrdenFabricacion){
         $OF=OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
