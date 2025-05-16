@@ -25,7 +25,7 @@
                     <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Entrada <i class="fas fa-arrow-down"></i></h3>
                 </div>
                 <div>
-                    <button class="btn btn-sm btn-outline-danger mt-1 mx-1 float-end" id="CerrarPlatillo"><i class="fas fa-times-circle"></i> Cerrar Plato</button>
+                    <button class="btn btn-sm btn-outline-danger mt-1 mx-1 float-end" id="CerrarPlatillo" style="display: none;"><i class="fas fa-times-circle"></i> Cerrar Plato</button>
                     <button class="btn btn-sm btn-outline-primary mt-1 mx-1 float-end" id="NuevoPlatillo"><i class="fas fa-plus-circle"></i> Nuevo Plato</button>
                 </div>
                 <div class="card-body row" id="filtroEntrada">
@@ -160,7 +160,8 @@
    let timeout;
     function ListaCodigo(Codigo,Contenedor,TipoEntrada){
         clearTimeout(timeout);
-        $('#CerrarPlatillo').removeAttr('onclick');
+        $('#CerrarPlatillo').attr('onclick', 'CerrarPlatillo(0)');
+        $('#CerrarPlatillo').hide();
         timeout = setTimeout(() => {
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
         if (CadenaVacia(Codigo)) {
@@ -314,7 +315,7 @@
                                     Color='bg-warning';
                                     break;
                                 case 3:
-                                    confirmacion('Retrabajo','¿Desea enviar codigo'+Codigo+' a Retrabajo? ','Confirmar','Retrabajo("'+Codigo+'")');
+                                    confirmacion('Retrabajo','¿Desea enviar codigo'+Codigo+' a Retrabajo? ','Confirmar','Retrabajo("'+Codigo+'")'.toString());
                                     return 0;
                                     break;
                                 case 4:
@@ -395,6 +396,9 @@
                         }, 2500);
                     }
                     $('#CerrarPlatillo').attr('onclick', 'CerrarPlatillo('+ response.NumeroBloque+')');
+                    if(response.NumeroBloque!=0){
+                        $('#CerrarPlatillo').show();
+                    }
                 }else if(response.status=="empty"){
                         if(Inicio==1){
                             $('#CodigoEscanerEntrada').focus();
@@ -410,17 +414,17 @@
                         }, 4000);
                     //}
                 }else if(response.status=="NoExiste"){
-                        if(Inicio==1){
-                            $('#CodigoEscanerEntrada').focus();
-                        }else if(Inicio==0){
-                            $('#CodigoEscanerSalida').focus();
-                        }
-                        $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
-                        $('#ToastGuardadoBody').html('El codigo No existe!  ');
-                        $('#ToastGuardado').fadeIn();
-                        setTimeout(function(){
-                            $('#ToastGuardado').fadeOut();
-                        }, 4000);
+                    if(Inicio==1){
+                        $('#CodigoEscanerEntrada').focus();
+                    }else if(Inicio==0){
+                        $('#CodigoEscanerSalida').focus();
+                    }
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                    $('#ToastGuardadoBody').html('El codigo No existe!  ');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 4000);
                 }else if(response.status == "ErrorLineaComplete"){
                     if(Inicio==1){
                         $('#CodigoEscanerEntrada').focus();
@@ -439,7 +443,10 @@
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
                     }, 4000);
-                    
+                    $('#CerrarPlatillo').attr('onclick', 'CerrarPlatillo('+ response.NumeroBloque+')');
+                    if(response.NumeroBloque!=0){
+                        $('#CerrarPlatillo').show();
+                    }
                 }else if(response.status == "ErrorLinea"){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
                     $('#ToastGuardadoBody').html('Error de Línea, el retrabajo tiene que ser en la misma Linea que se inicio normal!');
@@ -639,10 +646,6 @@
         });
         $('#NuevoPlatillo').on('click', function() {
             $('#CodigoEscanerEntrada').prop('disabled', false);
-        });
-        $('#CerrarPlatillo').on('click', function() {
-            $('#CodigoEscanerEntrada').prop('disabled', true);
-            $('#CodigoEscanerEntrada').val('');
         });
     });
     function TipoNoEscaner(TipoEntrada) {
@@ -881,8 +884,47 @@
             }
         });
     }
-    function CerrarPlatillo(){
-        alert('Cerrada');
+    function CerrarPlatillo(NumBloque){
+        if(NumBloque == 0){
+            $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+            $('#ToastGuardadoBody').html('Error, Ingresa un codigo valido para ver el Bloque a cerrar!');
+            $('#ToastGuardado').fadeIn();
+            setTimeout(function(){
+                $('#ToastGuardado').fadeOut();
+            }, 5000);
+        }
+        $.ajax({
+            url: "{{route('PulidoCerrarPlato')}}",
+            type: 'POST',
+            data: {
+                Area: '{{$Area}}',
+                NumBloque:NumBloque,
+            },
+            beforeSend: function() {
+            },
+            success: function(response) {
+                if(response.status == 'Success'){
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                    $('#ToastGuardadoBody').html('Guardado correctamente!, '+response.message+'!');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 5000);
+                }else{
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                    $('#ToastGuardadoBody').html('Error, '+response.message+'!');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 5000);
+                }
+            },
+            error: function(xhr, status, error) {
+               errorBD(); 
+            }
+        });
+        $('#CodigoEscanerEntrada').prop('disabled', true);
+        $('#CodigoEscanerEntrada').val('');
     }
 </script>
 @endsection

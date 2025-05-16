@@ -76,6 +76,7 @@ Route::get('/Area/Ribonizado', [AreasController::class,'Ribonizado'])->name('Rib
 Route::get('/Area/Ensamble', [AreasController::class,'Ensamble'])->name('Ensamble')->middleware('auth');
 Route::get('/Area/Corte/fibra', [AreasController::class,'Cortedefibra'])->name('Cortedefibra')->middleware('auth');
 Route::get('/Area/Pulido', [AreasController::class,'Pulido'])->name('Pulido')->middleware('auth');
+Route::post('/Area/Pulido/CerrarPlato', [AreasController::class,'PulidoCerrarPlato'])->name('PulidoCerrarPlato')->middleware('auth');
 Route::get('/Area/Armado', [AreasController::class,'Armado'])->name('Armado')->middleware('auth');
 Route::get('/Area/Inspección', [AreasController::class,'Inspeccion'])->name('Inspeccion')->middleware('auth');
 Route::get('/Area/Polaridad', [AreasController::class,'Polaridad'])->name('Polaridad')->middleware('auth');
