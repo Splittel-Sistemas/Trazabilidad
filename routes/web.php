@@ -225,7 +225,7 @@ Route::put('/update/perfil', [PerfilController::class, 'update'])->name('update.
 Route::get('/Error/permiso',[HomeController::class, 'error'])->name('error.')->middleware('auth'); 
 
 //dasboard operador
-Route::get('/Dashboard/operador',[HomeController::class, 'indexoperador'])->name('index.operador')->middleware('auth'); 
+Route::get('/Home',[HomeController::class, 'indexoperador'])->name('index.operador')->middleware('auth'); 
 
 
 Route::post('/guardar-aviso', [HomeController::class, 'guardarAviso'])->name('guardarAviso');
