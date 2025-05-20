@@ -361,7 +361,7 @@ class AreasController extends Controller
                                 <th class="text-center">Tipo Partida</th>
                                 <th class="text-center">Estatus</th>
                                 <th class="text-center" colspan="2">Acciones</th>
-                                <th class="text-center" colspan="3">Etiquetas</th>
+                                <th class="text-center" colspan="2">Etiquetas</th>
                             </tr>
                         </thead>
                         <tbody>';
@@ -467,10 +467,9 @@ class AreasController extends Controller
                             }
                         }
                         if($OrdenFabricacion->Corte==0){
-                            $Ordenfabricacionpartidas.='<td ><button class="btn btn-link" onclick="etiquetaColor(\''.$this->funcionesGenerales->encrypt($Partida[$key]['pivot']->id).'\',1)" type="button">3-3.7X2.5 <i class="fas fa-download"></i></button></td>
-                                                        <td ><button class="btn btn-link" onclick="etiquetaColor(\''.$this->funcionesGenerales->encrypt($Partida[$key]['pivot']->id).'\',2)" type="button">1-4.5X2.5 <i class="fas fa-download"></i></button></td>
+                            $Ordenfabricacionpartidas.='<td ><button class="btn btn-link" onclick="etiquetaColor(\''.$this->funcionesGenerales->encrypt($Partida[$key]['pivot']->id).'\',1)" type="button">40-4.5X2.5 <i class="fas fa-download"></i></button></td>
                                                         <td ><button class="btn btn-link" onclick="etiquetaColor(\''.$this->funcionesGenerales->encrypt($Partida[$key]['pivot']->id).'\',3)" type="button">1-11X2 <i class="fas fa-download"></i></button></td>';
-                        }else{$Ordenfabricacionpartidas.='<td class="text-center"></td><td class="text-center"></td><td class="text-center"></td>';}
+                        }else{$Ordenfabricacionpartidas.='<td class="text-center"></td><td class="text-center"></td>';}
                         $Ordenfabricacionpartidas.='</tr>';
                     }
                 }
@@ -643,7 +642,6 @@ class AreasController extends Controller
         }
         return $opciones;
     }
-    
     //Area 4 Preparado
     /*public function Preparado(){
         $user = Auth::user();

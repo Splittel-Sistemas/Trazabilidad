@@ -4635,6 +4635,13 @@
                     }
                 });
             });
+            setInterval(function() {
+                $.get('{{route("CheckSession")}}', function(data) {
+                    if (!data.isValid) {
+                        window.location.href = "{{route('login')}}";
+                    }
+                });
+            }, 3600000);
         </script>
         @yield('scripts')
     </body>

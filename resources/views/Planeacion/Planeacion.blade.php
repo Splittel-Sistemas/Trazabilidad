@@ -210,22 +210,22 @@
                     <div class="row">
                         <div class="col-6" id="Content_TablaVencidas">
                             <div id="container_table_OV_Vencidas" class="table-responsive">
-                                    <table id="table_OV_Vencidas" class="table table-sm fs--1 mb-0">
-                                        <thead class="table-primary text-center">
-                                            <tr>
-                                                <th class="fw-bold">
-                                                    <span id="filtro-fecha-Ov_Vencidas">Órdenes de Venta <br> <p>faltantes de Planeación </p></span>
-                                                    <div class="input-group ">
-                                                        <input type="text" placeholder="Ingresa una Orden de Venta" oninput="filtro_ov_tabla(this.value,'table_OV_Vencidas');" name="Filtro_buscarOV_Vencidas" id="Filtro_buscarOV_Vencidas"  class="form-control form-control-sm   w-autoborder-primary col-12">
-                                                        <button class="btn btn-primary btn-sm">
-                                                            <i class="fa fa-search"></i> buscar
-                                                        </button>
-                                                    </div>
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="table_OV_body_Vencidas">
-                                            @foreach ($datos as $orden)
+                                <table id="table_OV_Vencidas" class="table table-sm fs--1 mb-0">
+                                    <thead class="table-primary text-center">
+                                        <tr>
+                                            <th class="fw-bold">
+                                                <span id="filtro-fecha-Ov_Vencidas">Órdenes de Venta <br> <p>faltantes de Planeación </p></span>
+                                                <div class="input-group ">
+                                                    <input type="text" placeholder="Ingresa una Orden de Venta" oninput="filtro_ov_tabla(this.value,'table_OV_Vencidas');" name="Filtro_buscarOV_Vencidas" id="Filtro_buscarOV_Vencidas"  class="form-control form-control-sm   w-autoborder-primary col-12">
+                                                    <button class="btn btn-primary btn-sm">
+                                                        <i class="fa fa-search"></i> buscar
+                                                    </button>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table_OV_body_Vencidas">
+                                        @foreach ($datos as $orden)
                                             <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true">
                                                 <td role="button" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, `{{ $orden['Cliente'] }}`)">
                                                     {{ $orden['OV']." - ".$orden['Cliente']}}
@@ -236,9 +236,9 @@
                                                     <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
                                                 </td>
                                             </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                         <div class="col-6">

@@ -1914,23 +1914,10 @@ class HomeController extends Controller
         // Redirige con mensaje de éxito
         return redirect()->back()->with('success', 'Aviso enviado correctamente.');
     }
-    /*
-    public function obtenerPorcentajes(Request $request)
-    {
-       
-        $datos = [
-            'NumeroPersonas' => 10,
-            'CantidadEstimadaDia' => 100,
-            'PlaneadoPorDia' => 80,
-            'Piezasfaltantes' => 20,
-            'PorcentajePlaneada' => 80,
-            'PorcentajeFaltante' => 20,
-            'Fecha_Grafica' => now()->format('Y-m-d')
-        ];
-        //dd($datos);
-
-        return response()->json($datos);
-    }*/
+    //Revisa la sesión y la cooki de sesion
+    public function CheckSession(){
+        return response()->json(['isValid' => Auth::check()]);
+    }
 
 }
 

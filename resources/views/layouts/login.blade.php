@@ -145,8 +145,7 @@
         .bg-bubbles li:nth-child(8) { top: 80%; left: 60%; width: 20px; height: 20px; }
         .bg-bubbles li:nth-child(9) { top: 15%; left: 90%; width: 10px; height: 10px; }
         .bg-bubbles li:nth-child(10) { top: 40%; left: 10%; width: 160px; height: 160px; }
-    </style>
-    
+    </style> 
 </head>
 <body>
     <div class="wrapper">
@@ -202,23 +201,23 @@
     </div>
 </body>
 <script>
-document.getElementById('toggleAdministrativo').addEventListener('click', function() {
-    // Activar el botón de Administrativos
-    this.classList.add('active');
-    document.getElementById('toggleOperadores').classList.remove('active');
+    document.getElementById('toggleAdministrativo').addEventListener('click', function() {
+        // Activar el botón de Administrativos
+        this.classList.add('active');
+        document.getElementById('toggleOperadores').classList.remove('active');
 
-    // Mostrar solo el formulario de Administrativos
-    document.getElementById('formAdministrativo').style.display = 'block';
-    document.getElementById('formOperador').style.display = 'none';
-});
-document.getElementById('toggleOperadores').addEventListener('click', function() {
-    // Activar el botón de Operadores
-    this.classList.add('active');
-    document.getElementById('toggleAdministrativo').classList.remove('active');
-    // Mostrar solo el formulario de Operadores
-    document.getElementById('formAdministrativo').style.display = 'none';
-    document.getElementById('formOperador').style.display = 'block';
-});
+        // Mostrar solo el formulario de Administrativos
+        document.getElementById('formAdministrativo').style.display = 'block';
+        document.getElementById('formOperador').style.display = 'none';
+    });
+    document.getElementById('toggleOperadores').addEventListener('click', function() {
+        // Activar el botón de Operadores
+        this.classList.add('active');
+        document.getElementById('toggleAdministrativo').classList.remove('active');
+        // Mostrar solo el formulario de Operadores
+        document.getElementById('formAdministrativo').style.display = 'none';
+        document.getElementById('formOperador').style.display = 'block';
+    });
 </script>
 
 </html>
