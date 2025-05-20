@@ -3,8 +3,6 @@
 @section('styles')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="stylesheet" href="{{asset('css/Planecion.css')}}">
-
-
 @endsection
 @section('content')
     <div class="row gy-3 mb-2 justify-content-between">
@@ -1017,7 +1015,7 @@
             return;
         }
         // Obtener la fecha actual en formato YYYY-MM-DD
-        let fechaActual = new Date().toISOString().split('T')[0];
+        let fechaActual = '{{\Carbon\Carbon::parse($FechaFin)->format('Y-m-d')}}';
         // Validar si la fecha seleccionada es menor a la actual
         if (fecha < fechaActual) {
             $('#Error_'+OrdenFabricacion).show();
@@ -1028,6 +1026,9 @@
             title: 'Actualizar',
             text: '¿Estás Seguro que deseas actualizar la fecha de Planeación?',
             icon: 'warning',
+            input:'text',
+            focusConfirm: false,
+            inputPlaceholder: 'Comentario...',
             showCancelButton: true,
             confirmButtonText: 'Sí, actualizar',
             cancelButtonText: 'Cancelar'

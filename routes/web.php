@@ -55,6 +55,8 @@ Route::post('/Area/Corte/Cancelar', [CorteController::class,'CancelarCorte'])->n
 Route::post('/Area/Corte/Finalizar', [CorteController::class,'FinalizarCorte'])->name('FinalizarCorte')->middleware('auth');
 Route::post('/Area/Corte/Buscar', [CorteController::class,'BuscarCorte'])->name('BuscarCorte')->middleware('auth');
 Route::get('/Area/Corte/GenerarPDF', [CorteController::class, 'generarPDF'])->name('generarPDF')->middleware('auth');//Generar PDF
+Route::get('/Area/Corte/GenerarPDF/45X25', [CorteController::class, 'generarPDF45X25'])->name('generarPDF45X25')->middleware('auth');//Generar PDF
+Route::get('/Area/Corte/GenerarPDF/110X20', [CorteController::class, 'generarPDF110X20'])->name('generarPDF110X20')->middleware('auth');//Generar PDF
 //Suministro
 Route::get('/Area/Suministro', [AreasController::class,'Suministro'])->name('Suministro')->middleware('auth');
 Route::get('/Area/Suministro/Tabla', [AreasController::class,'SuministroRecargarTabla'])->name('SuministroRecargarTabla')->middleware('auth');
@@ -65,7 +67,9 @@ Route::post('/Area/Suministro/Guardar', [AreasController::class,'SuministroGuard
 Route::post('/Area/Suministro/Cancelar', [AreasController::class,'SuministroCancelar'])->name('SuministroCancelar')->middleware('auth');
 Route::post('/Area/Suministro/Finalizar', [AreasController::class,'SuministroFinalizar'])->name('SuministroFinalizar')->middleware('auth');
 Route::post('/Area/Suministro/Buscar', [AreasController::class,'BuscarSuministro'])->name('BuscarSuministro')->middleware('auth');
-Route::get('/Area/Corte/GenerarPDF/Suministro', [CorteController::class, 'generarPDFSuministro'])->name('generarPDFSuministro')->middleware('auth');//Generar PDF
+Route::get('/Area/Corte/GenerarPDF/Suministro/110X10X3', [CorteController::class, 'generarPDFSuministro'])->name('generarPDFSuministro')->middleware('auth');//Generar PDF
+Route::get('/Area/Corte/GenerarPDF/Suministro/45X25', [CorteController::class, 'generarPDFSuministro45X25'])->name('generarPDFSuministro45X25')->middleware('auth');//Generar PDF
+Route::get('/Area/Corte/GenerarPDF/Suministro/110X20', [CorteController::class, 'generarPDFSuministro110X20'])->name('generarPDFSuministro110X20')->middleware('auth');//Generar PDF
 //Preparado
 Route::get('/Area/Transición', [AreasController::class,'Transicion'])->name('Transicion')->middleware('auth');
 Route::get('/Area/Preparado', [AreasController::class,'Preparado'])->name('Preparado')->middleware('auth');

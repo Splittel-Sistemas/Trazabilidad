@@ -129,7 +129,7 @@
                         <tbody id="TablaPreparadoPendientesBody" class="list">
                             @foreach($Registros as $partida)
                                 @foreach($partida->PartidasOFFaltantes as $PartidaArea)
-                                    <tr>
+                                    <tr style="@if($partida->Urgencia == 'U'){{'background:#8be0fc;'}} @endif">
                                         <td class="text-center">{{$partida->OrdenFabricacion }}</td>
                                         <td>{{$partida->Articulo }}</td>
                                         <td>{{$partida->Descripcion }}</td>
@@ -153,7 +153,6 @@
 @section('scripts')
 <script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
-
     let timeout;
     function ListaCodigo(Codigo,Contenedor,TipoEntrada){
         clearTimeout(timeout);

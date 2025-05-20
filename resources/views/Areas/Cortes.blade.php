@@ -639,9 +639,16 @@
                         }*/
         });
     }
-    function etiquetaColor(id){
+    function etiquetaColor(id,ruta){
+        if(ruta==1)
+        var url = "{{ route('generarPDF')}}?id=_corteId_";
+        else if(ruta == 2){
+            var url = "{{ route('generarPDF45X25')}}?id=_corteId_";
+        }else{
+            var url = "{{ route('generarPDF110X20')}}?id=_corteId_";
+        }
         Coloretiqueta=$('#Coloretiqueta').val();
-        var url = "{{ route('generar.pdf')}}?id=_corteId_";
+        //var url = "{{ route('generar.pdf')}}?id=_corteId_";
         url = url.replace('_corteId_', id);
         // Asignar la URL al iframe para mostrar el PDF
         document.getElementById('pdfIframe').src = url;

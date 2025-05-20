@@ -159,14 +159,15 @@ class AreasController extends Controller
         if($retrabajo=="false"){//Normal
             //Comprueba que no sobrepase el numero de piezas a de la PartidaOF solo si es Normal
             //Sumamos para ver la cantidad de cortes, se maneja como una partida normal si el número de cortes alcansa para lo suministrado
-            /*$CantidadCortes = $PartidasOF->Areas()->where('Areas_id',2)->get();
-            $CantidadCortes  = $CantidadCortes->whereNotNull('pivot.FechaTermina')->SUM('pivot.Cantidad');
-            if($contartotal>$CantidadCortes ){//->PartidasOF()->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida')){
-                return response()->json([
-                    'status' => 'errorCantidada',
-                    'message' =>'Partida no guardada, Cantidad solicitada no disponible!',
-                ], 200);
-            }*/
+            $CantidadCortes = $OrdenFabricacion->CantidadTotal;
+            $CantidadSuministro =  $PartidasOF->Areas()->where('TipoPartida','N')->where('Areas_id',$this->AreaEspecialSuministro)->get()->SUM('pivot.Cantidad');//whereNotNull('pivot.FechaTermina')->SUM('pivot.Cantidad');$OrdenFabricacion->CantidadTotal;
+            $CantidadSuministro += $Cantitadpiezas;
+            if($CantidadCortes<$CantidadSuministro){
+                    return response()->json([
+                        'status' => 'errorCantidada',
+                        'message' =>'Partida no guardada, Cantidad solicitada no disponible!, por favor revisa si es partida normal o retrabajo.',
+                    ], 200);
+            }
             $TipoPartida='N';
         }else{//Retrabajo
             //Comprueba que no sobrepase el numero de piezas terminadas actualmente a de la PartidaOF solo si es Retrabajo
@@ -360,7 +361,7 @@ class AreasController extends Controller
                                 <th class="text-center">Tipo Partida</th>
                                 <th class="text-center">Estatus</th>
                                 <th class="text-center" colspan="2">Acciones</th>
-                                <th class="text-center">Etiquetas</th>
+                                <th class="text-center" colspan="3">Etiquetas</th>
                             </tr>
                         </thead>
                         <tbody>';
@@ -466,8 +467,10 @@ class AreasController extends Controller
                             }
                         }
                         if($OrdenFabricacion->Corte==0){
-                            $Ordenfabricacionpartidas.='<td class="text-center"><button class="btn btn-link me-1 mb-1" onclick="etiquetaColor(\''.$this->funcionesGenerales->encrypt($Partida[$key]['pivot']->id).'\')" type="button"><i class="fas fa-download"></i></button></td>';
-                        }else{$Ordenfabricacionpartidas.='<td class="text-center"></td>';}
+                            $Ordenfabricacionpartidas.='<td ><button class="btn btn-link" onclick="etiquetaColor(\''.$this->funcionesGenerales->encrypt($Partida[$key]['pivot']->id).'\',1)" type="button">3-3.7X2.5 <i class="fas fa-download"></i></button></td>
+                                                        <td ><button class="btn btn-link" onclick="etiquetaColor(\''.$this->funcionesGenerales->encrypt($Partida[$key]['pivot']->id).'\',2)" type="button">1-4.5X2.5 <i class="fas fa-download"></i></button></td>
+                                                        <td ><button class="btn btn-link" onclick="etiquetaColor(\''.$this->funcionesGenerales->encrypt($Partida[$key]['pivot']->id).'\',3)" type="button">1-11X2 <i class="fas fa-download"></i></button></td>';
+                        }else{$Ordenfabricacionpartidas.='<td class="text-center"></td><td class="text-center"></td><td class="text-center"></td>';}
                         $Ordenfabricacionpartidas.='</tr>';
                     }
                 }
@@ -1258,8 +1261,8 @@ class AreasController extends Controller
                                         $EstatusBloque = $PartdaAr->CerrarBloque;
                                     }
                                     if($EstatusBloque != 1){
-                                        $EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">Bloque '.$NumeroBloque.' Abierto</span></div>';
-                                    }else{$EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Bloque '.$NumeroBloque.' cerrado</span></div>';}
+                                        $EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">Bloque Abierto</span></div>';
+                                    }else{$EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Bloque Cerrado</span></div>';}
                                     //Mostrar Partidas
                                     $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
                                     foreach($registrosporLinea as $MostrarPartidas){
@@ -1345,8 +1348,8 @@ class AreasController extends Controller
                                             $EstatusBloque = $PartdaAr->CerrarBloque;
                                         }
                                         if($EstatusBloque != 1){
-                                            $EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">Bloque '.$NumeroBloque.' Abierto</span></div>';
-                                        }else{$EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Bloque '.$NumeroBloque.' cerrado</span></div>';}
+                                            $EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">Bloque Abierto</span></div>';
+                                        }else{$EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Bloque Cerrado</span></div>';}
                                         $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
                                         foreach($registrosporLinea as $MostrarPartidas){
                                             $LineaMostrar = Linea::find($MostrarPartidas['pivot']->Linea_id)->NumeroLinea;
@@ -4758,7 +4761,7 @@ class AreasController extends Controller
         }
     }
     public function tablaEmpacado(){
-        $areas = DB::table('partidasof_areas')
+        return$areas = DB::table('partidasof_areas')
             ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
             ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
             ->join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
@@ -4766,6 +4769,7 @@ class AreasController extends Controller
             ->where('ordenfabricacion.Cerrada', '!=', 0)
             ->select(
                 'ordenfabricacion.Cerrada',
+                'ordenfabricacion.Urgencia',
                 'ordenventa.OrdenVenta',
                 'ordenfabricacion.OrdenFabricacion',
                 'ordenfabricacion.CantidadTotal',
@@ -4775,6 +4779,7 @@ class AreasController extends Controller
             )
             ->groupBy(
                 'ordenfabricacion.Cerrada',
+                'ordenfabricacion.Urgencia',
                 'ordenventa.OrdenVenta',
                 'ordenfabricacion.OrdenFabricacion',
                 'ordenfabricacion.CantidadTotal',
@@ -4785,13 +4790,13 @@ class AreasController extends Controller
             ->groupBy(fn($item) => $item->OrdenVenta . '-' . $item->OrdenFabricacion)
             ->map(function ($items) {
                 $area17 = $items->firstWhere('Areas_id', $this->AreaEspecialEmpaque );
-    
                 if ($area17) {
                     return $area17;
                 } else {
                     $base = $items->first();
                     return (object) [
                         'OrdenVenta' => $base->OrdenVenta,
+                        'Urgencia' => $base->Urgencia,
                         'OrdenFabricacion' => $base->OrdenFabricacion,
                         'CantidadTotal' => $base->CantidadTotal,
                         'FechaEntrega' => $base->FechaEntrega,
@@ -5116,7 +5121,11 @@ class AreasController extends Controller
         $tabla='';
         foreach($OrdenFabricacionPendiente as $partida){
             foreach($partida->PartidasOFFaltantes as $PartidaArea){
-                $tabla.='<tr>
+                $tabla.='<tr';
+                if($partida->Urgencia == 'U'){
+                   $tabla.=' style="background:#8be0fc;"';
+                }
+                $tabla.='>
                             <td class="text-center">'.$partida->OrdenFabricacion.'</td>
                             <td>'.$partida->Articulo .'</td>
                             <td>'.$partida->Descripcion.'</td>
@@ -5729,29 +5738,4 @@ class AreasController extends Controller
         }
         return $NumeroBloque;
     }
-    /*public function AreaAnteriorregistros($Area,$OrdenFabricacion){
-        $OF=OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
-        $PartidasActuales=0;
-        $PartidasPosteriores=0;
-        $PartidasAnteriores=0;
-        $AreaRetornar=0;
-        foreach($OF->PartidasOF as $Partidas){
-            $parti=$Partidas->Areas()->where('Areas_id','<',$Area)->OrderBy('Areas_id','Desc')->first();
-            if($parti!=""){
-                if($parti->pivot->Areas_id>$AreaRetornar){
-                    $AreaRetornar=$parti->pivot->Areas_id;
-                }
-            }
-            $PartidasActuales+=$Partidas->Areas()->where('Areas_id',$Area)->get()->count();
-            $PartidasPosteriores+=$Partidas->Areas()->where('Areas_id','>',$Area)->get()->count();
-        }
-        return $AreaRetornar;
-        $PartidasAnteriores=Partidasof_Areas::where('Areas_id',$AreaRetornar)->get()->count();
-        if($PartidasActuales== 0 AND $PartidasPosteriores>0){
-            if($PartidasAnteriores=0){
-                $AreaRetornar=1;
-            }
-        }
-        return$AreaRetornar;
-    }*/
 }

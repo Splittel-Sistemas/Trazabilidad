@@ -1,7 +1,6 @@
 @extends('layouts.menu2')
 @section('title', 'Empaquetado')
 @section('styles')
-<link rel="stylesheet" href="{{asset('css/Suministro.css')}}">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
 <style>
     #ToastGuardado {
@@ -128,7 +127,6 @@
 <script>
     var puedeFinalizar = @json(Auth::user()->hasPermission("Finalizar Trazabilidad"));
 </script>
-<script src="{{ asset('js/Suministro.js') }}"></script>
 <script>
     let timeout;
     function ListaCodigo(Codigo,Contenedor,Accion){
@@ -600,7 +598,11 @@
                             : '';
 
                         let fila = `
-                            <tr>
+                            <tr `;
+                        if(item.Urgencia == 'U'){
+                            fila+=` style="background:#8be0fc;" `;
+                        }
+                        fila+=`>
                                 <td class="text-center">${item.OrdenVenta}</td>
                                 <td class="text-center">${item.OrdenFabricacion}</td>
                                 <td class="text-center">${item.CantidadTotal}</td>
