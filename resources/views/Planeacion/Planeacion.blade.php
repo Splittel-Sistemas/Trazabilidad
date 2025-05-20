@@ -1026,9 +1026,6 @@
             title: 'Actualizar',
             text: '¿Estás Seguro que deseas actualizar la fecha de Planeación?',
             icon: 'warning',
-            input:'text',
-            focusConfirm: false,
-            inputPlaceholder: 'Comentario...',
             showCancelButton: true,
             confirmButtonText: 'Sí, actualizar',
             cancelButtonText: 'Cancelar'
