@@ -164,7 +164,7 @@ class PlaneacionController extends Controller
                 INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
                 LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"DocEntry\" = T2.\"OriginAbs\" AND T2.\"Status\" NOT IN ('C') AND T2.\"ItemCode\" = T1.\"ItemCode\"
                 WHERE T0.\"DocNum\" = '{$ordenventa}'
-                AND  T2.\"Status\" = 'R'
+                AND  (T2.\"Status\" = 'R' OR T2.\"Status\" = 'P')
                 ORDER BY T1.\"PoTrgNum\""; 
                 //ORDER BY T1.\"VisOrder\"";
         //Ejecucion de la consulta
@@ -731,7 +731,7 @@ class PlaneacionController extends Controller
                     INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
                     LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"DocEntry\" = T2.\"OriginAbs\" AND T2.\"Status\" NOT IN ('C') AND T2.\"ItemCode\" = T1.\"ItemCode\"
                     WHERE T0.\"DocNum\" = '{$ordenventa}'
-                    AND  T2.\"Status\" = 'R'
+                    AND  (T2.\"Status\" = 'R' OR T2.\"Status\" = 'P')
                     ORDER BY T1.\"PoTrgNum\""; 
                 //ORDER BY T1.\"VisOrder\"";
         //Ejecucion de la consulta
