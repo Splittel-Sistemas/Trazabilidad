@@ -1084,7 +1084,7 @@ class PlaneacionController extends Controller
             $Comentarios->Areas_id = 1;
             $Comentarios->Usuario_id =  $this->funcionesGenerales->InfoUsuario();
             $Comentarios->Fecha =  now();
-            $Comentarios->Comentario =  $Comentario;
+            $Comentarios->Comentario =  "Cambio de fecha de ".$orden->FechaEntrega." a ".$fechaEntrega." ".$Comentario ;
             $Comentarios->save();
             return response()->json(['message' => 'Fecha actualizada correctamente']);
         } catch (\Exception $e) {
