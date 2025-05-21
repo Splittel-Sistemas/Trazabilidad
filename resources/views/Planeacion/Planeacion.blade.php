@@ -306,7 +306,7 @@
         </div>
     </div>
     <!-- Modal Detalles Ordenes de Fabricacion-->
-    <div class="modal fade m-4" id="ModalOrdenesFabricacion"  role="dialog" aria-labelledby="ModalOrdenesFabricacionLabel" aria-hidden="true" >
+    <div class="modal fade m-4" id="ModalOrdenesFabricacion" data-bs-focus="false" role="dialog" aria-labelledby="ModalOrdenesFabricacionLabel" aria-hidden="true" >
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-info">
@@ -1028,11 +1028,23 @@
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Sí, actualizar',
-            cancelButtonText: 'Cancelar'
+            cancelButtonText: 'Cancelar',
+            input: 'textarea',
+            inputPlaceholder: 'Comentario...',
+            preConfirm: (value) => {
+            if (!value) {
+                Swal.showValidationMessage(
+                    'Campo obligatorio'
+                );
+                return false; // Evita que la alerta se cierre
+                }
+                return value; // Devuelve el valor si es válido
+            }
         }).then((result) => {
             if (result.isConfirmed) {
                 let csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
                 if (csrfTokenMeta) {
+                    comentario=result.value;
                     let csrfToken = csrfTokenMeta.getAttribute('content');
                     $.ajax({
                         url: "{{ route('ActualizarFechaPlaneacion') }}",
@@ -1040,6 +1052,7 @@
                         data: {
                             OrdenFabricacion: OrdenFabricacion,
                             fecha_entrega: fecha,
+                            comentario:comentario,
                             _token: csrfToken 
                         },
                         success: function(data) {

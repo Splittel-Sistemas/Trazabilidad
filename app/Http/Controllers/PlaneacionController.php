@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Linea;
 use App\Models\Permission;
 use App\Models\User;
+use App\Models\Comentarios;
 class PlaneacionController extends Controller
 {
     protected $funcionesGenerales;
@@ -1054,6 +1055,7 @@ class PlaneacionController extends Controller
     }
     public function ActualizarFechaPlaneacion(Request $request){
         try {
+            $Comentario = $request->input('comentario');
             $ordenFabricacion = $request->input('OrdenFabricacion');
             $fechaEntrega = $request->input('fecha_entrega');
             // Validación básica
@@ -1076,6 +1078,14 @@ class PlaneacionController extends Controller
             // Actualizar la fecha de entrega
             $orden->FechaEntrega = $fechaEntrega;
             $orden->save();
+            $Comentarios = new Comentarios();
+            $Comentarios->OrdenFabricacion_id = $ordenFabricacion;
+            $Comentarios->Partida_id = 1;
+            $Comentarios->Areas_id = 1;
+            $Comentarios->Usuario_id =  $this->funcionesGenerales->InfoUsuario();
+            $Comentarios->Fecha =  now();
+            $Comentarios->Comentario =  $Comentario;
+            $Comentarios->save();
             return response()->json(['message' => 'Fecha actualizada correctamente']);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
