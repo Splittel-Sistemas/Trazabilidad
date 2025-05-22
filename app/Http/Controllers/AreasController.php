@@ -609,6 +609,7 @@ class AreasController extends Controller
             $PartidasOF=$OrdenFabricacion->PartidasOF->first();
             $PartidasOF->EstatusPartidaOFSuministro = '1';
             $PartidasOF->save();
+            //
         }
         return response()->json([
             'status' => 'success',
