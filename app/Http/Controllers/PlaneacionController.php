@@ -22,9 +22,11 @@ class PlaneacionController extends Controller
 {
     protected $funcionesGenerales;
     protected $CantidadParaEscanner;//Variable para ver apartir de cuantas piezas es Escaneado o masivo
+    protected $usuariosIMEX;
     public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
         $this->CantidadParaEscanner = 10;
+        $this->usuariosIMEX = ['C0875','C0912'];
     }
     public function index(){
         // Obtener el usuario autenticado
@@ -299,42 +301,121 @@ class PlaneacionController extends Controller
     }
     public function PlaneacionFOV(Request $request){
         $NumOV=$request->input('OV');
+        $TipoOrden = $request->input('TipoOrden');
         $tablaOrdenes="";
+        $status="empty";
+        if($TipoOrden == 'OV'){
             $datos=$this->OrdenesVenta("","",$NumOV);
             if($datos!=0){
                 if(empty($datos)){
                     $status="empty";
                 }else{
                     $status="success";
+                    $banderaOV=0;
                     foreach ($datos as $index => $orden) {
                         if($orden['Estatus']>0){
-                            $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '">
-                                            <td onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] .', `' . $orden['Cliente'] . '`)">
-                                                ' . $orden['OV'] . " - " . $orden['Cliente'] . '
-                                            </td>
-                                        </tr>
-                                        <tr id="details' . $index . '" class="collapse">
-                                            <td class="table-border" id="details' . $index . 'llenar">
-                                                <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
-                                            </td>
-                                            <td style="display:none"> ' . $orden['Cliente']. '</td>
-                                            <td style="display:none"> ' . $orden['OV']. '</td>
-                                        </tr>';
+                             $banderaOV=1;
+                            $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)">
+                                                <td role="button" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '" onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] .', `' . $orden['Cliente'] . '`)">
+                                                    ' . $orden['OV'] . " - " . $orden['Cliente'] . '
+                                                </td>
+                                            </tr>
+                                            <tr id="details' . $index . '" class="collapse">
+                                                <td class="table-border" id="details' . $index . 'llenar">
+                                                sassasassasa
+                                                    <!-- Aquí se llenarán los detalles de la orden cuando el usuario haga clic -->
+                                                </td>
+                                                <td style="display:none"> ' . $orden['Cliente']. '</td>
+                                                <td style="display:none"> ' . $orden['OV']. '</td>
+                                            </tr>';
                         }
+                    }
+                    if($banderaOV==0){
+                        $status="empty";
                     }
                 }
             }else{
                 $status="error";
             }
-            return response()->json([
-                'status' => $status,
-                'data' => $tablaOrdenes,
-                'NumOV' => $NumOV
-            ]);
+        }else{
+            $OrdenesFabricacion = $this->OrdenFabricacionWhere($NumOV,'T1."PoTrgNum" LIKE \'%' . $NumOV . '%\'');
+            if ($OrdenesFabricacion === false) {
+                return response()->json([
+                    'status' => 'empty',
+                    'message' => 'Error al ejecutar la consulta. Verifique los parámetros.'
+                ]);
+            }
+            if (empty($OrdenesFabricacion)) {
+                //Log::warning("No se encontraron partidas para la orden: $ordenventa");
+                return response()->json([
+                    'status' => 'empty',
+                    'message' => 'No se encontraron partidas para esta orden.'
+                ]);
+            }
+            $status="success";
+            $tablaOrdenes .= '<tr class="collapse show"><td class="table-border"><div class="table-responsive"  style="width:100%;"> 
+                                <table class="table table-sm fs--1 mb-0" id="" style="width:100%;"> 
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Marcar</th>
+                                            <th>Orden Fabricación</th>
+                                            <th>Artículo</th>
+                                            <th>Descripción</th>
+                                            <th>Cantidad</th>
+                                            <th>Fecha entrega</th>
+                                            <th style="display:none;"></th>
+                                            <th style="display:none;"></th>
+                                            <th style="display:none;">Escáner</th>
+                                            <th>Requiere corte</th>
+                                            <th style="display:none;"></th>
+                                            <th style="display:none;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list">';
+            foreach ($OrdenesFabricacion as $index => $partida) {
+                $OrdenFabricacionContar = Ordenfabricacion::where('OrdenFabricacion',$partida['Orden de F.'])->first();
+                if($OrdenFabricacionContar==""){
+                    $tablaOrdenes .='<tr>';
+                    $ordenFab = trim($partida['Orden de F.']); 
+                    $cantidadOF = is_numeric($partida['Cantidad OF']) 
+                        ? number_format($partida['Cantidad OF'], 0, '.', '') 
+                        : 'No disponible'; 
+                    $fechaEntrega = !empty($partida['Fecha entrega OF']) 
+                        ? \Carbon\Carbon::parse($partida['Fecha entrega OF'])->format('d-m-Y') 
+                        : 'No disponible'; 
+                    $tablaOrdenes.= '<tr id="row-' . $index . '" draggable="true" ondragstart="drag(event)" data-orden-fab="' . trim($partida['Orden de F.']) . '" data-articulo="' . $partida['Articulo'] . '" data-descripcion="' . $partida['Descripcion'] . '" data-cantidad="' . $cantidadOF . '" data-fecha-entrega="' . $fechaEntrega . '">';
+                    $tablaOrdenes.='<tr id="row' .$ordenFab.$index . '" draggable="true" ondragstart="drag(event)" class="draggable" >
+                            <td class="text-center">';
+                    if($partida['Orden de F.'] != ""){
+                        $tablaOrdenes .='<input type="checkbox" class="selectAll'.$ordenFab.'rowCheckbox" onclick="SeleccionarFila(event, this)">';
+                    }
+                    $tablaOrdenes .='</td>
+                                <td>' . ($partida['Orden de F.'] ?? 'No disponible') . '</td>
+                                <td>' . ($partida['Articulo'] ?? 'No disponible') . '</td>
+                                <td>' . ($partida['Descripcion'] ?? 'No disponible') . '</td>
+                                <td class="text-center">' . ($cantidadOF ?: 'No disponible') . '</td>
+                                <td>' . ($fechaEntrega ?: 'No disponible') . '</td>
+                                <td style="display:none;">00000</td>
+                                <td style="display:none;">'.$partida['Cliente'].'</td>
+                                <td class="text-center" style="display:none;"><input type="checkbox" class="Escaner'.$ordenFab.'"></td>
+                                <td style="display:none;">' . $partida['LineNum']. '</td>
+                                <td class="text-center"><input type="checkbox" class="Corte'.$ordenFab.'"></td>
+                                <td class="text-center"><input type="hidden" value="'.$this->funcionesGenerales->encrypt($partida['Cliente'] ?? '000').'"></td>
+                            </tr>';
+                    $tablaOrdenes .='</tr>';
+                }
+            }
+            $tablaOrdenes .= '</table></tbody></div></td></tr>';
+        }
+        return response()->json([
+            'status' => $status,
+            'data' => $tablaOrdenes,
+            'NumOV' => $NumOV
+        ]);
     }
     public function PartidasOFGuardar(Request $request){
         $DatosPlaneacion=json_decode($request->input('DatosPlaneacion'));
-        $usuariosIMEX = ['C0875','C0912'];//Array con los codigos de Clientes IMEX
+        $usuariosIMEX = $this->usuariosIMEX;//Array con los codigos de Clientes IMEX
         $FechaHoy=date('Y-m-d');
         $Fechaplaneada=$DatosPlaneacion[0]->Fecha_planeada;
         if($Fechaplaneada<$FechaHoy){
@@ -345,131 +426,139 @@ class PlaneacionController extends Controller
         $bandera="";
         $NumOV="";
         $NumOF=[];
+        $NumOFNoGuardada=[];
         for($i=0;$i<count($DatosPlaneacion);$i++){
-            $LLC=$this->funcionesGenerales->decrypt($DatosPlaneacion[$i]->LLC);
-            if (in_array($LLC, $usuariosIMEX)) {
-                $LLC=1;
-            }else{$LLC=0;}
-            $respuesta=0;
-            $bandera_existe="";
-            $respuesta=$this->comprobar_OV($DatosPlaneacion[$i]->OV);
-            $NumOV=$DatosPlaneacion[$i]->OV;
-            $respuestaOF= new Ordenfabricacion();
-            $datosRegistrosBuffer=RegistrosBuffer:: where('OrdenVentaB','=',$DatosPlaneacion[$i]->OV)
-                                    ->where(function($query) use ($DatosPlaneacion, $i) {
-                                        $query->where('OrdenFabricacionB', '=', $DatosPlaneacion[$i]->OF)
-                                        ->orWhere('NumeroLineaB', '=', $DatosPlaneacion[$i]->Linea);
-                                    })
-                                    ->first();
-            if($datosRegistrosBuffer){
-                $datosRegistrosBuffer->delete();
-            }
-            if($respuesta==0){
-                $respuestaOV= new OrdenVenta();
-                $respuestaOV->OrdenVenta=$DatosPlaneacion[$i]->OV;
-                $respuestaOV->NombreCliente=$DatosPlaneacion[$i]->Cliente;
-                $bandera=$respuestaOV->save();
-                if($bandera==1){
-                    $NumOF[]=$DatosPlaneacion[$i]->OF;
-                    $Fecha_entrega=isset($DatosPlaneacion[$i]->Fecha_entrega)?Carbon::createFromFormat('d-m-Y', $DatosPlaneacion[$i]->Fecha_entrega)->format('Y-m-d'):null;
-                    $respuestaOF->OrdenVenta_id=$respuestaOV->id;
-                    $respuestaOF->OrdenFabricacion=$DatosPlaneacion[$i]->OF;
-                    $respuestaOF->Articulo=$DatosPlaneacion[$i]->Articulo;
-                    $respuestaOF->Descripcion=$DatosPlaneacion[$i]->Descripcion;
-                    $respuestaOF->CantidadTotal=$DatosPlaneacion[$i]->Cantidad;
-                    $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
-                    if(!($DatosPlaneacion[$i]->Corte==1)){
-                        $respuestaOF->EstatusEntrega=1;
-                    }else{$respuestaOF->EstatusEntrega=0;$respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->responsablecorte;}
-                    $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
-                    if($DatosPlaneacion[$i]->Cantidad>$this->CantidadParaEscanner){
-                        $respuestaOF->Escaner=0;
-                    }else{
-                        $respuestaOF->Escaner=1;
-                    }
-                    $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;
-                    $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
-                    $respuestaOF->LLC = $LLC;// 1 si 0 no
-                    $respuestaOF->save();
+            $OrdenFabricacionContar = Ordenfabricacion::where('OrdenFabricacion',$DatosPlaneacion[$i]->OF)->first(); 
+            if($OrdenFabricacionContar == ""){
+                $LLC=$this->funcionesGenerales->decrypt($DatosPlaneacion[$i]->LLC);
+                if (in_array($LLC, $usuariosIMEX)) {
+                    $LLC=1;
+                }else{$LLC=0;}
+                $respuesta=0;
+                $bandera_existe="";
+                $respuesta=$this->comprobar_OV($DatosPlaneacion[$i]->OV);
+                $NumOV=$DatosPlaneacion[$i]->OV;
+                $respuestaOF= new Ordenfabricacion();
+                $datosRegistrosBuffer=RegistrosBuffer:: where('OrdenVentaB','=',$DatosPlaneacion[$i]->OV)
+                                        ->where(function($query) use ($DatosPlaneacion, $i) {
+                                            $query->where('OrdenFabricacionB', '=', $DatosPlaneacion[$i]->OF)
+                                            ->orWhere('NumeroLineaB', '=', $DatosPlaneacion[$i]->Linea);
+                                        })
+                                        ->first();
+                if($datosRegistrosBuffer){
+                    $datosRegistrosBuffer->delete();
                 }
-                else{
-                    return response()->json([
-                        'status' => "error",
-                        'NumOV' => $NumOF,
-                        'NumOV' => $NumOV
-                    ]);
+                if($respuesta==0){
+                    $respuestaOV= new OrdenVenta();
+                    $respuestaOV->OrdenVenta=$DatosPlaneacion[$i]->OV;
+                    $respuestaOV->NombreCliente=$DatosPlaneacion[$i]->Cliente;
+                    $bandera=$respuestaOV->save();
+                    if($bandera==1){
+                        $NumOF[]=$DatosPlaneacion[$i]->OF;
+                        $Fecha_entrega=isset($DatosPlaneacion[$i]->Fecha_entrega)?Carbon::createFromFormat('d-m-Y', $DatosPlaneacion[$i]->Fecha_entrega)->format('Y-m-d'):null;
+                        $respuestaOF->OrdenVenta_id=$respuestaOV->id;
+                        $respuestaOF->OrdenFabricacion=$DatosPlaneacion[$i]->OF;
+                        $respuestaOF->Articulo=$DatosPlaneacion[$i]->Articulo;
+                        $respuestaOF->Descripcion=$DatosPlaneacion[$i]->Descripcion;
+                        $respuestaOF->CantidadTotal=$DatosPlaneacion[$i]->Cantidad;
+                        $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
+                        if(!($DatosPlaneacion[$i]->Corte==1)){
+                            $respuestaOF->EstatusEntrega=1;
+                        }else{$respuestaOF->EstatusEntrega=0;$respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->responsablecorte;}
+                        $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
+                        if($DatosPlaneacion[$i]->Cantidad>$this->CantidadParaEscanner){
+                            $respuestaOF->Escaner=0;
+                        }else{
+                            $respuestaOF->Escaner=1;
+                        }
+                        $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;
+                        $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
+                        $respuestaOF->LLC = $LLC;// 1 si 0 no
+                        $respuestaOF->save();
+                    }
+                    else{
+                        return response()->json([
+                            'status' => "error",
+                            'NumOV' => $NumOF,
+                            'NumOV' => $NumOV
+                        ]);
+                    }
+                }else{
+                    $datos=OrdenVenta:: where('id','=',$respuesta)->first();
+                    $comprobar_existe_partida=$this->comprobar_existe_partida($datos->id, $DatosPlaneacion[$i]->OF);
+                    if($comprobar_existe_partida==0){
+                        $NumOF[]=$DatosPlaneacion[$i]->OF;
+                        $Fecha_entrega=isset($DatosPlaneacion[$i]->Fecha_entrega)?Carbon::createFromFormat('d-m-Y', $DatosPlaneacion[$i]->Fecha_entrega)->format('Y-m-d'):null;
+                        $respuestaOF->OrdenVenta_id=$datos->id;
+                        $respuestaOF->OrdenFabricacion=$DatosPlaneacion[$i]->OF;
+                        $respuestaOF->Articulo=$DatosPlaneacion[$i]->Articulo;
+                        $respuestaOF->Descripcion=$DatosPlaneacion[$i]->Descripcion;
+                        $respuestaOF->CantidadTotal=$DatosPlaneacion[$i]->Cantidad;
+                        $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
+                        if(!($DatosPlaneacion[$i]->Corte==1)){
+                            $respuestaOF->EstatusEntrega=1;
+                        }else{$respuestaOF->EstatusEntrega=0;$respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->responsablecorte;}
+                        $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
+                        if($DatosPlaneacion[$i]->Cantidad>$this->CantidadParaEscanner){
+                            $respuestaOF->Escaner=0;
+                        }else{
+                            $respuestaOF->Escaner=1;
+                        }
+                        $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;
+                        $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
+                        $respuestaOF->LLC = $LLC; // 1 si 0 no
+                        $respuestaOF->save();
+                    }
+                }
+                if(!($DatosPlaneacion[$i]->Corte==1)){
+                    $PartidasOF = new PartidasOF();
+                    $PartidasOF->OrdenFabricacion_id=$respuestaOF->id;
+                    $PartidasOF->cantidad_partida=$respuestaOF->CantidadTotal;
+                    $PartidasOF->NumeroPartida=1;
+                    $PartidasOF->TipoPartida='N';
+                    $PartidasOF->FechaFabricacion=Now();
+                    $PartidasOF->EstatusPartidaOF=0;
+                    $PartidasOF->FechaComienzo=Now();
+                    $PartidasOF->FechaFinalizacion=Now();
+                    $PartidasOF->save();
+                    $data = [
+                        'Cantidad' => $respuestaOF->CantidadTotal,
+                        'TipoPartida' => 'N', // N = Normal
+                        'FechaComienzo' => now(),
+                        'FechaTermina' => now(),
+                        'NumeroEtiqueta' => 1,
+                        'Linea_id' => 1,
+                        'Users_id' => $this->funcionesGenerales->InfoUsuario(),
+                    ];
+                    //Area 2 Corte
+                    $PartidasOF->Areas()->attach(2, $data);
+                }else{
+                    $PartidasOF = new PartidasOF();
+                    $PartidasOF->OrdenFabricacion_id=$respuestaOF->id;
+                    $PartidasOF->cantidad_partida=$respuestaOF->CantidadTotal;
+                    $PartidasOF->NumeroPartida=1;
+                    $PartidasOF->TipoPartida='N';
+                    $PartidasOF->FechaFabricacion=Now();
+                    $PartidasOF->EstatusPartidaOF=0;
+                    $PartidasOF->save();
                 }
             }else{
-                $datos=OrdenVenta:: where('id','=',$respuesta)->first();
-                $comprobar_existe_partida=$this->comprobar_existe_partida($datos->id, $DatosPlaneacion[$i]->OF);
-                if($comprobar_existe_partida==0){
-                    $NumOF[]=$DatosPlaneacion[$i]->OF;
-                    $Fecha_entrega=isset($DatosPlaneacion[$i]->Fecha_entrega)?Carbon::createFromFormat('d-m-Y', $DatosPlaneacion[$i]->Fecha_entrega)->format('Y-m-d'):null;
-                    $respuestaOF->OrdenVenta_id=$datos->id;
-                    $respuestaOF->OrdenFabricacion=$DatosPlaneacion[$i]->OF;
-                    $respuestaOF->Articulo=$DatosPlaneacion[$i]->Articulo;
-                    $respuestaOF->Descripcion=$DatosPlaneacion[$i]->Descripcion;
-                    $respuestaOF->CantidadTotal=$DatosPlaneacion[$i]->Cantidad;
-                    $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
-                    if(!($DatosPlaneacion[$i]->Corte==1)){
-                        $respuestaOF->EstatusEntrega=1;
-                    }else{$respuestaOF->EstatusEntrega=0;$respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->responsablecorte;}
-                    $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
-                    if($DatosPlaneacion[$i]->Cantidad>$this->CantidadParaEscanner){
-                        $respuestaOF->Escaner=0;
-                    }else{
-                        $respuestaOF->Escaner=1;
-                    }
-                    $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;
-                    $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
-                    $respuestaOF->LLC = $LLC; // 1 si 0 no
-                    $respuestaOF->save();
-                }
-            }
-            if(!($DatosPlaneacion[$i]->Corte==1)){
-                $PartidasOF = new PartidasOF();
-                $PartidasOF->OrdenFabricacion_id=$respuestaOF->id;
-                $PartidasOF->cantidad_partida=$respuestaOF->CantidadTotal;
-                $PartidasOF->NumeroPartida=1;
-                $PartidasOF->TipoPartida='N';
-                $PartidasOF->FechaFabricacion=Now();
-                $PartidasOF->EstatusPartidaOF=0;
-                $PartidasOF->FechaComienzo=Now();
-                $PartidasOF->FechaFinalizacion=Now();
-                $PartidasOF->save();
-                $data = [
-                    'Cantidad' => $respuestaOF->CantidadTotal,
-                    'TipoPartida' => 'N', // N = Normal
-                    'FechaComienzo' => now(),
-                    'FechaTermina' => now(),
-                    'NumeroEtiqueta' => 1,
-                    'Linea_id' => 1,
-                    'Users_id' => $this->funcionesGenerales->InfoUsuario(),
-                ];
-                //Area 2 Corte
-                $PartidasOF->Areas()->attach(2, $data);
-            }else{
-                $PartidasOF = new PartidasOF();
-                $PartidasOF->OrdenFabricacion_id=$respuestaOF->id;
-                $PartidasOF->cantidad_partida=$respuestaOF->CantidadTotal;
-                $PartidasOF->NumeroPartida=1;
-                $PartidasOF->TipoPartida='N';
-                $PartidasOF->FechaFabricacion=Now();
-                $PartidasOF->EstatusPartidaOF=0;
-                $PartidasOF->save();
+                $NumOFNoGuardada[]=$DatosPlaneacion[$i]->OF;
             }
         }
         if (!empty($NumOF)) {
             return response()->json([
                 'status' => "success",
                 'NumOF' => $NumOF,
-                'NumOV' => $NumOV
+                'NumOV' => $NumOV,
+                'NumOFNoGuardada' => $NumOFNoGuardada,
             ]);
         }else{
             return response()->json([
                 'status' => "empty",
                 'NumOF' => $NumOF,
-                'NumOV' => $NumOV
+                'NumOV' => $NumOV,
+                'NumOFNoGuardada' => $NumOFNoGuardada,
             ]);
         }
     }
@@ -744,6 +833,32 @@ class PlaneacionController extends Controller
             $countpartidas=$partidasOF->ordenesFabricacions()->get()->count();
         }
         return count($partidas)-$countpartidas;
+    }
+    public function OrdenFabricacionWhere($OrdenFabricacion,$Where){
+        $schema = 'HN_OPTRONICS';
+        //Consulta a SAP para traer las partidas de una OV
+        $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
+                    T1.\"Dscription\" AS \"Descripcion\", 
+                    ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
+                    T2.\"DueDate\" AS \"Fecha entrega OF\", 
+                    T1.\"PoTrgNum\" AS \"Orden de F.\" ,
+                    T1.\"LineNum\" AS \"LineNum\",
+                    T0.\"CardName\" AS \"Cliente\",
+                    CASE T2.\"Status\"
+                    	WHEN 'P' THEN 'Planeado'
+                    	WHEN 'R' THEN 'Liberado'
+                    	WHEN 'L' THEN 'Cerrado'
+                    	WHEN 'C' THEN 'Cancelado'
+                    END \"Estatus\"
+                    FROM {$schema}.\"ORDR\" T0
+                    INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
+                    LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"DocEntry\" = T2.\"OriginAbs\" AND T2.\"Status\" NOT IN ('C') AND T2.\"ItemCode\" = T1.\"ItemCode\"
+                    WHERE  (T2.\"Status\" = 'R' OR T2.\"Status\" = 'P')
+                    AND ".$Where."
+                    ORDER BY T1.\"PoTrgNum\""; 
+                //ORDER BY T1.\"VisOrder\"";
+        //Ejecucion de la consulta
+        return$partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
     }
     //Funcion para comprobar si existe una Orden de Fabricacion de una OV
     public function comprobar_existe_partida($OrdenVenta, $Ordenfabricacion){

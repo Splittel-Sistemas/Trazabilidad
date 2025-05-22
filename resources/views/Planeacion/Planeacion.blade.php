@@ -18,9 +18,9 @@
                   <div class="card-body p-2">
                     <div class="accordion" id="accordionFiltroOV">
                         <div class="accordion-item border-top border-300 p-0">
-                            <h4 class="accordion-header" id="headingOne">
+                            <h4 class="accordion-header mx-2" id="headingOne">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroOV" aria-expanded="true" aria-controls="collapseFiltroOV">
-                                Filtro Orden de Venta
+                                Filtros <!--FechaOrden de Venta-->
                                 </button>
                             </h4>
                             <div class="accordion-collapse collapse show" id="collapseFiltroOV" aria-labelledby="headingOne" data-bs-parent="#accordionFiltroOV">
@@ -29,6 +29,7 @@
                                         @csrf
                                         <div class="row">
                                             <div class="col-12 ">
+                                                <h5 class="mt-2">Filtro por Fecha</h5>
                                                 <div class="row">
                                                     <div class=" col-6">
                                                         <label class="form-label" for="startDateInput">Fecha inicio </label>
@@ -45,6 +46,23 @@
                                                 <div class=" pt-1">
                                                     <button type="button" class="btn btn-primary btn-sm float-end" id="Filtro_fecha-btn">
                                                         <i class="fa fa-search"></i> Filtrar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <h5 class="mt-2">Filtro por Orden</h5>
+                                            <div class="col-6">
+                                                <label class="form-label" for="TipoOrden">Tipo de Orden</label>
+                                                <select class="form-select" onchange="BuscarOrden();" id="TipoOrden" aria-label="Default select example">
+                                                    <option value="OV">Orden Venta</option>
+                                                    <option value="OF">Orden Fabricaci&oacute;n</option>
+                                                  </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label" for="FiltroOrden">N&uacute;mero de Orden</label>
+                                                <input type="text" name="FiltroOrden" id="FiltroOrden" oninput="BuscarOrden();RegexNumeros(this);" class="form-control form-control-sm w-autoborder-primary" value="">
+                                                <div class=" pt-1">
+                                                    <button type="button" onclick="BuscarOrden();" class="btn btn-primary btn-sm float-end" id="Filtro_Orden-btn">
+                                                        <i class="fa fa-search"></i> Buscar
                                                     </button>
                                                 </div>
                                             </div>
@@ -327,6 +345,7 @@
 <script src="{{ asset('js/OrdenesVenta.js') }}"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    currentRequest = null;
     $(document).ready(function() {
         $('#element').toast('show');
         TablaOrdenFabricacion("{{$FechaFin}}");
@@ -372,7 +391,7 @@
                 }
             });
         });
-        $('#Filtro_buscarOV').on('input',function() {
+        /*$('#Filtro_buscarOV').on('input',function() {
             RegexNumeros(document.getElementById('Filtro_buscarOV'));
             OV=$('#Filtro_buscarOV').val();
             if(CadenaVacia(OV)){
@@ -407,7 +426,7 @@
                     //errorBD();
                 }
             });
-        });
+        });*/
         $('#FiltroOF_table2').on('input',function() {
             RegexNumeros(document.getElementById('FiltroOF_table2'));
             FiltroOF_table2=$('#FiltroOF_table2').val();
@@ -709,7 +728,23 @@
                     }
                     $('#Filtro_fecha-btn').trigger('click');
                     success("Guardado!","Las ordenes de fabricación "+OrdenFabricacion+" se guardaron correctamente!");
+                    Noguardadas="";
+                    NumOFNoGuardada = response.NumOFNoGuardada;
+                    if(NumOFNoGuardada.length>0){
+                        for(i=0;i<NumOFNoGuardada.length;i++){
+                            Noguardadas+=response.NumOFNoGuardada[i]+", ";
+                        }
+                        error("Ocurrio un error!","Las Ordenes de Fabricación "+Noguardadas+" Ya se encuentran Planeadas con un Número de Venta diferente por favor verifique.");
+                    }
                 } else if(response.status==="empty") {
+                    Noguardadas="";
+                    NumOFNoGuardada = response.NumOFNoGuardada;
+                    if(NumOFNoGuardada.length>0){
+                        for(i=0;i<NumOFNoGuardada.length;i++){
+                            Noguardadas+=response.NumOFNoGuardada[i]+", ";
+                        }
+                        error("Ocurrio un error!","Las Ordenes de Fabricación "+Noguardadas+" Ya se encuentran Planeadas con un Número de Venta diferente por favor verifique.");
+                    }
                 } else if(response.status==='errordate'){
                     for(i=0;i<Datosenviar.length;i++){
                         //loadContent('details21',Datosenviar[i]['OV'], `Error`);
@@ -1088,5 +1123,93 @@
             }
         });
     }
+    function BuscarOrden(){
+            if (currentRequest) {
+                currentRequest.abort();
+            }
+            //TipoOrden  FiltroOrden
+            FiltroOrden = $('#FiltroOrden').val();
+            TipoOrden = $('#TipoOrden').val();
+            if(FiltroOrden.length == 0){
+                $('#Filtro_fecha-btn').trigger('click');
+                return 0;
+            }else if(FiltroOrden.length < 3){
+                return 0;
+            }else{
+                if(TipoOrden == 'OV'){
+                    $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>Filtro: '+FiltroOrden+'</p>');
+                }else{
+                    $('#filtro-fecha-Ov').html('Órdenes de Fabricación<br><p>Filtro: '+FiltroOrden+'</p>');
+                }
+            }
+            currentRequest = $.ajax({
+                url: "{{route('PlaneacionFOV')}}", 
+                type: 'POST',
+                data: {
+                    OV: FiltroOrden,
+                    TipoOrden: TipoOrden,
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+                    $('#table_OV_body').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>")
+                    // You can display a loading spinner here
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        if(TipoOrden == 'OV'){
+                            $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>Filtro: '+FiltroOrden+'</p>');
+                        }else{
+                            $('#filtro-fecha-Ov').html('Órdenes de Fabricación<br><p>Filtro: '+FiltroOrden+'</p>');
+                        }
+                        $('#table_OV_body').html(response.data);
+                    } else if(response.status==="empty") {
+                        if(TipoOrden == 'OV'){
+                            $('#table_OV_body').html('<td class="text-center">No existen registros para lo orden de venta '+FiltroOrden+' o ya se encuentra planeada</td>');
+                        }else{
+                            $('#table_OV_body').html('<td class="text-center">No existen registros para lo orden de Fabricación '+FiltroOrden+' o ya se encuentra planeada</td>');
+                        }
+                    }else{
+                        error("Ocurrio un error!....","Los datos no pudieron ser procesados correctamente");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    //errorBD();
+                }
+            });
+            /*RegexNumeros(document.getElementById('Filtro_buscarOV'));
+            OV=$('#Filtro_buscarOV').val();
+            if(CadenaVacia(OV)){
+                return 0;
+            }
+            if(OV.length<2){
+                $('#Filtro_fecha-btn').trigger('click');
+                return 0;
+            }else{$('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>Filtro: '+OV+'</p>');}
+            $.ajax({
+                url: "{{route('PlaneacionFOV')}}", 
+                type: 'PUT',
+                data: {
+                    OV: OV,
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+                    $('#table_OV_body').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>")
+                    // You can display a loading spinner here
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>Filtro: '+OV+'</p>');
+                        $('#table_OV_body').html(response.data);
+                    } else if(response.status==="empty") {
+                        $('#table_OV_body').html('<p>No existen registros para lo orden de venta '+OV+'</p>');
+                    }else{
+                        error("Ocurrio un error!....","Los datos no pudieron ser procesados correctamente");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    //errorBD();
+                }
+            });*/
+        }
 </script>
 @endsection
