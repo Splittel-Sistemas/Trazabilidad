@@ -338,7 +338,7 @@ class PlaneacionController extends Controller
                 $status="error";
             }
         }else{
-            $OrdenesFabricacion = $this->OrdenFabricacionWhere($NumOV,'T1."PoTrgNum" LIKE \'%' . $NumOV . '%\'');
+            $OrdenesFabricacion = $this->OrdenFabricacionWhere($NumOV,'T2."DocNum" LIKE \'%' . $NumOV . '%\'');
             if ($OrdenesFabricacion === false) {
                 return response()->json([
                     'status' => 'empty',
@@ -398,9 +398,9 @@ class PlaneacionController extends Controller
                                 <td style="display:none;">00000</td>
                                 <td style="display:none;">'.$partida['Cliente'].'</td>
                                 <td class="text-center" style="display:none;"><input type="checkbox" class="Escaner'.$ordenFab.'"></td>
-                                <td style="display:none;">' . $partida['LineNum']. '</td>
+                                <td style="display:none;">1</td>
                                 <td class="text-center"><input type="checkbox" class="Corte'.$ordenFab.'"></td>
-                                <td class="text-center"><input type="hidden" value="'.$this->funcionesGenerales->encrypt($partida['Cliente'] ?? '000').'"></td>
+                                <td class="text-center"><input type="hidden" value="'.$this->funcionesGenerales->encrypt($partida['Cliente'] ?? '00000').'"></td>
                             </tr>';
                     $tablaOrdenes .='</tr>';
                 }
@@ -837,13 +837,13 @@ class PlaneacionController extends Controller
     public function OrdenFabricacionWhere($OrdenFabricacion,$Where){
         $schema = 'HN_OPTRONICS';
         //Consulta a SAP para traer las partidas de una OV
-        $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
-                    T1.\"Dscription\" AS \"Descripcion\", 
+        /*$sql = "SELECT T2.\"ItemCode\" AS \"Articulo\", 
+                    T2.\"ProdName\" AS \"Descripcion\", 
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
                     T2.\"DueDate\" AS \"Fecha entrega OF\", 
                     T1.\"PoTrgNum\" AS \"Orden de F.\" ,
                     T1.\"LineNum\" AS \"LineNum\",
-                    T0.\"CardName\" AS \"Cliente\",
+                    T2.\"CardCode\" AS \"Cliente\",
                     CASE T2.\"Status\"
                     	WHEN 'P' THEN 'Planeado'
                     	WHEN 'R' THEN 'Liberado'
@@ -853,10 +853,26 @@ class PlaneacionController extends Controller
                     FROM {$schema}.\"ORDR\" T0
                     INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
                     LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"DocEntry\" = T2.\"OriginAbs\" AND T2.\"Status\" NOT IN ('C') AND T2.\"ItemCode\" = T1.\"ItemCode\"
-                    WHERE  (T2.\"Status\" = 'R' OR T2.\"Status\" = 'P')
+                    WHERE  (T2.\"Status\" = 'R' OR T2.\"Status\" = 'P' OR T2.\"Status\" = 'C' OR T2.\"Status\" = 'L')
                     AND ".$Where."
                     ORDER BY T1.\"PoTrgNum\""; 
-                //ORDER BY T1.\"VisOrder\"";
+                //ORDER BY T1.\"VisOrder\"";*/
+        $sql='SELECT T2."ItemCode" AS "Articulo", 
+                    T2."ProdName" AS "Descripcion", 
+                    ROUND(T2."PlannedQty", 0) AS "Cantidad OF", 
+                    T2."DueDate" AS "Fecha entrega OF", 
+                    T2."DocNum" AS "Orden de F." ,
+                    T2."CardCode" AS "Cliente",
+                    CASE T2."Status"
+                        WHEN \'P\' THEN \'Planeado\'
+                        WHEN \'R\' THEN \'Liberado\'
+                        WHEN \'L\' THEN \'Cerrado\'
+                        WHEN \'C\' THEN \'Cancelado\'
+                    END "Estatus"
+                    FROM '.$schema.'."OWOR" T2 
+                    WHERE T2."Status"  IN (\'R\',\'P\')
+                    AND '.$Where.
+                    'ORDER BY T2."DocNum"';
         //Ejecucion de la consulta
         return$partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
     }
