@@ -382,11 +382,13 @@ class CorteController extends Controller
                 ];
                 //Area 2 Corte
                 $partidasOF->Areas()->attach(2, $data);
-                $OrdenFabricacion->EstatusEntrega=0;
-                $OrdenFabricacion->save();
-                $partidasOF->FechaFinalizacion=null;
-                $partidasOF->save();
                 if($retrabajo=='Retrabajo'){
+                    //Solo se abre en Suministro cuando sea retrabajo
+                    $OrdenFabricacion->EstatusEntrega=0;
+                    $OrdenFabricacion->save();
+                    $partidasOF->FechaFinalizacion=null;
+                    $partidasOF->save();
+
                     $idEmision=Partidasof_Areas::where('PartidasOF_id',$partidasOF->id)->where('Areas_id', 2)->orderByDesc('id','desc')->first();
                     $emision = new Emision(); 
                     $emision->OrdenFabricacion_id = $OrdenFabricacion->id;
