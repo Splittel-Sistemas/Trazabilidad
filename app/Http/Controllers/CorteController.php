@@ -594,11 +594,11 @@ class CorteController extends Controller
             $PartidasOF->FechaFinalizacion=now();
             $PartidasOF->save();
         }
-        foreach($OrdenFabricacion->PartidasOF as $partida){
+        /*foreach($OrdenFabricacion->PartidasOF as $partida){
             $partida->EstatusPartidaOF=0;
-            $partida->EstatusPartidaOFSuministro=0;
+            //$partida->EstatusPartidaOFSuministro=0;
             $partida->save();
-        }
+        }*/
         return response()->json([
             'status' => 'success',
             'message' =>'Partida '.$PartidasOF->NumeroPartida.' Finalizada correctamente!',
