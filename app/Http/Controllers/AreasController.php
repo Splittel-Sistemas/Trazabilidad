@@ -590,7 +590,10 @@ class AreasController extends Controller
             ]);
         }
         $fechaHoy=date('Y-m-d H:i:s');
-        DB::table('partidasof_areas')->where('id', $id)->update(['FechaTermina' => $fechaHoy]);
+        //DB::table('partidasof_areas')->where('id', $id)->update(['FechaTermina' => $fechaHoy]);
+        $Partidasof_Areas = Partidasof_Areas::find($id);
+        $Partidasof_Areas->FechaTermina = $fechaHoy;
+        $Partidasof_Areas->save();
         $PartidaOF=PartidasOF::where('id',$PartidaOF_Areas->PartidasOF_id)->first();
         $OrdenFabricacion=$PartidaOF->OrdenFabricacion;
 
@@ -607,11 +610,12 @@ class AreasController extends Controller
                 $partida->save();
             }
             $PartidasOF=$OrdenFabricacion->PartidasOF->first();
-            $PartidasOF->EstatusPartidaOFSuministro = '1';
+            $PartidasOF->EstatusPartidaOFSuministro = 1;
             $PartidasOF->save();
             //
         }
         return response()->json([
+            'DatosEjemplo' => $PartidasOF_AreasN."   ".$PartidasOF_Areas,
             'status' => 'success',
             'message' =>'Partida finalizada correctamente!',
             'OF' => $this->funcionesGenerales->encrypt($PartidaOF_Areas->PartidasOF_id)
