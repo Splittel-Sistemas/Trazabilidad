@@ -4629,6 +4629,7 @@
         <script>
             // Configuración global del token CSRF para todas las solicitudes AJAX
             $(document).ready(function() {
+                verificarSesion();
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -4636,12 +4637,15 @@
                 });
             });
             setInterval(function() {
+               verificarSesion();
+            }, 3600000);
+            function verificarSesion(){
                 $.get('{{route("CheckSession")}}', function(data) {
                     if (!data.isValid) {
                         window.location.href = "{{route('login')}}";
                     }
                 });
-            }, 3600000);
+            }
         </script>
         @yield('scripts')
     </body>

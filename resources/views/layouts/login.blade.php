@@ -81,7 +81,7 @@
             outline: none;
         }
         #login-button {
-            width: 90%;
+            width: 50%;
             padding: 10px;
             border: none;
             border-radius: 90px;
@@ -96,7 +96,7 @@
             transform: scale(1.1);
         }
         #login-operador {
-            width: 90%;
+            width: 50%;
             margin-top: 1rem;
             padding: 10px;
             border: none;
@@ -148,8 +148,8 @@
     </style> 
 </head>
 <body>
-    <div class="wrapper">
-        <div class="container">
+        <div class="wrapper">
+            <div class="container">
                 <img class="img" src="{{asset('imagenes/splittel.png') }}" alt="Splittel" width="100" height="40">
                 <h1 class="m-0 p-0">Trazabilidad</h1>
                 <div class="text-center mb-4 bg-select">
@@ -175,7 +175,6 @@
                     </div>
                     <button type="submit" id="login-button">Ingresar</button>
                 </form>
-                
                 <!-- Formulario para Operadores (Oculto por defecto) -->
                 <form method="POST" action="{{ route('operador.login') }}" class="form" id="formOperador" style="display: none;">
                     @csrf
@@ -186,18 +185,18 @@
                 </form>
             </div>
         </div>
-         <ul class="bg-bubbles">
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-    </ul>
+        <ul class="bg-bubbles">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
     </div>
 </body>
 <script>
@@ -218,6 +217,20 @@
         document.getElementById('formAdministrativo').style.display = 'none';
         document.getElementById('formOperador').style.display = 'block';
     });
+    $(document).ready(function () {
+        $('#formAdministrativo').on('submit', function (event) {
+            $('#login-button').prop('disabled', true).text('Enviando...');
+            setTimeout(RecargarLogin, 15000);
+        });
+        $('#formOperador').on('submit', function (event) {
+            $('#login-operador').prop('disabled', true).text('Enviando...');
+            setTimeout(RecargarLogin, 15000);
+        });
+        setTimeout(RecargarLogin, 240000);
+    });
+    function RecargarLogin(){
+        window.location.href = '{{ route('login') }}';
+    }
 </script>
 
 </html>
