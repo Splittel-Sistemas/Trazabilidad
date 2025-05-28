@@ -1313,7 +1313,7 @@ class AreasController extends Controller
                                 }
                             }
                     $IniciadosMostrar = $partidas->first();
-                    $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNotNull('FechaComienzo')->where('Areas_id',$Area)->get()->SUM('pivot.Cantidad');//->get();
+                    $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNull('FechaTermina')->where('Areas_id',$Area)->get()->SUM('pivot.Cantidad');//->get();
                 }else{
                     $Opciones='<option selected="" value="">Todos</option>
                         <option value="Iniciado">Iniciado</option>
@@ -1398,7 +1398,8 @@ class AreasController extends Controller
                                 }
                             }
                             $IniciadosMostrar = $partidas->first();
-                            $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNotNull('FechaComienzo')->where('Areas_id',$Area)->get()->SUM('pivot.Cantidad');//->get();
+                            $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNotNull('FechaComienzo')->where('Areas_id',$Area)->get()->SUM('pivot.Cantidad')
+                                                - $IniciadosMostrar->Areas()->whereNull('FechaComienzo')->where('Areas_id',$Area)->get()->SUM('pivot.Cantidad');//->get();
                 }
                 $menu='<div class="card-body">
                     <div id="ContainerTableSuministros" class="table-list">
@@ -1408,7 +1409,7 @@ class AreasController extends Controller
                                     <div class="col-auto px-3">
                                         <h6 class="text-center">Orden de Fabricación '.$datos->OrdenFabricacion.'</h6>
                                         <div class="badge badge-phoenix fs--4 badge-phoenix-secondary"><span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span></div>
-                                        <br><div class="badge badge-phoenix fs--4 badge-phoenix-info"><span class="fw-bold"><span class="ms-1 fas fa-angle-double-right"></span> Iniciados </span>'.$IniciadosMostrar.'</div>
+                                        <br><div class="badge badge-phoenix fs--4 badge-phoenix-info"><span class="fw-bold"><span class="ms-1 fas fa-angle-double-right"></span> Pendientes de finalizar </span>'.$IniciadosMostrar.'</div>
                                      </div>
                                      <div class="col-auto px-3" style="transform:scale(1.4);">
                                     '.$EstatusBloque.'
