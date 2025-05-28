@@ -1222,6 +1222,7 @@ class AreasController extends Controller
                 if($CantidadCompletada<0){
                     $CantidadCompletada=0; 
                 }
+                $IniciadosMostrar = 0; 
                 if($Escaner==1){
                     //Opciones de la tabla
                     $Opciones='<option selected="" value="">Todos</option>
@@ -1311,6 +1312,8 @@ class AreasController extends Controller
                                     }
                                 }
                             }
+                    $IniciadosMostrar = $partidas->first();
+                    $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNotNull('FechaComienzo')->where('Areas_id',$Area)->get()->SUM('pivot.Cantidad');//->get();
                 }else{
                     $Opciones='<option selected="" value="">Todos</option>
                         <option value="Iniciado">Iniciado</option>
@@ -1394,6 +1397,8 @@ class AreasController extends Controller
                                     }
                                 }
                             }
+                            $IniciadosMostrar = $partidas->first();
+                            $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNotNull('FechaComienzo')->where('Areas_id',$Area)->get()->SUM('pivot.Cantidad');//->get();
                 }
                 $menu='<div class="card-body">
                     <div id="ContainerTableSuministros" class="table-list">
@@ -1401,8 +1406,9 @@ class AreasController extends Controller
                             <div class="col-6">
                                 <div class="row justify-content-start g-0">
                                     <div class="col-auto px-3">
-                                    <h6 class="text-center">Orden de Fabricación '.$datos->OrdenFabricacion.'</h6>
-                                    <div class="badge badge-phoenix fs--4 badge-phoenix-secondary"><span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span></div>
+                                        <h6 class="text-center">Orden de Fabricación '.$datos->OrdenFabricacion.'</h6>
+                                        <div class="badge badge-phoenix fs--4 badge-phoenix-secondary"><span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span></div>
+                                        <br><div class="badge badge-phoenix fs--4 badge-phoenix-info"><span class="fw-bold"><span class="ms-1 fas fa-angle-double-right"></span> Iniciados </span>'.$IniciadosMostrar.'</div>
                                      </div>
                                      <div class="col-auto px-3" style="transform:scale(1.4);">
                                     '.$EstatusBloque.'
