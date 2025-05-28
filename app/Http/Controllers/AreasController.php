@@ -4569,6 +4569,20 @@ class AreasController extends Controller
             ], 500);
         }
     }
+    public function ClasificacionBusqueda(Request $request){
+        $OrdenFabricacion = $request->OrdenFabricacion;
+        $OrdenesFabricacion = OrdenFabricacion::where('OrdenFabricacion', 'LIKE', '%'.$OrdenFabricacion.'%')->get();
+        $Lista = '<ul class="list-group">';
+        foreach($OrdenesFabricacion as $key=>$OF){
+            $id = $this->funcionesGenerales->encrypt($OF->id);
+            if($key==0){
+                $Lista .= '<li class="list-group-item list-group-item-action m-0 p-0 fs-0 active" onclick="AsignarLinea(\''.$id.'\');BorrarContenedor();">'.$OF->OrdenFabricacion.'</li>';
+            }else{
+                $Lista .= '<li class="list-group-item list-group-item-action m-0 p-0 fs-0" onclick="AsignarLinea(\''.$id.'\');BorrarContenedor();">'.$OF->OrdenFabricacion.'</li>';
+            }
+        }
+        return$Lista .= '</ul>';
+    }
     //Empaquetado
     public function EmpaquetadoBuscar(Request $request){
         if ($request->has('Confirmacion')) {

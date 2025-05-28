@@ -31,6 +31,10 @@
         padding: 0;
         margin: 0;
     }
+    #FiltroOrdenFabricacionContent{
+        max-height: 6rem; 
+        overflow: auto;
+    }
 </style>
 @endsection
 @section('content')
@@ -122,13 +126,22 @@
                                                 <div class="col-6 m-0">
                                                     <div class="form-row">
                                                         <div class="col-12 mb-1">
-                                                            <label for="Filtrofecha_table2">Fecha de asignaci&oacute;n:</label>
+                                                            <label for="Filtrofecha_table2">Fecha de asignaci&oacute;n</label>
                                                             <div class="input-group">
                                                                 <input type="date" name="FiltroOF_Fecha_table2"  id="FiltroOF_Fecha_table2" class="form-control form-control-sm   w-autoborder-primary col-12" placeholder="Ingresa Orden de fabricación" value="{{\Carbon\Carbon::parse($FechaFin)->translatedFormat('Y-m-d')}}">
                                                                 <button id="buscarOV_vencidas" class="btn btn-primary btn-sm">
                                                                     Mostrar
                                                                 </button>
                                                             </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 mt-4">
+                                                     <div class="form-group form-group-sm">
+                                                        <label for="FiltroOrdenFabricacion">Buscar:</label>
+                                                        <input type="text" oninput="BuscarOrden(this);RegexNumeros(this);" class="form-control" id="FiltroOrdenFabricacion" aria-describedby="FiltroOrdenFabricacionHelp" placeholder="Ingresa Orden de Fabricación">
+                                                        <div id="FiltroOrdenFabricacionContent">
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -538,6 +551,31 @@
                 error('Ocurrio un erro!', 'El Tipo Escáner no se pudo actualizar')
             }
         }); 
+    }
+    function BuscarOrden(Elemento){
+        $('#FiltroOrdenFabricacionContent').html('');
+        OF=Elemento.value
+        if(OF.length>4){
+            $.ajax({
+                url: "{{route('ClasificacionBusqueda')}}", 
+                type: 'POST',
+                data: {
+                    OrdenFabricacion:OF,
+                    _token: '{{ csrf_token() }}'  
+                },
+                beforeSend: function() {
+                },
+                success: function(response) {
+                   $('#FiltroOrdenFabricacionContent').html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.log('ocurrio un Error al traer los datos para:'+OF);
+                }
+        }); 
+        }
+    }
+    function BorrarContenedor(){
+        $('#FiltroOrdenFabricacionContent').html('');
     }
 </script>
 @endsection

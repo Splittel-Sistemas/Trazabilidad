@@ -30,6 +30,7 @@ class BusquedaController extends Controller
     protected $ObjBusqueda;
     public function __construct(){
         $this->AreaClasificacion=18;
+        $this->AreaPulido=9;
         $this->AreaArmado=16;
         $this->AreaEmpaque=17;
     }
@@ -235,7 +236,6 @@ class BusquedaController extends Controller
 
                 // Definir los IDs de las áreas
                 $areaIds = [
-
                     'cortes' => 0,
                     'suministros' => 3,
                     'transicion'=> 4,
@@ -271,7 +271,6 @@ class BusquedaController extends Controller
                         'Progreso' => ['OrdenVenta' => null, 'Progreso' => 0],
                     ]);
                 }
-
                 // Obtener los datos de 'cortes' por separado porque tiene una estructura diferente
                 $cortesorden = OrdenVenta::where('ordenventa.OrdenVenta', $idVenta)
                     ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
@@ -1358,6 +1357,7 @@ class BusquedaController extends Controller
         $OrdenFabricacion = Ordenfabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
         $PartidasOF = $OrdenFabricacion->PartidasOF->first();
         $Estaciones=[];
+        $Areas =[];
         if($OrdenFabricacion == "" || $PartidasOF==""){
             return response()->json([
                 'Areas' => "",
@@ -1374,7 +1374,9 @@ class BusquedaController extends Controller
         //Linea a la que pertenece, 18 es el Area de Clasificacion
             $Linea = $PartidasOF->Areas()->where('Areas_id',$this->AreaClasificacion)->first();
             if($Linea == ""){
-                return response()->json([
+                $Areas = '2,3';
+                $Area = $array = explode(",", $Areas);
+                /*return response()->json([
                     'Areas' => "",
                     "TiempoDuracion" => 0,
                     'partidasAreas' => "",
@@ -1384,24 +1386,25 @@ class BusquedaController extends Controller
                     "TiempoMuerto"=> 0,
                     "Estaciones"=>$Estaciones,
                     "Estatus" => $estatus,
-                ]);
+                ]);*/
+            }else{
+                $Linea = Linea::find($Linea['pivot']->Linea_id);
+                $Areas = $Linea->AreasPosibles;
+                if($Areas == ""){
+                    return response()->json([
+                        'Areas' => "",
+                        "TiempoDuracion" => 0,
+                        'partidasAreas' => "",
+                        "TiempoProductivo" => 0,
+                        'progreso' => 0,
+                        "TiempoTotal" => 0,
+                        "TiempoMuerto"=> 0,
+                        "Estaciones"=>$Estaciones,
+                        "Estatus" => $estatus,
+                    ]);
+                }
+                $Area = $array = explode(",", $Areas);
             }
-            $Linea = Linea::find($Linea['pivot']->Linea_id);
-            $Areas = $Linea->AreasPosibles;
-            if($Areas == ""){
-                return response()->json([
-                    'Areas' => "",
-                    "TiempoDuracion" => 0,
-                    'partidasAreas' => "",
-                    "TiempoProductivo" => 0,
-                    'progreso' => 0,
-                    "TiempoTotal" => 0,
-                    "TiempoMuerto"=> 0,
-                    "Estaciones"=>$Estaciones,
-                    "Estatus" => $estatus,
-                ]);
-            }
-            $Area = $array = explode(",", $Areas);
             $Progreso=0;
             $FechaUltima = "";
             if (in_array($this->AreaArmado, $array)) {
@@ -1493,41 +1496,71 @@ class BusquedaController extends Controller
             $TiempoProductivoEstacion=0;
             if($OrdenFabricacion->Escaner == 1){
                 foreach($Area as $index => $AreaPosible){
-                    //Tipo de Trabajo
-                    $Retrabajo=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
-                    $Normales=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad');
-                    //Porcentaje Actual por Area
-                    $AP=$AreaPosible;
-                    $PorcentajeActual=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNotNull('FechaTermina')->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')
-                                        -$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNull('FechaTermina')->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
-                    $PorcentajeActual =($PorcentajeActual/$OrdenFabricacion->CantidadTotal)*100;
-                    //Tiempo Total
-                    $NumEtiquetas = $PartidasOF->Areas()->where('Areas_id',$this->AreaClasificacion)->get()->SUM('pivot.Cantidad');
-                    $TiempoTotalEstacion=0;
-                    for($i=0;$i<$NumEtiquetas;$i++){
-                        $MayorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->OrderBy('FechaTermina', 'desc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
-                        $MenorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->OrderBy('FechaComienzo', 'asc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
-                        if($MayorFecha != "" AND $MenorFecha!=""){
-                            $FechaPrimera=Carbon::parse($MenorFecha['pivot']->FechaComienzo);
-                            $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
-                            $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                        }
+                    if($AreaPosible != $this->AreaPulido){
+                        //Tipo de Trabajo
+                            $Retrabajo=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
+                            $Normales=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad');
+                        //Porcentaje Actual por Area
+                            $AP=$AreaPosible;
+                            $PorcentajeActual=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNotNull('FechaTermina')->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')
+                                                -$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNull('FechaTermina')->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
+                            $PorcentajeActual =($PorcentajeActual/$OrdenFabricacion->CantidadTotal)*100;
+                        //Tiempo Total
+                            $NumEtiquetas = $PartidasOF->Areas()->where('Areas_id',$this->AreaClasificacion)->get()->SUM('pivot.Cantidad');
+                            $TiempoTotalEstacion=0;
+                            for($i=0;$i<$NumEtiquetas;$i++){
+                                $MayorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->OrderBy('FechaTermina', 'desc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
+                                $MenorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->OrderBy('FechaComienzo', 'asc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
+                                if($MayorFecha != "" AND $MenorFecha!=""){
+                                    $FechaPrimera=Carbon::parse($MenorFecha['pivot']->FechaComienzo);
+                                    $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
+                                    $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
+                                }
+                            }
+                            if($TiempoTotalEstacion >0){
+                                $TiempoTotalEstacion=$this->Fechas($TiempoTotalEstacion);
+                            }
+                        //Tiempo Productivo por Estacion
+                            $TiempoProductivoEstacionAreas = $PartidasOF->Areas()->whereNotNull('FechaTermina')->where('Areas_id',$AreaPosible)->get();
+                            $TiempoProductivoEstacion=0;
+                            foreach($TiempoProductivoEstacionAreas as $TPEA){
+                                $FechaPrimera=Carbon::parse($TPEA['pivot']->FechaComienzo);
+                                $FechaTermina=Carbon::parse($TPEA['pivot']->FechaTermina);
+                                $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
+                            }
+                            if($TiempoProductivoEstacion>0){
+                                $TiempoProductivoEstacion=$this->Fechas($TiempoProductivoEstacion);
+                            }
+                            $TiempoOrdenes=$TiempoTotalEstacion;
+                    }else{
+                            //Tipo de Trabajo
+                                $Retrabajo=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
+                                $Normales=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad');
+                            //Porcentaje Actual por Area
+                                $AP=$AreaPosible;
+                                $PorcentajeActual=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNotNull('FechaTermina')->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')
+                                                    -$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNull('FechaTermina')->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
+                                $PorcentajeActual =($PorcentajeActual/$OrdenFabricacion->CantidadTotal)*100;
+                            //Tiempo Total
+                                return$NumEtiquetas = $PartidasOF->Areas()->where('Areas_id',$this->AreaPulido)->get()->GroupBy('pivot.NumeroBloque');//->SUM('pivot.Cantidad');
+                                $TiempoTotalEstacion=0;
+                                for($i=0;$i<$NumEtiquetas;$i++){
+                                    $MayorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->OrderBy('FechaTermina', 'desc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
+                                    $MenorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->OrderBy('FechaComienzo', 'asc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
+                                    if($MayorFecha != "" AND $MenorFecha!=""){
+                                        $FechaPrimera=Carbon::parse($MenorFecha['pivot']->FechaComienzo);
+                                        $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
+                                        $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
+                                    }
+                                }
+                                if($TiempoTotalEstacion >0){
+                                    $TiempoTotalEstacion=$this->Fechas($TiempoTotalEstacion);
+                                }
+                                $TiempoTotalEstacion=0;
+                                $TiempoOrdenes = 3600;
+                            $AP=$AreaPosible;
+                            $TiempoProductivoEstacion = 7200;
                     }
-                    if($TiempoTotalEstacion >0){
-                        $TiempoTotalEstacion=$this->Fechas($TiempoTotalEstacion);
-                    }
-                    //Tiempo Productivo por Estacion
-                    $TiempoProductivoEstacionAreas = $PartidasOF->Areas()->whereNotNull('FechaTermina')->where('Areas_id',$AreaPosible)->get();
-                    $TiempoProductivoEstacion=0;
-                    foreach($TiempoProductivoEstacionAreas as $TPEA){
-                        $FechaPrimera=Carbon::parse($TPEA['pivot']->FechaComienzo);
-                        $FechaTermina=Carbon::parse($TPEA['pivot']->FechaTermina);
-                        $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                    }
-                    if($TiempoProductivoEstacion>0){
-                        $TiempoProductivoEstacion=$this->Fechas($TiempoProductivoEstacion);
-                    }
-                    $TiempoOrdenes=$TiempoTotalEstacion;
                     $AreaDatos=Areas::find($AreaPosible);
                     $Estaciones[$index] = ['PorcentajeActual' => $PorcentajeActual, 'Retrabajo' => $Retrabajo, 'Normales' => $Normales, 'TiempoOrdenes' => $TiempoOrdenes, 'AP' => $AP
                                         ,'NombreArea'=>$AreaDatos->nombre,"TiempoProductivoEstacion"=>$TiempoProductivoEstacion];
