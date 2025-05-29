@@ -659,7 +659,7 @@ class PlaneacionController extends Controller
                     ORDER BY T1.\"PoTrgNum\""; 
                 //ORDER BY T1.\"VisOrder\"";
         //Ejecucion de la consulta
-        $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
+        return$partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
         $partidasOF=OrdenVenta::where('OrdenVenta','=',$ordenventa)->first();
         if($partidasOF==null || $partidasOF==""){
             $countpartidas=0;

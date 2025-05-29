@@ -150,12 +150,12 @@ class PlaneacionController extends Controller
             ]);
         }
         //Consulta a SAP para traer las partidas de una OV
-        $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
+        $sql = "SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", 
                     T1.\"Dscription\" AS \"Descripcion\", 
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
                     T2.\"DueDate\" AS \"Fecha entrega OF\", 
                     T1.\"PoTrgNum\" AS \"Orden de F.\" ,
-                    T1.\"LineNum\" AS \"LineNum\",
+                    --T1.\"LineNum\" AS \"LineNum\",
                     T2.\"CardCode\" AS \"Cliente\",
                     CASE T2.\"Status\"
                     	WHEN 'P' THEN 'Planeado'
@@ -235,7 +235,7 @@ class PlaneacionController extends Controller
                             <td style="display:none;">' . $ordenventa. '</td>
                             <td style="display:none;">' . $cliente. '</td>
                             <td class="text-center" style="display:none;"><input type="checkbox" class="Escaner'.$ordenventa.'"></td>
-                            <td style="display:none;">' . $partida['LineNum']. '</td>
+                            <td style="display:none;">1</td>
                             <td class="text-center"><input type="checkbox" class="Corte'.$ordenventa.'"></td>
                             <td class="text-center"><input type="hidden" value="'.$this->funcionesGenerales->encrypt($partida['Cliente'] ?? '000').'"></td>
                         </tr>';
@@ -805,12 +805,12 @@ class PlaneacionController extends Controller
     public function OrdenFabricacion($ordenventa){
         $schema = 'HN_OPTRONICS';
         //Consulta a SAP para traer las partidas de una OV
-        $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
+        $sql = "SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", 
                     T1.\"Dscription\" AS \"Descripcion\", 
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
                     T2.\"DueDate\" AS \"Fecha entrega OF\", 
                     T1.\"PoTrgNum\" AS \"Orden de F.\" ,
-                    T1.\"LineNum\" AS \"LineNum\",
+                    --T1.\"LineNum\" AS \"LineNum\",
                     CASE T2.\"Status\"
                     	WHEN 'P' THEN 'Planeado'
                     	WHEN 'R' THEN 'Liberado'
@@ -904,12 +904,12 @@ class PlaneacionController extends Controller
         $schema = 'HN_OPTRONICS';
         $ordenventa = $OV;
         //Consulta a SAP para traer las partidas de una OV
-        $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
+        $sql = "SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", 
         T1.\"Dscription\" AS \"Descripcion\", 
         ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
         T2.\"DueDate\" AS \"Fecha entrega OF\", 
         T1.\"PoTrgNum\" AS \"Orden de F.\" ,
-        T1.\"LineNum\" AS \"LineNum\",
+        --T1.\"LineNum\" AS \"LineNum\",
         CASE T2.\"Status\"
             WHEN 'P' THEN 'Planeado'
             WHEN 'R' THEN 'Liberado'
@@ -1124,7 +1124,7 @@ class PlaneacionController extends Controller
                         $RegistrosBuffer->FechasBuffer_id=$FechasBuffer->id;
                         $RegistrosBuffer->OrdenVentaB=$orden['OV'];
                         $RegistrosBuffer->OrdenFabricacionB=isset($ordenf['Orden de F.'])?$ordenf['Orden de F.']:"";
-                        $RegistrosBuffer->NumeroLineaB=$ordenf['LineNum'];
+                        $RegistrosBuffer->NumeroLineaB=1;
                         $RegistrosBuffer->save();
                     }
                 }
@@ -1145,12 +1145,12 @@ class PlaneacionController extends Controller
             ]);
         }
         //Consulta a SAP para traer las partidas de una OV
-        $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
+        $sql = "SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", 
                     T1.\"Dscription\" AS \"Descripcion\", 
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
                     T2.\"DueDate\" AS \"Fecha entrega OF\", 
                     T1.\"PoTrgNum\" AS \"Orden de F.\" ,
-                    T1.\"LineNum\" AS \"LineNum\",
+                    --T1.\"LineNum\" AS \"LineNum\",
                     CASE T2.\"Status\"
                     	WHEN 'P' THEN 'Planeado'
                     	WHEN 'R' THEN 'Liberado'
@@ -1248,6 +1248,4 @@ class PlaneacionController extends Controller
             ]);
         }
     }
-    
-    
 }    
