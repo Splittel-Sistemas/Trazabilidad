@@ -118,12 +118,12 @@ class FuncionesGeneralesController extends Controller
     }
     public function OrdenFabricacion($ordenventa){
         $schema = 'HN_OPTRONICS';
-        $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
+        $sql = "SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", 
                     T1.\"Dscription\" AS \"Descripcion\", 
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
                     T2.\"DueDate\" AS \"Fecha entrega OF\", 
                     T1.\"PoTrgNum\" AS \"Orden de F.\" ,
-                    T1.\"LineNum\" AS \"LineNum\",
+                    --T1.\"LineNum\" AS \"LineNum\",
                     CASE T2.\"Status\"
                     	WHEN 'P' THEN 'Planeado'
                     	WHEN 'R' THEN 'Liberado'
@@ -162,7 +162,7 @@ class FuncionesGeneralesController extends Controller
     }
     public function DetallesCable($OrdenFabricacion){
         $schema = 'HN_OPTRONICS';
-        $sql="SELECT T1.\"ItemCode\" AS \"Articulo\", T1.\"Dscription\" AS\"Descripcion\", ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", T2.\"DueDate\" AS \"Fecha entrega OF\", 
+        $sql="SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", T1.\"Dscription\" AS\"Descripcion\", ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", T2.\"DueDate\" AS \"Fecha entrega OF\", 
 	            T1.\"PoTrgNum\" AS \"Orden de F.\" , T1.\"LineNum\" AS \"LineNum\", T3.\"ItemCode\" \"Hijo\", T3.\"ItemName\" \"Nombre Hijo\", T3.\"BaseQty\" \"Cantidad Base\",T3.\"IssuedQty\" \"Ctd. requerida\" 
                 FROM {$schema}.\"ORDR\" T0
                 INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
