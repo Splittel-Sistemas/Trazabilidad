@@ -730,7 +730,7 @@ class CorteController extends Controller
             $pdf = new TCPDF();
             // Ajustar márgenes
             $pdf->SetMargins(1, 1, 1);
-            $pdf->SetFont('helvetica', 'B', 5);  
+            $pdf->SetFont('helvetica', 'B', 5.8);  
             $pdf->SetAutoPageBreak(TRUE, 0.5);  
             $x = 0;  //Contador para saber cuántas etiquetas se han colocado en la página x
             $y = 0; //Contador para saber cuántas etiquetas se han colocado en la página y
@@ -740,12 +740,12 @@ class CorteController extends Controller
                     $pdf->AddPage('P', 'Letter');
                 }
                 if($key % 40 == 0 AND $key!=0){
-                    $y=-26.5;
+                    $y=-27.2;//26.5;
                 }
                 // Calcular la posición X para cada etiqueta
-                $posX = ($x % 4) * 47;
+                $posX = ($x % 4) * 53;//47;
                 if ($key % 4 == 0 AND $key != 0) {
-                    $y+=26.5;
+                    $y+=27.2;//26.5;
                 }
                 $pdf->SetFillColor(0, 0, 0); 
                 $pdf->Rect($posX, $y+4, 80, 0.2, 'F');  // Color de fondo en la parte superior de la etiqueta
@@ -764,7 +764,7 @@ class CorteController extends Controller
                 }
                 // Añadir el contenido de texto
                 $pdf->SetXY($posX + 4, $y+5);  // Colocamos el texto un poco desplazado desde el borde
-                $pdf->MultiCell(40, 25, $content, 0, 'L', 0, 1);  // Ajustamos la celda para que se ajuste al ancho de la etiqueta
+                $pdf->MultiCell(45, 26, $content, 0, 'L', 0, 1);  // Ajustamos la celda para que se ajuste al ancho de la etiqueta
                 // Generar y colocar el código de barras
                 $CodigoBarras = strip_tags($partida['Codigo']);
                 $pdf->SetXY($posX + 10, $y+20);  // Ajuste de la posición del código de barras
@@ -994,8 +994,8 @@ class CorteController extends Controller
             
             // Ajustar márgenes
             $pdf->SetMargins(1, 3, 1); 
-            $pdf->SetFont('helvetica', 'B', 4);  
-            $pdf->SetAutoPageBreak(TRUE, 0.5);   
+            $pdf->SetFont('helvetica', 'B', 5);  
+            $pdf->SetAutoPageBreak(TRUE, 0.5);  
     
             $counter = 0;  // Contador para saber cuántas etiquetas se han colocado en la página
             foreach ($partidasData as $key=>$partida) {
@@ -1226,7 +1226,7 @@ class CorteController extends Controller
             $pdf = new TCPDF();
             // Ajustar márgenes
             $pdf->SetMargins(1, 1, 1);
-            $pdf->SetFont('helvetica', 'B', 5);  
+            $pdf->SetFont('helvetica', 'B', 6);  
             $pdf->SetAutoPageBreak(TRUE, 0.5); 
             $x = 0;  //Contador para saber cuántas etiquetas se han colocado en la página x
             $y = 0; //Contador para saber cuántas etiquetas se han colocado en la página y
@@ -1236,12 +1236,12 @@ class CorteController extends Controller
                     $pdf->AddPage('P', 'Letter');
                 }
                 if($key % 40 == 0 AND $key!=0){
-                    $y=-26.5;
+                    $y=-27.2;
                 }
                 // Calcular la posición X para cada etiqueta
-                $posX = ($x % 4) * 47;
+                $posX = ($x % 4) * 53;
                 if ($key % 4 == 0 AND $key != 0) {
-                    $y+=26.5;
+                    $y+=27.2;
                 }
                 $pdf->SetFillColor(0, 0, 0); 
                 $pdf->Rect($posX, $y+4, 80, 0.2, 'F');  // Color de fondo en la parte superior de la etiqueta
