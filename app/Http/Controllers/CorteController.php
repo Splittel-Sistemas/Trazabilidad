@@ -126,14 +126,17 @@ class CorteController extends Controller
         $id=$this->funcionesGenerales->decrypt($request->id);
         $OrdenFabricacion=OrdenFabricacion::where('id','=',$id)->first();
         $DetallesCable=$this->funcionesGenerales->DetallesCable($OrdenFabricacion->OrdenFabricacion);
-        if(count($DetallesCable)==0){
+        /*if(count($DetallesCable)==0){
             return response()->json([
                 'status' => 'successnotcable',
                 'Ordenfabricacioninfo' => '<p class="text-center">La Orden de Fabricacion no contiene cable para cortar.<p>',
                 'id' => $id
             ], 200);
-        }
-        $Ordenfabricacionpartidas='<table id="TablePartidasModal" class="table table-sm fs--1 mb-0" style="width:100%">
+        }*/
+        $Hijo = isset($DetallesCable[0]['Hijo'])?$DetallesCable[0]['Hijo']:"";
+        $CantidadBase = isset($DetallesCable[0]['Cantidad Base'])?$DetallesCable[0]['Cantidad Base']:"";
+        $NombreHijo = isset($DetallesCable[0]['Nombre Hijo'])?$DetallesCable[0]['Nombre Hijo']:"";
+        $Ordenfabricacionpartidas = '<table id="TablePartidasModal" class="table table-sm fs--1 mb-0" style="width:100%">
                         <thead>
                             <tr>
                                 <th class="text-center" colspan="8">Partidas</th>
@@ -184,13 +187,13 @@ class CorteController extends Controller
                                     <tr><th class="text-center" colspan="4">Detalles del Cable</th></tr>
                                     <tr>
                                         <th class="bg-light p-1"  style="width: 30%;">Número Parte Cable</th>
-                                        <td class="text-center p-1"  style="width: 20%;">'.$DetallesCable[0]['Hijo'].'</td>
+                                        <td class="text-center p-1"  style="width: 20%;">'.$Hijo.'</td>
                                         <th class="bg-light p-1"  style="width: 30%;">Medida del Corte</th>
-                                        <td class="text-center p-1"  style="width: 20%;">'.$DetallesCable[0]['Cantidad Base'].'</td>
+                                        <td class="text-center p-1"  style="width: 20%;">'.$CantidadBase.'</td>
                                     </tr>
                                     <tr>
                                         <th class="bg-light p-1"  style="width: 30%;">Descripción Cable</th>
-                                        <td class="text-center p-1"  style="width: 20%;" colspan="3">'.$DetallesCable[0]['Nombre Hijo'].'</td>
+                                        <td class="text-center p-1"  style="width: 20%;" colspan="3">'.$NombreHijo.'</td>
                                     </tr>
                                 </tbody>
                             </table>';
