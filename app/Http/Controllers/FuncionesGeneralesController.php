@@ -168,7 +168,7 @@ class FuncionesGeneralesController extends Controller
                 INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
                 LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
                 INNER JOIN {$schema}.\"WOR1\" T3 ON T3.\"DocEntry\" = T2.\"DocEntry\"
-                WHERE T1.\"PoTrgNum\" = {$OrdenFabricacion} --AND T3.\"ItemName\" LIKE '%Cable%' 
+                WHERE T1.\"PoTrgNum\" = {$OrdenFabricacion} AND T3.\"ItemName\" LIKE '%Cable%' 
                 LIMIT 1";
                 //WHERE T0.\"DocNum\" = 66483 AND T3.\"ItemName\" LIKE '%Cable%'";
         return $Detalles = $this->ejecutarConsulta($sql);
