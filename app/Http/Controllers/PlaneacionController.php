@@ -199,7 +199,7 @@ class PlaneacionController extends Controller
                         <th style="display:none;"></th>
                         <th style="display:none;"></th>
                         <th style="display:none;">Escáner</th>
-                        <th>Requiere corte</th>
+                        <th>Requiere corte <input type="checkbox" id="selectAllCorte'.$ordenventa.'" onclick="SeleccionaFilasCorte(this)"></th>
                         <th style="display:none;"></th>
                         <th style="display:none;"></th>
                     </tr>
@@ -236,7 +236,7 @@ class PlaneacionController extends Controller
                             <td style="display:none;">' . $cliente. '</td>
                             <td class="text-center" style="display:none;"><input type="checkbox" class="Escaner'.$ordenventa.'"></td>
                             <td style="display:none;">1</td>
-                            <td class="text-center"><input type="checkbox" class="Corte'.$ordenventa.'"></td>
+                            <td class="text-center"><input type="checkbox" class="selectAllCorte'.$ordenventa.'"></td>
                             <td class="text-center"><input type="hidden" value="'.$this->funcionesGenerales->encrypt($partida['Cliente'] ?? '000').'"></td>
                         </tr>';
             }
@@ -951,10 +951,17 @@ class PlaneacionController extends Controller
                                     'ordenfabricacion.CantidadTotal', 
                                     'ordenfabricacion.FechaEntrega', 
                                     'ordenfabricacion.FechaEntregaSAP', 
-                                    'ordenfabricacion.Escaner'  // Aquí se selecciona la columna Escaner para el checkbox
+                                    'ordenfabricacion.Escaner',  // Aquí se selecciona la columna Escaner para el checkbox
+                                    'ordenfabricacion.Corte',
+                                    'ordenfabricacion.ResponsableUser_id'
                                 )
                                 ->where('ordenfabricacion.id','=',$NumOF_id)->first();
         if($datos){
+            $UsuariosCortes =  User::whereHas('roles.permissions', function ($query) {
+                    $query->where('name', 'Vista Corte');
+            })
+            ->where('role','O')
+            ->get();
             $cadena='<table class="table table-sm fs--1 mb-0" style="width:100%">
                         <thead>
                         </thead>
@@ -1002,6 +1009,34 @@ class PlaneacionController extends Controller
                             <tr>
                                 <th class="table-active">Fecha Entrega</th>
                                 <td class="text-center">'.Carbon::parse($datos->FechaEntregaSAP)->format('d/m/Y').'</td>
+                            </tr>
+                            <tr>
+                                <th class="table-active">Requiere Corte </th>
+                                <td class="text-center">
+                                        <input type="checkbox" id="RequiereCorteupdate"';
+                                        if($datos->Corte == 1){
+                                            $cadena.=' checked ';
+                                        }
+                                        $cadena.='onclick="CambiarEstatusCorte(this,\''.$this->funcionesGenerales->encrypt($datos->ordenfabricacionid).'\')">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="table-active">Responsable Corte</th>
+                                <td class="text-center d-flex justify-content-center">
+                                    <div class="col-6">
+                                        <select name="EncargadoCorteUpdate" id="EncargadoCorteUpdate" class="form-select form-select-sm border-primary w-100">
+                                            <option value="OSC">Ordenes sin Corte</option>';
+                                            foreach($UsuariosCortes as $UC){
+                                                $cadena.='<option value="'.$UC->id.'"';
+                                                if($UC->id == $datos->ResponsableUser_id){
+                                                   $cadena.=' selected '; 
+                                                }
+                                                $cadena.='>'.$UC->name.'  '.$UC->apellido.'</option>';
+                                            }
+                                        $cadena.='</select>
+                                        <small id="errorEncargadoCorteUpdate"></small>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody></table>';
                 return response()->json([
@@ -1236,6 +1271,33 @@ class PlaneacionController extends Controller
                 ]);
             }else{
                 $OF->Urgencia='N';
+                $OF->save();
+                return response()->json([
+                    'status' => "success",
+                    'valor' => "false"
+                ]);
+            }
+        }catch(Exception $e){
+            return response()->json([
+                'status' => "error",
+            ]);
+        }
+    }
+    public function CambiarCorteEstatus(Request $request){
+         try{
+            $NumOF_id=$this->funcionesGenerales->decrypt($request['Id']);
+            $OF = OrdenFabricacion::where('id','=',$NumOF_id)->first();
+            $corte=$request->Corte;
+            if($corte=="true"){
+                $OF->Corte=1;
+                $OF->save();
+                return response()->json([
+                    'status' => "success",
+                    'valor' => "true"
+                ]);
+            }else{
+                $OF->Corte = 0;
+                $OF->ResponsableUser_id = null; 
                 $OF->save();
                 return response()->json([
                     'status' => "success",
