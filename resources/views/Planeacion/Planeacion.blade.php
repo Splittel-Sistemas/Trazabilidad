@@ -204,7 +204,7 @@
         </div>
     </div>
     <!-- Toast ver las Ordenes de Fabricacion Pendientes por asignar-->
-    <div id="element" class="d-flex flex-center" aria-live="polite" aria-atomic="true"  style="position: fixed; bottom: 0.5rem; right: 1rem; z-index: 1050;" data-bs-delay="30000">
+    <div id="element" class="d-flex flex-center" aria-live="polite" aria-atomic="true"  style="position: fixed; bottom: 0.5rem; right: 1rem; z-index: 1050;display:none;" data-bs-delay="30000">
         <div class="toast show p-0" role="alert" data-bs-autohide="false" aria-live="assertive" aria-atomic="true" >
             <div class="toast-header bg-danger text-white p-1">
                 <strong class="me-auto">Alerta</strong>
@@ -611,6 +611,13 @@
             checkboxes.forEach(checkbox => {
                 checkbox.checked = selectAllCheckbox.checked;
                 SeleccionarFila(null, checkbox);  // Actualiza la clase "selected"
+            });
+    }
+    function SeleccionaFilasCorte(campo) {
+        const selectAllCheckbox = document.getElementById(campo.id);
+        const checkboxes = document.querySelectorAll("."+campo.id);
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
             });
     }
     function SeleccionarFila(event, checkbox) {
@@ -1210,6 +1217,62 @@
                     //errorBD();
                 }
             });*/
+    }
+    function CambiarEstatusCorte(IdordenFabricacion,evento){
+        EstatusCorte = document.getElementById('RequiereCorteupdate');
+        EstatusCorteCheck=EstatusCorte.checked;
+        errorEncargadoCorteUpdate = $('#errorEncargadoCorteUpdate');
+        EncargadoCorteUpdate = $('#EncargadoCorteUpdate');
+        errorEncargadoCorteUpdate.html('');
+        ResponsableCorte = null;
+        if(EstatusCorteCheck==true){
+           if(EncargadoCorteUpdate.val() == null || EncargadoCorteUpdate.val() == 'OSC'){
+            errorEncargadoCorteUpdate.html('* Para actualizar el campo Requiere Corte, selecciona un responsable.');
+            EstatusCorte.checked = false;
+            return 0;
+           }
+        }else{
+            if(evento=='change'){
+                return 0;
+            }
         }
+        //errorEncargadoCorteUpdate
+        $.ajax({
+            url: "{{route('CambiarCorteEstatus')}}", 
+            type: 'POST',
+            data: {
+                Corte: EstatusCorteCheck,
+                Id: IdordenFabricacion,
+                IdEncargado: EncargadoCorteUpdate.val(),
+                _token: '{{ csrf_token() }}'  
+            },
+            beforeSend: function() {
+            },
+            success: function(response) {
+                if(response.status == 'error'){
+                    error('Ocurrio un error!','El Requiere Corte no se pudo actualizar.')
+                }else if(response.status == 'success'){
+                    DetallesOrdenFabricacion(IdordenFabricacion);
+                    /*if(response.valor == false){
+                        EstatusCorte.checked = true;
+                    }
+                    if(response.valor == true){
+                        EstatusCorte.checked = false;
+                    }*/
+                }
+                /*if(response.status=='success'){
+                    if(response.valor=='false'){
+                        success('Guardado correctamente!','Urgente desactivado!')
+                    }else{
+                        success('Guardado correctamente!','Urgente Activado!')
+                    }
+                }*/
+                RecargarTablaOF();
+            },
+            error: function(xhr, status, error) {
+                error('Ocurrio un erro!', 'Requiere Corte no se pudo actualizar')
+            }
+        }); 
+    }
 </script>
 @endsection
