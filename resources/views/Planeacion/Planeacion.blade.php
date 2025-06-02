@@ -1218,26 +1218,47 @@
                 }
             });*/
     }
-    function CambiarEstatusCorte(EstatusCorte,IdordenFabricacion){
-        EstatusCorte=EstatusCorte.checked;
+    function CambiarEstatusCorte(IdordenFabricacion,evento){
+        EstatusCorte = document.getElementById('RequiereCorteupdate');
+        EstatusCorteCheck=EstatusCorte.checked;
+        errorEncargadoCorteUpdate = $('#errorEncargadoCorteUpdate');
+        EncargadoCorteUpdate = $('#EncargadoCorteUpdate');
+        errorEncargadoCorteUpdate.html('');
         ResponsableCorte = null;
-        if(EstatusCorte==true){
+        if(EstatusCorteCheck==true){
+           if(EncargadoCorteUpdate.val() == null || EncargadoCorteUpdate.val() == 'OSC'){
+            errorEncargadoCorteUpdate.html('* Para actualizar el campo Requiere Corte, selecciona un responsable.');
+            EstatusCorte.checked = false;
+            return 0;
+           }
+        }else{
+            if(evento=='change'){
+                return 0;
+            }
         }
-        return 0;
         //errorEncargadoCorteUpdate
         $.ajax({
             url: "{{route('CambiarCorteEstatus')}}", 
             type: 'POST',
             data: {
-                Corte: EstatusCorte,
+                Corte: EstatusCorteCheck,
                 Id: IdordenFabricacion,
+                IdEncargado: EncargadoCorteUpdate.val(),
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
             },
             success: function(response) {
                 if(response.status == 'error'){
-                    error('Ocurrio un error!','El Corte no se pudo actualizar.')
+                    error('Ocurrio un error!','El Requiere Corte no se pudo actualizar.')
+                }else if(response.status == 'success'){
+                    DetallesOrdenFabricacion(IdordenFabricacion);
+                    /*if(response.valor == false){
+                        EstatusCorte.checked = true;
+                    }
+                    if(response.valor == true){
+                        EstatusCorte.checked = false;
+                    }*/
                 }
                 /*if(response.status=='success'){
                     if(response.valor=='false'){

@@ -600,7 +600,7 @@ class PlaneacionController extends Controller
                                 <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
                                     <i class="fa fa-arrow-left"></i> Cancelar
                                 </button>
-                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary">
+                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm float-end btn-primary">
                                     <i class="fa fa-eye"></i> Detalles
                                 </button>
                             </td>
@@ -618,7 +618,7 @@ class PlaneacionController extends Controller
                             <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
                                 <i class="fa fa-arrow-left"></i> Cancelar
                             </button>
-                            <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary">
+                            <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm float-end btn-primary">
                                 <i class="fa fa-eye"></i> Detalles
                             </button>
                         </td>
@@ -632,7 +632,11 @@ class PlaneacionController extends Controller
                                 $tabla .=' checked ';
                             }  
                             $tabla .= '></td>
-                            <td class="text-center"></td>
+                            <td class="text-center">
+                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm float-end btn-primary">
+                                    <i class="fa fa-eye"></i> Detalles
+                                </button>
+                            </td>
                         </tr>';
                     }
                 }
@@ -957,6 +961,9 @@ class PlaneacionController extends Controller
                                 )
                                 ->where('ordenfabricacion.id','=',$NumOF_id)->first();
         if($datos){
+            //Comprobamos si ya se inicio en Produccion
+            $PartidasOF = PartidasOF::where('OrdenFabricacion_id',$datos->ordenfabricacionid)->first();
+            $PartidasOFCount = $PartidasOF->Areas()->where('Areas_id',18)->get()->count();
             $UsuariosCortes =  User::whereHas('roles.permissions', function ($query) {
                     $query->where('name', 'Vista Corte');
             })
@@ -1017,14 +1024,22 @@ class PlaneacionController extends Controller
                                         if($datos->Corte == 1){
                                             $cadena.=' checked ';
                                         }
-                                        $cadena.='onclick="CambiarEstatusCorte(this,\''.$this->funcionesGenerales->encrypt($datos->ordenfabricacionid).'\')">
+                                        $cadena.='onclick="CambiarEstatusCorte(\''.$this->funcionesGenerales->encrypt($datos->ordenfabricacionid).'\',\'input\')"';
+                                        if($PartidasOFCount>0){
+                                            $cadena.=' disabled ';
+                                        }
+                                        $cadena.='>
                                 </td>
                             </tr>
                             <tr>
                                 <th class="table-active">Responsable Corte</th>
                                 <td class="text-center d-flex justify-content-center">
                                     <div class="col-6">
-                                        <select name="EncargadoCorteUpdate" id="EncargadoCorteUpdate" class="form-select form-select-sm border-primary w-100">
+                                        <select name="EncargadoCorteUpdate" id="EncargadoCorteUpdate" onChange="CambiarEstatusCorte(\''.$this->funcionesGenerales->encrypt($datos->ordenfabricacionid).'\',\'change\')" class="form-select form-select-sm border-primary w-100"';
+                                        if($PartidasOFCount>0){
+                                            $cadena.=' disabled ';
+                                        }
+                                        $cadena.='>
                                             <option value="OSC">Ordenes sin Corte</option>';
                                             foreach($UsuariosCortes as $UC){
                                                 $cadena.='<option value="'.$UC->id.'"';
@@ -1034,7 +1049,7 @@ class PlaneacionController extends Controller
                                                 $cadena.='>'.$UC->name.'  '.$UC->apellido.'</option>';
                                             }
                                         $cadena.='</select>
-                                        <small id="errorEncargadoCorteUpdate"></small>
+                                        <p class="text-danger float-start" id="errorEncargadoCorteUpdate"></p>
                                     </div>
                                 </td>
                             </tr>
@@ -1087,7 +1102,7 @@ class PlaneacionController extends Controller
                                 <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
                                     <i class="fa fa-arrow-left"></i> Cancelar
                                 </button>
-                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary">
+                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn float-end btn-sm btn-primary">
                                     <i class="fa fa-eye"></i> Detalles
                                 </button>
                             </td>
@@ -1105,7 +1120,7 @@ class PlaneacionController extends Controller
                             <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
                                 <i class="fa fa-arrow-left"></i> Cancelar
                             </button>
-                            <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-primary">
+                            <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm float-end btn-primary">
                                 <i class="fa fa-eye"></i> Detalles
                             </button>
                         </td>
@@ -1118,7 +1133,11 @@ class PlaneacionController extends Controller
                             if($datos[$i]['Urgencia']=='U'){
                                 $tabla .=' checked ';
                             }  
-                            $tabla .= '></td>
+                            $tabla .= '>
+                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm float-end btn-primary">
+                                    <i class="fa fa-eye"></i> Detalles
+                                </button>
+                            </td>
                             <td class="text-center"></td>
                         </tr>';
                     }
@@ -1286,19 +1305,41 @@ class PlaneacionController extends Controller
     public function CambiarCorteEstatus(Request $request){
          try{
             $NumOF_id=$this->funcionesGenerales->decrypt($request['Id']);
+            $Responsable_id=$request['IdEncargado'];
             $OF = OrdenFabricacion::where('id','=',$NumOF_id)->first();
+            $PartidasOF = $OF->PartidasOF->first();
             $corte=$request->Corte;
             if($corte=="true"){
                 $OF->Corte=1;
+                $OF->ResponsableUser_id = $Responsable_id; 
+                $OF->EstatusEntrega = 0;
                 $OF->save();
+                
+                $Partidasof_Areas = Partidasof_Areas::where('PartidasOF_id',$PartidasOF->id)->where('Areas_id',2)->get();
+                foreach($Partidasof_Areas as $PA){
+                    $PA->delete();
+                }
                 return response()->json([
                     'status' => "success",
                     'valor' => "true"
                 ]);
+                
             }else{
                 $OF->Corte = 0;
                 $OF->ResponsableUser_id = null; 
+                $OF->EstatusEntrega = 1;
                 $OF->save();
+                $PartidasOFAreas = new Partidasof_Areas();
+                $PartidasOFAreas->PartidasOF_id = $PartidasOF->id;
+                $PartidasOFAreas->Areas_id = 2;
+                $PartidasOFAreas->Users_id = $this->funcionesGenerales->InfoUsuario();
+                $PartidasOFAreas->Linea_id = 1;
+                $PartidasOFAreas->Cantidad = $OF->CantidadTotal;
+                $PartidasOFAreas->NumeroEtiqueta = 1;
+                $PartidasOFAreas->TipoPartida = 'N';
+                $PartidasOFAreas->FechaComienzo = now();
+                $PartidasOFAreas->FechaTermina = now();
+                $PartidasOFAreas->save();
                 return response()->json([
                     'status' => "success",
                     'valor' => "false"
@@ -1307,6 +1348,7 @@ class PlaneacionController extends Controller
         }catch(Exception $e){
             return response()->json([
                 'status' => "error",
+                'valor' => $corte,
             ]);
         }
     }
