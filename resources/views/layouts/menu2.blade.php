@@ -339,7 +339,7 @@
                                         @endif
                                         @if(Auth::user()->hasPermission("Vista Visualizacion"))
                                             <li class="nav-item"><a class="nav-link {{ Route::is('Visualizacion') ? 'nav-tabs active' : '' }}" href="{{route('Visualizacion')}}" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Visualizaci&oacute;n</span></div>
+                                                <div class="d-flex align-items-center"><span class="nav-link-text">Visual</span></div>
                                                 </a>
                                             </li>
                                         @endif

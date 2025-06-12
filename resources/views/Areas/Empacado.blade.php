@@ -318,6 +318,7 @@
                             $('#ToastGuardado').fadeOut();
                         }, 4000);
                     }
+                    $('#CodigoEscaner').val('');
                 }else if(response.status=="empty"){
                     //if(response.Escaner!=0){
                         $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
@@ -327,13 +328,15 @@
                             $('#ToastGuardado').fadeOut();
                         }, 4000);
                     //}
+                        $('#CodigoEscaner').val('');
                 }else if(response.status=="NoExiste"){
-                        $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
-                        $('#ToastGuardadoBody').html('El codigo No existe!  ');
-                        $('#ToastGuardado').fadeIn();
-                        setTimeout(function(){
-                            $('#ToastGuardado').fadeOut();
-                        }, 4000);
+                    $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
+                    $('#ToastGuardadoBody').html('El codigo No existe!  ');
+                    $('#ToastGuardado').fadeIn();
+                    setTimeout(function(){
+                        $('#ToastGuardado').fadeOut();
+                    }, 4000);
+                    $('#CodigoEscaner').val('');
                 }
             },
             error: function(xhr, status, error) {

@@ -226,7 +226,7 @@
             $('#login-operador').prop('disabled', true).text('Enviando...');
             setTimeout(RecargarLogin, 15000);
         });
-        setTimeout(RecargarLogin, 240000);
+        setInterval(RecargarLogin, 90000);
     });
     function RecargarLogin(){
         window.location.href = '{{ route('login') }}';
