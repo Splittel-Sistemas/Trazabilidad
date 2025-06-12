@@ -88,7 +88,7 @@ Route::get('/Area/Inspección', [AreasController::class,'Inspeccion'])->name('In
 Route::get('/Area/Polaridad', [AreasController::class,'Polaridad'])->name('Polaridad')->middleware('auth');
 Route::get('/Area/Crimpado', [AreasController::class,'Crimpado'])->name('Crimpado')->middleware('auth');
 Route::get('/Area/Medición', [AreasController::class,'Medicion'])->name('Medicion')->middleware('auth');
-Route::get('/Area/Visualización', [AreasController::class,'Visualizacion'])->name('Visualizacion')->middleware('auth');
+Route::get('/Area/Visual', [AreasController::class,'Visualizacion'])->name('Visualizacion')->middleware('auth');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas')->middleware('auth');
 Route::get('/Area/Montaje', [AreasController::class,'Montaje'])->name('Montaje')->middleware('auth');
 Route::post('/Area/Tabla/Pendientes', [AreasController::class,'AreaTablaPendientes'])->name('AreaTablaPendientes')->middleware('auth');

@@ -1786,13 +1786,14 @@ class HomeController extends Controller
     //dasboard operador 
     public function indexoperador(Request $request)
     {
-        $hoy = Carbon::today(); 
-    
+        $manana = Carbon::now()->addDay()->format('Y-m-d H:i:s'); 
+        $hoy = Carbon::now()->format('Y-m-d H:i:s');
         $avisos = DB::table('avisos')
-            ->whereDate('fecha_envio', $hoy) 
+            //->where('created_at','>=',$hoy)
+            //->where('created_at','<=',$manana)
+            ->whereBetween('fecha_envio', [$hoy, $manana])
             ->orderBy('created_at', 'desc')
             ->get();
-    
         $linea = Linea::where('active', 1)->get();
         $user = Auth::user();
     
@@ -1903,10 +1904,15 @@ class HomeController extends Controller
         ]);
 
         // Inserta el aviso en la base de datos
+        //Se le aumentan 24 de la fecha para saber cuanto va durar, solo dura 1 dia
+        $Fecha = $request->input('fecha').' '.date('H:i:d');
+        $Fecha = Carbon::parse($Fecha);
+        $Fecha = $Fecha->addHours(24);
+        $Fecha = $Fecha->format('Y-m-d H:i:s');
         DB::table('avisos')->insert([
             'titulo' => $request->input('titulo'),
             'contenido' => $request->input('aviso'),
-            'fecha_envio' => $request->input('fecha'),
+            'fecha_envio' => $Fecha,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

@@ -190,6 +190,8 @@
         }
         FiltroLinea = $('#FiltroLinea').val();
         if(FiltroLinea == null || FiltroLinea=="" || FiltroLinea<0){
+            $('#CodigoEscanerSalida').val('');
+            $('#CodigoEscanerEntrada').val('');
             Mensaje='Para comenzar, en el campo Núm. Línea selecciona la línea en la que vas a trabajar!';
                             Color='bg-danger';
                             $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
@@ -389,6 +391,8 @@
                             $('#ToastGuardado').fadeOut();
                         }, 2500);
                     }
+                    $('#CodigoEscanerSalida').val('');
+                    $('#CodigoEscanerEntrada').val('');
                 }else if(response.status=="empty"){
                         if(Inicio==1){
                             $('#CodigoEscanerEntrada').focus();
@@ -403,6 +407,8 @@
                             $('#ToastGuardado').fadeOut();
                         }, 4000);
                     //}
+                        $('#CodigoEscanerSalida').val('');
+                        $('#CodigoEscanerEntrada').val('');
                 }else if(response.status=="NoExiste"){
                         if(Inicio==1){
                             $('#CodigoEscanerEntrada').focus();
@@ -415,6 +421,8 @@
                         setTimeout(function(){
                             $('#ToastGuardado').fadeOut();
                         }, 4000);
+                        $('#CodigoEscanerSalida').val('');
+                        $('#CodigoEscanerEntrada').val('');
                 }else if(response.status == "ErrorLineaComplete"){
                     if(Inicio==1){
                         $('#CodigoEscanerEntrada').focus();
@@ -433,7 +441,8 @@
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
                     }, 4000);
-                    
+                    $('#CodigoEscanerSalida').val('');
+                    $('#CodigoEscanerEntrada').val('');
                 }else if(response.status == "ErrorLinea"){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
                     $('#ToastGuardadoBody').html('Error de Línea, el retrabajo tiene que ser en la misma Linea que se inicio normal!');
@@ -441,6 +450,8 @@
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
                     }, 5000);
+                    $('#CodigoEscanerSalida').val('');
+                    $('#CodigoEscanerEntrada').val('');
                 }else if(response.status == "ErrorLineaCodigo"){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
                     $('#ToastGuardadoBody').html('Error de Línea, Este Codigo No pertenece a la Línea '+FiltroLinea +'!,\n seleccione correctamente su Línea');
@@ -448,6 +459,8 @@
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
                     }, 5000);
+                    $('#CodigoEscanerSalida').val('');
+                    $('#CodigoEscanerEntrada').val('');
                 }else if(response.status == "Cerrada"){
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
                     $('#ToastGuardadoBody').html('Error, La orden de Fabricación ya se encuentra cerrada!');
@@ -455,6 +468,8 @@
                     setTimeout(function(){
                         $('#ToastGuardado').fadeOut();
                     }, 5000);
+                    $('#CodigoEscanerSalida').val('');
+                    $('#CodigoEscanerEntrada').val('');
                 }
                 $('#ContentTabla').show();
                 RecargarTablaPendientes();
