@@ -196,6 +196,7 @@
                                             <th>Cantidad Total Orden de Fabricacion</th>
                                             <th>Esc&aacute;ner</th>
                                             <th>Asignar l&iacute;nea</th>
+                                            <th>Finalizar Orden de Fabricaci&oacute;n</th>
                                         </tr>
                                     </thead>
                                     <tbody id="TablaCalsificacionAbiertasBody" class="list">
@@ -209,6 +210,9 @@
                                                 <td class="text-center"><input type="checkbox" @if ($partida->EscanerDisabled == 0 ) onchange="Escaner(this,'{{$partida->idEncriptOF}}')" @else disabled @endif class="Corte67869" @if($partida->Escaner == 1) checked @endif></td>
                                                 <td>
                                                     <button class="btn btn-sm btn-outline-info px-3 py-2" onclick="AsignarLinea('{{$partida->idEncriptOF}}')">Asignar</button>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-sm btn-outline-danger px-3 py-2" onclick="FinalizarOrdenFabricacion('{{$partida->idEncriptOF}}')">Finalizar</button>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -576,6 +580,42 @@
     }
     function BorrarContenedor(){
         $('#FiltroOrdenFabricacionContent').html('');
+    }
+    function FinalizarOrdenFabricacion(IdOrdenFabricación){
+         Swal.fire({
+            title: 'Finalizar Orden de Fabricación',
+            text: '¿Deseas finalizar la Orden de Fabricación?',
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            cancelButtonText:"Cancelar",
+            confirmButtonText: 'Finalizar',
+        }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "{{route('FinalizarOrdenFabricacion')}}", 
+                type: 'POST',
+                data: {
+                    idOF:IdOrdenFabricación,
+                },
+                beforeSend: function() {
+                    //$('#ModalDetalleBodyInfoOF').html('<div class="d-flex justify-content-center align-items-center"><div class="spinner-grow text-info text-center" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                },
+                success: function(response) {
+                    if(response==1){
+                        success('Guardado Correctamente','La Orden de Fabricación a sido finalizada correctamente!')
+                    }else{
+                        error('Error al Finalizar la orden de fabricación!', 'Los datos no pudieron ser procesados correctamente, si persiste el error contacta a TI');
+                    }
+                    RecargarTabla();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    errorBD();
+                }
+            });
+        }
+      });
     }
 </script>
 @endsection

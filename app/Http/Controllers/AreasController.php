@@ -4440,6 +4440,9 @@ class AreasController extends Controller
                             <td>
                                 <button class="btn btn-sm btn-outline-info px-3 py-2" onclick="AsignarLinea(\''.$OrdenFab->idEncriptOF.'\')">Asignar</button>
                             </td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-danger px-3 py-2" onclick="FinalizarOrdenFabricacion(\''.$OrdenFab->idEncriptOF.'\')">Finalizar</button>
+                            </td>
                         </tr>';
             }
             return response()->json([
@@ -4464,7 +4467,13 @@ class AreasController extends Controller
         //Valores disponibles
         $ContarPartidas = $PartidasOF->Areas()->where('Areas_id',3)->get()->whereNotNull('pivot.FechaTermina')->where('pivot.TipoPartida','N')->sum('pivot.Cantidad');
         $ContarPartidasClasificacion = $PartidasOF->Areas()->where('Areas_id',18)->get()->sum('pivot.Cantidad');
-        $Ordenfabricacionpartidas='<h5 class="text-center mb-1">Orden de Fabricación <br>'.$OrdenFabricacion->OrdenFabricacion.'</h5>';
+        $Ordenfabricacionpartidas='<div class="col-12"><button class="btn btn-sm btn-outline-danger px-3 py-2 float-end"';
+        if($OrdenFabricacion->Cerrada == 0){
+            $Ordenfabricacionpartidas.=' disabled';
+        }else{
+            $Ordenfabricacionpartidas.='  onclick="FinalizarOrdenFabricacion(\''.$request->id.'\')" ';
+        }
+        $Ordenfabricacionpartidas.='>Finalizar</button></div><h5 class="text-center mb-1">Orden de Fabricación <br>'.$OrdenFabricacion->OrdenFabricacion.'</h5>';
         $Ordenfabricacionpartidas.='<div class="row mx-6 my-2">
                                         <div class="col-6 border bg-light rounded-left">
                                         Cantidad disponible para asignar
@@ -4589,6 +4598,17 @@ class AreasController extends Controller
             }
         }
         return$Lista .= '</ul>';
+    }
+    public function FinalizarOrdenFabricacion(Request $request){
+        $id = $this->funcionesGenerales->decrypt($request->idOF);
+        $OrdenFabricacion = OrdenFabricacion::find($id);
+        if($OrdenFabricacion == ''){
+            return 0;
+        }else{
+            $OrdenFabricacion->Cerrada = 0;
+            $OrdenFabricacion->save();
+            return 1;
+        }
     }
     //Empaquetado
     public function EmpaquetadoBuscar(Request $request){
