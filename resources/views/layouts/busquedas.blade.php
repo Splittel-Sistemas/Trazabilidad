@@ -582,8 +582,20 @@
                                                     <i class="fas fa-stopwatch fa-stack-1x text-white "></i>
                                                 </span>
                                             </div>
-                                            <h5 class="mt-2">Productivo</h5>
+                                            <h5 class="mt-2">Tiempo Productivo</h5>
                                             <p id="Produccion"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
+                                        </div>
+                                    </div>
+                                     <div class="col-12 col-md-4 mb-3">
+                                        <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #f8d7da;">
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <span class="fa-stack fa-1x">
+                                                    <i class="fas fa-circle fa-stack-2x text-danger"></i>
+                                                    <i class="fas fa-hourglass-empty fa-stack-1x text-white"></i>
+                                                </span>
+                                            </div>
+                                            <h5 class="mt-2">Tiempo Muerto</h5>
+                                            <p id="Muerto"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-4 mb-3">
@@ -594,21 +606,8 @@
                                                     <i class="fas fa-clock fa-stack-1x text-white"></i>
                                                 </span>
                                             </div>
-                                            <h5 class="mt-2">Tiempo Total</h5>
+                                            <h5 class="mt-2">Tiempo Total Trabajado</h5>
                                             <p id="TiempoTotal"  class="text-muted fs--1 mb-0">Tiempo Total de la Orden</p>
-                                        </div>
-                                    </div>
-                                
-                                    <div class="col-12 col-md-4 mb-3">
-                                        <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #f8d7da;">
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <span class="fa-stack fa-1x">
-                                                    <i class="fas fa-circle fa-stack-2x text-danger"></i>
-                                                    <i class="fas fa-hourglass-empty fa-stack-1x text-white"></i>
-                                                </span>
-                                            </div>
-                                            <h5 class="mt-2">Tiempo Muerto</h5>
-                                            <p id="Muerto"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1907,7 +1906,7 @@
                         Muerto.html('Tiempo total<br>'+response.TiempoMuerto);
                     }
                     if(!response.TiempoDuracion==0){
-                        CadenaTiempo="Duración Total: ";
+                        CadenaTiempo="Duración Total de Fabricación: ";
                         if(response.TiempoDuracion.y!=0){CadenaTiempo+=response.TiempoDuracion.y+" Años "}
                         if(response.TiempoDuracion.m!=0){CadenaTiempo+=response.TiempoDuracion.m+" Meses "}
                         if(response.TiempoDuracion.d!=0){CadenaTiempo+=response.TiempoDuracion.d+" Días "}
