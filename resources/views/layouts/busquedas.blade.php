@@ -466,6 +466,12 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+        .Estacion_Hover {
+            transition: transform 0.3s ease; /* Duración y tipo de transición */
+        }
+        .Estacion_Hover:hover{
+            transform: scale(1.08);
+        }
     </style>
 @endsection
 @section('content')
@@ -1972,7 +1978,7 @@
                                 ColorProgress = ' #38f41a ';
                             }
                             if(area.AP != 1){
-                                EstacionesGraficas+='<div class="col-12 col-sm-3 col-md-4 my-2">'+
+                                EstacionesGraficas+='<div class="col-12 col-sm-3 col-md-4 my-2 Estacion_Hover">'+
                                                         '<div class="card rounded border-0" style="box-shadow: 3px 3px 3px 2px rgba(0.1, 0.1, 0.1, 0.2);">'+
                                                             '<h5 class="text-center">'+area.NombreArea+'</h5>'+
                                                             '<div class="progress-container">'+
@@ -1980,7 +1986,7 @@
                                                                     '<div class="progress-Porcentaje"><h5>'+area.PorcentajeActual+'%</h5></div>'+   
                                                                 '</div>'+
                                                             '</div>'+
-                                                            '<small class="float-start"><span class="float-start">Piezas Normales:'+area.Normales+'</span><span class="float-end"> Piezas Retrabajo:'+area.Retrabajo+'</span></small><h6 class="text-center mt-2">Tiempos</h6><small>Total: '+area.TiempoOrdenes+'</small><small>Productivo: '+area.TiempoProductivoEstacion+'</small>'+
+                                                            '<small class="float-start"><span class="float-start">Piezas Normales:'+area.Normales+'</span><span class="float-end"> Piezas Retrabajo:'+area.Retrabajo+'</span></small><h6 class="text-center mt-2">Tiempos</h6><small>Duración: '+area.TiempoOrdenes+'</small><small>Productivo: '+area.TiempoProductivoEstacion+'</small>'+
                                                         '</div>'+
                                                     '</div>';
                             }
