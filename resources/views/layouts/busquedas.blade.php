@@ -237,7 +237,7 @@
                             <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
                             <div  class="row mb-3" id="plemasCanvases">
                             </div>
-                            <div class="col-11 col-sm-11 col-md-11 Estacion_Hover my-3">
+                            <div class="col-11 col-sm-11 col-md-11 Estacion_Hover my-3" id="ContainerGraficaPorcentajeTiempos">
                                 <div class="card rounded border-0 p-2" style="box-shadow: 3px 3px 3px 2px rgba(0.1, 0.1, 0.1, 0.2);">
                                     <div id="GraficaPorcentajeTiempos"></div>
                                 </div>
@@ -1616,58 +1616,66 @@
                 }
                 // Mostrar el modal
                 $('#example2Modal').modal('show');
-                var chart = echarts.init(document.getElementById('GraficaPorcentajeTiempos'));
-                var option = {
-                    title: {
-                        text: 'Porcentaje de Tiempo por Estación',
-                        subtext: '% Tiempo en segundos',
-                        left: 'center'
-                    },
-                    tooltip: {
-                        trigger: 'item',
-                        formatter: '{b}: ({c} segundos)'
-                    },
-                    legend: {
-                        type: 'scroll',
-                        orient: 'vertical',
-                        left: '5%',
-                        top: 'middle',
-                        itemGap: 5,            // Más distancia entre entradas
-                        bottom: 20,
-                        data: ArrayNombrePorcentajeGrafica
-                    },
-                    series: [
-                        {
-                        name: 'Tiempo',
-                        type: 'pie',
-                        radius: ['40%', '60%'], 
-                        center: ['50%', '60%'],
-                        avoidLabelOverlap: true,  // Previene superposición de etiquetas
-                        itemStyle: {
-                            borderWidth: 2,         // Línea entre segmentos para separación visual
-                            borderColor: '#fff'
+                //if((response.Estaciones).length!=0){
+                    var chart = echarts.init(document.getElementById('GraficaPorcentajeTiempos'));
+                    var option = {
+                        title: {
+                            text: 'Porcentaje de Tiempo por Estación',
+                            subtext: '% Tiempo en segundos',
+                            left: 'center'
                         },
-                        label: {
-                            position: 'outside',    // Etiquetas afuera para mayor espacio
-                            alignTo: 'labelLine',
-                            formatter: '{b}: {d}%', 
-                            distance: 1            // Distancia desde el gráfico
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: '{b}: ({c} segundos)'
                         },
-                        labelLine: {
-                            smooth: false,
-                            length: 40              // Longitud de línea guía
+                        legend: {
+                            type: 'scroll',
+                            orient: 'vertical',
+                            left: '5%',
+                            top: 'middle',
+                            itemGap: 5,            // Más distancia entre entradas
+                            //bottom: 20,
+                            data: ArrayNombrePorcentajeGrafica
                         },
-                        data: ArrayPorcentajeGrafica,
-                            emphasis: {
-                                itemStyle: {
-                                shadowBlur: 10,
-                                shadowOffsetX: 0,
-                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        series: [
+                            {
+                            name: 'Tiempo en horas',
+                            type: 'pie',
+                            radius: ['25%', '40%'], 
+                            center: ['50%', '50%'],
+                            //avoidLabelOverlap: true,  // Previene superposición de etiquetas
+                            itemStyle: {
+                                borderWidth: 1,         // Línea entre segmentos para separación visual
+                                borderColor: '#fff'
+                            },
+                            label: {
+                                //position: 'outside',    // Etiquetas afuera para mayor espacio
+                                //alignTo: 'labelLine',
+                                formatter: '{b}: {d}%', 
+                                //distance: 1            // Distancia desde el gráfico
+                            },
+                            labelLine: {
+                                smooth: false,
+                                length: 20              // Longitud de línea guía
+                            },
+                            data: ArrayPorcentajeGrafica,
+                                emphasis: {
+                                    itemStyle: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
                                 }
                             }
-                        }
-                    ]
-                };
+                        ]
+                    };
+                    if((response.Estaciones).length==0){
+                        chart.setOption(option);
+                        $('#ContainerGraficaPorcentajeTiempos').hide();
+                    }else{
+                        $('#ContainerGraficaPorcentajeTiempos').show();
+                    }
+                //}
 
     // Establecer la opción y renderizar el gráfico
     chart.setOption(option);

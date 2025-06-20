@@ -125,18 +125,26 @@ class CorteController extends Controller
     public function CortesDatosModal(Request $request){
         $id=$this->funcionesGenerales->decrypt($request->id);
         $OrdenFabricacion=OrdenFabricacion::where('id','=',$id)->first();
-        $DetallesCable=[];//$this->funcionesGenerales->DetallesCable($OrdenFabricacion->OrdenFabricacion);
-        /*if(count($DetallesCable)==0){
+        $ErrorSap = 0;
+        try {
+            $DetallesCable=$this->funcionesGenerales->DetallesCable($OrdenFabricacion->OrdenFabricacion);
+        } catch (\Throwable $e) {
+            $DetallesCable=[];
+            $ErrorSap = 1;
+        }
+        $DetallesCable=[];
+        if(count($DetallesCable)==0 AND $ErrorSap == 0){
             return response()->json([
                 'status' => 'successnotcable',
                 'Ordenfabricacioninfo' => '<p class="text-center">La Orden de Fabricacion no contiene cable para cortar.<p>',
                 'id' => $id
             ], 200);
-        }*/
+        }
         $Hijo = isset($DetallesCable[0]['Hijo'])?$DetallesCable[0]['Hijo']:"";
         $CantidadBase = isset($DetallesCable[0]['Cantidad Base'])?$DetallesCable[0]['Cantidad Base']:"";
         $NombreHijo = isset($DetallesCable[0]['Nombre Hijo'])?$DetallesCable[0]['Nombre Hijo']:"";
-        $Ordenfabricacionpartidas = '<table id="TablePartidasModal" class="table table-sm fs--1 mb-0" style="width:100%">
+        $Ordenfabricacionpartidas = '
+                    <table id="TablePartidasModal" class="table table-sm fs--1 mb-0" style="width:100%">
                         <thead>
                             <tr>
                                 <th class="text-center" colspan="8">Partidas</th>
@@ -165,8 +173,15 @@ class CorteController extends Controller
         if(!($OrdenFabricacion==null || $OrdenFabricacion=="")){
             $id=$this->funcionesGenerales->encrypt($OrdenFabricacion->id);
             $PartidasOF=$OrdenFabricacion->partidasOF()->first();
-            $Ordenfabricacioninfo.='
-                              <table class="table table-bordered table-sm text-xs"> 
+            if($ErrorSap == 1){
+                $Ordenfabricacioninfo.='
+                                <div class="alert alert-danger d-flex align-items-center p-1 mx-2" role="alert">
+                                    <span class="fas fa-times-circle text-danger fs-3 me-3"></span>
+                                    <p class="mb-0 flex-1">Se produjo un error al conectar con SAP!, La operación continuará, pero no se mostrarán los detalles del cable.</p>
+                                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>';
+            }
+            $Ordenfabricacioninfo.='<table class="table table-bordered table-sm text-xs"> 
                                 <tbody>
                                     <tr>
                                         <th class="bg-light p-1"  style="width: 30%;">Artículo</th>
@@ -277,7 +292,8 @@ class CorteController extends Controller
             'status' => 'success',
             'Ordenfabricacioninfo' => $Ordenfabricacioninfo,
             'Ordenfabricacionpartidas' => $Ordenfabricacionpartidas,
-            'id' => $id
+            'id' => $id,
+            'ErrorSAP' => $ErrorSap,
         ], 200);
     }
     public function TraerEmisiones(Request $request){
