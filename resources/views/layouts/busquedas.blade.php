@@ -3,419 +3,6 @@
 @section('styles')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!--estilos-->
-<style>
-   /* .progress-scroll-container {
-        margin-top: 20px;
-        max-height: 300px;
-        overflow-y: auto;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-    }
-
-    .task-progress-bar {
-        margin-bottom: 15px;
-        background-color: #e0e0e0;
-        border-radius: 4px;
-        position: relative;
-        padding: 5px;
-    }
-
-    .task-label {
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-
-    .task-progress {
-        height: 24px;
-        line-height: 24px;
-        color: #fff;
-        text-align: right;
-        padding-right: 8px;
-        border-radius: 4px;
-        font-weight: bold;
-        transition: width 0.3s ease;
-    }
-
-    .progress-text {
-        position: absolute;
-        top: 5px;
-        right: 10px;
-        font-size: 12px;
-        color: #000;
-    }
-
-    .retrabajo .task-progress {
-        background-color: blue !important;
-    }
-    */
-
-
-
-        /*estilo de boton detalles*/
-        .ver-detalles:hover {
-            background-color: #0c705f; /
-            transform: translateY(-2px) ; 
-        }
-
-        /*estilo de barrade progreso*/
-        .card {
-            overflow-x: auto; /* Permite scroll horizontal */
-            padding: 10px; /* Espaciado opcional */
-            border: 1px solid #ccc; /* Estilo de borde opcional */
-            border-radius: 8px; /* Bordes redondeados */
-            max-width: 100%; /* Que no se pase del contenedor padre */
-        }
-
-        .progress-bar-stages {
-            list-style: none;
-            display: flex;
-            gap: 10px; /* Espacio entre elementos */
-            width: max-content; /* Que se adapte al contenido interno */
-            padding: 0;
-            margin: 0;
-        }
-
-        .stage {
-            text-align: center;
-            cursor: pointer;
-            flex: 0 0 auto; /* No se estira, conserva su tamaño */
-            min-width: 80px; /* Tamaño mínimo para que se vea bien en scroll */
-        }
-
-        .stage-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #a0d2e9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            margin: 0 auto;
-        }
-
-        .stage span {
-            display: block;
-            margin-top: 5px;
-            font-size: 12px;
-        }
-        .card::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .card::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        .card::-webkit-scrollbar-thumb {
-            background: #a0d2e9;
-            border-radius: 4px;
-        }
-            #progress-wrapper {
-                padding: 10px;
-               
-                border-radius: 8px;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            }
-
-            .task-progress-bar {
-                margin-bottom: 15px;
-                padding: 5px;
-               
-                border-radius: 5px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-
-            .task-label {
-                display: block;
-                font-weight: bold;
-                margin-bottom: 5px;
-                color: #333;
-            }
-
-            .task-progress {
-                height: 20px;
-                border-radius: 5px;
-               
-                text-align: center;
-                color: rgba(255, 255, 255, 0.493);
-                line-height: 20px;
-                font-weight: bold;
-                transition: width 2s ease-in-out;
-            }*/
-
-            .wizard-buttons {
-                text-align: center;
-                margin-top: 20px;
-            }
-
-            .btn {
-                /*padding: 10px 20px;
-                /*border: none;*/
-                cursor: pointer;
-            }
-
-            .btn-secondary {
-                background-color: #6c757d;
-                color: rgba(255, 255, 255, 0.596);
-            }
-
-            .btn-primary {
-                background-color: #007bff;
-                color: rgba(255, 255, 255, 0.459);
-            }
-        
-        .btn-primary, .btn-secondary {
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 25px;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-    
-        /* Barra de progreso */
-        
-        .task-progress-bar {
-                margin-bottom: 15px; 
-                position: relative;
-                background-color: #f1f1f1;
-                border-radius: 10px;
-                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-                padding: 8px; 
-                font-size:  
-            }
-
-            
-            .task-label {
-                font-weight: normal; 
-                text-align: center;
-                margin-bottom: 5px; 
-            }
-
-         
-            .task-progress {
-                height: 20px; 
-                border-radius: 10px;
-                position: relative;
-                overflow: hidden;
-                display: flex;
-                align-items: center; 
-                justify-content: center;
-            }
-
-          
-            .progress-text {
-                color: rgb(0, 0, 0);
-                font-size: 12px; 
-                font-weight: normal; 
-            }
-
-          
-            .task-progress-bar .task-progress {
-                font-size: 10px; 
-            }
-
-            .task-progress-bar .task-progress span {
-                font-size: 10px; 
-        }
-
-      
-        .selected-stage .stage-circle,
-            .selected-stage span {
-                background-color:#299ae6 ; 
-                color: white; 
-            }
-
-        /* Estilos generales */
-        .grid-container {
-                    display: grid;
-                    grid-template-columns: repeat(4, 1fr); 
-                    gap: 10px; 
-                    width: 90%;
-                    max-width: 120%;
-                    margin: 0 auto; 
-                    padding: 0; 
-                }
-
-                .grid-item {
-                    text-align: center;
-                    padding: 0px;
-                    border-radius: 20px; 
-                    background-color: #f9f9f9a4; 
-                    box-shadow: 0 4px 5px rgba(0, 0, 0, 0.1); 
-                    transition: transform 0.3s ease, box-shadow 0.3s ease;
-                    margin-bottom: 0; 
-                }
-
-                .grid-item:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); 
-                }
-
-                .small-title {
-                    font-size: 18px; 
-                    margin-bottom: 10px; 
-                    font-weight: 600; 
-                    color: #444; 
-                    letter-spacing: 0.5px; 
-                }
-
-                canvas {
-                    user-select: none;
-                   /* -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-                    border: 2px solid #17a2b8; */
-                    border-radius: 8px; 
-                    width: 100%;
-                    max-width: 250px;
-                    height: 150px;
-                    margin: 0 auto; 
-                    padding: 0;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-                    
-                    display: block; 
-                }
-
-
-
-                    #collapseContent {
-                display: none;
-                transition: all 0.3s ease;
-            }
-
-            .toggle-icon {
-                font-size: 18px;
-                font-weight: bold;
-            }
-
-            #estacionesContainer {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Se ajusta automáticamente */
-                grid-template-rows: repeat(4, auto); /* 4 filas */
-                gap: 1px; /* Espacio entre tarjetas */
-                padding: 10px;
-                justify-content: center;
-            }
-
-            .estacion-card {
-                border: 1px solid #dddddda9;
-                border-radius: 10px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-                padding: 15px;
-                text-align: center;
-               
-            }
-
-            .estacion-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-            }
-
-            /* Estilos para los títulos y texto */
-            .card-title {
-                font-size: 18px;
-                font-weight: bold;
-                color: #333;
-            }
-
-            .card-text {
-                font-size: 14px;
-                color: #666;
-            }
-
-            /* Estilos para las etiquetas (badge) */
-            .badge {
-                font-size: 14px;
-                padding: 6px 12px;
-                border-radius: 20px;
-                margin-right: 5px;
-            }
-
-            .badge-success {
-                background-color: #1a662c;
-               
-            }
-
-            .badge-warning {
-                background-color: #881410;
-               
-            }
-
-
-
-            .btn-custom {
-                width: 120px;
-                height: 40px;
-                font-size: 16px;
-                font-weight: bold;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px; /* Espacio entre el icono y el texto */
-                border-radius: 8px; /* Bordes redondeados */
-                background-color: #17a2b8; /* Color info mejorado */
-              
-                border: none;
-                transition: all 0.3s ease;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            }
-
-            .btn-custom:hover {
-                background-color: #138496; /* Color más oscuro en hover */
-                transform: translateY(-2px); /* Efecto al pasar el mouse */
-                box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-            }
-
-            .btn-custom i {
-                font-size: 18px; /* Tamaño del icono */
-            }
-
-
-
-            .canvas-container {
-                margin-bottom: -20px; 
-            }
-            .title-container {
-                font-size: 1px; 
-                padding: -100px; 
-            }
-            .status-box {
-                position: relative;  /* Hacer que se pueda mover */
-                left: 135px; /* Mover el elemento hacia la izquierda */
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 100px;
-                height: 30px;
-                border-radius: 12px;
-                background-color: gray;
-                font-weight: bold;
-                font-size: 14px;
-                color: white;
-                gap: 6px;
-                transition: all 0.3s ease-in-out;
-            }
-
-            .status-box i {
-                font-size: 1rem;
-            }
-
-            .status-box.bg-success {
-                background-color: green;
-            }
-
-            .status-box.bg-danger {
-                background-color: red;
-            }
-
-            .status-box.bg-secondary {
-                background-color: gray;
-            }
-
-</style>
     <style>
         .lista-busqueda{
             height:6rem;
@@ -472,6 +59,10 @@
         .Estacion_Hover:hover{
             transform: scale(1.08);
         }
+        #GraficaPorcentajeTiempos {
+        width: 100%;
+        height: 350px;
+        }
     </style>
 @endsection
 @section('content')
@@ -506,7 +97,7 @@
                         <div class="list-group lista-busqueda" id="ListaBusquedas" style="display: none;">
                         </div>
                     </div>
-                </div>
+                </div> 
             </div>
             <!-- Tabla 1: Orden de Venta -->
             <div id="tablaVenta" class="card p-4" style="display:none;">
@@ -566,7 +157,7 @@
                     </div>
                     <div class="modal-body ">
                         <!-- Barra de progreso -->
-                        <h6 class="text-center">Progreso de piezas completadas</h6>
+                        <h5 class="text-center">Progreso de piezas completadas</h5>
                         <div class="progress" style="height: 22px; border-radius: 10px; box-shadow: 0px 3px 6px rgba(0,0,0,0.2); overflow: hidden; width: 90%; margin-left: 5%;">
                             <div id="plemasProgressBar" class="progress-bar text-white fw-bold progress-animated" role="progressbar" 
                                 style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;" 
@@ -576,81 +167,92 @@
                             <h6 class="mx-2 mt-2" id="Bloque0porciento">0%</h6>
                         </div>
                         <div style="height:12px;"></div>
-                        <h6 id="TiempoDuracion" class="m-2 text-center"></h6>
                         <div class="row justify-content-center">
-                                <!-- Primera fila (4 elementos) -->
-                                <div class="row">
-                                    <div class="col-12 col-md-4 mb-3">
-                                        <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #d4edda;">
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <span class="fa-stack fa-1x">
-                                                    <i class="fas fa-circle fa-stack-2x text-success"></i>
-                                                    <i class="fas fa-stopwatch fa-stack-1x text-white "></i>
-                                                </span>
-                                            </div>
-                                            <h5 class="mt-2">Tiempo Productivo</h5>
-                                            <p id="Produccion"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
+                            <!-- Primera fila (4 elementos) -->
+                            <div class="row mt-3">
+                                <div class="col-6 mb-3 Estacion_Hover">
+                                    <div class="card shadow-sm border-0 p-2 text-center">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <span class="fa-stack fa-1x">
+                                                <i class="fas fa-circle fa-stack-2x text-success"></i>
+                                                <i class="fas fa-cog fa-stack-1x text-white "></i>
+                                            </span>
                                         </div>
-                                    </div>
-                                     <div class="col-12 col-md-4 mb-3">
-                                        <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #f8d7da;">
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <span class="fa-stack fa-1x">
-                                                    <i class="fas fa-circle fa-stack-2x text-danger"></i>
-                                                    <i class="fas fa-hourglass-empty fa-stack-1x text-white"></i>
-                                                </span>
-                                            </div>
-                                            <h5 class="mt-2">Tiempo Muerto</h5>
-                                            <p id="Muerto"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-4 mb-3">
-                                        <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #cce5ff;">
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <span class="fa-stack fa-1x">
-                                                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                                                    <i class="fas fa-clock fa-stack-1x text-white"></i>
-                                                </span>
-                                            </div>
-                                            <h5 class="mt-2">Tiempo Total Trabajado</h5>
-                                            <p id="TiempoTotal"  class="text-muted fs--1 mb-0">Tiempo Total de la Orden</p>
-                                        </div>
+                                        <h5 class="mt-2">Duración Total de Fabricación</h5>
+                                        <p id="TiempoDuracion" class="text-muted fs--1 mb-0"></p>
                                     </div>
                                 </div>
+                                <div class="col-6 mb-3 Estacion_Hover">
+                                    <div class="card shadow-sm border-0 p-2 text-center">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <span class="fa-stack fa-1x">
+                                                <i class="fas fa-circle fa-stack-2x text-success"></i>
+                                                <i class="fas fa-cogs fa-stack-1x text-white "></i>
+                                            </span>
+                                        </div>
+                                        <h5 class="mt-2">Duración Promedio por Pieza</h5>
+                                        <p id="TiempoPromedio" class="text-muted fs--1 mb-0"></p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4 mb-3 Estacion_Hover">
+                                    <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #d4edda;">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <span class="fa-stack fa-1x">
+                                                <i class="fas fa-circle fa-stack-2x text-success"></i>
+                                                <i class="fas fa-stopwatch fa-stack-1x text-white "></i>
+                                            </span>
+                                        </div>
+                                        <h5 class="mt-2">Tiempo Productivo</h5>
+                                        <p id="Produccion"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4 mb-3 Estacion_Hover ">
+                                    <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #f8d7da;">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <span class="fa-stack fa-1x">
+                                                <i class="fas fa-circle fa-stack-2x text-danger"></i>
+                                                <i class="fas fa-hourglass-empty fa-stack-1x text-white"></i>
+                                            </span>
+                                        </div>
+                                        <h5 class="mt-2">Tiempo Muerto</h5>
+                                        <p id="Muerto"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4 mb-3 Estacion_Hover ">
+                                    <div class="card shadow-sm border-0 p-2 text-center" style="background-color: #cce5ff;">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <span class="fa-stack fa-1x">
+                                                <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                                                <i class="fas fa-clock fa-stack-1x text-white"></i>
+                                            </span>
+                                        </div>
+                                        <h5 class="mt-2">Tiempo Total Trabajado</h5>
+                                        <p id="TiempoTotal"  class="text-muted fs--1 mb-0">Tiempo Total de la Orden</p>
+                                    </div>
+                                </div>
+                            </div>
                             <br>
                             <!---->
                             <!--<div class="card p-3">-->
                             <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
-                            <div  class="row" id="plemasCanvases">
+                            <div  class="row mb-3" id="plemasCanvases">
                             </div>
-                        
-
-                        <!--
-                        <div style="height: 30px;"></div>
-                        <div class="text-end">
-                            <button class="btn btn-info VerMas btn-custom">
-                                <i class="fa fa-clock"></i> Más
-                            </button>
-                        </div>--->
-                        <!-- Contenedor colapsable -->
-                        <div class="collapse mt-3" id="collapseContent">
-                            <div class="card">
-                                <div class="card-body">
-                                    <strong></strong><br>
-                                    <div id="estacionesContainer" data-ordenfabricacion="ordenfabricacion" style="display: flex; flex-wrap: wrap; gap: 20px;">
-                                        
-                                        <!-- Aquí se cargarán los datos dinámicamente -->
-                                    </div>
-                                    
+                            <div class="col-11 col-sm-11 col-md-11 Estacion_Hover my-3">
+                                <div class="card rounded border-0 p-2" style="box-shadow: 3px 3px 3px 2px rgba(0.1, 0.1, 0.1, 0.2);">
+                                    <div id="GraficaPorcentajeTiempos"></div>
                                 </div>
                             </div>
-                        </div>        
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
+                            <!--<div class="col-12 col-sm-12 col-md-12 Estacion_Hover">
+                                <div class="card rounded border-0 p-2" style="box-shadow: 3px 3px 3px 2px rgba(0.1, 0.1, 0.1, 0.2);">
+                                    <div id="GraficaPorcentajeTiempos1">dkjkjhjdlkjskdlajsl</div>
+                                </div>
+                            </div>-->
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
         <!--modal principal-->
@@ -896,7 +498,6 @@
 @section('scripts')
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>   
     $(document).on('click', '.ver-detalles', function (e) {
         var ordenVenta = $(this).data('ordenventa');
@@ -1884,6 +1485,7 @@
         var TiempoTotal = $('#TiempoTotal');
         var Muerto = $('#Muerto')
         var plemasCanvases = $('#plemasCanvases');
+        var TiempoPromedio = $('#TiempoPromedio');
         plemasCanvases.html('');
         TiempoTotal.html('Tiempo Total')
         Produccion.html('Tiempo Total');
@@ -1912,7 +1514,7 @@
                         Muerto.html('Tiempo total<br>'+response.TiempoMuerto);
                     }
                     if(!response.TiempoDuracion==0){
-                        CadenaTiempo="Duración Total de Fabricación: ";
+                        CadenaTiempo="";
                         if(response.TiempoDuracion.y!=0){CadenaTiempo+=response.TiempoDuracion.y+" Años "}
                         if(response.TiempoDuracion.m!=0){CadenaTiempo+=response.TiempoDuracion.m+" Meses "}
                         if(response.TiempoDuracion.d!=0){CadenaTiempo+=response.TiempoDuracion.d+" Días "}
@@ -1921,6 +1523,11 @@
                         if(response.TiempoDuracion.s!=0){CadenaTiempo+=response.TiempoDuracion.s+" Segundos"}
                     }else{
                         CadenaTiempo="";
+                    }
+                    if(!response.TiempoPromedioSeg==""){
+                        TiempoPromedio.html(response.TiempoPromedioSeg);
+                    }else{
+                        TiempoPromedio.html("");
                     }
                     TiempoDuracion.html(CadenaTiempo);
                     // Actualizar la barra de progreso con animación
@@ -1962,6 +1569,8 @@
                         }
                     }
                     EstacionesGraficas ='';
+                    var ArrayPorcentajeGrafica = [];
+                    var ArrayNombrePorcentajeGrafica = [];
                     if((response.Estaciones).length!=0){
                         (response.Estaciones).forEach(area => {
                             ColorProgress="";
@@ -1979,7 +1588,7 @@
                             }
                             if(area.AP != 1){
                                 EstacionesGraficas+='<div class="col-12 col-sm-3 col-md-4 my-2 Estacion_Hover">'+
-                                                        '<div class="card rounded border-0" style="box-shadow: 3px 3px 3px 2px rgba(0.1, 0.1, 0.1, 0.2);">'+
+                                                        '<div class="card rounded border-0 p-2" style="box-shadow: 3px 3px 3px 2px rgba(0.1, 0.1, 0.1, 0.2);">'+
                                                             '<h5 class="text-center">'+area.NombreArea+'</h5>'+
                                                             '<div class="progress-container">'+
                                                                 '<div class="progress-circle" style="background: conic-gradient('+ColorProgress+' 0% '+area.PorcentajeActual+'%, #e0e0e0 '+area.PorcentajeActual+'% 100%);">'+
@@ -1989,6 +1598,8 @@
                                                             '<small class="float-start"><span class="float-start">Piezas Normales:'+area.Normales+'</span><span class="float-end"> Piezas Retrabajo:'+area.Retrabajo+'</span></small><h6 class="text-center mt-2">Tiempos</h6><small>Duración: '+area.TiempoOrdenes+'</small><small>Productivo: '+area.TiempoProductivoEstacion+'</small>'+
                                                         '</div>'+
                                                     '</div>';
+                                ArrayPorcentajeGrafica.push({ value: area.TiempoEstacionSegundos, name: area.NombreArea});
+                                ArrayNombrePorcentajeGrafica.push(area.NombreArea);
                             }
                         });
                     }else{
@@ -2003,7 +1614,70 @@
                     $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
                     $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
                 }
+                // Mostrar el modal
                 $('#example2Modal').modal('show');
+                var chart = echarts.init(document.getElementById('GraficaPorcentajeTiempos'));
+                var option = {
+                    title: {
+                        text: 'Porcentaje de Tiempo por Estación',
+                        subtext: '% Tiempo en segundos',
+                        left: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{b}: ({c} segundos)'
+                    },
+                    legend: {
+                        type: 'scroll',
+                        orient: 'vertical',
+                        left: '5%',
+                        top: 'middle',
+                        itemGap: 5,            // Más distancia entre entradas
+                        bottom: 20,
+                        data: ArrayNombrePorcentajeGrafica
+                    },
+                    series: [
+                        {
+                        name: 'Tiempo',
+                        type: 'pie',
+                        radius: ['40%', '60%'], 
+                        center: ['50%', '60%'],
+                        avoidLabelOverlap: true,  // Previene superposición de etiquetas
+                        itemStyle: {
+                            borderWidth: 2,         // Línea entre segmentos para separación visual
+                            borderColor: '#fff'
+                        },
+                        label: {
+                            position: 'outside',    // Etiquetas afuera para mayor espacio
+                            alignTo: 'labelLine',
+                            formatter: '{b}: {d}%', 
+                            distance: 1            // Distancia desde el gráfico
+                        },
+                        labelLine: {
+                            smooth: false,
+                            length: 40              // Longitud de línea guía
+                        },
+                        data: ArrayPorcentajeGrafica,
+                            emphasis: {
+                                itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                };
+
+    // Establecer la opción y renderizar el gráfico
+    chart.setOption(option);
+    $('#example2Modal').on('shown.bs.modal', function () {
+    chart.resize();
+    });
+    // Hacer que el gráfico sea responsivo al cambiar el tamaño de la ventana
+    window.addEventListener('resize', function() {
+      chart.resize();
+    });
             },
             error: function () {
                 var progressBar = $('#plemasProgressBar');
@@ -2013,282 +1687,284 @@
                 $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
                 errorBD();
             }
-        });  /*
-                const endpoints = [
-                    { tipo: 'plemasCorte', id: 'plemasCorte', areaId: 2 },
-                    { tipo: 'plemasSuministrodia', id: 'plemasSuministro', areaId: 3 },
-                    { tipo: 'plemasTransiciondia', id: 'plemasTransicion', areaId: 4 },
-                    { tipo: 'plemasPreparadodia', id: 'plemasPreparado', areaId: 5 },
-                    { tipo: 'plemasRibonizadodia', id: 'plemasRibonizado', areaId: 6 },
-                    { tipo: 'plemasEnsambledia', id: 'plemasEnsamble', areaId: 7 },
-                    { tipo: 'plemasCortesFibradia', id: 'plemasCorteFibra', areaId: 8 },
-                    { tipo: 'plemasPulidodia', id: 'plemasPulido', areaId: 9 },
-                    { tipo: 'plemasArmadodia', id: 'plemasArmado', areaId: 10 },
-                    { tipo: 'plemasInspecciondia', id: 'plemasInspeccion', areaId: 11 },
-                    { tipo: 'plemasPolaridaddia', id: 'plemasPolaridad', areaId: 12 },
-                    { tipo: 'plemasCrimpadodia', id: 'plemasCrimpado', areaId: 13 },
-                    { tipo: 'plemasMediciondia', id: 'plemasMedicion', areaId: 14 },
-                    { tipo: 'plemasVisualizaciondia', id: 'plemasVisualizacion', areaId: 15 },
-                    { tipo: 'plemasMontajedia', id: 'plemasMontaje', areaId: 16 },
-                    { tipo: 'plemasEmpaque', id: 'plemasEmpaque', areaId: 17 },
-                ];
-                $.ajax({
-                    url: '{{ route("graficadoOF") }}',
-                    type: 'GET',
-                    data: { id: ordenfabricacion },
-                    success: function(response) {
-                        if (response && response.estaciones) {
-                            endpoints.forEach(endpoint => {
-                                let estacion = response.estaciones[endpoint.tipo];
-                                if (estacion && estacion.length > 0) {
-                                    let datos = estacion[0]; 
-                                    let porcentaje = datos.porcentaje ? Math.floor(datos.porcentaje) : 0;
+        });  
+        /*
+                    const endpoints = [
+                        { tipo: 'plemasCorte', id: 'plemasCorte', areaId: 2 },
+                        { tipo: 'plemasSuministrodia', id: 'plemasSuministro', areaId: 3 },
+                        { tipo: 'plemasTransiciondia', id: 'plemasTransicion', areaId: 4 },
+                        { tipo: 'plemasPreparadodia', id: 'plemasPreparado', areaId: 5 },
+                        { tipo: 'plemasRibonizadodia', id: 'plemasRibonizado', areaId: 6 },
+                        { tipo: 'plemasEnsambledia', id: 'plemasEnsamble', areaId: 7 },
+                        { tipo: 'plemasCortesFibradia', id: 'plemasCorteFibra', areaId: 8 },
+                        { tipo: 'plemasPulidodia', id: 'plemasPulido', areaId: 9 },
+                        { tipo: 'plemasArmadodia', id: 'plemasArmado', areaId: 10 },
+                        { tipo: 'plemasInspecciondia', id: 'plemasInspeccion', areaId: 11 },
+                        { tipo: 'plemasPolaridaddia', id: 'plemasPolaridad', areaId: 12 },
+                        { tipo: 'plemasCrimpadodia', id: 'plemasCrimpado', areaId: 13 },
+                        { tipo: 'plemasMediciondia', id: 'plemasMedicion', areaId: 14 },
+                        { tipo: 'plemasVisualizaciondia', id: 'plemasVisualizacion', areaId: 15 },
+                        { tipo: 'plemasMontajedia', id: 'plemasMontaje', areaId: 16 },
+                        { tipo: 'plemasEmpaque', id: 'plemasEmpaque', areaId: 17 },
+                    ];
+                    $.ajax({
+                        url: '{{ route("graficadoOF") }}',
+                        type: 'GET',
+                        data: { id: ordenfabricacion },
+                        success: function(response) {
+                            if (response && response.estaciones) {
+                                endpoints.forEach(endpoint => {
+                                    let estacion = response.estaciones[endpoint.tipo];
+                                    if (estacion && estacion.length > 0) {
+                                        let datos = estacion[0]; 
+                                        let porcentaje = datos.porcentaje ? Math.floor(datos.porcentaje) : 0;
 
-                                    let label = datos.totalR > 0 ? `Retrabajo: ${datos.totalR}` : '';
-                                    drawGauge(endpoint.id, porcentaje, label);
-                                } else {
-                                    console.log(`No hay datos para ${endpoint.tipo}`);
-                                    drawGauge(endpoint.id, 0, 'Sin Datos');
-                                }
-                            });
-                        } else {
-                            console.log('No hay datos para mostrar.');
-                            endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Sin Datos'));
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error al obtener los datos:', error);
-                        endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Error'));
-                    }
-                });
-                $.ajax({
-                    
-                    method: 'GET',
-                    data: { 
-                        id: ordenfabricacion,
-                    },
-                    success: function(response) {
-                        // Asigna el tiempo total
-                        document.getElementById("TiempoTotal").textContent = response.tiempototal.DuracionTotal;
-                        document.getElementById("Muerto").textContent = response.TiempoMuertoFormato;
-                        document.getElementById("Produccion").textContent = formatTiempo(response.totalSegundos);
-
-                        // Verificar si la respuesta tiene tiempos de cortes
-                        if (response.tiemposcortes.length > 0) {
-                            $('#titulo-cortes')
-                                .text('Duración: ' + response.tiemposcortes[0].Duracion)
-                                .css({
-                                    'font-size': '10px',
-                                    'color': 'black',
-                                    'font-weight': 'bold'
+                                        let label = datos.totalR > 0 ? `Retrabajo: ${datos.totalR}` : '';
+                                        drawGauge(endpoint.id, porcentaje, label);
+                                    } else {
+                                        console.log(`No hay datos para ${endpoint.tipo}`);
+                                        drawGauge(endpoint.id, 0, 'Sin Datos');
+                                    }
                                 });
-                        } else {
-                            $('#titulo-cortes')
-                                .text('Sin datos de duración')
-                                .css({
-                                    'font-size': '10px',
-                                    'color': 'red',
-                                    'font-weight': 'bold'
-                                });
-                        }
-
-                        // Verificar si tiemposareas tiene datos
-                        let hasData = false;
-
-                        if (response.tiemposareas.length > 0) {
-                            response.tiemposareas.forEach(function(item) {
-                                hasData = true;
-                                switch (item.Areas_id) {
-                                    case 3:
-                                        $('#titulo-suministro')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                        case 4:
-                                        $('#titulo-transicion')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                    case 5:
-                                        $('#titulo-preparado')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                        case 6:
-                                        $('#titulo-ribonizado')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                    case 7:
-                                        $('#titulo-ensamble')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                        case 8:
-                                        $('#titulo-corteFibra')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                    case 9:
-                                        $('#titulo-pulido')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                        case 10:
-                                        $('#titulo-armado')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                        case 11:
-                                        $('#titulo-inspeccion')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                        case 12:
-                                        $('#titulo-polaridad')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                    case 13:
-                                        $('#titulo-crimpado')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                        case 14:
-                                        $('#titulo-medicion')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                    case 15:
-                                        $('#titulo-visualizacion')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                        case 16:
-                                        $('#titulo-montaje')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                    case 17:
-                                        $('#titulo-empaque')
-                                            .text('Duración: ' + item.DuracionTotal)
-                                            .css({
-                                                'font-size': '10px',
-                                                'color': 'black',
-                                                'font-weight': 'bold'
-                                            });
-                                        break;
-                                    default:
-                                        console.warn('Área no reconocida:', item.Areas_id);
-                                }
-                            });
-                        }
-
-                        if (!hasData) {
-                            $('#titulo-suministro').text('Sin datos de duración').css({
-                                'font-size': '10px',
-                                'color': 'red',
-                                'font-weight': 'bold'
-                            });
-
-                            $('#titulo-preparado').text('Sin datos de duración').css({
-                                'font-size': '10px',
-                                'color': 'red',
-                                'font-weight': 'bold'
-                            });
-
-                            $('#titulo-ensamble').text('Sin datos de duración').css({
-                                'font-size': '10px',
-                                'color': 'red',
-                                'font-weight': 'bold'
-                            });
-
-                            $('#titulo-pulido').text('Sin datos de duración').css({
-                                'font-size': '10px',
-                                'color': 'red',
-                                'font-weight': 'bold'
-                            });
-
-                            $('#titulo-medicion').text('Sin datos de duración').css({
-                                'font-size': '10px',
-                                    'color': 'red',
-                                    'font-weight': 'bold'
-                                });
-
-                                $('#titulo-visualizacion').text('Sin datos de duración').css({
-                                    'font-size': '10px',
-                                    'color': 'red',
-                                    'font-weight': 'bold'
-                                });
-
-                                $('#titulo-empaque').text('Sin datos de duración').css({
-                                    'font-size': '10px',
-                                    'color': 'red',
-                                    'font-weight': 'bold'
-                                });
+                            } else {
+                                console.log('No hay datos para mostrar.');
+                                endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Sin Datos'));
                             }
                         },
-                        error: function() {
-                            console.error('Error al obtener los datos');
+                        error: function(xhr, status, error) {
+                            console.error('Error al obtener los datos:', error);
+                            endpoints.forEach(endpoint => drawGauge(endpoint.id, 0, 'Error'));
                         }
                     });
+                    $.ajax({
+                        
+                        method: 'GET',
+                        data: { 
+                            id: ordenfabricacion,
+                        },
+                        success: function(response) {
+                            // Asigna el tiempo total
+                            document.getElementById("TiempoTotal").textContent = response.tiempototal.DuracionTotal;
+                            document.getElementById("Muerto").textContent = response.TiempoMuertoFormato;
+                            document.getElementById("Produccion").textContent = formatTiempo(response.totalSegundos);
 
-    */});
+                            // Verificar si la respuesta tiene tiempos de cortes
+                            if (response.tiemposcortes.length > 0) {
+                                $('#titulo-cortes')
+                                    .text('Duración: ' + response.tiemposcortes[0].Duracion)
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'black',
+                                        'font-weight': 'bold'
+                                    });
+                            } else {
+                                $('#titulo-cortes')
+                                    .text('Sin datos de duración')
+                                    .css({
+                                        'font-size': '10px',
+                                        'color': 'red',
+                                        'font-weight': 'bold'
+                                    });
+                            }
+
+                            // Verificar si tiemposareas tiene datos
+                            let hasData = false;
+
+                            if (response.tiemposareas.length > 0) {
+                                response.tiemposareas.forEach(function(item) {
+                                    hasData = true;
+                                    switch (item.Areas_id) {
+                                        case 3:
+                                            $('#titulo-suministro')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                            case 4:
+                                            $('#titulo-transicion')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                        case 5:
+                                            $('#titulo-preparado')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                            case 6:
+                                            $('#titulo-ribonizado')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                        case 7:
+                                            $('#titulo-ensamble')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                            case 8:
+                                            $('#titulo-corteFibra')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                        case 9:
+                                            $('#titulo-pulido')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                            case 10:
+                                            $('#titulo-armado')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                            case 11:
+                                            $('#titulo-inspeccion')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                            case 12:
+                                            $('#titulo-polaridad')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                        case 13:
+                                            $('#titulo-crimpado')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                            case 14:
+                                            $('#titulo-medicion')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                        case 15:
+                                            $('#titulo-visualizacion')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                            case 16:
+                                            $('#titulo-montaje')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                        case 17:
+                                            $('#titulo-empaque')
+                                                .text('Duración: ' + item.DuracionTotal)
+                                                .css({
+                                                    'font-size': '10px',
+                                                    'color': 'black',
+                                                    'font-weight': 'bold'
+                                                });
+                                            break;
+                                        default:
+                                            console.warn('Área no reconocida:', item.Areas_id);
+                                    }
+                                });
+                            }
+
+                            if (!hasData) {
+                                $('#titulo-suministro').text('Sin datos de duración').css({
+                                    'font-size': '10px',
+                                    'color': 'red',
+                                    'font-weight': 'bold'
+                                });
+
+                                $('#titulo-preparado').text('Sin datos de duración').css({
+                                    'font-size': '10px',
+                                    'color': 'red',
+                                    'font-weight': 'bold'
+                                });
+
+                                $('#titulo-ensamble').text('Sin datos de duración').css({
+                                    'font-size': '10px',
+                                    'color': 'red',
+                                    'font-weight': 'bold'
+                                });
+
+                                $('#titulo-pulido').text('Sin datos de duración').css({
+                                    'font-size': '10px',
+                                    'color': 'red',
+                                    'font-weight': 'bold'
+                                });
+
+                                $('#titulo-medicion').text('Sin datos de duración').css({
+                                    'font-size': '10px',
+                                        'color': 'red',
+                                        'font-weight': 'bold'
+                                    });
+
+                                    $('#titulo-visualizacion').text('Sin datos de duración').css({
+                                        'font-size': '10px',
+                                        'color': 'red',
+                                        'font-weight': 'bold'
+                                    });
+
+                                    $('#titulo-empaque').text('Sin datos de duración').css({
+                                        'font-size': '10px',
+                                        'color': 'red',
+                                        'font-weight': 'bold'
+                                    });
+                                }
+                            },
+                            error: function() {
+                                console.error('Error al obtener los datos');
+                            }
+                        });
+
+        */
+    });
 </script>
 @endsection

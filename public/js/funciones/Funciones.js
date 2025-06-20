@@ -40,7 +40,7 @@ function errorBD(){
     Swal.fire({
       icon: 'error',
       title: 'Ocurrio un Error',
-      text: 'Ocurrio un error!, reviza tu conexión.',
+      text: 'Ocurrio un error!, revisa tu conexión.',
       showCancelButton: true,
       cancelButtonText: 'Cancelar',
       showConfirmButton: false,

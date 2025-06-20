@@ -1414,10 +1414,12 @@ class BusquedaController extends Controller
             $Progreso = (fmod($Progreso, 1) == 0) ?$Progreso:number_format(($Progreso),2);
         //Tiempos Duracion, Tiempo Total, Tiempo Productivo, Tiempo Mu3rto
             $TiempoDuracion=0;
+            $TiempoPromedioSeg=0;
             $FechaPrimera = $OrdenFabricacion->created_at;
             if($Progreso >= 100){
                 if($FechaUltima!=""){
                     $TiempoDuracion = $FechaPrimera->diff($FechaUltima['pivot']->FechaTermina);
+                    $TiempoPromedioSeg = $this->Fechas(($FechaPrimera->diffInSeconds($FechaUltima['pivot']->FechaTermina))/$OrdenFabricacion->CantidadTotal);
                 }
             }
             $TiempoTotal=0;
@@ -1490,6 +1492,12 @@ class BusquedaController extends Controller
                         else{$TiempoMuerto = 0;}
                     }
                 //END Tiempo Muerto 
+                //Tiempo Promedio
+                    //Hora preomedio
+
+                    //Duracion promedio
+
+                //END Tiempo Promedio
             }else{
                 $PartidasTiempoProductivo=$PartidasOF->Areas()->whereNotNull('FechaComienzo')->whereNotNull('FechaTermina')->get();
             }$Estaciones=[];
@@ -1498,6 +1506,7 @@ class BusquedaController extends Controller
             $TiempoProductivoEstacion=0;
             if($OrdenFabricacion->Escaner == 1){
                 foreach($Area as $index => $AreaPosible){
+                    $TiempoEstacionSegundos = 0;
                     if($AreaPosible != $this->AreaPulido){
                         //Tipo de Trabajo
                             $Retrabajo=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
@@ -1528,6 +1537,7 @@ class BusquedaController extends Controller
                                     $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
                                 }
                             }*/
+                            $TiempoEstacionSegundos = $TiempoTotalEstacion;
                             if($TiempoTotalEstacion >0){
                                 $TiempoTotalEstacion=$this->Fechas($TiempoTotalEstacion);
                             }
@@ -1573,7 +1583,9 @@ class BusquedaController extends Controller
                                     $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
                                 }
                             }*/
+                            $TiempoEstacionSegundos = $TiempoTotalEstacion;
                             if($TiempoTotalEstacion >0){
+
                                 $TiempoTotalEstacion=$this->Fechas($TiempoTotalEstacion);
                             }
                         //Tiempo Productivo por Estacion
@@ -1595,7 +1607,7 @@ class BusquedaController extends Controller
                     }
                     $AreaDatos=Areas::find($AreaPosible);
                     $Estaciones[$index] = ['PorcentajeActual' => $PorcentajeActual, 'Retrabajo' => $Retrabajo, 'Normales' => $Normales, 'TiempoOrdenes' => $TiempoOrdenes, 'AP' => $AP
-                                        ,'NombreArea'=>$AreaDatos->nombre,"TiempoProductivoEstacion"=>$TiempoProductivoEstacion];
+                                        ,'NombreArea'=>$AreaDatos->nombre,"TiempoProductivoEstacion"=>$TiempoProductivoEstacion, "TiempoEstacionSegundos"=>$TiempoEstacionSegundos ];
                 }
             }else{
             }
@@ -1614,6 +1626,7 @@ class BusquedaController extends Controller
             "TiempoTotal" => $TiempoTotal,
             "TiempoMuerto"=> $TiempoMuerto,
             "Estaciones"=>$Estaciones,
+            "TiempoPromedioSeg"=>$TiempoPromedioSeg,
         ]);
     }
     function Fechas($TiempoTotalEstacion){

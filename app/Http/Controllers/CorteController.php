@@ -125,7 +125,7 @@ class CorteController extends Controller
     public function CortesDatosModal(Request $request){
         $id=$this->funcionesGenerales->decrypt($request->id);
         $OrdenFabricacion=OrdenFabricacion::where('id','=',$id)->first();
-        $DetallesCable=$this->funcionesGenerales->DetallesCable($OrdenFabricacion->OrdenFabricacion);
+        $DetallesCable=[];//$this->funcionesGenerales->DetallesCable($OrdenFabricacion->OrdenFabricacion);
         /*if(count($DetallesCable)==0){
             return response()->json([
                 'status' => 'successnotcable',

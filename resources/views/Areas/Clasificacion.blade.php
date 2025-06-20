@@ -585,14 +585,26 @@
          Swal.fire({
             title: 'Finalizar Orden de Fabricación',
             text: '¿Deseas finalizar la Orden de Fabricación?',
+            html: `
+                    <p>¿Deseas finalizar la Orden de Fabricación?</p>
+                    <textarea id="motivoInput" class="swal2-textarea" placeholder="Ingrese el motivo para finalizar la Orden de Fabricación"></textarea>
+                    <p id="errorText" class="text-danger" style="display:none; margin-top: 5px;">El motivo es obligatorio.</p>`,
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
             cancelButtonText:"Cancelar",
             confirmButtonText: 'Finalizar',
+            input: 'textarea',
+            inputPlaceholder: 'Ingrese el motivo para finalizar la Orde de Fabricación', 
         }).then((result) => {
         if (result.isConfirmed) {
+            var observacion = result.value;
+            if(CadenaVacia(observacion)){
+                return 0;
+            }
+            return 0;
+            return false;
             $.ajax({
                 url: "{{route('FinalizarOrdenFabricacion')}}", 
                 type: 'POST',
