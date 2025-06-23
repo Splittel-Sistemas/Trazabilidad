@@ -24,7 +24,7 @@ Route::post('/login', [loginController::class, 'login'])->name('login_post');
 Route::get('/logout', [loginController::class, 'logout'])->name('logout')->middleware('auth');
 Route::post('/register', [loginController::class, 'register'])->name('register')->middleware('auth');
 Route::get('/lineas/progreso', [HomeController::class, 'lineas'])->name('lineas.indicador');
-Route::get('/check-session', [HomeController::class, 'CheckSession'])->name('CheckSession');
+Route::get('/UpdateSession', [HomeController::class, 'UpdateSession'])->name('UpdateSession');
 //Ruta Home
 Route::get('/', [HomeController::class, 'index'])->name('Home')->middleware('auth');
 

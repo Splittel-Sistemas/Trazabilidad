@@ -22,7 +22,7 @@ class LoginController extends Controller
         ]);
         /*$encryptedPassword = bcrypt('12345678');
         dd($encryptedPassword);*/
-        $remember = $request->has('remember');
+        $remember = false;//$request->has('remember');
         $user = User::where('email', $request->email)->first();
         if (!$user || $user->active == 0) {
             return redirect('login')
@@ -32,6 +32,7 @@ class LoginController extends Controller
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $remember)) {
             $request->session()->regenerate();
+            session(['inicio_sesion' => now()]);
             return redirect()->intended(route('index.operador'));
         } else {
 
@@ -64,19 +65,24 @@ class LoginController extends Controller
             if ($operador->active == 1) {
                 Auth::login($operador);
                 $request->session()->regenerate();
+                session(['inicio_sesion' => now()]);
                 return redirect()->intended(route('index.operador'));
             } else {
                 return redirect()->route('login')
                     ->withErrors(['clave' => 'El acceso ha sido restringido. Contacte al administrador.']);
             }
         }
-
         return redirect()->route('login')
             ->withErrors(['clave' => 'Clave incorrecta.']);
     }
     public function logout(){
         if (Auth::check()) {
+            $user = Auth::user();
             Auth::logout();
+             if ($user) {
+                $user->remember_token = null;
+                $user->save();
+            }
             return redirect()->route('login');
         } else {
             return redirect()->route('login');

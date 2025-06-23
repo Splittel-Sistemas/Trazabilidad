@@ -6,14 +6,14 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Log;
+//use Illuminate\Support\Facades\Log;
 
 
 class CheckPermission
 {
     public function handle(Request $request, Closure $next, $permission)
 {
-    Log::debug("Verificando permiso: " . $permission);
+    //Log::debug("Verificando permiso: " . $permission);
     $user = Auth::user();
 
     $hasPermission = $user && $user->roles->flatMap(function ($role) {

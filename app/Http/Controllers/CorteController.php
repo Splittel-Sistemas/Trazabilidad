@@ -132,7 +132,6 @@ class CorteController extends Controller
             $DetallesCable=[];
             $ErrorSap = 1;
         }
-        $DetallesCable=[];
         if(count($DetallesCable)==0 AND $ErrorSap == 0){
             return response()->json([
                 'status' => 'successnotcable',

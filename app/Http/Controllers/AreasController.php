@@ -12,6 +12,7 @@ use App\Models\Partidas;
 use App\Models\Emision;
 use App\Models\Linea;
 use App\Models\Partidasof_Areas;
+use App\Models\Comentarios;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -4369,7 +4370,7 @@ class AreasController extends Controller
         }
     }
     // Area Clasificacion
-    public function Clasificacion(){
+    public function Clasificacion(Request $request){
         $user= Auth::user();
         $FechaFin= date('d-m-Y');
         if (!$user) {
@@ -4601,12 +4602,21 @@ class AreasController extends Controller
     }
     public function FinalizarOrdenFabricacion(Request $request){
         $id = $this->funcionesGenerales->decrypt($request->idOF);
+        $Motivo = $request->Motivo;
         $OrdenFabricacion = OrdenFabricacion::find($id);
         if($OrdenFabricacion == ''){
             return 0;
         }else{
             $OrdenFabricacion->Cerrada = 0;
             $OrdenFabricacion->save();
+            $Comentarios = new Comentarios();
+            $Comentarios->OrdenFabricacion_id = $id;
+            $Comentarios->Partida_id = 1;
+            $Comentarios->Areas_id = 18;
+            $Comentarios->Usuario_id =  $this->funcionesGenerales->InfoUsuario();
+            $Comentarios->Fecha =  now();
+            $Comentarios->Comentario =  "Se finalizó la Orden de Fabricación  ".$OrdenFabricacion->OrdenFabricacion." de manera manual devido a: ".$Motivo;
+            $Comentarios->save();
             return 1;
         }
     }

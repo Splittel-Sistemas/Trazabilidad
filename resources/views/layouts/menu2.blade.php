@@ -4599,6 +4599,28 @@
                 </div><small class="text-uppercase text-700 fw-bold py-2 pe-2 ps-1 rounded-end">customize</small>
             </div>
         </a>
+        <!--MODAL SESION-->
+        <div class="modal fade" id="ModalSesion" tabindex="-1" role="dialog" aria-labelledby="ModalSesionLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary">
+                        <h5 class="modal-title text-white" id="ModalSesionexampleModalLabel">Tiempo de Sesi&oacute;n</h5>
+                        <button class="btn" type="button" href="{{route('logout')}}" aria-label="Close" style="transform: scale(1.3)">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img class="p-0 m-0"  src="{{asset('imagenes/LoginSesion.png') }}" alt="Splittel" width="200" height="200">
+                        <br>
+                        Tú sesi&oacute;n esta por terminar <br> ¿Necesitas más tiempo para seguir trabajando?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="ActualizarSesion();">Confirmar</button>
+                        <button type="button" class="btn btn-danger" href="{{route('logout')}}" >Salir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- ===============================================-->
         <!--    JavaScripts-->
         <!-- ===============================================-->
@@ -4627,20 +4649,23 @@
         <script>
             // Configuración global del token CSRF para todas las solicitudes AJAX
             $(document).ready(function() {
-                verificarSesion();
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     }
                 });
             });
+            //Cada que se ingresa a una pagina se eejecuta cada 2 horas para comprobar la sesion del usuarios
             setInterval(function() {
-               verificarSesion();
-            }, 3600000);
-            function verificarSesion(){
-                $.get('{{route("CheckSession")}}', function(data) {
-                    if (!data.isValid) {
+                $('#ModalSesion').modal('show');
+            }, 7200000);
+            //Actualiza la sesion del usuario
+            function ActualizarSesion(){
+                $.get('{{route("UpdateSession")}}', function(data) {
+                    if (!data) {
                         window.location.href = "{{route('login')}}";
+                    }else{
+                        $('#ModalSesion').modal('hide');
                     }
                 });
             }

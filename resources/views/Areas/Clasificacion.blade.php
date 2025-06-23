@@ -585,10 +585,6 @@
          Swal.fire({
             title: 'Finalizar Orden de Fabricación',
             text: '¿Deseas finalizar la Orden de Fabricación?',
-            html: `
-                    <p>¿Deseas finalizar la Orden de Fabricación?</p>
-                    <textarea id="motivoInput" class="swal2-textarea" placeholder="Ingrese el motivo para finalizar la Orden de Fabricación"></textarea>
-                    <p id="errorText" class="text-danger" style="display:none; margin-top: 5px;">El motivo es obligatorio.</p>`,
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
@@ -596,20 +592,40 @@
             cancelButtonText:"Cancelar",
             confirmButtonText: 'Finalizar',
             input: 'textarea',
-            inputPlaceholder: 'Ingrese el motivo para finalizar la Orde de Fabricación', 
+            inputPlaceholder: 'Ingrese el motivo para finalizar la Orde de Fabricación',  
+            inputAttributes: {
+                id: 'Motivo'
+            },
+            inputValidator: () => null,
+            didOpen: () => {
+                const textarea = Swal.getInput(); // obtiene el <textarea>
+                const errorText = document.createElement('p');
+                errorText.id = 'errorMotivo';
+                errorText.className = 'text-danger';
+                errorText.style.marginTop = '2px';
+                errorText.style.marginLeft = '40px';
+                errorText.style.display = 'none'; // oculto por defecto
+                errorText.innerText = '*El motivo es obligatorio';
+                textarea.insertAdjacentElement('afterend', errorText);
+            },
+            preConfirm: () => {
+                const textarea = Swal.getInput();
+                if(!CadenaVacia(textarea.value)){
+                    $('#errorMotivo').hide();
+                }else{
+                    $('#errorMotivo').show();
+                    return false;
+                }
+            }
         }).then((result) => {
         if (result.isConfirmed) {
-            var observacion = result.value;
-            if(CadenaVacia(observacion)){
-                return 0;
-            }
-            return 0;
-            return false;
+            var Motivo = result.value;
             $.ajax({
                 url: "{{route('FinalizarOrdenFabricacion')}}", 
                 type: 'POST',
                 data: {
                     idOF:IdOrdenFabricación,
+                    Motivo:Motivo,
                 },
                 beforeSend: function() {
                     //$('#ModalDetalleBodyInfoOF').html('<div class="d-flex justify-content-center align-items-center"><div class="spinner-grow text-info text-center" role="status"><span class="visually-hidden">Loading...</span></div></div>');

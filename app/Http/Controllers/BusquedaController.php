@@ -1355,6 +1355,7 @@ class BusquedaController extends Controller
         $idFabricacion = $request->input('id');
         $OrdenFabricacion = $request->input('id');
         $OrdenFabricacion = Ordenfabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
+        $RequiereCorte = $OrdenFabricacion->Corte;//0 es igual a si, 1 es a no
         $PartidasOF = $OrdenFabricacion->PartidasOF->first();
         $Estaciones=[];
         $Areas =[];
@@ -1627,6 +1628,7 @@ class BusquedaController extends Controller
             "TiempoMuerto"=> $TiempoMuerto,
             "Estaciones"=>$Estaciones,
             "TiempoPromedioSeg"=>$TiempoPromedioSeg,
+            "RequiereCorte"=>$RequiereCorte,
         ]);
     }
     function Fechas($TiempoTotalEstacion){

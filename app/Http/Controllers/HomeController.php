@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\PorcentajePlaneacion;
@@ -21,7 +22,8 @@ class HomeController extends Controller
         return view('Home');
     }
     public function index()
-    {   $user = Auth::user();
+    {   
+        $user = Auth::user();
         if ($user->hasPermission('Vista Dashboard')) {
 
             $user = Auth::user();
@@ -1921,8 +1923,13 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Aviso enviado correctamente.');
     }
     //Revisa la sesión y la cooki de sesion
-    public function CheckSession(){
-        return response()->json(['isValid' => Auth::check()]);
+    public function UpdateSession(){
+        if(session()->get('inicio_sesion')){
+            Session::put('last_activity', now());
+            //Session::regenerate();
+        }
+        return session()->get('inicio_sesion');
+        //return response()->json(['isValid' => Auth::check()]);
     }
 
 }
