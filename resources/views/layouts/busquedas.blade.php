@@ -497,7 +497,7 @@
 @endsection
 @section('scripts')
     <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>   
     $(document).on('click', '.ver-detalles', function (e) {
         var ordenVenta = $(this).data('ordenventa');
@@ -1429,6 +1429,7 @@
     }
 </script>
 <script>
+    AjaxOrden = null;
     $('#TipoOrden1').on('change', function() {
         $('#ListaBusquedas').html('');
         $('#ListaBusquedas').hide();
@@ -1439,6 +1440,9 @@
     });
     $('#NumeroOrden').on('input', function() {
         NumeroOrden = $('#NumeroOrden').val();
+         if (AjaxOrden && typeof AjaxOrden.abort === 'function') {
+            AjaxOrden.abort();
+        }
         if(NumeroOrden.length<3){
             $('#ListaBusquedas').html('');
             $('#ListaBusquedas').hide();
@@ -1629,7 +1633,14 @@
                         },
                         tooltip: {
                             trigger: 'item',
-                            formatter: '{b}: ({c} segundos)'
+                            formatter: function (params) {
+                                var totalSeconds = params.value;
+                                var hours = Math.floor(totalSeconds / 3600);
+                                var minutes = Math.floor((totalSeconds % 3600) / 60);
+                                var seconds = totalSeconds % 60;
+                                return `${params.name}: (${hours}h ${minutes}m ${seconds}s)`;
+                            }
+                            /*formatter: '{b}: ({c} segundos)'*/
                         },
                         legend: {
                             type: 'scroll',

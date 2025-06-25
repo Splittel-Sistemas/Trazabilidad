@@ -172,14 +172,6 @@ class CorteController extends Controller
         if(!($OrdenFabricacion==null || $OrdenFabricacion=="")){
             $id=$this->funcionesGenerales->encrypt($OrdenFabricacion->id);
             $PartidasOF=$OrdenFabricacion->partidasOF()->first();
-            if($ErrorSap == 1){
-                $Ordenfabricacioninfo.='
-                                <div class="alert alert-danger d-flex align-items-center p-1 mx-2" role="alert">
-                                    <span class="fas fa-times-circle text-danger fs-3 me-3"></span>
-                                    <p class="mb-0 flex-1">Se produjo un error al conectar con SAP!, La operación continuará, pero no se mostrarán los detalles del cable.</p>
-                                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>';
-            }
             $Ordenfabricacioninfo.='<table class="table table-bordered table-sm text-xs"> 
                                 <tbody>
                                     <tr>
@@ -198,8 +190,18 @@ class CorteController extends Controller
                                         <th class="bg-light p-1"  style="width: 30%;">Descripción</th>
                                         <td class="text-center p-1"  style="width: 20%;" colspan="3">'.$OrdenFabricacion->Descripcion.'</td>
                                     </tr>
-                                    <tr><th class="text-center" colspan="4">Detalles del Cable</th></tr>
-                                    <tr>
+                                    <tr><th class="text-center" colspan="4">Detalles del Cable</th></tr>'; 
+            if($ErrorSap == 1){
+                $Ordenfabricacioninfo.='
+                            <tr><th class="text-center" colspan="4">
+                                <div class="alert alert-danger d-flex align-items-center p-1 mx-2" role="alert">
+                                <span class="fas fa-times-circle text-danger fs-3 me-3"></span>
+                                <p class="mb-0 flex-1">Se produjo un error al conectar con SAP, La operación continuará, pero no se mostrarán los detalles del cable.<br> Actualiza el modal de la orden de fabricación '.$OrdenFabricacion->OrdenFabricacion.' , si el problema persiste contacta a TI.</p>
+                                <!--<button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>-->
+                                </div>
+                            </th></tr>';
+            }
+            $Ordenfabricacioninfo.='<tr>
                                         <th class="bg-light p-1"  style="width: 30%;">Número Parte Cable</th>
                                         <td class="text-center p-1"  style="width: 20%;">'.$Hijo.'</td>
                                         <th class="bg-light p-1"  style="width: 30%;">Medida del Corte</th>

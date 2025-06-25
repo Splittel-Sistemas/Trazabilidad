@@ -171,7 +171,7 @@
                     @csrf
                     <div id="administrativoFields">
                         <input name="email" type="email" placeholder="Correo Electrónico" value="{{ old('email') }}" required class="input-field">
-                        <input name="password" type="password" placeholder="Contraseña" required class="input-field">
+                        <input name="password" type="password" placeholder="Contraseña" required class="input-field" autocomplete="off">
                     </div>
                     <button type="submit" id="login-button">Ingresar</button>
                 </form>
