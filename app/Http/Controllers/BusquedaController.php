@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
 use TCPDF;
 use App\Models\Role;
+use App\Models\Comentarios;
 use App\Models\Linea;
 use App\Models\Areas;
 use App\Models\Permission;
@@ -1778,6 +1779,9 @@ class BusquedaController extends Controller
             $TiempoTotal = $this->ConversionSegDias($TiempoTotal);
             $TiempoProductivo = $this->ConversionSegDias($TiempoProductivo);
         }
+        //return$Comentario = Comentarios::all();
+        //return $OrdenFabricacion->id;
+        //return$comentarios = Comentarios::where('Comentario', 'like', '%finalizó%')->where('OrdenFabricacion_id',$OrdenFabricacion->id)->get();
         return response()->json([
             'progreso' => round($Progreso,2),
             "Estatus" => $estatus,

@@ -226,7 +226,7 @@
         </div>
     </div>
     <!--MODAL DETALLE-->
-    <div class="modal fade" id="ModalDetalle" tabindex="-1" data-bs-backdrop="static" aria-labelledby="ModalDetalleLabel" aria-hidden="true">
+    <div class="modal fade" id="ModalDetalle" data-bs-backdrop="static" aria-labelledby="ModalDetalleLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable" style="height: 90%">
           <div class="modal-content" style="height: 100%">
             <div class="modal-header bg-info">
@@ -582,7 +582,12 @@
         $('#FiltroOrdenFabricacionContent').html('');
     }
     function FinalizarOrdenFabricacion(IdOrdenFabricación){
-         Swal.fire({
+        const modalEl = document.getElementById('ModalDetalle');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance && modalInstance._focustrap) {
+            modalInstance._focustrap.deactivate();
+        }
+        Swal.fire({
             title: 'Finalizar Orden de Fabricación',
             text: '¿Deseas finalizar la Orden de Fabricación?',
             icon: "warning",
@@ -632,7 +637,8 @@
                 },
                 success: function(response) {
                     if(response==1){
-                        success('Guardado Correctamente','La Orden de Fabricación a sido finalizada correctamente!')
+                        AsignarLinea(IdOrdenFabricación);
+                        success('Guardado Correctamente','La Orden de Fabricación ha sido finalizada correctamente!');
                     }else{
                         error('Error al Finalizar la orden de fabricación!', 'Los datos no pudieron ser procesados correctamente, si persiste el error contacta a TI');
                     }

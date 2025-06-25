@@ -1638,7 +1638,18 @@
                                 var hours = Math.floor(totalSeconds / 3600);
                                 var minutes = Math.floor((totalSeconds % 3600) / 60);
                                 var seconds = totalSeconds % 60;
-                                return `${params.name}: (${hours}h ${minutes}m ${seconds}s)`;
+                                var timeParts = [];
+                                if (hours > 0) {
+                                    timeParts.push(`${hours}h`);
+                                    timeParts.push(`${minutes}m`);
+                                    timeParts.push(`${seconds}s`);
+                                }
+                                else if (minutes > 0){
+                                    timeParts.push(`${minutes}m`);
+                                    timeParts.push(`${seconds}s`);
+                                }
+                                else if (seconds > 0 || timeParts.length === 0) timeParts.push(`${seconds}s`);
+                                return `${params.name}: (${timeParts.join(' ')})`;
                             }
                             /*formatter: '{b}: ({c} segundos)'*/
                         },

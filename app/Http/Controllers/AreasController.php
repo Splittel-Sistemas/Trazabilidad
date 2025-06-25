@@ -1314,7 +1314,7 @@ class AreasController extends Controller
                                 }
                             }
                     $IniciadosMostrar = $partidas->first();
-                    $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNull('FechaTermina')->where('Areas_id',$Area)->get()->SUM('pivot.Cantidad');//->get();
+                    $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNull('FechaTermina')->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->get()->SUM('pivot.Cantidad');//->get();
                 }else{
                     $Opciones='<option selected="" value="">Todos</option>
                         <option value="Iniciado">Iniciado</option>
@@ -1399,8 +1399,8 @@ class AreasController extends Controller
                                 }
                             }
                             $IniciadosMostrar = $partidas->first();
-                            $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNotNull('FechaComienzo')->where('Areas_id',$Area)->get()->SUM('pivot.Cantidad')
-                                                - $IniciadosMostrar->Areas()->whereNull('FechaComienzo')->where('Areas_id',$Area)->get()->SUM('pivot.Cantidad');//->get();
+                            $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNotNull('FechaComienzo')->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->get()->SUM('pivot.Cantidad')
+                                                - $IniciadosMostrar->Areas()->whereNull('FechaComienzo')->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->get()->SUM('pivot.Cantidad');//->get();
                 }
                 $menu='<div class="card-body">
                     <div id="ContainerTableSuministros" class="table-list">
