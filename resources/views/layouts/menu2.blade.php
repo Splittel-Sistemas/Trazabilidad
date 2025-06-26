@@ -4605,9 +4605,9 @@
                 <div class="modal-content">
                     <div class="modal-header bg-primary">
                         <h5 class="modal-title text-white" id="ModalSesionexampleModalLabel">Tiempo de Sesi&oacute;n</h5>
-                        <button class="btn" type="button" href="{{route('logout')}}" aria-label="Close" style="transform: scale(1.3)">
+                        <a class="btn" type="button" href="{{route('logout')}}" aria-label="Close" style="transform: scale(1.3)">
                         <span aria-hidden="true">&times;</span>
-                        </button>
+                        </a>
                     </div>
                     <div class="modal-body text-center">
                         <img class="p-0 m-0"  src="{{asset('imagenes/LoginSesion.png') }}" alt="Splittel" width="200" height="200">
@@ -4616,7 +4616,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" onclick="ActualizarSesion();">Confirmar</button>
-                        <button type="button" class="btn btn-danger" href="{{route('logout')}}" >Salir</button>
+                        <a type="button" class="btn btn-danger" href="{{route('logout')}}" >Salir</a>
                     </div>
                 </div>
             </div>
@@ -4669,6 +4669,11 @@
                     }
                 });
             }
+            window.onpageshow = function(event) {
+                if (event.persisted) {
+                    window.location.reload();
+                }
+            };
         </script>
         @yield('scripts')
     </body>

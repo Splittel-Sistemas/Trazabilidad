@@ -162,14 +162,20 @@ class FuncionesGeneralesController extends Controller
     }
     public function DetallesCable($OrdenFabricacion){
         $schema = 'HN_OPTRONICS';
-        $sql="SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", T1.\"Dscription\" AS\"Descripcion\", ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", T2.\"DueDate\" AS \"Fecha entrega OF\", 
+        $sql = 'SELECT DISTINCT T3."ItemCode" AS "Articulo", T4."ItemName" AS"Descripcion", ROUND(T2."PlannedQty", 0) AS "Cantidad OF", T2."DueDate" AS "Fecha entrega OF",
+                    T2."DocNum" AS "Orden de F." , T3."ItemCode" "Hijo", T3."ItemName" "Nombre Hijo", T3."BaseQty" "Cantidad Base",T3."IssuedQty" "Ctd. requerida" 
+                    FROM  HN_OPTRONICS."OWOR" T2 
+                    INNER JOIN HN_OPTRONICS."WOR1" T3 ON T3."DocEntry" = T2."DocEntry" 
+                    INNER JOIN HN_OPTRONICS."OITM" T4 ON T4."ItemCode" = T3."ItemCode"
+                    WHERE T2."DocNum" = '.$OrdenFabricacion.' AND T3."ItemName" LIKE \'%Cable%\' LIMIT 1';
+                /*$sql="SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", T1.\"Dscription\" AS\"Descripcion\", ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", T2.\"DueDate\" AS \"Fecha entrega OF\", 
 	            T1.\"PoTrgNum\" AS \"Orden de F.\" , T1.\"LineNum\" AS \"LineNum\", T3.\"ItemCode\" \"Hijo\", T3.\"ItemName\" \"Nombre Hijo\", T3.\"BaseQty\" \"Cantidad Base\",T3.\"IssuedQty\" \"Ctd. requerida\" 
                 FROM {$schema}.\"ORDR\" T0
                 INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
                 LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
                 INNER JOIN {$schema}.\"WOR1\" T3 ON T3.\"DocEntry\" = T2.\"DocEntry\"
                 WHERE T1.\"PoTrgNum\" = {$OrdenFabricacion} AND T3.\"ItemName\" LIKE '%Cable%' 
-                LIMIT 1";
+                LIMIT 1";*/
                 //WHERE T0.\"DocNum\" = 66483 AND T3.\"ItemName\" LIKE '%Cable%'";
         return $Detalles = $this->ejecutarConsulta($sql);
     }

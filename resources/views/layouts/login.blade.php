@@ -204,7 +204,6 @@
         // Activar el botón de Administrativos
         this.classList.add('active');
         document.getElementById('toggleOperadores').classList.remove('active');
-
         // Mostrar solo el formulario de Administrativos
         document.getElementById('formAdministrativo').style.display = 'block';
         document.getElementById('formOperador').style.display = 'none';
@@ -226,7 +225,7 @@
             $('#login-operador').prop('disabled', true).text('Enviando...');
             setTimeout(RecargarLogin, 15000);
         });
-        setInterval(RecargarLogin, 90000);
+        setInterval(RecargarLogin, 120000);
     });
     function RecargarLogin(){
         window.location.href = '{{ route('login') }}';

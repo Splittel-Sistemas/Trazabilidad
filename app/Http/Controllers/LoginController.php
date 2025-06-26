@@ -75,7 +75,7 @@ class LoginController extends Controller
         return redirect()->route('login')
             ->withErrors(['clave' => 'Clave incorrecta.']);
     }
-    public function logout(){
+    public function logout(Request $request){
         if (Auth::check()) {
             $user = Auth::user();
             Auth::logout();
