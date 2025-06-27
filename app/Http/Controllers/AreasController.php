@@ -1202,7 +1202,13 @@ class AreasController extends Controller
                                 }
                             }
                             if($CantidadArea<1){
-                                    $status = 'ErrorLineaComplete'; 
+                                    $ComprobarAreaClasificacion = $datos->PartidasOF->first();
+                                    $ComprobarAreaClasificacion = $ComprobarAreaClasificacion->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get()->count();
+                                    if($ComprobarAreaClasificacion == 0){
+                                        $status = 'ErrorNoAsignado';
+                                    }else{
+                                        $status = 'ErrorLineaComplete'; 
+                                    }
                             }
                         }else{
                                 $TipoEscanerrespuesta=$this->FinalizarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
@@ -1213,6 +1219,16 @@ class AreasController extends Controller
                             $EscanerExiste = 1;
                         }else{
                             $EscanerExiste = 0;
+                        }
+                        if($Inicio==1){
+                            $CantidadArea=$this->ComprobarCantidadArea($CodigoPartes,$Area,$NumeroLinea);
+                            if($CantidadArea<1){
+                                $ComprobarAreaClasificacion = $datos->PartidasOF->first();
+                                $ComprobarAreaClasificacion = $ComprobarAreaClasificacion->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get()->count();
+                                if($ComprobarAreaClasificacion == 0){
+                                    $status = 'ErrorNoAsignado';
+                                }
+                            }
                         }
                     }
                     if(!isset($CodigoPartes[2])){
