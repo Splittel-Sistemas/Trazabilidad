@@ -22,6 +22,7 @@ class CreateOrdenFabricacionTable extends Migration
             $table->boolean('Cerrada')->default(true);
             $table->date('FechaEntregaSAP');
             $table->date('FechaEntrega');
+            $table->dateTime('FechaFin')->nullable();
             $table->boolean('Escaner')->default(false);// 1 Si 0 No
             $table->boolean('Corte')->default(false);// 1 Si 0 No
             $table->boolean('LLC')->default(false);// 1 Si 0 No

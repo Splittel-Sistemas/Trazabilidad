@@ -4624,6 +4624,7 @@ class AreasController extends Controller
             return 0;
         }else{
             $OrdenFabricacion->Cerrada = 0;
+            $OrdenFabricacion->FechaFin = now();
             $OrdenFabricacion->save();
             $Comentarios = new Comentarios();
             $Comentarios->OrdenFabricacion_id = $id;
@@ -5738,6 +5739,7 @@ class AreasController extends Controller
             }
         }
         $OrdenFabricacion->Cerrada = 0; 
+        $OrdenFabricacion->FechaFin = now();
         $OrdenFabricacion->save();
         return response()->json([
             'message' => 'Finalizado correctamente!',

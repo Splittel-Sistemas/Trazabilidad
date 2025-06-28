@@ -16,6 +16,7 @@ use App\Models\Comentarios;
 use App\Models\Linea;
 use App\Models\Areas;
 use App\Models\Permission;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
 use Carbon\Carbon as CarbonClass;
@@ -44,7 +45,7 @@ class BusquedaController extends Controller
         $partidasAreas = DB::table('partidasof_areas')
         ->where('PartidasOF_id', $partidaId)  
         ->get();
-        return view('layouts.busquedas', compact('partidasAreas'));
+        return view('Busqueda.Progreso', compact('partidasAreas'));
         }else
         return redirect()->route('error.');
     
@@ -2022,5 +2023,123 @@ class BusquedaController extends Controller
             ]);
             
     } 
+    public function EstatusOrdenesFabricacion($FechaInicio = null, $FechaFin = null,$Estatus = null){
+        $user = Auth::user();
+        if($user->hasPermission('Vista Progreso')){
+            if(!isset($FechaInicio)){
+                $FechaInicio = now()->subMonth()->toDateString();
+            }
+            if(!isset($FechaFin)){
+                $FechaFin = now()->toDateString();
+            }
+        $BodyTable = "";
+            if($Estatus=='Abiertas'){
+                $OrdenFabricacionAbiertas = OrdenFabricacion::where('Cerrada','1')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
+                foreach($OrdenFabricacionAbiertas as $key=>$OFA){
+                    $Usuario = "SIN CORTE";
+                    $Escaner = "Masivo";
+                    if($OFA->Escaner == 1){
+                        $Escaner = "Uno a uno";
+                    }
+                    $Urgencia = "Urgente";
+                    if($OFA->Urgencia == 0){
+                        $Urgencia = "Normal";
+                    }
+                    $LLC = "Si";
+                    if($OFA->LLC == 0){
+                        $LLC = "No";
+                    }
+                    if($OFA->ResponsableUser_id){
+                        $user= User::find($OFA->ResponsableUser_id);
+                        $Usuario = $user->name." ".$user->apellido;
+                    }
+                    $BodyTable .= '<tr>
+                                    <td class="text-center">'.($key+1).'</td>
+                                    <td class="text-center">'. $OFA->OrdenFabricacion.'</td>
+                                    <td class="text-center">'. $OFA->OrdenVenta->first()->OrdenVenta.'</td>';
+                                    if(Auth::user()->hasPermission("Vista Planeacion")){
+                                        $BodyTable .= '<td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">'.$Usuario.'</span></div></td>';
+                                    }
+                    $BodyTable .= '<td class="text-center">'. $OFA->Articulo.'</td>
+                                    <td class="text-center">'. $OFA->Descripcion .'</td>
+                                    <td class="text-center">'. $OFA->CantidadTotal .'</td>
+                                    <td class="text-center">'. $OFA->FechaEntrega .'</td>
+                                    <td class="text-center">'. $OFA->FechaEntregaSAP .'</td>
+                                    <td class="text-center">'.$Escaner.'</td>
+                                    <td class="text-center">'.$Urgencia.'</td>
+                                    <td class="text-center">'. $LLC.'</td>
+                                    <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                                </tr>';
+                }
+                 return response()->json([
+                    'BodyTabla' => $BodyTable,
+                    "status" => 'success',
+                ]);
+            }elseif($Estatus=='Cerradas'){
+                $OrdenFabricacionCerradas = OrdenFabricacion::where('Cerrada','0')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
+                foreach($OrdenFabricacionCerradas as $key => $OFC){
+                    $Usuario = "SIN CORTE";
+                    $Escaner = "Masivo";
+                    if($OFC->Escaner == 1){
+                        $Escaner = "Uno a uno";
+                    }
+                    $Urgencia = "Urgente";
+                    if($OFC->Urgencia == 0){
+                        $Urgencia = "Normal";
+                    }
+                    $LLC = "Si";
+                    if($OFC->LLC == 0){
+                        $LLC = "No";
+                    }
+                    if($OFC->ResponsableUser_id){
+                        $user= User::find($OFC->ResponsableUser_id);
+                        $Usuario = $user->name." ".$user->apellido;
+                    }
+                    $BodyTable .= '<tr>
+                                    <td class="text-center">'.($key+1).'</td>
+                                    <td class="text-center">'. $OFC->OrdenFabricacion.'</td>
+                                    <td class="text-center">'. $OFC->OrdenVenta->first()->OrdenVenta.'</td>';
+                                    if(Auth::user()->hasPermission("Vista Planeacion")){
+                                        $BodyTable .= '<td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">'.$Usuario.'</span></div></td>';
+                                    }
+                    $BodyTable .= '<td class="text-center">'. $OFC->Articulo.'</td>
+                                    <td class="text-center">'. $OFC->Descripcion .'</td>
+                                    <td class="text-center">'. $OFC->CantidadTotal .'</td>
+                                    <td class="text-center">'. $OFC->FechaEntrega .'</td>
+                                    <td class="text-center">'. $OFC->FechaEntregaSAP .'</td>
+                                    <td class="text-center">'.$Escaner.'</td>
+                                    <td class="text-center">'.$Urgencia.'</td>
+                                    <td class="text-center">'. $LLC.'</td>
+                                    <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-primary"><span class="fw-bold">Cerrada</span></div></td>
+                                </tr>';
+                }
+                return response()->json([
+                    'BodyTabla' => $BodyTable,
+                    "status" => 'success',
+                ]);
+            }else{
+                $OrdenFabricacionAbiertas = OrdenFabricacion::where('Cerrada','1')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
+                foreach($OrdenFabricacionAbiertas as $OFA){
+                    if($OFA->ResponsableUser_id){
+                        $user= User::find($OFA->ResponsableUser_id);
+                        $OFA['ResponsableUser'] = $user->name."  ".$user->apellido;
+                    }else{
+                        $OFA['ResponsableUser'] = null;
+                    }
+                }
+                $OrdenFabricacionCerradas = OrdenFabricacion::where('Cerrada','0')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
+                foreach($OrdenFabricacionCerradas as $OFC){
+                    if($OFC->ResponsableUser_id){
+                        $user= User::find($OFC->ResponsableUser_id);
+                        $OFC['ResponsableUser'] = $user->name."  ".$user->apellido;
+                    }
+                    else{$OFC['ResponsableUser'] = null;
+                    }
+                }
+                return view('Busqueda.EstatusOrdenesFabricacion',compact('OrdenFabricacionAbiertas','OrdenFabricacionCerradas','FechaInicio','FechaFin'));
+            }
+        }else
+        return redirect()->route('error.');
+    }
 
 }

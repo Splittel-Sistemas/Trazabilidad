@@ -108,7 +108,7 @@
                                 </div>
                             @endif                           
                         </li>
-                        @if(Auth::user()->hasPermission("Vista Progreso"))
+                        {{--@if(Auth::user()->hasPermission("Vista Progreso"))
                             <li class="nav-item"><!-- Progreso-->
                                 <p class="navbar-vertical-label">B&uacute;squeda</p>
                                 <hr class="navbar-vertical-line" /><!-- parent pages-->
@@ -116,6 +116,39 @@
                                     <a class="nav-link label-1 {{ Route::is('Busquedas.OV') ? 'active' : '' }}" href="{{ route('Busquedas.OV') }}" role="button" data-bs-toggle="" aria-expanded="false">
                                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span><i class="fa-solid fa-bars-progress"></i></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Progreso</span></span></div>
                                     </a>
+                                </div>
+                            </li>
+                        @endif--}}
+                        @if(Auth::user()->hasPermission("Vista Progreso"))
+                             <li class="nav-item"><!-- Busqueda-->
+                                <!-- label-->
+                                <p class="navbar-vertical-label">B&uacute;squeda</p>
+                                <hr class="navbar-vertical-line" />
+                                <div class="nav-item-wrapper">
+                                    <a class="nav-link dropdown-indicator label-1 {{ Route::is('Busquedas.OV') ? 'nav-tabs active' : '' }} ? 'nav-tabs active' : '' }}" href="#nv-e-busqueda" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-e-busqueda">
+                                        <div class="d-flex align-items-center">
+                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="search"></span></span><span class="nav-link-text">B&uacute;squeda</span>
+                                        </div>
+                                    </a>
+                                    <div class="parent-wrapper label-1">
+                                        <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-e-busqueda">
+                                            <li class="collapsed-nav-item-title d-none">B&uacute;squeda</li>
+                                            @if(Auth::user()->hasPermission("Vista Progreso"))
+                                                <li class="nav-item">
+                                                    <a class="nav-link {{ Route::is('Busquedas.OV') ? 'nav-tabs active' : '' }}" href="{{route('Busquedas.OV')}}" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Progreso</span></div>
+                                                    </a>
+                                                </li>
+                                            @endif
+                                            @if(Auth::user()->hasPermission("Vista Progreso"))
+                                                <li class="nav-item">
+                                                    <a class="nav-link {{ Route::is('EstatusOrdenesFabricacion') ? 'nav-tabs active' : '' }}" href="{{route('EstatusOrdenesFabricacion')}}" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Estatus Orden Fabricaci&oacute;n</span></div>
+                                                    </a>
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    </div>
                                 </div>
                             </li>
                         @endif
@@ -4636,6 +4669,14 @@
         {{--! Datatable --}}
         <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/2.2.1/js/dataTables.bootstrap5.min.js"></script>
+        <!-- Botones Datatable-->
+        
+        {{--<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">--}}
+        <script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.bootstrap5.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.html5.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
         <script src="{{asset('menu2/vendors/list.js/list.min.js')}}"></script>
         <script src="{{asset('menu2/vendors/feather-icons/feather.min.js')}}"></script>
         <script src="{{asset('menu2/vendors/dayjs/dayjs.min.js')}}"></script>

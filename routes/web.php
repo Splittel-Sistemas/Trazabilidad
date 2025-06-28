@@ -174,6 +174,7 @@ Route::get('/graficadorOF',[BusquedaController::class,'GraficadorFabricacion'])-
 Route::get('/graficasOR/OF',[BusquedaController::class,'GraficarOROF'])->name('graficarOR.OF')->middleware('auth');
 Route::get('/tiempos/fabricacion',[BusquedaController::class, 'tiemposOrden'])->name('tiempo.orden')->middleware('auth');
 Route::post('/Busqueda/Ordenes',[BusquedaController::class, 'TipoOrden'])->name('TipoOrden')->middleware('auth');
+Route::get('/Busqueda/Estatus/OrdenesFabricacion/{FechaInicio?}/{FechaFin?}/{Estatus?}',[BusquedaController::class, 'EstatusOrdenesFabricacion'])->name('EstatusOrdenesFabricacion')->middleware('auth');
 
 //rutas del dashboard
 Route::get('/retrabajo', [HomeController:: class, 'Ordenes'])->name('ordenes.retrabajo')->middleware('auth');
