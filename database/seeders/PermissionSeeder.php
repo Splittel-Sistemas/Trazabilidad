@@ -106,10 +106,6 @@ class PermissionSeeder extends Seeder
             'groups' => 13, 
         ]);
         Permission::create([
-            'name' =>'Vista Armado',
-            'groups' => 13, 
-        ]);
-        Permission::create([
             'name' => 'Enviar Avisos',
             'groups' => 15, 
         ]);
@@ -118,10 +114,6 @@ class PermissionSeeder extends Seeder
             'groups' => 11, 
         ]);
         //Nuevas Areas
-        Permission::create([
-            'name' =>'Vista Transición',
-            'groups' => 24, 
-        ]);
         Permission::create([
             'name' =>'Vista Ribonizado',
             'groups' => 17, 
@@ -149,6 +141,18 @@ class PermissionSeeder extends Seeder
         Permission::create([
             'name' =>'Vista Clasificación',
             'groups' => 23, 
+        ]);
+          Permission::create([
+            'name' =>'Vista Transición',
+            'groups' => 24, 
+        ]);
+          Permission::create([
+            'name' =>'Vista Estatus Orden Fabricación',
+            'groups' => 25, 
+        ]);
+         Permission::create([
+            'name' =>'Vista Armado',
+            'groups' => 26, 
         ]);
         /*Permission::create([
             'name' =>'Vista Montaje',

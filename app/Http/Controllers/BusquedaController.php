@@ -2025,9 +2025,9 @@ class BusquedaController extends Controller
     } 
     public function EstatusOrdenesFabricacion($FechaInicio = null, $FechaFin = null,$Estatus = null){
         $user = Auth::user();
-        if($user->hasPermission('Vista Progreso')){
+        if($user->hasPermission('Vista Estatus Orden Fabricación')){
             if(!isset($FechaInicio)){
-                $FechaInicio = now()->subMonth()->toDateString();
+                $FechaInicio = now()->subWeek()->toDateString();
             }
             if(!isset($FechaFin)){
                 $FechaFin = now()->toDateString();

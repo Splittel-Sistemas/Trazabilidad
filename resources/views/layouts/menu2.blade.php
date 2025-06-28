@@ -119,7 +119,7 @@
                                 </div>
                             </li>
                         @endif--}}
-                        @if(Auth::user()->hasPermission("Vista Progreso"))
+                        @if(Auth::user()->hasPermission("Vista Progreso") OR Auth::user()->hasPermission("Vista Estatus Orden Fabricación"))
                              <li class="nav-item"><!-- Busqueda-->
                                 <!-- label-->
                                 <p class="navbar-vertical-label">B&uacute;squeda</p>
@@ -140,7 +140,7 @@
                                                     </a>
                                                 </li>
                                             @endif
-                                            @if(Auth::user()->hasPermission("Vista Progreso"))
+                                            @if(Auth::user()->hasPermission("Vista Estatus Orden Fabricación"))
                                                 <li class="nav-item">
                                                     <a class="nav-link {{ Route::is('EstatusOrdenesFabricacion') ? 'nav-tabs active' : '' }}" href="{{route('EstatusOrdenesFabricacion')}}" data-bs-toggle="" aria-expanded="false">
                                                         <div class="d-flex align-items-center"><span class="nav-link-text">Estatus Orden Fabricaci&oacute;n</span></div>
