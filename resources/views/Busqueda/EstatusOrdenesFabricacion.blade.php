@@ -30,6 +30,10 @@
         padding: 0;
         margin: 0;
     }
+    .MostrarMenos{
+        height: 1rem;
+        overflow: hidden;
+    }
 </style>
 @endsection
 @section('content')
@@ -72,6 +76,10 @@
                                         <div class="accordion-body pt-2">
                                                 @csrf
                                                 <div class="row">
+                                                    <div class="col-12">
+                                                        <button type="button" class="btn btn-sm btn-outline-info" onclick="BuscarFecha('{{$FechaFin}}','{{$FechaFin}}','Abierto')"><i class="fa-solid fa-calendar"></i> Día</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-info" onclick="BuscarFecha('{{$FechaInicio}}','{{$FechaFin}}','Abierto')"><i class="fa-solid fa-calendar-week"></i> Semana</button>
+                                                    </div>
                                                     <div class="col-md-6">
                                                         <label for="inputFechaInicioA" class="form-label"><strong>Fecha Inicio</strong></label>
                                                         <div class="input-group">
@@ -130,7 +138,12 @@
                                             <td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">{{ isset($orden->ResponsableUser)?$orden->ResponsableUser:"Sin corte"}}</span></div></td>
                                         @endif
                                         <td class="text-center">{{ $orden->Articulo}}</td>
-                                        <td class="text-center">{{ $orden->Descripcion }}</td>
+                                        <td class="text-center">
+                                            <div class="MostrarMenos" id="collapseA{{ $orden->OrdenFabricacion}}">
+                                                {{ $orden->Descripcion }}
+                                            </div>
+                                            <a  onclick="MostrarMas('collapseA{{ $orden->OrdenFabricacion}}',this);" class="btn btn-sm btn-link">Ver más</a>
+                                        </td>
                                         <td class="text-center">{{ $orden->CantidadTotal }}</td>
                                         <td class="text-center">{{ $orden->FechaEntrega }}</td>
                                         <td class="text-center">{{ $orden->FechaEntregaSAP }}</td>
@@ -157,6 +170,10 @@
                                         <div class="accordion-body pt-2">
                                                 @csrf
                                                 <div class="row">
+                                                    <div class="col-12">
+                                                        <button type="button" class="btn btn-sm btn-outline-info" onclick="BuscarFecha('{{$FechaFin}}','{{$FechaFin}}','Cerrado')"><i class="fa-solid fa-calendar"></i> Día</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-info" onclick="BuscarFecha('{{$FechaInicio}}','{{$FechaFin}}','Cerrado')"><i class="fa-solid fa-calendar-week"></i> Semana</button>
+                                                    </div>
                                                     <div class="col-md-6">
                                                         <label for="inputFechaInicioC" class="form-label"><strong>Fecha Inicio</strong></label>
                                                         <div class="input-group">
@@ -215,7 +232,12 @@
                                             <td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">{{ isset($orden->ResponsableUser)?$orden->ResponsableUser:"Sin corte"}}</span></div></td>
                                         @endif
                                         <td class="text-center">{{ $orden->Articulo}}</td>
-                                        <td class="text-center">{{ $orden->Descripcion }}</td>
+                                        <td class="text-center">
+                                            <div class="MostrarMenos" id="collapseC{{ $orden->OrdenFabricacion}}">
+                                                {{ $orden->Descripcion }}
+                                            </div>
+                                            <a  onclick="MostrarMas('collapseC{{ $orden->OrdenFabricacion}}',this);" class="btn btn-sm btn-link">Ver más</a>
+                                        </td>
                                         <td class="text-center">{{ $orden->CantidadTotal }}</td>
                                         <td class="text-center">{{ $orden->FechaEntrega }}</td>
                                         <td class="text-center">{{ $orden->FechaEntregaSAP }}</td>
@@ -370,6 +392,29 @@
         });
         var table = $('#' + tabla).DataTable();
         table.buttons().container().appendTo('#'+tabla+'btn');
+    }
+    function BuscarFecha(FechaInicio,FechaFin,Estatus){
+        FechaInicio = FechaInicio;
+        FechaFin = FechaFin;
+        if(Estatus == 'Abierto'){
+            $('#inputFechaInicioA').val(FechaInicio);
+            $('#inputFechaFinA').val(FechaFin);
+            $('#buscarAbiertas').trigger('click');
+        }else{
+            $('#inputFechaInicioC').val(FechaInicio);
+            $('#inputFechaFinC').val(FechaFin);
+            $('#buscarCerradas').trigger('click');
+        }
+    }
+    function MostrarMas(IdDiv,IdDivBtn){
+        if ($('#' + IdDiv).hasClass('MostrarMenos')) {
+            $('#'+IdDiv).removeClass('MostrarMenos');
+            IdDivBtn.innerHTML = ('Ver menos');
+        }else{
+            $('#'+IdDiv).addClass('MostrarMenos');
+            IdDivBtn.innerHTML = ('Ver más');
+        }
+
     }
 </script>
 @endsection

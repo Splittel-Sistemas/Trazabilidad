@@ -2061,7 +2061,12 @@ class BusquedaController extends Controller
                                         $BodyTable .= '<td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">'.$Usuario.'</span></div></td>';
                                     }
                     $BodyTable .= '<td class="text-center">'. $OFA->Articulo.'</td>
-                                    <td class="text-center">'. $OFA->Descripcion .'</td>
+                                    <td class="text-center"> 
+                                        <div class="MostrarMenos" id="collapseA'. $OFA->OrdenFabricacion.'">
+                                            '.$OFA->Descripcion.'
+                                        </div>
+                                        <a  onclick="MostrarMas(\'collapseA'. $OFA->OrdenFabricacion.'\',this);" class="btn btn-sm btn-link">Ver más</a>
+                                    </td>
                                     <td class="text-center">'. $OFA->CantidadTotal .'</td>
                                     <td class="text-center">'. $OFA->FechaEntrega .'</td>
                                     <td class="text-center">'. $OFA->FechaEntregaSAP .'</td>
@@ -2102,8 +2107,13 @@ class BusquedaController extends Controller
                                     if(Auth::user()->hasPermission("Vista Planeacion")){
                                         $BodyTable .= '<td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">'.$Usuario.'</span></div></td>';
                                     }
-                    $BodyTable .= '<td class="text-center">'. $OFC->Articulo.'</td>
-                                    <td class="text-center">'. $OFC->Descripcion .'</td>
+                    $BodyTable .= ' <td class="text-center">'. $OFC->Articulo .'</td>
+                                    <td class="text-center"> 
+                                        <div class="MostrarMenos" id="collapseC'. $OFC->OrdenFabricacion.'">
+                                            '.$OFC->Descripcion.'
+                                        </div>
+                                        <a  onclick="MostrarMas(\'collapseC'. $OFC->OrdenFabricacion.'\',this);" class="btn btn-sm btn-link">Ver más</a>
+                                    </td>
                                     <td class="text-center">'. $OFC->CantidadTotal .'</td>
                                     <td class="text-center">'. $OFC->FechaEntrega .'</td>
                                     <td class="text-center">'. $OFC->FechaEntregaSAP .'</td>
