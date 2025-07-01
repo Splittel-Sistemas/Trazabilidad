@@ -1819,8 +1819,7 @@ class BusquedaController extends Controller
         }
         return $Tiempo;
     }
-    public function tiempoS(Request $request)
-    {
+    public function tiempoS(Request $request){
         $idFabricacion = $request->input('id');
         $duracionFinalCortes =  DB::table('ordenfabricacion')
         ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
@@ -2042,7 +2041,7 @@ class BusquedaController extends Controller
                         $Escaner = "Uno a uno";
                     }
                     $Urgencia = "Urgente";
-                    if($OFA->Urgencia == 0){
+                    if($OFA->Urgencia == 'N'){
                         $Urgencia = "Normal";
                     }
                     $LLC = "Si";
@@ -2100,7 +2099,7 @@ class BusquedaController extends Controller
                         $Escaner = "Uno a uno";
                     }
                     $Urgencia = "Urgente";
-                    if($OFC->Urgencia == 0){
+                    if($OFC->Urgencia == 'N'){
                         $Urgencia = "Normal";
                     }
                     $LLC = "Si";

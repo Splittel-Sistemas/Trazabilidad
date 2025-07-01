@@ -614,6 +614,7 @@
     }
     function DataTable(tabla, busqueda){
         $('#'+tabla).DataTable({
+                        stateSave: true,
                         "pageLength": 10,  // Paginación de 10 elementos por página
                         "lengthChange": false, // Desactiva la opción de cambiar el número de elementos por página
                         "paging": true, // Habilitar paginación

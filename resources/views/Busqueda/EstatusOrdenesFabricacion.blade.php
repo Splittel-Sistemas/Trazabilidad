@@ -392,6 +392,7 @@
     function DataTable(tabla, busqueda){
         var table = $('#'+tabla).DataTable({
             //"dom": 'Blfrtip',
+            stateSave: true,
             "language": {
                 "emptyTable": "No hay datos disponibles en la tabla",
                 "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
@@ -415,7 +416,7 @@
                 $('#'+tabla).css('font-size', '0.7rem');
             }
         });
-        var table = $('#' + tabla).DataTable();
+        //var table = $('#' + tabla).DataTable();
         table.buttons().container().appendTo('#'+tabla+'btn');
     }
     function BuscarFecha(FechaInicio,FechaFin,Estatus){

@@ -709,29 +709,30 @@
         //var url = "{{ route('generarPDFSuministro')}}?id=_corteId_";
         url = url.replace('_corteId_', id);
         // Asignar la URL al iframe para mostrar el PDF
-    document.getElementById('pdfIframe').src = url;
-    
-    // Abrir el modal con el iframe
-    $('#pdfModal').modal('show');
-        // Abre la URL para descargar el PDF
-        /*var ventana = window.open(url, '_blank');
-        $('#ModalColor').modal('hide');*/
+        document.getElementById('pdfIframe').src = url;
+        
+        // Abrir el modal con el iframe
+        $('#pdfModal').modal('show');
+            // Abre la URL para descargar el PDF
+            /*var ventana = window.open(url, '_blank');
+            $('#ModalColor').modal('hide');*/
     }
     function DataTable(tabla, busqueda){
         $('#'+tabla).DataTable({
-                        "pageLength": 10,  // Paginación de 10 elementos por página
-                        "lengthChange": false, // Desactiva la opción de cambiar el número de elementos por página
-                        "paging": true, // Habilitar paginación
-                        "searching": busqueda, // Habilitar búsqueda
-                        "ordering": true, // Habilitar ordenación de columnas
-                        "info": true, // Muestra información sobre el total de elementos
-                        "language": {
-                            "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
-                            "search":"Buscar",
-                        },
-                        "initComplete": function(settings, json) {
-                            $('#'+tabla).css('font-size', '0.7rem');
-                        }
+            stateSave: true,
+            "pageLength": 10,  // Paginación de 10 elementos por página
+            "lengthChange": false, // Desactiva la opción de cambiar el número de elementos por página
+            "paging": true, // Habilitar paginación
+            "searching": busqueda, // Habilitar búsqueda
+            "ordering": true, // Habilitar ordenación de columnas
+            "info": true, // Muestra información sobre el total de elementos
+            "language": {
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
+                "search":"Buscar",
+            },
+            "initComplete": function(settings, json) {
+                $('#'+tabla).css('font-size', '0.7rem');
+            }
         });
     }
 </script>
