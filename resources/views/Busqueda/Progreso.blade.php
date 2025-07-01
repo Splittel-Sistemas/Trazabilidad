@@ -1430,6 +1430,7 @@
 </script>
 <script>
     AjaxOrden = null;
+
     $('#TipoOrden1').on('change', function() {
         $('#ListaBusquedas').html('');
         $('#ListaBusquedas').hide();
@@ -1443,6 +1444,10 @@
          if (AjaxOrden && typeof AjaxOrden.abort === 'function') {
             AjaxOrden.abort();
         }
+        if (AjaxOrden && AjaxOrden.readyState !== 4) {
+                AjaxOrden.abort();
+                console.log("Petición anterior cancelada");
+            }
         if(NumeroOrden.length<3){
             $('#ListaBusquedas').html('');
             $('#ListaBusquedas').hide();
@@ -1454,7 +1459,7 @@
         if(OrdenVenta == true){
             TipoOrden = "OV";
         }
-        $.ajax({
+        AjaxOrden = $.ajax({
             url: '{{ route("TipoOrden") }}',
             type: 'POST',
             data: { 
@@ -1468,7 +1473,7 @@
                 }
             },
             error: function () {
-                alert('Error al obtener los datos de la venta.');
+                //alert('Error al obtener los datos de la venta.');
             }
         });
     });

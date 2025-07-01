@@ -94,6 +94,12 @@
                                                         </div>
                                                          <small class="text-danger" id="error_inputFechaFinA"></small>
                                                     </div>
+                                                    <p class="text-center m-0 p-0">D&iacute;a</p>
+                                                    <div class="col-12 d-flex justify-content-center">
+                                                        <a type="button" id="PreviusA" class="btn btn-link py-1 px-3" style="transform:scale(1.3)" onclick="BuscarPorDia('{{$FechaFin}}','{{$FechaFin}}','Abierto','A')">Anterior <i class="fas fa-arrow-left"></i></a>
+                                                        <span id="SpanFechaA" class="pb-0">{{ \Carbon\Carbon::parse($FechaFin)->format('d/m/Y') }}</span>
+                                                        <a type="button" id="NextA" class="btn btn-link py-1 px-3" style="transform:scale(1.3)" onclick="BuscarPorDia('{{$FechaFin}}','{{$FechaFin}}','Abierto','S')"><i class="fas fa-arrow-right"></i> Siguiente</a>
+                                                    </div>
                                                     <div class="col-12 mt-2">
                                                         <button id="buscarAbiertas" class="btn btn-primary btn-sm float-end">
                                                             <i class="fa fa-search"></i> Buscar
@@ -188,6 +194,12 @@
                                                         </div>
                                                         <small class="text-danger" id="error_inputFechaFinC"></small>
                                                     </div>
+                                                    <p class="text-center m-0 p-0">D&iacute;a</p>
+                                                    <div class="col-12 d-flex justify-content-center">
+                                                        <a type="button" id="PreviusC" class="btn btn-link py-1 px-3" style="transform:scale(1.3)" onclick="BuscarPorDia('{{$FechaFin}}','{{$FechaFin}}','Cerrado','A')">Anterior <i class="fas fa-arrow-left"></i></a>
+                                                        <span id="SpanFechaC" class="pb-0">{{ \Carbon\Carbon::parse($FechaFin)->format('d/m/Y') }}</span>
+                                                        <a type="button" id="NextC" class="btn btn-link py-1 px-3" style="transform:scale(1.3)" onclick="BuscarPorDia('{{$FechaFin}}','{{$FechaFin}}','Cerrado','S')"><i class="fas fa-arrow-right"></i> Siguiente</a>
+                                                    </div>
                                                     <div class="col-12 mt-2">
                                                         <button id="buscarCerradas" class="btn btn-primary btn-sm float-end">
                                                             <i class="fa fa-search"></i> Buscar
@@ -256,10 +268,16 @@
 @endsection
 @section('scripts')
 <script>
+    var DatosOrdenFabricacionA = null;
+    var DatosOrdenFabricacionC = null;
     $(document).ready(function() {
         DataTable('AbiertasTable',true)
         DataTable('CerradasTable',true);
         $('#buscarAbiertas').on('click', function() {
+            if (DatosOrdenFabricacionA && DatosOrdenFabricacionA.readyState !== 4) {
+                DatosOrdenFabricacionA.abort();
+                console.log("Petición anterior cancelada");
+            }
             let FechaInicio = $('#inputFechaInicioA').val();
             let FechaFin = $('#inputFechaFinA').val();
             let Estatus = 'Abiertas';
@@ -272,7 +290,7 @@
                 $('#error_inputFechaInicioA').html('');
             }
             let url = `{{route('EstatusOrdenesFabricacion')}}/${FechaInicio || ''}/${FechaFin || ''}/${Estatus || ''}`;
-            $.ajax({
+            DatosOrdenFabricacionA = $.ajax({
                 url: url, 
                 type: 'GET',
                 beforeSend: function() {
@@ -288,6 +306,10 @@
             });
         });
         $('#buscarCerradas').on('click', function() {
+             if (DatosOrdenFabricacionC && DatosOrdenFabricacionC.readyState !== 4) {
+                DatosOrdenFabricacionC.abort();
+                console.log("Petición anterior cancelada");
+            }
             let FechaInicio = $('#inputFechaInicioC').val();
             let FechaFin = $('#inputFechaFinC').val();
             let Estatus = 'Cerradas';
@@ -300,7 +322,7 @@
                 $('#error_inputFechaInicioC').html('');
             }
             let url = `{{route('EstatusOrdenesFabricacion')}}/${FechaInicio || ''}/${FechaFin || ''}/${Estatus || ''}`;
-            $.ajax({
+            DatosOrdenFabricacionC = $.ajax({
                 url: url, 
                 type: 'GET',
                 beforeSend: function() {
@@ -400,11 +422,55 @@
             $('#inputFechaInicioA').val(FechaInicio);
             $('#inputFechaFinA').val(FechaFin);
             $('#buscarAbiertas').trigger('click');
+            Previus=document.getElementById('PreviusA');
+            Next=document.getElementById('NextA');
+            SpanFecha = $('#SpanFechaA');
+            Previus.setAttribute('onclick', "BuscarPorDia('" + FechaFin + "','" + FechaFin + "','" + Estatus + "','" + 'A' + "')");
+            Next.setAttribute('onclick', "BuscarPorDia('" + FechaFin + "','" + FechaFin + "','" + Estatus + "','" + 'S' + "')");
+            let partes = FechaFin.split("-");
+            SpanFecha.html(`${partes[2]}/${partes[1]}/${partes[0]}`);
         }else{
             $('#inputFechaInicioC').val(FechaInicio);
             $('#inputFechaFinC').val(FechaFin);
             $('#buscarCerradas').trigger('click');
+            Previus=document.getElementById('PreviusC');
+            Next=document.getElementById('NextC');
+            SpanFecha = $('#SpanFechaC');  
+            Previus.setAttribute('onclick', "BuscarPorDia('" + FechaFin + "','" + FechaFin + "','" + Estatus + "','" + 'A' + "')");
+            Next.setAttribute('onclick', "BuscarPorDia('" + FechaFin + "','" + FechaFin + "','" + Estatus + "','" + 'S' + "')");
+            let partes = FechaFin.split("-");
+            SpanFecha.html(`${partes[2]}/${partes[1]}/${partes[0]}`);
         }
+    }
+    function BuscarPorDia(FechaInicio,FechaFin,Estatus,Accion){
+        //alert(Estatus);
+        if(Estatus == 'Abierto'){
+            Previus=document.getElementById('PreviusA');
+            Next=document.getElementById('NextA');
+            SpanFecha = $('#SpanFechaA');
+        }else{
+            Previus=document.getElementById('PreviusC');
+            Next=document.getElementById('NextC');
+            SpanFecha = $('#SpanFechaC');        
+        }
+        if(Accion == "A"){
+            FechaInicio = RestarDia(FechaInicio);
+            FechaFin = FechaInicio;
+            Previus.onclick = null;
+            Previus.setAttribute('onclick', "BuscarPorDia('" + FechaInicio + "','" + FechaFin + "','" + Estatus + "','" + Accion + "')");
+            Next.onclick = null;
+            Next.setAttribute('onclick', "BuscarPorDia('" + FechaInicio + "','" + FechaFin + "','" + Estatus + "','" + 'S' + "')");
+        }else{
+            FechaInicio = SumarDia(FechaInicio);
+            FechaFin = FechaInicio;
+            Previus.onclick = null;
+            Previus.setAttribute('onclick', "BuscarPorDia('" + FechaInicio + "','" + FechaFin + "','" + Estatus + "','" + 'A' + "')");
+            Next.onclick = null;
+            Next.setAttribute('onclick', "BuscarPorDia('" + FechaInicio + "','" + FechaFin + "','" + Estatus + "','" + Accion + "')");
+        }
+        let partes = FechaFin.split("-");
+        SpanFecha.html(`${partes[2]}/${partes[1]}/${partes[0]}`);
+        BuscarFecha(FechaInicio,FechaFin,Estatus);
     }
     function MostrarMas(IdDiv,IdDivBtn){
         if ($('#' + IdDiv).hasClass('MostrarMenos')) {
