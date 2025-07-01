@@ -2053,6 +2053,16 @@ class BusquedaController extends Controller
                         $user= User::find($OFA->ResponsableUser_id);
                         $Usuario = $user->name." ".$user->apellido;
                     }
+                    $PartidaOF = $OFA->PartidasOF()->first();
+                    $UltimaEstacion = "Planeación";
+                    if($PartidaOF != ""){
+                        $PartidaOFAreas = $PartidaOF->Areas()->where('Areas_id','!=',$this->AreaClasificacion)->orderBy('Areas_id','desc')->get();
+                        if($PartidaOFAreas->count() > 0 ){
+                            $UltimaEstacion  = $PartidaOFAreas->first();
+                            $UltimaEstacion = $UltimaEstacion['pivot']->Areas_id;
+                            $UltimaEstacion = $this->AreaNombre($UltimaEstacion);
+                        }
+                    }
                     $BodyTable .= '<tr>
                                     <td class="text-center">'.($key+1).'</td>
                                     <td class="text-center">'. $OFA->OrdenFabricacion.'</td>
@@ -2073,6 +2083,7 @@ class BusquedaController extends Controller
                                     <td class="text-center">'.$Escaner.'</td>
                                     <td class="text-center">'.$Urgencia.'</td>
                                     <td class="text-center">'. $LLC.'</td>
+                                    <td class="text-center">'.$UltimaEstacion.'</td>
                                     <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
                                 </tr>';
                 }
@@ -2100,6 +2111,16 @@ class BusquedaController extends Controller
                         $user= User::find($OFC->ResponsableUser_id);
                         $Usuario = $user->name." ".$user->apellido;
                     }
+                    $PartidaOF = $OFC->PartidasOF()->first();
+                    $UltimaEstacion = "Planeación";
+                    if($PartidaOF != ""){
+                        $PartidaOFAreas = $PartidaOF->Areas()->where('Areas_id','!=',$this->AreaClasificacion)->orderBy('Areas_id','desc')->get();
+                        if($PartidaOFAreas->count() > 0 ){
+                            $UltimaEstacion  = $PartidaOFAreas->first();
+                            $UltimaEstacion = $UltimaEstacion['pivot']->Areas_id;
+                            $UltimaEstacion = $this->AreaNombre($UltimaEstacion);
+                        }
+                    }
                     $BodyTable .= '<tr>
                                     <td class="text-center">'.($key+1).'</td>
                                     <td class="text-center">'. $OFC->OrdenFabricacion.'</td>
@@ -2120,6 +2141,7 @@ class BusquedaController extends Controller
                                     <td class="text-center">'.$Escaner.'</td>
                                     <td class="text-center">'.$Urgencia.'</td>
                                     <td class="text-center">'. $LLC.'</td>
+                                    <td class="text-center">'.$UltimaEstacion.'</td>
                                     <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-primary"><span class="fw-bold">Cerrada</span></div></td>
                                 </tr>';
                 }
@@ -2130,26 +2152,52 @@ class BusquedaController extends Controller
             }else{
                 $OrdenFabricacionAbiertas = OrdenFabricacion::where('Cerrada','1')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
                 foreach($OrdenFabricacionAbiertas as $OFA){
+                    $PartidaOF = $OFA->PartidasOF()->first();
+                    $UltimaEstacion = "Planeación";
+                    if($PartidaOF != ""){
+                        $PartidaOFAreas = $PartidaOF->Areas()->where('Areas_id','!=',$this->AreaClasificacion)->orderBy('Areas_id','desc')->get();
+                        if($PartidaOFAreas->count() > 0 ){
+                            $UltimaEstacion  = $PartidaOFAreas->first();
+                            $UltimaEstacion = $UltimaEstacion['pivot']->Areas_id;
+                            $UltimaEstacion = $this->AreaNombre($UltimaEstacion);
+                        }
+                    }
                     if($OFA->ResponsableUser_id){
                         $user= User::find($OFA->ResponsableUser_id);
                         $OFA['ResponsableUser'] = $user->name."  ".$user->apellido;
                     }else{
                         $OFA['ResponsableUser'] = null;
                     }
+                    $OFA['UltimaEstacion'] = $UltimaEstacion;
                 }
                 $OrdenFabricacionCerradas = OrdenFabricacion::where('Cerrada','0')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
                 foreach($OrdenFabricacionCerradas as $OFC){
+                    $PartidaOF = $OFC->PartidasOF()->first();
+                    $UltimaEstacion = "Planeación";
+                    if($PartidaOF != ""){
+                        $PartidaOFAreas = $PartidaOF->Areas()->where('Areas_id','!=',$this->AreaClasificacion)->orderBy('Areas_id','desc')->get();
+                        if($PartidaOFAreas->count() > 0 ){
+                            $UltimaEstacion  = $PartidaOFAreas->first();
+                            $UltimaEstacion = $UltimaEstacion['pivot']->Areas_id;
+                            $UltimaEstacion = $this->AreaNombre($UltimaEstacion);
+                        }
+                    }
                     if($OFC->ResponsableUser_id){
                         $user= User::find($OFC->ResponsableUser_id);
                         $OFC['ResponsableUser'] = $user->name."  ".$user->apellido;
                     }
                     else{$OFC['ResponsableUser'] = null;
                     }
+                    $OFC['UltimaEstacion'] = $UltimaEstacion;
                 }
                 return view('Busqueda.EstatusOrdenesFabricacion',compact('OrdenFabricacionAbiertas','OrdenFabricacionCerradas','FechaInicio','FechaFin'));
             }
         }else
         return redirect()->route('error.');
+    }
+    public function AreaNombre($IdArea){
+        $Area = Areas::find($IdArea); 
+        return $Area->nombre;
     }
 
 }

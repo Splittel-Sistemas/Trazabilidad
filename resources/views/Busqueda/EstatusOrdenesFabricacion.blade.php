@@ -131,6 +131,7 @@
                                         <th>Tipo de Escaneo</th>
                                         <th>Urgencia</th>
                                         <th>LLC</th>
+                                        <th>&Uacute;ltima Estaci&oacute;n</th>
                                         <th>Estatus</th>
                                     </tr>
                                 </thead>
@@ -156,6 +157,7 @@
                                         <td class="text-center">{{ ($orden->Escaner == 0)?"Uno a uno":"Masivo"}}</td>
                                         <td class="text-center">{{ ($orden->Urgencia == 'N')?"Normal":"Urgente" }}</td>
                                         <td class="text-center">{{ ($orden->LLC == 0)?"No":"Si" }}</td>
+                                        <td class="text-center">{{ $orden->UltimaEstacion }}</td>
                                         <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
                                     </tr>
                                 @endforeach
@@ -231,6 +233,7 @@
                                         <th>Tipo de Escaneo</th>
                                         <th>Urgencia</th>
                                         <th>LLC</th>
+                                        <th>&Uacute;ltima Estaci&oacute;n</th>
                                         <th>Estatus</th>
                                     </tr>
                                 </thead>
@@ -244,8 +247,7 @@
                                             <td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">{{ isset($orden->ResponsableUser)?$orden->ResponsableUser:"Sin corte"}}</span></div></td>
                                         @endif
                                         <td class="text-center">{{ $orden->Articulo}}</td>
-                                        <td class="text-center">
-                                            <div class="MostrarMenos" id="collapseC{{ $orden->OrdenFabricacion}}">
+                                        <td class="text-center">                                            <div class="MostrarMenos" id="collapseC{{ $orden->OrdenFabricacion}}">
                                                 {{ $orden->Descripcion }}
                                             </div>
                                             <a  onclick="MostrarMas('collapseC{{ $orden->OrdenFabricacion}}',this);" class="btn btn-sm btn-link">Ver más</a>
@@ -256,6 +258,7 @@
                                         <td class="text-center">{{ ($orden->Escaner == 0)?"Uno a uno":"Masivo"}}</td>
                                         <td class="text-center">{{ ($orden->Urgencia == 'N')?"Normal":"Urgente" }}</td>
                                         <td class="text-center">{{ ($orden->LLC == 0)?"No":"Si" }}</td>
+                                        <td class="text-center">{{ $orden->UltimaEstacion }}</td>
                                         <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-primary"><span class="fw-bold">Cerrada</span></div></td>
                                     </tr>
                                 @endforeach
