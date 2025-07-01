@@ -140,7 +140,7 @@
                                     <tr>
                                         <td class="text-center">{{$key+1}}</td>
                                         <td class="text-center">{{ $orden->OrdenFabricacion}}</td>
-                                        <td class="text-center">{{ $orden->OrdenVenta->first()->OrdenVenta}}</td>
+                                        <td class="text-center">{{ $orden->OrdenVenta}}</td>
                                         @if(Auth::user()->hasPermission("Vista Planeacion"))
                                             <td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">{{ isset($orden->ResponsableUser)?$orden->ResponsableUser:"Sin corte"}}</span></div></td>
                                         @endif
@@ -242,7 +242,7 @@
                                     <tr>
                                         <td class="text-center">{{$key+1}}</td>
                                         <td class="text-center">{{ $orden->OrdenFabricacion}}</td>
-                                        <td class="text-center">{{ $orden->OrdenVenta->first()->OrdenVenta}}</td>
+                                        <td class="text-center">{{ $orden->OrdenVenta}}</td>
                                         @if(Auth::user()->hasPermission("Vista Planeacion"))
                                             <td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">{{ isset($orden->ResponsableUser)?$orden->ResponsableUser:"Sin corte"}}</span></div></td>
                                         @endif
@@ -392,7 +392,6 @@
     function DataTable(tabla, busqueda){
         var table = $('#'+tabla).DataTable({
             //"dom": 'Blfrtip',
-            stateSave: true,
             "language": {
                 "emptyTable": "No hay datos disponibles en la tabla",
                 "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
@@ -416,7 +415,7 @@
                 $('#'+tabla).css('font-size', '0.7rem');
             }
         });
-        //var table = $('#' + tabla).DataTable();
+        var table = $('#' + tabla).DataTable();
         table.buttons().container().appendTo('#'+tabla+'btn');
     }
     function BuscarFecha(FechaInicio,FechaFin,Estatus){

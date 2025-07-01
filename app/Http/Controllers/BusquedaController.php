@@ -2037,6 +2037,7 @@ class BusquedaController extends Controller
                 foreach($OrdenFabricacionAbiertas as $key=>$OFA){
                     $Usuario = "SIN CORTE";
                     $Escaner = "Masivo";
+                    $OrdenVenta = $OFA->OrdenVenta->OrdenVenta;
                     if($OFA->Escaner == 1){
                         $Escaner = "Uno a uno";
                     }
@@ -2065,7 +2066,7 @@ class BusquedaController extends Controller
                     $BodyTable .= '<tr>
                                     <td class="text-center">'.($key+1).'</td>
                                     <td class="text-center">'. $OFA->OrdenFabricacion.'</td>
-                                    <td class="text-center">'. $OFA->OrdenVenta->first()->OrdenVenta.'</td>';
+                                    <td class="text-center">'. $OrdenVenta .'</td>';
                                     if(Auth::user()->hasPermission("Vista Planeacion")){
                                         $BodyTable .= '<td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">'.$Usuario.'</span></div></td>';
                                     }
@@ -2093,6 +2094,7 @@ class BusquedaController extends Controller
             }elseif($Estatus=='Cerradas'){
                 $OrdenFabricacionCerradas = OrdenFabricacion::where('Cerrada','0')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
                 foreach($OrdenFabricacionCerradas as $key => $OFC){
+                    $OrdenVenta = $OFC->OrdenVenta->OrdenVenta;
                     $Usuario = "SIN CORTE";
                     $Escaner = "Masivo";
                     if($OFC->Escaner == 1){
@@ -2123,7 +2125,7 @@ class BusquedaController extends Controller
                     $BodyTable .= '<tr>
                                     <td class="text-center">'.($key+1).'</td>
                                     <td class="text-center">'. $OFC->OrdenFabricacion.'</td>
-                                    <td class="text-center">'. $OFC->OrdenVenta->first()->OrdenVenta.'</td>';
+                                    <td class="text-center">'. $OrdenVenta.'</td>';
                                     if(Auth::user()->hasPermission("Vista Planeacion")){
                                         $BodyTable .= '<td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">'.$Usuario.'</span></div></td>';
                                     }
@@ -2152,6 +2154,7 @@ class BusquedaController extends Controller
                 $OrdenFabricacionAbiertas = OrdenFabricacion::where('Cerrada','1')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
                 foreach($OrdenFabricacionAbiertas as $OFA){
                     $PartidaOF = $OFA->PartidasOF()->first();
+                    $OrdenVenta = $OFA->OrdenVenta->OrdenVenta;
                     $UltimaEstacion = "Planeación";
                     if($PartidaOF != ""){
                         $PartidaOFAreas = $PartidaOF->Areas()->where('Areas_id','!=',$this->AreaClasificacion)->orderBy('Areas_id','desc')->get();
@@ -2168,10 +2171,12 @@ class BusquedaController extends Controller
                         $OFA['ResponsableUser'] = null;
                     }
                     $OFA['UltimaEstacion'] = $UltimaEstacion;
+                    $OFA['OrdenVenta'] = ($OrdenVenta == '00000')?"Sin Orden Venta":$OrdenVenta;
                 }
                 $OrdenFabricacionCerradas = OrdenFabricacion::where('Cerrada','0')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
                 foreach($OrdenFabricacionCerradas as $OFC){
                     $PartidaOF = $OFC->PartidasOF()->first();
+                    $OrdenVenta = $OFC->OrdenVenta->OrdenVenta;
                     $UltimaEstacion = "Planeación";
                     if($PartidaOF != ""){
                         $PartidaOFAreas = $PartidaOF->Areas()->where('Areas_id','!=',$this->AreaClasificacion)->orderBy('Areas_id','desc')->get();
@@ -2188,6 +2193,7 @@ class BusquedaController extends Controller
                     else{$OFC['ResponsableUser'] = null;
                     }
                     $OFC['UltimaEstacion'] = $UltimaEstacion;
+                    $OFC['OrdenVenta'] = ($OrdenVenta == '00000')?"Sin Orden Venta":$OrdenVenta;
                 }
                 return view('Busqueda.EstatusOrdenesFabricacion',compact('OrdenFabricacionAbiertas','OrdenFabricacionCerradas','FechaInicio','FechaFin'));
             }
