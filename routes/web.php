@@ -27,7 +27,7 @@ Route::get('/lineas/progreso', [HomeController::class, 'lineas'])->name('lineas.
 Route::get('/UpdateSession', [HomeController::class, 'UpdateSession'])->name('UpdateSession');
 //Ruta Home
 Route::get('/', [HomeController::class, 'index'])->name('Home')->middleware('auth');
-
+Route::post('/Dashboard/Principal', [HomeController::class, 'DashboardPrincipal'])->name('DashboardPrincipal')->middleware('auth');
 //Rutas Planeación
 Route::get('/Planeacion', [PlaneacionController::class,'index'])->name('Planeacion')->middleware('auth');
 Route::post('/Planeacion/Filtro/Fechas', [PlaneacionController::class,'PlaneacionFF'])->name('PlaneacionFF')->middleware('auth');

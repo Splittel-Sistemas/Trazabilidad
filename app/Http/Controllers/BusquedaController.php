@@ -2022,6 +2022,7 @@ class BusquedaController extends Controller
             ]);
             
     } 
+    //Estatus Ordenes de Fabricación
     public function EstatusOrdenesFabricacion($FechaInicio = null, $FechaFin = null,$Estatus = null){
         $user = Auth::user();
         if($user->hasPermission('Vista Estatus Orden Fabricación')){
@@ -2200,6 +2201,7 @@ class BusquedaController extends Controller
         }else
         return redirect()->route('error.');
     }
+    //Sacar nombre del Area
     public function AreaNombre($IdArea){
         $Area = Areas::find($IdArea); 
         return $Area->nombre;

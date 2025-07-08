@@ -9,35 +9,251 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\PorcentajePlaneacion;
 use App\Models\OrdenFabricacion;
+use App\Models\Areas;
 use App\Models\Partidasof_Areas;
 use Illuminate\Support\Facades\Log;
 use App\Models\Linea;
 
+use function GuzzleHttp\json_decode;
 
 class HomeController extends Controller
 { 
+    private $AreaEspecialEmpaque=17;
+    private $AreaEspecialCorte=2;
    // HomeController.php
-    public function Home()
+    /*public function Home()
     {
         return view('Home');
-    }
-    public function index()
-    {   
+    }*/
+    public function index(){   
         $user = Auth::user();
         if ($user->hasPermission('Vista Dashboard')) {
-
             $user = Auth::user();
             if (!$user || !$user->active) {
                 Auth::logout();
                 return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
             }
             // Si el usuario está autenticado y su cuenta está activa
-            return view('Home', compact('user')); // O la vista que corresponda
+            //$OFDia = $this->Dia();
+            //$OFDia = $OFDia->getData();
+            $FechaHoy = date('Y-m-d');
+            $FechaAyer = date('Y-m-d', strtotime('-1 day'));
+            return view('Home', compact('FechaHoy','FechaAyer')); // O la vista que corresponda
         } else {
             return redirect()->route('index.operador');
         }
     }
-    public function CapacidadProductiva()
+    public function Dia(){
+        //Día de hoy
+        $FechaHoy = date('Y-m-d');
+        $FechaAyer = date('Y-m-d', strtotime('-1 day'));
+        $OFDia = OrdenFabricacion::where('FechaEntrega',$FechaHoy)->get();
+        $OFAbierta = OrdenFabricacion::where('FechaEntrega',$FechaHoy)->where('Cerrada',1)->get();
+        $OFCerrada = OrdenFabricacion::where('FechaEntrega',$FechaHoy)->where('Cerrada',0)->get();
+        $OFAbiertaCant = $OFAbierta->count();
+        $OFCerradaCant = $OFCerrada->count();
+        $OFAbiertaAyer = OrdenFabricacion::where('FechaEntrega',$FechaAyer)->where('Cerrada',1)->get();
+        $OFCerradaAyer = OrdenFabricacion::where('FechaEntrega',$FechaAyer)->where('Cerrada',0)->get();
+        $OFAbiertaCantAyer = $OFAbiertaAyer->count();
+        $OFCerradaCantAyer = $OFCerradaAyer->count();
+        //Orden de Fabricacion
+        if($OFAbiertaCantAyer == 0){
+            $PorcentajeAvanceA = $OFAbiertaCant*100;
+        }else{
+            $PorcentajeAvanceA = (($OFAbiertaCant-$OFAbiertaCantAyer)/$OFAbiertaCantAyer)*100;
+        }
+        if($OFCerradaCantAyer == 0){
+            $PorcentajeAvanceC = $OFCerradaCant*100;
+        }else{
+            $PorcentajeAvanceC = (($OFCerradaCant-$OFCerradaCantAyer)/$OFCerradaCantAyer)*100;
+        }
+        if($PorcentajeAvanceA>=0){
+            $PorcentajeAvanceA = "+".$PorcentajeAvanceA; 
+        }else{
+            $PorcentajeAvanceA = $PorcentajeAvanceA; 
+        }
+        if($PorcentajeAvanceC>=0){
+            $PorcentajeAvanceC = "+".$PorcentajeAvanceC; 
+        }else{
+            $PorcentajeAvanceC = $PorcentajeAvanceC; 
+        }
+        //Estaciones
+        $Estaciones = Areas::where('id','!=',19)->where('id','!=',20)->where('id','!=',21)->get();
+        $Programadas = 0;
+        $Pendientes = 0;
+        $EnProceso = 0;
+        $Terminadas = 0;
+        $PromedioPieza = 0;
+        $PiezasAsignadasLinea = 0;
+        $PiezasFaltanteLinea = 0;
+        //Asignadas, Pendientes Línea
+        foreach ($OFDia as $key1=>$OFD) {
+            $OFDP = $OFD->partidasOF->first();
+            //Asignadas, Pendientes Línea
+            ($OFDP->Areas()->where('Areas_id', 18)->COUNT() > 0)?$PiezasAsignadasLinea += 1:$PiezasFaltanteLinea += 1;
+            ($OFDP->Areas()->where('Areas_id', 18)->COUNT() > 0)?$OFDia[$key1]['LineasOriginal']=$OFDP->Areas()->first()->id: $OFDia[$key1]['LineasOriginal']=0;
+        }
+        foreach($Estaciones as $key => $Estac){
+            //Programadas
+            $Programadas = 0;
+            foreach ($OFDia as $key => $OFD) {
+                if($OFD->LineasOriginal != 0){
+                    $LineasOriginal = Linea::find($OFD->LineasOriginal);
+                    $LineasOriginal = array_map('intval', explode(',', $LineasOriginal->AreasPosibles));
+                    if($Estac->id == 2){
+                        if($OFD->Corte != 0){
+                            if (in_array($Estac->id, $LineasOriginal)) {
+                                $Programadas+=1;
+                            }
+                        }
+                    }else{
+                        if (in_array($Estac->id, $LineasOriginal)) {
+                            $Programadas+=1;
+                        }
+                    }
+                }else{
+                    if($Estac->id == 2){
+                        if($OFD->Corte != 0){
+                            $Programadas+=1;
+                        }
+                    }elseif($Estac->id == 3){
+                        $Programadas+=1;
+                    }
+                }
+            }
+            $Estac['Programadas']=$Programadas;
+        }
+        /*foreach($OFDia as $OFD){
+                foreach( $OFD->PartidasOF as $OFDP){
+
+                    if($Estac == 2 || $Estac == 3){
+
+                    }else{
+
+                    }
+                    //Programadas
+                        return$OFDP->Areas()->where('Areas_id',$Estac);
+                    //$TotalCantidadProgramadas $OFDP->Areas()->where('Areas_id',$Estac)->get();
+                }
+            }
+            //Programadas
+                //return$OFDia;
+            //Pendientes
+            //En proceso
+            //Terminadas
+            //Promedio por pieza (Tiempo)
+        }*/
+        $Lineas = Linea::where('id','!=',1)->get();
+        foreach($Estaciones as $Estac){
+            //if()
+            $Estac;
+        }
+        return response()->json([
+            "OFAbiertaCant" => $OFAbiertaCant,
+            "OFCerradaCant" => $OFCerradaCant,
+            "PorcentajeAvanceA" => round($PorcentajeAvanceA,2),
+            "PorcentajeAvanceC" => round($PorcentajeAvanceC,2),
+            "Estaciones" => $Estaciones,
+        ]);
+    }
+    public function Semana(){
+        // 1 Semana hacia Atras
+        $FechaHoy = date('Y-m-d');
+        $FechaSemana = date('Y-m-d', strtotime('-1 week'));
+        $FechaSemanaAtras = date('Y-m-d', strtotime('-2 week'));
+        $OFAbierta = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaSemana,$FechaHoy])->get();//->where('Cerrada',1)->get();
+        $OFCerrada = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaSemana,$FechaHoy])->where('Cerrada',0)->get();
+        $OFAbiertaCant = $OFAbierta->count();
+        $OFCerradaCant = $OFCerrada->count();
+        $OFAbiertaAyer = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaSemanaAtras,$FechaSemana])->where('Cerrada',1)->get();
+        $OFCerradaAyer = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaSemanaAtras,$FechaSemana])->where('Cerrada',0)->get();
+        $OFAbiertaCantAyer = $OFAbiertaAyer->count();
+        $OFCerradaCantAyer = $OFCerradaAyer->count();
+        if($OFAbiertaCantAyer == 0){
+            $PorcentajeAvanceA = $OFAbiertaCant*100;
+        }else{
+            $PorcentajeAvanceA = (($OFAbiertaCant-$OFAbiertaCantAyer)/$OFAbiertaCantAyer)*100;
+        }
+        if($OFCerradaCantAyer == 0){
+            $PorcentajeAvanceC = $OFCerradaCant*100;
+        }else{
+            $PorcentajeAvanceC = (($OFCerradaCant-$OFCerradaCantAyer)/$OFCerradaCantAyer)*100;
+        }
+        if($PorcentajeAvanceA>=0){
+            $PorcentajeAvanceA = "+".$PorcentajeAvanceA; 
+        }else{
+            $PorcentajeAvanceA = $PorcentajeAvanceA; 
+        }
+        if($PorcentajeAvanceC>=0){
+            $PorcentajeAvanceC = "+".$PorcentajeAvanceC; 
+        }else{
+            $PorcentajeAvanceC = $PorcentajeAvanceC; 
+        }
+        $Estaciones = Areas::where('id','!=',19)->where('id','!=',20)->where('id','!=',21)->get();
+        return response()->json([
+            "OFAbiertaCant" => $OFAbiertaCant,
+            "OFCerradaCant" => $OFCerradaCant,
+            "PorcentajeAvanceA" => round($PorcentajeAvanceA,2),
+            "PorcentajeAvanceC" => round($PorcentajeAvanceC,2),
+            "Estaciones" => $Estaciones,
+        ]);
+    }
+    public function Mes(){
+        //Este mes
+        $FechaMesInicio = date('Y-m-01');
+        $FechaMes = date('Y-m-d', strtotime('-1 month'));
+        $FechaMesAtras = date('Y-m-d', strtotime('-2 month'));
+        $OFAbierta = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaMes,$FechaMesInicio])->get();//->where('Cerrada',1)->get();
+        $OFCerrada = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaMes,$FechaMesInicio])->where('Cerrada',0)->get();
+        $OFAbiertaCant = $OFAbierta->count();
+        $OFCerradaCant = $OFCerrada->count();
+        $OFAbiertaAyer = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaMesAtras,$FechaMes])->where('Cerrada',1)->get();
+        $OFCerradaAyer = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaMesAtras,$FechaMes])->where('Cerrada',0)->get();
+        $OFAbiertaCantAyer = $OFAbiertaAyer->count();
+        $OFCerradaCantAyer = $OFCerradaAyer->count();
+        if($OFAbiertaCantAyer == 0){
+            $PorcentajeAvanceA = $OFAbiertaCant*100;
+        }else{
+            $PorcentajeAvanceA = (($OFAbiertaCant-$OFAbiertaCantAyer)/$OFAbiertaCantAyer)*100;
+        }
+        if($OFCerradaCantAyer == 0){
+            $PorcentajeAvanceC = $OFCerradaCant*100;
+        }else{
+            $PorcentajeAvanceC = (($OFCerradaCant-$OFCerradaCantAyer)/$OFCerradaCantAyer)*100;
+        }
+        if($PorcentajeAvanceA>=0){
+            $PorcentajeAvanceA = "+".$PorcentajeAvanceA; 
+        }else{
+            $PorcentajeAvanceA = $PorcentajeAvanceA; 
+        }
+        if($PorcentajeAvanceC>=0){
+            $PorcentajeAvanceC = "+".$PorcentajeAvanceC; 
+        }else{
+            $PorcentajeAvanceC = $PorcentajeAvanceC; 
+        }
+        $Estaciones = Areas::where('id','!=',19)->where('id','!=',20)->where('id','!=',21)->get();
+        return response()->json([
+            "OFAbiertaCant" => $OFAbiertaCant,
+            "OFCerradaCant" => $OFCerradaCant,
+            "PorcentajeAvanceA" => round($PorcentajeAvanceA,2),
+            "PorcentajeAvanceC" => round($PorcentajeAvanceC,2),
+            "Estaciones" => $Estaciones,
+        ]);
+    }
+    public function DashboardPrincipal(Request $request){
+        $LapsoTiempo = $request->LapsoTiempo;
+        $FechaInicio = $request->FechaInicio;
+        $FechaFin = $request->FechaFin;
+        if($LapsoTiempo == 'D'){
+            return $this-> Dia();
+        }else if($LapsoTiempo == 'S'){
+            return $this-> Semana();
+        }else{
+            return $this-> Mes();
+        }
+
+    }
+    /*public function CapacidadProductiva()
     {
         $fecha=date('y-m-d 00:00:00');
         $fechaFin= date('y-m-d 23:59:59');
@@ -162,7 +378,7 @@ class HomeController extends Controller
             'progreso' => $progreso
         ]);*/
         
-    }
+    /*}
     public function graficasmes()
     {
         $fechaInicio = now()->startOfMonth(); // Primer día del mes actual
@@ -1784,6 +2000,37 @@ class HomeController extends Controller
 
         */
 
+    //}
+    public function NumeroCompletadas($OrdenFabricacion,$Area){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+        $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
+        $PartidasOF=$OrdenFabricacion->PartidasOF;
+        $Suma=0;
+        if($OrdenFabricacion->Escaner == 1){
+            foreach($PartidasOF as $Partidas){
+                $PartidasOFAreasCompN=$Partidas->Areas()->where('Areas_id',$Area)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad');
+                $PartidasOFAreasCompRI=$Partidas->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('TipoPartida','R')->SUM('Cantidad');
+                $Suma+=$PartidasOFAreasCompN-$PartidasOFAreasCompRI;
+            }
+        }else{
+            if($Area!=$this->AreaEspecialEmpaque ){
+                foreach($PartidasOF as $Partidas){
+                    $Suma +=$Partidas->Areas()->where('Areas_id', $Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
+                            ($Partidas->Areas()->where('Areas_id', $Area)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
+                           - $Partidas->Areas()->where('Areas_id', $Area)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad'));
+                }
+            }else{
+                foreach($PartidasOF as $Partidas){
+                    $PartidasOFAreasCompN=$Partidas->Areas()->where('Areas_id',$Area)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad');
+                    $PartidasOFAreasCompRI=$Partidas->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('TipoPartida','R')->SUM('Cantidad');
+                    $Suma+=$PartidasOFAreasCompN-$PartidasOFAreasCompRI;
+                }
+            }
+        }
+        return $Suma;
     }
     //dasboard operador 
     public function indexoperador(Request $request)

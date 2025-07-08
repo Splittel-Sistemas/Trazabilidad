@@ -325,555 +325,378 @@
         .linea-row {
             margin-top: 20px; /* Ajusta el valor según la separación que desees */
         }
+        .Nav-fixed{
+            position: fixed;
+            top: 2rem;
+            z-index: 1;
+            background: #F5F7FA;
+            width: 94%;
+        }
+        .Nav-Contend{
+            position: relative;
+            top: 10.5rem;
+        }
     </style>
 @endsection
 @section('content')
-<!--botones principales Dia,Semana,mes-->
-<div class="card text-center">
-        <hr class="hr2">
-            <h1 class="progress-title mt-3 mb-4"></h1>
-            <div class="row justify-content-center">
-                <!-- Órdenes Cerradas (Completadas) -->
-                <div class="col-12 col-md-3 mb-4 m-1">
-                    <div class="d-flex align-items-center justify-content-center activebtn btn-menu" id="click-dia" style="cursor: pointer;">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-calendar-day" style="font-size: 30px; color: #007bff;"></i>
-                        </span>
-                        <div class="ms-1">
-                            <h4  class="mb-0" >Órdenes por Día</h4>
-                            <p class="text-muted fs--1 mb-0"></p>
+        <div class="row gy-3 justify-content-between" id="Nav-fixed">
+            <div class="col-xxl-6">
+                <h2 class="mb-2 text-1100">Dashboard</h2>
+                <div class="row g-3 justify-content-between mb-4 ">
+                    <div class="col-auto">
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-phoenix-primary" onclick="DashboardPrincipal('D','{{$FechaHoy}}','{{$FechaAyer}}');"><i class="fas fa-calendar-day"></i> D&iacute;a</button>
+                            <button class="btn btn-phoenix-primary" onclick="DashboardPrincipal('S','{{$FechaHoy}}','{{$FechaAyer}}');"><i class="fas fa-calendar-week"></i> Semana</button>
+                            <button class="btn btn-phoenix-primary" onclick="DashboardPrincipal('M','{{$FechaHoy}}','{{$FechaAyer}}');"><i class="fas fa-calendar-alt"></i> Mes</button>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="d-flex">
+                            <div class="search-box me-2 d-none d-xl-block">
+                            <form class="position-relative" data-bs-toggle="search" data-bs-display="static"><input class="form-control search-input search" type="search" placeholder="Search by name" aria-label="Search">
+                                <svg class="svg-inline--fa fa-magnifying-glass search-box-icon" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="magnifying-glass" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><span class="fas fa-search search-box-icon"></span></svg>
+                            </form>
+                            </div>
+                            {{--<button class="btn px-3 btn-phoenix-secondary me-2 d-xl-none"><svg class="svg-inline--fa fa-magnifying-glass" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="magnifying-glass" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7C401.8 87.79 326.8 13.32 235.2 1.723C99.01-15.51-15.51 99.01 1.724 235.2c11.6 91.64 86.08 166.7 177.6 178.9c53.8 7.189 104.3-6.236 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 0C515.9 484.7 515.9 459.3 500.3 443.7zM79.1 208c0-70.58 57.42-128 128-128s128 57.42 128 128c0 70.58-57.42 128-128 128S79.1 278.6 79.1 208z"></path></svg><!-- <span class="fa-solid fa-search"></span> Font Awesome fontawesome.com --></button><button class="btn px-3 btn-phoenix-primary" type="button" data-bs-toggle="modal" data-bs-target="#filterModal" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent"><svg class="svg-inline--fa fa-filter" data-fa-transform="down-3" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="filter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="" style="transform-origin: 0.5em 0.6875em;"><g transform="translate(256 256)"><g transform="translate(0, 96)  scale(1, 1)  rotate(0 0 0)"><path fill="currentColor" d="M3.853 54.87C10.47 40.9 24.54 32 40 32H472C487.5 32 501.5 40.9 508.1 54.87C514.8 68.84 512.7 85.37 502.1 97.33L320 320.9V448C320 460.1 313.2 471.2 302.3 476.6C291.5 482 278.5 480.9 268.8 473.6L204.8 425.6C196.7 419.6 192 410.1 192 400V320.9L9.042 97.33C-.745 85.37-2.765 68.84 3.854 54.87L3.853 54.87z" transform="translate(-256 -256)"></path></g></g></svg><!-- <span class="fa-solid fa-filter" data-fa-transform="down-3"></span> Font Awesome fontawesome.com --></button>
+                            <div class="modal fade" id="filterModal" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content border">
+                                    <form id="addEventForm" autocomplete="off">
+                                        <div class="modal-header border-200 p-4">
+                                        <h5 class="modal-title text-1000 fs-2 lh-sm">Filter</h5><button class="btn p-1 text-900" type="button" data-bs-dismiss="modal" aria-label="Close"><svg class="svg-inline--fa fa-xmark fs--1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg=""><path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"></path></svg><!-- <span class="fas fa-times fs--1"></span> Font Awesome fontawesome.com --></button>
+                                        </div>
+                                        <div class="modal-body pt-4 pb-2 px-4">
+                                        <div class="mb-3"><label class="fw-bold mb-2 text-1000" for="leadStatus">Lead Status</label><select class="form-select" id="leadStatus">
+                                            <option value="newLead" selected="selected">New Lead</option>
+                                            <option value="coldLead">Cold Lead</option>
+                                            <option value="wonLead">Won Lead</option>
+                                            <option value="canceled">Canceled</option>
+                                            </select></div>
+                                        <div class="mb-3"><label class="fw-bold mb-2 text-1000" for="createDate">Create Date</label><select class="form-select" id="createDate">
+                                            <option value="today" selected="selected">Today</option>
+                                            <option value="last7Days">Last 7 Days</option>
+                                            <option value="last30Days">Last 30 Days</option>
+                                            <option value="chooseATimePeriod">Choose a time period</option>
+                                            </select></div>
+                                        <div class="mb-3"><label class="fw-bold mb-2 text-1000" for="designation">Designation</label><select class="form-select" id="designation">
+                                            <option value="VPAccounting" selected="selected">VP Accounting</option>
+                                            <option value="ceo">CEO</option>
+                                            <option value="creativeDirector">Creative Director</option>
+                                            <option value="accountant">Accountant</option>
+                                            <option value="executiveManager">Executive Manager</option>
+                                            </select></div>
+                                        </div>
+                                        <div class="modal-footer d-flex justify-content-end align-items-center px-4 pb-4 border-0 pt-3"><button class="btn btn-sm btn-phoenix-primary px-4 fs--2 my-0" type="submit"> <svg class="svg-inline--fa fa-arrows-rotate me-2 fs--2" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrows-rotate" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M464 16c-17.67 0-32 14.31-32 32v74.09C392.1 66.52 327.4 32 256 32C161.5 32 78.59 92.34 49.58 182.2c-5.438 16.81 3.797 34.88 20.61 40.28c16.89 5.5 34.88-3.812 40.3-20.59C130.9 138.5 189.4 96 256 96c50.5 0 96.26 24.55 124.4 64H336c-17.67 0-32 14.31-32 32s14.33 32 32 32h128c17.67 0 32-14.31 32-32V48C496 30.31 481.7 16 464 16zM441.8 289.6c-16.92-5.438-34.88 3.812-40.3 20.59C381.1 373.5 322.6 416 256 416c-50.5 0-96.25-24.55-124.4-64H176c17.67 0 32-14.31 32-32s-14.33-32-32-32h-128c-17.67 0-32 14.31-32 32v144c0 17.69 14.33 32 32 32s32-14.31 32-32v-74.09C119.9 445.5 184.6 480 255.1 480c94.45 0 177.4-60.34 206.4-150.2C467.9 313 458.6 294.1 441.8 289.6z"></path></svg><!-- <span class="fas fa-arrows-rotate me-2 fs--2"></span> Font Awesome fontawesome.com -->Reset</button><button class="btn btn-sm btn-primary px-9 fs--2 my-0" type="submit">Done</button></div>
+                                    </form>
+                                    </div>
+                                </div>
+                            </div>--}}
                         </div>
                     </div>
                 </div>
-                <!-- Órdenes Abiertas (En Proceso) -->
-                <div class="col-12 col-md-3 mb-4 m-1 ">
-                    <div class="d-flex align-items-center justify-content-center btn-menu" id="click-semana" style="cursor: pointer;">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-calendar-week" style="font-size: 30px; color: #ffc107;"></i>
-                        </span>
-                        <div class="ms-1">
-                            <h4  class="mb-0" >Órdenes por Semana</h4>
-                            <p class="text-muted fs--1 mb-0"></p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Total de Órdenes -->
-                <div class="col-12 col-md-3 mb-4 m-1">
-                    <div class="d-flex align-items-center justify-content-center btn-menu" id="click-mes" style="cursor: pointer;">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-calendar-alt" style="font-size: 30px; color: #28a745;"></i>
-                        </span>
-                        <div class="ms-1">
-                            <h4  class="mb-0" >Órdenes por Mes</h4>
-                            <p class="text-muted fs--1 mb-0"></p>  
-                        </div>
-                    </div>
-                </div>
+                <hr>
             </div>
-        <hr class="hr2">
-</div>
-<!--Indicadores de Producción por Dia-->
-    <hr class="hr">
-    <div style="height: 10px;"></div>
-    <div id="indicadores-dia" class="mb-4">
-        <div class="col-sm-12 bg-white mb-4">
-            <div class="accordion-body bg-white pt-0">
-                <div class="card-body bg-white p-1">
-                    <h5 class="p-1">
-                        Capacidad Productiva &nbsp;
-                        <span id="Fecha_Grafica">{{ \Carbon\Carbon::now()->translatedFormat('d \d\e F \d\e Y') }}</span>
-                    </h5>
-                    <div class="d-flex justify-content-between">
-                        <div class="row">
-                            <h6 class="text-700 col-6">
-                                Cantidad personas: <span id="Cantidad">0</span>
-                            </h6>
-                            <h6 class="text-700 col-6">
-                                Estimado de piezas por día: <span id="piezas">0</span>
-                            </h6>
-                            <h6 class="text-700 col-6">
-                                Piezas Completadas: <span id="Piezasfinalizadas">0</span>
-                            </h6>
-                            <h6 class="text-700 col-6">
-                                Piezas faltantes: <span id="Piezafaltantes">0</span>
-                            </h6>
-                            <h6 class="text-700 col-6"></h6>
+        </div>
+        <div class="row gy-3 mb-4 justify-content-between" id="Nav-Contend">
+            <h4 class="text-700 fw-semi-bold mb-2">Ordenes de Fabricaci&oacute;n</h4>
+            <div class="col-xxl-6">
+                 <div class="row g-3 mb-3">
+                    <div class="col-sm-6 col-md-4 col-xl-3 col-xxl-4">
+                        <div class="card h-90">
+                        <div class="card-body">
+                            <div class="d-flex d-sm-block justify-content-between">
+                            <div class="border-bottom-sm mb-sm-2">
+                                <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center icon-wrapper-sm shadow-primary-100" style="transform: rotate(-7.45deg);">
+                                    <span class="far fas fa-calendar-check text-primary fs-1 z-index-1 ms-2"></span>
+                                </div>
+                                <p class="text-700 fs--1 mb-0 ms-2 mt-3">Ordene de Fabricaci&oacute;n</p>
+                                </div>
+                                <p class="text-success mt-2 fs-2 fw-bold mb-0 mb-sm-4" ><span id="OFCantidadAbierta">0</span><span class="fs-0 text-900 lh-lg"> Abiertas</span></p>
+                            </div>
+                            <div class="d-flex flex-column justify-content-center flex-between-end d-sm-block text-end text-sm-start"><span class="badge badge-phoenix badge-phoenix-success fs--2 mb-2" ><span id="OFPorcentajeAbierta"></span>%</span>
+                                <span class="mb-0 fs--1 text-700">que el d&iacute;a de ayer</span>
+                            </div>
+                            </div>
+                        </div>
                         </div>
                     </div>
-                    <div class="pb-1 pt-1 d-flex justify-content-center align-items-center">
-                        <div class="p-0" id="PorcentajePlaneacion" style="width: 9rem; height: 9rem"></div>
+                    <div class="col-sm-6 col-md-4 col-xl-3 col-xxl-4">
+                        <div class="card h-90">
+                            <div class="card-body">
+                                <div class="d-flex d-sm-block justify-content-between">
+                                    <div class="border-bottom-sm mb-sm-2">
+                                        <div class="d-flex align-items-center">
+                                        <div class="d-flex align-items-center icon-wrapper-sm shadow-info-100" style="transform: rotate(-7.45deg);">
+                                            <span class="fas fa-calendar-minus text-info fs-1 z-index-1 ms-2"></span></div>
+                                        <p class="text-700 fs--1 mb-0 ms-2 mt-3">Ordene de Fabricaci&oacute;n</p>
+                                        </div>
+                                        <p class="text-warning mt-2 fs-2 fw-bold mb-0 mb-sm-4"><span id="OFCantidadCerrada">0</span> <span class="fs-0 text-900 lh-lg">Cerradas</span></p>
+                                    </div>
+                                    <div class="d-flex flex-column justify-content-center flex-between-end d-sm-block text-end text-sm-start"><span class="badge badge-phoenix badge-phoenix-warning fs--2 mb-2"><span id="OFPorcentajeCerrada">0</span>%</span>
+                                        <span class="mb-0 fs--1 text-700">que el d&iacute;a de ayer</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="bullet-item bg-primary me-2"></div>
-                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">
-                                Porcentaje Completadas
-                            </h6>
-                            <h6 class="text-900 fw-semi-bold mb-0">
-                                <span id="Porcentajeplaneada">0</span>%
-                            </h6>
+                    <div class="col-md-4 col-xl-6 col-xxl-4 gy-2 gy-md-1 ">
+                        <div class="border-bottom">
+                            <h5 class="pb-4 border-bottom">Grafica Ordenes de Fabricaci&oacute;n</h5>
+                            <div id="OFGraficoAbiertasCerradas" style="width: 100%; height: 200px;"></div>
                         </div>
-
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="bullet-item bg-primary-200 me-2"></div>
-                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">
-                                Porcentaje Faltantes
-                            </h6>
-                            <h6 class="text-900 fw-semi-bold mb-0">
-                                <span id="Porcentajefaltante">0</span>%
-                            </h6>
+                    </div>
+                    <hr>
+                    <h4 class="text-700 fw-semi-bold my-1">Estaci&oacute;nes</h4>
+                    <div class="row gy-3 justify-content-between">
+                        <div class="col-xl-5 col-xxl-4">
+                            <div class="card">
+                                <div class="card-body">
+                                <div class="echart-reports-details mb-5" style="height: 358px; width: 100%; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1751584819048"><div style="position: relative; width: 775px; height: 358px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="1162" height="537" style="position: absolute; left: 0px; top: 0px; width: 775px; height: 358px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; background-color: rgb(239, 242, 246); border-width: 1px; border-radius: 4px; color: rgb(20, 24, 36); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 7px 10px; top: 0px; left: 0px; transform: translate3d(597px, 135px, 0px); border-color: rgb(203, 208, 221); pointer-events: none; visibility: hidden; opacity: 0;"><div>
+                                    <p class="mb-2 text-600">
+                                        Offering
+                                    </p>
+                                    <div class="ms-1">
+                                <h6 class="text-700"><svg class="svg-inline--fa fa-circle me-1 fs--2" style="color: #85a9ff;" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256z"></path></svg><!-- <span class="fas fa-circle me-1 fs--2" style="color:#85a9ff"></span> Font Awesome fontawesome.com -->
+                                    Revenue : 62
+                                </h6>
+                                </div>
+                                </div></div></div>
+                                    <div class="table-responsive scrollbar">
+                                    <table class="reports-details-chart-table table table-sm fs--1 mb-0">
+                                    <thead>
+                                        <tr>
+                                        <th class="align-middle pe- text-700 fw-bold fs--2 text-uppercase text-nowrap" scope="col" style="width:35%;">Report stage</th>
+                                        <th class="align-middle text-end ps-4 text-700 fw-bold fs--2 text-uppercase text-nowrap" scope="col" style="width:35%;">total count</th>
+                                        <th class="align-middle text-end ps-4 text-700 fw-bold fs--2 text-uppercase" scope="col" style="width:30%;">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list" id="report-data-body">
+                                        <tr class="hover-actions-trigger btn-reveal-trigger position-static">
+                                        <td class="align-middle white-space-nowrap fw-semi-bold text-1000 py-2">Analysis</td>
+                                        <td class="align-middle text-end white-space-nowrap fw-semi-bold text-1000 ps-4 py-2">03</td>
+                                        <td class="align-middle text-end white-space-nowrap ps-4 fw-semi-bold text-1000"><span class="badge badge-phoenix badge-phoenix-info">+15.21%</span></td>
+                                        </tr>
+                                        <tr class="hover-actions-trigger btn-reveal-trigger position-static">
+                                        <td class="align-middle white-space-nowrap fw-semi-bold text-1000 py-2">Statement</td>
+                                        <td class="align-middle text-end white-space-nowrap fw-semi-bold text-1000 ps-4 py-2">01</td>
+                                        <td class="align-middle text-end white-space-nowrap ps-4 fw-semi-bold text-1000"><span class="badge badge-phoenix badge-phoenix-warning">+05.21%</span></td>
+                                        </tr>
+                                        <tr class="hover-actions-trigger btn-reveal-trigger position-static">
+                                        <td class="align-middle white-space-nowrap fw-semi-bold text-1000 py-2">Action</td>
+                                        <td class="align-middle text-end white-space-nowrap fw-semi-bold text-1000 ps-4 py-2">02</td>
+                                        <td class="align-middle text-end white-space-nowrap ps-4 fw-semi-bold text-1000"><span class="badge badge-phoenix badge-phoenix-primary">+22.12%</span></td>
+                                        </tr>
+                                        <tr class="hover-actions-trigger btn-reveal-trigger position-static">
+                                        <td class="align-middle white-space-nowrap fw-semi-bold text-1000 py-2">Offering</td>
+                                        <td class="align-middle text-end white-space-nowrap fw-semi-bold text-1000 ps-4 py-2">02</td>
+                                        <td class="align-middle text-end white-space-nowrap ps-4 fw-semi-bold text-1000"><span class="badge badge-phoenix badge-phoenix-danger">-14.21%</span></td>
+                                        </tr>
+                                        <tr class="hover-actions-trigger btn-reveal-trigger position-static">
+                                        <td class="align-middle white-space-nowrap fw-semi-bold text-1000 py-2">Interlocution</td>
+                                        <td class="align-middle text-end white-space-nowrap fw-semi-bold text-1000 ps-4 py-2">02</td>
+                                        <td class="align-middle text-end white-space-nowrap ps-4 fw-semi-bold text-1000"><span class="badge badge-phoenix badge-phoenix-danger">-14.21%</span></td>
+                                        </tr>
+                                    </tbody>
+                                    </table>
+                                </div>
+                                </div>
+                            </div>
                         </div>
+                        <div class="col-xl-7 col-xxl-8">
+                            <div class="border-top">
+                                <div class="table-responsive scrollbar mx-n1 px-1">
+                                    <table id="TableEstaciones" class="table table-sm  fs--1 leads-table" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Estación</th>
+                                                <th>Programadas</th>
+                                                <th>Pendientes</th>
+                                                <th>En proceso</th>
+                                                <th class="text-center">Terminadas</th>
+                                                <th class="text-center">Promedio por pieza(t)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list" id="BodyEstaciones">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="text-700 fw-semi-bold my-1">L&iacute;neas</h4>
+                    <div class="row gy-3 justify-content-between">
                     </div>
                 </div>
             </div>
         </div>
-    <div class="row" id="lineas-container"></div>   
-    <div class="card text-center pb-3">
-            <h1 class="progress-title mt-3 mb-4">Indicadores de Producción por Dia</h1>
-            <div class="row justify-content-center">
-                <!-- Órdenes Cerradas (Completadas) -->
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-check-circle" style="font-size: 30px; color: #28a745;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="ordenesCompletadasDia" class="mb-0">Órdenes Cerradas</h4>
-                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del dia cerradas</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Órdenes Abiertas (En Proceso) -->
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-sync-alt" style="font-size: 30px; color: #ffc107;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="ordenesAbiertasDia" class="mb-0">Órdenes Abiertas</h4>
-                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del dia abiertas</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Total de Órdenes -->
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-boxes" style="font-size: 30px; color: #007bff;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="totalOrdenesDia" class="mb-0">Total De Órdenes</h4>
-                            <p class="text-muted fs--1 mb-0">Total de todas las órdenes del dia</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="height: 10px;"></div>
-            <div class="container">
-                <div class="row mb-4">
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasCortedia" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasSuministrodia" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasPreparadodia" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasEnsambledia" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasPulidodia" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasMediciondia" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasVisualizaciondia" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasEmpaquedia" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div style="height: 10px;"></div>
-        <div class="card p-3">
-            <div class="row justify-content-center">
-                <h1 class="progress-title mt-3 mb-4">Indicadores de Piezas</h1>
-                <!-- Primera fila (4 elementos) -->
-                <div class="col-12 col-md-3 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-cut" style="font-size: 30px; color: #28a745;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="Cortes" class="mb-0">Cortes</h4>
-                            <p class="text-muted fs--1 mb-0">Tiempo Promedio</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-12 col-md-3 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-box-open" style="font-size: 30px; color: #ff6347;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="Suministro" class="mb-0">Suministro</h4>
-                            <p class="text-muted fs--1 mb-0">Tiempo Promedio</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-12 col-md-3 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-tools" style="font-size: 30px; color: #240fe2;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="Preparado" class="mb-0">Preparado</h4>
-                            <p class="text-muted fs--1 mb-0">Tiempo Promedio</p>
-                        </div>
-                    </div>
-                </div>
-                
-                
-                
-                <div class="col-12 col-md-3 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-cogs" style="font-size: 30px; color: #007bff;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="Ensamble" class="mb-0">Ensamble</h4>
-                            <p class="text-muted fs--1 mb-0">Tiempo Promedio</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        
-            <div class="row justify-content-center">
-                <!-- Segunda fila (4 elementos) -->
-                <div class="col-12 col-md-3 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-polish" style="font-size: 30px; color: #ff4500;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="Pulido" class="mb-0">Pulido</h4>
-                            <p class="text-muted fs--1 mb-0">Tiempo Promedio</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-12 col-md-3 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-ruler" style="font-size: 30px; color: #32cd32;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="Medicion" class="mb-0">Medición</h4>
-                            <p class="text-muted fs--1 mb-0">Tiempo Promedio</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-12 col-md-3 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-eye" style="font-size: 30px; color: #00bcd4;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="Visualizacion" class="mb-0">Visualización</h4>
-                            <p class="text-muted fs--1 mb-0">Tiempo Promedio</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-12 col-md-3 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-box" style="font-size: 30px; color: #f39c12;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="Empaquetado" class="mb-0">Empaquetado</h4>
-                            <p class="text-muted fs--1 mb-0">Tiempo Promedio</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <div style="height: 10px;"></div>
-    <div class="card" style="display: none;">
-            <div class="col-10 col-md-18 col-lg-12 mx-auto">
-                <h1 class="progress-title">Progreso de Piezas por Dia</h1>
-                <p id="chart-hour-fecha" style="font-size: 14px; color: gray;"></p> 
-                <div id="chart-hour" class="chart-container"></div>
-            </div>
-    </div>
-    <div style="height: 10px;"></div>
-
-    <div class="card">
-       
-        <div id="grafica-tiempoD" class="chart-container"></div>
-    </div>
-    
-
-
-    
-</div>
-<!--Progreso de semana-->
-<div id="indicadores-semana">
-    <div class="card text-center">
-            <h1 class="progress-title mt-3 mb-4">Indicadores de Producción de la semana</h1>
-            <div class="row justify-content-center">
-                <!-- Órdenes Cerradas (Completadas) -->
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-check-circle" style="font-size: 30px; color: #28a745;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="ordenesCompletadasemana" class="mb-0">Órdenes Cerradas</h4>
-                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del la semana cerradas</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Órdenes Abiertas (En Proceso) -->
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-sync-alt" style="font-size: 30px; color: #ffc107;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="ordenesAbiertasemana" class="mb-0">Órdenes Abiertas</h4>
-                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del la semana abiertas</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Total de Órdenes -->
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-boxes" style="font-size: 30px; color: #007bff;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="totalOrdenesemana" class="mb-0">Total De Órdenes</h4>
-                            <p class="text-muted fs--1 mb-0">Total de todas las órdenes del la semana</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="height: 10px;"></div>
-            <div class="container">
-                <div class="row mb-4">
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasCortesemana" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasSuministrosemana" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasPreparadosemana" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasEnsamblesemana" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasPulidosemana" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasMedicionsemana" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasVisualizacionsemana" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasEmpaquesemana" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    </div>
-    <div style="height: 10px;"></div>
-    <div class="card">
-            <h1 class="progress-title">Progreso de la Semana</h1>
-            <p id="chart-day-rango" style="font-size: 14px; color: gray;"></p>  
-            <div id="chart-day" class="chart-container"></div>
-    </div>
-</div>
-<!--progreso de la mes-->
-<div id="indicadores-mes">
-        <div style="height: 10px;"></div>
-        <div class="card" style="display: none">
-            <h1 class="progress-title">Ordenes Fabricación</h1>
-            <div class="grid-container" style="display: flex; justify-content: center;">
-                <div class="grid-item">
-                    <h1 class="small-title"></h1>
-                    <canvas id="plemasordenes" width="700" height="300"></canvas>
-                </div>     
-            </div>
-        </div>
-        <div class="card text-center">
-            <h1 class="progress-title mt-3 mb-4">Indicadores de Producción del Mes</h1>
-            <div class="row justify-content-center">
-                <!-- Órdenes Cerradas (Completadas) -->
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-check-circle" style="font-size: 30px; color: #28a745;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="ordenesCompletadas" class="mb-0">Órdenes Cerradas</h4>
-                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del mes cerradas</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Órdenes Abiertas (En Proceso) -->
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-sync-alt" style="font-size: 30px; color: #ffc107;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="ordenesAbiertas" class="mb-0">Órdenes Abiertas</h4>
-                            <p class="text-muted fs--1 mb-0">Órdenes fabricación del mes abiertas</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Total de Órdenes -->
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <span class="fa-stack" style="min-height: 46px; min-width: 46px;">
-                            <i class="fas fa-boxes" style="font-size: 30px; color: #007bff;"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h4 id="totalOrdenes" class="mb-0">Total De Órdenes</h4>
-                            <p class="text-muted fs--1 mb-0">Total de todas las órdenes del mes</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="height: 10px;"></div>
-            <div class="container">
-                <div class="row mb-4">
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasCorte" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasSuministro" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasPreparado" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasEnsamble" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasPulido" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasMedicion" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasVisualizacion" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-3">
-                        <div class="grid-item">
-                            <h1 class="small-title"></h1>
-                            <canvas id="plemasEmpaque" width="150" height="150"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div style="height: 10px;"></div>
-        <div class="card">
-            <h1 class="progress-title">Progreso del Mes</h1>
-            <p id="chart-month-mes" style="font-size: 14px; color: gray;"></p> <!-- Aquí se mostrará la fecha -->
-            <div id="chart-month" class="chart-container"></div>
-        </div>
-</div>
-<hr class="hr">
 @endsection
 @section('scripts')
+<script>
+    window.onload = function (){
+        DashboardPrincipal('D','{{$FechaHoy}}','{{$FechaAyer}}');
+    }
+    window.addEventListener("scroll", function () {
+        const cuadro = document.getElementById("Nav-fixed");
+        const NavContend = document.getElementById("Nav-Contend");
+        const scrollY = window.scrollY;
+        if (scrollY > 92) {
+            cuadro.classList.add("Nav-fixed");
+            NavContend.classList.add("Nav-Contend");
+        } else {
+            cuadro.classList.remove("Nav-fixed");
+            NavContend.classList.remove("Nav-Contend");
+        }
+    });
+    //Dashboard/Principal
+    function DashboardPrincipal(LapsoTiempo,FechaInicio,FechaFin){
+        OFCantidadAbierta = $('#OFCantidadAbierta');
+        OFPorcentajeAbierta = $('#OFPorcentajeAbierta');
+        OFCantidadCerrada = $('#OFCantidadCerrada'); 
+        OFPorcentajeCerrada = $('#OFPorcentajeCerrada');
+        BodyEstaciones = document.getElementById('BodyEstaciones');
+        OFGraficoAbiertasCerradas = document.getElementById('OFGraficoAbiertasCerradas');
+        OFCantidadAbierta.html('');
+        OFPorcentajeAbierta.html('');
+        OFCantidadCerrada.html(''); 
+        OFPorcentajeCerrada.html('');
+        BodyEstaciones.innerHTML = "";
+        if (echarts.getInstanceByDom(OFGraficoAbiertasCerradas)) {
+            echarts.dispose(OFGraficoAbiertasCerradas); // Destruye la instancia previa
+        }
+        $.ajax({
+            url: "{{route('DashboardPrincipal')}}", 
+            type: 'POST',
+            data: {
+                LapsoTiempo:LapsoTiempo,
+                FechaInicio:FechaInicio,
+                FechaFin:FechaFin,
+            },
+            beforeSend: function() {
+
+            },
+            success: function(response) {
+                OFCantidadAbierta.html(response.OFAbiertaCant);
+                OFPorcentajeAbierta.html(response.PorcentajeAvanceA);
+                OFCantidadCerrada.html(response.OFCerradaCant); 
+                OFPorcentajeCerrada.html(response.PorcentajeAvanceC);
+                var ChartOFGraficoAbiertasCerradas = echarts.init(OFGraficoAbiertasCerradas);
+                var option = {
+                    title: {
+                        text: 'Ordenes Totales: '+(response.OFCerradaCant+response.OFAbiertaCant),
+                        left: 'center',
+                        top: 0,
+                        textStyle: {
+                            fontSize: 12,
+                            fontWeight: 'bold'
+                        }
+                    },
+                    color: ['#007bff', '#17a2b8'],
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{b}: {c} ({d}%)'
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        top: '1%',
+                        left: 'left',
+                        formatter: function (name) {
+                            const series = option.series[0];
+                            const item = series.data.find(i => i.name === name);
+                            if (!item) return name;
+
+                            const total = series.data.reduce((sum, i) => sum + i.value, 0);
+                            if (total === 0) {
+                                    return `${name}: 0%`;
+                            }
+                            const percent = ((item.value / total) * 100).toFixed(1);
+                            return `${name}: ${percent}%`;
+                        }
+                    },
+                    series: [
+                        {
+                            name: 'Información',
+                            type: 'pie',
+                            radius: ['40%', '70%'],
+                            avoidLabelOverlap: false,
+                            itemStyle: {
+                            borderRadius: 1,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                            },
+                            label: {
+                            show: false,
+                            position: 'center'
+                            },
+                            emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: 10,
+                                fontWeight: 'bold'
+                            }
+                            },
+                            labelLine: {
+                            show: false
+                            },
+                            data: [
+                                { value: response.OFAbiertaCant, name: 'Abiertas' },
+                                { value: response.OFCerradaCant, name: 'Cerradas' },
+                            ]
+                        }
+                    ]
+                };
+                ChartOFGraficoAbiertasCerradas.setOption(option);
+                 if ($.fn.DataTable.isDataTable('#TableEstaciones')) {
+                    $('#TableEstaciones').DataTable().clear().destroy();
+                }
+                (response.Estaciones).forEach(element => {
+                    BodyEstaciones.innerHTML += `
+                        <tr class="hover-actions-trigger btn-reveal-trigger position-static">
+                            <td class="fw-semi-bold text-1000 ps-0 py-0">
+                                <a class="fw-bold text-primary" href="#!">`+element.nombre+`</a>
+                            </td>
+                            <td class="fw-semi-bold text-900 py-0 text-center">`+element.Programadas+`</td>
+                            <td class="w-semi-bold text-900 py-0">Themewagon</td>
+                            <td class="fw-semi-bold text-900 py-0">Themewagon</td>
+                            <td fw-bold text-900 py-0">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div style="--phoenix-circle-progress-bar:50">
+                                        <svg class="circle-progress-svg" width="54" height="54" viewBox="0 0 170 170">
+                                            <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="14"></circle>
+                                            <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#3874FF" stroke-width="14"></circle>
+                                        </svg>
+                                    </div>
+                                    <h6 class="mb-0 text-900">Analysis</h6>
+                                </div>
+                            </td>
+                            <td class="fw-semi-bold text-900 py-0">Themewagon</td>
+                        </tr>`;
+                });
+                $('#TableEstaciones').DataTable({
+                    pageLength: 10,
+                    lengthChange: false,
+                    ordering: false,
+                    searching: false,
+                    language: {
+                        info: "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                        infoEmpty: "Mostrando 0 a 0 de 0 entradas",
+                        infoFiltered: "(filtrado de _MAX_ entradas totales)",
+                        paginate: {
+                            first: "Primero",
+                            last: "Último",
+                            next: "Siguiente",
+                            previous: "Anterior"
+                        }
+                    }
+                });
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                //$('#RetrabajoOFOpciones').html('');
+            }
+        });
+    }
+</script>
+{{--
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
 <script>
@@ -1707,5 +1530,5 @@ fetch("{{ route('lineas.indicador') }}")
 
 
 </script>
-    
+    --}}
 @endsection

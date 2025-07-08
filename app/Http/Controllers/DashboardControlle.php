@@ -5,19 +5,32 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\OrdenFabricacion;
 
 class DashboardControlle extends Controller
 {
-    // ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id') 
-    //->join('partidasof_areas', 'PartidasOF.id', '=', 'partidasof_areas.PartidasOF_id') 
-    public function index()
-    {
-
+    public function index(){
+        //return $this->Dia();
         return view('layouts.principal');
     }
+    public function Dia(){
+        $FechaHoy = date('Y-m-d');
+        $OFAbierta = OrdenFabricacion::where('FechaEntre',$FechaHoy)->get();
+        $OFCerrada = $OFAbierta->where('Cerrada',0);
+        $OFCerradaCant  = $OFAbierta->count();
+        $OFAbiertaCant = $OFCerrada->count();
+        return response()->json([
+            "OFAbiertaCant" => $OFAbiertaCant,
+            "OFCerradaCant" => $OFCerradaCant
+        ]);
+    }
+    public function Semana(){
 
-    public function Ordenes()
+    }
+    public function Mes(){
+
+    }
+    /*public function Ordenes()
     {
         
         $totalOrdenes = DB::table('ordenfabricacion')->count();
@@ -155,7 +168,7 @@ class DashboardControlle extends Controller
             'ordenes' => $ordenesAbiertas
         ]);*/
         
-    }
+    /*}
 
     public function graficas()
     {
@@ -200,7 +213,7 @@ class DashboardControlle extends Controller
             'ordenesPorSemana' => $ordenesPorSemana,
             'ordenesPorMes' => $ordenesPorMes,
         ]);*/
-    }
+    /*}
 
 
     public function progreso()
@@ -319,7 +332,7 @@ class DashboardControlle extends Controller
         return response()->json([
             'progreso' => $progreso
         ]);
-    }
+    }*/
     
     
 

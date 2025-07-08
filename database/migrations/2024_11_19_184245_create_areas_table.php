@@ -29,7 +29,7 @@ class CreateAreasTable extends Migration
             ['nombre' => 'Polaridad'],//12
             ['nombre' => 'Crimpado'],//13
             ['nombre' => 'Medición'],//14
-            ['nombre' => 'Visualización'],//15
+            ['nombre' => 'Visual'],//15
             ['nombre' => 'Montaje'],//16 //AreaFinal
             ['nombre' => 'Empaque'],//17 //AreaFinal
             ['nombre' => 'Clasificación'],//18 //AreaFinal
