@@ -78,7 +78,7 @@ class HomeController extends Controller
             $PorcentajeAvanceC = $PorcentajeAvanceC; 
         }
         //Estaciones
-        $Estaciones = Areas::where('id','!=',19)->where('id','!=',20)->where('id','!=',21)->get();
+        $Estaciones = Areas::where('id','!=',1)->where('id','!=',19)->where('id','!=',20)->where('id','!=',21)->get();
         $Programadas = 0;
         $Pendientes = 0;
         $EnProceso = 0;
@@ -96,7 +96,11 @@ class HomeController extends Controller
         foreach($Estaciones as $key => $Estac){
             //Programadas
             $Programadas = 0;
+            $Pendientes = 0;
+            $EnProceso = 0;
+            $Terminadas = 0;
             foreach ($OFDia as $key => $OFD) {
+                //Programadas
                 if($OFD->LineasOriginal != 0){
                     $LineasOriginal = Linea::find($OFD->LineasOriginal);
                     $LineasOriginal = array_map('intval', explode(',', $LineasOriginal->AreasPosibles));
@@ -120,8 +124,37 @@ class HomeController extends Controller
                         $Programadas+=1;
                     }
                 }
+                //Pendientes y terminadas
+                if($Programadas>0){
+                    $OFDP = $OFD->partidasOF->first();
+                    if($OFDP->Areas()->where('Areas_id', $Estac->id)->COUNT() == 0){
+                        if($Estac->id == 2){
+                            if($OFD->Corte != 0){
+                                $Pendientes += 1;
+                            }
+                        }else{
+                            $Pendientes += 1;
+                        }
+                    }else{
+                        if($this->NumeroCompletadas($OFD->OrdenFabricacion,$Estac->id) >= $OFD->CantidadTotal){
+                            if($Estac->id == 2){
+                                if($OFD->Corte == 0){
+                                    $Terminadas += 1;   
+                                }
+                            }else{
+                                $Terminadas += 1;
+                            }
+                        }else{
+                            $EnProceso += 1;
+                        }
+                    }
+                }
             }
-            $Estac['Programadas']=$Programadas;
+            $Estac['PorcentajeTerminadas'] = round(($Terminadas== 0)?0:($Programadas * 100) / $Terminadas);
+            $Estac['Programadas'] = $Programadas;
+            $Estac['Pendientes'] = $Pendientes;
+            $Estac['EnProceso'] = $EnProceso;
+            $Estac['Terminadas'] = $Terminadas;
         }
         /*foreach($OFDia as $OFD){
                 foreach( $OFD->PartidasOF as $OFDP){

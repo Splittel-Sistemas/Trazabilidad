@@ -503,6 +503,7 @@
         EmisionesOpciones.removeClass('is-invalid');
                 errorEmision.text('');
                 errorEmision.hide();
+        $('#EmisionesOpciones').prop('disabled', false);
         $.ajax({
             url: "{{route('SuministroDatosModal')}}", 
             type: 'POST',
@@ -519,7 +520,12 @@
                     $('#CantitadpiezasIdPartidasOF').val(response.idPartidaOF);
                     $('#ModalSuministroBodyInfoOF').html(response.Ordenfabricacioninfo);
                     $('#ModalSuministroBodyPartidasOF').html(response.Ordenfabricacionpartidas);
-                    TraerEmisiones();
+                    if(response.statusOF == '0'){
+                        $('#EmisionesOpciones').html('');
+                        $('#EmisionesOpciones').prop('disabled', true);
+                    }else{
+                        TraerEmisiones();
+                    }
                     //$('#TablePartidasModal').DataTable().destroy();
                     //DataTable('TablePartidasModal',false);
                 }

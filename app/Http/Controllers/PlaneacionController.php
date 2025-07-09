@@ -587,7 +587,8 @@ class PlaneacionController extends Controller
                         $countPartidasSinCortes=$PartidasSinC->Areas()->where('Areas_id', 3)->get()->count();
                         $countPartidas=$PartidasSinC->Areas()->where('Areas_id', 2)->get()->count();
                     }
-                    if ($countPartidas == 0 AND $countdatosOrdenFabricacion->Corte == 1) { 
+                    $disabled = 0;
+                    $disabled = ($countdatosOrdenFabricacion->Cerrada == 1)?'onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')"':'disabled';                    if ($countPartidas == 0 AND $countdatosOrdenFabricacion->Corte == 1) { 
                         $tabla .= '<tr>
                             <td class="text-center">'.$dato['OrdenVenta'].'</td>
                             <td class="text-center">'.$dato['OrdenFabricacion'].'</td>
@@ -597,7 +598,7 @@ class PlaneacionController extends Controller
                         }  
                         $tabla .= '></td>
                             <td class="text-center">
-                                <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
+                                <button type="button" '.$disabled.' class="btn btn-sm btn-danger">
                                     <i class="fa fa-arrow-left"></i> Cancelar
                                 </button>
                                 <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm float-end btn-primary">
@@ -615,7 +616,7 @@ class PlaneacionController extends Controller
                         }  
                         $tabla .= '></td>
                         <td class="text-center">
-                            <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
+                            <button type="button" '.$disabled.' class=" btn btn-sm btn-danger">
                                 <i class="fa fa-arrow-left"></i> Cancelar
                             </button>
                             <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm float-end btn-primary">
@@ -755,7 +756,7 @@ class PlaneacionController extends Controller
             ]);
         }
     }
-     //Funcion para cambiar estutus de si se escanea o no
+    //Funcion para cambiar estutus de si se escanea o no
     public function CambiarEstatusEscaner(Request $request){
         try{
             $NumOF_id=$this->funcionesGenerales->decrypt($request['Id']);
@@ -957,7 +958,8 @@ class PlaneacionController extends Controller
                                     'ordenfabricacion.FechaEntregaSAP', 
                                     'ordenfabricacion.Escaner',  // Aquí se selecciona la columna Escaner para el checkbox
                                     'ordenfabricacion.Corte',
-                                    'ordenfabricacion.ResponsableUser_id'
+                                    'ordenfabricacion.ResponsableUser_id',
+                                    'ordenfabricacion.Cerrada'
                                 )
                                 ->where('ordenfabricacion.id','=',$NumOF_id)->first();
         if($datos){
@@ -969,7 +971,22 @@ class PlaneacionController extends Controller
             })
             ->where('role','O')
             ->get();
-            $cadena='<table class="table table-sm fs--1 mb-0" style="width:100%">
+            $cadena = "";
+            if($datos->Cerrada == 0){
+                $cadena.='<div class="alert alert-danger d-flex align-items-center p-0 mx-0" role="alert">
+                            <span class="fas fa-times-circle text-danger fs-3 me-2"></span>
+                            <p class="mb-0 flex-1">La Orden de Fabricacion se cerro de manera manual.</p>
+                        </div>'; 
+            }
+            $cadena.='
+                    <button class="btn btn-sm btn-danger float-end" ';
+                    if($datos->Cerrada == 1){//Verificamos si esta abierta 1= si, 0=no
+                        $cadena.='onclick="FinalizarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos->ordenfabricacionid).'\')"';
+                    }else{
+                        $cadena.='disabled';
+                    }
+            $cadena.='>Finalizar</button>
+                    <table class="table table-sm fs--1 mb-0" style="width:100%">
                         <thead>
                         </thead>
                         <tbody>
@@ -1089,6 +1106,7 @@ class PlaneacionController extends Controller
                         $countPartidasSinCortes=$PartidasSinC->Areas()->where('Areas_id', 3)->get()->count();
                         $countPartidas=$PartidasSinC->Areas()->where('Areas_id', 2)->get()->count();
                     }
+                    $disabled = ($countdatosOrdenFabricacion->Cerrada == 1)?'onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($countdatosOrdenFabricacion['ordenfabricacion_id']).'\')"':'disabled';
                     if ($countPartidas == 0 AND $countdatosOrdenFabricacion->Corte == 1) { 
                         $tabla .= '<tr>
                             <td class="text-center">'.$datos[$i]['OrdenVenta'].'</td>
@@ -1099,7 +1117,7 @@ class PlaneacionController extends Controller
                         }  
                         $tabla .='></td>
                             <td class="text-center">
-                                <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
+                                <button type="button" '.$disabled .' class="btn btn-sm btn-danger">
                                     <i class="fa fa-arrow-left"></i> Cancelar
                                 </button>
                                 <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn float-end btn-sm btn-primary">
@@ -1117,7 +1135,7 @@ class PlaneacionController extends Controller
                         }  
                         $tabla .= '></td>
                         <td class="text-center">
-                            <button type="button" onclick="RegresarOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm btn-danger">
+                            <button type="button" '.$disabled .' class="btn btn-sm btn-danger">
                                 <i class="fa fa-arrow-left"></i> Cancelar
                             </button>
                             <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm float-end btn-primary">

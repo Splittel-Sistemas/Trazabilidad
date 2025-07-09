@@ -500,6 +500,9 @@
         $('#btnGrupoPiezasCorte').fadeIn();
         $('#InputNormal').fadeOut();
         $('#btnGrupoPiezasCorte1').fadeOut();
+        $('#Cantitadpiezas').prop('disabled', false);
+        $('#EmisionesOpciones').prop('disabled', false);
+        //$('#cantidadPiezas').prop('disabled', true);
         document.getElementById("Retrabajo").checked=false;
         $.ajax({
             url: "{{route('CortesDatosModal')}}", 
@@ -511,7 +514,7 @@
             beforeSend: function() {
                 $('#ModalSuministroBodyInfoOF').html('<div class="d-flex justify-content-center align-items-center"><div class="spinner-grow text-info text-center" role="status"><span class="visually-hidden">Loading...</span></div></div>');
                 $('#ModalSuministroBodyPartidasOF').html('<div class="d-flex justify-content-center align-items-center"><div class="spinner-grow text-info text-center" role="status"><span class="visually-hidden">Loading...</span></div></div>');
-                },
+            },
             success: function(response) {
                 if(response.status=="success"){
                     $('#CantitadpiezasIdOF').val(response.id);
@@ -522,6 +525,10 @@
                     //DataTable('TablePartidasModal',false);
                 }else if(response.status=='successnotcable'){
                     $('#ModalSuministroBodyInfoOF').html(response.Ordenfabricacioninfo);
+                }
+                if(response.statusOF == '0'){
+                    $('#Cantitadpiezas').prop('disabled', true);
+                    $('#EmisionesOpciones').prop('disabled', true);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {

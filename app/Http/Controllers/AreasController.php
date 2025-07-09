@@ -96,7 +96,7 @@ class AreasController extends Controller
                         ->whereBetween('FechaTermina', [$fechaAtras.' 00:00:00', $fecham.' 00:00:00'])
                         ->get()
                         ->unique('PartidasOF_id');
-        foreach($PartidasOFC as $orden) {
+        foreach($PartidasOFC as $key1=>$orden) {
             $ordenFabri=$orden->ordenFabricacion;
             $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
             $orden['OrdenFabricacion']=$ordenFabri->OrdenFabricacion;
@@ -393,6 +393,14 @@ class AreasController extends Controller
                 $TotalCortes  =$TotalCortes->whereNotNull('pivot.FechaTermina')->SUM('pivot.Cantidad');
             }
             $TotalCompletadas+=$PartidaNormal+$PartidaRetrabajo;
+             if($OrdenFabricacion->Cerrada == 0){
+                $Ordenfabricacioninfo.='<tr><th class="text-center" colspan="4">
+                                        <div class="alert alert-danger d-flex align-items-center p-0 mx-0" role="alert">
+                                            <span class="fas fa-times-circle text-danger fs-3 me-2"></span>
+                                            <p class="mb-0 flex-1">La Orden de Fabricacion se cerro de manera manual.</p>
+                                        </div>
+                                    </th></tr>'; 
+            }
             $Ordenfabricacioninfo.='
                             <tr>
                                 <th class="table-active">Articulo</th>
@@ -487,6 +495,7 @@ class AreasController extends Controller
         $Ordenfabricacioninfo.='</tbody></table>';
         return response()->json([
             'status' => 'success',
+            'statusOF' =>$OrdenFabricacion->Cerrada,
             'Ordenfabricacioninfo' => $Ordenfabricacioninfo,
             'Ordenfabricacionpartidas' => $Ordenfabricacionpartidas,
             'idPartidaOF' => $this->funcionesGenerales->encrypt($OrdenFabricacion->id)
@@ -4485,12 +4494,21 @@ class AreasController extends Controller
         $ContarPartidas = $PartidasOF->Areas()->where('Areas_id',3)->get()->whereNotNull('pivot.FechaTermina')->where('pivot.TipoPartida','N')->sum('pivot.Cantidad');
         $ContarPartidasClasificacion = $PartidasOF->Areas()->where('Areas_id',18)->get()->sum('pivot.Cantidad');
         $Ordenfabricacionpartidas='<div class="col-12"><button class="btn btn-sm btn-outline-danger px-3 py-2 float-end"';
+        $InputsBloqueo="";
         if($OrdenFabricacion->Cerrada == 0){
             $Ordenfabricacionpartidas.=' disabled';
+            $InputsBloqueo.= ' disabled ';
         }else{
             $Ordenfabricacionpartidas.='  onclick="FinalizarOrdenFabricacion(\''.$request->id.'\')" ';
         }
         $Ordenfabricacionpartidas.='>Finalizar</button></div><h5 class="text-center mb-1">Orden de Fabricación <br>'.$OrdenFabricacion->OrdenFabricacion.'</h5>';
+        if($OrdenFabricacion->Cerrada == 0){
+                $Ordenfabricacionpartidas.='
+                                        <div class="alert alert-danger d-flex align-items-center p-0 mx-0" role="alert">
+                                            <span class="fas fa-times-circle text-danger fs-3 me-2"></span>
+                                            <p class="mb-0 flex-1">La Orden de Fabricacion se cerro de manera manual.</p>
+                                        </div>'; 
+        }
         $Ordenfabricacionpartidas.='<div class="row mx-6 my-2">
                                         <div class="col-6 border bg-light rounded-left">
                                         Cantidad disponible para asignar
@@ -4503,19 +4521,19 @@ class AreasController extends Controller
                                     <div class="col-6">
                                         <div class="mb-0">
                                         <label for="organizerSingle">Ingresa el numero de piezas</label>
-                                        <input class="form-control form-control-sm" oninput="RegexNumeros(this);" id="CantidadModal" type="text" placeholder="0" />
+                                        <input class="form-control form-control-sm" oninput="RegexNumeros(this);" id="CantidadModal" type="text" placeholder="0" '.$InputsBloqueo.' />
                                         </div>
                                         <small class="text-danger" id="ErrorCantidadModal"></small>
                                     </div>
                                     <div class="col-6">
                                     <label for="organizerSingle">Selecciona Línea</label>
-                                    <select id="LineaModal" class="form-select form-select-sm" aria-label="">
+                                    <select id="LineaModal" class="form-select form-select-sm" aria-label="" '.$InputsBloqueo.'>
                                         <option selected="" disabled>Selecciona una L&iacute;nea</option>';
                                         foreach($Lineas as $L){
                                             $Ordenfabricacionpartidas.='<option value="'.$L->id.'">'.$L->Nombre.'</option>';
                                         }
         $Ordenfabricacionpartidas.='</select><small class="text-danger" id="ErrorLineaModal"></small>
-                                    <button class="btn btn-sm btn-success m-2 float-end" onclick="GuardarAsignacion(\''.$this->funcionesGenerales->encrypt($OrdenFabricacion->id).'\');" type="button">Guardar</button>
+                                    <button class="btn btn-sm btn-success m-2 float-end"'.$InputsBloqueo.' onclick="GuardarAsignacion(\''.$this->funcionesGenerales->encrypt($OrdenFabricacion->id).'\');" type="button">Guardar</button>
                                     </div></div>';
         $Ordenfabricacionpartidas.='<table id="TablePartidasModal" class="table table-sm fs--1 mb-0" style="width:100%">
                         <thead>
@@ -4617,6 +4635,7 @@ class AreasController extends Controller
         return$Lista .= '</ul>';
     }
     public function FinalizarOrdenFabricacion(Request $request){
+        $Estacion = isset($request->Estacion)?$request->Estacion:0;
         $id = $this->funcionesGenerales->decrypt($request->idOF);
         $Motivo = $request->Motivo;
         $OrdenFabricacion = OrdenFabricacion::find($id);
@@ -4634,6 +4653,14 @@ class AreasController extends Controller
             $Comentarios->Fecha =  now();
             $Comentarios->Comentario =  "Se finalizó la Orden de Fabricación  ".$OrdenFabricacion->OrdenFabricacion." de manera manual devido a: ".$Motivo;
             $Comentarios->save();
+            if($Estacion == 1){
+                $OrdenFabricacion->EstatusEntrega = 1;
+                $OrdenFabricacion->save();
+                $PartidasOF = $OrdenFabricacion->PartidasOF->first();
+                $PartidasOF->EstatusPartidaOF = 1;
+                $PartidasOF->EstatusPartidaOFSuministro = 1;
+                $PartidasOF->save();
+            }
             return 1;
         }
     }

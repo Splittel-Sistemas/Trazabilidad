@@ -1274,5 +1274,76 @@
             }
         }); 
     }
+    function FinalizarOrdenFabricacion(IdOrdenFabricación){
+        const modalEl = document.getElementById('ModalOrdenesFabricacion');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance && modalInstance._focustrap) {
+            modalInstance._focustrap.deactivate();
+        }
+        Swal.fire({
+            title: 'Finalizar Orden de Fabricación',
+            text: '¿Deseas finalizar la Orden de Fabricación?',
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            cancelButtonText:"Cancelar",
+            confirmButtonText: 'Finalizar',
+            input: 'textarea',
+            inputPlaceholder: 'Ingrese el motivo para finalizar la Orde de Fabricación',  
+            inputAttributes: {
+                id: 'Motivo'
+            },
+            inputValidator: () => null,
+            didOpen: () => {
+                const textarea = Swal.getInput(); // obtiene el <textarea>
+                const errorText = document.createElement('p');
+                errorText.id = 'errorMotivo';
+                errorText.className = 'text-danger';
+                errorText.style.marginTop = '2px';
+                errorText.style.marginLeft = '40px';
+                errorText.style.display = 'none'; // oculto por defecto
+                errorText.innerText = '*El motivo es obligatorio';
+                textarea.insertAdjacentElement('afterend', errorText);
+            },
+            preConfirm: () => {
+                const textarea = Swal.getInput();
+                if(!CadenaVacia(textarea.value)){
+                    $('#errorMotivo').hide();
+                }else{
+                    $('#errorMotivo').show();
+                    return false;
+                }
+            }
+        }).then((result) => {
+        if (result.isConfirmed) {
+            var Motivo = result.value;
+            $.ajax({
+                url: "{{route('FinalizarOrdenFabricacion')}}", 
+                type: 'POST',
+                data: {
+                    idOF:IdOrdenFabricación,
+                    Motivo:Motivo,
+                    Estacion:'1',
+                },
+                beforeSend: function() {
+                    //$('#ModalDetalleBodyInfoOF').html('<div class="d-flex justify-content-center align-items-center"><div class="spinner-grow text-info text-center" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                },
+                success: function(response) {
+                    if(response==1){
+                        success('Guardado Correctamente','La Orden de Fabricación ha sido finalizada correctamente!');
+                    }else{
+                        error('Error al Finalizar la orden de fabricación!', 'Los datos no pudieron ser procesados correctamente, si persiste el error contacta a TI');
+                    }
+                    RecargarTablaOF();
+                    $('#ModalOrdenesFabricacion').modal('hide');
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    errorBD();
+                }
+            });
+        }
+      });
+    }
 </script>
 @endsection

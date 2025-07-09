@@ -656,17 +656,17 @@
                                 <a class="fw-bold text-primary" href="#!">`+element.nombre+`</a>
                             </td>
                             <td class="fw-semi-bold text-900 py-0 text-center">`+element.Programadas+`</td>
-                            <td class="w-semi-bold text-900 py-0">Themewagon</td>
-                            <td class="fw-semi-bold text-900 py-0">Themewagon</td>
+                            <td class="w-semi-bold text-900 py-0 text-center">`+element.Pendientes+`</td>
+                            <td class="fw-semi-bold text-900 py-0">`+element.EnProceso+`</td>
                             <td fw-bold text-900 py-0">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div style="--phoenix-circle-progress-bar:50">
+                                    <div style="--phoenix-circle-progress-bar:`+element.PorcentajeTerminadas+`">
                                         <svg class="circle-progress-svg" width="54" height="54" viewBox="0 0 170 170">
                                             <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="14"></circle>
                                             <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#3874FF" stroke-width="14"></circle>
                                         </svg>
                                     </div>
-                                    <h6 class="mb-0 text-900">Analysis</h6>
+                                    <h6 class="mb-0 text-900">`+element.Terminadas+`</h6>
                                 </div>
                             </td>
                             <td class="fw-semi-bold text-900 py-0">Themewagon</td>

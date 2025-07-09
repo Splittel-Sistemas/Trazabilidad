@@ -172,9 +172,18 @@ class CorteController extends Controller
         if(!($OrdenFabricacion==null || $OrdenFabricacion=="")){
             $id=$this->funcionesGenerales->encrypt($OrdenFabricacion->id);
             $PartidasOF=$OrdenFabricacion->partidasOF()->first();
-            $Ordenfabricacioninfo.='<table class="table table-bordered table-sm text-xs"> 
-                                <tbody>
-                                    <tr>
+            $Ordenfabricacioninfo.='
+                            <table class="table table-bordered table-sm text-xs"> 
+                                <tbody>';
+            if($OrdenFabricacion->Cerrada == 0){
+                $Ordenfabricacioninfo.='<tr><th class="text-center" colspan="4">
+                                        <div class="alert alert-danger d-flex align-items-center p-0 mx-0" role="alert">
+                                            <span class="fas fa-times-circle text-danger fs-3 me-2"></span>
+                                            <p class="mb-0 flex-1">La Orden de Fabricacion se cerro de manera manual.</p>
+                                        </div>
+                                    </th></tr>'; 
+            }
+            $Ordenfabricacioninfo.='<tr>
                                         <th class="bg-light p-1"  style="width: 30%;">Artículo</th>
                                         <td class="text-center p-1"  style="width: 20%;">'.$OrdenFabricacion->Articulo.'</td>
                                         <th class="bg-light p-1"  style="width: 30%;">Fecha Planeación</th>
@@ -291,6 +300,7 @@ class CorteController extends Controller
         $Ordenfabricacioninfo.='</tbody></table>';
         return response()->json([
             'status' => 'success',
+            'statusOF' =>$OrdenFabricacion->Cerrada,
             'Ordenfabricacioninfo' => $Ordenfabricacioninfo,
             'Ordenfabricacionpartidas' => $Ordenfabricacionpartidas,
             'id' => $id,
@@ -305,6 +315,11 @@ class CorteController extends Controller
                 'status' => 'empty',
                 'table' => '<option selected="" disabled>Orden Fabricacion no encontrada</option>',
             ], 500);
+        }elseif($OrdenFabricacion->Cerrada == 0){
+            return response()->json([
+                'status' => 'empty',
+                'table' => '<option selected="" disabled>Orden Fabricacion ya se encuentra cerrada</option>',
+            ], 200);
         }else{
             $opciones='<option selected disabled>Selecciona una Emisión de producción</option>';
             //Funcion para traer las emisiones esta en el archivo FuncionesGeneralesController
@@ -647,7 +662,7 @@ class CorteController extends Controller
     //Consultas a SAP
     //Ordenes de Fabricacion Filtro Fecha, Abierta=0 Cerrada=1
     public function OrdenesFabricacionAbiertas(){
-        $OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->orderBy('FechaEntrega', 'asc')->get();
+        $OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->where('Cerrada',1)->orderBy('FechaEntrega', 'asc')->get();
         foreach($OrdenFabricacion as $orden) {
             $PartidasOF=$orden->partidasOF()->first();
             $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
