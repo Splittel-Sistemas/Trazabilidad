@@ -352,11 +352,11 @@
                     </div>
                     <div class="col-auto">
                         <div class="d-flex">
-                            <div class="search-box me-2 d-none d-xl-block">
+                            {{--<div class="search-box me-2 d-none d-xl-block">
                             <form class="position-relative" data-bs-toggle="search" data-bs-display="static"><input class="form-control search-input search" type="search" placeholder="Search by name" aria-label="Search">
                                 <svg class="svg-inline--fa fa-magnifying-glass search-box-icon" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="magnifying-glass" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><span class="fas fa-search search-box-icon"></span></svg>
                             </form>
-                            </div>
+                            </div>--}}
                             {{--<button class="btn px-3 btn-phoenix-secondary me-2 d-xl-none"><svg class="svg-inline--fa fa-magnifying-glass" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="magnifying-glass" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7C401.8 87.79 326.8 13.32 235.2 1.723C99.01-15.51-15.51 99.01 1.724 235.2c11.6 91.64 86.08 166.7 177.6 178.9c53.8 7.189 104.3-6.236 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 0C515.9 484.7 515.9 459.3 500.3 443.7zM79.1 208c0-70.58 57.42-128 128-128s128 57.42 128 128c0 70.58-57.42 128-128 128S79.1 278.6 79.1 208z"></path></svg><!-- <span class="fa-solid fa-search"></span> Font Awesome fontawesome.com --></button><button class="btn px-3 btn-phoenix-primary" type="button" data-bs-toggle="modal" data-bs-target="#filterModal" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent"><svg class="svg-inline--fa fa-filter" data-fa-transform="down-3" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="filter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="" style="transform-origin: 0.5em 0.6875em;"><g transform="translate(256 256)"><g transform="translate(0, 96)  scale(1, 1)  rotate(0 0 0)"><path fill="currentColor" d="M3.853 54.87C10.47 40.9 24.54 32 40 32H472C487.5 32 501.5 40.9 508.1 54.87C514.8 68.84 512.7 85.37 502.1 97.33L320 320.9V448C320 460.1 313.2 471.2 302.3 476.6C291.5 482 278.5 480.9 268.8 473.6L204.8 425.6C196.7 419.6 192 410.1 192 400V320.9L9.042 97.33C-.745 85.37-2.765 68.84 3.854 54.87L3.853 54.87z" transform="translate(-256 -256)"></path></g></g></svg><!-- <span class="fa-solid fa-filter" data-fa-transform="down-3"></span> Font Awesome fontawesome.com --></button>
                             <div class="modal fade" id="filterModal" tabindex="-1">
                                 <div class="modal-dialog modal-dialog-centered">
@@ -399,9 +399,9 @@
         </div>
         <div class="row gy-3 mb-4 justify-content-between" id="Nav-Contend">
             <h4 class="text-700 fw-semi-bold mb-2">Ordenes de Fabricaci&oacute;n</h4>
-            <div class="col-xxl-6">
+            <div class="col-xxl-12">
                  <div class="row g-3 mb-3">
-                    <div class="col-sm-6 col-md-4 col-xl-3 col-xxl-4">
+                    <div class="col-sm-6 col-md-4 col-xl-3 col-xxl-3">
                         <div class="card h-90">
                         <div class="card-body">
                             <div class="d-flex d-sm-block justify-content-between">
@@ -414,14 +414,14 @@
                                 </div>
                                 <p class="text-success mt-2 fs-2 fw-bold mb-0 mb-sm-4" ><span id="OFCantidadAbierta">0</span><span class="fs-0 text-900 lh-lg"> Abiertas</span></p>
                             </div>
-                            <div class="d-flex flex-column justify-content-center flex-between-end d-sm-block text-end text-sm-start"><span class="badge badge-phoenix badge-phoenix-success fs--2 mb-2" ><span id="OFPorcentajeAbierta"></span>%</span>
+                            <div class="d-flex flex-column justify-content-center flex-between-end d-sm-block text-end text-sm-start"><span class="badge badge-phoenix badge-phoenix-info fs--2 mb-2" ><span id="OFPorcentajeAbierta"></span>%</span>
                                 <span class="mb-0 fs--1 text-700">que el d&iacute;a de ayer</span>
                             </div>
                             </div>
                         </div>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-4 col-xl-3 col-xxl-4">
+                    <div class="col-sm-6 col-md-4 col-xl-3 col-xxl-2">
                         <div class="card h-90">
                             <div class="card-body">
                                 <div class="d-flex d-sm-block justify-content-between">
@@ -433,14 +433,14 @@
                                         </div>
                                         <p class="text-warning mt-2 fs-2 fw-bold mb-0 mb-sm-4"><span id="OFCantidadCerrada">0</span> <span class="fs-0 text-900 lh-lg">Cerradas</span></p>
                                     </div>
-                                    <div class="d-flex flex-column justify-content-center flex-between-end d-sm-block text-end text-sm-start"><span class="badge badge-phoenix badge-phoenix-warning fs--2 mb-2"><span id="OFPorcentajeCerrada">0</span>%</span>
+                                    <div class="d-flex flex-column justify-content-center flex-between-end d-sm-block text-end text-sm-start"><span class="badge badge-phoenix badge-phoenix-info fs--2 mb-2"><span id="OFPorcentajeCerrada">0</span>%</span>
                                         <span class="mb-0 fs--1 text-700">que el d&iacute;a de ayer</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 col-xl-6 col-xxl-4 gy-2 gy-md-1 ">
+                    <div class="col-sm-6 col-md-4 col-xl-6 col-xxl-4 gy-2 gy-md-1 ">
                         <div class="border-bottom">
                             <h5 class="pb-4 border-bottom">Grafica Ordenes de Fabricaci&oacute;n</h5>
                             <div id="OFGraficoAbiertasCerradas" style="width: 100%; height: 200px;"></div>
@@ -449,70 +449,48 @@
                     <hr>
                     <h4 class="text-700 fw-semi-bold my-1">Estaci&oacute;nes</h4>
                     <div class="row gy-3 justify-content-between">
-                        <div class="col-xl-5 col-xxl-4">
+                        <div class="col-xl-12 col-xxl-12">
                             <div class="card">
                                 <div class="card-body">
-                                <div class="echart-reports-details mb-5" style="height: 358px; width: 100%; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1751584819048"><div style="position: relative; width: 775px; height: 358px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="1162" height="537" style="position: absolute; left: 0px; top: 0px; width: 775px; height: 358px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; background-color: rgb(239, 242, 246); border-width: 1px; border-radius: 4px; color: rgb(20, 24, 36); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 7px 10px; top: 0px; left: 0px; transform: translate3d(597px, 135px, 0px); border-color: rgb(203, 208, 221); pointer-events: none; visibility: hidden; opacity: 0;"><div>
-                                    <p class="mb-2 text-600">
-                                        Offering
-                                    </p>
-                                    <div class="ms-1">
-                                <h6 class="text-700"><svg class="svg-inline--fa fa-circle me-1 fs--2" style="color: #85a9ff;" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256z"></path></svg><!-- <span class="fas fa-circle me-1 fs--2" style="color:#85a9ff"></span> Font Awesome fontawesome.com -->
-                                    Revenue : 62
-                                </h6>
-                                </div>
-                                </div></div></div>
-                                    <div class="table-responsive scrollbar">
-                                    <table class="reports-details-chart-table table table-sm fs--1 mb-0">
-                                    <thead>
-                                        <tr>
-                                        <th class="align-middle pe- text-700 fw-bold fs--2 text-uppercase text-nowrap" scope="col" style="width:35%;">Report stage</th>
-                                        <th class="align-middle text-end ps-4 text-700 fw-bold fs--2 text-uppercase text-nowrap" scope="col" style="width:35%;">total count</th>
-                                        <th class="align-middle text-end ps-4 text-700 fw-bold fs--2 text-uppercase" scope="col" style="width:30%;">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="list" id="report-data-body">
-                                        <tr class="hover-actions-trigger btn-reveal-trigger position-static">
-                                        <td class="align-middle white-space-nowrap fw-semi-bold text-1000 py-2">Analysis</td>
-                                        <td class="align-middle text-end white-space-nowrap fw-semi-bold text-1000 ps-4 py-2">03</td>
-                                        <td class="align-middle text-end white-space-nowrap ps-4 fw-semi-bold text-1000"><span class="badge badge-phoenix badge-phoenix-info">+15.21%</span></td>
-                                        </tr>
-                                        <tr class="hover-actions-trigger btn-reveal-trigger position-static">
-                                        <td class="align-middle white-space-nowrap fw-semi-bold text-1000 py-2">Statement</td>
-                                        <td class="align-middle text-end white-space-nowrap fw-semi-bold text-1000 ps-4 py-2">01</td>
-                                        <td class="align-middle text-end white-space-nowrap ps-4 fw-semi-bold text-1000"><span class="badge badge-phoenix badge-phoenix-warning">+05.21%</span></td>
-                                        </tr>
-                                        <tr class="hover-actions-trigger btn-reveal-trigger position-static">
-                                        <td class="align-middle white-space-nowrap fw-semi-bold text-1000 py-2">Action</td>
-                                        <td class="align-middle text-end white-space-nowrap fw-semi-bold text-1000 ps-4 py-2">02</td>
-                                        <td class="align-middle text-end white-space-nowrap ps-4 fw-semi-bold text-1000"><span class="badge badge-phoenix badge-phoenix-primary">+22.12%</span></td>
-                                        </tr>
-                                        <tr class="hover-actions-trigger btn-reveal-trigger position-static">
-                                        <td class="align-middle white-space-nowrap fw-semi-bold text-1000 py-2">Offering</td>
-                                        <td class="align-middle text-end white-space-nowrap fw-semi-bold text-1000 ps-4 py-2">02</td>
-                                        <td class="align-middle text-end white-space-nowrap ps-4 fw-semi-bold text-1000"><span class="badge badge-phoenix badge-phoenix-danger">-14.21%</span></td>
-                                        </tr>
-                                        <tr class="hover-actions-trigger btn-reveal-trigger position-static">
-                                        <td class="align-middle white-space-nowrap fw-semi-bold text-1000 py-2">Interlocution</td>
-                                        <td class="align-middle text-end white-space-nowrap fw-semi-bold text-1000 ps-4 py-2">02</td>
-                                        <td class="align-middle text-end white-space-nowrap ps-4 fw-semi-bold text-1000"><span class="badge badge-phoenix badge-phoenix-danger">-14.21%</span></td>
-                                        </tr>
-                                    </tbody>
-                                    </table>
-                                </div>
+                                    <div class="border-bottom">
+                                        <h5 class="pb-4 border-bottom">Tiempo promedio por Pieza</h5>
+                                        <p class="text-center">% de tiempo</p>
+                                        <div id="OFGraficoEstacionesTiempos" style="width: 100%; height: 200px;"></div>
+                                    </div>
+                                    <div class="border-top">
+                                        <div class="table-responsive scrollbar mx-n1 px-1">
+                                            <table id="TableEstaciones" class="table table-sm  fs--1 leads-table" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Estación</th>
+                                                        <th class="text-center">Programadas</th>
+                                                        <th class="text-center">Pendientes</th>
+                                                        <th class="text-center">En proceso</th>
+                                                        <th class="text-center">Terminadas</th>
+                                                        <th class="text-center">Promedio tiempo productivo(pieza)</th>
+                                                        <th class="text-center">Promedio tiempo Muerto(pieza)</th>
+                                                        <th class="text-center">Promedio tiempo Total(pieza)</th>
+                                                        <th class="text-center">Promedio piezas/h</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="list" id="BodyEstaciones">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-7 col-xxl-8">
+                        {{--<div class="col-xl-12 col-xxl-12">
                             <div class="border-top">
                                 <div class="table-responsive scrollbar mx-n1 px-1">
                                     <table id="TableEstaciones" class="table table-sm  fs--1 leads-table" style="width:100%">
                                         <thead>
                                             <tr>
                                                 <th>Estación</th>
-                                                <th>Programadas</th>
-                                                <th>Pendientes</th>
-                                                <th>En proceso</th>
+                                                <th class="text-center">Programadas</th>
+                                                <th class="text-center">Pendientes</th>
+                                                <th class="text-center">En proceso</th>
                                                 <th class="text-center">Terminadas</th>
                                                 <th class="text-center">Promedio por pieza(t)</th>
                                             </tr>
@@ -522,7 +500,7 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
+                        </div>--}}
                     </div>
                     <h4 class="text-700 fw-semi-bold my-1">L&iacute;neas</h4>
                     <div class="row gy-3 justify-content-between">
@@ -556,6 +534,7 @@
         OFPorcentajeCerrada = $('#OFPorcentajeCerrada');
         BodyEstaciones = document.getElementById('BodyEstaciones');
         OFGraficoAbiertasCerradas = document.getElementById('OFGraficoAbiertasCerradas');
+        OFGraficoEstacionesTiempos = document.getElementById('OFGraficoEstacionesTiempos');
         OFCantidadAbierta.html('');
         OFPorcentajeAbierta.html('');
         OFCantidadCerrada.html(''); 
@@ -563,6 +542,9 @@
         BodyEstaciones.innerHTML = "";
         if (echarts.getInstanceByDom(OFGraficoAbiertasCerradas)) {
             echarts.dispose(OFGraficoAbiertasCerradas); // Destruye la instancia previa
+        }
+        if (echarts.getInstanceByDom(OFGraficoEstacionesTiempos)) {
+            echarts.dispose(OFGraficoEstacionesTiempos); // Destruye la instancia previa
         }
         $.ajax({
             url: "{{route('DashboardPrincipal')}}", 
@@ -573,9 +555,10 @@
                 FechaFin:FechaFin,
             },
             beforeSend: function() {
-
+                BodyEstaciones.innerHTML = "<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>";
             },
             success: function(response) {
+                BodyEstaciones.innerHTML = "";
                 OFCantidadAbierta.html(response.OFAbiertaCant);
                 OFPorcentajeAbierta.html(response.PorcentajeAvanceA);
                 OFCantidadCerrada.html(response.OFCerradaCant); 
@@ -646,10 +629,24 @@
                     ]
                 };
                 ChartOFGraficoAbiertasCerradas.setOption(option);
-                 if ($.fn.DataTable.isDataTable('#TableEstaciones')) {
+                var DataSourceEstacionesTiempos = [
+                    ['product', 'Tiempo Total', 'Tiempo Productivo', 'Tiempo Muerto']
+                ];
+                if ($.fn.DataTable.isDataTable('#TableEstaciones')) {
                     $('#TableEstaciones').DataTable().clear().destroy();
                 }
                 (response.Estaciones).forEach(element => {
+                    if(element.id != 18){
+                        DataSourceEstacionesTiempos.push([
+                            element.nombre, // o como se llame el campo del nombre
+                            //element.PorcentajeTiempoTotal, // duración de la orden
+                            element.PorcentajeTiempoProductivo, // tiempo productivo
+                            element.PorcentajeTiempoMuerto, // tiempo muerto
+                            //element.TiempoTotal,
+                            element.TiempoProductivo,
+                            element.TiempoMuerto,
+                        ]);
+                    }
                     BodyEstaciones.innerHTML += `
                         <tr class="hover-actions-trigger btn-reveal-trigger position-static">
                             <td class="fw-semi-bold text-1000 ps-0 py-0">
@@ -657,11 +654,11 @@
                             </td>
                             <td class="fw-semi-bold text-900 py-0 text-center">`+element.Programadas+`</td>
                             <td class="w-semi-bold text-900 py-0 text-center">`+element.Pendientes+`</td>
-                            <td class="fw-semi-bold text-900 py-0">`+element.EnProceso+`</td>
-                            <td fw-bold text-900 py-0">
-                                <div class="d-flex align-items-center gap-3">
+                            <td class="fw-semi-bold text-900 py-0 text-center">`+element.EnProceso+`</td>
+                            <td class="fw-bold text-900 py-0 text-center">
+                                <div class="d-flex align-items-center gap-3" title="`+element.PorcentajeTerminadas+`%">
                                     <div style="--phoenix-circle-progress-bar:`+element.PorcentajeTerminadas+`">
-                                        <svg class="circle-progress-svg" width="54" height="54" viewBox="0 0 170 170">
+                                        <svg class="circle-progress-svg" width="40" height="40" viewBox="0 0 170 170">
                                             <circle class="progress-bar-rail" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke-width="14"></circle>
                                             <circle class="progress-bar-top" cx="60" cy="60" r="54" fill="none" stroke-linecap="round" stroke="#3874FF" stroke-width="14"></circle>
                                         </svg>
@@ -669,9 +666,71 @@
                                     <h6 class="mb-0 text-900">`+element.Terminadas+`</h6>
                                 </div>
                             </td>
-                            <td class="fw-semi-bold text-900 py-0">Themewagon</td>
+                            <td class="fw-semi-bold text-900 py-0 text-center">`+element.TiempoPromedioPieza+`</td>
+                            <td class="fw-semi-bold text-900 py-0 text-center">`+element.TiempoMuerto+`</td>
+                             <td class="fw-semi-bold text-900 py-0 text-center">`+element.TiempoTotal+`</td>
+                            <td class="fw-semi-bold text-900 py-0 text-center">`+element.CantidadPiezasHora+`</td>
                         </tr>`;
                 });
+                var ChartOFGraficoEstacionesTiempos = echarts.init(OFGraficoEstacionesTiempos);
+                OptionEstaciones = {
+                    legend: {},
+                    tooltip: {
+                        /*trigger: 'item',
+                        formatter: function (params) {
+                            const data = params.data;
+                            const nombre = data[0];
+                            const tipo = params.seriesName;
+                            let porcentaje = '';
+                            let tiempo = '';
+
+                            if (tipo === 'Total') {
+                                porcentaje = data[1];
+                                tiempo = data[4];
+                            } else if (tipo === 'Productivo') {
+                                porcentaje = data[2];
+                                tiempo = data[5];
+                            } else if (tipo === 'Muerto') {
+                                porcentaje = data[3];
+                                tiempo = data[6];
+                            }
+
+                            return `
+                                <strong>${nombre}</strong><br/>
+                                ${tipo}: ${tiempo} seg (${porcentaje.toFixed(2)}%)
+                            `;
+                        }*/
+                    },
+                    dataset: {
+                        source: DataSourceEstacionesTiempos
+                    },
+                    grid: {
+                        left: '5%',
+                        right: '5%',
+                        bottom: 60,   // más espacio si se rotan etiquetas
+                        top: '15%'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        axisLabel: {
+                            fontSize: 10,
+                            rotate: 40,
+                            overflow: 'truncate',
+                            ellipsis: '...'
+                        }
+                    },
+                    yAxis: {
+                        axisLabel: {
+                            fontSize: 10          // opcional, también reducir
+                        }
+                    },
+                    series: [
+                        //{ name: 'Total',type: 'bar', barWidth: '20%',stack: 'total', itemStyle: { color: '#1f77b4' } },  // azul fuerte
+                        { name: 'Productivo',type: 'bar', barWidth: '20%',stack: 'total', itemStyle: { color: '#5DADE2' } },  // azul más claro
+                        { name: 'Muerto',type: 'bar', barWidth: '20%',stack: 'total', itemStyle: { color: '#EC7063' } }   // azul muy claro (opcional)
+                    ]
+                };
+                ChartOFGraficoEstacionesTiempos.setOption(OptionEstaciones);
                 $('#TableEstaciones').DataTable({
                     pageLength: 10,
                     lengthChange: false,

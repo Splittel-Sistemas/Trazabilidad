@@ -338,6 +338,7 @@
         '<button class="btn btn-info mb-0" data-bs-toggle="modal" data-bs-target="#ModalRetrabajo" onclick="LimpiarOF()"><i class="fas fa-plus"></i> Retrabajo</button>');
         DataTable('TablaSuministroCerradas',true);
         $('#btnGrupoUnidadaesSuministro').click(function() {
+            const btn = document.getElementById("btnGrupoUnidadaesSuministro");
             event.preventDefault();
             Cantitadpiezas=$('#Cantitadpiezas');
             errorCantidad=$('#error_cantidad');
@@ -370,7 +371,7 @@
                 errorEmision.text('');
                 errorEmision.hide(); 
             }
-            
+            btn.disabled = true; 
             $.ajax({
                 url: "{{route('SuministroGuardar')}}", 
                 type: 'POST',
@@ -396,8 +397,10 @@
                     }else if(response.status=="errorEmision"){
                         error('Orden de emisión requerida!',response.message);
                     }
+                    btn.disabled = false; 
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
+                    btn.disabled = false; 
                     error('Error Server',jqXHR.responseJSON.message);
                 }
             });

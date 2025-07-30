@@ -204,7 +204,7 @@
         </div>
     </div>
     <!-- Toast ver las Ordenes de Fabricacion Pendientes por asignar-->
-    <div id="element" class="d-flex flex-center" aria-live="polite" aria-atomic="true"  style="position: fixed; bottom: 0.5rem; right: 1rem; z-index: 1050;display:none;" data-bs-delay="30000">
+    <div id="ElementAlert" class="d-flex flex-center" aria-live="polite" aria-atomic="true"  style="position: fixed; bottom: 0.5rem; right: 1rem; z-index: 1;display:none;" data-bs-delay="30000">
         <div class="toast show p-0" role="alert" data-bs-autohide="false" aria-live="assertive" aria-atomic="true" >
             <div class="toast-header bg-danger text-white p-1">
                 <strong class="me-auto">Alerta</strong>
@@ -347,7 +347,7 @@
 <script>
     currentRequest = null;
     $(document).ready(function() {
-        $('#element').toast('show');
+        $('#ElementAlert').toast('show');
         TablaOrdenFabricacion("{{$FechaFin}}");
         $('#Filtro_fecha-btn').click(function() {
             var startDate = $('#startDate').val();  
@@ -546,6 +546,9 @@
         @if($VerificarSAP==0)
             error("Error SAP", "El servidor SAP no esta disponible en este momento, estamos trabajando en ello.");
         @endif
+        setTimeout(function() {
+            $('#ElementAlert').html('');
+        }, 30000);
     });
     function loadContent(idcontenedor, docNum, cliente) {
         let elemento = document.getElementById(idcontenedor + "cerrar");

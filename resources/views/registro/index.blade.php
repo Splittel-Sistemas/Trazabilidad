@@ -173,9 +173,9 @@
             <form id="userEditForm" action="{{ route('registro.update', ['id' => $registro->id]) }}" method="POST">
                 @csrf
                 @method('PUT')
-                <div class="modal-body">
+                <div class="modal-body" id="ModalBodyEditarUsuario">
                     <!-- Fila para Apellido y Nombre juntos -->
-                    <div class="row mb-4">
+                    <div class="row mb-2">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="name">Nombre</label>
@@ -190,15 +190,14 @@
                         </div>
                     </div>
                     <!-- Fila para Correo Electrónico -->
-                    <div class="form-group">
+                    <div class="form-group mb-2">
                         <label for="email">Email</label>
                         <input type="email" name="email" id="email" class="form-control" placeholder="Ingrese su email" required>
                         @error('email')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
-                    
-                    <div class="row mb-4">
+                    <div class="row mb-2" id="ContainerPassword">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="password">Contraseña</label>
@@ -213,7 +212,7 @@
                         </div>
                     </div>
                     <!-- Fila para Roles -->
-                    <div class="form-group">
+                    <div class="form-group mt-2">
                         <label for="roles">Rol</label>
                         <div id="roles" class="form-check d-flex flex-wrap">
                             <!-- Los roles se generarán aquí dinámicamente -->
@@ -221,8 +220,14 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    <div class='d-flex justify-content-center align-items-center'>
+                        <div class='spinner-grow text-primary' role='status' id="ModalBodyEditarUsuarioCargar">
+                            <span class='visually-hidden'>Loading...</span>
+                        </div>
+                    </div>
+                    <br>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
         </div>
@@ -260,6 +265,11 @@
     });
     function EditarUsuario(registro){
         var userId = $(registro).data('id');  
+        var ContainerPassword = $('#ContainerPassword');
+        var ModalBodyEditarUsuario = $('#ModalBodyEditarUsuario');
+        var ModalBodyEditarUsuarioCargar = $('#ModalBodyEditarUsuarioCargar');
+        ModalBodyEditarUsuario.hide();
+        ContainerPassword.hide();
         var url = "{{ route('registro.show', ['id' => '__userId__']) }}".replace('__userId__', userId);
         $('#apellido').val('');
         $('#email').val('');  
@@ -269,8 +279,15 @@
         $.ajax({
             url: url,
             method: 'GET',
+            beforeSend: function() {
+                    ModalBodyEditarUsuarioCargar.show();
+            },
             success: function(response) {
-                console.log(response);
+                ModalBodyEditarUsuario.show();
+                ModalBodyEditarUsuarioCargar.hide();
+                if(response.role == 'A'){
+                    ContainerPassword.show();
+                }
                 $('#apellido').val(response.apellido);
                 $('#email').val(response.email);  
                 $('#name').val(response.name);
@@ -292,6 +309,10 @@
 
                 // Mostrar el modal
                 $('#userModal').modal('show');
+            },
+            error: function(xhr, status, error) {
+                $('#userModal').modal('hide');
+                error('Ocurrio un error!,los datos no pudieron ser procesados, intente de nuevo! si el error persiste contacte a TI.');
             }
         });
     }

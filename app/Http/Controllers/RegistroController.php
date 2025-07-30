@@ -66,6 +66,7 @@ class RegistroController extends Controller
             'apellido' => $registro->apellido,
             'name' => $registro->name,
             'email' => $registro->email,
+            'role' => $registro->role,
             'roles' => $roles 
         ]);
     }

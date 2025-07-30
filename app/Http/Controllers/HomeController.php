@@ -20,11 +20,8 @@ class HomeController extends Controller
 { 
     private $AreaEspecialEmpaque=17;
     private $AreaEspecialCorte=2;
-   // HomeController.php
-    /*public function Home()
-    {
-        return view('Home');
-    }*/
+    private $AreaEspecialSuministro = 3;
+    
     public function index(){   
         $user = Auth::user();
         if ($user->hasPermission('Vista Dashboard')) {
@@ -91,14 +88,22 @@ class HomeController extends Controller
             $OFDP = $OFD->partidasOF->first();
             //Asignadas, Pendientes Línea
             ($OFDP->Areas()->where('Areas_id', 18)->COUNT() > 0)?$PiezasAsignadasLinea += 1:$PiezasFaltanteLinea += 1;
-            ($OFDP->Areas()->where('Areas_id', 18)->COUNT() > 0)?$OFDia[$key1]['LineasOriginal']=$OFDP->Areas()->first()->id: $OFDia[$key1]['LineasOriginal']=0;
+            ($OFDP->Areas()->where('Areas_id', 18)->COUNT() > 0)?$OFDia[$key1]['LineasOriginal']=$OFDP->Areas()->where('Areas_id', 18)->first()['pivot']->Linea_id: $OFDia[$key1]['LineasOriginal']=0;
         }
+        //Estaciones
         foreach($Estaciones as $key => $Estac){
             //Programadas
             $Programadas = 0;
             $Pendientes = 0;
             $EnProceso = 0;
             $Terminadas = 0;
+            $TiempoPromedioPieza = 0;
+            $CantidadPiezas = 0;
+            $CantidadPiezasHora = 0;
+            $TiempoTotal = 0;
+            $PiezasTiempoTotal = 0;
+            $TiempoProductivo = 0;
+            $TiempoMuerto = 0;
             foreach ($OFDia as $key => $OFD) {
                 //Programadas
                 if($OFD->LineasOriginal != 0){
@@ -116,71 +121,105 @@ class HomeController extends Controller
                         }
                     }
                 }else{
-                    if($Estac->id == 2){
-                        if($OFD->Corte != 0){
-                            $Programadas+=1;
-                        }
-                    }elseif($Estac->id == 3){
-                        $Programadas+=1;
-                    }
-                }
-                //Pendientes y terminadas
-                if($Programadas>0){
-                    $OFDP = $OFD->partidasOF->first();
-                    if($OFDP->Areas()->where('Areas_id', $Estac->id)->COUNT() == 0){
                         if($Estac->id == 2){
                             if($OFD->Corte != 0){
-                                $Pendientes += 1;
+                                $Programadas+=1;
                             }
-                        }else{
-                            $Pendientes += 1;
+                        }elseif($Estac->id == 3){
+                            $Programadas+=1;
+                        }
+                }
+                //Pendientes y terminadas
+                if($OFD->Cerrada == 0){
+                    if($Estac->id == 2){
+                        if($OFD->Corte == 1){        
+                            $Terminadas++;
                         }
                     }else{
-                        if($this->NumeroCompletadas($OFD->OrdenFabricacion,$Estac->id) >= $OFD->CantidadTotal){
-                            if($Estac->id == 2){
-                                if($OFD->Corte == 0){
-                                    $Terminadas += 1;   
+                        $Terminadas++;
+                    }
+                }else{
+                    if($Programadas>0){
+                        $OFDP = $OFD->partidasOF->first();
+                        if($OFDP->Areas()->where('Areas_id', $Estac->id)->COUNT() == 0){
+                            if($Estac->id == $this->AreaEspecialCorte){
+                                if($OFD->Corte == 1){
+                                    $Pendientes += 1;
                                 }
+                            }elseif($Estac->id == $this->AreaEspecialSuministro){
+                                    $Pendientes += 1;
                             }else{
-                                $Terminadas += 1;
+                                if($OFDP->Areas()->where('Areas_id', 18)->COUNT() > 0){
+                                    $Pendientes += 1;
+                                }
                             }
                         }else{
-                            $EnProceso += 1;
+                            if($this->NumeroCompletadas($OFD->OrdenFabricacion,$Estac->id) >= $OFD->CantidadTotal){
+                               if($Estac->id == $this->AreaEspecialCorte){
+                                    if($OFD->Corte == 1){
+                                        $Terminadas += 1;   
+                                    }
+                                }else{
+                                    $Terminadas += 1;
+                                }
+                            }else{
+                                if($Estac->id == $this->AreaEspecialCorte){
+                                    if($OFD->Corte == 1){
+                                        $EnProceso += 1;   
+                                    }
+                                }else{
+                                    $EnProceso += 1;
+                                }
+                            }
                         }
                     }
                 }
+                //Promedio por pieza
+                    $TiempoPromedioPiezaArr = $this->TiempoPiezasSegundos($Estac->id,$OFD);
+                    if($TiempoPromedioPiezaArr['Tiempo']>0){
+                    $CantidadPiezas += $TiempoPromedioPiezaArr['Cantidad'];
+                    $TiempoPromedioPieza += $TiempoPromedioPiezaArr['Tiempo'];
+                    }
+                //Tiempo total por estacion
+                    //$TiempoTotal += 
+                    if($OFD->OrdenFabricacion == '137124'){
+                        return$this->TiempoMuertoTotal($Estac->id,$OFD);
+                    }
+                    /*$PartidaInicio = $OFD->PartidasOF->first();
+                    $FechaInicio = $PartidaInicio->Areas()->where('Areas_id',$Estac->id)->whereNotNull('FechaComienzo')->orderByPivot('FechaComienzo','asc')->first();
+                    $FechaFin = $PartidaInicio->Areas()->where('Areas_id',$Estac->id)->whereNotNull('FechaTermina')->orderByPivot('FechaTermina','desc')->first();
+                    if($FechaInicio!="" AND $FechaFin!=""){
+                        $ComprobarTotal = 0;
+                        $ComprobarTotal = $TiempoTotal += $this->TiempoSegundos($FechaInicio['pivot']->FechaComienzo, $FechaFin['pivot']->FechaTermina);
+                        if($ComprobarTotal>0){
+                            $PiezasTiempoTotal += $this->NumeroCompletadas($OFD->OrdenFabricacion,$Estac->id);
+                        }
+                    }*/
             }
-            $Estac['PorcentajeTerminadas'] = round(($Terminadas== 0)?0:($Programadas * 100) / $Terminadas);
+            //$TiempoTotal = ($PiezasTiempoTotal==0)?0:$TiempoTotal/$PiezasTiempoTotal;
+            if($Estac->id == 2){
+                return  $TiempoTotal."      ".$TiempoPromedioPieza."     ".$TiempoMuerto; 
+            }
+            //TiempoProductivo estacion
+            $TiempoProductivo = (($CantidadPiezas == 0)?0:$TiempoPromedioPieza/$CantidadPiezas);
+            $CantidadPiezasHora = ($CantidadPiezas == 0)?0:$TiempoPromedioPieza/$CantidadPiezas;
+            $TiempoPromedioPieza = $this->Fechas(($CantidadPiezas == 0)?0:$TiempoPromedioPieza/$CantidadPiezas);
+            $Estac['PorcentajeTerminadas'] = round(($Terminadas== 0)?0:($Terminadas/$Programadas) *100,2);
             $Estac['Programadas'] = $Programadas;
             $Estac['Pendientes'] = $Pendientes;
             $Estac['EnProceso'] = $EnProceso;
             $Estac['Terminadas'] = $Terminadas;
+            $Estac['TiempoPromedioPieza'] = $TiempoPromedioPieza;
+            $Estac['CantidadPiezasHora'] = ($CantidadPiezasHora > 0)?floor(3600 / $CantidadPiezasHora):"Sin datos";
+            $Estac['PorcentajeTiempoTotal'] = ($TiempoTotal>0)?100:0;//$TiempoTotal;
+            $TiempoMuerto = ($TiempoTotal > 0) ? ($TiempoProductivo / $TiempoTotal) * 100 : 0;
+            $Estac['PorcentajeTiempoProductivo'] =($TiempoTotal > 0) ? ($TiempoProductivo / $TiempoTotal) * 100 : 0;
+            $Estac['PorcentajeTiempoMuerto'] = ($TiempoTotal > 0) ?100-$TiempoMuerto:0;
+            $Estac['TiempoTotal'] = $this->Fechas($TiempoTotal);
+            $Estac['TiempoProductivo'] = $this->Fechas($TiempoProductivo);
+            $Estac['TiempoMuerto'] = $this->Fechas($TiempoTotal-$TiempoMuerto);
         }
-        /*foreach($OFDia as $OFD){
-                foreach( $OFD->PartidasOF as $OFDP){
-
-                    if($Estac == 2 || $Estac == 3){
-
-                    }else{
-
-                    }
-                    //Programadas
-                        return$OFDP->Areas()->where('Areas_id',$Estac);
-                    //$TotalCantidadProgramadas $OFDP->Areas()->where('Areas_id',$Estac)->get();
-                }
-            }
-            //Programadas
-                //return$OFDia;
-            //Pendientes
-            //En proceso
-            //Terminadas
-            //Promedio por pieza (Tiempo)
-        }*/
         $Lineas = Linea::where('id','!=',1)->get();
-        foreach($Estaciones as $Estac){
-            //if()
-            $Estac;
-        }
         return response()->json([
             "OFAbiertaCant" => $OFAbiertaCant,
             "OFCerradaCant" => $OFCerradaCant,
@@ -194,7 +233,8 @@ class HomeController extends Controller
         $FechaHoy = date('Y-m-d');
         $FechaSemana = date('Y-m-d', strtotime('-1 week'));
         $FechaSemanaAtras = date('Y-m-d', strtotime('-2 week'));
-        $OFAbierta = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaSemana,$FechaHoy])->get();//->where('Cerrada',1)->get();
+        $OFSemana = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaSemana,$FechaHoy])->get();
+        $OFAbierta = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaSemana,$FechaHoy])->where('Cerrada',1)->get();
         $OFCerrada = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaSemana,$FechaHoy])->where('Cerrada',0)->get();
         $OFAbiertaCant = $OFAbierta->count();
         $OFCerradaCant = $OFCerrada->count();
@@ -223,6 +263,144 @@ class HomeController extends Controller
             $PorcentajeAvanceC = $PorcentajeAvanceC; 
         }
         $Estaciones = Areas::where('id','!=',19)->where('id','!=',20)->where('id','!=',21)->get();
+        $Programadas = 0;
+        $Pendientes = 0;
+        $EnProceso = 0;
+        $Terminadas = 0;
+        $PromedioPieza = 0;
+        $PiezasAsignadasLinea = 0;
+        $PiezasFaltanteLinea = 0;
+        //Asignadas, Pendientes Línea
+        foreach ($OFSemana as $key1=>$OFD) {
+            $OFDP = $OFD->partidasOF->first();
+            //Asignadas, Pendientes Línea
+            ($OFDP->Areas()->where('Areas_id', 18)->COUNT() > 0)?$PiezasAsignadasLinea += 1:$PiezasFaltanteLinea += 1;
+            ($OFDP->Areas()->where('Areas_id', 18)->COUNT() > 0)?$OFDia[$key1]['LineasOriginal']=$OFDP->Areas()->where('Areas_id', 18)->first()['pivot']->Linea_id: $OFDia[$key1]['LineasOriginal']=0;
+        }
+        //Estaciones
+        foreach($Estaciones as $key => $Estac){
+            //Programadas
+            $Programadas = 0;
+            $Pendientes = 0;
+            $EnProceso = 0;
+            $Terminadas = 0;
+            $TiempoPromedioPieza = 0;
+            $CantidadPiezas = 0;
+            $CantidadPiezasHora = 0;
+            $TiempoTotal = 0;
+            $PiezasTiempoTotal = 0;
+            $TiempoProductivo = 0;
+            $TiempoMuerto = 0;
+            foreach ($OFSemana as $key => $OFD) {
+                //Programadas
+                if($OFD->LineasOriginal != 0){
+                    $LineasOriginal = Linea::find($OFD->LineasOriginal);
+                    $LineasOriginal = array_map('intval', explode(',', $LineasOriginal->AreasPosibles));
+                    if($Estac->id == 2){
+                        if($OFD->Corte != 0){
+                            if (in_array($Estac->id, $LineasOriginal)) {
+                                $Programadas+=1;
+                            }
+                        }
+                    }else{
+                        if (in_array($Estac->id, $LineasOriginal)) {
+                            $Programadas+=1;
+                        }
+                    }
+                }else{
+                        if($Estac->id == 2){
+                            if($OFD->Corte != 0){
+                                $Programadas+=1;
+                            }
+                        }elseif($Estac->id == 3){
+                            $Programadas+=1;
+                        }
+                }
+                //Pendientes y terminadas
+                if($OFD->Cerrada == 0){
+                    if($Estac->id == 2){
+                        if($OFD->Corte == 1){        
+                            $Terminadas++;
+                        }
+                    }else{
+                        $Terminadas++;
+                    }
+                }else{
+                    if($Programadas>0){
+                        $OFDP = $OFD->partidasOF->first();
+                        if($OFDP->Areas()->where('Areas_id', $Estac->id)->COUNT() == 0){
+                            if($Estac->id == $this->AreaEspecialCorte){
+                                if($OFD->Corte == 1){
+                                    $Pendientes += 1;
+                                }
+                            }elseif($Estac->id == $this->AreaEspecialSuministro){
+                                    $Pendientes += 1;
+                            }else{
+                                if($OFDP->Areas()->where('Areas_id', 18)->COUNT() > 0){
+                                    $Pendientes += 1;
+                                }
+                            }
+                        }else{
+                            if($this->NumeroCompletadas($OFD->OrdenFabricacion,$Estac->id) >= $OFD->CantidadTotal){
+                               if($Estac->id == $this->AreaEspecialCorte){
+                                    if($OFD->Corte == 1){
+                                        $Terminadas += 1;   
+                                    }
+                                }else{
+                                    $Terminadas += 1;
+                                }
+                            }else{
+                                if($Estac->id == $this->AreaEspecialCorte){
+                                    if($OFD->Corte == 1){
+                                        $EnProceso += 1;   
+                                    }
+                                }else{
+                                    $EnProceso += 1;
+                                }
+                            }
+                        }
+                    }
+                }
+                //Promedio por pieza
+                    $TiempoPromedioPiezaArr = $this->TiempoPiezasSegundos($Estac->id,$OFD);
+                    $CantidadPiezas += $TiempoPromedioPiezaArr['Cantidad'];
+                    $TiempoPromedioPieza += $TiempoPromedioPiezaArr['Tiempo'];
+                //Tiempo total por estacion
+                    $PartidaInicio = $OFD->PartidasOF->first();
+                    $FechaInicio = $PartidaInicio->Areas()->where('Areas_id',$Estac->id)->whereNotNull('FechaComienzo')->orderByPivot('FechaComienzo','asc')->first();
+                    $FechaFin = $PartidaInicio->Areas()->where('Areas_id',$Estac->id)->whereNotNull('FechaTermina')->orderByPivot('FechaTermina','desc')->first();
+                    if($FechaInicio!="" AND $FechaFin!=""){
+                        if($Estac->id == 5){
+                            //return $FechaInicio;//.$FechaFin; 
+                        }
+                        $TiempoTotal += $this->TiempoSegundos($FechaInicio['pivot']->FechaComienzo, $FechaFin['pivot']->FechaTermina);
+                        if($this->TiempoSegundos($FechaInicio['pivot']->FechaComienzo, $FechaFin['pivot']->FechaTermina)>0){
+                            $PiezasTiempoTotal += $this->NumeroCompletadas($OFD->OrdenFabricacion,$Estac->id);
+                            //echo$FechaInicio['pivot']->FechaComienzo."     ".$FechaFin['pivot']->FechaTermina."     ".$Estac->id."     ".$TiempoTotal."     ".$PiezasTiempoTotal."||||||||||||||";
+                        }
+                    }
+            }
+            $TiempoTotal = ($PiezasTiempoTotal==0)?0:$TiempoTotal/$PiezasTiempoTotal;
+            //TiempoProductivo estacion
+            $TiempoProductivo = (($CantidadPiezas == 0)?0:$TiempoPromedioPieza/$CantidadPiezas);
+            $CantidadPiezasHora = ($CantidadPiezas == 0)?0:$TiempoPromedioPieza/$CantidadPiezas;
+            $TiempoPromedioPieza = $this->Fechas(($CantidadPiezas == 0)?0:$TiempoPromedioPieza/$CantidadPiezas);
+            $Estac['PorcentajeTerminadas'] = round(($Terminadas== 0)?0:($Terminadas/$Programadas) *100,2);
+            $Estac['Programadas'] = $Programadas;
+            $Estac['Pendientes'] = $Pendientes;
+            $Estac['EnProceso'] = $EnProceso;
+            $Estac['Terminadas'] = $Terminadas;
+            $Estac['TiempoPromedioPieza'] = $TiempoPromedioPieza;
+            $Estac['CantidadPiezasHora'] = ($CantidadPiezasHora > 0)?floor(3600 / $CantidadPiezasHora):"Sin datos";
+            $Estac['PorcentajeTiempoTotal'] = ($TiempoTotal>0)?100:0;//$TiempoTotal;
+            $TiempoMuerto = ($TiempoTotal > 0) ? ($TiempoProductivo / $TiempoTotal) * 100 : 0;
+            $Estac['PorcentajeTiempoProductivo'] =($TiempoTotal > 0) ? ($TiempoProductivo / $TiempoTotal) * 100 : 0;
+            $Estac['PorcentajeTiempoMuerto'] = ($TiempoTotal > 0) ?100-$TiempoMuerto:0;
+            $Estac['TiempoTotal'] = $this->Fechas($TiempoTotal);
+            $Estac['TiempoProductivo'] = $this->Fechas($TiempoProductivo);
+            $Estac['TiempoMuerto'] = $this->Fechas($TiempoTotal-$TiempoProductivo);
+        }
+        $Lineas = Linea::where('id','!=',1)->get();
         return response()->json([
             "OFAbiertaCant" => $OFAbiertaCant,
             "OFCerradaCant" => $OFCerradaCant,
@@ -236,7 +414,8 @@ class HomeController extends Controller
         $FechaMesInicio = date('Y-m-01');
         $FechaMes = date('Y-m-d', strtotime('-1 month'));
         $FechaMesAtras = date('Y-m-d', strtotime('-2 month'));
-        $OFAbierta = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaMes,$FechaMesInicio])->get();//->where('Cerrada',1)->get();
+        $OFMes = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaMes,$FechaMesInicio])->get();
+        $OFAbierta = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaMes,$FechaMesInicio])->where('Cerrada',1)->get();
         $OFCerrada = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaMes,$FechaMesInicio])->where('Cerrada',0)->get();
         $OFAbiertaCant = $OFAbierta->count();
         $OFCerradaCant = $OFCerrada->count();
@@ -265,6 +444,144 @@ class HomeController extends Controller
             $PorcentajeAvanceC = $PorcentajeAvanceC; 
         }
         $Estaciones = Areas::where('id','!=',19)->where('id','!=',20)->where('id','!=',21)->get();
+        $Programadas = 0;
+        $Pendientes = 0;
+        $EnProceso = 0;
+        $Terminadas = 0;
+        $PromedioPieza = 0;
+        $PiezasAsignadasLinea = 0;
+        $PiezasFaltanteLinea = 0;
+        //Asignadas, Pendientes Línea
+        foreach ($OFMes as $key1=>$OFD) {
+            $OFDP = $OFD->partidasOF->first();
+            //Asignadas, Pendientes Línea
+            ($OFDP->Areas()->where('Areas_id', 18)->COUNT() > 0)?$PiezasAsignadasLinea += 1:$PiezasFaltanteLinea += 1;
+            ($OFDP->Areas()->where('Areas_id', 18)->COUNT() > 0)?$OFDia[$key1]['LineasOriginal']=$OFDP->Areas()->where('Areas_id', 18)->first()['pivot']->Linea_id: $OFDia[$key1]['LineasOriginal']=0;
+        }
+        //Estaciones
+        foreach($Estaciones as $key => $Estac){
+            //Programadas
+            $Programadas = 0;
+            $Pendientes = 0;
+            $EnProceso = 0;
+            $Terminadas = 0;
+            $TiempoPromedioPieza = 0;
+            $CantidadPiezas = 0;
+            $CantidadPiezasHora = 0;
+            $TiempoTotal = 0;
+            $PiezasTiempoTotal = 0;
+            $TiempoProductivo = 0;
+            $TiempoMuerto = 0;
+            foreach ($OFMes as $key => $OFD) {
+                //Programadas
+                if($OFD->LineasOriginal != 0){
+                    $LineasOriginal = Linea::find($OFD->LineasOriginal);
+                    $LineasOriginal = array_map('intval', explode(',', $LineasOriginal->AreasPosibles));
+                    if($Estac->id == 2){
+                        if($OFD->Corte != 0){
+                            if (in_array($Estac->id, $LineasOriginal)) {
+                                $Programadas+=1;
+                            }
+                        }
+                    }else{
+                        if (in_array($Estac->id, $LineasOriginal)) {
+                            $Programadas+=1;
+                        }
+                    }
+                }else{
+                        if($Estac->id == 2){
+                            if($OFD->Corte != 0){
+                                $Programadas+=1;
+                            }
+                        }elseif($Estac->id == 3){
+                            $Programadas+=1;
+                        }
+                }
+                //Pendientes y terminadas
+                if($OFD->Cerrada == 0){
+                    if($Estac->id == 2){
+                        if($OFD->Corte == 1){        
+                            $Terminadas++;
+                        }
+                    }else{
+                        $Terminadas++;
+                    }
+                }else{
+                    if($Programadas>0){
+                        $OFDP = $OFD->partidasOF->first();
+                        if($OFDP->Areas()->where('Areas_id', $Estac->id)->COUNT() == 0){
+                            if($Estac->id == $this->AreaEspecialCorte){
+                                if($OFD->Corte == 1){
+                                    $Pendientes += 1;
+                                }
+                            }elseif($Estac->id == $this->AreaEspecialSuministro){
+                                    $Pendientes += 1;
+                            }else{
+                                if($OFDP->Areas()->where('Areas_id', 18)->COUNT() > 0){
+                                    $Pendientes += 1;
+                                }
+                            }
+                        }else{
+                            if($this->NumeroCompletadas($OFD->OrdenFabricacion,$Estac->id) >= $OFD->CantidadTotal){
+                               if($Estac->id == $this->AreaEspecialCorte){
+                                    if($OFD->Corte == 1){
+                                        $Terminadas += 1;   
+                                    }
+                                }else{
+                                    $Terminadas += 1;
+                                }
+                            }else{
+                                if($Estac->id == $this->AreaEspecialCorte){
+                                    if($OFD->Corte == 1){
+                                        $EnProceso += 1;   
+                                    }
+                                }else{
+                                    $EnProceso += 1;
+                                }
+                            }
+                        }
+                    }
+                }
+                //Promedio por pieza
+                    $TiempoPromedioPiezaArr = $this->TiempoPiezasSegundos($Estac->id,$OFD);
+                    $CantidadPiezas += $TiempoPromedioPiezaArr['Cantidad'];
+                    $TiempoPromedioPieza += $TiempoPromedioPiezaArr['Tiempo'];
+                //Tiempo total por estacion
+                    $PartidaInicio = $OFD->PartidasOF->first();
+                    $FechaInicio = $PartidaInicio->Areas()->where('Areas_id',$Estac->id)->whereNotNull('FechaComienzo')->orderByPivot('FechaComienzo','asc')->first();
+                    $FechaFin = $PartidaInicio->Areas()->where('Areas_id',$Estac->id)->whereNotNull('FechaTermina')->orderByPivot('FechaTermina','desc')->first();
+                    if($FechaInicio!="" AND $FechaFin!=""){
+                        if($Estac->id == 5){
+                            //return $FechaInicio;//.$FechaFin; 
+                        }
+                        $TiempoTotal += $this->TiempoSegundos($FechaInicio['pivot']->FechaComienzo, $FechaFin['pivot']->FechaTermina);
+                        if($this->TiempoSegundos($FechaInicio['pivot']->FechaComienzo, $FechaFin['pivot']->FechaTermina)>0){
+                            $PiezasTiempoTotal += $this->NumeroCompletadas($OFD->OrdenFabricacion,$Estac->id);
+                            //echo$FechaInicio['pivot']->FechaComienzo."     ".$FechaFin['pivot']->FechaTermina."     ".$Estac->id."     ".$TiempoTotal."     ".$PiezasTiempoTotal."||||||||||||||";
+                        }
+                    }
+            }
+            $TiempoTotal = ($PiezasTiempoTotal==0)?0:$TiempoTotal/$PiezasTiempoTotal;
+            //TiempoProductivo estacion
+            $TiempoProductivo = (($CantidadPiezas == 0)?0:$TiempoPromedioPieza/$CantidadPiezas);
+            $CantidadPiezasHora = ($CantidadPiezas == 0)?0:$TiempoPromedioPieza/$CantidadPiezas;
+            $TiempoPromedioPieza = $this->Fechas(($CantidadPiezas == 0)?0:$TiempoPromedioPieza/$CantidadPiezas);
+            $Estac['PorcentajeTerminadas'] = round(($Terminadas== 0)?0:($Terminadas/$Programadas) *100,2);
+            $Estac['Programadas'] = $Programadas;
+            $Estac['Pendientes'] = $Pendientes;
+            $Estac['EnProceso'] = $EnProceso;
+            $Estac['Terminadas'] = $Terminadas;
+            $Estac['TiempoPromedioPieza'] = $TiempoPromedioPieza;
+            $Estac['CantidadPiezasHora'] = ($CantidadPiezasHora > 0)?floor(3600 / $CantidadPiezasHora):"Sin datos";
+            $Estac['PorcentajeTiempoTotal'] = ($TiempoTotal>0)?100:0;//$TiempoTotal;
+            $TiempoMuerto = ($TiempoTotal > 0) ? ($TiempoProductivo / $TiempoTotal) * 100 : 0;
+            $Estac['PorcentajeTiempoProductivo'] =($TiempoTotal > 0) ? ($TiempoProductivo / $TiempoTotal) * 100 : 0;
+            $Estac['PorcentajeTiempoMuerto'] = ($TiempoTotal > 0) ?100-$TiempoMuerto:0;
+            $Estac['TiempoTotal'] = $this->Fechas($TiempoTotal);
+            $Estac['TiempoProductivo'] = $this->Fechas($TiempoProductivo);
+            $Estac['TiempoMuerto'] = $this->Fechas($TiempoTotal-$TiempoProductivo);
+        }
+        $Lineas = Linea::where('id','!=',1)->get();
         return response()->json([
             "OFAbiertaCant" => $OFAbiertaCant,
             "OFCerradaCant" => $OFCerradaCant,
@@ -285,6 +602,112 @@ class HomeController extends Controller
             return $this-> Mes();
         }
 
+    }
+    public function TiempoPiezasSegundos($IdArea,$OrdenFabricacion){
+        //Dependiendo del tipo de escaner se toma el tiempo
+        $TiempoProductivoEstacion = 0;
+        $PartidasOF = $OrdenFabricacion->PartidasOF->first();
+        $PiezasCantidad = 0;
+        if($OrdenFabricacion->Escaner == 1){
+            $TiempoProductivoEstacionAreas = $PartidasOF->Areas()->whereNotNull('FechaTermina')->where('Areas_id',$IdArea)->get();
+            $TiempoProductivoEstacion = 0;
+            foreach($TiempoProductivoEstacionAreas as $TPEA){
+                $PiezasCantidad += $TPEA['pivot']->Cantidad;
+                $FechaPrimera=Carbon::parse($TPEA['pivot']->FechaComienzo);
+                $FechaTermina=Carbon::parse($TPEA['pivot']->FechaTermina);
+                $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
+            }
+        }else{
+            $TiempoProductivoEstacion=0;
+            $TiempoProductivoEstacions=0;
+            if($IdArea == 2 || $IdArea == 3){
+                $TiempoProductivoEstacionAreas = $PartidasOF->Areas()->whereNotNull('FechaTermina')->where('Areas_id',$IdArea)->get();
+                foreach($TiempoProductivoEstacionAreas as $TPEA){
+                    $PiezasCantidad += $TPEA['pivot']->Cantidad;
+                    $FechaPrimera=Carbon::parse($TPEA['pivot']->FechaComienzo);
+                    $FechaTermina=Carbon::parse($TPEA['pivot']->FechaTermina);
+                    $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
+                }
+            }else{
+                $TiempoProductivoEstacionAreasA = $PartidasOF->Areas()->where('TipoPartida','!=','F')->where('Areas_id',$IdArea)->orderBy('Linea_id')->get();
+                $TiempoProductivoEstacionAreasF= $PartidasOF->Areas()->where('TipoPartida','=','F')->where('Areas_id',$IdArea)->orderBy('Linea_id')->get();
+                foreach($TiempoProductivoEstacionAreasA as $keyA => $TPEAA){
+                    foreach($TiempoProductivoEstacionAreasF as $keyF => $TPEAF){
+                        if($TPEAA['pivot']->Linea_id != $TPEAF['pivot']->Linea_id){
+                            unset($TiempoProductivoEstacionAreasA[$keyA]);
+                        }else{
+                            $PiezasCantidad += $TPEAF['pivot']->Cantidad;
+                            $CantidadA=$TPEAA['pivot']->Cantidad;
+                            $CantidadF=$TPEAF['pivot']->Cantidad;
+                            if($CantidadA == $CantidadF){
+                                $FechaPrimera=Carbon::parse($TPEAA['pivot']->FechaComienzo);
+                                $FechaTermina=Carbon::parse($TPEAF['pivot']->FechaTermina);
+                                $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
+                                unset($TiempoProductivoEstacionAreasF[$keyF]);
+                                break;
+                            }elseif($CantidadA > $CantidadF){
+                                $FechaPrimera=Carbon::parse($TPEAA['pivot']->FechaComienzo);
+                                $FechaTermina=Carbon::parse($TPEAF['pivot']->FechaTermina);
+                                $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
+                                $TPEAA['pivot']->Cantidad -= $CantidadF;
+                                unset($TiempoProductivoEstacionAreasF[$keyF]);
+                            }else{
+                                $FechaPrimera=Carbon::parse($TPEAA['pivot']->FechaComienzo);
+                                $FechaTermina=Carbon::parse($TPEAF['pivot']->FechaTermina);
+                                $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
+                                $TPEAF['pivot']->Cantidad -= $CantidadA;
+                                unset($TiempoProductivoEstacionAreasA[$keyA]);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return [
+        'Tiempo' => $TiempoProductivoEstacion,
+        'Cantidad' => $PiezasCantidad,
+        ];
+    }
+    public function Fechas($TiempoTotalEstacion){
+        $horas = floor($TiempoTotalEstacion / 3600);
+        $minutos = floor(($TiempoTotalEstacion % 3600) / 60);
+        $segundos = $TiempoTotalEstacion % 60;
+        if($horas!=0){$TiempoTotalEstacion = sprintf("%02d h %02d m %02d s ", $horas, $minutos, $segundos);}
+        elseif($minutos!=0){$TiempoTotalEstacion = sprintf("%02d m %02d s ", $minutos, $segundos);}
+        elseif($segundos!=0){$TiempoTotalEstacion = sprintf("%02d s",$segundos);}
+        else{$TiempoTotalEstacion = "Sin datos";}
+        return $TiempoTotalEstacion;
+    }
+    public function TiempoSegundos($FechaInicio, $FechaFin){
+        $inicio = Carbon::parse($FechaInicio);
+        $fin = Carbon::parse($FechaFin);
+        if ($inicio > $fin) {
+            return 0;
+        }
+        return $inicio->diffInSeconds($fin);
+    }
+    public function TiempoMuertoTotal($IdArea,$OrdenFabricacion){
+        $PartidaOF = $OrdenFabricacion->PartidasOF->first();
+        $Cantidad = 0;
+        $TiempoSegundos = 0;
+        //Si es igual a 2 o 3 no imparta el tipo de escaner
+        if($OrdenFabricacion->Escaner == 1 || $IdArea == $this->AreaEspecialCorte || $IdArea == $this->AreaEspecialSuministro ){
+            $Partidasof_Areas = Partidasof_Areas::where('Areas_id',$IdArea)->whereNotNull('FechaTermina')->where('PartidasOF_id',$PartidaOF->id)->orderBy('Linea_id', 'asc')->get();
+            foreach($Partidasof_Areas as $key => $PA){
+                if(($key+1) < $Partidasof_Areas->count()){
+                    if($PA->Linea_id == $Partidasof_Areas[$key+1]->Linea_id){
+                        $FechaInicio = $PA->Fechatermina;
+                        $FechaFin = $Partidasof_Areas[$key+1]->Fechacomienzo;
+                        return 
+                        $TiempoSegundos += $this->TiempoSegundos($FechaInicio, $FechaFin);
+                    }
+                }
+            }
+        }else{
+
+        }
+        return $TiempoSegundos;
     }
     /*public function CapacidadProductiva()
     {
@@ -2035,14 +2458,14 @@ class HomeController extends Controller
 
     //}
     public function NumeroCompletadas($OrdenFabricacion,$Area){
-        $user= Auth::user();
+        /*$user= Auth::user();
         if (!$user) {
             return redirect()->route('login');
-        }
+        }*/
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
         $PartidasOF=$OrdenFabricacion->PartidasOF;
         $Suma=0;
-        if($OrdenFabricacion->Escaner == 1){
+        if($OrdenFabricacion->Escaner == 1 OR $Area==2 OR $Area==3){
             foreach($PartidasOF as $Partidas){
                 $PartidasOFAreasCompN=$Partidas->Areas()->where('Areas_id',$Area)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad');
                 $PartidasOFAreasCompRI=$Partidas->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('TipoPartida','R')->SUM('Cantidad');
