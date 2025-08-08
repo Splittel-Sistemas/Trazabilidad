@@ -34,7 +34,7 @@
 @section('content')
     <div class="row gy-3 mb-2 justify-content-between">
         <div class="col-md-9 col-auto">
-        <h4 class="mb-2 text-1100">Empaquetado</h4>
+        <h4 class="mb-2 text-1100">Empaque</h4>
         </div>
     </div>
     <div class="row">

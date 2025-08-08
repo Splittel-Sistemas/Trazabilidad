@@ -251,6 +251,16 @@
             </div>
             <div class="modal-body">
                 <div class="row">
+                    <!--<div class="mb-3 col-8">
+                        <label class="form-label" for="CantidadPersona">Grupo:</label>
+                        <select class="form-control" id="GrupoPersona">
+                            <option value="">Selecciona un color</option>
+                            <option value="Rojo">Rojo</option>
+                            <option value="Verde">Verde</option>
+                            <option value="Gris">Gris</option>
+                        </select>
+                        <div class="invalid-feedback" id="error_CantidadPersona"></div>
+                    </div>-->
                     <div class="mb-1 col-6">
                         <label class="form-label" for="CantidadPersona">Cantidad de personas:</label>
                         <input class="form-control" id="CantidadPersona" oninput="RegexNumeros(this)" type="text" placeholder="Ingresa una cantidad" />

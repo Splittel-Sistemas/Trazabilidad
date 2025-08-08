@@ -60,9 +60,9 @@ class BusquedaController extends Controller
             $Ordenes=OrdenFabricacion::where('OrdenFabricacion', 'like', '%' . $NumeroOrden . '%')->orderBy('OrdenFabricacion', 'asc')->get();
             foreach($Ordenes as $key=>$Orden){
                 if($key==0){
-                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 active" onclick="SeleccionarNumOrden('.$Orden->OrdenFabricacion.')">'.$Orden->OrdenFabricacion.'</a>';
+                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 active" data-cantidad="'.$Orden->CantidadTotal.'" onclick="SeleccionarNumOrden('.$Orden->OrdenFabricacion.')">'.$Orden->OrdenFabricacion.'</a>';
                 }else{
-                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 " onclick="SeleccionarNumOrden('.$Orden->OrdenFabricacion.')">'.$Orden->OrdenFabricacion.'</a>';
+                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 " data-cantidad="'.$Orden->CantidadTotal.'" onclick="SeleccionarNumOrden('.$Orden->OrdenFabricacion.')">'.$Orden->OrdenFabricacion.'</a>';
                 }
             }
         }else{

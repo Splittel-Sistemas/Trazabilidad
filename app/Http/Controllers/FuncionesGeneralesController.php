@@ -160,6 +160,7 @@ class FuncionesGeneralesController extends Controller
         }
         return count($partidas)-$countpartidas;
     }
+    //Retorna detalles del cable para validarlos 
     public function DetallesCable($OrdenFabricacion){
         $schema = 'HN_OPTRONICS';
         $sql = 'SELECT DISTINCT T3."ItemCode" AS "Articulo", T4."ItemName" AS"Descripcion", ROUND(T2."PlannedQty", 0) AS "Cantidad OF", T2."DueDate" AS "Fecha entrega OF",
@@ -167,7 +168,7 @@ class FuncionesGeneralesController extends Controller
                     FROM  HN_OPTRONICS."OWOR" T2 
                     INNER JOIN HN_OPTRONICS."WOR1" T3 ON T3."DocEntry" = T2."DocEntry" 
                     INNER JOIN HN_OPTRONICS."OITM" T4 ON T4."ItemCode" = T3."ItemCode"
-                    WHERE T2."DocNum" = '.$OrdenFabricacion.' AND T3."ItemName" LIKE \'%Cable%\' LIMIT 1';
+                    WHERE T2."DocNum" = '.$OrdenFabricacion.' AND (T3."ItemName" LIKE \'%Cable%\' OR T3."ItemCode" = \'SP012930190B\') LIMIT 1';
                 /*$sql="SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", T1.\"Dscription\" AS\"Descripcion\", ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", T2.\"DueDate\" AS \"Fecha entrega OF\", 
 	            T1.\"PoTrgNum\" AS \"Orden de F.\" , T1.\"LineNum\" AS \"LineNum\", T3.\"ItemCode\" \"Hijo\", T3.\"ItemName\" \"Nombre Hijo\", T3.\"BaseQty\" \"Cantidad Base\",T3.\"IssuedQty\" \"Ctd. requerida\" 
                 FROM {$schema}.\"ORDR\" T0
@@ -178,5 +179,36 @@ class FuncionesGeneralesController extends Controller
                 LIMIT 1";*/
                 //WHERE T0.\"DocNum\" = 66483 AND T3.\"ItemName\" LIKE '%Cable%'";
         return $Detalles = $this->ejecutarConsulta($sql);
+    }
+    public function EtiquetasDatosSAP($NumOV){
+        $schema = 'HN_OPTRONICS';
+        $where="";
+        $datos="";
+        try {
+            $where = 'T0."DocNum" LIKE \'%' . $NumOV . '%\'';
+            $sql = ' SELECT  T0."DocNum" AS "OV",T2."SubCatNum"  AS "SubCatNum"
+                FROM  ' . $schema . '.ORDR T0
+				INNER JOIN  ' . $schema . '.RDR1 T2 ON T2."DocEntry" = T0."DocEntry" 
+                LEFT JOIN  ' . $schema . '.OSCN T1 ON T0."CardCode" = T1."CardCode" AND T1."Substitute" = T2."SubCatNum" AND T2."ItemCode" = T1."ItemCode"
+                WHERE T0."DocNum" = '. $NumOV.';';
+            $datos = $this->ejecutarConsulta($sql);
+        } catch (\Exception $e) {
+            return $datos=[];
+        }
+        return $datos;
+    }
+    public function EtiquetasDatosSAPFMX($NumOV){
+        $schema = 'HN_OPTRONICS';
+        $where="";
+        $datos="";
+        try {
+            $sql = ' SELECT T0."NumAtCard",T0."DocNum" AS "OV"
+                FROM  ' . $schema . '.ORDR T0
+                WHERE T0."DocNum" = '. $NumOV.' AND T0."CardCode" = \'C0004\';';
+            $datos = $this->ejecutarConsulta($sql);
+        } catch (\Exception $e) {
+            return $datos=[];
+        }
+        return $datos;
     }
 }

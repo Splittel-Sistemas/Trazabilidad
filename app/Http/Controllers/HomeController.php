@@ -177,14 +177,13 @@ class HomeController extends Controller
                 //Promedio por pieza
                     $TiempoPromedioPiezaArr = $this->TiempoPiezasSegundos($Estac->id,$OFD);
                     if($TiempoPromedioPiezaArr['Tiempo']>0){
-                    $CantidadPiezas += $TiempoPromedioPiezaArr['Cantidad'];
-                    $TiempoPromedioPieza += $TiempoPromedioPiezaArr['Tiempo'];
+                        $CantidadPiezas += $TiempoPromedioPiezaArr['Cantidad'];
+                        $TiempoPromedioPieza += $TiempoPromedioPiezaArr['Tiempo'];
                     }
                 //Tiempo total por estacion
-                    //$TiempoTotal += 
-                    if($OFD->OrdenFabricacion == '137124'){
-                        return$this->TiempoMuertoTotal($Estac->id,$OFD);
-                    }
+                    $TiempoTotalArr = $this->TiempoTotal($Estac->id,$OFD);
+                    $TiempoTotal += $TiempoTotalArr['Tiempo'];
+                    $PiezasTiempoTotal += $TiempoTotalArr['Cantidad'];
                     /*$PartidaInicio = $OFD->PartidasOF->first();
                     $FechaInicio = $PartidaInicio->Areas()->where('Areas_id',$Estac->id)->whereNotNull('FechaComienzo')->orderByPivot('FechaComienzo','asc')->first();
                     $FechaFin = $PartidaInicio->Areas()->where('Areas_id',$Estac->id)->whereNotNull('FechaTermina')->orderByPivot('FechaTermina','desc')->first();
@@ -196,28 +195,30 @@ class HomeController extends Controller
                         }
                     }*/
             }
-            //$TiempoTotal = ($PiezasTiempoTotal==0)?0:$TiempoTotal/$PiezasTiempoTotal;
-            if($Estac->id == 2){
-                return  $TiempoTotal."      ".$TiempoPromedioPieza."     ".$TiempoMuerto; 
-            }
+            //TiempoTotal estacion
+                $TiempoTotal = (($PiezasTiempoTotal==0)?0:$TiempoTotal/$PiezasTiempoTotal);
+                $Estac['TiempoTotal'] = $this->Fechas($TiempoTotal);
             //TiempoProductivo estacion
-            $TiempoProductivo = (($CantidadPiezas == 0)?0:$TiempoPromedioPieza/$CantidadPiezas);
-            $CantidadPiezasHora = ($CantidadPiezas == 0)?0:$TiempoPromedioPieza/$CantidadPiezas;
-            $TiempoPromedioPieza = $this->Fechas(($CantidadPiezas == 0)?0:$TiempoPromedioPieza/$CantidadPiezas);
-            $Estac['PorcentajeTerminadas'] = round(($Terminadas== 0)?0:($Terminadas/$Programadas) *100,2);
-            $Estac['Programadas'] = $Programadas;
-            $Estac['Pendientes'] = $Pendientes;
-            $Estac['EnProceso'] = $EnProceso;
-            $Estac['Terminadas'] = $Terminadas;
-            $Estac['TiempoPromedioPieza'] = $TiempoPromedioPieza;
-            $Estac['CantidadPiezasHora'] = ($CantidadPiezasHora > 0)?floor(3600 / $CantidadPiezasHora):"Sin datos";
-            $Estac['PorcentajeTiempoTotal'] = ($TiempoTotal>0)?100:0;//$TiempoTotal;
-            $TiempoMuerto = ($TiempoTotal > 0) ? ($TiempoProductivo / $TiempoTotal) * 100 : 0;
-            $Estac['PorcentajeTiempoProductivo'] =($TiempoTotal > 0) ? ($TiempoProductivo / $TiempoTotal) * 100 : 0;
-            $Estac['PorcentajeTiempoMuerto'] = ($TiempoTotal > 0) ?100-$TiempoMuerto:0;
-            $Estac['TiempoTotal'] = $this->Fechas($TiempoTotal);
-            $Estac['TiempoProductivo'] = $this->Fechas($TiempoProductivo);
-            $Estac['TiempoMuerto'] = $this->Fechas($TiempoTotal-$TiempoMuerto);
+                $TiempoProductivo = (($CantidadPiezas == 0)?0:$TiempoPromedioPieza/$CantidadPiezas);
+                $Estac['TiempoProductivo'] = $this->Fechas($TiempoProductivo);
+            //TiempoMuerto estacion
+                $TiempoMuerto = $TiempoTotal-$TiempoProductivo;
+                $Estac['TiempoMuerto'] = $this->Fechas($TiempoMuerto);
+            //Parametros Tabla
+                $Estac['Programadas'] = $Programadas;
+                $Estac['Pendientes'] = $Pendientes;
+                $Estac['EnProceso'] = $EnProceso;
+                $Estac['Terminadas'] = $Terminadas;
+            //Tiempo Promedio por Hora
+                $CantidadPiezasHora = $TiempoProductivo;
+                $Estac['CantidadPiezasHora'] = ($CantidadPiezasHora > 0)?floor(3600 / $CantidadPiezasHora):"Sin datos";
+                $TiempoPromedioPieza = $this->Fechas(($CantidadPiezas == 0)?0:$TiempoPromedioPieza/$CantidadPiezas);
+                $Estac['PorcentajeTerminadas'] = round(($Terminadas== 0)?0:($Terminadas/$Programadas) *100,2);
+                $Estac['TiempoPromedioPieza'] = $TiempoPromedioPieza;
+                $Estac['PorcentajeTiempoTotal'] = ($TiempoTotal>0)?100:0;//$TiempoTotal;
+                $TiempoMuerto = ($TiempoTotal > 0) ? ($TiempoProductivo / $TiempoTotal) * 100 : 0;
+                $Estac['PorcentajeTiempoProductivo'] =round(($TiempoTotal > 0) ? ($TiempoProductivo / $TiempoTotal) * 100 : 0,2);
+                $Estac['PorcentajeTiempoMuerto'] = round(($TiempoTotal > 0) ?100-$TiempoMuerto:0,2);
         }
         $Lineas = Linea::where('id','!=',1)->get();
         return response()->json([
@@ -687,12 +688,40 @@ class HomeController extends Controller
         }
         return $inicio->diffInSeconds($fin);
     }
-    public function TiempoMuertoTotal($IdArea,$OrdenFabricacion){
+    public function TiempoTotal($IdArea,$OrdenFabricacion){
         $PartidaOF = $OrdenFabricacion->PartidasOF->first();
+        $Partidasof_Areas = Partidasof_Areas::where('Areas_id',$IdArea)->whereNotNull('FechaTermina')->where('PartidasOF_id',$PartidaOF->id)->orderBy('Linea_id', 'asc')->get();
         $Cantidad = 0;
         $TiempoSegundos = 0;
         //Si es igual a 2 o 3 no imparta el tipo de escaner
-        if($OrdenFabricacion->Escaner == 1 || $IdArea == $this->AreaEspecialCorte || $IdArea == $this->AreaEspecialSuministro ){
+        if($IdArea == $this->AreaEspecialCorte){
+            if($OrdenFabricacion->Corte == 1){
+                foreach($Partidasof_Areas as $POF_A){
+                    $Tiempo = $this->TiempoSegundos($OrdenFabricacion->created_at,$POF_A->FechaTermina);
+                    if($Tiempo >0){
+                        $TiempoSegundos += $Tiempo;
+                        $Cantidad += $POF_A->Cantidad;
+                    }
+                }
+            }else{
+                $TiempoSegundos = 0;
+            }
+        }else if($IdArea == $this->AreaEspecialSuministro){
+            foreach($Partidasof_Areas as $POF_A){
+                    $Tiempo = $this->TiempoSegundos($OrdenFabricacion->created_at,$POF_A->FechaTermina);
+                    if($Tiempo >0){
+                        $TiempoSegundos += $Tiempo;
+                        $Cantidad += $POF_A->Cantidad;
+                    }
+                }
+        }else{
+            if($OrdenFabricacion->Escaner == 1){
+                $EstacionAnterior = $this->EstacionAnterior($OrdenFabricacion,$IdArea);
+            }else{
+                $EstacionAnterior = $this->EstacionAnterior($OrdenFabricacion,$IdArea);
+            }
+        }
+        /*if($OrdenFabricacion->Escaner == 1 || $IdArea == $this->AreaEspecialCorte || $IdArea == $this->AreaEspecialSuministro ){
             $Partidasof_Areas = Partidasof_Areas::where('Areas_id',$IdArea)->whereNotNull('FechaTermina')->where('PartidasOF_id',$PartidaOF->id)->orderBy('Linea_id', 'asc')->get();
             foreach($Partidasof_Areas as $key => $PA){
                 if(($key+1) < $Partidasof_Areas->count()){
@@ -706,8 +735,11 @@ class HomeController extends Controller
             }
         }else{
 
-        }
-        return $TiempoSegundos;
+        }*/
+        return [
+        'Tiempo' => $TiempoSegundos,
+        'Cantidad' => $Cantidad,
+        ];;
     }
     /*public function CapacidadProductiva()
     {
@@ -2458,10 +2490,6 @@ class HomeController extends Controller
 
     //}
     public function NumeroCompletadas($OrdenFabricacion,$Area){
-        /*$user= Auth::user();
-        if (!$user) {
-            return redirect()->route('login');
-        }*/
         $OrdenFabricacion=OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
         $PartidasOF=$OrdenFabricacion->PartidasOF;
         $Suma=0;
@@ -2487,6 +2515,9 @@ class HomeController extends Controller
             }
         }
         return $Suma;
+    }
+    public function EstacionAnterior($OrdenFabricacion,$Area){
+
     }
     //dasboard operador 
     public function indexoperador(Request $request)

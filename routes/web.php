@@ -14,6 +14,7 @@ use App\Http\Controllers\EmpacadoController;
 use App\Http\Controllers\LineasController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\DashboardControlle;
+use App\Http\Controllers\EtiquetasController;
 use GuzzleHttp\Promise\Coroutine;
 use Illuminate\Routing\Route as RoutingRoute;
 
@@ -141,6 +142,11 @@ Route::post('/generar-etiquetas', [CorteController::class, 'generarEtiquetas'])-
 Route::get('/mostrar/etiqueta', [CorteController::class, 'MostarInformacion'])->name('mostrar.etiqueta')->middleware('auth');
 Route::get('/generar-pdf', [CorteController::class, 'generarPDF'])->name('generar.pdf')->middleware('auth');
 Route::post('/generar-pdf-rangos', [CorteController::class, 'PDFCondicion'])->name('pdfcondicion')->middleware('auth');
+
+//Etiquetas
+Route::get('/Etiquetas', [EtiquetasController::class, 'index'])->name('Etiquetas.index')->middleware('auth');
+Route::get('/Etiquetas{OrdenFabricacion}', [EtiquetasController::class, 'show'])->name('Etiquetas.show')->middleware('auth');
+Route::post('/Etiquetas/Generar', [EtiquetasController::class, 'Generar'])->name('Etiquetas.Generar')->middleware('auth');
 
 //ruta para el formulario de registro
 Route::get('/registro', [RegistroController::class, 'index'])->name('registro.index')->middleware('auth');

@@ -33,7 +33,7 @@ function error(titulo,mensaje){
         showCancelButton: true,
         cancelButtonText: 'Cerrar',
         showConfirmButton: false,
-        timer: 5000
+        timer: 10000
       });
 }
 function errorBD(){

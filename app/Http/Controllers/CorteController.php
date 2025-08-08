@@ -271,7 +271,7 @@ class CorteController extends Controller
                             $Ordenfabricacionpartidas .= '<td class="text-center">
                             <button class="btn btn-sm btn-outline-secondary rounded-pill me-1 mb-1 px-3 py-1" 
                                 type="button" 
-                                onclick="Cancelar(\'' . $this->funcionesGenerales->encrypt($partida['pivot']->id) . '\',\'' . $partida['pivot']->NumeroPartida . '\')">
+                                onclick="Cancelar(\'' . $this->funcionesGenerales->encrypt($partida['pivot']->id) . '\',\'' . $partida['pivot']->NumeroEtiqueta . '\')">
                                 Cancelar
                             </button>
                         </td>';  
@@ -1075,6 +1075,7 @@ class CorteController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    //Prueba de etiqueta descomentar
     public function generarPDF110X20(Request $request){
         try {
             $partidaId = $this->funcionesGenerales->decrypt($request->input('id'));

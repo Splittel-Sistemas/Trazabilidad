@@ -1,278 +1,390 @@
 @extends('layouts.menu2')
-@section('title', 'Cortes')
+@section('title', 'Etiquetas')
 @section('styles')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
-    #myTab li a{
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        padding: 0.5rem 1rem 0.5rem 1rem;
-    }
-    #myTab li a:hover{
-        background: #f1f1f1;
-        border: solid 1px #e7e7e7;
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-    }
-    #myTab li .active{
-        border: solid 1px #e7e7e7;
-        border-bottom: solid white;
-    }
-    #myTab li .active:hover{
-        border: solid 1px #e7e7e7;
-        border-bottom: solid white;
-    }
-    #hr-menu{
-        padding: 0;
-        margin: 0;
-    }
+    .borde {
+          border: 1px solid black;
+        }
 </style>
 @endsection
 @section('content')
-    <!-- Breadcrumbs -->
     <div class="breadcrumbs mb-3">
         <div class="row gy-3 mb-2 justify-content-between">
             <div class="col-md-9 col-auto">
-                <h4 class="mb-2 text-1100">Cortes</h4>
+                <h4 class="mb-2 text-1100">Etiquetas</h4>
+            </div>
+        </div>
+        <!--<div class="alert alert-outline-info d-flex align-items-center" role="alert">
+            <span class="fas fa-info-circle text-info fs-1 me-3"></span>
+            <p class="mb-0 flex-1"> Las etiquetas, solo se pueden generar de acuerdo a parametros establecidos!</p>
+            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>-->
+    </div>
+    <div class="row">
+        <div class="mb-2 col-6">
+            <label for="NumeroOrden" class="form-label">Ingresa orden de Fabricación</label>
+            <div class="input-group">
+                <input type="text" oninput="RegexNumeros(this)" class="form-control form-control-sm" id="NumeroOrden" placeholder="Número de Orden de Fabricación">
+                <button class="btn btn-outline-primary btn-sm" id="Btn-BuscarOrden" onclick="BuscarOF()">Buscar</button>
+            </div>
+            <div class="list-group lista-busqueda" id="ListaBusquedas" style="display: none;">
             </div>
         </div>
     </div>
-        <div class="card">
-            <div class="card-body">
-                <!-- Módulos sin corte y completados -->
-                <ul class="nav nav-underline" id="myTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link active" id="proceso-tab" data-bs-toggle="tab" href="#tab-proceso" role="tab" aria-controls="tab-proceso" aria-selected="false" tabindex="-1">
-                            Abiertos
-                        </a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="completado-tab" data-bs-toggle="tab" href="#tab-completado" role="tab" aria-controls="tab-completado" aria-selected="false" tabindex="-1">
-                            Cerrados
-                        </a>
-                    </li>
-                </ul>
-                <hr id="hr-menu">
-                <div class="tab-content mt-4 " id="myTabContent">
-                    <!-- Tab Proceso -->
-                    <div class="tab-pane fade show active" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab">
-                        <div class="table-responsive card">
-                            <table id="procesoTable" class="table table-sm" style="width: 100%;display: none;">
-                                <thead>
-                                    <tr class="bg-light">
-                                        <th>Orden Fabricación</th>
-                                        <th>Responsable Corte</th>
-                                        <th>Artículo</th>
-                                        <th>Descripción</th>
-                                        <th>Piezas Cortadas Normal</th>
-                                        <th>Piezas Cortadas Retrabajo</th>
-                                        <th>Cantidad Total</th>
-                                        <th>Fecha Planeada</th>
-                                        <th>Estatus</th>
-                                        <th>Accion</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="procesoTableBody">
-                                @foreach($OrdenesFabricacionAbiertas as $orden)
-                                    <tr style="@if($orden->Urgencia == 'U'){{'background:#8be0fc;'}} @endif">
-                                        <td>{{ $orden->OrdenFabricacion }}</td>
-                                        <td class="text-center"><span class="badge badge-phoenix badge-phoenix-primary">{{$orden->responsable}}</span></td>
-                                        <td>{{ $orden->Articulo }}</td>
-                                        <td>{{ $orden->Descripcion }}</td>
-                                        <td>{{ $orden->Piezascortadas }}</td>
-                                        <td>{{ $orden->PiezascortadasR }}</td>
-                                        <td>{{ $orden->CantidadTotal }}</td>
-                                        <td>{{ $orden->FechaEntrega }}</td>
-                                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                                        <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Planear('{{$orden->idEncript}}')">Cortes</button></td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="tab-completado" role="tabpanel" aria-labelledby="completado-tab">
-                        <div class="col-6 mt-2  mb-4 ">
-                            <div class="accordion ml-3" id="accordionFiltroUnico">
-                                <div class="accordion-item shadow-sm card border border-light">
-                                    <h4 class="accordion-header" id="headingFiltroUnico">
-                                        <button class="accordion-button btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroUnico" aria-expanded="true" aria-controls="collapseFiltroUnico">
-                                            <strong>Filtro Fecha</strong>
-                                        </button>
-                                    </h4>
-                                    <div class="accordion-collapse collapse collapse" id="collapseFiltroUnico" aria-labelledby="headingFiltroUnico" data-bs-parent="#accordionFiltroUnico">
-                                        <div class="accordion-body pt-2">
-                                                @csrf
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <label for="inputFechaUnica" class="form-label"><strong>Fecha Inicio</strong></label>
-                                                        <div class="input-group">
-                                                            <input type="date" name="fecha" id="inputFechaInicio" value="{{$fechaAtras}}" class="form-control form-control-sm">
-                                                        </div>
-                                                        <div class="invalid-feedback" id="error_inputFechaInicio"></div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label for="inputFechaUnica" class="form-label"><strong>Fecha Fin</strong></label>
-                                                        <div class="input-group">
-                                                            <input type="date" name="fecha" id="inputFechaFin" value="{{$fecha}}" class="form-control form-control-sm">
-                                                        </div>
-                                                        <div class="invalid-feedback" id="error_inputFechaFin"></div>
-                                                    </div>
-                                                    <div class="col-12 mt-2">
-                                                        <button id="buscarUnico" class="btn btn-primary btn-sm float-end">
-                                                            <i class="fa fa-search"></i> Buscar
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="table-responsive card">
-                            <table id="completadoTable" class="table table-sm fs--1 mb-1">
-                                <thead>
-                                    <tr class="bg-light">
-                                        <th>Orden Fabricación</th>
-                                        <th>Artículo</th>
-                                        <th>Descripción</th>
-                                        <th>Piezas Normales</th>
-                                        <th>Piezas Retrabajo</th>
-                                        <th>Cantidad Total OF</th>
-                                        <th>Fecha inicio</th>
-                                        <th>Fecha Cierre</th>
-                                        <th>Estatus</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="completadoTableBody" class="list">
-                                    @foreach($OrdenesFabricacionCerradas as $orden1)
-                                    <tr>
-                                        <td>{{$orden1->OrdenFabricacion }}</td>
-                                        <td>{{$orden1->Articulo }}</td>
-                                        <td>{{$orden1->Descripcion }}</td>
-                                        <td>{{$orden1->Piezascortadas}}</td>
-                                        <td>{{$orden1->PiezascortadasR }}</td>
-                                        <td>{{$orden1->CantidadTotal }}</td>
-                                        <td>{{$orden1->FechaComienzo }}</td>
-                                        <td>{{$orden1->FechaFinalizacion }}</td>
-                                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Cerrada</span></div></td>
-                                        <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Detalles('{{$orden1->idEncript}}')">Detalles</button></td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <!--MODAL PARA PLANEACION-->
-    <div class="modal fade" id="ModalSuministro" tabindex="-1" data-bs-backdrop="static" aria-labelledby="ModalSuministroLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-scrollable" style="height: 90%">
-          <div class="modal-content" style="height: 100%">
-            <div class="modal-header bg-info">
-              <h5 class="modal-title text-white" id="ModalSuministroLabel">Cortes</h5><button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1 text-white"></span></button>
-            </div>
-            <div class="modal-body" id="ModalSuministroBody">
-                <div class="" id="ModalSuministroBodyInfoOF">
-                </div>
-                <div class="row">
-                    <form id="CortesForm" class="row needs-validation" novalidate="">
-                        <div id="InputNormal" class="col-6">
-                            <label class="form-label" for="Cantitadpiezas">Ingresa n&uacute;mero de piezas a cortar </label>
-                            <div class="input-group">
-                                <input class="form-control form-control-sm has-validation" id="Cantitadpiezas" type="number" oninput="RegexNumeros(this)" placeholder="Ingresa una cantidad" />
-                                <button id="btnGrupoPiezasCorte" class="btn btn-success btn-sm float-end">Guardar</button>
-                            </div>
-                            <div class="invalid-feedback" id="error_cantidad"></div>
-                            <div class="form-check mt-2 mb-2">
-                                <input class="form-check-input" id="Retrabajo" type="checkbox" />
-                                <label class="form-check-label" for="Retrabajo">Retrabajo</label>
-                                <div class="invalid-feedback" id="error_retrabajo"></div>
-                            </div>
-                            <input type="hidden" id="CantitadpiezasIdOF">
-                        </div>
-                        <div id="InputEmision" class="col-6">
-                            <div id="Emisiones" class="mb-2" style="display:none;">
-                                <label class="form-label" for="Cantitadpiezas">Selecciona una Orden de Producci&oacute;n </label>
-                                <select id="EmisionesOpciones" class="form-select form-select-sm" aria-label=".form-select-sm">
-                                </select>
-                                <div class="invalid-feedback" id="error_emision"></div>
-                            </div>
-                            <button id="btnGrupoPiezasCorte1" class="btn btn-success btn-sm float-end" style="display: none">Guardar</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="mt-0" id="ModalSuministroBodyPartidasOF">
-                </div>
-            </div>
-            <div class="modal-footer" id="ModalSuministroFooter">
-                <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-          </div>
-        </div>
-    </div>
-    <!--MODAL RETRABAJO-->
-    <div class="modal fade" id="ModalRetrabajo" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog ">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="ModalRetrabajoLabel">Orden de Fabricaci&oacute;n a Retrabajo</h5><button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1"></span></button>
-            </div>
-            <div class="modal-body">
-                    <div class="col-8">
-                        <label class="form-label" for="RetrabajoOF">Orden de Fabricación</label>
-                            <input class="form-control search-input form-control-sm" id="RetrabajoOF" type="text"  required="" oninput="RegexNumeros(this); RetrabajoMostrarOFBuscar(this)" placeholder="Ingresa Número de Orden de Fabricación"/>
-                        <div id="RetrabajoOFOpciones" class="list-group" style="position:;max-height: 7rem;overflow-y: auto;">
-
-                        </div>
-                        <div class="invalid-feedback" id="error_RetrabajoOF"></div>
-                    </div>
-            </div>
-            <div class="modal-footer"><button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cancelar</button></div>
-          </div>
-        </div>
-    </div>
-    <!--MODAL DETALLE-->
     <div class="modal fade" id="ModalDetalle" tabindex="-1" data-bs-backdrop="static" aria-labelledby="ModalDetalleLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable" style="height: 90%">
           <div class="modal-content" style="height: 100%">
             <div class="modal-header bg-info">
-              <h5 class="modal-title text-white" id="ModalDetalleLabel">Detalles Partidas de Orden de Fabricaci&oacute;n</h5><button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1 text-white"></span></button>
+              <h5 class="modal-title text-white" id="ModalDetalleLabel">Etiquetas</h5><button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1 text-white"></span></button>
             </div>
             <div class="modal-body" id="ModalDetalleBody">
-                <div class="" id="ModalDetalleBodyInfoOF">
+                <div class="alert alert-outline-info d-flex align-items-center py-1" role="alert">
+                    <span class="fas fa-info-circle text-info fs-3 me-1"></span>
+                    <p class="mb-0 flex-1">Selecciona el tipo de etiqueta que requieres generar</p>
+                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <div class="mt-0" id="ModalDetalleBodyPartidasOF">
+                <h5 class="text-center text-muted" id="TextoDetallesOV"></h5>
+                <h5 class="text-center text-muted" id="TextoDetallesCliente"></h5>
+                <div class="mt-2" id="ModalDetalleBody">
+                    <div class="p-1">
+                        <div class="row border border-light">
+                            <div class="col-4 border border-light">
+                                <label class="form-label mt-2" for="Sociedad">Tipo de Etiqueta</label>
+                                <input class="form-control" onclick="" oninput="BuscarEtiquetaFiltro(this);" type="text" id="Etiquetaitems" placeholder="buscar" style="display:none;">
+                                <select id="TipoEtiqueta" onchange="Etiqueta(this);" class="form-select" style="width: 100%;">
+                                    <option value="" disabled>Selecciona una Opci&oacute;n</option>
+                                    <option value="ETIQ1">ETIQUETA ESPECIAL HUAWEI</option>
+                                    <option value="ETIQ2">ETIQUETA DE BANDERILLA QR GENERAL</option>
+                                    <option value="ETIQ3">ETIQUETA DE BANDERILLA QR NÚMERO ESPECIAL</option>
+                                    <option value="ETIQ4">ETIQUETA DE BOLSA JUMPER</option>
+                                    <option value="ETIQ5">ETIQUETA DE NÚMERO DE PIEZAS</option>
+                                </select>
+                                <div id="ListaOpciones" class="list-group" style="display:none;">
+                                    <a onclick="SeleccionarCampo('ETIQ1')" class="list-group-item list-group-item-action active" style="font-size: 12px; padding: 4px 8px;">ETIQUETA ESPECIAL HUAWEI</a>
+                                    <a onclick="SeleccionarCampo('ETIQ2')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE BANDERILLA QR GENERAL</a>
+                                    <a onclick="SeleccionarCampo('ETIQ3')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE BANDERILLA QR GENERAL ESPECIAL</a>
+                                    <a onclick="SeleccionarCampo('ETIQ4')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE BOLSA JUMPER</a>
+                                    <a onclick="SeleccionarCampo('ETIQ5')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE NÚMERO DE PIEZAS</a>
+                                </div>
+                            </div>
+                            <div class="col-8">
+                                <div id="DatosEtiquetas" class="row mt-2">
+                                    <div class="col-12">
+                                        <div class="alert alert-danger p-2" role="alert" id="PdfAlerta" style="display: none">
+                                        </div>
+                                        <h5 class="text-center" id="TituloEtiqueta"></h5>
+                                    </div>
+                                    <div class="col-3" id="ContenedorSociedad">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="Sociedad">Logo</label>
+                                                <select class="form-select" id="Sociedad" data-choices="data-choices" size="1" required="required" name="organizerSingle" data-options='{"removeItemButton":true,"placeholder":true}'>
+                                                    <option value="" disabled>Selecciona una Opci&oacute;n</option>
+                                                    <option value="FMX">Fibremex</option>
+                                                    <option value="OPT">Optronics</option>
+                                                </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-3" id="ContenedorCantidadEtiquetas">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="CantidadEtiquetas">Cantidad de Etiquetas  </label>
+                                            <input class="form-control" id="CantidadEtiquetas" type="number" placeholder="0" />
+                                        </div>
+                                    </div>
+                                    <div class="col-3" id="ContenedorPaginaInicio">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="PaginaInicio">P&aacute;gina inicio </label>
+                                            <input class="form-control" id="PaginaInicio" type="number" placeholder="0" />
+                                        </div>
+                                    </div>
+                                    <div class="col-3" id="ContenedorPaginaFin">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="PaginaFin">P&aacute;gina fin  </label>
+                                            <input class="form-control" id="PaginaFin" type="number" placeholder="0" />
+                                        </div>
+                                    </div>
+                                    <div class="col-3" id="ContenedorCantidadBolsa">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="CantidadBolsa">Cantidad por bolsa  </label>
+                                            <input class="form-control" id="CantidadBolsa" type="number" placeholder="0" value="1" />
+                                        </div>
+                                    </div>
+                                    <div class="col-3" id="ContenedorBoton">
+                                        <div class="mt-4">
+                                            <button type="button" id="BtnGenerar" class="btn btn-phoenix-primary me-1 mb-1">Generar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--PDF Etiquetas-->
+                                <div class="modal-header bg-dark p-2">
+                                    <h6 class="modal-title text-white" id="ModalDetalleLabel">PDF Etiquetas</h6>
+                                </div>
+                                <!-- Aquí se cargará el PDF en un iframe -->
+                                <iframe id="pdfIframe" src="" width="100%" height="300px" style="display: none"></iframe>
+                                <p id="TextoSelecciona" class="text-center my-4"> <i class="far fa-file-pdf"></i> Selecciona una opci&oacute;n</p>
+                                <input type="hidden" id="PDFOrdenFabricacion">
+                                <input type="hidden" id="PDFEtiqueta">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer" id="ModalDetalleFooter">
-                <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Cerrar</button>
+                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
           </div>
-        </div>
-    </div>
-    <!--MODAL PDF-->
-    <div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-dark">
-                    <h6 class="modal-title text-white" id="ModalDetalleLabel">Imprimir PDF</h6><button class="btn" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs--1 text-white"></span></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Aquí se cargará el PDF en un iframe -->
-                    <iframe id="pdfIframe" src="" width="100%" height="300px"></iframe>
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
         </div>
     </div>
 @endsection
 @section('scripts')
 <script>
+    window.CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').content;
+</script>
+<script>
+    AjaxOrden = null;
+    $('#NumeroOrden').on('input', function() {
+        NumeroOrden = $('#NumeroOrden').val();
+         if (AjaxOrden && typeof AjaxOrden.abort === 'function') {
+            AjaxOrden.abort();
+        }
+        if (AjaxOrden && AjaxOrden.readyState !== 4) {
+                AjaxOrden.abort();
+                console.log("Petición anterior cancelada");
+            }
+        if(NumeroOrden.length<3){
+            $('#ListaBusquedas').html('');
+            $('#ListaBusquedas').hide();
+            return 0;
+        }
+        TipoOrden = "OF";
+        AjaxOrden = $.ajax({
+            url: '{{ route("TipoOrden") }}',
+            type: 'POST',
+            data: { 
+                NumeroOrden:NumeroOrden,
+                TipoOrden:TipoOrden,
+            },
+            success: function (response) {
+                $('#ListaBusquedas').html(response);
+                if(response!=""){
+                    $('#ListaBusquedas').show();
+                }
+            },
+            error: function () {
+                //alert('Error al obtener los datos de la venta.');
+            }
+        });
+    });
+    function BuscarOF(){
+        $('#NumeroOrden').trigger('input');
+    }
+    function SeleccionarNumOrden(OF){
+        $('#ListaBusquedas').hide();
+        $('#ModalDetalle').modal('show');
+        $('#ModalDetalleLabel').html('Etiquetas Orden de Fabricación '+OF);
+        $('#PDFOrdenFabricacion').val(OF);
+        $('#TextoSelecciona').show();
+        $('#PdfAlerta').hide();
+        $('#TipoEtiqueta').val("");
+        $('#Etiquetaitems').hide();
+        InputPaginaFin = document.getElementById("PaginaFin");
+        InputPaginaInicio = document.getElementById("PaginaInicio");
+        InputCantidadEtiquetas = document.getElementById("CantidadEtiquetas");
+        ContenedorCantidadBolsa = document.getElementById("ContenedorCantidadBolsa");
+        ContenedorPaginaFin = document.getElementById("ContenedorPaginaFin");
+        ContenedorPaginaInicio = document.getElementById("ContenedorPaginaInicio");
+        ContenedorSociedad = document.getElementById("ContenedorSociedad");
+        ContenedorBoton = document.getElementById("ContenedorBoton");
+        ContenedorCantidadEtiquetas = document.getElementById("ContenedorCantidadEtiquetas");
+        ContenedorCantidadBolsa.style.display = "none";
+        ContenedorPaginaFin.style.display = "none";
+        ContenedorPaginaInicio.style.display = "none";
+        ContenedorSociedad.style.display = "none";
+        ContenedorBoton.style.display = "none";
+        ContenedorCantidadEtiquetas.style.display = "none";
+        document.getElementById('pdfIframe').src = "";
+        document.getElementById('pdfIframe').style.display = "none";
+        TextoDetallesOV = document.getElementById("TextoDetallesOV");
+        TextoDetallesCliente = document.getElementById("TextoDetallesCliente");
+        TextoDetallesOV.innerHTML = "";
+        TextoDetallesCliente.innerHTML = "";
+        URL = '{{ route("Etiquetas.show", ":OF")}}'.replace(":OF", OF);
+        fetch(URL)
+        .then(response => response.json())
+        .then(data => {
+            InputPaginaInicio.value = 1;
+            InputPaginaFin.value = data.CantidadTotal;
+            CantidadEtiquetas.value = data.CantidadTotal;
+            TextoDetallesOV.innerHTML = "Orden de Venta: "+data.OrdenVenta+ "    "+"Orden Fabricación: "+data.OrdenFabricacion;
+            TextoDetallesCliente.innerHTML = "Cliente:"+data.Cliente;
+        })
+        .catch(error1 => {
+            $('#ModalDetalle').modal('hide');    
+            error('Ocurrio un error',error1);
+        });
+    }
+    function Etiqueta(TIPOETIQUETA){
+        InputPDFOrdenFabricacion = document.getElementById("PDFOrdenFabricacion");
+        InputCantidadBolsa = document.getElementById("CantidadBolsa");
+        InputPaginaFin = document.getElementById("PaginaFin");
+        InputPaginaInicio = document.getElementById("PaginaInicio");
+        InputSociedad = document.getElementById("Sociedad");
+        ContenedorCantidadBolsa = document.getElementById("ContenedorCantidadBolsa");
+        ContenedorPaginaFin = document.getElementById("ContenedorPaginaFin");
+        ContenedorPaginaInicio = document.getElementById("ContenedorPaginaInicio");
+        ContenedorSociedad = document.getElementById("ContenedorSociedad");
+        ContenedorBoton = document.getElementById("ContenedorBoton");
+        ContenedorCantidadEtiquetas = document.getElementById("ContenedorCantidadEtiquetas");
+        TituloEtiqueta = document.getElementById("TituloEtiqueta");
+        ContenedorPaginaFin.style.display = "none";
+        ContenedorPaginaInicio.style.display = "none";
+        ContenedorBoton.style.display = "none";
+        ContenedorSociedad.style.display = "none";
+        ContenedorCantidadEtiquetas.style.display = "none";
+        ContenedorCantidadBolsa.style.display = "none";
+        BtnGenerar = document.getElementById("BtnGenerar");
+        BtnGenerar.onclick = "";
+        $('#PdfAlerta').hide();
+        $('#Etiquetaitems').hide();
+        document.getElementById('TipoEtiqueta').blur();
+        BtnGenerar.onclick = function() {GenerarEtiquetas(InputPDFOrdenFabricacion.value,TIPOETIQUETA);};
+        document.getElementById('pdfIframe').src = "";
+        document.getElementById('pdfIframe').style.display = "none";
+        switch(TIPOETIQUETA.value){
+            case 'ETIQ1':
+                ContenedorPaginaFin.style.display = "";
+                ContenedorPaginaInicio.style.display = "";
+                ContenedorBoton.style.display = "";
+                TituloEtiqueta.innerHTML = "ETIQUETA ESPECIAL HUAWEI";
+                break;
+            case 'ETIQ2':
+                ContenedorPaginaFin.style.display = "";
+                ContenedorPaginaInicio.style.display = "";
+                ContenedorBoton.style.display = "";
+                TituloEtiqueta.innerHTML = "ETIQUETA DE BANDERILLA QR GENERAL";
+                break;
+            case 'ETIQ3':
+                ContenedorPaginaFin.style.display = "";
+                ContenedorPaginaInicio.style.display = "";
+                ContenedorBoton.style.display = "";
+                TituloEtiqueta.innerHTML = "ETIQUETA DE BANDERILLA QR NÚMERO ESPECIAL";
+                break;
+            case 'ETIQ4':
+                ContenedorCantidadEtiquetas.style.display = "";
+                ContenedorBoton.style.display = "";
+                TituloEtiqueta.innerHTML = "ETIQUETA DE BOLSA JUMPER";
+                break;
+            case 'ETIQ5':
+                ContenedorSociedad.style.display = "";
+                ContenedorCantidadEtiquetas.style.display = "";
+                ContenedorCantidadBolsa.style.display = "";   ContenedorSociedad.style.display = "";
+                ContenedorCantidadEtiquetas.style.display = "";
+                ContenedorCantidadBolsa.style.display = "";
+                ContenedorBoton.style.display = "";
+                TituloEtiqueta.innerHTML = "ETIQUETA DE NÚMERO DE PIEZAS";
+                break;
+            default:
+                break;
+        }
+    }
+    function GenerarEtiquetas(OF,TipoEtiqueta){
+        InputPDFOrdenFabricacion = document.getElementById("PDFOrdenFabricacion");
+        InputCantidadBolsa = document.getElementById("CantidadBolsa");
+        InputPaginaFin = document.getElementById("PaginaFin");
+        InputPaginaInicio = document.getElementById("PaginaInicio");
+        InputSociedad = document.getElementById("Sociedad");
+        CantidadEtiquetas = document.getElementById("CantidadEtiquetas");
+        PdfAlerta = document.getElementById("PdfAlerta");
+        InputTipoEtiqueta = document.getElementById("TipoEtiqueta").value;
+        const URL = '{{ route("Etiquetas.Generar") }}';
+        const payload = {
+            PDFOrdenFabricacion: InputPDFOrdenFabricacion.value,
+            CantidadBolsa: InputCantidadBolsa.value,
+            PaginaFin: InputPaginaFin.value,
+            PaginaInicio: InputPaginaInicio.value,
+            Sociedad: InputSociedad.value,
+            CantidadEtiquetas: CantidadEtiquetas.value,
+            OF:OF,
+            TipoEtiqueta:InputTipoEtiqueta
+
+        };
+        fetch(URL, {
+            method: 'POST',
+            credentials: 'same-origin', // importante para enviar cookies de sesión
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': window.CSRF_TOKEN
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if('error' in data){
+                PdfAlerta.style.display = "";
+                PdfAlerta.innerHTML = '<i class ="far fa-times-circle"></i>   Ocurrio un error, '+data.error;
+                document.getElementById('pdfIframe').style.display = "none";
+                $('#TextoSelecciona').show();
+            }else{
+                PdfAlerta.style.display = "none";
+                $('#TextoSelecciona').hide();
+                url = "data:application/pdf;base64," + data.pdf;
+                document.getElementById('pdfIframe').src = url;
+                document.getElementById('pdfIframe').style.display = "";
+            }
+        })
+        .catch(err => {
+            $('#ModalDetalle').modal('hide');
+            error('Ocurrió un error', err);
+            document.getElementById('pdfIframe').style.display = "none";
+            $('#TextoSelecciona').show();
+        });
+    }
+    function BuscarEtiqueta(BuscarEtiqueta){
+        document.getElementById('TipoEtiqueta').click();
+    }
+    document.getElementById('TipoEtiqueta').addEventListener('focus', () => {
+        $('#Etiquetaitems').show();
+        $('#ListaOpciones').hide();
+    });
+    document.getElementById('Etiquetaitems').addEventListener('focus', () => {
+        $('#ListaOpciones').show();
+    });
+    function BuscarEtiquetaFiltro(input) {
+        const filtro = input.value.toLowerCase();
+        const lista = document.getElementById('ListaOpciones');
+        const opciones = lista.querySelectorAll('.list-group-item');
+        if (filtro.trim() === '') {
+            opciones.forEach(opcion => {
+                opcion.style.display = 'block';
+            });
+            lista.style.display = 'block';
+            return;
+        }
+        let hayCoincidencias = false;
+        opciones.forEach(opcion => {
+            const texto = opcion.textContent.toLowerCase();
+            if (texto.includes(filtro)) {
+                opcion.style.display = 'block';
+                hayCoincidencias = true;
+            }else {
+                opcion.style.display = 'none';
+            }
+        });
+        // Mostrar u ocultar la lista según si hay coincidencias o si hay texto
+        if (filtro !== '' && hayCoincidencias) {
+            lista.style.display = 'block';
+        } else {
+            lista.style.display = 'none';
+        }
+    }
+    function SeleccionarCampo(valor){
+        $('#TipoEtiqueta').val(valor).change();
+        $('#ListaOpciones').hide();
+    }
+</script>
+
+{{--<script>
     $(document).ready(function() {
         //$('#procesoTableBody').html('{{$OrdenesFabricacionCerradas}}');
         DataTable('procesoTable',true);
@@ -778,5 +890,5 @@
             }
         });
     }
-</script>
+</script>--}}
 @endsection
