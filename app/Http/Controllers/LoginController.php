@@ -29,7 +29,6 @@ class LoginController extends Controller
                 ->withInput($request->only('email'))
                 ->withErrors(['email' => 'Cuenta inactiva o no encontrada.']);
         }
-
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $remember)) {
             $request->session()->regenerate();
             session(['inicio_sesion' => now()]);
@@ -73,6 +72,7 @@ class LoginController extends Controller
             }
         }
         return redirect()->route('login')
+            ->with('Vista','Operador')
             ->withErrors(['clave' => 'Clave incorrecta.']);
     }
     public function logout(Request $request){

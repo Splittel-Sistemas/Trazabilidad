@@ -44,11 +44,13 @@
                     <p class="mb-0 flex-1">Selecciona el tipo de etiqueta que requieres generar</p>
                     <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <h5 class="text-center text-muted" id="TextoDetallesOV"></h5>
-                <h5 class="text-center text-muted" id="TextoDetallesCliente"></h5>
                 <div class="mt-2" id="ModalDetalleBody">
                     <div class="p-1">
                         <div class="row border border-light">
+                            <div class="col-12">
+                                <h5 class="text-center pt-1" id="TextoDetallesCliente"></h5>
+                                <h6 class="text-center text-muted" id="TextoDetallesOV"></h6>
+                            </div>
                             <div class="col-4 border border-light">
                                 <label class="form-label mt-2" for="Sociedad">Tipo de Etiqueta</label>
                                 <input class="form-control" onclick="" oninput="BuscarEtiquetaFiltro(this);" type="text" id="Etiquetaitems" placeholder="buscar" style="display:none;">
@@ -117,7 +119,7 @@
                                 </div>
                                 <!--PDF Etiquetas-->
                                 <div class="modal-header bg-dark p-2">
-                                    <h6 class="modal-title text-white" id="ModalDetalleLabel">PDF Etiquetas</h6>
+                                    <h6 class="modal-title text-white" id="ModalDetalleLabel">PDF Etiquetas <span id="PdfEspinner"></span></h6>
                                 </div>
                                 <!-- Aquí se cargará el PDF en un iframe -->
                                 <iframe id="pdfIframe" src="" width="100%" height="300px" style="display: none"></iframe>
@@ -215,12 +217,12 @@
             InputPaginaInicio.value = 1;
             InputPaginaFin.value = data.CantidadTotal;
             CantidadEtiquetas.value = data.CantidadTotal;
-            TextoDetallesOV.innerHTML = "Orden de Venta: "+data.OrdenVenta+ "    "+"Orden Fabricación: "+data.OrdenFabricacion;
-            TextoDetallesCliente.innerHTML = "Cliente:"+data.Cliente;
+            TextoDetallesOV.innerHTML = "Orden de Venta: "+data.OrdenVenta+ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+"Orden Fabricación: "+data.OrdenFabricacion;
+            TextoDetallesCliente.innerHTML = data.Cliente+"   ("+data.CodigoCliente+")";
         })
         .catch(error1 => {
             $('#ModalDetalle').modal('hide');    
-            error('Ocurrio un error',error1);
+            error('Error: ',error1);
         });
     }
     function Etiqueta(TIPOETIQUETA){
@@ -308,6 +310,7 @@
             TipoEtiqueta:InputTipoEtiqueta
 
         };
+        SpinnerInsert('PdfEspinner');
         fetch(URL, {
             method: 'POST',
             credentials: 'same-origin', // importante para enviar cookies de sesión
@@ -320,9 +323,10 @@
         })
         .then(response => response.json())
         .then(data => {
+            document.getElementById('PdfEspinner').innerHTML = "";
             if('error' in data){
                 PdfAlerta.style.display = "";
-                PdfAlerta.innerHTML = '<i class ="far fa-times-circle"></i>   Ocurrio un error, '+data.error;
+                PdfAlerta.innerHTML = '<i class ="far fa-times-circle"></i>   Error: '+data.error;
                 document.getElementById('pdfIframe').style.display = "none";
                 $('#TextoSelecciona').show();
             }else{
@@ -334,6 +338,7 @@
             }
         })
         .catch(err => {
+            document.getElementById('PdfEspinner').innerHTML = "";
             $('#ModalDetalle').modal('hide');
             error('Ocurrió un error', err);
             document.getElementById('pdfIframe').style.display = "none";

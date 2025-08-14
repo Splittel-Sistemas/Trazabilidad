@@ -61,6 +61,7 @@
     @if (session('status'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('status') }}
+            {{ session('Usuario') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
@@ -70,29 +71,15 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
+    @if(session('Email'))
+        {{ session('Email') }}
+        {{ session('Usuario') }}
+    @endif
+    @if(session('Clave'))
+        {{ session('Email') }}
+        {{ session('Usuario') }}
+    @endif
     <div class="card p-4" style="display:block;" id="tableExample3" data-list="{&quot;valueNames&quot;:[&quot;apellido&quot;,&quot;nombre&quot;,&quot;email&quot;,&quot;roles&quot;,&quot;estatus&quot;],&quot;page&quot;:10,&quot;pagination&quot;:true}">
-        <!--<div class="row justify-content-end g-0">
-            <div class="col-auto px-3">
-                <span>Registros</span>
-                <select id="NumeroRegistros" class="form-select form-select-sm">
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="30">30</option>
-                    <option value="50">50</option>
-              </select>
-            </div>
-        </div>
-        <div class="search-box mb-2 mx-auto">
-            <form class="position-relative d-flex align-items-center" data-bs-toggle="search" data-bs-display="static">
-                <input class="form-control search-input search form-control-sm rounded-pill pe-5" 
-                    type="search" 
-                    placeholder="Buscar" 
-                    aria-label="Buscar">
-                <svg class="position-absolute end-0 me-3 search-box-icon" width="16" height="16" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8 8-3.58 8-8S12.42 0 8 0zm0 14C4.69 14 2 11.31 2 8s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path>
-                </svg>
-            </form>
-        </div>-->
         <div class="table-responsive">
                 <table id="Tabla-Usuarios" class="table table-striped table-sm fs--1 mb-0">
                     <thead class="bg-primary text-white">
@@ -233,10 +220,39 @@
         </div>
     </div>
 </div>
+<!---Modal Credenciales-->
+@if(request()->has('Email') OR request()->has('Clave'))
+    <div class="modal fade show" id="ModalUsuarioAgregado" tabindex="-1" data-bs-backdrop="static" aria-labelledby="staticBackdropLabel" style="display: block;" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white" id="staticBackdropLabel">Usuario Agregado</h5>
+                    <button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close"><svg class="svg-inline--fa fa-xmark fs--1 text-white" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg=""><path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"></path></svg><!-- <span class="fas fa-times fs--1 text-white"></span> Font Awesome fontawesome.com --></button>
+                </div>
+                <div class="modal-body">
+                    @if(request()->has('Email'))
+                        <h5 class="text-muted m-1">Usuario: {{request('Usuarios')}}</h5>
+                        <h5 class="text-muted m-1">Correo: {{request('Email')}}</h5>
+                    @endif
+                    @if(request()->has('Clave'))
+                        <h5 class="text-muted m-1">Usuario: {{request('Usuarios')}}</h5>
+                        <h5 class="text-muted m-1">Clave: {{request('Clave')}}</h5>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-primary" type="button" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
 @endsection
 @section('scripts')
 <script>
     $(document).ready(function() {
+        @if(request()->has('Email') OR request()->has('Clave'))
+            $('#ModalUsuarioAgregado').modal('show');
+        @endif
         // Manejar el envío del formulario a través de AJAX
         $(document).on('submit', '#userEditForm', function(event) {
             event.preventDefault();

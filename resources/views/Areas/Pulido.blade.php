@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col-3">
             <div class="card-header p-2" id="filtroEntrada" style="background:#1c7dfc;">
-                <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white"><i class="fas fa-plus-circle"></i>  Nuevo Platillo</h3>
+                <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white"><i class="fas fa-plus-circle"></i>  Nuevo Plato</h3>
             </div>
             <div class="card-body card d-flex justify-content-center">
                 <button class="btn btn-sm btn-outline-primary mt-1 mx-1 float-center" id="NuevoPlatillo"><i class="fas fa-plus-circle"></i> Nuevo Plato</button>
@@ -32,7 +32,13 @@
                 <div class="card-header p-2" id="filtroEntrada" style="background: #01914f">
                     <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white">Entrada <i class="fas fa-arrow-down"></i></h3>
                 </div>
-                <div class="card-body row" id="filtroEntrada">
+                <div class="card-body pt-0 m-0 row" id="filtroEntrada">
+                    <div class="col-12 m-0 p-0" id="AlertaActivado">
+                        <div class="alert alert-warning d-flex align-items-center p-1 my-1" role="alert" style="width: 100%;">
+                            <span class="fas fa-info-circle text-white"></span>
+                            <p class="mx-2 mb-0 flex-1 text-white"> Plato desactivado!</p>
+                        </div>
+                    </div>
                     <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
                         <div class="col-8" id="CodigoDiv">
                             <div class="">
@@ -67,7 +73,7 @@
         </div>
         <div class="col-3">
             <div class="card-header p-2" id="filtroEntrada" style="background:#dd4b39;">
-                <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white"><i class="fas fa-times-circle"></i>  Cerrar Platillo</h3>
+                <h3 for="CodigoEscaner" class="col-sm-12 p-0 text-white"><i class="fas fa-times-circle"></i>  Cerrar Plato</h3>
             </div>
             <div class="card-body card d-flex justify-content-center">
                 <button class="btn btn-sm btn-outline-danger mt-1 mx-1 float-center" id="CerrarPlatillo" disabled><i class="fas fa-times-circle"></i> Cerrar Plato</button>
@@ -705,6 +711,11 @@
         });
         $('#NuevoPlatillo').on('click', function() {
             $('#CodigoEscanerEntrada').prop('disabled', false);
+            AlertaActivado = document.getElementById('AlertaActivado');
+            AlertaActivado.innerHTML = '<div class="alert alert-primary d-flex align-items-center p-1 my-1" role="alert" style="width: 100%;">'+
+                                            '<span class="fas fa-info-circle text-white"></span>'+
+                                            '<p class="mx-2 mb-0 flex-1 text-white"> Plato activado!</p>'+
+                                        '</div>';
         });
     });
     function TipoNoEscaner(TipoEntrada) {
@@ -963,6 +974,11 @@
             },
             success: function(response) {
                 if(response.status == 'Success'){
+                    AlertaActivado = document.getElementById('AlertaActivado');
+                    AlertaActivado.innerHTML = '<div class="alert alert-warning d-flex align-items-center p-1 my-1" role="alert" style="width: 100%;">'+
+                                                '<span class="fas fa-info-circle text-white"></span>'+
+                                                '<p class="mx-2 mb-0 flex-1 text-white"> Plato desactivado!</p>'+
+                                        '</div>';
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
                     $('#ToastGuardadoBody').html('Guardado correctamente!, '+response.message+'!');
                     $('#ToastGuardado').fadeIn();

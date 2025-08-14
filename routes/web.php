@@ -100,6 +100,7 @@ Route::post('/Area/Clasificación/InfoModal', [AreasController::class,'Clasifica
 Route::post('/Area/Clasificación/Asignar', [AreasController::class,'ClasificacionAsignar'])->name('ClasificacionAsignar')->middleware('auth');
 Route::post('/Area/Clasificación/Busqueda', [AreasController::class,'ClasificacionBusqueda'])->name('ClasificacionBusqueda')->middleware('auth');
 Route::post('/Area/Clasificación/Finalizar', [AreasController::class,'FinalizarOrdenFabricacion'])->name('FinalizarOrdenFabricacion')->middleware('auth');
+Route::post('/Area/Clasificación/Eliminar', [AreasController::class,'EliminarAsignacion'])->name('EliminarAsignacion')->middleware('auth');
 //
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden')->middleware('auth');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida')->middleware('auth');

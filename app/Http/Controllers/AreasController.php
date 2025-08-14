@@ -1291,8 +1291,8 @@ class AreasController extends Controller
                                         $EstatusBloque = $PartdaAr->CerrarBloque;
                                     }
                                     if($EstatusBloque != 1){
-                                        $EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">Bloque Abierto</span></div>';
-                                    }else{$EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Bloque Cerrado</span></div>';}
+                                        $EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">Plato Abierto</span></div>';
+                                    }else{$EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Plato Cerrado</span></div>';}
                                     //Mostrar Partidas
                                     $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
                                     foreach($registrosporLinea as $MostrarPartidas){
@@ -1380,14 +1380,15 @@ class AreasController extends Controller
                                             $EstatusBloque = $PartdaAr->CerrarBloque;
                                         }
                                         if($EstatusBloque != 1){
-                                            $EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">Bloque Abierto</span></div>';
-                                        }else{$EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Bloque Cerrado</span></div>';}
+                                            $EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">Plato Abierto</span></div>';
+                                        }else{$EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Plato Cerrado</span></div>';}
                                         $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
                                         foreach($registrosporLinea as $MostrarPartidas){
                                             $LineaMostrar = Linea::find($MostrarPartidas['pivot']->Linea_id)->NumeroLinea;
                                             $TotalMostrar = Partidasof_Areas::where('PartidasOF_id',$MostrarPartidas['pivot']->PartidasOF_id)->where('Areas_id', $this->AreaEspecialClasificacion)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->get()->SUM('Cantidad');
-                                            $CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad')
-                                            -$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('TipoPartida','R')->SUM('Cantidad');
+                                            //$CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad')
+                                            //-$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('TipoPartida','R')->SUM('Cantidad');
+                                            $CantidadCompletadaPartidas=$this->NumeroCompletadas($CodigoPartes,$Area);
                                             $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span class="text" style="font-size:0.8em;">'.$LineaMostrar.'</span><span class="badge badge-light-danger rounded-pill">'.$TotalMostrar-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$TotalMostrar.'</span></li>';
                                         }
                                     }
@@ -1414,7 +1415,7 @@ class AreasController extends Controller
                                     //Mostrar Partidas
                                     $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
                                     foreach($registrosporLinea as $MostrarPartidas){
-                                        $CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('Areas_id', $Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
+                                        $CantidadCompletadaPartidas=$this->NumeroCompletadas($CodigoPartes,$Area);//$PartidasordenFabricacion->Areas()->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('Areas_id', $Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
                                         ($PartidasordenFabricacion->Areas()->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('Areas_id', $Area)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
                                         - $PartidasordenFabricacion->Areas()->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('Areas_id', $Area)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad'));
                                         $LineaMostrar = Linea::find($MostrarPartidas['pivot']->Linea_id)->NumeroLinea;
@@ -3135,7 +3136,7 @@ class AreasController extends Controller
         }
         return response()->json([
             'status' => "Success",
-            'message' => "Datos del bloque ".$NumBloque." guardados correctamente.",
+            'message' => "Datos del Plato guardados correctamente.",
             'Codigo' => $Codigo
         ]);
     }
@@ -4493,6 +4494,7 @@ class AreasController extends Controller
         //Valores disponibles
         $ContarPartidas = $PartidasOF->Areas()->where('Areas_id',3)->get()->whereNotNull('pivot.FechaTermina')->where('pivot.TipoPartida','N')->sum('pivot.Cantidad');
         $ContarPartidasClasificacion = $PartidasOF->Areas()->where('Areas_id',18)->get()->sum('pivot.Cantidad');
+        $PartidasIniciadas = $PartidasOF->Areas()->where('Areas_id','>',3)->where('Areas_id','!=',18)->get();
         $Ordenfabricacionpartidas='<div class="col-12"><button class="btn btn-sm btn-outline-danger px-3 py-2 float-end"';
         $InputsBloqueo="";
         if($OrdenFabricacion->Cerrada == 0){
@@ -4521,7 +4523,7 @@ class AreasController extends Controller
                                     <div class="col-6">
                                         <div class="mb-0">
                                         <label for="organizerSingle">Ingresa el numero de piezas</label>
-                                        <input class="form-control form-control-sm" oninput="RegexNumeros(this);" id="CantidadModal" type="text" placeholder="0" '.$InputsBloqueo.' />
+                                        <input class="form-control form-control-sm" autocomplete="off" oninput="RegexNumeros(this);" id="CantidadModal" type="text" placeholder="0" '.$InputsBloqueo.' />
                                         </div>
                                         <small class="text-danger" id="ErrorCantidadModal"></small>
                                     </div>
@@ -4533,19 +4535,19 @@ class AreasController extends Controller
                                             $Ordenfabricacionpartidas.='<option value="'.$L->id.'">'.$L->Nombre.'</option>';
                                         }
         $Ordenfabricacionpartidas.='</select><small class="text-danger" id="ErrorLineaModal"></small>
-                                    <button class="btn btn-sm btn-success m-2 float-end"'.$InputsBloqueo.' onclick="GuardarAsignacion(\''.$this->funcionesGenerales->encrypt($OrdenFabricacion->id).'\');" type="button">Guardar</button>
+                                    <button class="btn btn-sm btn-success m-2 float-end"'.$InputsBloqueo.' onclick="GuardarAsignacion(\''.$this->funcionesGenerales->encrypt($OrdenFabricacion->id).'\',this);" type="button">Guardar</button>
                                     </div></div>';
         $Ordenfabricacionpartidas.='<table id="TablePartidasModal" class="table table-sm fs--1 mb-0" style="width:100%">
                         <thead>
                             <tr>
-                                <th class="text-center" colspan="4">Partidas</th>
+                                <th class="text-center" colspan="5">Partidas</th>
                             </tr>
                             <tr>
-                                <th class="text-center" style="width:25%">Número Partida</th>
-                                <th class="text-center" style="width:25%">Piezas Asignadas</th>
-                                <th class="text-center" style="width:25%">Linea</th>
-                                <th class="text-center" style="width:25%">Fecha de Ingreso a Línea</th>
-
+                                <th class="text-center" style="width:20%">Número Partida</th>
+                                <th class="text-center" style="width:20%">Piezas Asignadas</th>
+                                <th class="text-center" style="width:20%">Linea</th>
+                                <th class="text-center" style="width:20%">Fecha de Ingreso a Línea</th>
+                                <th class="text-center" style="width:20%">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>';
@@ -4553,15 +4555,21 @@ class AreasController extends Controller
             foreach($PartidasClasificacion as $key=>$Partida){
                 $Linea = Linea::find($Partida['pivot']->Linea_id);
                 $Ordenfabricacionpartidas.='<tr>
-                    <td class="text-center">'.(($Partida->$key)+1).'</td>
+                    <td class="text-center">'.($key+1).'</td>
                     <td class="text-center">'.$Partida['pivot']->Cantidad.'</td>
                     <td class="text-center"><span class="text-white p-1" style="background:'.$Linea->ColorLinea.';">'.$Linea->Nombre.'</span></td>
                     <td class="text-center">'.$Partida['pivot']->FechaComienzo.'</td>
-                    </tr>';
+                    <td class="text-center"><button class="btn btn-sm btn-outline-danger" ';
+                if($PartidasIniciadas->count()==0){
+                    $Ordenfabricacionpartidas.=' onclick="EliminarPartida(\''. $this->funcionesGenerales->encrypt($Partida['pivot']->id).'\','.($key+1).',\''.$request->id.'\')">Eliminar</button> ';
+                }else{
+                    $Ordenfabricacionpartidas.=' disabled >Eliminar</button>';
+                } 
+                    $Ordenfabricacionpartidas.='</tr>';
             }
         }else{
             $Ordenfabricacionpartidas.='<tr>
-                                        <td class="text-center" colspan="4">Aún no existen partidas asignadas</td>
+                                        <td class="text-center" colspan="5">Aún no existen partidas asignadas</td>
                                     </tr>';
         }
         $Ordenfabricacionpartidas.='</tbody></table>';
@@ -4664,6 +4672,17 @@ class AreasController extends Controller
             return 1;
         }
     }
+    public function EliminarAsignacion(Request $request){
+        $id = $this->funcionesGenerales->decrypt($request->idOF);
+        $Partida = Partidasof_Areas::find($id);
+        $Delete = $Partida->delete();
+        if ($Delete) {
+            return 1;
+        }else{
+            return 2;
+        }
+    }
+
     //Empaquetado
     public function EmpaquetadoBuscar(Request $request){
         if ($request->has('Confirmacion')) {

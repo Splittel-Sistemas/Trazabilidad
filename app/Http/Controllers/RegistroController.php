@@ -16,8 +16,7 @@ use Illuminate\Support\Facades\DB;
 class RegistroController extends Controller
 {
     // Método para listar todos los usuarios
-    public function index()
-    {
+    public function index(){
         $user = Auth::user();
         if ($user->hasPermission('Vista Usuarios')) {
             
@@ -34,9 +33,7 @@ class RegistroController extends Controller
 
         }
     }
-
-    public function tablaPrincipal()
-    {
+    public function tablaPrincipal(){
         $tabla = DB::table('users')
             ->select('users.apellido', 'users.name', 'users.email', 'users.password', 'users.role', 'users.active')
             ->get();
@@ -48,17 +45,14 @@ class RegistroController extends Controller
     
         return response()->json($tabla);
     }
-    
     // RegistroController.php
-    public function edit(User $registro)
-    {
+    public function edit(User $registro){
         //$role = Role::with('permissions')->findOrFail($id); 
         $roles = Role::all(); // Obtener todos los roles disponibles
         $userRoles = $registro->roles->pluck('id'); // Obtener los roles asignados al usuario
         return view('registro.edit', compact('registro', 'roles', 'userRoles'));
     }
-    public function show(User $request, $registro)
-    {
+    public function show(User $request, $registro){
         $registro = User::findOrFail($registro);
         $registro->load('roles');
         $roles = $registro->roles->pluck('id')->toArray();
@@ -71,8 +65,7 @@ class RegistroController extends Controller
         ]);
     }
     // Método para actualizar un usuario
-    public function update(Request $request, $id)
-    {
+    public function update(Request $request, $id){
         $user = User::findOrFail($id);
         $validatedData = $request->validate([
             'apellido' => 'required|string|max:255',
@@ -92,26 +85,20 @@ class RegistroController extends Controller
             'message' => 'Usuario actualizado exitosamente.'
         ]);
     }
-
      // Método para mostrar el formulario de creación de un nuevo usuario
-    public function create()
-    {
+    public function create(){
          $roles = Role::all(); 
          $permissions = Permission::all(); 
          return view('registro.create', compact('roles', 'permissions')); 
     }
-     
-    public function destroy($id)
-    {
+    public function destroy($id){
         $registro = User::findOrFail($id);
         $registro->delete();
 
         return response()->json(['mensaje' => 'Usuario eliminado exitosamente.']);
     }
-    
     // Método para activar un usuario
-    public function activar(Request $request)
-    {
+    public function activar(Request $request){
         $user = User::find($request->user_id);
         if ($user) {
             $user->active = true;
@@ -120,10 +107,8 @@ class RegistroController extends Controller
         }
         return response()->json(['success' => false, 'message' => 'Usuario no encontrado.'], 404);
     }
-
     // Método para desactivar un usuario
-    public function desactivar(Request $request)
-    {
+    public function desactivar(Request $request){
         $user = User::find($request->user_id);
         if ($user) {
             $user->active = false;
@@ -132,9 +117,7 @@ class RegistroController extends Controller
         }
         return response()->json(['success' => false, 'message' => 'Usuario no encontrado.'], 404);
     }
-
-    public function storeoperador(Request $request)
-    {
+    public function storeoperador(Request $request){
         $validatedData = $request->validate([
         'apellido' => 'required|string|max:255',
         'name' => 'required|string|max:255',
@@ -161,12 +144,11 @@ class RegistroController extends Controller
         $user->save();
 
         $user->roles()->sync($validatedData['roles']); 
-
-        return redirect()->route('registro.index')->with('status', 'Usuario creado exitosamente.');
+        $Usuario = $validatedData['name']." ".$validatedData['apellido'];
+        return redirect()->route('registro.index',['Usuarios' => $Usuario,'Clave' =>$clave])->with('status', 'Usuario creado exitosamente.');
     }
     // Validaciones y crear usuario
-    public function store(Request $request)
-    {
+    public function store(Request $request){
         $validatedData = $request->validate([
             'apellido' => 'required|string|max:255',
             'name' => 'required|string|max:255',
@@ -181,10 +163,9 @@ class RegistroController extends Controller
             'password' => Hash::make($validatedData['password']),
             'role' => 'A', 
         ]);
+        $Usuario = $validatedData['name']." ".$validatedData['apellido'];
+        $Email = $validatedData['email'];
         $user->roles()->sync($validatedData['roles']); 
-        return redirect()->route('registro.index')->with('status', 'Usuario creado exitosamente.');
-}
-    
-    
-
+        return redirect()->route('registro.index',['Usuarios' => $Usuario,'Email' =>$Email])->with('status', 'Usuario creado exitosamente.');
+    }
 }

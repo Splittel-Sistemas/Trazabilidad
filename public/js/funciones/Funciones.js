@@ -117,3 +117,6 @@ function RegexNumeros_valor(datos){
 function RegexMayusculas(Input){
   $(Input).val($(Input).val().toUpperCase());
 }
+function SpinnerInsert(ContendorId){
+  document.getElementById(ContendorId).innerHTML = '<div class="spinner-border text-info" role="status"><span class="visually-hidden">Loading...</span></div>'; 
+}

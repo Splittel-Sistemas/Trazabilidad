@@ -33,8 +33,10 @@ class EtiquetasController extends Controller
             $OrdenFabricacion->OrdenVenta = 'S/N';
             $OrdenFabricacion->Cliente = 'S/N';
         }else{
+            $Cliente = ($this->funcionesGenerales->OrdeneVenta($OrdenVenta->OrdenVenta));
             $OrdenFabricacion->OrdenVenta = $OrdenVenta->OrdenVenta;
             $OrdenFabricacion->Cliente = $OrdenVenta->NombreCliente;
+            $OrdenFabricacion->CodigoCliente = $Cliente[0]['CardCode'];
         }
         return $OrdenFabricacion;
     }
@@ -249,8 +251,10 @@ class EtiquetasController extends Controller
             // Contador para saber cuántas etiquetas se han colocado en la página
             for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
                 $Aumento = 0;
+                $Aumentox  = 0;
                 if($TipoEtiqBan == 2){
                     $Aumento = 1.4;
+                    $Aumentox = 2; 
                 }
                 $pdf->SetFont('dejavusans', '', 4.5);
                 $pdf->AddPage('L', array(35, 22));
@@ -273,13 +277,13 @@ class EtiquetasController extends Controller
                 $pdf->StartTransform();
                 $pdf->Rotate(180, $cx, $cy);
                 $pdf->SetXY($x, $y); // posición X=3 mm, Y=0 mm
-                $pdf->Cell(17.5, 4,$OrdenFabricacion5P."  ".str_pad(($i+1), 4, '0', STR_PAD_LEFT), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
+                $pdf->Cell(17.5+$Aumentox, 4,$OrdenFabricacion5P."  ".str_pad(($i+1), 4, '0', STR_PAD_LEFT), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
                 $pdf->StopTransform();
 
                 $x = 17.5;
                 $y = 16.5-$Aumento;
                 $pdf->SetXY($x, $y);
-                $pdf->Cell(17.5, 2, "  " . $OrdenFabricacion5P . "  " . str_pad(($i + 1), 4, '0', STR_PAD_LEFT), 0, 0, 'C');
+                $pdf->Cell(19.5, 2, "  " . $OrdenFabricacion5P . "  " . str_pad(($i + 1), 4, '0', STR_PAD_LEFT), 0, 0, 'C');
 
                 $x = 9;
                 $y = 11+$Aumento;
@@ -315,10 +319,10 @@ class EtiquetasController extends Controller
                     }
                     $pdf->SetFont('dejavusans', '', 5.5);
                     $pdf->SetXY(18, 18.5-$Aumento);
-                    $pdf->Cell(17.5, 2,$NumeroEspecial, 0, 0, 'C');
+                    $pdf->Cell(19.5, 2,$NumeroEspecial, 0, 0, 'C');
                     $x = 0;
                     $y = 0+$Aumento;
-                    $cx = $x + 17.5 / 2;
+                    $cx = $x + 16.5 / 2;
                     $cy = $y + 4 / 2;
                     $pdf->StartTransform();
                     $pdf->Rotate(180, $cx, $cy);
@@ -339,6 +343,7 @@ class EtiquetasController extends Controller
         try {
             $Sociedad = $Sociedad; //Sociedad
             $CantidadBolsa = $CantidadBolsa;
+            $AumentoX = 0;
             $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
             if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
                 return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']);
@@ -353,14 +358,22 @@ class EtiquetasController extends Controller
             $NoPEDIDO = "";
             $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAPFMX($OrdenVenta);
             $NumeroRegistros = count($DatosSAP);
-            if($NumeroRegistros==0){
-                throw new \Exception('Ocurrio un problema, Etiqueta permitida solo para Intercompañias.');
-            }else{
-                if($DatosSAP[0]['NumAtCard']==""){
-                    throw new \Exception('Ocurrio un error, No.PEDIDO no encontrado.');
-                }else{
-                    $NoPEDIDO =  $DatosSAP[0]['NumAtCard'];
+            if($OrdenVenta != '00000'){
+                if($Sociedad == "FMX"){
+                    if($NumeroRegistros==0){
+                        throw new \Exception('Etiqueta permitida solo para Intercompañias.');
+                    }else{
+                        if($DatosSAP[0]['NumAtCard']==""){
+                            throw new \Exception('No.PEDIDO no encontrado.');
+                        }else{
+                            $NoPEDIDO =  $DatosSAP[0]['NumAtCard'];
+                        }
+                    }
                 }
+            }else{
+                $AumentoX = 2;
+                $OrdenVenta = "S/N";
+                //$NoPEDIDO = "S/N";
             }
             // Crear PDF
             $pdf = new TCPDF();
@@ -413,7 +426,7 @@ class EtiquetasController extends Controller
 
                         $ParteNo = $OrdenVenta;
                         $pdf->SetFont('dejavusans', 'B', 8);
-                        $pdf->SetXY(3.3, 16);
+                        $pdf->SetXY(3.3+$AumentoX, 16);
                         $pdf->MultiCell(13.3, 0, $ParteNo, 0, 'L', 0, 1);
                         $ParteNo = $OrdenFabricacion->OrdenFabricacion;
                         $pdf->SetFont('dejavusans', 'B', 8);
@@ -466,10 +479,10 @@ class EtiquetasController extends Controller
                         $ParteNo = $NoPEDIDO;
                         $pdf->SetFont('dejavusans', 'B', 4);
                         $pdf->SetXY(1, 16);
-                        $pdf->MultiCell(13.1, 0, $ParteNo, 0, 'L', 0, 1);
+                        $pdf->MultiCell(13.1+$AumentoX, 0, $ParteNo, 0, 'L', 0, 1);
                         $ParteNo = $OrdenVenta;
                         $pdf->SetFont('dejavusans', 'B', 8);
-                        $pdf->SetXY(13.3, 16);
+                        $pdf->SetXY(13.3+$AumentoX, 16);
                         $pdf->MultiCell(13.3, 0, $ParteNo, 0, 'L', 0, 1);
                         $ParteNo = $OrdenFabricacion->OrdenFabricacion;
                         $pdf->SetFont('dejavusans', 'B', 8);

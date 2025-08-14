@@ -1095,7 +1095,9 @@ header .form-inline {
   .for-notification .dropdown-menu .dropdown-item p {
     padding: 0 !important;
     text-overflow: ellipsis; }
-
+  .nav-link{
+    color: #b40018;
+  }
 .user-area {
   float: right;
   padding-right: 0;

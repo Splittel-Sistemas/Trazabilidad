@@ -4703,6 +4703,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     }
                 });
+            //localStorage.setItem('Sessioniniciada', 'true');
             });
             //Cada que se ingresa a una pagina se eejecuta cada 2 horas para comprobar la sesion del usuarios
             setInterval(function() {
@@ -4723,6 +4724,15 @@
                     window.location.reload();
                 }
             };
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'userLoggedIn' && event.newValue === 'true') {
+                    // Recarga la página
+                    location.reload();
+                }
+            });
+            function login() {
+                localStorage.setItem('userLoggedIn', 'true');
+            }
         </script>
         @yield('scripts')
     </body>

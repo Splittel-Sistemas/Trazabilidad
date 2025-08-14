@@ -204,7 +204,7 @@
         </div>
     </div>
     <!-- Toast ver las Ordenes de Fabricacion Pendientes por asignar-->
-    <div id="ElementAlert" class="d-flex flex-center" aria-live="polite" aria-atomic="true"  style="position: fixed; bottom: 0.5rem; right: 1rem; z-index: 1;display:none;" data-bs-delay="30000">
+    <div id="ElementAlert" class="d-flex flex-center" aria-live="polite" aria-atomic="true"  style="position: fixed; bottom: 0.5rem; right: 1rem; z-index: 1085;display:none;" data-bs-delay="30000">
         <div class="toast show p-0" role="alert" data-bs-autohide="false" aria-live="assertive" aria-atomic="true" >
             <div class="toast-header bg-danger text-white p-1">
                 <strong class="me-auto">Alerta</strong>

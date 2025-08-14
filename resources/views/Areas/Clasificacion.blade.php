@@ -195,8 +195,7 @@
                                             <th>Cantidad Pendiente de asignar</th>
                                             <th>Cantidad Total Orden de Fabricacion</th>
                                             <th>Esc&aacute;ner</th>
-                                            <th>Asignar l&iacute;nea</th>
-                                            <th>Finalizar Orden de Fabricaci&oacute;n</th>
+                                            <th class="text-center" colspan="2">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody id="TablaCalsificacionAbiertasBody" class="list">
@@ -211,7 +210,7 @@
                                                 <td>
                                                     <button class="btn btn-sm btn-outline-info px-3 py-2" onclick="AsignarLinea('{{$partida->idEncriptOF}}')">Asignar</button>
                                                 </td>
-                                                <td class="text-center">
+                                                <td>   
                                                     <button class="btn btn-sm btn-outline-danger px-3 py-2" onclick="FinalizarOrdenFabricacion('{{$partida->idEncriptOF}}')">Finalizar</button>
                                                 </td>
                                             </tr>
@@ -329,7 +328,8 @@
             }
         });
     }
-    function GuardarAsignacion(id){
+    function GuardarAsignacion(id, BotonGuardar){
+        BotonGuardar.disabled = true;
         CantidadModal = $('#CantidadModal').val();
         LineaModal = $('#LineaModal').val();
         ErrorCantidadModal = $('#ErrorCantidadModal');
@@ -368,6 +368,7 @@
                 RecargarTabla();
             },
             error: function(jqXHR, textStatus, errorThrown) {
+                BotonGuardar.disabled = false;
                 errorBD();
                 RecargarTabla();
             }
@@ -660,6 +661,69 @@
             });
         }
       });
+    }
+    function EliminarPartida(IdOrdenFabricación,NumPartida,OrdenFabricacion){
+         Swal.fire({
+            title: 'Eliminar partida asignada',
+            text: '¿Deseas eliminar la partida '+NumPartida+'?',
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            cancelButtonText:"Cancelar",
+            confirmButtonText: 'Aceptar', 
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "{{route('EliminarAsignacion')}}", 
+                    type: 'POST',
+                    data: {
+                        idOF:IdOrdenFabricación,
+                    },
+                    beforeSend: function() {
+                        //$('#ModalDetalleBodyInfoOF').html('<div class="d-flex justify-content-center align-items-center"><div class="spinner-grow text-info text-center" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                    },
+                    success: function(response) {
+                        if(response==1){
+                            AsignarLinea(OrdenFabricacion);
+                            success('Guardado Correctamente','Partida '+NumPartida+' eliminada correctamente!');
+                        }else{
+                            error('Error al Eliminar Partida!', 'Los datos no pudieron ser procesados correctamente, si persiste el error contacta a TI');
+                        }
+                        RecargarTabla();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        errorBD();
+                    }
+                });
+            }
+            /*    const Motivo = result.value;
+                fetch("{{ route('FinalizarOrdenFabricacion') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    },
+                    body: JSON.stringify({
+                        idOF: IdOrdenFabricación,
+                        Motivo: Motivo,
+                    }),
+                })
+                .then(response => response.json())
+                .then(response => {
+                    if (response === 1) {
+                        AsignarLinea(IdOrdenFabricación);
+                        success('Guardado Correctamente','La Orden de Fabricación ha sido finalizada correctamente!');
+                    } else {
+                        error('Error al Finalizar la orden de fabricación!', 'Los datos no pudieron ser procesados correctamente, si persiste el error contacta a TI');
+                    }
+                    RecargarTabla();
+                })
+                .catch(() => {
+                    errorBD();
+                });
+            }*/
+        }); 
     }
 </script>
 @endsection
