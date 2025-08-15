@@ -716,6 +716,7 @@
                                             '<span class="fas fa-info-circle text-white"></span>'+
                                             '<p class="mx-2 mb-0 flex-1 text-white"> Plato activado!</p>'+
                                         '</div>';
+            document.getElementById('CodigoEscanerEntrada').focus();
         });
     });
     function TipoNoEscaner(TipoEntrada) {

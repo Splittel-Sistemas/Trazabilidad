@@ -198,24 +198,6 @@
                                             <th class="text-center" colspan="2">Acciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="TablaCalsificacionAbiertasBody" class="list">
-                                        @foreach($OrdenFabricacion as $partida)
-                                            <tr style="@if($partida->Urgencia=='U'){{'background:#8be0fc';}}@endif" id="Fila_$partida->OrdenFabricacion">
-                                                <td class="text-center">{{$partida->OrdenFabricacion }}</td>
-                                                <td>{{$partida->Articulo }}</td>
-                                                <td>{{$partida->Descripcion }}</td>
-                                                <td class="text-center">{{$partida->CantidadSuministro }}</td>
-                                                <td class="text-center">{{$partida->CantidadTotal }} </td>
-                                                <td class="text-center"><input type="checkbox" @if ($partida->EscanerDisabled == 0 ) onchange="Escaner(this,'{{$partida->idEncriptOF}}')" @else disabled @endif class="Corte67869" @if($partida->Escaner == 1) checked @endif></td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-outline-info px-3 py-2" onclick="AsignarLinea('{{$partida->idEncriptOF}}')">Asignar</button>
-                                                </td>
-                                                <td>   
-                                                    <button class="btn btn-sm btn-outline-danger px-3 py-2" onclick="FinalizarOrdenFabricacion('{{$partida->idEncriptOF}}')">Finalizar</button>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -280,25 +262,44 @@
 @section('scripts')
 <script>
     $(document).ready(function() {
-        DataTable('TablaClasificacionAbiertas',true);
+        RecargarTabla();
         setInterval(RecargarTabla,180000);//180000
     });
     function RecargarTabla(){
-        $.ajax({
-            url: "{{route('ClasificacionRecargarTabla')}}", 
-            type: 'GET',
-            data: {
-                _token: '{{ csrf_token() }}'  
+        $('#TablaClasificacionAbiertas').DataTable({
+            destroy: true,
+            ajax: {
+                url: "{{ route('ClasificacionRecargarTabla') }}",
+                dataSrc: 'data'
             },
-            beforeSend: function() {
-            },
-            success: function(response) {
-                if(response.status=="success"){
-                    $('#TablaClasificacionAbiertas').DataTable().destroy();
-                    $('#TablaCalsificacionAbiertasBody').html(response.table);
-                    DataTable('TablaClasificacionAbiertas',true);
+            columns: [
+                { data: 'OrdenFabricacion' },
+                { data: 'Articulo' },
+                { data: 'Descripcion' },
+                { data: 'CantidadPendiente' },
+                { data: 'CantidadTotal' },
+                { data: 'Escaner' },
+                { data: 'Asignar' },
+                { data: 'Finalizar' }
+            ],
+            columnDefs: [
+                { targets: [5, 6, 7], orderable: false }, // Opcional: desactiva orden en acciones
+                { targets: [5, 6, 7], searchable: false }, // Opcional: desactiva búsqueda
+                { targets: [5, 6, 7], className: 'text-center' } // Centra los botones y checkbox
+            ],
+            language: {
+                            "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
+                            "search":"Buscar",
+                        },
+                        "initComplete": function(settings, json) {
+                            $('#'+tabla).css('font-size', '0.7rem');
+                        },
+            rowCallback: function(row, data, index) {
+                if (data.Urgencia === 'U') {
+                    $(row).css('background-color', '#8be0fc');
                 }
-            }
+            },
+            lengthChange: false
         });
     }
     function AsignarLinea(id){
@@ -374,7 +375,7 @@
             }
         });
     }
-    function DataTable(tabla, busqueda){
+    /*function DataTable(tabla, busqueda){
         $('#'+tabla).DataTable({
             "pageLength": 10,  // Paginación de 10 elementos por página
             "lengthChange": false, // Desactiva la opción de cambiar el número de elementos por página
@@ -390,7 +391,7 @@
                 $('#'+tabla).css('font-size', '0.7rem');
             }
         });
-    }
+    }*/
     $(document).ready(function() {
         PorcentajeLlenadas(); 
         $('#lineaModal').change(function() {

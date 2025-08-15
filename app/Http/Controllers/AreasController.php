@@ -4403,22 +4403,8 @@ class AreasController extends Controller
             return redirect()->route('login');
         }
         if($user->hasPermission('Vista Clasificación')){
-        //Cerrada = 1 es abierta
-        $OrdenFabricacion = OrdenFabricacion::where('Cerrada','1')->get();
-        foreach($OrdenFabricacion as $key=>$OrdenFab){
-            $Partida = $OrdenFab->PartidasOF->first();
-            $ContarPartidas = $Partida->Areas()->where('Areas_id',$this->AreaEspecialSuministro)->get()->whereNotNull('pivot.FechaTermina')->where('pivot.TipoPartida','N')->sum('pivot.Cantidad');
-            $ContarPartidasClasificacion = $Partida->Areas()->where('Areas_id',18)->get()->sum('pivot.Cantidad');
-            $OrdenFab['CantidadSuministro'] = $ContarPartidas-$ContarPartidasClasificacion;
-            $OrdenFab['idEncriptOF'] = $this->funcionesGenerales->encrypt($OrdenFab->id);
-            $OrdenFab['Escaner'] = $OrdenFab->Escaner;
-            $OrdenFab['EscanerDisabled'] = $Partida->Areas()->where('Areas_id','!=',$this->AreaEspecialClasificacion)->where('Areas_id','>',$this->AreaEspecialSuministro)->get()->count();
-            if($ContarPartidas == 0 || ($ContarPartidasClasificacion!=0 AND $ContarPartidasClasificacion==$ContarPartidas)){
-                unset($OrdenFabricacion[$key]);
-            }
-        }
         $Lineas = Linea::where('active','1')->where('id','!=',1)->orderBy('Nombre', 'asc')->get();
-        return view('Areas.Clasificacion',compact('OrdenFabricacion','Lineas','FechaFin')); 
+        return view('Areas.Clasificacion',compact('Lineas','FechaFin')); 
         }else{
             return redirect()->route('error.');
         }
@@ -4431,6 +4417,45 @@ class AreasController extends Controller
         if($user->hasPermission('Vista Clasificación')){
             //Cerrada = 1 es abierta
             $OrdenFabricacion = OrdenFabricacion::where('Cerrada','1')->get();
+            $data = []; 
+            foreach($OrdenFabricacion as $key=>$OrdenFab){
+                $Partida = $OrdenFab->PartidasOF->first();
+                $ContarPartidas = $Partida->Areas()->where('Areas_id',3)->get()->whereNotNull('pivot.FechaTermina')->where('pivot.TipoPartida','N')->sum('pivot.Cantidad');
+                $ContarPartidasClasificacion = $Partida->Areas()->where('Areas_id',18)->get()->sum('pivot.Cantidad');
+                $OrdenFab['CantidadSuministro'] = $ContarPartidas-$ContarPartidasClasificacion;
+                $OrdenFab['idEncriptOF'] = $this->funcionesGenerales->encrypt($OrdenFab->id);
+                $OrdenFab['EscanerDisabled'] = $Partida->Areas()->where('Areas_id','!=',$this->AreaEspecialClasificacion)->where('Areas_id','>',$this->AreaEspecialSuministro)->get()->count();
+                if($ContarPartidas == 0 || ($ContarPartidasClasificacion!=0 AND $ContarPartidasClasificacion==$ContarPartidas)){
+                    unset($OrdenFabricacion[$key]);
+                }
+                $data[] = [
+                    'OrdenFabricacion' => $OrdenFab->OrdenFabricacion,
+                    'Articulo' => $OrdenFab->Articulo,
+                    'Descripcion' => $OrdenFab->Descripcion,
+                    'CantidadPendiente' => ($OrdenFab->CantidadTotal - $OrdenFab->CantidadSuministro),
+                    'CantidadTotal' => $OrdenFab->CantidadTotal,
+                    'Escaner' => $OrdenFab->EscanerDisabled == 0 ? '<input type="checkbox" onchange="Escaner(this,\''.$OrdenFab->idEncriptOF.'\')" '.($OrdenFab->Escaner == 1 ? 'checked' : '').'>' : '<input type="checkbox" disabled>',
+                    'Asignar' => '<button class="btn btn-sm btn-outline-info px-3 py-2" onclick="AsignarLinea(\''.$OrdenFab->idEncriptOF.'\')">Asignar</button>',
+                    'Finalizar' => '<button class="btn btn-sm btn-outline-danger px-3 py-2" onclick="FinalizarOrdenFabricacion(\''.$OrdenFab->idEncriptOF.'\')">Finalizar</button>',
+                    'Urgencia' => $OrdenFab->Urgencia
+                ];
+            }
+            return response()->json([
+                'data' => $data,
+            ], 200);
+        }else{
+            return "";
+        }
+    }
+    //Descomentar en caso de que no funcionen los cambios
+    /*public function ClasificacionRecargarTabla(Request $request){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+        if($user->hasPermission('Vista Clasificación')){
+            //Cerrada = 1 es abierta
+            $OrdenFabricacion = OrdenFabricacion::where('Cerrada','1')->get()OrdenFabricacion::where('Cerrada','1')->get();
             foreach($OrdenFabricacion as $key=>$OrdenFab){
                 $Partida = $OrdenFab->PartidasOF->first();
                 $ContarPartidas = $Partida->Areas()->where('Areas_id',3)->get()->whereNotNull('pivot.FechaTermina')->where('pivot.TipoPartida','N')->sum('pivot.Cantidad');
@@ -4479,7 +4504,7 @@ class AreasController extends Controller
         }else{
             return "";
         }
-    }
+    }*/
     public function ClasificacionInfoModal(Request $request){
         $id=$this->funcionesGenerales->decrypt($request->id);
         $OrdenFabricacion = OrdenFabricacion::where('id','=',$id)->first();
