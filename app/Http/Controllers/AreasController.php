@@ -4412,9 +4412,17 @@ class AreasController extends Controller
     public function ClasificacionRecargarTabla(Request $request){
         $user= Auth::user();
         if (!$user) {
-            return redirect()->route('login');
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => []
+            ]);
         }
         if($user->hasPermission('Vista Clasificación')){
+            $start = $request->input('start');
+            $length = $request->input('length');
+            $search = $request->input('search.value');
             //Cerrada = 1 es abierta
             $OrdenFabricacion = OrdenFabricacion::where('Cerrada','1')->get();
             $data = []; 
@@ -4424,21 +4432,22 @@ class AreasController extends Controller
                 $ContarPartidasClasificacion = $Partida->Areas()->where('Areas_id',18)->get()->sum('pivot.Cantidad');
                 $OrdenFab['CantidadSuministro'] = $ContarPartidas-$ContarPartidasClasificacion;
                 $OrdenFab['idEncriptOF'] = $this->funcionesGenerales->encrypt($OrdenFab->id);
-                $OrdenFab['EscanerDisabled'] = $Partida->Areas()->where('Areas_id','!=',$this->AreaEspecialClasificacion)->where('Areas_id','>',$this->AreaEspecialSuministro)->get()->count();
+                $OrdenFab['EscanerDisabled'] = $Partida->Areas()->where('Areas_id','!=',$this->AreaEspecialClasificacion)->where('Areas_id','>',$this->AreaEspecialSuministro)->limit(4)->get()->count();
                 if($ContarPartidas == 0 || ($ContarPartidasClasificacion!=0 AND $ContarPartidasClasificacion==$ContarPartidas)){
                     unset($OrdenFabricacion[$key]);
+                }else{
+                    $data[] = [
+                        'OrdenFabricacion' => $OrdenFab->OrdenFabricacion,
+                        'Articulo' => $OrdenFab->Articulo,
+                        'Descripcion' => $OrdenFab->Descripcion,
+                        'CantidadPendiente' => ($OrdenFab->CantidadTotal - $OrdenFab->CantidadSuministro),
+                        'CantidadTotal' => $OrdenFab->CantidadTotal,
+                        'Escaner' => $OrdenFab->EscanerDisabled == 0 ? '<input type="checkbox" onchange="Escaner(this,\''.$OrdenFab->idEncriptOF.'\')" '.($OrdenFab->Escaner == 1 ? 'checked' : '').'>' : '<input type="checkbox" disabled>',
+                        'Asignar' => '<button class="btn btn-sm btn-outline-info px-3 py-2" onclick="AsignarLinea(\''.$OrdenFab->idEncriptOF.'\')">Asignar</button>',
+                        'Finalizar' => '<button class="btn btn-sm btn-outline-danger px-3 py-2" onclick="FinalizarOrdenFabricacion(\''.$OrdenFab->idEncriptOF.'\')">Finalizar</button>',
+                        'Urgencia' => $OrdenFab->Urgencia
+                    ];
                 }
-                $data[] = [
-                    'OrdenFabricacion' => $OrdenFab->OrdenFabricacion,
-                    'Articulo' => $OrdenFab->Articulo,
-                    'Descripcion' => $OrdenFab->Descripcion,
-                    'CantidadPendiente' => ($OrdenFab->CantidadTotal - $OrdenFab->CantidadSuministro),
-                    'CantidadTotal' => $OrdenFab->CantidadTotal,
-                    'Escaner' => $OrdenFab->EscanerDisabled == 0 ? '<input type="checkbox" onchange="Escaner(this,\''.$OrdenFab->idEncriptOF.'\')" '.($OrdenFab->Escaner == 1 ? 'checked' : '').'>' : '<input type="checkbox" disabled>',
-                    'Asignar' => '<button class="btn btn-sm btn-outline-info px-3 py-2" onclick="AsignarLinea(\''.$OrdenFab->idEncriptOF.'\')">Asignar</button>',
-                    'Finalizar' => '<button class="btn btn-sm btn-outline-danger px-3 py-2" onclick="FinalizarOrdenFabricacion(\''.$OrdenFab->idEncriptOF.'\')">Finalizar</button>',
-                    'Urgencia' => $OrdenFab->Urgencia
-                ];
             }
             return response()->json([
                 'data' => $data,

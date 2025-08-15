@@ -1,0 +1,2 @@
+//Actualizar registros desde una fecha en especifico
+UPDATE OrdenFabricacion set Cerrada = 0 WHERE created_at < '2025-07-14 00:00:00' ORDER BY `id` DESC;

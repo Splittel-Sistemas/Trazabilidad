@@ -268,9 +268,14 @@
     function RecargarTabla(){
         $('#TablaClasificacionAbiertas').DataTable({
             destroy: true,
+            //processing: true,
+            //serverSide: true,
             ajax: {
                 url: "{{ route('ClasificacionRecargarTabla') }}",
-                dataSrc: 'data'
+                dataSrc: 'data',
+                error: function(xhr, error, thrown) {
+                    errorBD();
+                }
             },
             columns: [
                 { data: 'OrdenFabricacion' },
@@ -299,7 +304,10 @@
                     $(row).css('background-color', '#8be0fc');
                 }
             },
-            lengthChange: false
+            lengthChange: false,
+            initComplete: function(settings, json) {
+                $('#'+tabla).css('font-size', '0.7rem');
+            }
         });
     }
     function AsignarLinea(id){
