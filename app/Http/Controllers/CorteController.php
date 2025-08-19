@@ -24,7 +24,7 @@ class CorteController extends Controller
         if ($user->hasPermission('Vista Corte')) {
             $fecha = date('Y-m-d');
             $fechaAtras = date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
-            $OrdenesFabricacionAbiertas = $this->OrdenesFabricacionAbiertas();
+            /*$OrdenesFabricacionAbiertas = $this->OrdenesFabricacionAbiertas();
             foreach($OrdenesFabricacionAbiertas as $key=>$OFA){
                 $Usuario=isset($OFA->ResponsableUser_id)?User::find($OFA->ResponsableUser_id):"";
                 if($Usuario==""){
@@ -33,7 +33,7 @@ class CorteController extends Controller
                     $Nombre = $Usuario->name."  ".$Usuario->apellido;
                 }
                 $OrdenesFabricacionAbiertas[$key]['responsable'] = $Nombre;
-            }
+            }*/
             $OrdenesFabricacionCerradas = $this->OrdenesFabricacionCerradas($fechaAtras, $fecha);
             foreach($OrdenesFabricacionCerradas as $key=>$OFC){
                 $Usuario=isset($OFC->ResponsableUser_id)?User::find($OFC->ResponsableUser_id):"";
@@ -44,7 +44,7 @@ class CorteController extends Controller
                 }
                 $OrdenesFabricacionCerradas[$key]['responsable'] = $Nombre;
             }
-            return view('Areas.Cortes', compact('OrdenesFabricacionAbiertas', 'OrdenesFabricacionCerradas', 'fecha', 'fechaAtras'));
+            return view('Areas.Cortes', compact('OrdenesFabricacionCerradas', 'fecha', 'fechaAtras'));
         } else {
             return redirect()->route('error.');
         }
@@ -55,6 +55,7 @@ class CorteController extends Controller
             //$OrdenFabricacion=OrdenFabricacion::where('EstatusEntrega','=','0')->get();
             $OrdenFabricacion=$this->OrdenesFabricacionAbiertas();
             $tabla="";
+            $data =  [];
             foreach($OrdenFabricacion as $orden) {
                 $Usuario=isset($orden->ResponsableUser_id)?User::find($orden->ResponsableUser_id):"";
                 if($Usuario==""){
@@ -66,7 +67,20 @@ class CorteController extends Controller
                 if($orden->Urgencia=='U'){
                     $tabla.='style="background:#8be0fc"';
                 }
-                $tabla.='>
+                $data[] = [
+                        'OrdenFabricacion' => $orden->OrdenFabricacion,
+                        'Responsable_Corte' => '<span class="badge badge-phoenix badge-phoenix-primary">'.$Nombre.'</span>',
+                        'Articulo' => $orden->Articulo,
+                        'Descripcion' => $orden->Descripcion,
+                        'Piezas_Cortadas_Normal' =>$orden->Piezascortadas,
+                        'Piezas_Cortadas_Retrabajo' => $orden->PiezascortadasR,
+                        'Cantidad_Total' => $orden->CantidadTotal,
+                        'Fecha_Planeada' => $orden->FechaEntrega,
+                        'Estatus' => '<div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div>',
+                        'Accion' => '<button class="btn btn-sm btn-outline-primary px-3 py-1" onclick="Planear(\''.$orden->idEncript.'\')">Cortes</button>',
+                        'Urgencia' => $orden->Urgencia
+                    ];
+                /*$tabla.='>
                         <td>'. $orden->OrdenFabricacion .'</td>
                         <td class="text-center"><span class="badge badge-phoenix badge-phoenix-primary">'.$Nombre.'</span></td>
                         <td>'. $orden->Articulo .'</td>
@@ -77,12 +91,15 @@ class CorteController extends Controller
                         <td>'. $orden->FechaEntrega .'</td>
                         <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
                         <td><button class="btn btn-sm btn-outline-primary px-3 py-1" onclick="Planear(\''.$orden->idEncript.'\')">Cortes</button></td>
-                    </tr>';
+                    </tr>';*/
             }
-            return response()->json([
+            /*return response()->json([
                     'status' => 'success',
                     'table' => $tabla,
-                ], 200);
+                ], 200);*/
+            return response()->json([
+                'data' => $data,
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',

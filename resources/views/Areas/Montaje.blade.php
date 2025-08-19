@@ -673,7 +673,7 @@
                 $('#Apuntarbox').removeClass('Apuntarbox');
             }
         });
-        setInterval(RecargarTablaPendientes,180000);//180000
+        setInterval(RecargarTablaPendientes,600000);//180000
     });
     function TipoNoEscaner(TipoEntrada) {
         CodigoEscaner=$('#CodigoEscanerEntrada').val();

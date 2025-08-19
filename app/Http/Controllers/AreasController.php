@@ -55,37 +55,39 @@ class AreasController extends Controller
         $PartidasOFA=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
         foreach($PartidasOFA as $orden) {
             $ordenFabri=$orden->ordenFabricacion;
-            $ordenesSAP1=$this->funcionesGenerales->Emisiones($ordenFabri->OrdenFabricacion);
-            $ordenesSAP = array_filter($ordenesSAP1, function($item) {
-                return $item['Cantidad'] !== null;
-            });
-            $ordenesLocal=$ordenFabri->Emisions()->get();
-            foreach($ordenesLocal as $ordenesLoc){
-                foreach ($ordenesSAP as $key => $item) {
-                    if ($item["NoEmision"] == $ordenesLoc->NumEmision) {
-                        unset($ordenesSAP[$key]);  // Eliminar el elemento del array
-                        break;  // Detener el bucle después de eliminar
+            if($ordenFabri->Cerrada == 1){
+                $ordenesSAP1=$this->funcionesGenerales->Emisiones($ordenFabri->OrdenFabricacion);
+                $ordenesSAP = array_filter($ordenesSAP1, function($item) {
+                    return $item['Cantidad'] !== null;
+                });
+                $ordenesLocal=$ordenFabri->Emisions()->get();
+                foreach($ordenesLocal as $ordenesLoc){
+                    foreach ($ordenesSAP as $key => $item) {
+                        if ($item["NoEmision"] == $ordenesLoc->NumEmision) {
+                            unset($ordenesSAP[$key]);  // Eliminar el elemento del array
+                            break;  // Detener el bucle después de eliminar
+                        }
                     }
                 }
+                $orden['OrdenFaltantes']=count($ordenesSAP);
+                $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
+                $orden['OrdenFabricacion']=$ordenFabri->OrdenFabricacion;
+                $orden['Urgencia']=$ordenFabri->Urgencia;
+                //$orden['TotalPartida']=$ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida')-$ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida');
+                $orden['TotalPartida']=$ordenFabri->CantidadTotal;
+                $Normal=0;
+                $Retrabajo=0;
+                $ordenFabri->PartidasOF;
+                foreach($ordenFabri->PartidasOF as $partidasOF){
+                    $Normal+=$partidasOF->Areas()->where('Areas_id',3)->where('TipoPartida','N')->SUM('Cantidad');
+                    $Retrabajo+=$partidasOF->Areas()->where('Areas_id',3)->where('TipoPartida','R')->SUM('Cantidad');
+                }
+                $orden['Normal']=$Normal;
+                $orden['Retrabajo']=$Retrabajo;
+                $orden['Articulo']=$ordenFabri->Articulo;
+                $orden['Descripcion']=$ordenFabri->Descripcion;
+                $orden->id="";
             }
-            $orden['OrdenFaltantes']=count($ordenesSAP);
-            $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
-            $orden['OrdenFabricacion']=$ordenFabri->OrdenFabricacion;
-            $orden['Urgencia']=$ordenFabri->Urgencia;
-            //$orden['TotalPartida']=$ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida')-$ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida');
-            $orden['TotalPartida']=$ordenFabri->CantidadTotal;
-            $Normal=0;
-            $Retrabajo=0;
-            $ordenFabri->PartidasOF;
-            foreach($ordenFabri->PartidasOF as $partidasOF){
-                $Normal+=$partidasOF->Areas()->where('Areas_id',3)->where('TipoPartida','N')->SUM('Cantidad');
-                $Retrabajo+=$partidasOF->Areas()->where('Areas_id',3)->where('TipoPartida','R')->SUM('Cantidad');
-            }
-            $orden['Normal']=$Normal;
-            $orden['Retrabajo']=$Retrabajo;
-            $orden['Articulo']=$ordenFabri->Articulo;
-            $orden['Descripcion']=$ordenFabri->Descripcion;
-            $orden->id="";
         }
         //Consulta traer Ordenes cerradas en esta estacion
         $PartidasOFC = PartidasOF::Join('partidasof_areas','partidasof.id','=','partidasof_areas.PartidasOF_id')
@@ -234,42 +236,45 @@ class AreasController extends Controller
             $tabla="";
             foreach($PartidasOF as $orden) {
                 $ordenFabri=$orden->ordenFabricacion;
-                $ordenesSAP1=$this->funcionesGenerales->Emisiones($ordenFabri->OrdenFabricacion);
-                $ordenesSAP = array_filter($ordenesSAP1, function($item) {
-                    return $item['Cantidad'] !== null;
-                });
-                $ordenesLocal=$ordenFabri->Emisions()->get();
-                foreach($ordenesLocal as $ordenesLoc){
-                    foreach ($ordenesSAP as $key => $item) {
-                        if ($item["NoEmision"] == $ordenesLoc->NumEmision) {
-                            unset($ordenesSAP[$key]);  // Eliminar el elemento del array
-                            break;  // Detener el bucle después de eliminar
+                if($ordenFabri->Cerrada == 0){
+                        $ordenesSAP1=$this->funcionesGenerales->Emisiones($ordenFabri->OrdenFabricacion);
+                        $ordenesSAP = array_filter($ordenesSAP1, function($item) {
+                            return $item['Cantidad'] !== null;
+                        });
+                        $ordenesLocal=$ordenFabri->Emisions()->get();
+                        foreach($ordenesLocal as $ordenesLoc){
+                            foreach ($ordenesSAP as $key => $item) {
+                                if ($item["NoEmision"] == $ordenesLoc->NumEmision) {
+                                    unset($ordenesSAP[$key]);  // Eliminar el elemento del array
+                                    break;  // Detener el bucle después de eliminar
+                                }
+                            }
                         }
-                    }
-                }
-                $TotalPartida=$ordenFabri->CantidadTotal;//($ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida'))-($ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida'));
-                $tabla.='<tr';
-                if($ordenFabri->Urgencia=='U'){
-                 $tabla.=' style="background:#8be0fc;" ';   
-                }
-                $tabla.='>
-                        <td>'. $ordenFabri->OrdenFabricacion .'</td>
-                        <td>'. $ordenFabri->Articulo .'</td>
-                        <td>'. $ordenFabri->Descripcion.'</td>
-                        <td>'.count($ordenesSAP).'</td>';
-                        $Normal=0;
-                        $Retrabajo=0;
-                        foreach($ordenFabri->PartidasOF as $partidas){
-                            $Normal+=$partidas->Areas()->where('Areas_id',3)->where('TipoPartida','N')->SUM('Cantidad');
-                            $Retrabajo+=$partidas->Areas()->where('Areas_id',3)->where('TipoPartida','R')->SUM('Cantidad');
+                        $TotalPartida=$ordenFabri->CantidadTotal;//($ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida'))-($ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida'));
+                        $tabla.='<tr';
+                        if($ordenFabri->Urgencia=='U'){
+                        $tabla.=' style="background:#8be0fc;" ';   
                         }
-                        
-                $tabla.='<td>'. $Normal.'</td>
-                        <td>'. $Retrabajo.'</td>
-                        <td>'. $TotalPartida .'</td>
-                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                        <td><button class="btn btn-sm btn-outline-primary" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Detalles</button></td>
-                    </tr>';
+                        $tabla.='>
+                                <td>'. $ordenFabri->OrdenFabricacion .'</td>
+                                <td>'. $ordenFabri->Articulo .'</td>
+                                <td>'. $ordenFabri->Descripcion.'</td>
+                                <td>'.count($ordenesSAP).'</td>';
+                                $Normal=0;
+                                $Retrabajo=0;
+                                foreach($ordenFabri->PartidasOF as $partidas){
+                                    $Normal+=$partidas->Areas()->where('Areas_id',3)->where('TipoPartida','N')->SUM('Cantidad');
+                                    $Retrabajo+=$partidas->Areas()->where('Areas_id',3)->where('TipoPartida','R')->SUM('Cantidad');
+                                }
+                                
+                        $tabla.='<td>'. $Normal.'</td>
+                                <td>'. $Retrabajo.'</td>
+                                <td>'. $TotalPartida .'</td>
+                                <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                                <td><button class="btn btn-sm btn-outline-primary" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Detalles</button></td>
+                            </tr>';
+
+                }
             }
             return response()->json([
                     'status' => 'success',
@@ -4432,8 +4437,10 @@ class AreasController extends Controller
                 $ContarPartidasClasificacion = $Partida->Areas()->where('Areas_id',18)->get()->sum('pivot.Cantidad');
                 $OrdenFab['CantidadSuministro'] = $ContarPartidas-$ContarPartidasClasificacion;
                 $OrdenFab['idEncriptOF'] = $this->funcionesGenerales->encrypt($OrdenFab->id);
-                $OrdenFab['EscanerDisabled'] = $Partida->Areas()->where('Areas_id','!=',$this->AreaEspecialClasificacion)->where('Areas_id','>',$this->AreaEspecialSuministro)->limit(4)->get()->count();
+                $OrdenFab['EscanerDisabled'] = $Partida->Areas()->where('Areas_id','!=',$this->AreaEspecialClasificacion)->where('Areas_id','>',$this->AreaEspecialSuministro)->count();
                 if($ContarPartidas == 0 || ($ContarPartidasClasificacion!=0 AND $ContarPartidasClasificacion==$ContarPartidas)){
+                    unset($OrdenFabricacion[$key]);
+                }elseif($ContarPartidas == 0){
                     unset($OrdenFabricacion[$key]);
                 }else{
                     $data[] = [

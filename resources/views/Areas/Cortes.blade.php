@@ -56,8 +56,10 @@
                 <div class="tab-content mt-4 " id="myTabContent">
                     <!-- Tab Proceso -->
                     <div class="tab-pane fade show active" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab">
-                        <div class="table-responsive card">
-                            <table id="procesoTable" class="table table-sm" style="width: 100%;display: none;">
+                        <div id="ContentTabla" class="col-12 mt-2">
+                            <div class="card" id="DivCointainerTableSuministro">
+                            <div class="table-responsive">
+                            <table id="procesoTable" class="table table-sm fs--1 mb-1" style="width: 100%;display: none;">
                                 <thead>
                                     <tr class="bg-light">
                                         <th>Orden Fabricación</th>
@@ -72,23 +74,9 @@
                                         <th>Accion</th>
                                     </tr>
                                 </thead>
-                                <tbody id="procesoTableBody">
-                                @foreach($OrdenesFabricacionAbiertas as $orden)
-                                    <tr style="@if($orden->Urgencia == 'U'){{'background:#8be0fc;'}} @endif">
-                                        <td>{{ $orden->OrdenFabricacion }}</td>
-                                        <td class="text-center"><span class="badge badge-phoenix badge-phoenix-primary">{{$orden->responsable}}</span></td>
-                                        <td>{{ $orden->Articulo }}</td>
-                                        <td>{{ $orden->Descripcion }}</td>
-                                        <td>{{ $orden->Piezascortadas }}</td>
-                                        <td>{{ $orden->PiezascortadasR }}</td>
-                                        <td>{{ $orden->CantidadTotal }}</td>
-                                        <td>{{ $orden->FechaEntrega }}</td>
-                                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                                        <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Planear('{{$orden->idEncript}}')">Cortes</button></td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
                             </table>
+                            </div>
+                            </div>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="tab-completado" role="tabpanel" aria-labelledby="completado-tab">
@@ -274,10 +262,6 @@
 @section('scripts')
 <script>
     $(document).ready(function() {
-        //$('#procesoTableBody').html('{{$OrdenesFabricacionCerradas}}');
-        DataTable('procesoTable',true);
-        $('.dt-layout-start:first').append(
-        '<button class="btn btn-info mb-0" data-bs-toggle="modal" data-bs-target="#ModalRetrabajo" onclick="LimpiarOF()"><i class="fas fa-plus"></i> Retrabajo</button>');
         DataTable('completadoTable',true);
         document.getElementById("Retrabajo").addEventListener("change", function() {
             if (this.checked) {
@@ -471,11 +455,53 @@
             // Mostrarlo en la consola o hacer algo con el valor
             $('#Cantitadpiezas').val(cantidad);
         });
-        setInterval(RecargarTabla, 300000);//180000);
+        RecargarTabla();
+        setInterval(RecargarTabla, 600000);//180000);
         $('#procesoTable').show();
     });
     function RecargarTabla(){
-        $.ajax({
+        $('#procesoTable').DataTable({
+            destroy: true,
+            //processing: true,
+            //serverSide: true,
+            ajax: {
+                url: "{{ route('CorteRecargarTabla') }}",
+                dataSrc: 'data',
+                error: function(xhr, error, thrown) {
+                    errorBD();
+                }
+            },
+            columns: [
+                { data: 'OrdenFabricacion' },
+                { data: 'Responsable_Corte' },
+                { data: 'Articulo' },
+                { data: 'Descripcion' },
+                { data: 'Piezas_Cortadas_Normal' },
+                { data: 'Piezas_Cortadas_Retrabajo' },
+                { data: 'Cantidad_Total' },
+                { data: 'Fecha_Planeada' },
+                { data: 'Estatus' },
+                 { data: 'Accion' },
+            ],
+            columnDefs: [
+                { targets: [5, 6, 7], orderable: false }, // Opcional: desactiva orden en acciones
+                { targets: [5, 6, 7], searchable: false }, // Opcional: desactiva búsqueda
+                { targets: [5, 6, 7], className: 'text-center' } // Centra los botones y checkbox
+            ],
+            language: {
+                            "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
+                            "search":"Buscar",
+                        },
+            rowCallback: function(row, data, index) {
+                if (data.Urgencia === 'U') {
+                    $(row).css('background-color', '#8be0fc');
+                }
+            },
+            lengthChange: false,
+        });
+        $('.dt-layout-start:first').append(
+        '<button class="btn btn-info mb-0" data-bs-toggle="modal" data-bs-target="#ModalRetrabajo" onclick="LimpiarOF()"><i class="fas fa-plus"></i> Retrabajo</button>');
+        /*$.ajax({
             url: "{{route('CorteRecargarTabla')}}", 
             type: 'GET',
             data: {
@@ -492,7 +518,7 @@
                     '<button class="btn btn-info mb-0" data-bs-toggle="modal" data-bs-target="#ModalRetrabajo" onclick="LimpiarOF()"><i class="fas fa-plus"></i> Retrabajo</button>');
                 }
             }
-        });
+        });*/
     }
     function Planear(OrdenFabricacion){
         $('#Retrabajo').prop('checked', false);
@@ -641,17 +667,7 @@
                         },
                         "initComplete": function(settings, json) {
                             $('#'+tabla).css('font-size', '0.7rem');
-                        }/*,
-                        "stateSave": true, // Mantener el estado (página, búsqueda, etc.) entre recargas
-                        "stateSaveCallback": function(settings, data) {
-                            // Esto guarda el estado actual en localStorage (opcional si no usas un backend)
-                            localStorage.setItem('datatableState_' + tabla, JSON.stringify(data));
-                        },
-                        "stateLoadCallback": function(settings) {
-                            // Esto carga el estado desde localStorage (opcional si no usas un backend)
-                            var state = localStorage.getItem('datatableState_' + tabla);
-                            return state ? JSON.parse(state) : null;
-                        }*/
+                        }
         });
     }
     function etiquetaColor(id,ruta){
@@ -675,15 +691,9 @@
             $('#ModalColor').modal('hide');*/
     }
     function Detalles(id){
-        /*$('#Cantitadpiezas').val('');
-        $('#Emisiones').fadeOut(100);
-        $('#ModalSuministro').modal('show');*/
         $('#ModalDetalle').modal('show');
         $('#ModalDetalleBodyInfoOF').html('');
         $('#ModalDetalleBodyPartidasOF').html('');
-        /*$('#CantitadpiezasIdOF').val('');
-        $('#btnGrupoPiezasCorte').fadeIn();
-        $('#btnGrupoPiezasCorte1').fadeOut();*/
         document.getElementById("Retrabajo").checked=false;
         $.ajax({
             url: "{{route('CortesDatosModal')}}", 

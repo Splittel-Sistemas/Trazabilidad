@@ -448,7 +448,7 @@
             var cantidad = selectedOption.data('cantidad');
             $('#Cantitadpiezas').val(cantidad);
         });
-        setInterval(RecargarTabla, 300000); //180000);
+        setInterval(RecargarTabla, 600000); //180000);
     });
     function Detalles(id){
         $('#ModalDetalle').modal('show');

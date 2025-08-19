@@ -652,7 +652,7 @@
                 "sUrl":            "",
             },
         });
-        setInterval(RecargarTablaPendientes,180000);//180000
+        setInterval(RecargarTablaPendientes,600000);//setInterval(RecargarTablaPendientes,180000);//180000
         //Filtro por Linea
         $('#FiltroLinea').on('change', function() {
             var val = $(this).val();
