@@ -739,7 +739,7 @@ class AreasController extends Controller
         if ($user->hasPermission('Vista Transición')) {
             $AreaOriginal = 4;
             $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
-            $Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
+            /*$Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
             foreach ($Registros as $key => $registro) {
                 $OrdenFabricacion = OrdenFabricacion::find($registro->OrdenFabricacion_id);
                 $Linea = $OrdenFabricacion->Linea()->first();
@@ -866,9 +866,9 @@ class AreasController extends Controller
                     }
                     //return$PartidasOFComp = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get();
                 }
-            }
+            }*/
             $Lineas=Linea::where('id','!=',1)->get();
-            return view('Areas.Transicion', compact('Area', 'Registros','Lineas'));
+            return view('Areas.Transicion', compact('Area','Lineas'));
         } else {
             return redirect()->route('error.');
         }
@@ -882,7 +882,7 @@ class AreasController extends Controller
         if ($user->hasPermission('Vista Preparado')) {
         $AreaOriginal=5;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
-        $Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
+        /*$Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
         foreach ($Registros as $key => $registro) {
             $OrdenFabricacion = OrdenFabricacion::find($registro->OrdenFabricacion_id);
             $Linea = $OrdenFabricacion->Linea()->first();
@@ -1009,9 +1009,10 @@ class AreasController extends Controller
                 }
                 //return$PartidasOFComp = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get();
             }
-        }
+        }*/
             $Lineas=Linea::where('id','!=',1)->get();
-        return view('Areas.Preparado',compact('Area','Registros','Lineas'));
+            return view('Areas.Preparado',compact('Area','Lineas'));
+        //return view('Areas.Preparado',compact('Area','Registros','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2529,7 +2530,7 @@ class AreasController extends Controller
         if($user->hasPermission('Vista Ribonizado')){
         $AreaOriginal=6;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
-        $Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
+        /*$Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
         foreach ($Registros as $key => $registro) {
             $OrdenFabricacion = OrdenFabricacion::find($registro->OrdenFabricacion_id);
             $Linea = $OrdenFabricacion->Linea()->first();
@@ -2656,9 +2657,9 @@ class AreasController extends Controller
                 }
                 //return$PartidasOFComp = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get();
             }
-        }
+        }*/
             $Lineas=Linea::where('id','!=',1)->get();
-        return view('Areas.Ribonizado',compact('Area','Registros','Lineas'));
+        return view('Areas.Ribonizado',compact('Area','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2672,7 +2673,7 @@ class AreasController extends Controller
         if($user->hasPermission('Vista Ensamble')){
         $AreaOriginal=7;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
-            $Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
+            /*$Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
             foreach ($Registros as $key => $registro) {
                 $OrdenFabricacion = OrdenFabricacion::find($registro->OrdenFabricacion_id);
                 $Linea = $OrdenFabricacion->Linea()->first();
@@ -2799,10 +2800,10 @@ class AreasController extends Controller
                     }
                     //return$PartidasOFComp = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get();
                 }
-            }
+            }*/
             $Lineas=Linea::where('id','!=',1)->get();
             
-        return view('Areas.Ensamble',compact('Area','Registros','Lineas'));
+        return view('Areas.Ensamble',compact('Area','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2816,7 +2817,7 @@ class AreasController extends Controller
         if($user->haspermission('Vista Corte de fibra')){
         $AreaOriginal=8;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
-        $Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
+        /*$Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
         foreach ($Registros as $key => $registro) {
             $OrdenFabricacion = OrdenFabricacion::find($registro->OrdenFabricacion_id);
             $Linea = $OrdenFabricacion->Linea()->first();
@@ -2943,9 +2944,9 @@ class AreasController extends Controller
                 }
                 //return$PartidasOFComp = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get();
             }
-        }
+        }*/
         $Lineas=Linea::where('id','!=',1)->get();
-        return view('Areas.Cortedefibra',compact('Area','Registros','Lineas'));
+        return view('Areas.Cortedefibra',compact('Area','Lineas'));
         }else{
             return redirect()->route('error.');
         }
@@ -2959,7 +2960,7 @@ class AreasController extends Controller
         if($user->haspermission('Vista Pulido')){
         $AreaOriginal=9;
         $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
-        $Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
+        /*$Registros = $this->OrdenFabricacionPendiente($AreaOriginal - 1);
         foreach ($Registros as $key => $registro) {
             $OrdenFabricacion = OrdenFabricacion::find($registro->OrdenFabricacion_id);
             $Linea = $OrdenFabricacion->Linea()->first();
@@ -3086,9 +3087,9 @@ class AreasController extends Controller
                 }
                 //return$PartidasOFComp = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get();
             }
-        }
+        }*/
         $Lineas=Linea::where('id','!=',1)->get();
-        return view('Areas.Pulido',compact('Area','Registros','Lineas'));
+        return view('Areas.Pulido',compact('Area','Lineas'));
         }else{
             return redirect()->route('error.');
         }

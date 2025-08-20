@@ -126,7 +126,16 @@
                             </tr>
                         </thead>
                         <tbody id="TablaPreparadoPendientesBody" class="list">
-                            @foreach($Registros as $partida)
+                            <tr>
+                                <td colspan='100%' align='center' colspan="9">
+                                    <div class='d-flex justify-content-center align-items-center'>
+                                        <div class='spinner-grow text-primary' role='status'>
+                                            <span class='visually-hidden'>Loading...</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {{--@foreach($Registros as $partida)
                                 @foreach($partida->PartidasOFFaltantes as $PartidaArea)
                                     <tr style="@if($partida->Urgencia == 'U'){{'background:#8be0fc;'}} @endif">
                                         <td class="text-center">{{$partida->OrdenFabricacion }}</td>
@@ -140,7 +149,7 @@
                                         <td><h5 class="text-light text-center p-0" style="background: {{$PartidaArea->ColorLinea}};">{{$PartidaArea->Linea}}</h5></td>
                                     </tr>
                                 @endforeach
-                            @endforeach
+                            @endforeach--}}
                         </tbody>
                     </table>
                 </div>
@@ -640,7 +649,7 @@
             Cantidad=$('#CantidadSalida').val();
             TipoNoEscaner('Salida');
         });
-        var table=$('#TablaPreparadoPendientes').DataTable({
+        /*var table=$('#TablaPreparadoPendientes').DataTable({
             "language": {
                 "sProcessing":     "Procesando...",
                 "sLengthMenu":     "Mostrar _MENU_ registros",
@@ -651,8 +660,9 @@
                 "sSearch":         "Buscar:",
                 "sUrl":            "",
             },
-        });
+        });*/
         setInterval(RecargarTablaPendientes,600000);//180000
+        RecargarTablaPendientes();
         //Filtro por Linea9,mko
         $('#FiltroLinea').on('change', function() {
             var val = $(this).val();
