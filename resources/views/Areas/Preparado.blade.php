@@ -126,21 +126,6 @@
                             </tr>
                         </thead>
                         <tbody id="TablaPreparadoPendientesBody" class="list">
-                            {{--@foreach($Registros as $partida)
-                                @foreach($partida->PartidasOFFaltantes as $PartidaArea)
-                                    <tr style="@if($partida->Urgencia == 'U'){{'background:#8be0fc;'}} @endif">
-                                        <td class="text-center">{{$partida->OrdenFabricacion }}</td>
-                                        <td>{{$partida->Articulo }}</td>
-                                        <td>{{$partida->Descripcion }}</td>
-                                        <td class="text-center">{{$PartidaArea->Actual}}</td>
-                                        <td class="text-center">{{$PartidaArea->Anterior-$PartidaArea->Actual}}</td>
-                                        <td class="text-center">{{$PartidaArea->Anterior }}</td>
-                                        <td class="text-center">{{$partida->CantidadTotal }}</td>
-                                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                                        <td><h5 class="text-light text-center p-0" style="background: {{$PartidaArea->ColorLinea}};">{{$PartidaArea->Linea}}</h5></td>
-                                    </tr>
-                                @endforeach
-                            @endforeach--}}
                         </tbody>
                     </table>
                 </div>
@@ -663,12 +648,14 @@
         //Filtro por Linea
         $('#FiltroLinea').on('change', function() {
             var val = $(this).val();
-            if(val == -1) {
-                $('#Apuntarbox').addClass('Apuntarbox');
-                table.column(8).search('').draw();
-            } else {
-                table.column(8).search(val).draw();
-                $('#Apuntarbox').removeClass('Apuntarbox');
+            if(!(val == "" || val == null)){
+                if(val == -1) {
+                    $('#Apuntarbox').addClass('Apuntarbox');
+                        //table.column(8).search('').draw();
+                } else {
+                        //table.column(8).search(val).draw();
+                    $('#Apuntarbox').removeClass('Apuntarbox');
+                }
             }
         });
         RecargarTablaPendientes();
@@ -896,10 +883,12 @@
                 );
                 $('#FiltroLinea').on('change', function() {
                     var val = $(this).val();
-                    if(val == -1) {
-                        table.column(8).search('').draw();
-                    } else {
-                        table.column(8).search(val).draw();
+                    if(!(val == "" || val == null)){
+                        if(val == -1) {
+                            table.column(8).search('').draw();
+                        } else {
+                            table.column(8).search(val).draw();
+                        }
                     }
                 });
                 $('#FiltroLinea').trigger('change');

@@ -1255,7 +1255,9 @@ class AreasController extends Controller
                     $CantidadCompletada=0; 
                 }
                 $IniciadosMostrar = 0; 
+                $TipoEscaneo = "";
                 if($Escaner==1){
+                    $TipoEscaneo = "1 a 1";
                     //Opciones de la tabla
                     $Opciones='<option selected="" value="">Todos</option>
                         <option value="Abierta">Abiertas</option>
@@ -1347,6 +1349,7 @@ class AreasController extends Controller
                     $IniciadosMostrar = $partidas->first();
                     $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNull('FechaTermina')->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->get()->SUM('pivot.Cantidad');//->get();
                 }else{
+                    $TipoEscaneo = "Masivo";
                     $Opciones='<option selected="" value="">Todos</option>
                         <option value="Iniciado">Iniciado</option>
                         <option value="Finalizado">Finalizado</option>';
@@ -1437,10 +1440,11 @@ class AreasController extends Controller
                 $menu='<div class="card-body">
                     <div id="ContainerTableSuministros" class="table-list">
                         <div class="row">
+                            <h5 class="text-center text-secondary p-0 m-0">Tipo de Escaneo : '.$TipoEscaneo.'</h5>
                             <div class="col-6">
                                 <div class="row justify-content-start g-0">
                                     <div class="col-auto px-3">
-                                        <h6 class="text-center">Orden de Fabricación '.$datos->OrdenFabricacion.'</h6>
+                                        <h6 class="text-center">Orden de Fabricación '.$datos->OrdenFabricacion.'</h6> 
                                         <div class="badge badge-phoenix fs--4 badge-phoenix-secondary"><span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span></div>
                                         <br><div class="badge badge-phoenix fs--4 badge-phoenix-info"><span class="fw-bold"><span class="ms-1 fas fa-angle-double-right"></span> Pendientes de finalizar </span>'.$IniciadosMostrar.'</div>
                                      </div>
