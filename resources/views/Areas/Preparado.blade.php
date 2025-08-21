@@ -652,6 +652,12 @@
                 "sUrl":            "",
             },
         });
+        let loadingRow = table.row.add([
+        '','', '', '',
+        "<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'>"+
+                        "<span class='visually-hidden'>Loading...</span></div></div></td></tr>"
+            , '', '', '', ''
+        ]).draw().node();
         
         setInterval(RecargarTablaPendientes,600000);//setInterval(RecargarTablaPendientes,180000);//180000
         //Filtro por Linea
