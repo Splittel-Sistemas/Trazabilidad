@@ -650,12 +650,14 @@
         //Filtro por Linea
         $('#FiltroLinea').on('change', function() {
             var val = $(this).val();
-            if(val == -1) {
-                $('#Apuntarbox').addClass('Apuntarbox');
-                table.column(8).search('').draw();
-            } else {
-                table.column(8).search(val).draw();
-                $('#Apuntarbox').removeClass('Apuntarbox');
+            if(!(val == "" || val == null)){
+                if(val == -1) {
+                    $('#Apuntarbox').addClass('Apuntarbox');
+                    table.column(8).search('').draw();
+                } else {
+                    table.column(8).search(val).draw();
+                    $('#Apuntarbox').removeClass('Apuntarbox');
+                }
             }
         });
     });
@@ -882,10 +884,12 @@
                 );
                 $('#FiltroLinea').on('change', function() {
                     var val = $(this).val();
-                    if(val == -1) {
-                        table.column(8).search('').draw();
-                    } else {
-                        table.column(8).search(val).draw();
+                    if(!(val == "" || val == null)){
+                        if(val == -1) {
+                            table.column(8).search('').draw();
+                        } else {
+                            table.column(8).search(val).draw();
+                        }
                     }
                 });
                 $('#FiltroLinea').trigger('change');
