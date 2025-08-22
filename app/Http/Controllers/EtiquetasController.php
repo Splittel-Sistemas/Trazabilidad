@@ -193,12 +193,12 @@ class EtiquetasController extends Controller
                     throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
                 }else{
                     $imagePath = storage_path('app/Logos/Optronics.jpg');
-                    $pdf->Image($imagePath, 6, 5, 30);
+                    $pdf->Image($imagePath, 6, 4, 35);
                 }
                 //Se agrega el margen a la pagina
                 $margen = 1;
                 $border_style = array(
-                            'width' => 0.1,
+                            'width' => 0.3,
                             'cap' => 'butt',
                             'join' => 'miter',
                             'dash' => 0,
@@ -211,7 +211,7 @@ class EtiquetasController extends Controller
                 $pdf->SetLineWidth(0.5);
                 $pdf->Rect(3, 3, 95 , 45 );*/
                 $pdf->SetDrawColor(0, 0, 0);
-                $pdf->SetLineWidth(0.1);
+                $pdf->SetLineWidth(0.3);
                 $pdf->Rect(3, 13, 95 , 0 );
 
                 $ParteNo = 'Denomination:  '."\n\n\n\n".
