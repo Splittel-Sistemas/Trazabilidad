@@ -196,13 +196,23 @@ class EtiquetasController extends Controller
                     $pdf->Image($imagePath, 6, 5, 30);
                 }
                 //Se agrega el margen a la pagina
-                $margen = 3;
+                $margen = 1;
+                $border_style = array(
+                            'width' => 0.1,
+                            'cap' => 'butt',
+                            'join' => 'miter',
+                            'dash' => 0,
+                            'phase' => 0,
+                            'color' => array(0, 0, 0) // RGB negro
+                        );
+                $pdf->RoundedRect(3,3, 95, 45, 1, '1111', 'D', $border_style, array());
                 $pdf->SetDrawColor(0, 0, 0);
+                /*$pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetLineWidth(0.5);
-                $pdf->Rect(3, 3, 93 , 44 );
+                $pdf->Rect(3, 3, 95 , 45 );*/
                 $pdf->SetDrawColor(0, 0, 0);
-                $pdf->SetLineWidth(0.4);
-                $pdf->Rect(3, 13, 93 , 0 );
+                $pdf->SetLineWidth(0.1);
+                $pdf->Rect(3, 13, 95 , 0 );
 
                 $ParteNo = 'Denomination:  '."\n\n\n\n".
                             'Specification:  ';
@@ -218,7 +228,7 @@ class EtiquetasController extends Controller
                 $pdf->write1DBarcode($CodigoBarras, 'C128',18, 39, 65, 5, 0.4, array(), 'N');
                 $pdf->SetFont('dejavusans', '', 9);
                 $pdf->SetXY($posX+26, 31);
-                $pdf->MultiCell(70, 0, $CodigoBarras, 0, 'L', 0, 1);
+                $pdf->MultiCell(65, 0, $CodigoBarras, 0, 'L', 0, 1);
             }
             ob_end_clean();
             // Generar el archivo PDF y devolverlo al navegador
