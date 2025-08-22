@@ -221,7 +221,7 @@ class EtiquetasController extends Controller
                 $pdf->SetFont('dejavusans', '', 10);
                 $Descripcion= $OrdenFabricacion->Descripcion;
                 $pdf->SetXY($posX+28, 15); 
-                $pdf->MultiCell(66, 0, $Descripcion, 0, 'L', 0, 1);
+                $pdf->MultiCell(68, 0, $Descripcion, 0, 'L', 0, 1);
                 //Codigo de barras
                 $CodigoBarras = $OrdenFabricacion->Articulo;
                 //$pdf->SetXY($posX + 30, 1);
