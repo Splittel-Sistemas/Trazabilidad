@@ -193,7 +193,7 @@ class EtiquetasController extends Controller
                     throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
                 }else{
                     $imagePath = storage_path('app/Logos/Optronics.jpg');
-                    $pdf->Image($imagePath, 6, 4, 35);
+                    $pdf->Image($imagePath, 5, 4, 35);
                 }
                 //Se agrega el margen a la pagina
                 $margen = 1;
@@ -205,22 +205,22 @@ class EtiquetasController extends Controller
                             'phase' => 0,
                             'color' => array(0, 0, 0) // RGB negro
                         );
-                $pdf->RoundedRect(3,3, 95, 45, 1, '1111', 'D', $border_style, array());
+                $pdf->RoundedRect(2,3, 97, 45, 1, '1111', 'D', $border_style, array());
                 $pdf->SetDrawColor(0, 0, 0);
                 /*$pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetLineWidth(0.5);
                 $pdf->Rect(3, 3, 95 , 45 );*/
                 $pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetLineWidth(0.3);
-                $pdf->Rect(3, 13, 95 , 0 );
+                $pdf->Rect(2, 13, 97 , 0 );
 
                 $ParteNo = 'Denomination:  '."\n\n\n\n".
                             'Specification:  ';
-                $pdf->SetXY($posX+4, 15); 
+                $pdf->SetXY($posX+3, 15); 
                 $pdf->MultiCell(90, 0, $ParteNo, 0, 'L', 0, 1);
                 $pdf->SetFont('dejavusans', '', 10);
                 $Descripcion= $OrdenFabricacion->Descripcion;
-                $pdf->SetXY($posX+29, 15); 
+                $pdf->SetXY($posX+28, 15); 
                 $pdf->MultiCell(66, 0, $Descripcion, 0, 'L', 0, 1);
                 //Codigo de barras
                 $CodigoBarras = $OrdenFabricacion->Articulo;
