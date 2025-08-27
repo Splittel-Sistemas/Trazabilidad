@@ -263,7 +263,7 @@
 <script>
     $(document).ready(function() {
         RecargarTabla();
-        setInterval(RecargarTabla,180000);//180000
+        setInterval(RecargarTabla,600000);//180000
     });
     function RecargarTabla(){
         $('#TablaClasificacionAbiertas').DataTable({
@@ -353,6 +353,7 @@
             $BanderaRegistros=1;
         }else{ErrorLineaModal.html('');}
         if($BanderaRegistros==1){
+            BotonGuardar.disabled = false;
             return 0;
         }
         $.ajax({

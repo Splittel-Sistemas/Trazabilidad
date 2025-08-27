@@ -35,7 +35,7 @@ class CorteController extends Controller
                 $OrdenesFabricacionAbiertas[$key]['responsable'] = $Nombre;
             }*/
             $OrdenesFabricacionCerradas = $this->OrdenesFabricacionCerradas($fechaAtras, $fecha);
-            foreach($OrdenesFabricacionCerradas as $key=>$OFC){
+            /*foreach($OrdenesFabricacionCerradas as $key=>$OFC){
                 $Usuario=isset($OFC->ResponsableUser_id)?User::find($OFC->ResponsableUser_id):"";
                 if($Usuario==""){
                     $Nombre="";
@@ -43,7 +43,7 @@ class CorteController extends Controller
                     $Nombre = $Usuario->name."  ".$Usuario->apellido;
                 }
                 $OrdenesFabricacionCerradas[$key]['responsable'] = $Nombre;
-            }
+            }*/
             return view('Areas.Cortes', compact('OrdenesFabricacionCerradas', 'fecha', 'fechaAtras'));
         } else {
             return redirect()->route('error.');
@@ -63,10 +63,10 @@ class CorteController extends Controller
                 }else{
                     $Nombre = $Usuario->name."  ".$Usuario->apellido;
                 }
-                $tabla.='<tr ';
+                /*$tabla.='<tr ';
                 if($orden->Urgencia=='U'){
                     $tabla.='style="background:#8be0fc"';
-                }
+                }*/
                 $data[] = [
                         'OrdenFabricacion' => $orden->OrdenFabricacion,
                         'Responsable_Corte' => '<span class="badge badge-phoenix badge-phoenix-primary">'.$Nombre.'</span>',
