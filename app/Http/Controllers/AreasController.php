@@ -90,7 +90,7 @@ class AreasController extends Controller
             //}
         }
         //Consulta traer Ordenes cerradas en esta estacion
-        $PartidasOFC = PartidasOF::Join('partidasof_areas','partidasof.id','=','partidasof_areas.PartidasOF_id')
+        /*$PartidasOFC = PartidasOF::Join('partidasof_areas','partidasof.id','=','partidasof_areas.PartidasOF_id')
                         ->select('partidasof_areas.*','partidasof.*')
                         ->where('partidasof_areas.Areas_id', 3)
                         ->where('EstatusPartidaOFSuministro','1')
@@ -117,12 +117,12 @@ class AreasController extends Controller
             }
             $orden['Normal']=$Normal;
             $orden['Retrabajo']=$Retrabajo;
-        }
+        }*/
         $Area=$this->funcionesGenerales->encrypt(3);
         $user = Auth::user();
         if ($user->hasPermission('Vista Suministro')) {
            
-            return view('Areas.Suministro',compact('Area','PartidasOFA','PartidasOFC','fecha','fechaAtras'));
+            return view('Areas.Suministro',compact('Area','PartidasOFA','fecha','fechaAtras'));
         }else {
            
             return redirect()->route('error.');

@@ -204,7 +204,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="TablaSuministroCerradasBody" class="list">
-                                        @foreach($PartidasOFC as $partida)
+                                        {{--@foreach($PartidasOFC as $partida)
                                         <tr>
                                             <td class="text-center">{{$partida->OrdenFabricacion }}</td>
                                             <td class="text-center">{{$partida->NumeroPartida }}</td>
@@ -217,7 +217,7 @@
                                             <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Cerrada</span></div></td>
                                             <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Detalles('{{$partida->idEncript}}')">Detalles</button></td>
                                         </tr>
-                                    @endforeach
+                                    @endforeach--}}
                                     </tbody>
                                 </table>
                             </div>
@@ -448,6 +448,7 @@
             var cantidad = selectedOption.data('cantidad');
             $('#Cantitadpiezas').val(cantidad);
         });
+        RecargarTablaCerradas();
         setInterval(RecargarTabla, 600000); //180000);
     });
     function Detalles(id){
@@ -656,6 +657,8 @@
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
+                $('#TablaSuministroCerradasBody').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'>"+
+                "<span class='visually-hidden'>Loading...</span></div></div></td></tr>");
             },
             success: function(response) {
                 if(response.status=="success"){
