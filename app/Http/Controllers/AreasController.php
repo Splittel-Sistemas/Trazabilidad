@@ -55,7 +55,7 @@ class AreasController extends Controller
         $PartidasOFA=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
         foreach($PartidasOFA as $orden) {
             $ordenFabri=$orden->ordenFabricacion;
-            if($ordenFabri->Cerrada > 0){
+            //if($ordenFabri->Cerrada > 0){
                 $ordenesSAP1=$this->funcionesGenerales->Emisiones($ordenFabri->OrdenFabricacion);
                 $ordenesSAP = array_filter($ordenesSAP1, function($item) {
                     return $item['Cantidad'] !== null;
@@ -87,7 +87,7 @@ class AreasController extends Controller
                 $orden['Articulo']=$ordenFabri->Articulo;
                 $orden['Descripcion']=$ordenFabri->Descripcion;
                 $orden->id="";
-            }
+           //}
         }
         //Consulta traer Ordenes cerradas en esta estacion
         /*$PartidasOFC = PartidasOF::Join('partidasof_areas','partidasof.id','=','partidasof_areas.PartidasOF_id')
