@@ -1,7 +1,7 @@
 @extends('layouts.menu2')
 @section('title', 'Suministro')
 @section('styles')
-<link rel="stylesheet" href="{{asset('css/Suministro.css')}}">
+{{--<link rel="stylesheet" href="{{asset('css/Suministro.css')}}">--}}
 <style>
     #ToastGuardado {
         position: fixed; /* Fixed position */
@@ -330,7 +330,7 @@
     <div  id="ContainerToastGuardado"></div>
 @endsection
 @section('scripts')
-<script src="{{ asset('js/Suministro.js') }}"></script>
+{{--<script src="{{ asset('js/Suministro.js') }}"></script>--}}
 <script>
     $(document).ready(function() {
         DataTable('TablaSuministroAbiertas',true);

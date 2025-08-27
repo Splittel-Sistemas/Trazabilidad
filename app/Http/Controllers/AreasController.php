@@ -55,7 +55,7 @@ class AreasController extends Controller
         $PartidasOFA=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
         foreach($PartidasOFA as $orden) {
             $ordenFabri=$orden->ordenFabricacion;
-            //if($ordenFabri->Cerrada == 1){
+            if($ordenFabri->Cerrada > 0){
                 $ordenesSAP1=$this->funcionesGenerales->Emisiones($ordenFabri->OrdenFabricacion);
                 $ordenesSAP = array_filter($ordenesSAP1, function($item) {
                     return $item['Cantidad'] !== null;
@@ -87,7 +87,7 @@ class AreasController extends Controller
                 $orden['Articulo']=$ordenFabri->Articulo;
                 $orden['Descripcion']=$ordenFabri->Descripcion;
                 $orden->id="";
-            //}
+            }
         }
         //Consulta traer Ordenes cerradas en esta estacion
         /*$PartidasOFC = PartidasOF::Join('partidasof_areas','partidasof.id','=','partidasof_areas.PartidasOF_id')
@@ -3429,9 +3429,16 @@ class AreasController extends Controller
         $Ordenfabricacionpartidas.='>Finalizar</button></div><h5 class="text-center mb-1">Orden de Fabricación <br>'.$OrdenFabricacion->OrdenFabricacion.'</h5>';
         if($OrdenFabricacion->Cerrada == 0){
                 $Ordenfabricacionpartidas.='
-                                        <div class="alert alert-danger d-flex align-items-center p-0 mx-0" role="alert">
-                                            <span class="fas fa-times-circle text-danger fs-3 me-2"></span>
-                                            <p class="mb-0 flex-1">La Orden de Fabricacion se cerro de manera manual.</p>
+                                        <div class="alert alert-danger d-flex align-items-center p-1 mx-0" role="alert">
+                                            <span class="fas fa-times-circle text-white fs-2 me-2"></span>
+                                            <p class="mb-0 flex-1 text-white">La Orden de Fabricacion se cerro de manera manual.</p>
+                                        </div>'; 
+        }
+        if($ContarPartidasClasificacion == 0){
+                $Ordenfabricacionpartidas.='
+                                        <div class="alert alert-warning d-flex align-items-center p-1 mx-0" role="alert">
+                                            <i class="fas fa-times-circle text-white fs-2 me-2"></i>
+                                            <p class="mb-0 flex-1 text-white">Importante!  La Orden de Fabricación no ha sido asignada en estación anterior, Corte o Suministro.</p>
                                         </div>'; 
         }
         $Ordenfabricacionpartidas.='<div class="row mx-6 my-2">
@@ -3973,44 +3980,32 @@ class AreasController extends Controller
         return $Registros; 
     }*/
     public function OrdenFabricacionPendienteTabla($Area){
-        $Registros = OrdenFabricacion::select('OrdenFabricacion.*','OrdenFabricacion.id AS OrdenFabricacion_id', 'partidasOF.id AS partidasOF_id', 'partidasof_Areas.id AS partidasof_Areas_id',
-        'OrdenFabricacion','CantidadTotal AS OrdenFabricacionCantidad','cantidad_partida AS PartidasOFCantidad','partidasOF.NumeroPartida' )
-        ->join('partidasOF', 'OrdenFabricacion.id', '=', 'partidasOF.OrdenFabricacion_id') // Relación entre OrdenFabricacion y partidasOF
-        ->join('partidasof_Areas', 'partidasOF.id', '=', 'partidasof_Areas.PartidasOF_id') // Relación entre partidasOF y partidasof_Areas
-        ->where('OrdenFabricacion.Cerrada', 1) // Filtra las órdenes que aún están abiertas
-        ->where('partidasof_Areas.Areas_id','<=', $Area) // Filtra por el área 3 (Suministro)
-        ->where('partidasof_Areas.Areas_id','!=', 2) // Que el Area sea diferente de 2 para que no tome los de Suministro
-        ->whereNotNull('partidasof_Areas.FechaTermina') // Asegura que la columna FechaTermina no sea NULL
-        ->get()
-        ->unique('partidasOF_id')
-        ->unique('OrdenFabricacion');
-        foreach($Registros as $key1=>$registro){
-            $Area4=PartidasOF::find($registro->partidasOF_id);
-            if($registro->Escaner==1){
-                //Verifica si hay Ordenes con Escaner 1 pendientes
-                $NumeroActuales=$Area4->Areas()->where('Areas_id',$Area+1)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
-                                $Area4->Areas()->where('Areas_id',$Area+1)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
-                /*if($NumeroActuales == $Area4->Areas()->cantidad_partida){
-                    unset($Registros[$key1]);
-                }*/
-            }else{
-                //Verifica si hay Ordenes con Escaner 0 pendientes
-                $NumeroActuales =$Area4->Areas()->where('Areas_id', $Area+1)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
-                        ($Area4->Areas()->where('Areas_id', $Area+1)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
-                       - $Area4->Areas()->where('Areas_id', $Area+1)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad'));
-                /*if ($NumeroActuales==$Area4->cantidad_partida) {
-                    unset($Registros[$key1]);
-                }*/
-            }
-        }
+        $Registros = DB::select("
+            SELECT of.*,of.id AS OrdenFabricacion_id, pof.id AS partidasOF_id, pof.id AS partidasof_Areas_id,
+            OrdenFabricacion, CantidadTotal AS OrdenFabricacionCantidad, cantidad_partida AS PartidasOFCantidad, pof.NumeroPartida  
+
+            FROM OrdenFabricacion of
+                JOIN partidasOF pof ON of.id = pof.OrdenFabricacion_id
+                JOIN (
+                    SELECT  PartidasOF_id,
+                    MIN(id) AS id,
+                    MIN(Areas_id) AS Areas_id,
+                    MIN(FechaTermina) AS FechaTermina
+                    FROM partidasof_Areas
+                    WHERE FechaTermina IS NOT NULL AND Areas_id <= $Area AND Areas_id != 2
+                    GROUP BY PartidasOF_id
+                ) poa ON poa.PartidasOF_id = pof.id
+            WHERE of.Cerrada = 1
+        ");
         foreach ($Registros as $key => $registro) {
             $OrdenFabricacion = OrdenFabricacion::find($registro->OrdenFabricacion_id);
+            $Area4=PartidasOF::find($registro->partidasOF_id);
             $Linea = $OrdenFabricacion->Linea()->first();
             $SumarActual = 0;
             $TotalPendiente = 0;
             $NumeroPartidasTodas = 0;
-            $banderaSinRegistros=0;
-            $AreaAnterior=$this->AreaAnteriorregistros($Area+1, $OrdenFabricacion->OrdenFabricacion);
+            $banderaSinRegistros = 0;
+            $AreaAnterior = $this->AreaAnteriorregistros($Area+1, $OrdenFabricacion->OrdenFabricacion);
             if($Area+1==4 && $registro->Escaner==0){//Aplica para el Area 4 y que sea no Escaneado
                 foreach ($OrdenFabricacion->PartidasOF as $Partidas) {
                     //$banderaSinRegistros=0;
@@ -4025,10 +4020,10 @@ class AreasController extends Controller
                             $banderaSinRegistros=1;
                         }
                 }
-                $registro['NumeroActuales'] = $SumarActual;
-                $registro['TotalPendiente'] = $TotalPendiente;
-                $registro['Linea'] = $Linea->NumeroLinea;
-                $registro['ColorLinea'] = $Linea->ColorLinea;
+                $registro->NumeroActuales = $SumarActual;
+                $registro->TotalPendiente = $TotalPendiente;
+                $registro->Linea = $Linea->NumeroLinea;
+                $registro->ColorLinea = $Linea->ColorLinea;
                 if($TotalPendiente==0){
                     unset($Registros[$key]);
                 }
@@ -4059,10 +4054,10 @@ class AreasController extends Controller
                                                 - $Partidas->Areas()->where('Areas_id', $AreaAnterior)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad'));
                         }
                 }
-                $registro['NumeroActuales'] = $SumarActual;
-                $registro['TotalPendiente'] = $TotalPendiente;
-                $registro['Linea'] = $Linea->NumeroLinea;
-                $registro['ColorLinea'] = $Linea->ColorLinea;
+                $registro->NumeroActuales = $SumarActual;
+                $registro->TotalPendiente = $TotalPendiente;
+                $registro->Linea = $Linea->NumeroLinea;
+                $registro->ColorLinea = $Linea->ColorLinea;
                 //return $SumarActual ."   ". $TotalPendiente;
                 if($TotalPendiente==0){
                     unset($Registros[$key]);
@@ -4077,10 +4072,10 @@ class AreasController extends Controller
                         $TotalPendiente+=$Partidas->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
                                         $Partidas->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
                 }
-                $registro['NumeroActuales'] = $SumarActual;//-$Totalretrabajos;
-                $registro['TotalPendiente'] = $TotalPendiente;
-                $registro['Linea'] = $Linea->NumeroLinea;
-                $registro['ColorLinea'] = $Linea->ColorLinea;
+                $registro->NumeroActuales = $SumarActual;//-$Totalretrabajos;
+                $registro->TotalPendiente = $TotalPendiente;
+                $registro->Linea = $Linea->NumeroLinea;
+                $registro->ColorLinea = $Linea->ColorLinea;
                 if($SumarActual>=$TotalPendiente){
                     unset($Registros[$key]);
                 }
@@ -4089,6 +4084,7 @@ class AreasController extends Controller
         }
         foreach($Registros as $key => $registro){
             $OrdenFabricacion = OrdenFabricacion::find($registro->OrdenFabricacion_id);
+            $Area4=PartidasOF::find($registro->partidasOF_id);
             $PartidasOF = $OrdenFabricacion->PartidasOF()->first();
             $PartidasOFArea = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get();
             $AreaAnterior=$this->AreaAnteriorregistros($Area+1, $OrdenFabricacion->OrdenFabricacion);
@@ -4133,11 +4129,11 @@ class AreasController extends Controller
                                                 ($PartidasOF->Areas()->where('Linea_id',$POFA['pivot']->Linea_id)->where('Areas_id', $AreaAnterior)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
                                                 - $PartidasOF->Areas()->where('Linea_id',$POFA['pivot']->Linea_id)->where('Areas_id', $AreaAnterior)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad'));
                         }
-                        $POFA['Anterior'] = $SumarAnterior;
-                        $POFA['Actual'] = $SumarActual;
+                        $POFA->Anterior = $SumarAnterior;
+                        $POFA->Actual = $SumarActual;
                         $Linea = Linea::find($POFA['pivot']->Linea_id);
-                        $POFA['Linea'] = $Linea->NumeroLinea;
-                        $POFA['ColorLinea'] = $Linea->ColorLinea;
+                        $POFA->Linea = $Linea->NumeroLinea;
+                        $POFA->ColorLinea = $Linea->ColorLinea;
                         if($SumarAnterior<=$SumarActual){
                             unset($PartidasOFAreaUnique[$key1]);
                         }
@@ -4147,9 +4143,8 @@ class AreasController extends Controller
                     }
                 }
                 if($PartidasOFAreaUnique->count()>0){
-                    $Registros[$key]['PartidasOFFaltantes']=$PartidasOFAreaUnique;
+                    $Registros[$key]->PartidasOFFaltantes=$PartidasOFAreaUnique;
                 }
-                //return$PartidasOFComp = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get();
             }
         }
         $Lineas=Linea::where('id','!=',1)->get();
