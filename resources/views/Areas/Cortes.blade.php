@@ -74,6 +74,17 @@
                                         <th>Accion</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan='100%' align='center'>
+                                            <div class='d-flex justify-content-center align-items-center'>
+                                                <div class='spinner-grow text-primary' role='status'>
+                                                    <span class='visually-hidden'>Loading...</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                             </div>
                             </div>
@@ -780,6 +791,8 @@
                 _token: '{{ csrf_token() }}'  
             },
             beforeSend: function() {
+                $('#completadoTableBody').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'>"+
+                        "<span class='visually-hidden'>Loading...</span></div></div></td></tr>");
             },
             success: function(response) {
                 if(response.status=="success"){
