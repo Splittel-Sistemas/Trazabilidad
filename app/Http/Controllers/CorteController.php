@@ -24,6 +24,7 @@ class CorteController extends Controller
         if ($user->hasPermission('Vista Corte')) {
             $fecha = date('Y-m-d');
             $fechaAtras = date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
+            //Codigo comentado para optimizar la carga
             /*$OrdenesFabricacionAbiertas = $this->OrdenesFabricacionAbiertas();
             foreach($OrdenesFabricacionAbiertas as $key=>$OFA){
                 $Usuario=isset($OFA->ResponsableUser_id)?User::find($OFA->ResponsableUser_id):"";
@@ -34,7 +35,8 @@ class CorteController extends Controller
                 }
                 $OrdenesFabricacionAbiertas[$key]['responsable'] = $Nombre;
             }*/
-            $OrdenesFabricacionCerradas = $this->OrdenesFabricacionCerradas($fechaAtras, $fecha);
+            //$OrdenesFabricacionCerradas = $this->OrdenesFabricacionCerradas($fechaAtras, $fecha);
+            //Codigo comentado para optimizar la carga
             /*foreach($OrdenesFabricacionCerradas as $key=>$OFC){
                 $Usuario=isset($OFC->ResponsableUser_id)?User::find($OFC->ResponsableUser_id):"";
                 if($Usuario==""){
@@ -44,7 +46,7 @@ class CorteController extends Controller
                 }
                 $OrdenesFabricacionCerradas[$key]['responsable'] = $Nombre;
             }*/
-            return view('Areas.Cortes', compact('OrdenesFabricacionCerradas', 'fecha', 'fechaAtras'));
+            return view('Areas.Cortes', compact('fecha', 'fechaAtras'));
         } else {
             return redirect()->route('error.');
         }

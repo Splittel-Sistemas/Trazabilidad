@@ -134,7 +134,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="completadoTableBody" class="list">
-                                    @foreach($OrdenesFabricacionCerradas as $orden1)
+                                    {{--@foreach($OrdenesFabricacionCerradas as $orden1)
                                     <tr>
                                         <td>{{$orden1->OrdenFabricacion }}</td>
                                         <td>{{$orden1->Articulo }}</td>
@@ -147,7 +147,7 @@
                                         <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Cerrada</span></div></td>
                                         <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Detalles('{{$orden1->idEncript}}')">Detalles</button></td>
                                     </tr>
-                                @endforeach
+                                @endforeach--}}
                                 </tbody>
                             </table>
                         </div>
@@ -261,7 +261,8 @@
 @endsection
 @section('scripts')
 <script>
-    $(document).ready(function() {
+    //$(document).ready(function() {
+    document.addEventListener('DOMContentLoaded', function () {
         DataTable('completadoTable',true);
         document.getElementById("Retrabajo").addEventListener("change", function() {
             if (this.checked) {
@@ -456,6 +457,7 @@
             $('#Cantitadpiezas').val(cantidad);
         });
         RecargarTabla();
+        RecargarTablaCerradas();
         setInterval(RecargarTabla, 600000);//180000);
         $('#procesoTable').show();
     });
