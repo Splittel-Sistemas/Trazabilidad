@@ -175,9 +175,9 @@ class EtiquetasController extends Controller
             // Crear PDF
             $pdf = new TCPDF();
             // Ajustar márgenes
-            $pdf->SetMargins(1, 1, 1); 
+            $pdf->SetMargins(2, 2, 2); 
             $pdf->SetFont('dejavusans', '', 10);
-            $pdf->SetAutoPageBreak(TRUE, 0.5);   
+            $pdf->SetAutoPageBreak(TRUE, 0);   
             $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
             $pdf->SetPrintHeader(false);
 
@@ -185,7 +185,7 @@ class EtiquetasController extends Controller
             for ($i=0; $i<$CantidadEtiquetas; $i++) {
                 $pdf->AddPage('L', array(101, 51));
                 $pdf->SetFont('dejavusans', '', 9);
-                
+                $pdf->setFontSpacing(-0.2);
                 // Color de fondo y texto en la parte superior de la etiqueta
                 $posX = 0;
                 //Agregar la imagen
@@ -193,7 +193,7 @@ class EtiquetasController extends Controller
                     throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
                 }else{
                     $imagePath = storage_path('app/Logos/Optronics.jpg');
-                    $pdf->Image($imagePath, 5, 4, 35);
+                    $pdf->Image($imagePath, 3.5, 6, 35);
                 }
                 //Se agrega el margen a la pagina
                 $margen = 1;
@@ -205,29 +205,30 @@ class EtiquetasController extends Controller
                             'phase' => 0,
                             'color' => array(0, 0, 0) // RGB negro
                         );
-                $pdf->RoundedRect(2,3, 97, 45, 1, '1111', 'D', $border_style, array());
+                $pdf->RoundedRect(0.5,5, 97, 45, 1, '1111', 'D', $border_style, array());
                 $pdf->SetDrawColor(0, 0, 0);
                 /*$pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetLineWidth(0.5);
                 $pdf->Rect(3, 3, 95 , 45 );*/
                 $pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetLineWidth(0.3);
-                $pdf->Rect(2, 13, 97 , 0 );
+                $pdf->Rect(0.5, 15, 97 , 0 );
 
                 $ParteNo = 'Denomination:  '."\n\n\n\n".
                             'Specification:  ';
-                $pdf->SetXY($posX+3, 15); 
+                $pdf->SetXY($posX+1.5, 17); 
                 $pdf->MultiCell(90, 0, $ParteNo, 0, 'L', 0, 1);
                 $pdf->SetFont('dejavusans', '', 10);
                 $Descripcion= $OrdenFabricacion->Descripcion;
-                $pdf->SetXY($posX+28, 15); 
-                $pdf->MultiCell(68, 0, $Descripcion, 0, 'L', 0, 1);
+                $pdf->SetXY($posX+25.5, 17); 
+                $pdf->MultiCell(66, 0, $Descripcion, 0, 'L', 0, 1);
                 //Codigo de barras
                 $CodigoBarras = $OrdenFabricacion->Articulo;
                 //$pdf->SetXY($posX + 30, 1);
-                $pdf->write1DBarcode($CodigoBarras, 'C128',18, 39, 65, 5, 0.4, array(), 'N');
-                $pdf->SetFont('dejavusans', '', 9);
-                $pdf->SetXY($posX+26, 31);
+                $pdf->write1DBarcode($CodigoBarras, 'C128',18, 39, 65, 4, 0.4, array(), 'N');
+                $pdf->SetFont('dejavusans', '', 10);
+                $pdf->setFontSpacing(0);
+                $pdf->SetXY($posX+23.5, 33);
                 $pdf->MultiCell(65, 0, $CodigoBarras, 0, 'L', 0, 1);
             }
             ob_end_clean();
@@ -239,6 +240,130 @@ class EtiquetasController extends Controller
     }
     //Etiqueta de Banderilla QR General
     public function EtiquetaBanderillaQR($PaginaInicio,$PaginaFin,$OrdenFabricacion,$TipoEtiqBan){
+        try {
+            $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
+            if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
+                return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']);
+            }
+            $OrdenVenta = $OrdenFabricacion->OrdenVenta;
+            if($OrdenVenta == ""){
+                $OrdenVenta = "N/A";
+            }else{
+                $OrdenVenta = $OrdenVenta->OrdenVenta;
+            }
+            // Crear PDF
+            $pdf = new TCPDF();
+            $pdf->SetMargins(1, 1, 1); 
+            $pdf->SetFont('dejavusans', '', 7);
+            $pdf->SetAutoPageBreak(TRUE, 0.5);   
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
+            $pdf->SetPrintHeader(false);
+            $OrdenFabricacion5P = substr($OrdenFabricacion->OrdenFabricacion,0,6);
+            // Contador para saber cuántas etiquetas se han colocado en la página
+            //$x = 0.25;//papelv en blanco x
+            //$y = 0.25;//papel en blanco y
+            $PaginaFin = $PaginaFin/2;
+            for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
+                $Aumento = 0;
+                $Aumentox  = 0;
+                if($TipoEtiqBan == 2){
+                    $Aumento = 1.4;
+                    $Aumentox = 2; 
+                }
+                $pdf->SetFont('dejavusans', '', 5);
+                $pdf->AddPage('L', array(125, 25));
+                // Estilo de línea punteada
+                $pdf->SetLineStyle(array(
+                    'width' => 0.2,
+                    'dash' => '1,1', // patrón punteado: 1 mm línea, 1 mm espacio
+                    'color' => array(0, 0, 0) // negro
+                ));
+                $anchoPagina = 37.5;
+                $altoPagina = 225;
+                $x = 37.5 + ($anchoPagina / 2);
+                $pdf->Line($x, 0, $x, $altoPagina);
+                $pdf->SetLineStyle(array(
+                    'width' => 0.2,
+                    'dash' => '1,1', // patrón punteado: 1 mm línea, 1 mm espacio
+                    'color' => array(0, 0, 0) // negro
+                ));
+                $anchoPagina = 37.5;
+                $altoPagina = 225;
+                $x = $anchoPagina / 2;
+                $pdf->Line($x, 0, $x, $altoPagina);
+                //END
+                //Codigo 
+                //1
+                $x = 0;
+                $y = 2.7+$Aumento;
+                $cx = $x + 17.75 / 2;
+                $cy = $y + 4 / 2;
+                $pdf->StartTransform();
+                $pdf->Rotate(180, $cx, $cy);
+                $pdf->SetXY($x, $y); // posición X=3 mm, Y=0 mm
+                $pdf->Cell(17.5+$Aumentox, 4,$OrdenFabricacion5P."  ".str_pad(($i+1), 4, '0', STR_PAD_LEFT), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
+                $pdf->StopTransform();
+
+                //2
+                $x = 17.75;
+                $y = 16.5-$Aumento;
+                $pdf->SetXY($x, $y);
+                $pdf->Cell(19.5, 2, "  " . $OrdenFabricacion5P . "  " . str_pad(($i + 1), 4, '0', STR_PAD_LEFT), 0, 0, 'C');
+
+                $x = 7;
+                $y = 11+$Aumento;
+                $cx = $x + 0 / 2;
+                $cy = $y + 2 / 2;
+                $pdf->StartTransform();
+                $pdf->Rotate(90, $cx, $cy);   // rotar 180° sobre el centro del QR
+                $CodigoQR = 'https://optronics.com.mx/360/Inspeccion-Visual-1/'.$OrdenFabricacion->OrdenFabricacion.str_pad(($i + 1), 4, '0', STR_PAD_LEFT).".html";
+                $pdf->write2DBarcode($CodigoQR, 'QRCODE,H', 3, 7, 12.5, 12.5, null, 'N');
+                $pdf->StopTransform();
+
+                $x = 21.5;
+                $y = 7.5-$Aumento;
+                $cx = $x + 15.5 / 2;
+                $cy = $y + 10 / 2;
+                $pdf->StartTransform();
+                $pdf->Rotate(-90, $cx, $cy);   // rotar 180° sobre el centro del QR
+                $pdf->write2DBarcode($CodigoQR,'QRCODE,H',$x,$y,12.5,12.5,null,'N');
+                $pdf->StopTransform();
+                if($TipoEtiqBan == 2){
+                    //Datos de SAP
+                    $NumeroEspecial = "";
+                    $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta);
+                    $NumeroRegistros = count($DatosSAP);
+                    if($NumeroRegistros==0){
+                        return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es especial para el cliente HUAWEI INTERNATIONAL.']);
+                    }else{
+                        if($DatosSAP[0]['SubCatNum']==""){
+                            return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es especial para el cliente HUAWEI INTERNATIONAL.']);
+                        }else{
+                            $NumeroEspecial =  $DatosSAP[0]['SubCatNum'];
+                        }
+                    }
+                    $pdf->SetFont('dejavusans', '', 5.5);
+                    $pdf->SetXY(18, 18.5-$Aumento);
+                    $pdf->Cell(19.5, 2,$NumeroEspecial, 0, 0, 'C');
+                    $x = 0;
+                    $y = 0+$Aumento;
+                    $cx = $x + 16.5 / 2;
+                    $cy = $y + 4 / 2;
+                    $pdf->StartTransform();
+                    $pdf->Rotate(180, $cx, $cy);
+                    $pdf->SetXY($x, $y);
+                    $pdf->Cell(17.5, 2,$NumeroEspecial, 0, 0, 'C');
+                    $pdf->StopTransform();
+                }
+            }
+            ob_end_clean();
+            // Generar el archivo PDF y devolverlo al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaVisualQR_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    /*public function EtiquetaBanderillaQR($PaginaInicio,$PaginaFin,$OrdenFabricacion,$TipoEtiqBan){
         try {
             $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
             if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
@@ -347,7 +472,7 @@ class EtiquetasController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    }
+    }*/
     //Etiqueta de Número de piezas
     public function EtiquetaNumeroPiezas($Sociedad,$CantidadEtiquetas,$CantidadBolsa,$OrdenFabricacion){
         try {
