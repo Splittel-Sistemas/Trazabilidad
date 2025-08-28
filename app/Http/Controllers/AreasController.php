@@ -236,9 +236,9 @@ class AreasController extends Controller
         try {
             $PartidasOF=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
             $tabla="";
-            foreach($PartidasOF as $orden) {
+            foreach($PartidasOF as $key1=>$orden) {
                 $ordenFabri=$orden->ordenFabricacion;
-                //if($ordenFabri->Cerrada == 0){
+                if($ordenFabri->Cerrada == 1){
                         $ordenesSAP1=$this->funcionesGenerales->Emisiones($ordenFabri->OrdenFabricacion);
                         $ordenesSAP = array_filter($ordenesSAP1, function($item) {
                             return $item['Cantidad'] !== null;
@@ -276,7 +276,9 @@ class AreasController extends Controller
                                 <td><button class="btn btn-sm btn-outline-primary" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Detalles</button></td>
                             </tr>';
 
-                //}
+                }else{
+                    unset($PartidasOFA[$key1]);
+                }
             }
             return response()->json([
                     'status' => 'success',
