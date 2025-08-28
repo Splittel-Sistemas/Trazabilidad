@@ -3986,7 +3986,26 @@ class AreasController extends Controller
     public function OrdenFabricacionPendienteTabla($Area){
         $Registros = DB::select("
             SELECT of.*,of.id AS OrdenFabricacion_id, pof.id AS partidasOF_id, pof.id AS partidasof_Areas_id,
-            OrdenFabricacion, CantidadTotal AS OrdenFabricacionCantidad, cantidad_partida AS PartidasOFCantidad, pof.NumeroPartida  
+            OrdenFabricacion, CantidadTotal AS OrdenFabricacionCantidad, cantidad_partida AS PartidasOFCantidad, pof.NumeroPartida,
+            (SELECT poa.Areas_id FROM partidasof_areas poa WHERE poa.Areas_id < 5 ORDER BY poa.Areas_id DESC LIMIT 1 /*Ultima estacion*/
+		    ) AS UltimaEstacion,  
+            COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"N\" /*CantidadActualN*/
+		    ),0) AS SumarActualN ,
+		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"F\" /*CantidadActualF*/
+		    ),0) AS SumarActualF ,
+		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida != \"F\" /*CantidadActualDifF*/
+		    ),0) AS SumarActualDifF,
+		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida = \"N\" /*CantidadAnteriorN*/
+			    AND FechaTermina IS NOT NULL
+		    ),0) AS SumarAnteriorN,
+		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida = \"R\" /*CantidadAnteriorR*/
+			    AND FechaTermina IS NULL
+		    ),0) AS SumarAnteriorR
             FROM OrdenFabricacion of
                 JOIN partidasOF pof ON of.id = pof.OrdenFabricacion_id
                 JOIN (
@@ -4009,7 +4028,8 @@ class AreasController extends Controller
             $NumeroPartidasTodas = 0;
             $banderaSinRegistros = 0;
             $AreaAnterior = $this->AreaAnteriorregistros($Area+1, $OrdenFabricacion->OrdenFabricacion);
-            if($Area+1==4 && $registro->Escaner==0){//Aplica para el Area 4 y que sea no Escaneado
+            //Descomentar en caso de que falle
+            /*if($Area+1==4 && $registro->Escaner==0){//Aplica para el Area 4 y que sea no Escaneado
                 foreach ($OrdenFabricacion->PartidasOF as $Partidas) {
                     //$banderaSinRegistros=0;
                         //Sacamos la cantidad total de las piezas que ya pasaron
@@ -4031,6 +4051,23 @@ class AreasController extends Controller
                     unset($Registros[$key]);
                 }
                 if ($SumarActual == $TotalPendiente AND $banderaSinRegistros==0) {
+                    unset($Registros[$key]);
+                }
+            }*/if($Area+1==4 && $registro->Escaner==0){
+                $banderaSinRegistros=0;
+                $SumarActual = ($registro->SumarActualN - $registro->SumarActualF - $registro->SumarActualDifF);
+                $TotalPendiente = ($registro->SumarAnteriorN - $registro->SumarAnteriorR);
+                $registro->NumeroActuales = $SumarActual;
+                $registro->TotalPendiente = $TotalPendiente;
+                $registro->Linea = $Linea->NumeroLinea;
+                $registro->ColorLinea = $Linea->ColorLinea;
+                if($Area4->Areas()->where('Areas_id', $Area+1)->where('TipoPartida','=', 'F')->count()==0){
+                    $banderaSinRegistros=1;
+                }
+                if($TotalPendiente==0){
+                    unset($Registros[$key]);
+                }
+                if ($SumarActual == $TotalPendiente AND ($SumarActual==0 AND $TotalPendiente = 0)) {
                     unset($Registros[$key]);
                 }
             }elseif($Area+1!=4 && $registro->Escaner==0){//Aplica para el Area diferente a 4 y que sea no Escaneado
