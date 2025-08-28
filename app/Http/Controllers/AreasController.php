@@ -3885,7 +3885,7 @@ class AreasController extends Controller
             ->unique('OrdenFabricacion');
         return $Registros; 
     }
-    /*public function OrdenFabricacionPendienteTabla($Area){
+    public function OrdenFabricacionPendienteTabla($Area){
             $Registros = OrdenFabricacion::select('OrdenFabricacion.*','OrdenFabricacion.id AS OrdenFabricacion_id', 'partidasOF.id AS partidasOF_id', 'partidasof_Areas.id AS partidasof_Areas_id',
             'OrdenFabricacion','CantidadTotal AS OrdenFabricacionCantidad','cantidad_partida AS PartidasOFCantidad','partidasOF.NumeroPartida' )
             ->join('partidasOF', 'OrdenFabricacion.id', '=', 'partidasOF.OrdenFabricacion_id') // Relación entre OrdenFabricacion y partidasOF
@@ -3982,12 +3982,10 @@ class AreasController extends Controller
                 }
             }
         return $Registros; 
-    }*/
-    public function OrdenFabricacionPendienteTabla($Area){
-        $Registros = DB::select("
-            SELECT of.*,of.id AS OrdenFabricacion_id, pof.id AS partidasOF_id, pof.id AS partidasof_Areas_id,
+    }
+    /*public function OrdenFabricacionPendienteTabla($Area){
+            $query ="SELECT of.*,of.id AS OrdenFabricacion_id, pof.id AS partidasOF_id, pof.id AS partidasof_Areas_id,
             OrdenFabricacion, CantidadTotal AS OrdenFabricacionCantidad, cantidad_partida AS PartidasOFCantidad, pof.NumeroPartida  
-
             FROM OrdenFabricacion of
                 JOIN partidasOF pof ON of.id = pof.OrdenFabricacion_id
                 JOIN (
@@ -3999,8 +3997,8 @@ class AreasController extends Controller
                     WHERE FechaTermina IS NOT NULL AND Areas_id <= $Area AND Areas_id != 2
                     GROUP BY PartidasOF_id
                 ) poa ON poa.PartidasOF_id = pof.id
-            WHERE of.Cerrada = 1
-        ");
+            WHERE of.Cerrada = 1";
+        $Registros = DB::select();
         foreach ($Registros as $key => $registro) {
             $OrdenFabricacion = OrdenFabricacion::find($registro->OrdenFabricacion_id);
             $Area4=PartidasOF::find($registro->partidasOF_id);
@@ -4153,7 +4151,7 @@ class AreasController extends Controller
         }
         $Lineas=Linea::where('id','!=',1)->get();
         return $Registros; 
-    }
+    }*/
     Public function AreaTablaPendientes(Request $request){
         $Area=$this->funcionesGenerales->decrypt($request->Area);
         $OrdenFabricacionPendiente=$this->OrdenFabricacionPendienteTabla($Area-1);
