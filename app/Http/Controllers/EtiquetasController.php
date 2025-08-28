@@ -62,6 +62,9 @@ class EtiquetasController extends Controller
             case 'ETIQ4':
                 return $this->EtiquetaBolsaJumper($CantidadEtiquetas,$PDFOrdenFabricacion);
                 break;
+            case 'ETIQ4CEDIS':
+                return $this->EtiquetaBolsaJumperCEDIS($CantidadEtiquetas,$PDFOrdenFabricacion);
+                break;
             case 'ETIQ5':
                 return $this->EtiquetaNumeroPiezas($Sociedad,$CantidadEtiquetas,$CantidadBolsa,$PDFOrdenFabricacion);
                 break;
@@ -160,6 +163,7 @@ class EtiquetasController extends Controller
         }
     }
     //Etiqueta Bolsa de Jumper
+    //Productivo
     public function EtiquetaBolsaJumper($CantidadEtiquetas,$OrdenFabricacion){
         try {
             $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
@@ -229,6 +233,85 @@ class EtiquetasController extends Controller
                 $pdf->SetFont('dejavusans', '', 10);
                 $pdf->setFontSpacing(0);
                 $pdf->SetXY($posX+23.5, 33);
+                $pdf->MultiCell(65, 0, $CodigoBarras, 0, 'L', 0, 1);
+            }
+            ob_end_clean();
+            // Generar el archivo PDF y devolverlo al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumper_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    //Prueba
+    public function EtiquetaBolsaJumperCEDIS($CantidadEtiquetas,$OrdenFabricacion){
+        try {
+            $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
+            if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
+                return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']);
+            }
+            $OrdenVenta = $OrdenFabricacion->OrdenVenta;
+            if($OrdenVenta == ""){
+                $OrdenVenta = "N/A";
+            }else{
+                $OrdenVenta = $OrdenVenta->OrdenVenta;
+            }
+            // Crear PDF
+            $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetFont('dejavusans', '', 10);
+            $pdf->SetAutoPageBreak(TRUE, 0);   
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
+            $pdf->SetPrintHeader(false);
+
+            // Contador para saber cuántas etiquetas se han colocado en la página
+            for ($i=0; $i<$CantidadEtiquetas; $i++) {
+                $pdf->AddPage('L', array(101, 51));
+                $pdf->SetFont('dejavusans', '', 9);
+                $pdf->setFontSpacing(-0.2);
+                // Color de fondo y texto en la parte superior de la etiqueta
+                $posX = 0;
+                //Agregar la imagen
+                if(!file_exists(storage_path('app/Logos/Optronics.jpg'))){
+                    throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
+                }else{
+                    $imagePath = storage_path('app/Logos/Optronics.jpg');
+                    $pdf->Image($imagePath, 3.5, 4, 35);
+                }
+                //Se agrega el margen a la pagina
+                $margen = 1;
+                $border_style = array(
+                            'width' => 0.3,
+                            'cap' => 'butt',
+                            'join' => 'miter',
+                            'dash' => 0,
+                            'phase' => 0,
+                            'color' => array(0, 0, 0) // RGB negro
+                        );
+                $pdf->RoundedRect(2,3, 97, 45, 1, '1111', 'D', $border_style, array());
+                $pdf->SetDrawColor(0, 0, 0);
+                /*$pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetLineWidth(0.5);
+                $pdf->Rect(3, 3, 95 , 45 );*/
+                $pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetLineWidth(0.3);
+                $pdf->Rect(2, 13, 97 , 0 );
+
+                $ParteNo = 'Denomination:  '."\n\n\n\n".
+                            'Specification:  ';
+                $pdf->SetXY($posX+3, 16); 
+                $pdf->MultiCell(90, 0, $ParteNo, 0, 'L', 0, 1);
+                $pdf->SetFont('dejavusans', '', 10);
+                $Descripcion= $OrdenFabricacion->Descripcion;
+                $pdf->SetXY($posX+27, 16); 
+                $pdf->MultiCell(66, 0, $Descripcion, 0, 'L', 0, 1);
+                //Codigo de barras
+                $CodigoBarras = $OrdenFabricacion->Articulo;
+                //$pdf->SetXY($posX + 30, 1);
+                $pdf->write1DBarcode($CodigoBarras, 'C128',18, 39, 65, 4, 0.4, array(), 'N');
+                $pdf->SetFont('dejavusans', '', 10);
+                $pdf->setFontSpacing(0);
+                $pdf->SetXY($posX+25, 32);
                 $pdf->MultiCell(65, 0, $CodigoBarras, 0, 'L', 0, 1);
             }
             ob_end_clean();
@@ -521,7 +604,7 @@ class EtiquetasController extends Controller
 
             // Contador para saber cuántas etiquetas se han colocado en la página
             for ($i=0; $i<$CantidadEtiquetas; $i++) {
-                $pdf->AddPage('L', array(51, 24));
+                $pdf->AddPage('L', array(101, 51));
                 // Color de fondo y texto en la parte superior de la etiqueta
                 $posX = 0;
                 //Agregar la imagen
@@ -530,54 +613,60 @@ class EtiquetasController extends Controller
                         throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
                     }else{
                         $imagePath = storage_path('app/Logos/Optronics.jpg');
-                        $pdf->Image($imagePath, 16, 2, 21);
+                        $pdf->Image($imagePath, 25, 2, 50);
                         $margen = 1;
                         $pdf->SetDrawColor(0, 0, 0);
                         $pdf->SetLineWidth(0.3);
                         $border_style = array(
-                            'width' => 0.1,
+                            'width' => 0.3,
                             'cap' => 'butt',
                             'join' => 'miter',
                             'dash' => 0,
                             'phase' => 0,
                             'color' => array(0, 0, 0) // RGB negro
                         );
-                        $pdf->RoundedRect(1, 8, 49, 15, 1, '1111', 'D', $border_style, array());
+                        $pdf->RoundedRect(3, 16, 95, 30, 1, '1111', 'D', $border_style, array());
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.2);
-                        $pdf->Rect(16.3, 8, 0, 15);
+                        $pdf->SetLineWidth(0.3);
+                        $pdf->Rect(34.5, 16, 0, 30);
                         
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.2);
-                        $pdf->Rect(32.6, 8, 0, 15);
+                        $pdf->SetLineWidth(0.3);
+                        $pdf->Rect(67.5, 16, 0, 30);
                     
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.2);
-                        $pdf->Rect(1, 13.5, 49, 0);
-                        $ParteNo = '      OV             OF        CANTIDAD';
-                        $pdf->SetFont('dejavusans', '', 8);
-                        $pdf->SetXY(0.3, 9);
-                        $pdf->MultiCell(51, 0, $ParteNo, 0, 'L', 0, 1);
+                        $pdf->SetLineWidth(0.3);
+                        $pdf->Rect(3, 26, 95, 0);
+                        $ParteNo = '         O.V                  O.F            CANTIDAD';
+                        $pdf->SetFont('dejavusans', '', 12);
+                        $pdf->SetXY(3, 19);
+                        $pdf->MultiCell(95, 0, $ParteNo, 0, 'L', 0, 1);
 
                         $ParteNo = $OrdenVenta;
-                        $pdf->SetFont('dejavusans', 'B', 8);
-                        $pdf->SetXY(3.3+$AumentoX, 16);
-                        $pdf->MultiCell(13.3, 0, $ParteNo, 0, 'L', 0, 1);
+                        $pdf->SetFont('dejavusans', 'B', 20);
+                        $pdf->SetXY(5+$AumentoX, 32);
+                        $pdf->MultiCell(31, 0, $ParteNo, 0, 'L', 0, 1);
                         $ParteNo = $OrdenFabricacion->OrdenFabricacion;
-                        $pdf->SetFont('dejavusans', 'B', 8);
-                        $pdf->SetXY(17.6, 16);
-                        $pdf->MultiCell(14.3, 0, $ParteNo, 0, 'L', 0, 1);
+                        $pdf->SetFont('dejavusans', 'B', 18);
+                        $pdf->SetXY(37, 33);
+                        $pdf->MultiCell(31, 0, $ParteNo, 0, 'L', 0, 1);
                         $ParteNo = $CantidadBolsa;
-                        $pdf->SetFont('dejavusans', 'B', 8);
-                        $pdf->SetXY(38.9, 16);
-                        $pdf->MultiCell(13.3, 0, $ParteNo, 0, 'L', 0, 1);
+                        $pdf->SetFont('dejavusans', 'B', 28);
+                        $XRestanteCantidad=0;
+                        if(strlen($ParteNo)==2){
+                            $XRestanteCantidad = 3;
+                        }else if(strlen($ParteNo)==3){
+                            $XRestanteCantidad = 6;
+                        }
+                        $pdf->SetXY(78-$XRestanteCantidad, 30);
+                        $pdf->MultiCell(31, 0, $ParteNo, 0, 'L', 0, 1);
                     }
                 }else{
                     if(!file_exists(storage_path('app/Logos/Fibremex.png'))){
                         throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
                     }else{
                         $imagePath = storage_path('app/Logos/Fibremex.png');
-                        $pdf->Image($imagePath, 16, 2, 21);
+                        $pdf->Image($imagePath, 25, 2, 50);
                         $margen = 1;
                         $pdf->SetDrawColor(0, 0, 0);
                         $pdf->SetLineWidth(0.3);
@@ -590,43 +679,49 @@ class EtiquetasController extends Controller
                             'color' => array(0, 0, 0) // RGB negro
                         );
 
-                        $pdf->RoundedRect(1, 8, 49, 15, 1, '1111', 'D', $border_style, array());
+                        $pdf->RoundedRect(3, 16, 95, 30, 1, '1111', 'D', $border_style, array());
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.2);
-                        $pdf->Rect(13.2, 8, 0, 15);
+                        $pdf->SetLineWidth(0.3);
+                        $pdf->Rect(26.5, 16, 0, 30);
                         
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.2);
-                        $pdf->Rect(25.4, 8, 0, 15);
+                        $pdf->SetLineWidth(0.3);
+                        $pdf->Rect(50.5, 16, 0, 30);
                         
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.2);
-                        $pdf->Rect(37.6, 8, 0, 15);
+                        $pdf->SetLineWidth(0.3);
+                        $pdf->Rect(74.5, 16, 0, 30);
 
                         $pdf->SetDrawColor(0, 0, 0);
                         $pdf->SetLineWidth(0.2);
-                        $pdf->Rect(1, 13.5, 49, 0);
-                        $ParteNo = 'No.PEDIDO        OV             OF       CANTIDAD';
-                        $pdf->SetFont('dejavusans', '', 6);
-                        $pdf->SetXY(0.3, 10);
-                        $pdf->MultiCell(51, 0, $ParteNo, 0, 'L', 0, 1);
+                        $pdf->Rect(3, 26, 95, 0);
+                        $ParteNo = 'No.PEDIDO        O.V              O.F        CANTIDAD';
+                        $pdf->SetFont('dejavusans', '', 11);
+                        $pdf->SetXY(3, 19);
+                        $pdf->MultiCell(95, 0, $ParteNo, 0, 'L', 0, 1);
 
                         $ParteNo = $NoPEDIDO;
-                        $pdf->SetFont('dejavusans', 'B', 4);
-                        $pdf->SetXY(1, 16);
-                        $pdf->MultiCell(13.1+$AumentoX, 0, $ParteNo, 0, 'L', 0, 1);
+                        $pdf->SetFont('dejavusans', 'B', 8);
+                        $pdf->SetXY(5, 32);
+                        $pdf->MultiCell(23, 0, $ParteNo, 0, 'L', 0, 1);
                         $ParteNo = $OrdenVenta;
-                        $pdf->SetFont('dejavusans', 'B', 8);
-                        $pdf->SetXY(13.3+$AumentoX, 16);
-                        $pdf->MultiCell(13.3, 0, $ParteNo, 0, 'L', 0, 1);
+                        $pdf->SetFont('dejavusans', 'B', 16);
+                        $pdf->SetXY(28, 32);
+                        $pdf->MultiCell(23, 0, $ParteNo, 0, 'L', 0, 1);
                         $ParteNo = $OrdenFabricacion->OrdenFabricacion;
-                        $pdf->SetFont('dejavusans', 'B', 8);
-                        $pdf->SetXY(24.7, 16);
-                        $pdf->MultiCell(14.3, 0, $ParteNo, 0, 'L', 0, 1);
+                        $pdf->SetFont('dejavusans', 'B', 14);
+                        $pdf->SetXY(51, 33);
+                        $pdf->MultiCell(23, 0, $ParteNo, 0, 'L', 0, 1);
                         $ParteNo = $CantidadBolsa;
-                        $pdf->SetFont('dejavusans', 'B', 8);
-                        $pdf->SetXY(41.9, 16);
-                        $pdf->MultiCell(13.3, 0, $ParteNo, 0, 'L', 0, 1);
+                        $pdf->SetFont('dejavusans', 'B', 28);
+                        $XRestanteCantidad=0;
+                        if(strlen($ParteNo)==2){
+                            $XRestanteCantidad = 4;
+                        }else if(strlen($ParteNo)==3){
+                            $XRestanteCantidad = 7;
+                        }
+                        $pdf->SetXY(82-$XRestanteCantidad, 29);
+                        $pdf->MultiCell(23, 0, $ParteNo, 0, 'L', 0, 1);
                     }
                 }
             }
