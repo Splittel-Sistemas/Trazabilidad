@@ -111,7 +111,8 @@ class EtiquetasController extends Controller
             // Contador para saber cuántas etiquetas se han colocado en la página
             for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
                 $pdf->AddPage('L', array(101, 51));
-                
+                $pdf->SetFont('dejavusans', '', 9);
+                $pdf->setFontSpacing(-0.2);
                 // Color de fondo y texto en la parte superior de la etiqueta
                 $posX = 0;
     
@@ -120,25 +121,24 @@ class EtiquetasController extends Controller
                     return json_encode(["error" => 'No se encontraron el Logo requerido, por favor contactate con TI.']);
                 }else{
                     $imagePath = storage_path('app/Logos/Optronics.jpg');
-                    $pdf->Image($imagePath, 7, 5, 30);
+                    $pdf->Image($imagePath, 4, 4, 35);
                 }
                 //Se agrega el margen a la pagina
                 $margen = 2;
                 $pdf->SetDrawColor(0, 0, 0);
-                $pdf->SetLineWidth(0.5);
-                $pdf->Rect(2, 3, 97 , 45 );
-                $pdf->SetDrawColor(0, 0, 0);
-                $pdf->SetLineWidth(0.2);
-                $pdf->Rect(6, 13, 90 , 0 );
+                $pdf->SetLineWidth(0.1);
+                $pdf->Rect(4, 13, 92 , 0 );
 
-                $ParteNo = 'Part No:  '.$NumeroHuawei."\n".
-                            '  Desc:  ';
+                $ParteNo = 'Part No:  '.$NumeroHuawei;
                 $pdf->SetXY($posX+12, 16); 
+                $pdf->MultiCell(90, 0, $ParteNo, 0, 'L', 0, 1);
+                $ParteNo = '  Desc:  ';
+                $pdf->SetXY($posX+12, 22);
                 $pdf->MultiCell(90, 0, $ParteNo, 0, 'L', 0, 1);
                 $ParteNo = 'Qty: 1 PCS';
                 $pdf->SetXY($posX+70, 16);
                 $pdf->MultiCell(40, 0, $ParteNo, 0, 'L', 0, 1);
-                $pdf->SetXY($posX+24, 20); 
+                $pdf->SetXY($posX+24, 22); 
                 $pdf->MultiCell(69, 0, $OrdenFabricacion->Descripcion, 0, 'L', 0, 1);
                 $pdf->SetXY($posX+4, 31); 
                 $pdf->MultiCell(60, 0, "Specification:  ", 0, 'L', 0, 1);
@@ -678,7 +678,6 @@ class EtiquetasController extends Controller
                             'phase' => 0,
                             'color' => array(0, 0, 0) // RGB negro
                         );
-
                         $pdf->RoundedRect(3, 16, 95, 30, 1, '1111', 'D', $border_style, array());
                         $pdf->SetDrawColor(0, 0, 0);
                         $pdf->SetLineWidth(0.3);

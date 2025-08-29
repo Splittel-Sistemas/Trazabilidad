@@ -3987,11 +3987,20 @@ class AreasController extends Controller
         $Registros = DB::select("
             SELECT of.*,of.id AS OrdenFabricacion_id, pof.id AS partidasOF_id, pof.id AS partidasof_Areas_id,
             OrdenFabricacion, CantidadTotal AS OrdenFabricacionCantidad, cantidad_partida AS PartidasOFCantidad, pof.NumeroPartida,
-            (SELECT poa.Areas_id FROM partidasof_areas poa WHERE poa.Areas_id < 5 ORDER BY poa.Areas_id DESC LIMIT 1 /*Ultima estacion*/
+            (SELECT poa.Areas_id FROM partidasof_areas poa WHERE poa.Areas_id < ".($Area+1)." ORDER BY poa.Areas_id DESC LIMIT 1 /*Ultima estacion*/
 		    ) AS UltimaEstacion,  
             COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
 			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"N\" /*CantidadActualN*/
 		    ),0) AS SumarActualN ,
+            COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+			WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida = \"N\" /*CantidadActualNoescN*/
+		    ),0) AS NESumarActualN ,
+		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida = \"F\" /*CantidadActualNoescF*/
+		    ),0) AS NESumarActualF ,
+		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida != \"F\" /*CantidadActualNoescDifF*/
+		    ),0) AS NESumarActualDifF,
 		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
 			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"F\" /*CantidadActualF*/
 		    ),0) AS SumarActualF ,
@@ -4005,7 +4014,15 @@ class AreasController extends Controller
 		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
 			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida = \"R\" /*CantidadAnteriorR*/
 			    AND FechaTermina IS NULL
-		    ),0) AS SumarAnteriorR
+		    ),0) AS SumarAnteriorR,
+            COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"N\" /*CantidadAnteriorN*/
+			    AND FechaTermina IS NOT NULL
+		    ),0) AS SumarPosteriorN,
+		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"R\" /*CantidadAnteriorR*/
+			    AND FechaTermina IS NULL
+		    ),0) AS SumarPosteriorR
             FROM OrdenFabricacion of
                 JOIN partidasOF pof ON of.id = pof.OrdenFabricacion_id
                 JOIN (
@@ -4054,16 +4071,16 @@ class AreasController extends Controller
                     unset($Registros[$key]);
                 }
             }*/if($Area+1==4 && $registro->Escaner==0){
-                $banderaSinRegistros=0;
+                //$banderaSinRegistros=0;
                 $SumarActual = ($registro->SumarActualN - $registro->SumarActualF - $registro->SumarActualDifF);
                 $TotalPendiente = ($registro->SumarAnteriorN - $registro->SumarAnteriorR);
                 $registro->NumeroActuales = $SumarActual;
                 $registro->TotalPendiente = $TotalPendiente;
                 $registro->Linea = $Linea->NumeroLinea;
                 $registro->ColorLinea = $Linea->ColorLinea;
-                if($Area4->Areas()->where('Areas_id', $Area+1)->where('TipoPartida','=', 'F')->count()==0){
+                /*if($Area4->Areas()->where('Areas_id', $Area+1)->where('TipoPartida','=', 'F')->count()==0){
                     $banderaSinRegistros=1;
-                }
+                }*/
                 if($TotalPendiente==0){
                     unset($Registros[$key]);
                 }
@@ -4071,7 +4088,28 @@ class AreasController extends Controller
                     unset($Registros[$key]);
                 }
             }elseif($Area+1!=4 && $registro->Escaner==0){//Aplica para el Area diferente a 4 y que sea no Escaneado
-                foreach ($OrdenFabricacion->PartidasOF as $Partidas) {
+                if($AreaAnterior==3){
+                    $SumarActual = ($registro->SumarActualN - $registro->SumarActualF - $registro->SumarActualDifF);
+                    $TotalPendiente = ($registro->SumarAnteriorN - $registro->SumarAnteriorR);
+                    $registro->NumeroActuales = $SumarActual;
+                    $registro->TotalPendiente = $TotalPendiente;
+                    $registro->Linea = $Linea->NumeroLinea;
+                    $registro->ColorLinea = $Linea->ColorLinea;
+                    if ($SumarActual == $TotalPendiente AND ($SumarActual==0 AND $TotalPendiente = 0)) {
+                        unset($Registros[$key]);
+                    }
+                }else{
+                    $SumarActual = ($registro->SumarActualN - $registro->SumarActualF - $registro->SumarActualDifF);
+                    $TotalPendiente = ($registro->NESumarActualN - $registro->NESumarActualF - $registro->NESumarActualDifF);
+                    $registro->NumeroActuales = $SumarActual;
+                    $registro->TotalPendiente = $TotalPendiente;
+                    $registro->Linea = $Linea->NumeroLinea;
+                    $registro->ColorLinea = $Linea->ColorLinea;
+                    if ($SumarActual == $TotalPendiente AND ($SumarActual==0 AND $TotalPendiente = 0)) {
+                        unset($Registros[$key]);
+                    }
+                }
+                /*foreach ($OrdenFabricacion->PartidasOF as $Partidas) {
                         if($AreaAnterior==3){
                             $SumarActual +=$Partidas->Areas()->where('Areas_id', $Area+1)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
                             ($Partidas->Areas()->where('Areas_id', $Area+1)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
@@ -4093,24 +4131,24 @@ class AreasController extends Controller
                                                 ($Partidas->Areas()->where('Areas_id', $AreaAnterior)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
                                                 - $Partidas->Areas()->where('Areas_id', $AreaAnterior)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad'));
                         }
-                }
-                $registro->NumeroActuales = $SumarActual;
+                }*/
+                /*$registro->NumeroActuales = $SumarActual;
                 $registro->TotalPendiente = $TotalPendiente;
                 $registro->Linea = $Linea->NumeroLinea;
-                $registro->ColorLinea = $Linea->ColorLinea;
+                $registro->ColorLinea = $Linea->ColorLinea;*/
                 //return $SumarActual ."   ". $TotalPendiente;
                 if($TotalPendiente==0){
                     unset($Registros[$key]);
                 }
-                if ($SumarActual == $TotalPendiente) {
+                /*if ($SumarActual == $TotalPendiente) {
                     unset($Registros[$key]);
-                }
+                }*/
             }else{//Aplica para todos los Escaneados
                 foreach($OrdenFabricacion->PartidasOF as $Partidas){
-                        $SumarActual+=$Partidas->Areas()->where('Areas_id',$Area+1)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
-                                        $Partidas->Areas()->where('Areas_id',$Area+1)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
-                        $TotalPendiente+=$Partidas->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
-                                        $Partidas->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
+                        $SumarActual+=$registro->SumarPosteriorN-$registro->SumarPosteriorR;/*$Partidas->Areas()->where('Areas_id',$Area+1)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
+                                        $Partidas->Areas()->where('Areas_id',$Area+1)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');*/
+                        $TotalPendiente+=$registro->SumarAnteriorN-$registro->SumarAnteriorR;/*$Partidas->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
+                                        $Partidas->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');*/
                 }
                 $registro->NumeroActuales = $SumarActual;//-$Totalretrabajos;
                 $registro->TotalPendiente = $TotalPendiente;
