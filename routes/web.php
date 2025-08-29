@@ -29,7 +29,7 @@ Route::get('/UpdateSession', [HomeController::class, 'UpdateSession'])->name('Up
 //Ruta Home
 Route::get('/', [HomeController::class, 'index'])->name('Home')->middleware('auth');
 Route::post('/Dashboard/Principal', [HomeController::class, 'DashboardPrincipal'])->name('DashboardPrincipal')->middleware('auth');
-//Rutas Planeación
+//Rutas Planeacion
 Route::get('/Planeacion', [PlaneacionController::class,'index'])->name('Planeacion')->middleware('auth');
 Route::post('/Planeacion/Filtro/Fechas', [PlaneacionController::class,'PlaneacionFF'])->name('PlaneacionFF')->middleware('auth');
 Route::post('/Planeacion/Filtro/OrdenVenta',[PlaneacionController::class,'PlaneacionFOV'])->name('PlaneacionFOV')->middleware('auth');
@@ -73,7 +73,7 @@ Route::get('/Area/Corte/GenerarPDF/Suministro/110X10X3', [CorteController::class
 Route::get('/Area/Corte/GenerarPDF/Suministro/45X25', [CorteController::class, 'generarPDFSuministro45X25'])->name('generarPDFSuministro45X25')->middleware('auth');//Generar PDF
 Route::get('/Area/Corte/GenerarPDF/Suministro/110X20', [CorteController::class, 'generarPDFSuministro110X20'])->name('generarPDFSuministro110X20')->middleware('auth');//Generar PDF
 //Preparado
-Route::get('/Area/Transición', [AreasController::class,'Transicion'])->name('Transicion')->middleware('auth');
+Route::get('/Area/Transicion', [AreasController::class,'Transicion'])->name('Transicion')->middleware('auth');
 Route::get('/Area/Preparado', [AreasController::class,'Preparado'])->name('Preparado')->middleware('auth');
 Route::post('/Area/Preparado/buscar', [AreasController::class,'PreparadoBuscar'])->name('PreparadoBuscar')->middleware('auth');
 Route::get('/Area/Suministro/buscar', [AreasController::class,'SuministroBuscar'])->name('SuministroBuscar')->middleware('auth');
@@ -85,22 +85,22 @@ Route::get('/Area/Pulido', [AreasController::class,'Pulido'])->name('Pulido')->m
 Route::post('/Area/Pulido/CerrarPlato', [AreasController::class,'PulidoCerrarPlato'])->name('PulidoCerrarPlato')->middleware('auth');
 Route::post('/Area/Pulido/Linea', [AreasController::class,'PulidoLinea'])->name('PulidoLinea')->middleware('auth');
 Route::get('/Area/Armado', [AreasController::class,'Armado'])->name('Armado')->middleware('auth');
-Route::get('/Area/Inspección', [AreasController::class,'Inspeccion'])->name('Inspeccion')->middleware('auth');
+Route::get('/Area/Inspeccion', [AreasController::class,'Inspeccion'])->name('Inspeccion')->middleware('auth');
 Route::get('/Area/Polaridad', [AreasController::class,'Polaridad'])->name('Polaridad')->middleware('auth');
 Route::get('/Area/Crimpado', [AreasController::class,'Crimpado'])->name('Crimpado')->middleware('auth');
-Route::get('/Area/Medición', [AreasController::class,'Medicion'])->name('Medicion')->middleware('auth');
+Route::get('/Area/Medicion', [AreasController::class,'Medicion'])->name('Medicion')->middleware('auth');
 Route::get('/Area/Visual', [AreasController::class,'Visualizacion'])->name('Visualizacion')->middleware('auth');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas')->middleware('auth');
 Route::get('/Area/Montaje', [AreasController::class,'Montaje'])->name('Montaje')->middleware('auth');
 Route::post('/Area/Tabla/Pendientes', [AreasController::class,'AreaTablaPendientes'])->name('AreaTablaPendientes')->middleware('auth');
 //Clasificacion
-Route::get('/Area/Clasificación', [AreasController::class,'Clasificacion'])->name('Clasificacion')->middleware('auth');
-Route::get('/Area/Clasificación/RecargarTabla', [AreasController::class,'ClasificacionRecargarTabla'])->name('ClasificacionRecargarTabla')->middleware('auth');
-Route::post('/Area/Clasificación/InfoModal', [AreasController::class,'ClasificacionInfoModal'])->name('ClasificacionInfoModal')->middleware('auth');
-Route::post('/Area/Clasificación/Asignar', [AreasController::class,'ClasificacionAsignar'])->name('ClasificacionAsignar')->middleware('auth');
-Route::post('/Area/Clasificación/Busqueda', [AreasController::class,'ClasificacionBusqueda'])->name('ClasificacionBusqueda')->middleware('auth');
-Route::post('/Area/Clasificación/Finalizar', [AreasController::class,'FinalizarOrdenFabricacion'])->name('FinalizarOrdenFabricacion')->middleware('auth');
-Route::post('/Area/Clasificación/Eliminar', [AreasController::class,'EliminarAsignacion'])->name('EliminarAsignacion')->middleware('auth');
+Route::get('/Area/Clasificacion', [AreasController::class,'Clasificacion'])->name('Clasificacion')->middleware('auth');
+Route::get('/Area/Clasificacion/RecargarTabla', [AreasController::class,'ClasificacionRecargarTabla'])->name('ClasificacionRecargarTabla')->middleware('auth');
+Route::post('/Area/Clasificacion/InfoModal', [AreasController::class,'ClasificacionInfoModal'])->name('ClasificacionInfoModal')->middleware('auth');
+Route::post('/Area/Clasificacion/Asignar', [AreasController::class,'ClasificacionAsignar'])->name('ClasificacionAsignar')->middleware('auth');
+Route::post('/Area/Clasificacion/Busqueda', [AreasController::class,'ClasificacionBusqueda'])->name('ClasificacionBusqueda')->middleware('auth');
+Route::post('/Area/Clasificacion/Finalizar', [AreasController::class,'FinalizarOrdenFabricacion'])->name('FinalizarOrdenFabricacion')->middleware('auth');
+Route::post('/Area/Clasificacion/Eliminar', [AreasController::class,'EliminarAsignacion'])->name('EliminarAsignacion')->middleware('auth');
 //
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden')->middleware('auth');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida')->middleware('auth');
@@ -251,7 +251,7 @@ Route::get('/tiempo/promedio',[HomeController::class,'tiempopromedio'])->name('t
 
 
 
-// Grupo de rutas para la gestión de usuarios
+// Grupo de rutas para la gestion de usuarios
 /*Route::prefix('registro')->name('registro.')->group(function () {
     // Listar todos los usuarios
     Route::get('/index', [RegistroController::class, 'index'])->name('index')->middleware('auth');
@@ -296,7 +296,7 @@ use App\Http\Controllers\BarcodeController->middleware('auth');
 use App\Http\Controllers\CorteController->middleware('auth');
 use App\Http\Controllers\OrdenVentaController->middleware('auth');
 
-// Rutas de autenticación
+// Rutas de autenticacion
 Route::get('/login', [LoginController::class,'login_view'])->name('login')->middleware('auth');
 Route::post('/login/inicio', [LoginController::class,'login'])->name('login_post')->middleware('auth');
 //Route::view('/registro', "usuarios.registro")->name('register')->middleware('auth');

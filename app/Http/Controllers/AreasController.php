@@ -3438,7 +3438,7 @@ class AreasController extends Controller
                                             <p class="mb-0 flex-1 text-white">La Orden de Fabricacion se cerro de manera manual.</p>
                                         </div>'; 
         }
-        if($ContarPartidasClasificacion == 0){
+        if($ContarPartidas-$ContarPartidasClasificacion <= 0){
                 $Ordenfabricacionpartidas.='
                                         <div class="alert alert-warning d-flex align-items-center p-1 mx-0" role="alert">
                                             <i class="fas fa-times-circle text-white fs-2 me-2"></i>
