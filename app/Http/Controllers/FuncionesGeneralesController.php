@@ -183,16 +183,7 @@ class FuncionesGeneralesController extends Controller
                     FROM  HN_OPTRONICS."OWOR" T2 
                     INNER JOIN HN_OPTRONICS."WOR1" T3 ON T3."DocEntry" = T2."DocEntry" 
                     INNER JOIN HN_OPTRONICS."OITM" T4 ON T4."ItemCode" = T3."ItemCode"
-                    WHERE T2."DocNum" = '.$OrdenFabricacion.' AND (T3."ItemName" LIKE \'%Cable%\' OR T3."ItemCode" = \'SP012930190B\' OR T3."ItemName" LIKE \'%fiber/print%\') LIMIT 1';
-                /*$sql="SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", T1.\"Dscription\" AS\"Descripcion\", ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", T2.\"DueDate\" AS \"Fecha entrega OF\", 
-	            T1.\"PoTrgNum\" AS \"Orden de F.\" , T1.\"LineNum\" AS \"LineNum\", T3.\"ItemCode\" \"Hijo\", T3.\"ItemName\" \"Nombre Hijo\", T3.\"BaseQty\" \"Cantidad Base\",T3.\"IssuedQty\" \"Ctd. requerida\" 
-                FROM {$schema}.\"ORDR\" T0
-                INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
-                LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"PoTrgNum\" = T2.\"DocNum\"
-                INNER JOIN {$schema}.\"WOR1\" T3 ON T3.\"DocEntry\" = T2.\"DocEntry\"
-                WHERE T1.\"PoTrgNum\" = {$OrdenFabricacion} AND T3.\"ItemName\" LIKE '%Cable%' 
-                LIMIT 1";*/
-                //WHERE T0.\"DocNum\" = 66483 AND T3.\"ItemName\" LIKE '%Cable%'";
+                    WHERE T2."DocNum" = '.$OrdenFabricacion.' AND T4."InvntryUom" = \'MTR\' AND  (T3."ItemName" LIKE \'%Cable%\' OR T3."ItemCode" = \'SP012930190B\' OR T3."ItemName" LIKE \'%fiber/print%\') LIMIT 1';
         return $Detalles = $this->ejecutarConsulta($sql);
     }
     public function EtiquetasDatosSAP($NumOV){
