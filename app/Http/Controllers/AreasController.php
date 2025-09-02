@@ -3438,7 +3438,7 @@ class AreasController extends Controller
                                             <p class="mb-0 flex-1 text-white">La Orden de Fabricacion se cerro de manera manual.</p>
                                         </div>'; 
         }
-        if($ContarPartidas-$ContarPartidasClasificacion <= 0){
+        if($ContarPartidas <= 0){
                 $Ordenfabricacionpartidas.='
                                         <div class="alert alert-warning d-flex align-items-center p-1 mx-0" role="alert">
                                             <i class="fas fa-times-circle text-white fs-2 me-2"></i>
@@ -3983,45 +3983,45 @@ class AreasController extends Controller
             }
         return $Registros; 
     }*/
-    public function OrdenFabricacionPendienteTabla($Area){
+    /*public function OrdenFabricacionPendienteTabla($Area){
         $Registros = DB::select("
             SELECT of.*,of.id AS OrdenFabricacion_id, pof.id AS partidasOF_id, pof.id AS partidasof_Areas_id,
             OrdenFabricacion, CantidadTotal AS OrdenFabricacionCantidad, cantidad_partida AS PartidasOFCantidad, pof.NumeroPartida,
             (SELECT poa.Areas_id FROM partidasof_areas poa WHERE poa.Areas_id < ".($Area+1)." ORDER BY poa.Areas_id DESC LIMIT 1 /*Ultima estacion*/
-		    ) AS UltimaEstacion,  
+		   /* ) AS UltimaEstacion,  
             COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
 			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"N\" /*CantidadActualN*/
-		    ),0) AS SumarActualN ,
+		    /*),0) AS SumarActualN ,
             COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
 			WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida = \"N\" /*CantidadActualNoescN*/
-		    ),0) AS NESumarActualN ,
+		    /*),0) AS NESumarActualN ,
 		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
 			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida = \"F\" /*CantidadActualNoescF*/
-		    ),0) AS NESumarActualF ,
+		    /*),0) AS NESumarActualF ,
 		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
 			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida != \"F\" /*CantidadActualNoescDifF*/
-		    ),0) AS NESumarActualDifF,
+		    /*),0) AS NESumarActualDifF,
 		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
 			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"F\" /*CantidadActualF*/
-		    ),0) AS SumarActualF ,
+		    /*),0) AS SumarActualF ,
 		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
 			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida != \"F\" /*CantidadActualDifF*/
-		    ),0) AS SumarActualDifF,
+		    /*),0) AS SumarActualDifF,
 		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
 			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida = \"N\" /*CantidadAnteriorN*/
-			    AND FechaTermina IS NOT NULL
+			/*    AND FechaTermina IS NOT NULL
 		    ),0) AS SumarAnteriorN,
 		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
 			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida = \"R\" /*CantidadAnteriorR*/
-			    AND FechaTermina IS NULL
+			/*    AND FechaTermina IS NULL
 		    ),0) AS SumarAnteriorR,
             COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
 			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"N\" /*CantidadAnteriorN*/
-			    AND FechaTermina IS NOT NULL
+			/*    AND FechaTermina IS NOT NULL
 		    ),0) AS SumarPosteriorN,
 		    COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
 			    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"R\" /*CantidadAnteriorR*/
-			    AND FechaTermina IS NULL
+			/*    AND FechaTermina IS NULL
 		    ),0) AS SumarPosteriorR
             FROM OrdenFabricacion of
                 JOIN partidasOF pof ON of.id = pof.OrdenFabricacion_id
@@ -4070,7 +4070,7 @@ class AreasController extends Controller
                 if ($SumarActual == $TotalPendiente AND $banderaSinRegistros==0) {
                     unset($Registros[$key]);
                 }
-            }*/if($Area+1==4 && $registro->Escaner==0){
+            }*//*if($Area+1==4 && $registro->Escaner==0){
                 //$banderaSinRegistros=0;
                 $SumarActual = ($registro->SumarActualN - $registro->SumarActualF - $registro->SumarActualDifF);
                 $TotalPendiente = ($registro->SumarAnteriorN - $registro->SumarAnteriorR);
@@ -4081,7 +4081,7 @@ class AreasController extends Controller
                 /*if($Area4->Areas()->where('Areas_id', $Area+1)->where('TipoPartida','=', 'F')->count()==0){
                     $banderaSinRegistros=1;
                 }*/
-                if($TotalPendiente==0){
+                /*if($TotalPendiente==0){
                     unset($Registros[$key]);
                 }
                 if ($SumarActual == $TotalPendiente AND ($SumarActual==0 AND $TotalPendiente = 0)) {
@@ -4137,19 +4137,19 @@ class AreasController extends Controller
                 $registro->Linea = $Linea->NumeroLinea;
                 $registro->ColorLinea = $Linea->ColorLinea;*/
                 //return $SumarActual ."   ". $TotalPendiente;
-                if($TotalPendiente==0){
+                /*if($TotalPendiente==0){
                     unset($Registros[$key]);
                 }
                 /*if ($SumarActual == $TotalPendiente) {
                     unset($Registros[$key]);
                 }*/
-            }else{//Aplica para todos los Escaneados
+            /*}else{//Aplica para todos los Escaneados
                 foreach($OrdenFabricacion->PartidasOF as $Partidas){
                         $SumarActual+=$registro->SumarPosteriorN-$registro->SumarPosteriorR;/*$Partidas->Areas()->where('Areas_id',$Area+1)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
                                         $Partidas->Areas()->where('Areas_id',$Area+1)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');*/
-                        $TotalPendiente+=$registro->SumarAnteriorN-$registro->SumarAnteriorR;/*$Partidas->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
+                        /*$TotalPendiente+=$registro->SumarAnteriorN-$registro->SumarAnteriorR;/*$Partidas->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-
                                         $Partidas->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');*/
-                }
+                /*}
                 $registro->NumeroActuales = $SumarActual;//-$Totalretrabajos;
                 $registro->TotalPendiente = $TotalPendiente;
                 $registro->Linea = $Linea->NumeroLinea;
@@ -4227,13 +4227,155 @@ class AreasController extends Controller
         }
         $Lineas=Linea::where('id','!=',1)->get();
         return $Registros; 
+    }*/
+    public function OrdenFabricacionPendienteTabla($Area){
+        //$Area = $Area-1
+        $Registros = DB::select("
+             SELECT of.*,of.id AS OrdenFabricacion_id, pof.id AS partidasOF_id, poalin.Linea_id, lin.NumeroLinea, lin.ColorLinea,
+                COALESCE((SELECT poa.Areas_id FROM partidasof_areas poa WHERE poa.PartidasOF_id = partidasOF_id  AND poa.Areas_id < ".($Area+1)." AND poa.Linea_id = poalin.Linea_id ORDER BY poa.Areas_id DESC LIMIT 1 /*Ultima estacion*/
+		        ),3) AS UltimaEstacion, 
+                COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+			        WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"N\"  AND poa.Linea_id = poalin.Linea_id/*CantidadActualN*/
+		        ),0) AS SumarActualN ,
+                COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+                    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"F\" AND poa.Linea_id = poalin.Linea_id/*CantidadActualF*/
+                ),0) AS SumarActualF ,
+                COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+                    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"R\" AND poa.Linea_id = poalin.Linea_id/*CantidadActualDifF*/
+                ),0) AS SumarActualDifF,
+                COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+                    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida = \"N\" AND poa.Linea_id = poalin.Linea_id/*CantidadActualNoesN*/
+                ),0) AS NESumarActualN ,
+                COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+                    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida = \"F\" AND poa.Linea_id = poalin.Linea_id/*CantidadActualNoescF*/
+                ),0) AS NESumarActualF ,
+                COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+                    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida = \"R\" AND poa.Linea_id = poalin.Linea_id/*CantidadActualNoescDifF*/
+                ),0) AS NESumarActualDifF,
+                COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+                            WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida = \"N\" AND poa.Linea_id = poalin.Linea_id/*CantidadAnteriorN*/
+                            AND FechaTermina IS NOT NULL
+                        ),0)AS SumarAnteriorN,
+                COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+                    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = UltimaEstacion AND TipoPartida = \"R\" AND poa.Linea_id = poalin.Linea_id/*CantidadAnteriorR*/
+                    AND FechaTermina IS NULL
+                ),0) AS SumarAnteriorR,
+                COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+                    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"N\" AND poa.Linea_id = poalin.Linea_id/*CantidadAnteriorN*/
+                    AND FechaTermina IS NOT NULL
+                ),0) AS SumarPosteriorN,
+                COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+                    WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"R\" AND poa.Linea_id = poalin.Linea_id/*CantidadAnteriorR*/
+                    AND FechaTermina IS NULL
+                ),0) AS SumarPosteriorR,
+                COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
+			        WHERE poa.partidasof_id = pof.id AND poa.Areas_id = 18 AND TipoPartida = \"N\" AND poa.Linea_id = poalin.Linea_id/*CantidadAnteriorN*/
+		        ),0) AS SumarAnterior3N ,
+                (SELECT COUNT(*) FROM partidasof_areas WHERE PartidasOF_id = pof.id  AND Areas_id > ".($Area+1)." AND Areas_id != 18 AND Linea_id = poalin.Linea_id
+                ) AS RegistroAreaPosterior
+            FROM OrdenFabricacion OF
+            JOIN partidasOF pof ON of.id = pof.OrdenFabricacion_id
+            JOIN (
+                  SELECT  PartidasOF_id, Linea_id
+                  FROM partidasof_Areas
+                  WHERE Areas_id = ".$this->AreaEspecialClasificacion." /*Es el id de asignacion*/
+                  group BY PartidasOF_id,Linea_id
+            ) poalin ON poalin.PartidasOF_id = pof.id
+            JOIN (
+                  SELECT  PartidasOF_id,
+                  MIN(id) AS id,
+                  MIN(Areas_id) AS Areas_id,
+                  MIN(FechaTermina) AS FechaTermina
+                  FROM partidasof_Areas
+                  WHERE FechaTermina IS NOT NULL AND Areas_id <= ".($Area+1)." AND Areas_id > ".$this->AreaEspecialCorte." /*5 es el Area actual y 2 es Area de corte*/
+                  GROUP BY PartidasOF_id
+            ) poa ON poa.PartidasOF_id = pof.id
+            JOIN linea lin ON lin.id = poalin.Linea_id
+            WHERE of.Cerrada = 1
+            ORDER BY of.id;
+        ");
+        foreach($Registros as $key=>$registro){
+            if($Area+1==4 && $registro->Escaner==0){
+                    $SumarActual = ($registro->SumarActualF-$registro->SumarActualDifF);
+                    $TotalPendiente = $registro->SumarAnterior3N;
+                    $registro->NumeroActuales = $SumarActual;
+                    $registro->TotalPendiente = $TotalPendiente;
+                    $registro->Actual = $SumarActual;
+                    $registro->Anterior= $TotalPendiente;
+                    $registro->Linea = $registro->NumeroLinea;
+                    $registro->ColorLinea = $registro->ColorLinea;
+                    if($SumarActual>=$TotalPendiente AND !($SumarActual==0 AND $TotalPendiente==0)){
+                        unset($Registros[$key]);
+                    }
+                    if($registro->RegistroAreaPosterior > 0 AND $SumarActual == 0){
+                        unset($Registros[$key]);
+                    }
+            }elseif($Area+1!=4 && $registro->Escaner==0){
+                    if($registro->UltimaEstacion==3){
+                        $SumarActual = ($registro->SumarActualF-$registro->SumarActualDifF);
+                        $TotalPendiente = $registro->SumarAnterior3N;//($registro->SumarAnteriorN - $registro->SumarAnteriorR);
+                        $registro->NumeroActuales = $SumarActual;
+                        $registro->TotalPendiente = $TotalPendiente;
+                        $registro->Linea = $registro->NumeroLinea;
+                        $registro->ColorLinea = $registro->ColorLinea;
+                        if($SumarActual>=$TotalPendiente AND !($SumarActual==0 AND $TotalPendiente==0)){
+                            unset($Registros[$key]);
+                        }
+                        if($registro->RegistroAreaPosterior > 0 AND $SumarActual == 0){
+                            unset($Registros[$key]);
+                        }
+                    }else{
+                        $SumarActual = $registro->SumarActualF-$registro->SumarActualDifF;//($registro->SumarActualN - $registro->SumarActualF - $registro->SumarActualDifF);
+                        $TotalPendiente = $registro->NESumarActualF-$registro->NESumarActualDifF;//($registro->NESumarActualN - $registro->NESumarActualF - $registro->NESumarActualDifF);
+                        $registro->NumeroActuales = $SumarActual;
+                        $registro->TotalPendiente = $TotalPendiente;
+                         $registro->Linea = $registro->NumeroLinea;
+                        $registro->ColorLinea = $registro->ColorLinea;
+                        if($SumarActual>=$TotalPendiente ){//AND !($SumarActual==0 AND $TotalPendiente==0)){
+                            unset($Registros[$key]);
+                        }
+                        if($registro->RegistroAreaPosterior > 0 AND $SumarActual == 0){
+                            unset($Registros[$key]);
+                        }
+                    }
+                    $registro->Actual = $SumarActual;
+                    $registro->Anterior= $TotalPendiente;
+            }else{
+                if($registro->UltimaEstacion == 3){
+                    $SumarActual = ($registro->SumarPosteriorN - $registro->SumarPosteriorR);
+                    $TotalPendiente = $registro->SumarAnterior3N;
+                    $registro->NumeroActuales = $SumarActual;//-$Totalretrabajos;
+                    $registro->TotalPendiente = $TotalPendiente;
+                    $registro->Linea = $registro->NumeroLinea;
+                    $registro->ColorLinea = $registro->ColorLinea;
+                    $registro->Actual = $SumarActual;
+                    $registro->Anterior= $TotalPendiente;
+                }else{
+                    $SumarActual = ($registro->SumarPosteriorN - $registro->SumarPosteriorR);
+                    $TotalPendiente = $registro->SumarAnteriorN - $registro->SumarAnteriorR;
+                    $registro->NumeroActuales = $SumarActual;//-$Totalretrabajos;
+                    $registro->TotalPendiente = $TotalPendiente;
+                    $registro->Linea = $registro->NumeroLinea;
+                    $registro->ColorLinea = $registro->ColorLinea;
+                    $registro->Actual = $SumarActual;
+                    $registro->Anterior= $TotalPendiente;
+                }
+                if($SumarActual>=$TotalPendiente AND !($SumarActual==0 AND $TotalPendiente==0)){
+                    unset($Registros[$key]);
+                }
+                if($SumarActual == 0 AND $registro->RegistroAreaPosterior > 0){
+                    unset($Registros[$key]);
+                }
+            }
+        }
+        return $Registros;
     }
     Public function AreaTablaPendientes(Request $request){
         $Area=$this->funcionesGenerales->decrypt($request->Area);
         $OrdenFabricacionPendiente=$this->OrdenFabricacionPendienteTabla($Area-1);
         $tabla='';
         foreach($OrdenFabricacionPendiente as $partida){
-            foreach($partida->PartidasOFFaltantes as $PartidaArea){
+            //foreach($partida->PartidasOFFaltantes as $PartidaArea){
                 $tabla.='<tr';
                 if($partida->Urgencia == 'U'){
                    $tabla.=' style="background:#8be0fc;"';
@@ -4242,14 +4384,14 @@ class AreasController extends Controller
                             <td class="text-center">'.$partida->OrdenFabricacion.'</td>
                             <td>'.$partida->Articulo .'</td>
                             <td>'.$partida->Descripcion.'</td>
-                            <td class="text-center">'.$PartidaArea->Actual.'</td>
-                            <td class="text-center">'.$PartidaArea->Anterior-$PartidaArea->Actual .'</td>
-                            <td class="text-center">'.$PartidaArea->Anterior  .'</td>
+                            <td class="text-center">'.$partida->Actual.'</td>
+                            <td class="text-center">'.$partida->Anterior-$partida->Actual .'</td>
+                            <td class="text-center">'.$partida->Anterior  .'</td>
                             <td class="text-center">'.$partida->CantidadTotal.'</td>
                             <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                            <td><h5 class="text-light text-center p-0" style="background: '.$PartidaArea->ColorLinea .';">'.$PartidaArea->Linea .'</h5></td>
+                            <td><h5 class="text-light text-center p-0" style="background: '.$partida->ColorLinea .';">'.$partida->Linea .'</h5></td>
                             </tr>';
-            }
+            //}
         }
         return$tabla;
     }
