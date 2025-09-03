@@ -626,6 +626,7 @@
                     DataTable('EmpacadoTable', true);
                     $('#ContainerEmpacadoTable').fadeIn();
                     $(".finalizar-btn").off("click").on("click", function () {
+                        alert("En trabajo");
                         let id = $(this).data("id");
                         confirmacionesss(
                             "Finalizar Orden de Fabricación", 
