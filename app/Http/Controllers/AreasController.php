@@ -1844,9 +1844,18 @@ class AreasController extends Controller
                 }elseif($Area==$this->AreaEspecialEmpaque){
                     //Total Finalizadas que paso del area anterior
                     $NumeroPartidasTodas = $partidasOF->Areas()->where('Areas_id',$AreaAnterior)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad');
-                    $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad');
-                                            -$partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida', '=','F')->get()->SUM('pivot.Cantidad');
+                    $NumeroPartidasAbiertas = $partidasOF->Areas()->where('Areas_id',$Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad');
                     $NumeroPartidasAbiertas=$NumeroPartidasAbiertas+$Cantidad;
+                    if($NumeroPartidasAbiertas > $datos->CantidadTotal){
+                         return response()->json([
+                            'Inicio'=>$Inicio,
+                            'Fin'=>$Fin,
+                            'status' => "Excede",
+                            'CantidadTotal' => "",
+                            'CantidadCompletada' => "",
+                            'OF' => $CodigoPartes[0],       
+                        ]);
+                    }
                     if($NumeroPartidasAbiertas>$NumeroPartidasTodas){
                         return response()->json([
                             'Inicio'=>$Inicio,
