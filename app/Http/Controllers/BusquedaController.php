@@ -75,6 +75,9 @@ class BusquedaController extends Controller
                 }
             }
         }
+        if($Lista == ""){
+            $Lista ='<a class="list-group-item list-group-item-action p-1 m-0 disabled" style="background:#CDCECF">Sin resultados</a>';
+        }
         return $Lista;
 
     }

@@ -314,6 +314,7 @@ class AreasController extends Controller
             foreach($PartidasOF as $orden) {
                 $ordenFabri=$orden->ordenFabricacion;
                 $Part = $ordenFabri->PartidasOF->first();
+
                 $TotalCortes = $Part->Areas()->where('Areas_id',2)->get();
                 $TotalCortes = $TotalCortes->whereNotNull('pivot.FechaTermina')->SUM('pivot.Cantidad');
                 $orden['TotalPartida']=$TotalCortes;
@@ -325,7 +326,7 @@ class AreasController extends Controller
                 }
                 $orden['Normal']=$Normal;
                 $orden['Retrabajo']=$Retrabajo;
-                $TotalPartida=$Part->Areas()->where('Areas_id',3)->get()->count();//$ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida')-$ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida');
+                $TotalPartida=$Part->Areas()->where('Areas_id',3)->get()->count();
                 $tabla.='<tr>
                         <td>'. $ordenFabri->OrdenFabricacion .'</td>
                         <td class="text-center">'. $TotalPartida .'</td>
@@ -334,7 +335,7 @@ class AreasController extends Controller
                         <td>'. $Normal.'</td>
                         <td>'. $Retrabajo.'</td>
                         <td>'. $TotalCortes .'</td>
-                        <td>'. $orden->FechaFinalizacion.'</td>
+                        <td>'. $orden->FechaTermina.'</td>
                         <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Cerrada</span></div></td>
                         <td><button class="btn btn-sm btn-outline-primary" onclick="Detalles(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Detalles</button></td>
                     </tr>';

@@ -1,7 +1,6 @@
 @extends('layouts.menu2')
 @section('title', 'Suministro')
 @section('styles')
-{{--<link rel="stylesheet" href="{{asset('css/Suministro.css')}}">--}}
 <style>
     #ToastGuardado {
         position: fixed; /* Fixed position */
@@ -58,58 +57,6 @@
             <hr id="hr-menu">
             <div class="tab-content mt-4" id="myTabContent">
                 <div class="tab-pane fade show active" id="tab-proceso" role="tabpanel" aria-labelledby="proceso-tab">
-                    {{--<div class="col-6">
-                        <div class="card shadow-sm">
-                            <div class="card-body row" id="filtro">
-                                <label for="CodigoEscaner" class="col-form-label col-sm-12 pt-0">Proceso <span class="text-muted"></span></label>
-                                <div class="col-8">
-                                        <div class="form-check form-check-inline ">
-                                            <input class="form-check-input" type="radio" name="TipoProceso" id="Iniciar" checked onclick="MostrarRetrabajo('Entrada')">
-                                            <label class="form-check-label" for="Iniciar">
-                                            Entrada
-                                            </label>
-                                        </div>
-                                        <div class="form-check form-check-inline ">
-                                            <input class="form-check-input" type="radio" name="TipoProceso" id="Finalizar" onclick="MostrarRetrabajo('Salida')">
-                                            <label class="form-check-label" for="Finalizar">
-                                            Salida
-                                            </label>
-                                        </div>
-                                </div>
-                                <hr>
-                                <form id="filtroForm" method="post" class="form-horizontal row mt-0 needs-validation" novalidate="">
-                                    <div class="col-8" id="CodigoDiv">
-                                        <div class="">
-                                            <label for="CodigoEscaner">C&oacute;digo <span class="text-muted">&#40;Escanea o Ingresa manual&#41;</span></label>
-                                            <!--<a href=""><i class="fa fa-toggle-on"></i></a>-->
-                                            <div class="input-group">
-                                                <input type="text" class="form-control form-control-sm" oninput="ListaCodigo(this.value,'CodigoEscanerSuministro')" id="CodigoEscaner" aria-describedby="CodigoEscanerHelp" placeholder="Escánea o ingresa manualmente.">
-                                                <div class="invalid-feedback" id="error_CodigoEscaner"></div>
-                                            </div>
-                                            <div class=" mt-1 list-group-sm" id="CodigoEscanerSuministro">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-4" id="CantidadDiv" style="display: none">
-                                        <div class="form-group">
-                                            <label for="Cantidad">Cantidad</label>
-                                            <input type="text" class="form-control form-control-sm" id="Cantidad" aria-describedby="Cantidad" value="1" placeholder="Ingresa cantidad recibida.">
-                                            <div class="invalid-feedback" id="error_Cantidad"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 mt-2" id="RetrabajoDiv" style="display: none">
-                                        <div class="form-check">
-                                            <input class="form-check-input" id="Retrabajo" type="checkbox" />
-                                            <label class="form-check-label" for="Retrabajo">Enviar a retrabajo</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 mt-2" id="IniciarBtn" style="display: none">
-                                        <button class="btn btn-primary btn-sm float-end" type="button" id="btnEscanear"><i class="fa fa-play"></i> Iniciar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>--}}
                     <div id="ContentTabla" class="col-12 mt-2">
                         <div class="card" id="DivCointainerTableSuministro">
                             <div class="table-responsive">
@@ -204,20 +151,6 @@
                                         </tr>
                                     </thead>
                                     <tbody id="TablaSuministroCerradasBody" class="list">
-                                        {{--@foreach($PartidasOFC as $partida)
-                                        <tr>
-                                            <td class="text-center">{{$partida->OrdenFabricacion }}</td>
-                                            <td class="text-center">{{$partida->NumeroPartida }}</td>
-                                            <td>{{$partida->Articulo }}</td>
-                                            <td>{{$partida->Descripcion }}</td>
-                                            <td>{{$partida->Normal }}</td>
-                                            <td>{{$partida->Retrabajo }}</td>
-                                            <td class="text-center">{{$partida->TotalPartida }}</td>
-                                            <td class="text-center">{{$partida->FechaTermina }}</td>
-                                            <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Cerrada</span></div></td>
-                                            <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Detalles('{{$partida->idEncript}}')">Detalles</button></td>
-                                        </tr>
-                                    @endforeach--}}
                                     </tbody>
                                 </table>
                             </div>
@@ -330,7 +263,6 @@
     <div  id="ContainerToastGuardado"></div>
 @endsection
 @section('scripts')
-{{--<script src="{{ asset('js/Suministro.js') }}"></script>--}}
 <script>
     $(document).ready(function() {
         DataTable('TablaSuministroAbiertas',true);
