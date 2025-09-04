@@ -4242,7 +4242,7 @@ class AreasController extends Controller
         //$Area = $Area-1
         $Registros = DB::select("
              SELECT of.*,of.id AS OrdenFabricacion_id, pof.id AS partidasOF_id, poalin.Linea_id, lin.NumeroLinea, lin.ColorLinea,
-                COALESCE((SELECT poa.Areas_id FROM partidasof_areas poa WHERE poa.PartidasOF_id = partidasOF_id  AND poa.Areas_id < ".($Area+1)." AND poa.Linea_id = poalin.Linea_id ORDER BY poa.Areas_id DESC LIMIT 1 /*Ultima estacion*/
+                COALESCE((SELECT poa.Areas_id FROM partidasof_areas poa WHERE poa.PartidasOF_id = pof.id  AND poa.Areas_id < ".($Area+1)." AND poa.Linea_id = poalin.Linea_id ORDER BY poa.Areas_id DESC LIMIT 1 /*Ultima estacion*/
 		        ),3) AS UltimaEstacion, 
                 COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
 			        WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".($Area+1)." AND TipoPartida = \"N\"  AND poa.Linea_id = poalin.Linea_id/*CantidadActualN*/
@@ -4279,9 +4279,9 @@ class AreasController extends Controller
                     AND FechaTermina IS NULL
                 ),0) AS SumarPosteriorR,
                 COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
-			        WHERE poa.partidasof_id = pof.id AND poa.Areas_id = 18 AND TipoPartida = \"N\" AND poa.Linea_id = poalin.Linea_id/*CantidadAnteriorN*/
+			        WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".$this->AreaEspecialClasificacion." AND TipoPartida = \"N\" AND poa.Linea_id = poalin.Linea_id/*CantidadAnteriorN*/
 		        ),0) AS SumarAnterior3N ,
-                (SELECT COUNT(*) FROM partidasof_areas WHERE PartidasOF_id = pof.id  AND Areas_id > ".($Area+1)." AND Areas_id != 18 AND Linea_id = poalin.Linea_id
+                (SELECT COUNT(*) FROM partidasof_areas WHERE PartidasOF_id = pof.id  AND Areas_id > ".($Area+1)." AND Areas_id != ".$this->AreaEspecialClasificacion." AND Linea_id = poalin.Linea_id
                 ) AS RegistroAreaPosterior
             FROM OrdenFabricacion OF
             JOIN partidasOF pof ON of.id = pof.OrdenFabricacion_id

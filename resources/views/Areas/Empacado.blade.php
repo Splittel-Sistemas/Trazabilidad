@@ -604,7 +604,7 @@
                         //Si se cambia el area Empaque se tiene que cambiar el 17 de esta línea
                         let cantidad = item.Areas_id == 17 ? item.CantidadTotalArea : "0";
                         let botonFinalizar = (puedeFinalizar) 
-                            ? `<button class="btn btn-sm btn-danger finalizar-btn p-1" data-id="${item.OrdenFabricacion}">Finalizar</button>`
+                            ? `<button class="btn btn-sm btn-danger p-1" data-id="${item.OrdenFabricacion}" onclick="FinalizarManual('${item.OrdenFabricacion}')">Finalizar</button>`
                             : '';
 
                         let fila = `
@@ -628,9 +628,9 @@
                     $(".finalizar-btn").on("click", function () {
                         let id = $(this).data("id");
                         confirmacionesss(
-                            "Finalizar Orden de Fabricación", 
-                            "¿Estás seguro de que deseas finalizar esta orden de Fabricación?", 
-                            "Confirmar", 
+                        "Finalizar Orden de Fabricación", 
+                        "¿Estás seguro de que deseas finalizar esta orden de Fabricación?", 
+                        "Confirmar", 
                             function () {
                                 $.ajax({
                                     url: '{{ route("finProceso.empacado") }}',
@@ -655,11 +655,9 @@
                                         alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
                                     }
                                 });
-
                             }
                         );
                     });
-
                 },
                 error: function () {
                     console.log("Error al cargar los datos de la tabla.");
@@ -744,5 +742,38 @@
             toastr.info('La acción fue cancelada', 'Información');
         }
     }
+    function FinalizarManual(idOF){
+        let id = idOF;
+        confirmacionesss(
+            "Finalizar Orden de Fabricación", 
+            "¿Estás seguro de que deseas finalizar esta orden de Fabricación?", 
+            "Confirmar", 
+                function () {
+                    $.ajax({
+                        url: '{{ route("finProceso.empacado") }}',
+                        type: "GET",
+                        data: {
+                            id: id,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (response) {
+                            if (response.codigo=='Success') {
+                                success('Orden de Fabricacion Finalizada',response.message);
+                            }else{
+                                error('Ocurrio un error',response.message);
+                            }
+                            setTimeout(function() {
+                                console.log("Recargando la tabla...");
+                                cargarTablaEmpacado();
+                            }, 500);
+                        },
+                        error: function (xhr) {
+                            console.error("Error:", xhr);
+                            alert("Error: " + (xhr.responseJSON?.error || "Ocurrió un problema"));
+                        }
+                    });
+                }
+            );
+    } 
 </script>
 @endsection
