@@ -117,13 +117,14 @@
         <div class="row bg-white">
             <div class="col-12 pt-4" id="DetallesOrdenFabricacion" style="display: none">
                 <h4 class="mb-3" id="exampleModalLabel">
-                    Detalles De Orden Fabricacion:
+                    Detalles De Orden De Fabricacion:
                     <span id="ordenFabricacionNumero" class="text-muted"></span>
                     <span id="EstatusFabricacion"class="" style="position: absolute;right:4rem;">Estatus</span> 
                 </h4>
                 <hr>
                  <!-- Barra de progreso -->
-                        <h5 class="text-center mb-2">Progreso de piezas completadas</h5>
+                        <h4 class="text-center mb-3 text-muted">Orden de Venta: <span id="OrdenVenta"></span> &nbsp;&nbsp;&nbsp;&nbsp; Cliente: <span id="NombreCliente"></span></h4>
+                        <h5 class="text-center mb-2">Progreso Total de piezas completadas</h5>
                         <div class="progress" style="height: 22px; border-radius: 5px; box-shadow: 0px 3px 6px rgba(0,0,0,0.2); overflow: hidden; width: 100%;">
                             <div id="plemasProgressBar" class="progress-bar text-white fw-bold progress-animated" role="progressbar" 
                                 style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;" 
@@ -245,6 +246,25 @@
                                 </div>
                             </div>--}}
                         </div>
+            </div>
+            <div class="col-12 pt-4" id="DetallesOrdenVenta" style="display: none">
+                <h4 class="mb-3">
+                    Detalles De Orden De Venta:
+                    <span id="OVNumero"></span>
+                    <span id="OVEstatus"class="" style="position: absolute;right:4rem;">Estatus</span> 
+                </h4>
+                <hr>
+                 <!-- Barra de progreso -->
+                    <h4 class="text-center mb-3 text-muted">Cliente: <span id="OVNombreCliente"></span></h4>
+                    <h5 class="text-center mb-2">Progreso de piezas completadas</h5>
+                    <div class="progress" style="height: 22px; border-radius: 5px; box-shadow: 0px 3px 6px rgba(0,0,0,0.2); overflow: hidden; width: 100%;">
+                        <div id="OVBarrraProgreso" class="progress-bar text-white fw-bold progress-animated" role="progressbar" 
+                            style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;" 
+                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                            0%
+                        </div>
+                        <h6 class="mx-2 mt-2" id="OVBloque0porciento">0%</h6>
+                    </div>
             </div>
         </div>
     </div>
@@ -492,521 +512,8 @@
     <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>   
-    /*$(document).on('click', '.ver-detalles', function (e) {
-        var ordenVenta = $(this).data('ordenventa');
-        
-        // Muestra el valor en el elemento
-        $('#stage2').data('ordenventa', ordenVenta);
-        $('#stage3').data('ordenventa', ordenVenta);
-        $('#stage4').data('ordenventa', ordenVenta);
-        $('#stage5').data('ordenventa', ordenVenta);
-        $('#stage6').data('ordenventa', ordenVenta);
-        $('#stage7').data('ordenventa', ordenVenta);
-        $('#stage8').data('ordenventa', ordenVenta);
-        $('#stage9').data('ordenventa', ordenVenta);
-        $('.progress-bar').css('width', '0%').text('0%');
-        $('.progress-bar-stages .stage').removeClass('pending active completed no-data').addClass('pending');
-        $.ajax({
-            url: '{{ route("Buscar.Venta.Detalle") }}',
-            type: 'GET',
-            data: { id: ordenVenta },
-            success: function (response) {
-                console.log('Respuesta de la API:', response);  // Verifica la respuesta completa
-
-                if (response.Estatus && response.Estatus.length > 0) {
-                    var porcentaje = response.Porcentaje;
-                    var progressBar = $('#progressBar');
-                    
-                    // Resetear clases de color
-                    progressBar.removeClass('bg-danger bg-warning bg-primary bg-info bg-success');
-
-                    // Aplicar clase de color según el progreso
-                    if (porcentaje >= 0 && porcentaje < 20) {
-                        progressBar.addClass('bg-danger');  // Rojo
-                    } else if (porcentaje >= 20 && porcentaje < 40) {
-                        progressBar.addClass('bg-warning');  // Naranja
-                    } else if (porcentaje >= 40 && porcentaje < 70) {
-                        progressBar.addClass('bg-primary');  // Azul
-                    } else if (porcentaje >= 70 && porcentaje < 90) {
-                        progressBar.addClass('bg-info');  // Celeste
-                    } else {
-                        progressBar.addClass('bg-success');  // Verde
-                    }
-
-                    progressBar.css('width', porcentaje + '%').text(porcentaje + '%');
-                    $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
-
-                    // Verificar si todas las órdenes están cerradas
-                    var todasCerradas = response.Estatus.every(est => est.Estado === 'Cerrada');
-                    var estadoDeVenta = todasCerradas ? 'Cerrada' : 'Abierta';
-                    console.log('Estado calculado:', estadoDeVenta);
-                    $('#exampleModal').modal('show');
-                    $('#Estatus1').removeClass('badge bg-success bg-danger bg-secondary').addClass('badge');
-                    
-                    var icono = '';
-                    if (estadoDeVenta === 'Abierta') {
-                        $('#Estatus1').removeClass('bg-danger bg-secondary').addClass('bg-success');
-                        icono = '<i class="fas fa-lock-open"></i>'; 
-                        $('#Estatus1').html(icono + ' Abierta');
-                        console.log('Estado: Abierta, Clases: bg-success');
-                    } else {
-                        $('#Estatus1').removeClass('bg-success bg-secondary').addClass('bg-danger');
-                        icono = '<i class="fas fa-lock"></i>'; 
-                        $('#Estatus1').html(icono + ' Cerrada');
-                        console.log('Estado: Cerrada, Clases: bg-danger');
-                    }
-                } else {
-                    console.log('No se encontró el estado de la venta');
-                    $('.progress-bar-stages .stage').addClass('no-data');
-                    $('#progressBar').css('width', '0%').text('0%');
-                    $('#ordenVentaNumero').removeClass('text-muted').addClass('text-info').text(ordenVenta);
-                }
-            },
-            error: function () {
-                console.log('Error al obtener los datos de la venta');
-            }
-        });
-       
-        const endpoints = [
-            { tipo: 'Cortes', id: 'corte' },
-            { tipo: 'Suministros', id: 'suministro' },
-            { tipo: 'Transicion', id: 'transicion' },
-            { tipo: 'Preparado', id: 'preparado' },
-            { tipo: 'Ribonizado', id: 'ribonizado' },
-            { tipo: 'Ensamble', id: 'ensamble' },
-            { tipo: 'CorteF', id: 'cortef' },
-            { tipo: 'Pulido', id: 'pulido' },
-            { tipo: 'Armado', id: 'armado' },
-            { tipo: 'Inspeccion', id: 'inspeccion' },
-            { tipo: 'Polaridad', id: 'polaridad' },
-            { tipo: 'Crimpado', id: 'crimpado' },
-            { tipo: 'Medicion', id: 'medicion' },
-            { tipo: 'Visualizacion', id: 'visualizacion' },
-            { tipo: 'Montaje', id: 'montaje' },
-            { tipo: 'Empaque', id: 'empaque' },
-        ];
-
-       
-        if (typeof ordenVenta === "undefined" || ordenVenta === null) {
-            console.error("Error: ordenVenta no está definida.");
-        } else {
-            // Solo una llamada AJAX
-            $.ajax({
-                url: '{{ route("Buscar.Venta.Detalle") }}',
-                //url: 'route("graficador")), 
-                type: 'GET',
-                data: { id: ordenVenta }, // Solo pasamos el ID
-                success: function(response) {
-                    // Verificamos si 'data' está presente en la respuesta
-                    if (!response.data) {
-                        console.error("Error: No se encontraron datos en la respuesta.");
-                        return;
-                    }
-
-                    endpoints.forEach(endpoint => {
-                        const datos = response.data[endpoint.tipo]; // Ahora accedemos correctamente
-                        if (datos && typeof datos.Progreso !== "undefined") {
-                            const progreso = Math.min(datos.Progreso, 100);
-                            drawGauge(endpoint.id, progreso, '');
-                        } else {
-                            drawGauge(endpoint.id, 0, 'Sin Datos');
-                        }
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error al obtener los datos:", error);
-                    // Si falla todo, pinta todos los gauges con error
-                    endpoints.forEach(endpoint => {
-                        drawGauge(endpoint.id, 0, 'Error');
-                    });
-                }
-            });
-
-        }
-
-    });*/
-    // Cargar datos de la tabla de orden de fabricación
-    /*$('#Btn-BuscarOrden').on('click', function () {
-        var NumeroOrden = $('#NumeroOrden').val().trim();
-        if (NumeroOrden === '') {
-            return;  
-        }
-        var radioButton1 = document.getElementById("TipoOrden1");
-        if (radioButton1.checked) {
-            //cargarDatosVenta(search);
-        }else{
-            
-            SeleccionarNumOrden(NumeroOrden)
-        }
-    });*/
     //cargar los datos de fabricacion
-    function cargarDatosFabricacion(search) {
-        $('#tablaVenta').hide();
-        var tablaFabricacion = $('#tablaFabricacion');
-        tablaFabricacion.fadeIn(1000);
-            $.ajax({
-                url: '{{ route("Buscar.Fabricacion") }}', 
-                method: 'GET',
-                data: { search: search },
-                success: function (data) {
-                    var tbody = $('#tabla-resultadosFabricacion');
-                    tbody.empty();
-
-                    if (data.length > 0) {
-                        data.forEach(function (item) {
-                            var row = `
-                                <tr>
-                                    <td class="text-center align-middle">
-                                        <a href="#" class="btn btn-info btn-sm ver-fabricacion"
-                                        data-id="${item.id}"
-                                        data-ordenfabricacion="${item.OrdenFabricacion}"
-                                        data-descripcion="${item.Descripcion}"
-                                        data-cantidadtotal="${item.CantidadTotal}"
-                                        style="border-radius: 3px; padding: 4px 8px; font-size: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); transition: background-color 0.3s, transform 0.2s;">
-                                            <i class="bi bi-eye uil-comment-info"></i> Detalles
-                                        </a>
-                                    </td>
-                                </tr>`;
-                            tbody.append(row);
-                        });
-
-                        tablaFabricacion.show(); // Mostrar la tabla si hay resultados
-                    } else {
-                        tbody.append('<tr><td colspan="5" class="text-center">No se encontraron resultados</td></tr>');
-                        tablaFabricacion.show(); // Mostrar la tabla aunque esté vacía con el mensaje
-                    }
-                },
-                error: function () {
-                    alert('Error al cargar los datos de la Orden de Fabricación.');
-                }
-            });
-    }
-    /*function formatTiempo(totalSegundos) {
-        // Asegurarse de que totalSegundos sea un número entero
-        totalSegundos = parseInt(totalSegundos);
-
-        // Calcular horas, minutos y segundos
-        const horas = Math.floor(totalSegundos / 3600);
-        totalSegundos %= 3600;
-        const minutos = Math.floor(totalSegundos / 60);
-        const segundos = totalSegundos % 60;
-
-        // Crear una cadena con el formato adecuado
-        let tiempoFormateado = "";
-
-        // Si hay horas, las añadimos al resultado
-        if (horas > 0) {
-            tiempoFormateado += `${horas} hora${horas > 1 ? 's' : ''}`;
-        }
-
-        // Si hay minutos, las añadimos
-        if (minutos > 0) {
-            if (tiempoFormateado !== "") tiempoFormateado += " ";
-            tiempoFormateado += `${minutos} minuto${minutos > 1 ? 's' : ''}`;
-        }
-
-        // Siempre añadimos los segundos si son mayores a 0
-        if (segundos > 0 || tiempoFormateado === "") {
-            if (tiempoFormateado !== "") tiempoFormateado += " ";
-            tiempoFormateado += `${segundos} segundo${segundos > 1 ? 's' : ''}`;
-        }
-
-        return tiempoFormateado;
-    }*/
-    //Cargar Ventas
-    function cargarDatosVenta(search) {
-        $('#tablaFabricacion').hide(100);
-        $('#tablaVenta').fadeIn(1000);
-        $.ajax({
-            url: '{{ route("Buscar.Venta") }}',
-            method: 'GET',
-            data: { search: search },
-            success: function (data) {
-                var tbody = $('#tabla-resultadosVenta');
-                tbody.empty();
-
-                if (data.length > 0) {
-                    data.forEach(function (item) {
-                        //console.log(item);
-                        var row = `
-                            <tr>
-                                <td >${item.OrdenVenta}</td>
-                                <td>${item.NombreCliente}</td>
-                                <td class="text-center align-middle">
-                                    <a href="#" class="btn btn-info btn-sm ver-detalles" 
-                                    data-id="${item.id}"
-                                    data-ordenventa="${item.OrdenVenta}"
-                                    data-nombrecliente="${item.NombreCliente}"
-                                    style="border-radius: 3px; padding: 4px 8px; font-size: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); transition: background-color 0.3s, transform 0.2s;">
-                                        <i class="bi bi-eye uil-comment-info"></i> Detalles
-                                    </a>
-                                </td>
-                            </tr>`;
-                            
-                        tbody.append(row);
-                    });
-                } else {
-                    tbody.append('<tr><td colspan="3" class="text-center">No se encontraron resultados</td></tr>');
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                alert('Error al cargar los datos de la Orden de Venta. Estado: ' + textStatus + ', Error: ' + errorThrown);
-            }
-        });
-    }
-    //funcion para cargar los canvases general para Or-V Y Or-F
-    /*function drawGauge(canvasId, value, label) {
-        const canvas = document.getElementById(canvasId);
-        canvas.style.webkitTapHighlightColor = 'rgba(0, 0, 0, 0)'; // Desactivar el resaltado táctil
-
-        const ctx = canvas.getContext('2d');
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const radius = 100;
-        const startAngle = Math.PI;
-        const endAngle = 2 * Math.PI;
-
-        // Variables para ajustar manualmente las posiciones de los números
-        const offsetX = 0; // Desplazamiento horizontal de los números (0 = centrado)
-        const offsetY = 10; // Desplazamiento vertical de los números (ajústalo según necesites)
-
-        // Limpiar el lienzo
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Dibujar el arco de fondo con borde más delgado
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-        ctx.lineWidth = 20;  // Ancho de línea ajustado para mejor balance
-        ctx.strokeStyle = '#e0e0e0';  // Gris suave para el fondo
-        ctx.lineCap = 'butt';
-        ctx.stroke();
-
-        // Determinar el color del arco según el valor
-        let strokeColor;
-        if (value <= 20) strokeColor = '#e74c3c'; // Rojo
-        else if (value <= 50) strokeColor = '#f39c12'; // Naranja
-        else if (value <= 90) strokeColor = '#f1c40f'; // Amarillo
-        else strokeColor = '#12c72a'; // Verde
-
-        // Ajuste para hacer el principio y final del arco un poco cuadrado
-        const valueAngle = startAngle + (value / 100) * (endAngle - startAngle);
-
-        // Dibujar el arco del valor con color dinámico
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, startAngle, valueAngle);
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = 40; // Ancho del arco ajustado para mejor visibilidad
-        ctx.lineCap = 'butt'; // Ajustar el borde a cuadrado en el inicio y final
-        ctx.stroke();
-
-        // Determinar el color del texto del valor
-        let valueTextColor = strokeColor; // Usar el mismo color del arco
-        ctx.font = '30px Arial';  // Fuente más grande para el valor
-        ctx.fillStyle = valueTextColor;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle'; // Asegura que el texto esté alineado verticalmente en el medio
-
-        // Ajustar la posición vertical del texto para alinearlo con el arco
-        // Aquí, `centerY` ajustado verticalmente para que esté alineado con el arco
-        ctx.fillText(`${value}%`, centerX, centerY);
-
-        // Etiqueta debajo del valor
-        ctx.font = '18px Arial';
-        ctx.fillStyle = '#17a2b8';  // Color suave para la etiqueta
-        ctx.fillText(label, centerX, centerY + 40);  // Espaciado ajustado
-
-        // Dibujar las marcas de 0 y 100 fuera del arco, ajustable manualmente
-        ctx.font = '16px Arial';
-        ctx.fillStyle = '#000000';  // Color para los números de la escala
-
-        // Dibujar el "0" justo debajo del inicio del arco
-        ctx.fillText('0', centerX - radius, centerY+ 20);
-
-        // Dibujar el "100" en el final del arco
-        ctx.fillText('100', centerX + radius, centerY + 20); // Ajusta la posición vertical
-        //la posición
-    }*/
     let currentStageOpen = null; // <- para rastrear la etapa activa
-
-    $(document).ready(function () {
-    /*$('.stage').on('click', function () {
-        const stageId = $(this).attr('id');
-        const ordenVenta = $(this).data('ordenventa');
-        const progressWrapper = $('#progress-wrapper-container');
-
-        // Si el mismo stage se clickea otra vez, lo cerramos
-        if (currentStageOpen === stageId) {
-            currentStageOpen = null;
-            progressWrapper.slideUp().empty(); // Oculta y limpia
-            $('.stage').removeClass('selected-stage');
-            return; // Detener ejecución
-        }
-
-        currentStageOpen = stageId; // Guardamos la nueva etapa abierta
-        $('.stage').removeClass('selected-stage');
-        $(this).addClass('selected-stage');
-
-        progressWrapper.slideDown(); // Mostrar el contenedor
-        loadProgressData(ordenVenta, stageId);
-    });*/
-    });
-    /*function loadProgressData(ordenVenta, stageId) {
-        console.log('Enviando datos al controlador:', ordenVenta, stageId);
-
-        $.ajax({
-            url: '{{ route("graficarOR.OF") }}',
-            method: 'GET',
-            data: {
-                id: ordenVenta,
-                stage: stageId,
-                _token: $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (response) {
-                const data = response.flat(); // Aplanar si viene doble array
-                const progressWrapper = $('#progress-wrapper-container');
-                progressWrapper.empty(); // Limpiar contenido anterior
-
-                data.forEach(function (item, index) {
-                    const progressPercentage = parseFloat(item.Progreso);
-                    const displayProgress = Math.min(progressPercentage, 100);
-                    let progressColor = 'red';
-                    if (displayProgress > 30) progressColor = 'orange';
-                    if (displayProgress > 50) progressColor = 'yellow';
-                    if (displayProgress > 90) progressColor = '#12c72a';
-
-                    const progressBar = $('<div>', { class: 'task-progress-bar' });
-                    const progressLabel = $('<div>', { class: 'task-label', text: 'Orden ' + item.OrdenesFabricacion });
-
-                    const progress = $('<div>', {
-                        class: 'task-progress',
-                        text: displayProgress + '%',
-                        css: {
-                            width: displayProgress + '%',
-                            backgroundColor: progressColor
-                        }
-                    });
-
-                    const progressText = $('<div>', {
-                        class: 'progress-text',
-                        text: displayProgress + '%'
-                    });
-
-                    progressBar.append(progressLabel, progress, progressText);
-                    progressWrapper.append(progressBar);
-
-                    // Retrabajo
-                    if (progressPercentage > 100) {
-                        const retrabajoPercentage = (progressPercentage - 100).toFixed(2);
-
-                        const retrabajoBar = $('<div>', { class: 'task-progress-bar retrabajo' });
-                        const retrabajoLabel = $('<div>', { class: 'task-label', text: 'Retrabajo ' + item.OrdenesFabricacion });
-
-                        const retrabajoProgress = $('<div>', {
-                            class: 'task-progress',
-                            text: retrabajoPercentage + '%',
-                            css: {
-                                width: retrabajoPercentage + '%',
-                                backgroundColor: 'blue'
-                            }
-                        });
-
-                        const retrabajoText = $('<div>', {
-                            class: 'progress-text',
-                            text: retrabajoPercentage + '%'
-                        });
-
-                        retrabajoBar.append(retrabajoLabel, retrabajoProgress, retrabajoText);
-                        progressWrapper.append(retrabajoBar);
-                    }
-                });
-            },
-            error: function (xhr, status, error) {
-                console.error('Error en la solicitud AJAX:', error);
-            }
-        });
-    }*/
-    // Cuando se haga clic en una fila para seleccionar la OrdenFabricacion
-    /*$(document).on('click', '.ver-fabricacion', function () {
- 
-        var ordenfabricacion = $(this).data('ordenfabricacion');  
-        console.log('Orden de fabricación seleccionada:', ordenfabricacion);  
-
-        
-        $('.VerMas').data('ordenfabricacion', ordenfabricacion);  
-        //  console.log('Valor asignado al botón VerMas:', $('.VerMas').data('ordenfabricacion')); 
-        // Si deseas que el texto del botón también cambie para indicar la orden seleccionada:
-       // $('.VerMas').text(` Orden ${ordenfabricacion} +`);
-    });*/
-    // Lógica cuando se hace clic en el botón VerMas
-    $(document).on('click', '.VerMas', function (e) {
-        var ordenfabricacion = $(this).data('ordenfabricacion');
-        console.log('Orden de fabricación en el botón VerMas:', ordenfabricacion);
-
-        if (!ordenfabricacion) {
-            alert("No se ha seleccionado ninguna Orden de Fabricación.");
-            return;
-        }
-
-        let content = $("#collapseContent");
-        let container = $("#estacionesContainer");
-        let icon = $(this).find('.toggle-icon');
-
-        let isOpen = content.hasClass("show");
-
-        $.ajax({
-                url: '{{ route("tiempo.orden") }}',
-                type: "GET",
-                data: { ordenfabricacion: ordenfabricacion },
-                dataType: "json",
-                success: function (response) {
-                    console.log('Datos recibidos:', response);
-                    container.html("");
-
-                    response.forEach(resultado => {
-                        let tiempoDuracion = "No registrado";
-                        
-                        if (resultado.Tiempoinicio && resultado.Tiempofin) {
-                            let inicio = new Date(resultado.Tiempoinicio);
-                            let fin = new Date(resultado.Tiempofin);
-                            let diferencia = fin - inicio; // Diferencia en milisegundos
-
-                            let dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
-                            let horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                            let minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
-
-                            let partes = [];
-                            if (dias > 0) partes.push(`${dias} día${dias > 1 ? 's' : ''}`);
-                            if (horas > 0) partes.push(`${horas} hora${horas > 1 ? 's' : ''}`);
-                            if (minutos > 0) partes.push(`${minutos} minuto${minutos > 1 ? 's' : ''}`);
-
-                            tiempoDuracion = partes.join(", ");
-                        }
-
-                        let card = `
-                            <div class="card estacion-card">
-                                <div class="card-body">
-                                    <h5 class="card-title">${resultado.fase}</h5>
-                                    <p class="card-text">
-                                        <strong>Duración:</strong> <span class="badge ${tiempoDuracion !== "No registrado" ? 'badge-success' : 'badge-warning'}">${tiempoDuracion}</span><br>
-                                    </p>
-                                </div>
-                            </div>`;
-                        container.append(card);
-                    });
-
-                    if (isOpen) {
-                        content.removeClass("show").slideUp();
-                        icon.text('+');
-                    } else {
-                        content.addClass("show").slideDown();
-                        icon.text('−');
-                    }
-                },
-                error: function () {
-                    alert("Error al cargar los tiempos de las estaciones.");
-                }
-            });
-    });
     function cambiarEstatus(estado) {
         const estatusElement = document.getElementById('Estatus');
   
@@ -1022,248 +529,6 @@
     }
 </script>
 <script>
-    //Nuevos Metodos
-    /*$(document).on('click', '.ver-fabricacion', function (e) {
-        var ordenfabricacion = $('#NumeroOrden').val();
-        var Bloque0porciento = $('#Bloque0porciento'); 
-        var TiempoDuracion = $('#TiempoDuracion');
-        var Produccion = $('#Produccion');
-        var TiempoTotal = $('#TiempoTotal');
-        var Muerto = $('#Muerto')
-        var plemasCanvases = $('#plemasCanvases');
-        var TiempoPromedio = $('#TiempoPromedio');
-        plemasCanvases.html('');
-        TiempoTotal.html('Tiempo Total')
-        Produccion.html('Tiempo Total');
-        Muerto.html('Tiempo Total');
-        CadenaTiempo="Aún no ha comenzado el proceso";
-        $.ajax({
-            url: '{{ route("Detalles.Fabricacion") }}',
-            type: 'GET',
-            data: { id: ordenfabricacion },
-            success: function (response) {
-                var progressBar = $('#plemasProgressBar');
-                if (response.Estatus !== 'Error') {
-                    var progreso = response.progreso;
-                    if(progreso==0){
-                        Bloque0porciento.show();
-                    }else{
-                        Bloque0porciento.hide();
-                    }
-                    if(response.TiempoProductivo != 0){
-                        Produccion.html('Tiempo total<br>'+response.TiempoProductivo);
-                    }
-                    if(response.TiempoTotal != 0){
-                        TiempoTotal.html('Tiempo total<br>'+response.TiempoTotal);
-                    }
-                    if(response.TiempoMuerto != 0){
-                        Muerto.html('Tiempo total<br>'+response.TiempoMuerto);
-                    }
-                    if(!response.TiempoDuracion==0){
-                        CadenaTiempo="";
-                        if(response.TiempoDuracion.y!=0){CadenaTiempo+=response.TiempoDuracion.y+" Años "}
-                        if(response.TiempoDuracion.m!=0){CadenaTiempo+=response.TiempoDuracion.m+" Meses "}
-                        if(response.TiempoDuracion.d!=0){CadenaTiempo+=response.TiempoDuracion.d+" Días "}
-                        if(response.TiempoDuracion.h!=0){CadenaTiempo+=response.TiempoDuracion.h+" Horas "}
-                        if(response.TiempoDuracion.i!=0){CadenaTiempo+=response.TiempoDuracion.i+" Minutos "}
-                        if(response.TiempoDuracion.s!=0){CadenaTiempo+=response.TiempoDuracion.s+" Segundos"}
-                    }else{
-                        CadenaTiempo="";
-                    }
-                    if(!response.TiempoPromedioSeg==""){
-                        TiempoPromedio.html(response.TiempoPromedioSeg);
-                    }else{
-                        TiempoPromedio.html("");
-                    }
-                    TiempoDuracion.html(CadenaTiempo);
-                    // Actualizar la barra de progreso con animación
-                    progressBar.css('width', progreso + '%').text(progreso + '%');
-                    progressBar.removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
-                    // Asignar color según el porcentaje
-                    if (progreso >= 0 && progreso < 20) {
-                        progressBar.addClass('bg-danger');  // Rojo
-                    } else if (progreso >= 20 && progreso < 40) {
-                        progressBar.addClass('bg-warning');  // Naranja
-                    } else if (progreso >= 40 && progreso < 70) {
-                        progressBar.addClass('bg-primary');  // Azul
-                    } else if (progreso >= 70 && progreso < 90) {
-                        progressBar.addClass('bg-info');  // Celeste
-                    } else {
-                        progressBar.addClass('bg-success');  // Verde
-                    }
-                    $('#ordenFabricacionNumero').removeClass('text-muted').addClass('text-info').text(ordenfabricacion);
-                    if (response.Estatus != "") {
-                        var estadoFabricacion = response.Estatus || 'Desconocido';
-                        var $estatusElem = $('#EstatusFabricacion');
-                        var icono = '';
-                        $estatusElem.removeClass('bg-success bg-danger bg-secondary').addClass('badge');
-                        if (estadoFabricacion === 'Abierta') {
-                            $estatusElem.removeClass('bg-danger bg-secondary').addClass('bg-success');
-                            icono = '<i class="fas fa-lock-open"></i>';  // Ícono de "Abierta"
-                            $estatusElem.html(icono + ' Abierta');
-                        } else if (estadoFabricacion === 'Cerrada') {
-                            $estatusElem.removeClass('bg-success bg-secondary').addClass('bg-danger');
-                            icono = '<i class="fas fa-lock"></i>';  // Ícono de "Cerrada"
-                            $estatusElem.html(icono + ' Cerrada');
-                            console.log('Estado: Cerrada, Clases: bg-danger');
-                        } else {
-                            $estatusElem.removeClass('bg-success bg-danger').addClass('bg-secondary');
-                            icono = '<i class="fas fa-question-circle"></i>';  // Ícono de "Desconocido"
-                            $estatusElem.html(icono + ' Estado desconocido');
-                        }
-                    }
-                    EstacionesGraficas ='';
-                    var ArrayPorcentajeGrafica = [];
-                    var ArrayNombrePorcentajeGrafica = [];
-                    if((response.Estaciones).length!=0){
-                        (response.Estaciones).forEach(area => {
-                            ColorProgress="";
-                            if(area.PorcentajeActual<25){
-                                ColorProgress = ' #D32F2F ';
-                            }
-                            if(area.PorcentajeActual>=25 && area.PorcentajeActual<50){
-                                ColorProgress = ' #FF7043 '; 
-                            }
-                            if(area.PorcentajeActual>=50 && area.PorcentajeActual<75){
-                                ColorProgress = ' #FFEB3B ';
-                            }
-                            if(area.PorcentajeActual>=75 && area.PorcentajeActual<=100){
-                                ColorProgress = ' #38f41a ';
-                            }
-                            if(area.AP != 1){
-                                EstacionesGraficas+='<div class="col-12 col-sm-3 col-md-4 my-2 Estacion_Hover">'+
-                                                        '<div class="card rounded border-0 p-2" style="box-shadow: 3px 3px 3px 2px rgba(0.1, 0.1, 0.1, 0.2);">'+
-                                                            '<h5 class="text-center">'+area.NombreArea+'</h5>'
-                                                            +'<div class="progress-container">'+
-                                                                '<div class="progress-circle" style="background: conic-gradient('+ColorProgress+' 0% '+area.PorcentajeActual+'%, #e0e0e0 '+area.PorcentajeActual+'% 100%);">'+
-                                                                    '<div class="progress-Porcentaje"><h5>'+area.PorcentajeActual+'%</h5></div>'+   
-                                                                '</div>'+
-                                                            '</div>';
-                                if(response.RequiereCorte == 0 && area.NombreArea=='Corte'){
-                                    EstacionesGraficas+='<span class="badge bg-warning">No requiere Corte</span>';
-                                }
-                                EstacionesGraficas+='<small class="float-start"><span class="float-start">Piezas Normales:'+area.Normales+'</span><span class="float-end"> Piezas Retrabajo:'+area.Retrabajo+'</span></small><h6 class="text-center mt-2">Tiempos</h6><small>Duración: '+area.TiempoOrdenes+'</small><small>Productivo: '+area.TiempoProductivoEstacion+'</small>'+
-                                                        '</div>'+
-                                                    '</div>';
-                                ArrayPorcentajeGrafica.push({ value: area.TiempoEstacionSegundos, name: area.NombreArea});
-                                ArrayNombrePorcentajeGrafica.push(area.NombreArea);
-                            }
-                        });
-                    }else{
-                        EstacionesGraficas = '<h5 class="text-center">Aún no se asigna una Línea</h5>';
-                    }
-                    plemasCanvases.html(EstacionesGraficas);
-                } else {
-                    TiempoDuracion.html("");
-                    error('Error de la Orden de Fabricación',response.Message);
-                    Bloque0porciento.show();
-                    progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
-                    $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
-                    $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
-                }
-                // Mostrar el modal
-                $('#example2Modal').modal('show');
-                //if((response.Estaciones).length!=0){
-                    var chart = echarts.init(document.getElementById('GraficaPorcentajeTiempos'));
-                    var option = {
-                        title: {
-                            text: 'Porcentaje de Tiempo por Estación',
-                            subtext: '% Tiempo en segundos',
-                            left: 'center'
-                        },
-                        tooltip: {
-                            trigger: 'item',
-                            formatter: function (params) {
-                                var totalSeconds = params.value;
-                                var hours = Math.floor(totalSeconds / 3600);
-                                var minutes = Math.floor((totalSeconds % 3600) / 60);
-                                var seconds = totalSeconds % 60;
-                                var timeParts = [];
-                                if (hours > 0) {
-                                    timeParts.push(`${hours}h`);
-                                    timeParts.push(`${minutes}m`);
-                                    timeParts.push(`${seconds}s`);
-                                }
-                                else if (minutes > 0){
-                                    timeParts.push(`${minutes}m`);
-                                    timeParts.push(`${seconds}s`);
-                                }
-                                else if (seconds > 0 || timeParts.length === 0) timeParts.push(`${seconds}s`);
-                                return `${params.name}: (${timeParts.join(' ')})`;
-                            }
-                            /*formatter: '{b}: ({c} segundos)'*/
-                        /*},
-                        legend: {
-                            type: 'scroll',
-                            orient: 'vertical',
-                            left: '5%',
-                            top: 'middle',
-                            itemGap: 5,            // Más distancia entre entradas
-                            //bottom: 20,
-                            data: ArrayNombrePorcentajeGrafica
-                        },
-                        series: [
-                            {
-                            name: 'Tiempo en horas',
-                            type: 'pie',
-                            radius: ['25%', '40%'], 
-                            center: ['50%', '50%'],
-                            //avoidLabelOverlap: true,  // Previene superposición de etiquetas
-                            itemStyle: {
-                                borderWidth: 1,         // Línea entre segmentos para separación visual
-                                borderColor: '#fff'
-                            },
-                            label: {
-                                //position: 'outside',    // Etiquetas afuera para mayor espacio
-                                //alignTo: 'labelLine',
-                                formatter: '{b}: {d}%', 
-                                //distance: 1            // Distancia desde el gráfico
-                            },
-                            labelLine: {
-                                smooth: false,
-                                length: 20              // Longitud de línea guía
-                            },
-                            data: ArrayPorcentajeGrafica,
-                                emphasis: {
-                                    itemStyle: {
-                                    shadowBlur: 10,
-                                    shadowOffsetX: 0,
-                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
-                                    }
-                                }
-                            }
-                        ]
-                    };
-                    if((response.Estaciones).length==0){
-                        chart.setOption(option);
-                        $('#ContainerGraficaPorcentajeTiempos').hide();
-                    }else{
-                        $('#ContainerGraficaPorcentajeTiempos').show();
-                    }
-                //}
-
-    // Establecer la opción y renderizar el gráfico
-    chart.setOption(option);
-    $('#example2Modal').on('shown.bs.modal', function () {
-    chart.resize();
-    });
-    // Hacer que el gráfico sea responsivo al cambiar el tamaño de la ventana
-    window.addEventListener('resize', function() {
-      chart.resize();
-    });
-            },
-            error: function () {
-                var progressBar = $('#plemasProgressBar');
-                TiempoDuracion.html("");
-                progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
-                $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
-                $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
-                errorBD();
-            }
-        });  
-    });*/
-</script>
-<script>
     //Scripts utiles
     $('#Btn-BuscarOrden').on('click', function () {
         var NumeroOrden = $('#NumeroOrden').val().trim();
@@ -1272,9 +537,7 @@
         }
         $('#NumeroOrden').val(NumeroOrden).trigger('input');
     });
-
     AjaxOrden = null;
-
     $('#TipoOrden1').on('change', function() {
         $('#ListaBusquedas').html('');
         $('#ListaBusquedas').hide();
@@ -1325,10 +588,83 @@
         $('#NumeroOrden').val(NumeroOrden);
         $('#ListaBusquedas').hide();
         $('.ver-fabricacion').trigger('click');
+        $('#DetallesOrdenVenta').hide();
+        $('#DetallesOrdenFabricacion').hide();
         OrdenVenta = $('#TipoOrden1').is(':checked');
         OrdenFabricacion = $('#TipoOrden2').is(':checked');
         if(OrdenVenta == true){
-            alert("OV");
+            OVNumero = document.getElementById('OVNumero');
+            OVEstatus  = document.getElementById('OVEstatus');
+            OVNombreCliente = document.getElementById('OVNombreCliente');
+            OVBloque0porciento = document.getElementById('OVBloque0porciento');
+            OVBarrraProgreso = document.getElementById('OVBarrraProgreso');
+            OVNumero.innerHTML = NumeroOrden;
+            $.ajax({
+                url: '{{ route("Detalles.OrdenVenta") }}',
+                type: 'GET',
+                data: { id: NumeroOrden },
+                success: function (response) {
+                    if(response.Estatus != "error"){
+                        OVNombreCliente.innerHTML = response.Cliente;
+                        OVNumero.innerHTML = response.OV;
+                        if (response.OVEstatus != "") {
+                            var estadoFabricacion = response.OVEstatus || 'Desconocido';
+                            var $estatusElem = $('#OVEstatus');
+                            var icono = '';
+                            $estatusElem.removeClass('bg-success bg-danger bg-secondary').addClass('badge');
+                            if (estadoFabricacion === 'Abierta') {
+                                $estatusElem.removeClass('bg-danger bg-secondary').addClass('bg-success');
+                                icono = '<i class="fas fa-lock-open"></i>';  // Ícono de "Abierta"
+                                $estatusElem.html(icono + ' Abierta');
+                            } else if (estadoFabricacion === 'Cerrada') {
+                                $estatusElem.removeClass('bg-success bg-secondary').addClass('bg-danger');
+                                icono = '<i class="fas fa-lock"></i>';  // Ícono de "Cerrada"
+                                $estatusElem.html(icono + ' Cerrada');
+                                console.log('Estado: Cerrada, Clases: bg-danger');
+                            } else {
+                                $estatusElem.removeClass('bg-success bg-danger').addClass('bg-secondary');
+                                icono = '<i class="fas fa-question-circle"></i>';  // Ícono de "Desconocido"
+                                $estatusElem.html(icono + ' Estado desconocido');
+                            }
+                        }
+                        var progreso = response.progreso;
+                        if(progreso == 0){
+                            $('#OVBloque0porciento').show();
+                        }else{
+                            $('#OVBloque0porciento').hide();
+                        }
+                        var OVprogressBar = $('#OVBarrraProgreso');
+                        OVprogressBar.css('width', progreso + '%').text(progreso + '%');
+                        OVprogressBar.removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
+                        // Asignar color según el porcentaje
+                        if (progreso >= 0 && progreso < 20) {
+                            OVprogressBar.addClass('bg-danger');  // Rojo
+                        } else if (progreso >= 20 && progreso < 40) {
+                            OVprogressBar.addClass('bg-warning');  // Naranja
+                        } else if (progreso >= 40 && progreso < 70) {
+                            OVprogressBar.addClass('bg-primary');  // Azul
+                        } else if (progreso >= 70 && progreso < 90) {
+                            OVprogressBar.addClass('bg-info');  // Celeste
+                        } else {
+                            OVprogressBar.addClass('bg-success');  // Verde
+                        }
+                        $('#DetallesOrdenVenta').fadeIn();
+                    }else{
+                        error("Error Orden de Venta "+NumeroOrden, response.message);
+                    }
+                },
+                error: function () {
+                    OVNumero.innerHTML = "";
+                    OVEstatus.innerHTML = "";
+                    $('#OVBarrraProgreso').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
+                    /*var progressBar = $('#plemasProgressBar');
+                    TiempoDuracion.html("");
+                    progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
+                    $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
+                    $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');*/
+                    errorBD();
+                }
+            }); 
         }else{
             var ordenfabricacion = $('#NumeroOrden').val();
             var Bloque0porciento = $('#Bloque0porciento'); 
@@ -1338,6 +674,10 @@
             var Muerto = $('#Muerto')
             var plemasCanvases = $('#plemasCanvases');
             var TiempoPromedio = $('#TiempoPromedio');
+            var OrdenVenta = $('#OrdenVenta');
+            var NombreCliente = $('#NombreCliente');
+            OrdenVenta.html('');
+            NombreCliente.html('');
             plemasCanvases.html('');
             TiempoTotal.html('Tiempo Total')
             Produccion.html('Tiempo Total');
@@ -1387,6 +727,9 @@
                         }else{
                             TiempoPromedio.html("El dato se verá reflejado cuando la orden sea finalizada");
                         }
+                        //Orden Venta y Nombre Cliente
+                        OrdenVenta.html(response.OV);
+                        NombreCliente.html(response.Cliente);
                         TiempoDuracion.html(CadenaTiempo);
                         // Actualizar la barra de progreso con animación
                         progressBar.css('width', progreso + '%').text(progreso + '%');
@@ -1553,17 +896,15 @@
                         }else{
                             $('#ContainerGraficaPorcentajeTiempos').show();
                         }
-                    //}
-
-            // Establecer la opción y renderizar el gráfico
-            chart.setOption(option);
-            //$('#example2Modal').on('shown.bs.modal', function () {
-            chart.resize();
-            //});
-            // Hacer que el gráfico sea responsivo al cambiar el tamaño de la ventana
-            window.addEventListener('resize', function() {
-            chart.resize();
-            });//--}}
+                    // Establecer la opción y renderizar el gráfico
+                    chart.setOption(option);
+                    //$('#example2Modal').on('shown.bs.modal', function () {
+                    chart.resize();
+                    //});
+                    // Hacer que el gráfico sea responsivo al cambiar el tamaño de la ventana
+                    window.addEventListener('resize', function() {
+                    chart.resize();
+                    });//--}}
                 },
                 error: function () {
                     var progressBar = $('#plemasProgressBar');

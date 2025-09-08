@@ -27,14 +27,14 @@ use Carbon\Carbon as CarbonClass;
 class BusquedaController extends Controller
 {
     protected $AreaClasificacion;
-    protected $AreaArmado;
+    protected $AreaMontaje;
     protected $AreaPulido;
     protected $AreaEmpaque;
     protected $ObjBusqueda;
     public function __construct(){
         $this->AreaClasificacion=18;
         $this->AreaPulido=9;
-        $this->AreaArmado=16;
+        $this->AreaMontaje=16;
         $this->AreaEmpaque=17;
     }
     //vista
@@ -815,11 +815,13 @@ class BusquedaController extends Controller
         }
         return response()->json(['estaciones' => $result]);
     }
+
     //detalles OF
     public function DetallesOF(Request $request){
         $idFabricacion = $request->input('id');
         $OrdenFabricacion = $request->input('id');
         $OrdenFabricacion = Ordenfabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
+        $OrdenVenta = $OrdenFabricacion->OrdenVenta;
         $RequiereCorte = $OrdenFabricacion->Corte;//0 es igual a si, 1 es a no
         $PartidasOF = $OrdenFabricacion->PartidasOF->first();
         $Estaciones=[];
@@ -862,15 +864,15 @@ class BusquedaController extends Controller
             }
             $Progreso=0;
             $FechaUltima = "";
-            if (in_array($this->AreaArmado, $array)) {
+            if (in_array($this->AreaMontaje, $array)) {
                 if($OrdenFabricacion->Escaner == 1){
-                    $Progreso = $PartidasOF->Areas()->where('Areas_id',$this->AreaArmado)->where('TipoPartida','N')->get()->whereNotNull('pivot.Fechatermina')->SUM('pivot.Cantidad')
-                                - $PartidasOF->Areas()->where('Areas_id',$this->AreaArmado)->where('TipoPartida','R')->get()->whereNotNull('pivot.Fechatermina')->SUM('pivot.Cantidad');
+                    $Progreso = $PartidasOF->Areas()->where('Areas_id',$this->AreaMontaje)->where('TipoPartida','N')->get()->whereNotNull('pivot.Fechatermina')->SUM('pivot.Cantidad')
+                                - $PartidasOF->Areas()->where('Areas_id',$this->AreaMontaje)->where('TipoPartida','R')->get()->whereNotNull('pivot.Fechatermina')->SUM('pivot.Cantidad');
                 }else{
-                    $Progreso = $PartidasOF->Areas()->where('Areas_id',$this->AreaArmado)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad')
-                                -$PartidasOF->Areas()->where('Areas_id',$this->AreaArmado)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
+                    $Progreso = $PartidasOF->Areas()->where('Areas_id',$this->AreaMontaje)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad')
+                                -$PartidasOF->Areas()->where('Areas_id',$this->AreaMontaje)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
                 }
-                $FechaUltima = $PartidasOF->Areas()->whereNotNull('FechaTermina')->where('Areas_id',$this->AreaArmado)->orderBy('FechaTermina', 'desc')->first();
+                $FechaUltima = $PartidasOF->Areas()->whereNotNull('FechaTermina')->where('Areas_id',$this->AreaMontaje)->orderBy('FechaTermina', 'desc')->first();
             }else if(in_array($this->AreaEmpaque, $array)){
                 $Progreso = $PartidasOF->Areas()->where('Areas_id',$this->AreaEmpaque)->get()->SUM('pivot.Cantidad');
                 $FechaUltima = $PartidasOF->Areas()->whereNotNull('FechaTermina')->where('Areas_id',$this->AreaEmpaque)->orderBy('FechaTermina', 'desc')->first();
@@ -1212,7 +1214,7 @@ class BusquedaController extends Controller
                         }
                         $AreaDatos=Areas::find($AreaPosible);
                         $Estaciones[$index] = ['PorcentajeActual' => $PorcentajeActual, 'Retrabajo' => $Retrabajo, 'Normales' => $Normales, 'TiempoOrdenes' => $TiempoOrdenes, 'AP' => $AP
-                                            ,'NombreArea'=>$AreaDatos->nombre,"TiempoProductivoEstacion"=>$TiempoProductivoEstacion, "TiempoEstacionSegundos"=>$TiempoEstacionSegundos ];
+                                            ,'NombreArea'=>$AreaDatos->nombre,"TiempoProductivoEstacion"=>$TiempoProductivoEstacion, "TiempoEstacionSegundos"=>$TiempoEstacionSegundos];
                         $TiempoTotal+=$TiempoProductivoEstacions;
                         $TiempoProductivo+=$TiempoProductivoEstacions;
                     }
@@ -1228,6 +1230,8 @@ class BusquedaController extends Controller
             $TiempoTotal = $this->ConversionSegDias($TiempoTotal);
             $TiempoProductivo = $this->ConversionSegDias($TiempoProductivo);
         }
+        $OV = ($OrdenVenta->OrdenVenta != 00000) ? $OrdenVenta->OrdenVenta: "N/A";
+        $Cliente = ($OrdenVenta->OrdenVenta != 00000) ? $OrdenVenta->NombreCliente: "N/A";
         return response()->json([
             'progreso' => round($Progreso,2),
             "Estatus" => $estatus,
@@ -1239,6 +1243,60 @@ class BusquedaController extends Controller
             "Estaciones"=>$Estaciones,
             "TiempoPromedioSeg"=>$TiempoPromedioSeg,
             "RequiereCorte"=>$RequiereCorte,
+            'OV'=>$OV,
+            'Cliente'=>$Cliente,
+            'OrdenFabricacion' =>$idFabricacion
+        ]);
+    }
+    //Detalles OV
+    public function DetallesOV(Request $request){
+        $OV = $request->id;
+        $OVdatos = OrdenVenta::where('OrdenVenta',$OV)->first();
+        if($OVdatos == "" OR $OV == '00000'){
+            return response()->json([
+            'Estatus' => "error",
+            "message" => "La Orden de Venta no existe!"
+            ]);
+        }
+        //Ordenes Estatus Porcentaje de Orden de Fabricacion
+        $EstatusOV=$OVdatos->ordenesFabricacions->where('Cerrada',1)->first();
+        if($EstatusOV == ""){
+            $EstatusOV = "Cerrada";
+        }else{
+            $EstatusOV = "Abierta";
+        }
+        $OrdenesFabricacionDatos = $OVdatos->ordenesFabricacions;
+        $PorcentajeOrdenVenta = 0;
+        $NumeroOF = 1;
+        foreach($OrdenesFabricacionDatos as $key => $OFD){
+            if($key != 0){
+                $NumeroOF += 1;
+            }
+            $request = new Request(['id' => $OFD->OrdenFabricacion]);
+            $DetallesOrdenFabricacion = $this->DetallesOF($request);
+            $data = $DetallesOrdenFabricacion->getData(true);
+            $PorcentajeOrdenVenta += $data['progreso']; 
+        }
+        $PorcentajeOrdenVenta = $PorcentajeOrdenVenta/$NumeroOF;
+        //return $OrdenFabricacion = $OVdatos->OrdenFabricacion;
+        return response()->json([
+            'Estatus' => "success",            
+            'Cliente'=>$OVdatos->NombreCliente,
+            'OV'=>$OVdatos->OrdenVenta,
+            'OVEstatus'=>$EstatusOV,
+            'progreso' => $PorcentajeOrdenVenta,
+            /*'progreso' => round($Progreso,2),
+            "Estatus" => $estatus,
+            "Tiempototal" => $TiempoTotal,
+            "TiempoDuracion" => $TiempoDuracion,
+            "TiempoProductivo" => $TiempoProductivo,
+            "TiempoTotal" => $TiempoTotal,
+            "TiempoMuerto"=> $TiempoMuerto,
+            "Estaciones"=>$Estaciones,
+            "TiempoPromedioSeg"=>$TiempoPromedioSeg,
+            "RequiereCorte"=>$RequiereCorte,
+            'OV'=>$OV,
+            'Cliente'=>$Cliente*/
         ]);
     }
     function Fechas($TiempoTotalEstacion){

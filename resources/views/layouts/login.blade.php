@@ -231,18 +231,20 @@
     $(document).ready(function () {
         document.getElementById('email').focus();
         $('#formAdministrativo').on('submit', function (event) {
+            event.preventDefault();
+            refreshCsrfToken("Admin");
             $('#login-button').prop('disabled', true).text('Enviando...');
             setTimeout(() => {
                 alert("El envío del formulario está tardando demasiado. Intenta nuevamente.");
-            }, 60000);
-            //setTimeout(RecargarLogin, 15000);
+            }, 120000);
         });
         $('#formOperador').on('submit', function (event) {
+            event.preventDefault();
+            refreshCsrfToken("Oper");
             $('#login-operador').prop('disabled', true).text('Enviando...');
             setTimeout(() => {
                 alert("El envío del formulario está tardando demasiado. Intenta nuevamente.");
-            }, 60000);
-            //setTimeout(RecargarLogin, 15000);
+            }, 120000);
         });
         //Actualiza la pagina al abrir
         window.onpageshow = function(event) {
@@ -254,5 +256,19 @@
             document.getElementById('toggleOperadores').click();
         @endif
     });
+    function refreshCsrfToken(Formulario) {
+        $.get("{{ route('UpdateToken') }}", function (data) {
+            const newToken = data.token;
+            // 1. Actualizar <meta name="csrf-token">
+            $('meta[name="csrf-token"]').attr('content', newToken);
+            // 2. Actualizar todos los formularios con el nuevo token
+            $('input[name="_token"]').val(newToken);
+            if(Formulario == "Oper"){
+                $('#formOperador').off('submit').submit();
+            }else{
+                $('#formAdministrativo').off('submit').submit();
+            }
+        });
+    }
 </script>
 </html>

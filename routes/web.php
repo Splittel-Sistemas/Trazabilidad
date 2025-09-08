@@ -26,6 +26,13 @@ Route::get('/logout', [loginController::class, 'logout'])->name('logout')->middl
 Route::post('/register', [loginController::class, 'register'])->name('register')->middleware('auth');
 Route::get('/lineas/progreso', [HomeController::class, 'lineas'])->name('lineas.indicador');
 Route::get('/UpdateSession', [HomeController::class, 'UpdateSession'])->name('UpdateSession');
+
+//Retorna un nuevo token
+Route::get('/refresh-csrf', function () {
+    return response()->json([
+        'token' => csrf_token(),
+    ]);
+})->name('UpdateToken');
 //Ruta Home
 Route::get('/', [HomeController::class, 'index'])->name('Home')->middleware('auth');
 Route::post('/Dashboard/Principal', [HomeController::class, 'DashboardPrincipal'])->name('DashboardPrincipal')->middleware('auth');
@@ -177,6 +184,7 @@ Route::get('/tablafabricacion',[BusquedaController::class, 'obtenerOrdenesFabric
 Route::get('/detallesventa',[BusquedaController::class, 'detallesventa'])->name('Buscar.Venta.Detalle')->middleware('auth');
 Route::get('/graficador', [BusquedaController::class, 'Graficador'])-> name('graficador')->middleware('auth');
 Route::get('/detallesOF',[BusquedaController::class, 'DetallesOF'])->name('Detalles.Fabricacion')->middleware('auth');
+Route::get('/detallesOV',[BusquedaController::class, 'DetallesOV'])->name('Detalles.OrdenVenta')->middleware('auth');
 Route::get('/graficadorOF',[BusquedaController::class,'GraficadorFabricacion'])->name('graficadoOF')->middleware('auth');
 Route::get('/graficasOR/OF',[BusquedaController::class,'GraficarOROF'])->name('graficarOR.OF')->middleware('auth');
 Route::get('/tiempos/fabricacion',[BusquedaController::class, 'tiemposOrden'])->name('tiempo.orden')->middleware('auth');
