@@ -342,75 +342,111 @@ class EtiquetasController extends Controller
             $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
             $pdf->SetPrintHeader(false);
             $OrdenFabricacion5P = substr($OrdenFabricacion->OrdenFabricacion,0,6);
-            // Contador para saber cuántas etiquetas se han colocado en la página
-            //$x = 0.25;//papelv en blanco x
-            //$y = 0.25;//papel en blanco y
+            $TotalPaginas = $PaginaFin;
             $PaginaFin = $PaginaFin/2;
+            $NumSerie = 1;
             for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
                 $Aumento = 0;
                 $Aumentox  = 0;
+                $pdf->SetFont('dejavusans', '', 6);
+                $pdf->AddPage('L', array(80, 27.5));
                 if($TipoEtiqBan == 2){
-                    $Aumento = 1.4;
-                    $Aumentox = 2; 
+                    $Aumento = 2;
+                    $Aumentox = 0;
                 }
-                $pdf->SetFont('dejavusans', '', 5);
-                $pdf->AddPage('L', array(125, 25));
-                // Estilo de línea punteada
-                $pdf->SetLineStyle(array(
-                    'width' => 0.2,
-                    'dash' => '1,1', // patrón punteado: 1 mm línea, 1 mm espacio
-                    'color' => array(0, 0, 0) // negro
-                ));
-                $anchoPagina = 37.5;
-                $altoPagina = 225;
-                $x = 37.5 + ($anchoPagina / 2);
-                $pdf->Line($x, 0, $x, $altoPagina);
-                $pdf->SetLineStyle(array(
-                    'width' => 0.2,
-                    'dash' => '1,1', // patrón punteado: 1 mm línea, 1 mm espacio
-                    'color' => array(0, 0, 0) // negro
-                ));
-                $anchoPagina = 37.5;
-                $altoPagina = 225;
-                $x = $anchoPagina / 2;
-                $pdf->Line($x, 0, $x, $altoPagina);
-                //END
                 //Codigo 
-                //1
-                $x = 0;
-                $y = 2.7+$Aumento;
+                //Primer Codigo
+                $x = 1;
+                $y = 3.5+$Aumento;
                 $cx = $x + 17.75 / 2;
                 $cy = $y + 4 / 2;
                 $pdf->StartTransform();
                 $pdf->Rotate(180, $cx, $cy);
                 $pdf->SetXY($x, $y); // posición X=3 mm, Y=0 mm
-                $pdf->Cell(17.5+$Aumentox, 4,$OrdenFabricacion5P."  ".str_pad(($i+1), 4, '0', STR_PAD_LEFT), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
+                $pdf->Cell(17.5+$Aumentox, 4,$OrdenFabricacion5P." ".str_pad(($NumSerie), 4, '0', STR_PAD_LEFT), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
                 $pdf->StopTransform();
 
-                //2
-                $x = 17.75;
-                $y = 16.5-$Aumento;
+                $x = 17;
+                $y = 20.5-$Aumento;
                 $pdf->SetXY($x, $y);
-                $pdf->Cell(19.5, 2, "  " . $OrdenFabricacion5P . "  " . str_pad(($i + 1), 4, '0', STR_PAD_LEFT), 0, 0, 'C');
+                $pdf->Cell(19.5, 2, "  " . $OrdenFabricacion5P . " " . str_pad(($NumSerie), 4, '0', STR_PAD_LEFT), 0, 0, 'C');
 
-                $x = 7;
-                $y = 11+$Aumento;
-                $cx = $x + 0 / 2;
-                $cy = $y + 2 / 2;
+                $x = 3;
+                $y = 9;
+                $cx = $x + 14/2;//$x + 8 / 2;
+                $cy = $y + 14/2;
                 $pdf->StartTransform();
-                $pdf->Rotate(90, $cx, $cy);   // rotar 180° sobre el centro del QR
-                $CodigoQR = 'https://optronics.com.mx/360/Inspeccion-Visual-1/'.$OrdenFabricacion->OrdenFabricacion.str_pad(($i + 1), 4, '0', STR_PAD_LEFT).".html";
-                $pdf->write2DBarcode($CodigoQR, 'QRCODE,H', 3, 7, 12.5, 12.5, null, 'N');
+                $pdf->Rotate(180, $cx, $cy);   // rotar 180° sobre el centro del QR
+                $CodigoQR = 'https://optronics.com.mx/360/Inspeccion-Visual-1/'.$OrdenFabricacion->OrdenFabricacion.str_pad(($NumSerie), 4, '0', STR_PAD_LEFT).".html";
+                $pdf->write2DBarcode($CodigoQR, 'QRCODE,H', $x, $y, 14, 14, null, 'N');
                 $pdf->StopTransform();
 
-                $x = 21.5;
-                $y = 7.5-$Aumento;
-                $cx = $x + 15.5 / 2;
-                $cy = $y + 10 / 2;
+                $x = 20;
+                $y = 4.5;
                 $pdf->StartTransform();
-                $pdf->Rotate(-90, $cx, $cy);   // rotar 180° sobre el centro del QR
-                $pdf->write2DBarcode($CodigoQR,'QRCODE,H',$x,$y,12.5,12.5,null,'N');
-                $pdf->StopTransform();
+                $pdf->write2DBarcode($CodigoQR,'QRCODE,H',$x,$y,14,14,null,'N');
+                //END
+                //Codigo 2
+                if($i+1 < $PaginaFin OR (($i+1) == $PaginaFin AND $TotalPaginas%2 == 0)){
+                    $x = 40.5;
+                    $y = 3.5+$Aumento;
+                    $cx = $x + 17.75 / 2;
+                    $cy = $y + 4 / 2;
+                    $pdf->StartTransform();
+                    $pdf->Rotate(180, $cx, $cy);
+                    $pdf->SetXY($x, $y); // posición X=3 mm, Y=0 mm
+                    $pdf->Cell(17.5+$Aumentox, 4,$OrdenFabricacion5P." ".str_pad(($NumSerie+1), 4, '0', STR_PAD_LEFT), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
+                    $pdf->StopTransform();
+
+                    $x = 57;
+                    $y = 20.5-$Aumento;
+                    $pdf->SetXY($x, $y);
+                    $pdf->Cell(19.5, 2, "  " . $OrdenFabricacion5P . " " . str_pad(($NumSerie+1), 4, '0', STR_PAD_LEFT), 0, 0, 'C');
+
+                    $x = 43;
+                    $y = 9;
+                    $cx = $x + 14/2;
+                    $cy = $y + 14/2;
+                    $pdf->StartTransform();
+                    $pdf->Rotate(180, $cx, $cy);   // rotar 180° sobre el centro del QR
+                    $CodigoQR = 'https://optronics.com.mx/360/Inspeccion-Visual-1/'.$OrdenFabricacion->OrdenFabricacion.str_pad(($NumSerie + 1), 4, '0', STR_PAD_LEFT).".html";
+                    $pdf->write2DBarcode($CodigoQR, 'QRCODE,H', $x, $y, 14, 14, null, 'N');
+                    $pdf->StopTransform();
+
+                    $x = 60;
+                    $y = 4.5;
+                    $pdf->StartTransform();
+                    $pdf->write2DBarcode($CodigoQR,'QRCODE,H',$x,$y,14,14,null,'N');
+                    if($TipoEtiqBan == 2){
+                        //Datos de SAP
+                        $NumeroEspecial = "";
+                        $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta);
+                        $NumeroRegistros = count($DatosSAP);
+                        if($NumeroRegistros==0){
+                            return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es especial para el cliente HUAWEI INTERNATIONAL.']);
+                        }else{
+                            if($DatosSAP[0]['SubCatNum']==""){
+                                return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es especial para el cliente HUAWEI INTERNATIONAL.']);
+                            }else{
+                                $NumeroEspecial =  $DatosSAP[0]['SubCatNum'];
+                            }
+                        }
+                        $pdf->SetFont('dejavusans', '', 6);
+                        $pdf->SetXY(59, 21);
+                        $pdf->Cell(20, 2,$NumeroEspecial, 0, 0, 'C');
+                        $x = 40;
+                        $y = 0.5+$Aumento;
+                        $cx = $x + 17 / 2;
+                        $cy = $y + 4 / 2;
+                        $pdf->StartTransform();
+                        $pdf->Rotate(180, $cx, $cy);
+                        $pdf->SetXY($x, $y);
+                        $pdf->Cell(17.5, 2,$NumeroEspecial, 0, 0, 'C');
+                        $pdf->StopTransform();
+                    }
+                }
+                $NumSerie += 2;
+                //END
                 if($TipoEtiqBan == 2){
                     //Datos de SAP
                     $NumeroEspecial = "";
@@ -418,19 +454,19 @@ class EtiquetasController extends Controller
                     $NumeroRegistros = count($DatosSAP);
                     if($NumeroRegistros==0){
                         return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es especial para el cliente HUAWEI INTERNATIONAL.']);
-                    }else{
+                        }else{
                         if($DatosSAP[0]['SubCatNum']==""){
                             return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es especial para el cliente HUAWEI INTERNATIONAL.']);
                         }else{
                             $NumeroEspecial =  $DatosSAP[0]['SubCatNum'];
                         }
                     }
-                    $pdf->SetFont('dejavusans', '', 5.5);
-                    $pdf->SetXY(18, 18.5-$Aumento);
-                    $pdf->Cell(19.5, 2,$NumeroEspecial, 0, 0, 'C');
-                    $x = 0;
-                    $y = 0+$Aumento;
-                    $cx = $x + 16.5 / 2;
+                    $pdf->SetFont('dejavusans', '', 6);
+                    $pdf->SetXY(19, 21);
+                    $pdf->Cell(20, 2,$NumeroEspecial, 0, 0, 'C');
+                    $x = 0.5;
+                    $y = 0.5+$Aumento;
+                    $cx = $x + 17 / 2;
                     $cy = $y + 4 / 2;
                     $pdf->StartTransform();
                     $pdf->Rotate(180, $cx, $cy);

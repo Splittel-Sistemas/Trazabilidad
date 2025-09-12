@@ -1267,6 +1267,7 @@ class BusquedaController extends Controller
         }
         $OrdenesFabricacionDatos = $OVdatos->ordenesFabricacions;
         $PorcentajeOrdenVenta = 0;
+        $AreasDatos = [];
         $NumeroOF = 1;
         foreach($OrdenesFabricacionDatos as $key => $OFD){
             if($key != 0){
@@ -1275,6 +1276,7 @@ class BusquedaController extends Controller
             $request = new Request(['id' => $OFD->OrdenFabricacion]);
             $DetallesOrdenFabricacion = $this->DetallesOF($request);
             $data = $DetallesOrdenFabricacion->getData(true);
+            $AreasDatos[] = [$data['OrdenFabricacion'],$data['progreso'],$data['Estaciones'],$OFD->Corte,$OFD->Urgencia]; 
             $PorcentajeOrdenVenta += $data['progreso']; 
         }
         $PorcentajeOrdenVenta = $PorcentajeOrdenVenta/$NumeroOF;
@@ -1285,6 +1287,7 @@ class BusquedaController extends Controller
             'OV'=>$OVdatos->OrdenVenta,
             'OVEstatus'=>$EstatusOV,
             'progreso' => $PorcentajeOrdenVenta,
+            'AreasDatos' => $AreasDatos,
             /*'progreso' => round($Progreso,2),
             "Estatus" => $estatus,
             "Tiempototal" => $TiempoTotal,

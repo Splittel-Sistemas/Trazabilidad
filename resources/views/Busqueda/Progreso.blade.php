@@ -114,10 +114,11 @@
             </div>
         </div>
         <!--Detalles-->
-        <div class="row bg-white">
-            <div class="col-12 pt-4" id="DetallesOrdenFabricacion" style="display: none">
+        <div class="row ">
+            <!--Orden Fabricacion-->
+            <div class="col-12 pt-4 card" id="DetallesOrdenFabricacion" style="display: none">
                 <h4 class="mb-3" id="exampleModalLabel">
-                    Detalles De Orden De Fabricacion:
+                    Orden de Fabricaci&oacute;n:
                     <span id="ordenFabricacionNumero" class="text-muted"></span>
                     <span id="EstatusFabricacion"class="" style="position: absolute;right:4rem;">Estatus</span> 
                 </h4>
@@ -247,266 +248,62 @@
                             </div>--}}
                         </div>
             </div>
-            <div class="col-12 pt-4" id="DetallesOrdenVenta" style="display: none">
-                <h4 class="mb-3">
-                    Detalles De Orden De Venta:
-                    <span id="OVNumero"></span>
-                    <span id="OVEstatus"class="" style="position: absolute;right:4rem;">Estatus</span> 
-                </h4>
-                <hr>
-                 <!-- Barra de progreso -->
-                    <h4 class="text-center mb-3 text-muted">Cliente: <span id="OVNombreCliente"></span></h4>
-                    <h5 class="text-center mb-2">Progreso de piezas completadas</h5>
-                    <div class="progress" style="height: 22px; border-radius: 5px; box-shadow: 0px 3px 6px rgba(0,0,0,0.2); overflow: hidden; width: 100%;">
-                        <div id="OVBarrraProgreso" class="progress-bar text-white fw-bold progress-animated" role="progressbar" 
-                            style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;" 
-                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            0%
+            <!--Orden Venta-->
+            <div class="col-12 pt-4 rounded border-0" id="DetallesOrdenVenta" style="display: none">
+                <div class="py-4 px-2 ">
+                    <h4 class="mb-3">
+                        Orden de Venta 
+                        <span id="OVNumero"></span>
+                        <span id="OVEstatus"class="" style="position: absolute;right:4rem;">Estatus</span> 
+                    </h4>
+                    <hr>
+                    <!-- Barra de progreso -->
+                    <div class="card bg-white py-4 px-4 rounded">
+                        <h4 class="text-start mb-2 text-muted">Cliente: <span id="OVNombreCliente"></span></h4>
+                        <h5 class="text-center mb-2">Progreso de piezas completadas Orden de Venta</h5>
+                        <div class="progress" style="height: 22px; border-radius: 6px; box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.438); overflow: hidden; width: 100%;">
+                            <div id="OVBarrraProgreso" class="progress-bar text-white fw-bold progress-animated" role="progressbar" 
+                                style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;" 
+                                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                0%
+                            </div>
+                            <h6 class="mx-2 mt-2" id="OVBloque0porciento">0%</h6>
                         </div>
-                        <h6 class="mx-2 mt-2" id="OVBloque0porciento">0%</h6>
                     </div>
+                    <!-- Avance Orden Fabricacion-->
+                    <div class="my-3 col-xl-6 col-xxl-6 bg-white px-4 py-3 rounded">
+                        <div class="border-top">
+                            <div id="purchasersSellersTable">
+                                <div class="table-responsive scrollbar mx-n1 px-1">
+                                    <table class="table table-sm fs--1 leads-table">
+                                        <thead>
+                                            <tr>
+                                                <th class="ps-0 pe-5 text-uppercase text-nowrap" style="width: 20%;">Orden de fabricaci&oacute;n</th>
+                                                <th class="ps-4 pe-5 text-uppercase text-center" style="width: 80%;"> Progreso</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list" id="OrdenesCompletadas-body">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Avance de la Orden-->
+                    <div class="card theme-wizard my-3" data-theme-wizard="data-theme-wizard">
+                        <div class="card-header bg-100 pt-3 pb-2 border-bottom-0">
+                            <ul id="MenuTrazabilidad" class="nav justify-content-between nav-wizard" role="tablist">
+
+                            </ul>
+                        </div>
+                        <div id="MenuTrazabilidadBody" class="card-body d-flex justify-content-between pt-4 pb-0">
+                            
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-        <!--modal principal-->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title text-info" id="exampleModalLabel">
-                            Detalles Orden Venta:
-                            <span id="ordenVentaNumero" class="ms-3 text-muted"></span>
-                        </h5>
-                        <span id="Estatus1"class="status-box">Estado</span> 
-                      
-                          
-                        <button type="button" class="btn p-1" data-bs-dismiss="modal" aria-label="Close">
-                            <svg class="svg-inline--fa fa-xmark fs--1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
-                                <path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Barra de progreso -->
-                        <div class="progress" style="height: 20px;">
-                            <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                        </div>
-                        <br>
-                        <!-- Lista de etapas -->
-                        <div class="card">
-                            <ul class="progress-bar-stages">
-                                <li class="stage" id="stage2">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-cut"></i>
-                                    </div>
-                                    <span>2. Corte</span>
-                                </li>
-                                <li class="stage" id="stage3">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-box"></i>
-                                    </div>
-                                    <span>3. Suministro</span>
-                                </li>
-                                <li class="stage" id="stage4">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-random"></i>
-                                    </div>
-                                    <span>4. Transición</span>
-                                </li>
-                                <li class="stage" id="stage5">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-wrench"></i>
-                                    </div>
-                                    <span>5. Preparado</span>
-                                </li>
-                                <li class="stage" id="stage6">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-align-left"></i>
-                                    </div>
-                                    <span>6. Ribonizado</span>
-                                </li>
-                                <li class="stage" id="stage7">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-cogs"></i>
-                                    </div>
-                                    <span>7. Ensamble</span>
-                                </li>
-                                <li class="stage" id="stage8">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-cut"></i>
-                                    </div>
-                                    <span>8. Corte de Fibra</span>
-                                </li>
-                                <li class="stage" id="stage9">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-gem"></i>
-                                    </div>
-                                    <span>9. Pulido</span>
-                                </li>
-                                <li class="stage" id="stage10">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-screwdriver"></i>
-                                    </div>
-                                    <span>10. Armado</span>
-                                </li>
-                                <li class="stage" id="stage11">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-search"></i>
-                                    </div>
-                                    <span>11. Inspección</span>
-                                </li>
-                                <li class="stage" id="stage12">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-bolt"></i>
-                                    </div>
-                                    <span>12. Polaridad</span>
-                                </li>
-                                <li class="stage" id="stage13">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-link"></i>
-                                    </div>
-                                    <span>13. Crimpado</span>
-                                </li>
-                                <li class="stage" id="stage14">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-ruler"></i>
-                                    </div>
-                                    <span>14. Medición</span>
-                                </li>
-                                <li class="stage" id="stage15">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-eye"></i>
-                                    </div>
-                                    <span>15. Visualización</span>
-                                </li>
-                                <li class="stage" id="stage16">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-hammer"></i>
-                                    </div>
-                                    <span>16. Montaje</span>
-                                </li>
-                                <li class="stage" id="stage17">
-                                    <div class="stage-circle">
-                                        <i class="fas fa-box-open"></i>
-                                    </div>
-                                    <span>17. Empaque</span>
-                                </li>
-
-                            </ul>
-                            <div id="progress-wrapper-container" class="progress-scroll-container"></div>
-
-                        </div>
-                        
-                        <br> 
-                        <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
-                        
-                        <div class="grid-container card p-2" id="canvases">
-                            <!-- Estación Cortes -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Cortes</h1>
-                                <canvas id="Corte" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Suministros -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Suministros</h1>
-                                <canvas id="Suministro" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Transición -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Transición</h1>
-                                <canvas id="Transicion" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Preparado -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Preparado</h1>
-                                <canvas id="Preparado" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Ribonizado -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Ribonizado</h1>
-                                <canvas id="Ribonizado" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Ensamble -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Ensamble</h1>
-                                <canvas id="Ensamble" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Corte de Fibra -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Corte de Fibra</h1>
-                                <canvas id="CorteFibra" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Pulido -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Pulido</h1>
-                                <canvas id="Pulido" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Armado -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Armado</h1>
-                                <canvas id="Armado" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Inspección -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Inspección</h1>
-                                <canvas id="Inspeccion" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Polaridad -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Polaridad</h1>
-                                <canvas id="Polaridad" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Crimpado -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Crimpado</h1>
-                                <canvas id="Crimpado" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Medición -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Medición</h1>
-                                <canvas id="Medicion" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Visualización -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Visualización</h1>
-                                <canvas id="Visualizacion" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Montaje -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Montaje</h1>
-                                <canvas id="Montaje" width="300" height="300"></canvas>
-                            </div>
-                            
-                            <!-- Estación Empaque -->
-                            <div class="grid-item">
-                                <h1 class="small-title">Empaque</h1>
-                                <canvas id="Empaque" width="300" height="300"></canvas>
-                            </div>
-       
-                        </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">cerrar</button>
-                    </div>
-                </div>
-                </div>
-            </div>
-            <input type="hidden" id="idVenta" value="">
-            <input type="hidden" id="idFabricacion" value="">     
-        </div>
 @endsection
 @section('scripts')
     <!-- Scripts -->
@@ -598,6 +395,8 @@
             OVNombreCliente = document.getElementById('OVNombreCliente');
             OVBloque0porciento = document.getElementById('OVBloque0porciento');
             OVBarrraProgreso = document.getElementById('OVBarrraProgreso');
+            OrdenesCompletadasbody = document.getElementById('OrdenesCompletadas-body');
+            OrdenesCompletadasbody.innerHTML = "";
             OVNumero.innerHTML = NumeroOrden;
             $.ajax({
                 url: '{{ route("Detalles.OrdenVenta") }}',
@@ -649,6 +448,87 @@
                             OVprogressBar.addClass('bg-success');  // Verde
                         }
                         $('#DetallesOrdenVenta').fadeIn();
+                        InfoEstaciones = "";
+                        Trazabilidad = "";
+                        AcomodarLista = [];
+                        ListaCompleta = [];
+                        ListaAreas = [];
+                        Colores = [];
+                        MenuTrazabilidad = "";
+                        $NumeroOrdenes = 0;
+                        response.AreasDatos.forEach(([OrdenFabricacion,progreso, Areas]) => {
+                            clase = (progreso < 50) ? 'bg-warning' : 'bg-info';
+                            clase = (progreso>=50 && progreso <= 75) ? 'bg-info' : 'bg-success';
+                            InfoEstaciones += '<tr class="">'
+                                                +'<td class="text-start px-2"><span class=" fw-bold" style="font-size:1rem;">'+OrdenFabricacion+'</span></td>'
+                                                +'<td class="text-star">'
+                                                    +'<div class="progress" style="height: 22px; border-radius: 3px; overflow: hidden; width: 100%;">'
+                                                    +'<div id="OVBarrraProgreso" class="progress-bar text-white fw-bold progress-animated '+clase+'" role="progressbar" style="width: '+progreso+'%; transition: width 0.5s ease-in-out; font-size: 14px;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'+progreso+'%</div>'
+                                                +'</div></td>';
+                                            +'</tr>';
+                            AcomodarLista.push(...Areas.map(item => item.AP));
+                            ListaCompleta.push(Areas);
+                            ListaAreas.push(...Areas.map(item => item));
+                            $NumeroOrdenes++;
+                            Colores.push(ColorAleatorio());
+                        });
+                        AcomodarLista = [...new Set(AcomodarLista)];
+                        PorcentajeArea = "";
+                        AcomodarLista.forEach((IdArea,index) => {
+                            //PorcentajeArea = "";
+                            filtrado = ListaAreas.filter(item => item.AP === IdArea);
+                            color = "#01a524"
+                            icono = "fas fa-check";
+                            AcomodarLista.forEach((elemento,index) => {
+                                if(elemento.PorcentajeActual != 100){
+                                    color = "#ffc107"
+                                    icono = "fas fa-cogs";
+                                }
+                            });
+                            PorcentajeArea += '<div class="p-2 d-flex flex-column justify-content-around">';
+                            ListaCompleta.forEach((registro) =>{
+                                RegistroBan = registro.filter(item => item.AP === IdArea);
+                                if(RegistroBan.length>0){
+                                    PorcentajeArea +='<div class="mb-2"><div class="progress" style="height: 22px; border-radius: 3px; overflow: hidden; width: 90%;"><div id="OVBarrraProgreso" class="progress-bar text-white fw-bold progress-animated bg-success" role="progressbar" style="width: '+RegistroBan[0].PorcentajeActual+'%; transition: width 0.5s ease-in-out; font-size: 14px;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'+RegistroBan[0].PorcentajeActual+'%</div>'
+                                                            +'</div></div>'
+                                }
+                                else{
+                                    PorcentajeArea +='<div class="mb-2"><div class="progress" style="height: 22px; border-radius: 3px; overflow: hidden; width: 90%;"><div id="OVBarrraProgreso" class="progress-bar text-dark fw-bold progress-animated bg-white" role="progressbar" style="width: 100%; transition: width 0.5s ease-in-out; font-size: 14px;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">No asignada</div>'
+                                                            +'</div></div>'
+                                }
+                            });
+                            PorcentajeArea += '</div>';
+                            MenuTrazabilidad += '<li class="nav-item" role="presentation">'
+                                                    +'<a class="nav-link fw-semi-bold" data-bs-toggle="tab" data-wizard-step="'+index+'">'
+                                                        +'<div class="text-center d-inline-block">'
+                                                            +'<span class="nav-item-circle-parent">'
+                                                                +'<span class="nav-item-circle" style="color: '+color+'; border-color:'+color+';">'
+                                                                    +'<span class="'+icono+'"></span>'
+                                                                +'</span>'
+                                                            +'</span>'
+                                                            +'<span class="d-none d-md-block mt-1 fs--1" style="color:'+color+'">'+filtrado[0].NombreArea+'</span>'
+                                                        +'</div>'
+                                                    +'</a>'
+                                                +'</li>';
+                        });
+                        /*AcomodarLista.forEach((item, index) => {
+                            response.AreasDatos.forEach(([OrdenFabricacion, progreso, Areas]) => {
+                            
+                        });*/
+                        //AcomodarLista.sort((a, b) => a - b); 
+                        /*
+                        alert(AcomodarLista);
+                            Areas.forEach((item, index) => {
+                                Trazabilidad = '';
+                                console.log(`AP: ${item.AP}`);
+                                console.log(`Porcentaje: ${item.PorcentajeActual}`);
+                                console.log(`Tiempo: ${item.TiempoOrdenes}`);
+                                console.log('----------------------');
+                            });
+                        */
+                        document.getElementById('MenuTrazabilidadBody').innerHTML = PorcentajeArea;
+                        document.getElementById('MenuTrazabilidad').innerHTML = MenuTrazabilidad;
+                        OrdenesCompletadasbody.innerHTML = InfoEstaciones;
                     }else{
                         error("Error Orden de Venta "+NumeroOrden, response.message);
                     }
@@ -916,6 +796,14 @@
                 }
             });  
         }
+    }
+    function ColorAleatorio() {
+        const letras = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letras[Math.floor(Math.random() * 16)];
+        }
+        return color;
     }
 </script>
 @endsection

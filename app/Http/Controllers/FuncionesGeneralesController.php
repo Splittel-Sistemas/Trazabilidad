@@ -179,7 +179,7 @@ class FuncionesGeneralesController extends Controller
     public function DetallesCable($OrdenFabricacion){
         $schema = 'HN_OPTRONICS';
         $sql = 'SELECT DISTINCT T3."ItemCode" AS "Articulo", T4."ItemName" AS"Descripcion", ROUND(T2."PlannedQty", 0) AS "Cantidad OF", T2."DueDate" AS "Fecha entrega OF",
-                    T2."DocNum" AS "Orden de F." , T3."ItemCode" "Hijo", T3."ItemName" "Nombre Hijo", T3."BaseQty" "Cantidad Base",T3."IssuedQty" "Ctd. requerida" 
+                    T2."DocNum" AS "Orden de F." , T3."ItemCode" "Hijo", T3."ItemName" "Nombre Hijo", T3."BaseQty" "Cantidad Base",T3."IssuedQty" "Ctd. requerida" , T4."InvntryUom" "Medida"
                     FROM  HN_OPTRONICS."OWOR" T2 
                     INNER JOIN HN_OPTRONICS."WOR1" T3 ON T3."DocEntry" = T2."DocEntry" 
                     INNER JOIN HN_OPTRONICS."OITM" T4 ON T4."ItemCode" = T3."ItemCode"

@@ -739,6 +739,18 @@ class CorteController extends Controller
                 throw new \Exception('No se encontraron datos para este ID.');
             }
             $OrdenFabricacion = $PartidaOF->ordenFabricacion;
+            $DC="";
+            //Si se hace un cambio ver el numero de Letras en Medida
+            $Medida = "";
+            try {
+                $DetallesCable = $this->funcionesGenerales->DetallesCable($OrdenFabricacion->OrdenFabricacion);
+                if(count($DetallesCable)>0){
+                    $DC = number_format($DetallesCable[0]['Cantidad Base'],3);
+                    $Medida = $DetallesCable[0]['Medida'];
+                }
+            } catch (\Throwable $e) {
+                $DC = "~";
+            }
             $PartidasOFEtiq=$PartidaOF->Areas()->where('Areas_id',2)->get();
             $inicioR = $OrdenFabricacion->CantidadTotal;
             $inicio = 0;
@@ -807,12 +819,12 @@ class CorteController extends Controller
                 // Definir el contenido del texto para cada etiqueta
                 if ($TipoPartida == 'N') {
                     $content = 
-                    'Número Cable: ' . strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal . "\n" .
+                    'Número Cable: ' . strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal ."      MC: ".$DC." ".$Medida. "\n".
                     'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" .
                     'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
                 } else {
                     $content = 
-                    'Número Cable: ' . strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal . " R \n" . 
+                    'Número Cable: ' . strip_tags($partida['cantidad']) . " / " . $OrdenFabricacion->CantidadTotal ."      MC: ".$DC." ".$Medida."\n".
                     'Orden de Fabricación: ' . strip_tags($partida['OrdenFabricacion']) . "\n" . 
                     'Descripción: ' . strip_tags($partida['descripcion']) . "\n";
                 }
