@@ -62,6 +62,10 @@
                                     <option value="ETIQ4">ETIQUETA DE BOLSA JUMPER</option>
                                     <option value="ETIQ4CEDIS">ETIQUETA DE BOLSA JUMPER CEDIS</option>
                                     <option value="ETIQ5">ETIQUETA DE NÚMERO DE PIEZAS</option>
+                                    <option value="ETIQ6">ETIQUETA DE TRAZABILIDAD MPO</option>
+                                    <option value="ETIQ7">ETIQUETA DE INYECCIÓN</option>
+                                    <option value="ETIQ8">ETIQUETA DE DIVISOR</option>
+                                    <option value="ETIQ4">ETIQUETA DE BOLSA PATCH CORD GENERAL</option>
                                 </select>
                                 <div id="ListaOpciones" class="list-group" style="display:none;">
                                     <a onclick="SeleccionarCampo('ETIQ1')" class="list-group-item list-group-item-action active" style="font-size: 12px; padding: 4px 8px;">ETIQUETA ESPECIAL HUAWEI</a>
@@ -70,6 +74,10 @@
                                     <a onclick="SeleccionarCampo('ETIQ4')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE BOLSA JUMPER</a>
                                     <a onclick="SeleccionarCampo('ETIQ4CEDIS')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE BOLSA JUMPER CEDIS</a>
                                     <a onclick="SeleccionarCampo('ETIQ5')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE NÚMERO DE PIEZAS</a>
+                                    <a onclick="SeleccionarCampo('ETIQ6')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE TRAZABILIDAD MPO</a>
+                                    <a onclick="SeleccionarCampo('ETIQ7')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE INYECCIÓN</a>
+                                    <a onclick="SeleccionarCampo('ETIQ8')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE DIVISOR</a>
+                                    <a onclick="SeleccionarCampo('ETIQ4')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE BOLSA PATCH CORD GENERAL</a>
                                 </div>
                             </div>
                             <div class="col-8">
@@ -291,6 +299,21 @@
                 ContenedorCantidadBolsa.style.display = "";
                 ContenedorBoton.style.display = "";
                 TituloEtiqueta.innerHTML = "ETIQUETA DE NÚMERO DE PIEZAS";
+                break;
+            case 'ETIQ6':
+                ContenedorCantidadEtiquetas.style.display = "";
+                ContenedorBoton.style.display = "";
+                TituloEtiqueta.innerHTML = "ETIQUETA DE TRAZABILIDAD MPO";
+                break;
+            case 'ETIQ7':
+                ContenedorCantidadEtiquetas.style.display = "";
+                ContenedorBoton.style.display = "";
+                TituloEtiqueta.innerHTML = "ETIQUETA DE INYECCIÓN";
+                break;
+            case 'ETIQ8':
+                ContenedorCantidadEtiquetas.style.display = "";
+                ContenedorBoton.style.display = "";
+                TituloEtiqueta.innerHTML = "ETIQUETA DE DIVISOR";
                 break;
             default:
                 break;

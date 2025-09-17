@@ -430,6 +430,15 @@
                                 </div>
                             </li>
                         @endif
+                            <li class="nav-item"><!-- Lineas-->
+                                <p class="navbar-vertical-label">Manuales de Usuario</p>
+                                <hr class="navbar-vertical-line" /><!-- parent pages-->
+                                <div class="nav-item-wrapper">
+                                    <a class="nav-link label-1 {{ Route::is('ManualesUsuario') ? 'active' : '' }}" href="{{route('ManualesUsuario')}}" role="button" data-bs-toggle="" aria-expanded="false">
+                                        <div class="d-flex align-items-center"><span class="nav-link-icon"> <span><i class="fa-solid fa-book"></i></span></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Manuales de Usuario</span></span></div>
+                                    </a>
+                                </div>
+                            </li>
                     </ul>
                 </div>
                 </div>

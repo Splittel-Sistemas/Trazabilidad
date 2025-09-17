@@ -68,6 +68,15 @@ class EtiquetasController extends Controller
             case 'ETIQ5':
                 return $this->EtiquetaNumeroPiezas($Sociedad,$CantidadEtiquetas,$CantidadBolsa,$PDFOrdenFabricacion);
                 break;
+            case 'ETIQ6':
+                return $this->EtiquetaTrazabilidadMPO($CantidadEtiquetas,$PDFOrdenFabricacion);
+                break;
+            case 'ETIQ7':
+                return $this->EtiquetaInyeccion($CantidadEtiquetas,$PDFOrdenFabricacion);
+                break;
+            case 'ETIQ8':
+                return $this->EtiquetaDivisor($CantidadEtiquetas,$PDFOrdenFabricacion);
+                break;
             default:
                 break;
         }return $request;
@@ -649,12 +658,12 @@ class EtiquetasController extends Controller
                         throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
                     }else{
                         $imagePath = storage_path('app/Logos/Optronics.jpg');
-                        $pdf->Image($imagePath, 25, 2, 50);
+                        $pdf->Image($imagePath, 31, 4, 40);
                         $margen = 1;
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.3);
+                        $pdf->SetLineWidth(0.4);
                         $border_style = array(
-                            'width' => 0.3,
+                            'width' => 0.4,
                             'cap' => 'butt',
                             'join' => 'miter',
                             'dash' => 0,
@@ -663,15 +672,15 @@ class EtiquetasController extends Controller
                         );
                         $pdf->RoundedRect(3, 16, 95, 30, 1, '1111', 'D', $border_style, array());
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.3);
+                        $pdf->SetLineWidth(0.4);
                         $pdf->Rect(34.5, 16, 0, 30);
                         
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.3);
+                        $pdf->SetLineWidth(0.4);
                         $pdf->Rect(67.5, 16, 0, 30);
                     
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.3);
+                        $pdf->SetLineWidth(0.4);
                         $pdf->Rect(3, 26, 95, 0);
                         $ParteNo = '         O.V                  O.F            CANTIDAD';
                         $pdf->SetFont('dejavusans', '', 12);
@@ -702,12 +711,12 @@ class EtiquetasController extends Controller
                         throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
                     }else{
                         $imagePath = storage_path('app/Logos/Fibremex.png');
-                        $pdf->Image($imagePath, 25, 2, 50);
+                        $pdf->Image($imagePath, 27.5, 6, 45);
                         $margen = 1;
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.3);
+                        $pdf->SetLineWidth(0.4);
                         $border_style = array(
-                            'width' => 0.1,
+                            'width' => 0.4,
                             'cap' => 'butt',
                             'join' => 'miter',
                             'dash' => 0,
@@ -716,19 +725,19 @@ class EtiquetasController extends Controller
                         );
                         $pdf->RoundedRect(3, 16, 95, 30, 1, '1111', 'D', $border_style, array());
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.3);
+                        $pdf->SetLineWidth(0.4);
                         $pdf->Rect(26.5, 16, 0, 30);
                         
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.3);
+                        $pdf->SetLineWidth(0.4);
                         $pdf->Rect(50.5, 16, 0, 30);
                         
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.3);
+                        $pdf->SetLineWidth(0.4);
                         $pdf->Rect(74.5, 16, 0, 30);
 
                         $pdf->SetDrawColor(0, 0, 0);
-                        $pdf->SetLineWidth(0.2);
+                        $pdf->SetLineWidth(0.4);
                         $pdf->Rect(3, 26, 95, 0);
                         $ParteNo = 'No.PEDIDO        O.V              O.F        CANTIDAD';
                         $pdf->SetFont('dejavusans', '', 11);
@@ -763,6 +772,171 @@ class EtiquetasController extends Controller
             ob_end_clean();
             // Generar el archivo PDF y devolverlo al navegador
             return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaNumeroPiezas_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function EtiquetaTrazabilidadMPO($CantidadEtiquetas,$OrdenFabricacion){
+         try {
+            $NombreFabricacante = "Optronics S.A. de C.V.";
+            $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first(); 
+            if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
+                return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']);
+            }
+            $NumeroParte = $OrdenFabricacion->Articulo;
+            $Descripcion = $OrdenFabricacion->Descripcion;
+            $OrdenVenta = $OrdenFabricacion->OrdenVenta;
+            $ValorMedicionA = "PERDIDA DE INSERCCION ≤ 0.50 dB";
+            $ValorMedicionB = "PERDIDA DE RETORNO ≥ 20.0 dB";
+            $nombre = auth()->user()->name;
+            $nombre = $nombre[0];
+            if($OrdenVenta == ""){
+                $OrdenVenta = "N/A";
+            }else{
+                $OrdenVenta = $OrdenVenta->OrdenVenta;
+            }
+            // Crear PDF
+            $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetFont('dejavusans', '', 10);
+            $pdf->SetAutoPageBreak(TRUE, 0);   
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
+            $pdf->SetPrintHeader(false);
+
+            // Contador para saber cuántas etiquetas se han colocado en la página
+            for ($i=0; $i<$CantidadEtiquetas; $i++) {
+                $pdf->AddPage('P', array(35,22));
+                $pdf->SetFont('dejavusans', '', 5);
+                $pdf->SetXY(1, 3); 
+                $pdf->MultiCell(22, 0, $NombreFabricacante, 0, 'L', 0, 1);
+                $pdf->SetFont('dejavusans', 'B', 5);
+                $pdf->SetXY(1,6); 
+                $pdf->MultiCell(22, 0, $NumeroParte, 0, 'L', 0, 1);
+                $pdf->SetFont('dejavusans', '', 5);
+                $pdf->SetXY(1,10); 
+                $pdf->MultiCell(22, 0, $Descripcion, 0, 'L', 0, 1);
+                $pdf->SetXY(1,19); 
+                $pdf->MultiCell(22, 0, $ValorMedicionA, 0, 'L', 0, 1);
+                $pdf->SetXY(1,25); 
+                $pdf->MultiCell(22, 0, $ValorMedicionB, 0, 'L', 0, 1);
+                $pdf->SetXY(1,30); 
+                $pdf->MultiCell(22, 0, "ORDEN:", 0, 'L', 0, 1);
+                $pdf->SetFont('dejavusans', 'B', 5);
+                $pdf->SetXY(10,30); 
+                $pdf->MultiCell(22, 0, $nombre.$OrdenFabricacion->OrdenFabricacion, 0, 'L', 0, 1);
+                $pdf->SetFont('dejavusans', '', 5);
+                $pdf->SetXY(18,32); 
+                $pdf->MultiCell(22, 0, str_pad(($i+1), 2, '0', STR_PAD_LEFT), 0, 'L', 0, 1);
+                /*$pdf->setFontSpacing(-0.2);
+
+                $ParteNo = 'Denomination:  '."\n\n\n\n".
+                            'Specification:  ';
+                $pdf->SetXY(1.5, 17); 
+                $pdf->MultiCell(90, 0, $ParteNo, 0, 'L', 0, 1);
+                $pdf->SetFont('dejavusans', '', 10);
+                $Descripcion= $OrdenFabricacion->Descripcion;
+                $pdf->SetXY(25.5, 17); 
+                $pdf->MultiCell(66, 0, $Descripcion, 0, 'L', 0, 1);
+                //Codigo de barras
+                $CodigoBarras = $OrdenFabricacion->Articulo;
+                //$pdf->SetXY($posX + 30, 1);
+                $pdf->write1DBarcode($CodigoBarras, 'C128',18, 39, 65, 4, 0.4, array(), 'N');
+                $pdf->SetFont('dejavusans', '', 10);
+                $pdf->setFontSpacing(0);
+                $pdf->SetXY(23.5, 33);
+                $pdf->MultiCell(65, 0, $CodigoBarras, 0, 'L', 0, 1);*/
+            }
+            ob_end_clean();
+            // Generar el archivo PDF y devolverlo al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumper_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function EtiquetaInyeccion($CantidadEtiquetas,$OrdenFabricacion){
+         try {
+            $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first(); 
+            if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
+                return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']);
+            }
+            // Crear PDF
+            $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetFont('helvetica', '', 10);
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
+            $pdf->SetPrintHeader(false);
+            $pdf->SetAutoPageBreak(TRUE, 0);   
+
+            // Contador para saber cuántas etiquetas se han colocado en la página
+            for ($i=0; $i<$CantidadEtiquetas; $i++) {
+                $pdf->AddPage('L', array(51,24));
+                if(!file_exists(storage_path('app/Logos/Optronics.jpg'))){
+                        throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
+                }else{
+                    $imagePath = storage_path('app/Logos/Optronics.jpg');
+                    $pdf->Image($imagePath, 18, 1, 15);
+                    $pdf->SetFont('helvetica', '', 9);
+                    $pdf->SetXY(0, 6);
+                    $pdf->MultiCell(51, 0, "FECHA:         GRUPO:", 0, 'L', 0, 1);
+                    $pdf->SetXY(0, 10);
+                    $pdf->MultiCell(51, 0, "HORA DE INGRESO:", 0, 'L', 0, 1);
+                    $pdf->SetXY(0, 14);
+                    $pdf->MultiCell(51, 0, "CONECTORES INYECTADOS:", 0, 'L', 0, 1);
+                    $pdf->SetXY(0, 18);
+                    $pdf->MultiCell(51, 0, "HORA DE DESECHO:", 0, 'L', 0, 1);
+                }
+            }
+            ob_end_clean();
+            // Generar el archivo PDF y devolverlo al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumper_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function EtiquetaDivisor($CantidadEtiquetas,$OrdenFabricacion){
+        try {
+            // Crear PDF
+            $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(1, 1, 1); 
+            $pdf->SetAutoPageBreak(TRUE, 0.5);   
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
+            $pdf->SetPrintHeader(false);
+
+            // Contador para saber cuántas etiquetas se han colocado en la página
+            for ($i=0; $i<$CantidadEtiquetas; $i++) {
+                 $pdf->SetFont('helvetica', '', 10);
+                $pdf->AddPage('L', array(35, 22));
+                $pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetLineWidth(0.3);
+                $pdf->Rect(3, 4, 8 , 5 );
+                $pdf->Rect(13, 4, 8 , 5 );
+                $pdf->Rect(23, 4, 8 , 5 );
+                $pdf->Rect(3, 13, 8 , 5 );
+                $pdf->Rect(13, 13, 8 , 5 );
+                $pdf->Rect(23, 13, 8 , 5 );
+
+                $pdf->SetXY(12.5, 4);
+                $pdf->MultiCell(51, 0, "OUT", 0, 'L', 0, 1);
+                $pdf->SetXY(22.5, 4);
+                $pdf->MultiCell(51, 0, "50%", 0, 'L', 0, 1);
+
+                $pdf->SetXY(3, 13);
+                $pdf->MultiCell(51, 0, "50%", 0, 'L', 0, 1);
+                $pdf->SetXY(12.5, 13);
+                $pdf->MultiCell(51, 0, "50%", 0, 'L', 0, 1);
+                $pdf->SetXY(22.5, 13);
+                $pdf->MultiCell(51, 0, "50%", 0, 'L', 0, 1);
+
+                $pdf->SetFont('helvetica', 'B', 10);
+                $pdf->SetXY(4.5, 4);
+                $pdf->MultiCell(51, 0, "IN", 0, 'L', 0, 1);
+            }
+            ob_end_clean();
+            // Generar el archivo PDF y devolverlo al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaNumeroPiezas_'.$OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

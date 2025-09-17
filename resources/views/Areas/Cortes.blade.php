@@ -360,7 +360,7 @@
             }
             if(Cantitadpiezas.val()=="" || Cantitadpiezas.val()==null || Cantitadpiezas.val()==0){
                 Cantitadpiezas.addClass('is-invalid');
-                errorCantidad.text('Por favor, selecciona una Orden de fabricación valida.');
+                errorCantidad.text('Por favor, selecciona una Orden de Producción valida.');
                 errorCantidad.show();
                 return 0; 
             }else{

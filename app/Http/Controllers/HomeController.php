@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\PorcentajePlaneacion;
 use App\Models\OrdenFabricacion;
 use App\Models\Areas;
+use App\Models\Permission;
 use App\Models\Partidasof_Areas;
 use Illuminate\Support\Facades\Log;
 use App\Models\Linea;
@@ -2664,6 +2665,23 @@ class HomeController extends Controller
         }
         return session()->get('inicio_sesion');
         //return response()->json(['isValid' => Auth::check()]);
+    }
+    //Manuales de Usuario
+    public function ManualesUsuario(){
+        $user = Auth::user();
+            if (!$user || !$user->active) {
+                Auth::logout();
+                return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
+            }
+            return view('ManualesUsuario.ManualesUsuario'); // O la vista que corresponda
+    }
+    public function MostrarManual($manual)
+    {
+        $path = storage_path('app/public/Manuales/Estaciones/'.$manual.'_TRAZABILIDAD.pdf');
+        if (!file_exists($path)) {
+            abort(404, 'El archivo no fue encontrado');
+        }
+        return response()->file($path);
     }
 
 }

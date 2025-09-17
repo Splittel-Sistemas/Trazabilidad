@@ -108,7 +108,7 @@ Route::post('/Area/Clasificación/Asignar', [AreasController::class,'Clasificaci
 Route::post('/Area/Clasificación/Busqueda', [AreasController::class,'ClasificacionBusqueda'])->name('ClasificacionBusqueda')->middleware('auth');
 Route::post('/Area/Clasificación/Finalizar', [AreasController::class,'FinalizarOrdenFabricacion'])->name('FinalizarOrdenFabricacion')->middleware('auth');
 Route::post('/Area/Clasificación/Eliminar', [AreasController::class,'EliminarAsignacion'])->name('EliminarAsignacion')->middleware('auth');
-//
+//Corte
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden')->middleware('auth');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida')->middleware('auth');
 Route::get('corte/getCortes', [CorteController::class, 'getCortes'])->name('corte.getCortes')->middleware('auth');
@@ -126,21 +126,6 @@ Route::get('/corte/detalles', [CorteController::class, 'getDetalleOrden'])->name
 Route::get('/ordenes/cerradas',[CorteController:: class, 'index'])->name('ordenes.cerradas')->middleware('auth');
 Route::post('/filtrar-por-fechaS', [CorteController::class, 'fechaCompletado'])->name('Fitrar.FechaS')->middleware('auth');
 Route::get('/ordenes-filtradas', [CorteController::class, 'SinCortesProceso'])->name('ordenes.filtradas')->middleware('auth');
-//Rutas cortes
-/*
-    Route::get('/cortes/getData', [CorteController::class, 'getData'])->name('corte.getData')->middleware('auth');
-    Route::get('/detalles', [CorteController::class, 'verDetalles'])->name('detalles')->middleware('auth');
-    Route::get('/buscar-ordenes', [CorteController::class, 'buscarOrdenVenta'])->name('buscar.ordenes')->middleware('auth');
-    Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden')->middleware('auth');
-    Route::get('corte/getCortes', [CorteController::class, 'getCortes'])->name('corte.getCortes')->middleware('auth');
-    Route::post('corte/finalizar/corte', [CorteController::class, 'finalizarCorte'])->name('corte.finalizarCorte')->middleware('auth');
-    Route::get('/orden-fabricacion/cantidad-total/{id}', [CorteController::class, 'getCantidadTotal'])->name('ordenFabricacion.getCantidadTotal')->middleware('auth');
-    Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida')->middleware('auth');
-    Route::get('/orden-fabricacion/{id}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('ordenFabricacion.getCortesInfo')->middleware('auth');
-    Route::get('/orden-fabricacion/{ordenFabricacionId}/cortes-info', [CorteController::class, 'getCortesInfo'])->name('orden-fabricacion.cortes-info')->middleware('auth');
-    Route::post('/orden-fabricacion/update-status', [CorteController::class, 'updateStatus'])->name('orden-fabricacion.update-status')->middleware('auth');
-Route::get('/ruta-para-actualizar-tabla', [CorteController::class, 'actualizarTabla'])->name('actualizar.tabla')->middleware('auth');
-*/
 
 Route::get('/corte/DetallesCompletado', [CorteController::class, 'DetallesCompletado'])->name('corte.DetallesCompletado')->middleware('auth');
 
@@ -245,123 +230,8 @@ Route::get('/Error/permiso',[HomeController::class, 'error'])->name('error.')->m
 
 //dasboard operador
 Route::get('/Home',[HomeController::class, 'indexoperador'])->name('index.operador')->middleware('auth'); 
-
-
 Route::post('/guardar-aviso', [HomeController::class, 'guardarAviso'])->name('guardarAviso');
 Route::put('/Planeacion/actualizar/fecha',[PlaneacionController:: class,'ActualizarFechaPlaneacion'])->name('ActualizarFechaPlaneacion');
 Route::get('/tiempo/promedio',[HomeController::class,'tiempopromedio'])->name('tiempopromedio');
-
-
-
-
-//registro 
-//Route::view('/registro', "usuarios.registro")->name('register')->middleware('auth');
-
-
-
-// Grupo de rutas para la gestión de usuarios
-/*Route::prefix('registro')->name('registro.')->group(function () {
-    // Listar todos los usuarios
-    Route::get('/index', [RegistroController::class, 'index'])->name('index')->middleware('auth');
-
-    // Crear un nuevo usuario
-    Route::get('/create', [RegistroController::class, 'create'])->name('create')->middleware('auth');
-    Route::post('/store', [RegistroController::class, 'store'])->name('store')->middleware('auth');
-
-    // Mostrar detalles de un usuario específico
-    Route::get('/{registro}', [RegistroController::class, 'show'])->name('show')->middleware('auth');
-
-    // Editar un usuario existente
-    Route::get('/{registro}/edit', [RegistroController::class, 'edit'])->name('edit')->middleware('auth');
-    Route::put('/{registro}', [RegistroController::class, 'update'])->name('update')->middleware('auth');
-
-    // Eliminar un usuario
-    Route::delete('/{registro}', [RegistroController::class, 'destroy'])->name('destroy')->middleware('auth');
-})->middleware('auth');*/
-
-/*Route::get('/registro', [RegistroController::class, 'index'])->name('registro.index')->middleware('auth');
-Route::get('/registro/create', [RegistroController::class, 'create'])->name('registro.create')->middleware('auth');
-Route::post('/registro', [RegistroController::class, 'store'])->name('create')->middleware('auth');
-Route::get('/registro/{registro}', [RegistroController::class, 'show'])->name('registro.show')->middleware('auth');
-Route::get('/registro/{registro}/edit', [RegistroController::class, 'edit'])->name('registro.edit')->middleware('auth');
-Route::put('/registro/{registro}', [RegistroController::class, 'update'])->name('registro.update')->middleware('auth');
-Route::delete('/registro/{registro}', [RegistroController::class, 'destroy'])->name('registro.destroy')->middleware('auth');*/
-
-
-
-
-/*use Illuminate\Support\Facades\Route->middleware('auth');
-use App\Http\Controllers\LoginController->middleware('auth');
-use App\Http\Controllers\RegistroController->middleware('auth');
-use App\Http\Controllers\SapController->middleware('auth');
-use App\Http\Controllers\SuministrosController->middleware('auth');
-use App\Http\Controllers\OrdenesController->middleware('auth');
-use App\Http\Controllers\PrincipalController->middleware('auth');
-use App\Http\Controllers\PlaneacionController->middleware('auth');
-use App\Http\Controllers\OrdenFabricacionController->middleware('auth');
-use App\Http\Controllers\BarcodeController->middleware('auth');
-
-use App\Http\Controllers\CorteController->middleware('auth');
-use App\Http\Controllers\OrdenVentaController->middleware('auth');
-
-// Rutas de autenticación
-Route::get('/login', [LoginController::class,'login_view'])->name('login')->middleware('auth');
-Route::post('/login/inicio', [LoginController::class,'login'])->name('login_post')->middleware('auth');
-//Route::view('/registro', "usuarios.registro")->name('register')->middleware('auth');
-Route::view('/menu', "layouts.menu")->middleware('auth')->name('menu')->middleware('auth');
-//Route::post('/registro', [LoginController::class,'register'])->name('validar-registro')->middleware('auth');
-Route::post('/login', [LoginController::class,'login'])->name('inicia-sesion')->middleware('auth');
-Route::get('/logout', [LoginController::class,'logout'])->name('logout')->middleware('auth');
-
-Route::get('/panel-principal', [PrincipalController::class, 'index'])->name('panel.principal')->middleware('auth');
-
-
-Route::resource('registro', RegistroController::class)->middleware('auth');
-
-
-Route::get('/conexion-sap', [SapController::class, 'conexionSap'])->middleware('auth');
-Route::get('/datos-sap', [SapController::class, 'obtenerDatosSap'])->middleware('auth');
-
-
-Route::get('/suministros', [SuministrosController::class, 'index'])->name('suministros.index')->middleware('auth');
-Route::post('/suministros/enviar', [SuministrosController::class, 'enviar'])->name('suministros.enviar')->middleware('auth');
-
-Route::get('/ordenes', [OrdenesController::class, 'index'])->name('ordenes.index')->middleware('auth');
-Route::post('/enviar', [OrdenesController::class, 'ordenes.enviar'])->name('ordenes.enviar')->middleware('auth');
-
-Route::get('/orden-venta', [OrdenVentaController::class, 'index'])->name('ordenventa')->middleware('auth');
-Route::post('/orden-venta/{id}/update-state', [OrdenVentaController::class, 'updateState'])->name('ordenventa.updateState')->middleware('auth');
-
-Route::get('/leer-codigo-barra', [BarcodeController::class, 'index'])->name('leer.codigo.barra')->middleware('auth');
-
-Route::get('/ordenes-fabricacion', [OrdenFabricacionController::class,'index'])->name('ordenes.indexx')->middleware('auth');
-Route::get('/orders', [PlaneacionController::class, 'OrdenesVActual'])->name('orders')->middleware('auth');
-Route::post('/partidas', [PlaneacionController::class, 'DatosDePartida'])->name('datospartida')->middleware('auth');
-Route::post('/filtros', [PlaneacionController::class, 'filtros'])->name('filtros')->middleware('auth');
-Route::post('/filtro', [PlaneacionController::class, 'filtro'])->name('filtro')->middleware('auth');
-Route::post('/guardarDatos', [PlaneacionController::class, 'guardarDatos'])->name('guardarDatos')->middleware('auth');
-Route::post('/eliminar-registro', [PlaneacionController::class, 'eliminarRegistro'])->name('eliminarRegistro')->middleware('auth');
-
-Route::get('/cortes', [CorteController::class, 'index'])->name('cortes')->middleware('auth');
-Route::get('/cortes/data', [CorteController::class, 'getData'])->name('corte.getData')->middleware('auth');
-
-Route::post('/FiltroFecha', [CorteController::class, 'FiltroFecha'])->name('FiltroFecha')->middleware('auth');
-Route::post('/FiltroOrden', [CorteController::class, 'FiltroOrden'])->name('FiltroOrden')->middleware('auth');
-
-
-Route::get('/buscar-orden', [BarcodeController::class, 'searchOrder'])->middleware('auth');
-
-Route::get('/orden-fabricacion', [CorteController::class, 'create'])->middleware('auth');
-Route::post('/orden-fabricacion', [CorteController::class, 'store'])->middleware('auth');
-
-
-
-
-
-use App\Http\Controllers\DetallesController->middleware('auth');
-*/
-//Route::get('/orden/{id}', [DetallesController::class, 'show'])->name('orden.show')->middleware('auth');
-
-
-
- 
+Route::get('/Manuales Usuario', [HomeController::class, 'ManualesUsuario'])->name('ManualesUsuario')->middleware('auth');
+Route::get('/Manuales/{manual}', [HomeController::class, 'MostrarManual'])->name('MostrarManual')->middleware('auth');
