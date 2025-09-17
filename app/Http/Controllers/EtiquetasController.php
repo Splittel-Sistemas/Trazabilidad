@@ -711,7 +711,7 @@ class EtiquetasController extends Controller
                         throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
                     }else{
                         $imagePath = storage_path('app/Logos/Fibremex.png');
-                        $pdf->Image($imagePath, 27.5, 6, 45);
+                        $pdf->Image($imagePath, 28.5, 6, 45);
                         $margen = 1;
                         $pdf->SetDrawColor(0, 0, 0);
                         $pdf->SetLineWidth(0.4);
