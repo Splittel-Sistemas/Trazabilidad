@@ -468,6 +468,9 @@ class EtiquetasController extends Controller
                             return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es especial para el cliente HUAWEI INTERNATIONAL.']);
                         }else{
                             $NumeroEspecial =  $DatosSAP[0]['SubCatNum'];
+                            if($DatosSAP[0]['SubCatNum'] !="C0563"){
+                                return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es especial para el cliente HUAWEI INTERNATIONAL.']);
+                            }
                         }
                     }
                     $pdf->SetFont('dejavusans', '', 6);
