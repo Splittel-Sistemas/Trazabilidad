@@ -49,6 +49,8 @@ class EtiquetasController extends Controller
         $CantidadEtiquetas = $request->CantidadEtiquetas;
         $OF = $request->OF;
         $TipoEtiqueta = $request->TipoEtiqueta;
+        $PorcentajeA = $request->PorcentajeA;
+        $PorcentajeB = $request->PorcentajeB;
         switch($TipoEtiqueta){
             case 'ETIQ1':
                 return $this->EtiquetaHUAWEI($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion);
@@ -75,7 +77,7 @@ class EtiquetasController extends Controller
                 return $this->EtiquetaInyeccion($CantidadEtiquetas,$PDFOrdenFabricacion);
                 break;
             case 'ETIQ8':
-                return $this->EtiquetaDivisor($CantidadEtiquetas,$PDFOrdenFabricacion);
+                return $this->EtiquetaDivisor($CantidadEtiquetas,$PDFOrdenFabricacion,$PorcentajeA,$PorcentajeB);
                 break;
             default:
                 break;
@@ -105,6 +107,9 @@ class EtiquetasController extends Controller
                     return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es especial para el cliente HUAWEI INTERNATIONAL.']);
                 }else{
                     $NumeroHuawei =  $DatosSAP[0]['SubCatNum'];
+                    if($DatosSAP[0]['SubCatNum'] !="C0563"){
+                        return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es especial para el cliente HUAWEI INTERNATIONAL.']);
+                    }
                 }
             }
             // Crear PDF
@@ -357,7 +362,7 @@ class EtiquetasController extends Controller
             for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
                 $Aumento = 0;
                 $Aumentox  = 0;
-                $pdf->SetFont('dejavusans', '', 6);
+                $pdf->SetFont('dejavusans', 'B', 4.75);
                 $pdf->AddPage('L', array(80, 27.5));
                 if($TipoEtiqBan == 2){
                     $Aumento = 2;
@@ -365,7 +370,7 @@ class EtiquetasController extends Controller
                 }
                 //Codigo 
                 //Primer Codigo
-                $x = 1;
+                $x = 0.5;
                 $y = 3.5+$Aumento;
                 $cx = $x + 17.75 / 2;
                 $cy = $y + 4 / 2;
@@ -375,29 +380,30 @@ class EtiquetasController extends Controller
                 $pdf->Cell(17.5+$Aumentox, 4,$OrdenFabricacion5P." ".str_pad(($NumSerie), 4, '0', STR_PAD_LEFT), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
                 $pdf->StopTransform();
 
-                $x = 17;
-                $y = 20.5-$Aumento;
+                $x = 16;
+                $y = 18-$Aumento;
                 $pdf->SetXY($x, $y);
                 $pdf->Cell(19.5, 2, "  " . $OrdenFabricacion5P . " " . str_pad(($NumSerie), 4, '0', STR_PAD_LEFT), 0, 0, 'C');
 
-                $x = 3;
-                $y = 9;
+                $x = 2;
+                $y = 6;
                 $cx = $x + 14/2;//$x + 8 / 2;
                 $cy = $y + 14/2;
                 $pdf->StartTransform();
                 $pdf->Rotate(180, $cx, $cy);   // rotar 180° sobre el centro del QR
                 $CodigoQR = 'https://optronics.com.mx/360/Inspeccion-Visual-1/'.$OrdenFabricacion->OrdenFabricacion.str_pad(($NumSerie), 4, '0', STR_PAD_LEFT).".html";
-                $pdf->write2DBarcode($CodigoQR, 'QRCODE,H', $x, $y, 14, 14, null, 'N');
+                $pdf->write2DBarcode($CodigoQR, 'QRCODE,M', $x, $y, 12, 12, null, 'N');
                 $pdf->StopTransform();
 
                 $x = 20;
                 $y = 4.5;
                 $pdf->StartTransform();
-                $pdf->write2DBarcode($CodigoQR,'QRCODE,H',$x,$y,14,14,null,'N');
+
+                $pdf->write2DBarcode($CodigoQR,'QRCODE,M',$x,$y,12,12,null,'N');
                 //END
                 //Codigo 2
                 if($i+1 < $PaginaFin OR (($i+1) == $PaginaFin AND $TotalPaginas%2 == 0)){
-                    $x = 40.5;
+                    $x = 38.5;
                     $y = 3.5+$Aumento;
                     $cx = $x + 17.75 / 2;
                     $cy = $y + 4 / 2;
@@ -407,25 +413,24 @@ class EtiquetasController extends Controller
                     $pdf->Cell(17.5+$Aumentox, 4,$OrdenFabricacion5P." ".str_pad(($NumSerie+1), 4, '0', STR_PAD_LEFT), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
                     $pdf->StopTransform();
 
-                    $x = 57;
-                    $y = 20.5-$Aumento;
+                    $x = 53;
+                    $y = 18-$Aumento;
                     $pdf->SetXY($x, $y);
                     $pdf->Cell(19.5, 2, "  " . $OrdenFabricacion5P . " " . str_pad(($NumSerie+1), 4, '0', STR_PAD_LEFT), 0, 0, 'C');
 
-                    $x = 43;
-                    $y = 9;
+                    $x = 40;
+                    $y = 6;
                     $cx = $x + 14/2;
                     $cy = $y + 14/2;
                     $pdf->StartTransform();
                     $pdf->Rotate(180, $cx, $cy);   // rotar 180° sobre el centro del QR
                     $CodigoQR = 'https://optronics.com.mx/360/Inspeccion-Visual-1/'.$OrdenFabricacion->OrdenFabricacion.str_pad(($NumSerie + 1), 4, '0', STR_PAD_LEFT).".html";
-                    $pdf->write2DBarcode($CodigoQR, 'QRCODE,H', $x, $y, 14, 14, null, 'N');
+                    $pdf->write2DBarcode($CodigoQR, 'QRCODE,M', $x, $y, 12, 12, null, 'N');
                     $pdf->StopTransform();
-
-                    $x = 60;
+                    $x = 57;
                     $y = 4.5;
                     $pdf->StartTransform();
-                    $pdf->write2DBarcode($CodigoQR,'QRCODE,H',$x,$y,14,14,null,'N');
+                    $pdf->write2DBarcode($CodigoQR,'QRCODE,M',$x,$y,12,12,null,'N');
                     if($TipoEtiqBan == 2){
                         //Datos de SAP
                         $NumeroEspecial = "";
@@ -898,44 +903,140 @@ class EtiquetasController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    public function EtiquetaDivisor($CantidadEtiquetas,$OrdenFabricacion){
+    public function EtiquetaDivisor($CantidadEtiquetas,$OrdenFabricacion,$PorcentajeA,$PorcentajeB){
         try {
+            if($PorcentajeA <1 OR $PorcentajeB<1){
+                return response()->json(['error' => "Medida 1 y Medida 2 tienen que ser mayor a 0"], 500);
+            }
             // Crear PDF
             $pdf = new TCPDF();
             // Ajustar márgenes
             $pdf->SetMargins(1, 1, 1); 
+            $pdf->SetFont('dejavusans', '', 10);  //dejavusans equivalente a Arial helvetica
             $pdf->SetAutoPageBreak(TRUE, 0.5);   
             $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
             $pdf->SetPrintHeader(false);
 
             // Contador para saber cuántas etiquetas se han colocado en la página
+            $ResiduoCantidadEtiquetas = $CantidadEtiquetas%3;
+            $CantidadEtiquetas = intval($CantidadEtiquetas/3);
             for ($i=0; $i<$CantidadEtiquetas; $i++) {
-                 $pdf->SetFont('helvetica', '', 10);
-                $pdf->AddPage('L', array(35, 22));
+                $pdf->SetFont('helvetica', 'B', 9.5);
+                $pdf->AddPage('L', array(114, 25));
                 $pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetLineWidth(0.3);
-                $pdf->Rect(3, 4, 8 , 5 );
-                $pdf->Rect(13, 4, 8 , 5 );
-                $pdf->Rect(23, 4, 8 , 5 );
-                $pdf->Rect(3, 13, 8 , 5 );
-                $pdf->Rect(13, 13, 8 , 5 );
-                $pdf->Rect(23, 13, 8 , 5 );
-
-                $pdf->SetXY(12.5, 4);
-                $pdf->MultiCell(51, 0, "OUT", 0, 'L', 0, 1);
-                $pdf->SetXY(22.5, 4);
-                $pdf->MultiCell(51, 0, "50%", 0, 'L', 0, 1);
-
-                $pdf->SetXY(3, 13);
-                $pdf->MultiCell(51, 0, "50%", 0, 'L', 0, 1);
-                $pdf->SetXY(12.5, 13);
-                $pdf->MultiCell(51, 0, "50%", 0, 'L', 0, 1);
-                $pdf->SetXY(22.5, 13);
-                $pdf->MultiCell(51, 0, "50%", 0, 'L', 0, 1);
+                //Cuadro 1
+                $pdf->Rect(3, 6, 8 , 5 );
+                $pdf->Rect(13, 6, 8 , 5 );
+                $pdf->Rect(23, 6, 8 , 5 );
+                $pdf->Rect(3, 15, 8 , 5 );
+                $pdf->Rect(13, 15, 8 , 5 );
+                $pdf->Rect(23, 15, 8 , 5 );
+                $pdf->SetXY(20.7, 4);
+                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
+                $pdf->SetXY(1, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
+                $pdf->SetXY(10.7, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+                $pdf->SetXY(20.7, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
 
                 $pdf->SetFont('helvetica', 'B', 10);
-                $pdf->SetXY(4.5, 4);
-                $pdf->MultiCell(51, 0, "IN", 0, 'L', 0, 1);
+                $pdf->SetXY(10.2, 4);
+                $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
+                $pdf->SetXY(2.5, 4);
+                $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
+                // Cuadro 2
+                $pdf->Rect(41, 6, 8 , 5 );
+                $pdf->Rect(51, 6, 8 , 5 );
+                $pdf->Rect(61, 6, 8 , 5 );
+                $pdf->Rect(41, 15, 8 , 5 );
+                $pdf->Rect(51, 15, 8 , 5 );
+                $pdf->Rect(61, 15, 8 , 5 );
+                $pdf->SetXY(57.7, 4);
+                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
+                $pdf->SetXY(37.7, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
+                $pdf->SetXY(47.7, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+                $pdf->SetXY(57.7, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+
+                $pdf->SetFont('helvetica', 'B', 10);
+                $pdf->SetXY(47.2, 4);
+                $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
+                $pdf->SetXY(39.7, 4);
+                $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
+                // Cuadro 3
+                $pdf->Rect(75, 6, 8 , 5 );
+                $pdf->Rect(85, 6, 8 , 5 );
+                $pdf->Rect(95, 6, 8 , 5 );
+                $pdf->Rect(75, 15, 8 , 5 );
+                $pdf->Rect(85, 15, 8 , 5 );
+                $pdf->Rect(95, 15, 8 , 5 );
+                $pdf->SetXY(97.7, 4);
+                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
+                $pdf->SetXY(77.7, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
+                $pdf->SetXY(87.7, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+                $pdf->SetXY(97.7, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+
+                $pdf->SetFont('helvetica', 'B', 10);
+                $pdf->SetXY(87.2, 4);
+                $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
+                $pdf->SetXY(79.7, 4);
+                $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
+            }
+            if($ResiduoCantidadEtiquetas >= 1){
+                $pdf->SetFont('helvetica', 'B', 9.5);
+                $pdf->AddPage('L', array(114, 25));
+                $pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetLineWidth(0.3);
+                //Cuadro 1
+                $pdf->Rect(1, 4, 8 , 5 );
+                $pdf->Rect(11, 4, 8 , 5 );
+                $pdf->Rect(21, 4, 8 , 5 );
+                $pdf->Rect(1, 13, 8 , 5 );
+                $pdf->Rect(11, 13, 8 , 5 );
+                $pdf->Rect(21, 13, 8 , 5 );
+                $pdf->SetXY(20.7, 4);
+                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
+                $pdf->SetXY(1, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
+                $pdf->SetXY(10.7, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+                $pdf->SetXY(20.7, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+
+                $pdf->SetFont('helvetica', 'B', 10);
+                $pdf->SetXY(10.2, 4);
+                $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
+                $pdf->SetXY(2.5, 4);
+                $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
+            }
+            if($ResiduoCantidadEtiquetas >= 2){
+                $pdf->Rect(38, 4, 8 , 5 );
+                $pdf->Rect(48, 4, 8 , 5 );
+                $pdf->Rect(58, 4, 8 , 5 );
+                $pdf->Rect(38, 13, 8 , 5 );
+                $pdf->Rect(48, 13, 8 , 5 );
+                $pdf->Rect(58, 13, 8 , 5 );
+                $pdf->SetXY(57.7, 4);
+                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
+                $pdf->SetXY(37.7, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
+                $pdf->SetXY(47.7, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+                $pdf->SetXY(57.7, 13);
+                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+
+                $pdf->SetFont('helvetica', 'B', 10);
+                $pdf->SetXY(47.2, 4);
+                $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
+                $pdf->SetXY(39.7, 4);
+                $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
             }
             ob_end_clean();
             // Generar el archivo PDF y devolverlo al navegador
