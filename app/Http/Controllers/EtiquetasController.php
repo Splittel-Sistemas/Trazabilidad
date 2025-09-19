@@ -360,7 +360,7 @@ class EtiquetasController extends Controller
             $PaginaFin = $PaginaFin/2;
             $NumSerie = 1;
             for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
-                $Aumento = 3;
+                $Aumento = 0;
                 $Aumentox  = 0;
                 $pdf->SetFont('dejavusans', 'B', 4.75);
                 $pdf->AddPage('L', array(80, 27.5));
