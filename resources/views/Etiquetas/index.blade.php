@@ -58,7 +58,7 @@
                                     <option value="" disabled>Selecciona una Opci&oacute;n</option>
                                     <option value="ETIQ1">ETIQUETA ESPECIAL HUAWEI</option>
                                     <option value="ETIQ2">ETIQUETA DE BANDERILLA QR GENERAL</option>
-                                    {{--<option value="ETIQ3">ETIQUETA DE BANDERILLA QR NÚMERO ESPECIAL</option>--}}
+                                    <option value="ETIQ3">ETIQUETA DE BANDERILLA QR NÚMERO ESPECIAL</option>
                                     <option value="ETIQ4">ETIQUETA DE BOLSA JUMPER</option>
                                     <option value="ETIQ4CEDIS">ETIQUETA DE BOLSA JUMPER CEDIS</option>
                                     <option value="ETIQ5">ETIQUETA DE NÚMERO DE PIEZAS</option>
@@ -133,6 +133,7 @@
                                             <input class="form-control" id="PorcentajeB" type="number" placeholder="0" value="50" />
                                         </div>
                                     </div>
+                                    <input type="hidden" id="CodigoCliente">
                                     <div class="col-3" id="ContenedorBoton">
                                         <div class="mt-4">
                                             <button type="button" id="BtnGenerar" class="btn btn-phoenix-primary me-1 mb-1">Generar</button>
@@ -236,6 +237,8 @@
         TextoDetallesCliente = document.getElementById("TextoDetallesCliente");
         TextoDetallesOV.innerHTML = "";
         TextoDetallesCliente.innerHTML = "";
+        CodigoCliente = document.getElementById('CodigoCliente');
+        CodigoCliente.value = "";
         URL = '{{ route("Etiquetas.show", ":OF")}}'.replace(":OF", OF);
         fetch(URL)
         .then(response => response.json())
@@ -245,6 +248,7 @@
             CantidadEtiquetas.value = data.CantidadTotal;
             TextoDetallesOV.innerHTML = "Orden de Venta: "+data.OrdenVenta+ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+"Orden Fabricación: "+data.OrdenFabricacion;
             TextoDetallesCliente.innerHTML = data.Cliente+"   ("+data.CodigoCliente+")";
+            CodigoCliente.value = data.CodigoCliente;
         })
         .catch(error1 => {
             $('#ModalDetalle').modal('hide');    
@@ -351,6 +355,7 @@
         InputSociedad = document.getElementById("Sociedad");
         InputPorcentajeA = document.getElementById("PorcentajeA");
         InputPorcentajeB = document.getElementById("PorcentajeB");
+        InputCodigoCliente = document.getElementById("CodigoCliente");
         CantidadEtiquetas = document.getElementById("CantidadEtiquetas");
         PdfAlerta = document.getElementById("PdfAlerta");
         InputTipoEtiqueta = document.getElementById("TipoEtiqueta").value;
@@ -366,6 +371,7 @@
             TipoEtiqueta:InputTipoEtiqueta,
             PorcentajeA:InputPorcentajeA.value,
             PorcentajeB:InputPorcentajeB.value,
+            CodigoCliente:InputCodigoCliente.value,
 
         };
         SpinnerInsert('PdfEspinner');

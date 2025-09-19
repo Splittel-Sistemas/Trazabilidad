@@ -793,9 +793,26 @@ class PlaneacionController extends Controller
         }else{
             $where = 'T0."DocNum" LIKE \'%' . $NumOV . '%\'';
         }
+        //Queretaro
         $sql = 'SELECT T0."DocNum" AS "OV", T0."CardName" AS "Cliente", T0."DocDate" AS "Fecha", 
-                T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" FROM ' . $schema . '.ORDR T0 
-                WHERE '.$where.'ORDER BY T0."DocNum"';
+                T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total", MIN(T1."WhsCode") AS "WhsCode"
+                FROM ' . $schema . '.ORDR T0 
+                INNER JOIN '.$schema.'.RDR1 T1 ON T0."DocEntry" = T1."DocEntry"
+                WHERE '.$where.'
+                AND T1."WhsCode" NOT IN (\'BOE-MP\',\'BOE-PT\')
+                GROUP BY T0."DocNum", T0."CardName", T0."DocDate", T0."DocStatus", T0."DocTotal"
+                ORDER BY T0."DocNum"';
+        //Tijuana
+        /*
+        $sql = 'SELECT T0."DocNum" AS "OV", T0."CardName" AS "Cliente", T0."DocDate" AS "Fecha", 
+                T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total", MIN(T1."WhsCode") AS "WhsCode"
+                FROM ' . $schema . '.ORDR T0 
+                INNER JOIN '.$schema.'.RDR1 T1 ON T0."DocEntry" = T1."DocEntry"
+                WHERE '.$where.'
+                 AND T1."WhsCode" IN (\'BOE-MP\',\'BOE-PT\')
+                GROUP BY T0."DocNum", T0."CardName", T0."DocDate", T0."DocStatus", T0."DocTotal"
+                ORDER BY T0."DocNum"';
+        */
         try {
             $datos = $this->funcionesGenerales->ejecutarConsulta($sql);
         } catch (\Exception $e) {

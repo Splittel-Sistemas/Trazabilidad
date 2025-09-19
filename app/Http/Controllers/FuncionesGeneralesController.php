@@ -118,6 +118,9 @@ class FuncionesGeneralesController extends Controller
     }
     public function OrdenFabricacion($ordenventa){
         $schema = 'HN_OPTRONICS';
+        //Este Where Es para traer solo lo de Optronics
+        
+        //End
         $sql = "SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", 
                     T1.\"Dscription\" AS \"Descripcion\", 
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
@@ -166,8 +169,25 @@ class FuncionesGeneralesController extends Controller
         $datos="";
         $where = 'T0."DocNum" LIKE \'%' . $NumOV . '%\'';
         $sql = 'SELECT T0."DocNum" AS "OV", T0."CardName" AS "Cliente",T0."CardCode" AS "CardCode", T0."DocDate" AS "Fecha", 
-                T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" FROM ' . $schema . '.ORDR T0 
+                T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" 
+                FROM ' . $schema . '.ORDR T0
                 WHERE '.$where.'ORDER BY T0."DocNum"';
+        //Queretaro
+        /*$sql = 'SELECT T0."DocNum" AS "OV", T0."CardName" AS "Cliente",T0."CardCode" AS "CardCode", T0."DocDate" AS "Fecha", 
+                T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" 
+                FROM ' . $schema . '.ORDR T0
+                INNER JOIN '.$schema.'.RDR1 T1 ON T0."DocEntry" = T1."DocEntry" 
+                WHERE '.$where.'ORDER BY T0."DocNum"
+                AND T1.WhsCode NOT IN (\'BOE-MP\',\'BOE-PT\')';
+         //Tijuana
+        $sql = 'SELECT T0."DocNum" AS "OV", T0."CardName" AS "Cliente",T0."CardCode" AS "CardCode", T0."DocDate" AS "Fecha", 
+                T0."DocStatus" AS "Estado", T0."DocTotal" AS "Total" 
+                FROM ' . $schema . '.ORDR T0
+                INNER JOIN '.$schema.'.RDR1 T1 ON T0."DocEntry" = T1."DocEntry" 
+                WHERE '.$where.'ORDER BY T0."DocNum"
+                AND T1.WhsCode IN (\'BOE-MP\',\'BOE-PT\')';*/
+
+        /**AND T1.WhsCode NOT IN ('BOE-MP','BOE-PT') */
         try {
             $datos = $this->ejecutarConsulta($sql);
         } catch (\Exception $e) {
