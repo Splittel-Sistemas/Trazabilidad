@@ -170,7 +170,7 @@ class EtiquetasController extends Controller
                 $pdf->SetXY($posX+70, 16);
                 $pdf->MultiCell(40, 0, $ParteNo, 0, 'L', 0, 1);
                 $pdf->SetXY($posX+24, 22); 
-                $pdf->MultiCell(69, 0, $OrdenFabricacion->Descripcion, 0, 'L', 0, 1);
+                $pdf->MultiCell(69, 0, html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 0, 'L', 0, 1);
                 $pdf->SetXY($posX+4, 31); 
                 $pdf->MultiCell(60, 0, "Specification:  ", 0, 'L', 0, 1);
                 //Codigo de barras
@@ -255,7 +255,7 @@ class EtiquetasController extends Controller
                 $pdf->SetXY($posX+1.5, 17); 
                 $pdf->MultiCell(90, 0, $ParteNo, 0, 'L', 0, 1);
                 $pdf->SetFont('dejavusans', '', 10);
-                $Descripcion= $OrdenFabricacion->Descripcion;
+                $Descripcion= html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 $pdf->SetXY($posX+25.5, 17); 
                 $pdf->MultiCell(66, 0, $Descripcion, 0, 'L', 0, 1);
                 //Codigo de barras
@@ -334,7 +334,7 @@ class EtiquetasController extends Controller
                 $pdf->SetXY($posX+3, 16); 
                 $pdf->MultiCell(90, 0, $ParteNo, 0, 'L', 0, 1);
                 $pdf->SetFont('dejavusans', '', 10);
-                $Descripcion= $OrdenFabricacion->Descripcion;
+                $Descripcion= html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 $pdf->SetXY($posX+27, 16); 
                 $pdf->MultiCell(66, 0, $Descripcion, 0, 'L', 0, 1);
                 //Codigo de barras
@@ -823,7 +823,7 @@ class EtiquetasController extends Controller
             }else{
                 $NumeroParte = $OrdenFabricacion->Articulo;
             }
-            $Descripcion = $OrdenFabricacion->Descripcion;
+            $Descripcion = html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $OrdenVenta = $OrdenFabricacion->OrdenVenta;
             $ValorMedicionA = "PERDIDA DE INSERCCION ≤ ".$Insercion." dB";
             $ValorMedicionB = "PERDIDA DE RETORNO   ≥ ".$Retorno." dB";
@@ -1196,7 +1196,7 @@ class EtiquetasController extends Controller
                     $pdf->SetXY(3, 3);
                     $pdf->Cell(63, 6, "Descripción:", 0, 1, 'L', 0);
                     $pdf->SetXY(9, 9);
-                    $pdf->MultiCell(56, 0, $OrdenFabricacion->Descripcion, 0, 'L', 0, 1);
+                    $pdf->MultiCell(56, 0, html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 0, 'L', 0, 1);
                     $pdf->SetXY(3, 27);
                     $pdf->Cell(63, 6, "No. departe:", 0, 1, 'L', 0);
                     $x = 10;
@@ -1320,7 +1320,7 @@ class EtiquetasController extends Controller
                     $pdf->SetXY(3, 25);
                     $pdf->Cell(10, 6, "(MODEL)", 0, 1, 'L', 0);
                     $pdf->SetXY(16, 22);
-                    $pdf->MultiCell(48, 0, $OrdenFabricacion->Descripcion, 0, 'L', 0, 1);
+                    $pdf->MultiCell(48, 0,html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 0, 'L', 0, 1);
 
                     $pdf->SetXY(3, 34);
                     $pdf->Cell(10, 6, "(C.O.)", 0, 1, 'L', 0);
