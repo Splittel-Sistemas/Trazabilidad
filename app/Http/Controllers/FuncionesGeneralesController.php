@@ -212,7 +212,8 @@ class FuncionesGeneralesController extends Controller
         $datos="";
         try {
             $where = 'T0."DocNum" LIKE \'%' . $NumOV . '%\'';
-            $sql = ' SELECT  T0."DocNum" AS "OV",T2."SubCatNum"  AS "SubCatNum", T2."ItemCode" as "ItemCode"
+            $sql = ' SELECT  T0."DocNum" AS "OV",T2."SubCatNum"  AS "SubCatNum", T2."ItemCode" as "ItemCode", 
+                            T1."U_BPItmDsc" as "U_BPItmDsc", T0."DocDate", T0."NumAtCard"
                 FROM  ' . $schema . '.ORDR T0
 				INNER JOIN  ' . $schema . '.RDR1 T2 ON T2."DocEntry" = T0."DocEntry" 
                 LEFT JOIN  ' . $schema . '.OSCN T1 ON T0."CardCode" = T1."CardCode" AND T1."Substitute" = T2."SubCatNum" AND T2."ItemCode" = T1."ItemCode"

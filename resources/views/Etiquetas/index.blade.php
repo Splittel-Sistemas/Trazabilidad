@@ -62,10 +62,12 @@
                                     <option value="ETIQ4">ETIQUETA DE BOLSA JUMPER</option>
                                     <option value="ETIQ4CEDIS">ETIQUETA DE BOLSA JUMPER CEDIS</option>
                                     <option value="ETIQ5">ETIQUETA DE NÚMERO DE PIEZAS</option>
-                                    {{--<option value="ETIQ6">ETIQUETA DE TRAZABILIDAD MPO</option>
+                                    <!--<option value="ETIQ6">ETIQUETA DE TRAZABILIDAD MPO</option>
                                     <option value="ETIQ7">ETIQUETA DE INYECCIÓN</option>
-                                    <option value="ETIQ8">ETIQUETA DE DIVISOR</option>--}}
+                                    <option value="ETIQ8">ETIQUETA DE DIVISOR</option>
                                     <option value="ETIQ4">ETIQUETA DE BOLSA PATCH CORD GENERAL</option>
+                                    <option value="ETIQ9">ETIQUETA DE CAJA HUAWEI</option>
+                                    <option value="ETIQ10">ETIQUETA DE CAJA NOKIA</option>-->
                                 </select>
                                 <div id="ListaOpciones" class="list-group" style="display:none;">
                                     <a onclick="SeleccionarCampo('ETIQ1')" class="list-group-item list-group-item-action active" style="font-size: 12px; padding: 4px 8px;">ETIQUETA ESPECIAL HUAWEI</a>
@@ -74,10 +76,12 @@
                                     <a onclick="SeleccionarCampo('ETIQ4')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE BOLSA JUMPER</a>
                                     <a onclick="SeleccionarCampo('ETIQ4CEDIS')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE BOLSA JUMPER CEDIS</a>
                                     <a onclick="SeleccionarCampo('ETIQ5')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE NÚMERO DE PIEZAS</a>
-                                    {{--<a onclick="SeleccionarCampo('ETIQ6')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE TRAZABILIDAD MPO</a>
-                                    <a onclick="SeleccionarCampo('ETIQ7')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE INYECCIÓN</a>--
-                                    <a onclick="SeleccionarCampo('ETIQ8')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE DIVISOR</a>--}}
+                                    <a onclick="SeleccionarCampo('ETIQ6')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE TRAZABILIDAD MPO</a>
+                                    <a onclick="SeleccionarCampo('ETIQ7')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE INYECCIÓN</a>
+                                    <a onclick="SeleccionarCampo('ETIQ8')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE DIVISOR</a>
                                     <a onclick="SeleccionarCampo('ETIQ4')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE BOLSA PATCH CORD GENERAL</a>
+                                    <a onclick="SeleccionarCampo('ETIQ9')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE CAJA HUAWEI</a>
+                                    <a onclick="SeleccionarCampo('ETIQ10')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE CAJA NOKIA</a>
                                 </div>
                             </div>
                             <div class="col-8">
@@ -105,19 +109,25 @@
                                     </div>
                                     <div class="col-3" id="ContenedorPaginaInicio">
                                         <div class="mb-3">
-                                            <label class="form-label" for="PaginaInicio">P&aacute;gina inicio </label>
+                                            <label class="form-label" for="PaginaInicio">Etiqueta inicio </label>
                                             <input class="form-control" id="PaginaInicio" type="number" placeholder="0" />
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorPaginaFin">
                                         <div class="mb-3">
-                                            <label class="form-label" for="PaginaFin">P&aacute;gina fin  </label>
+                                            <label class="form-label" for="PaginaFin">Etiqueta fin  </label>
                                             <input class="form-control" id="PaginaFin" type="number" placeholder="0" />
+                                        </div>
+                                    </div>
+                                    <div class="col-3" id="ContenedorCantidadCajas">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="CantidadCajas">Cantidad de Cajas  </label>
+                                            <input class="form-control" id="CantidadCajas" type="number" placeholder="0" />
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorCantidadBolsa">
                                         <div class="mb-3">
-                                            <label class="form-label" for="CantidadBolsa">Cantidad por bolsa  </label>
+                                            <label class="form-label" for="CantidadBolsa">Cantidad por bolsa o caja  </label>
                                             <input class="form-control" id="CantidadBolsa" type="number" placeholder="0" value="1" />
                                         </div>
                                     </div>
@@ -133,9 +143,21 @@
                                             <input class="form-control" id="PorcentajeB" type="number" placeholder="0" value="50" />
                                         </div>
                                     </div>
+                                    <div class="col-3" id="ContenedorInsercion" style="display: none">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="Insercion">Insercion  </label>
+                                            <input class="form-control" id="Insercion" type="number" placeholder="0" value="0.50" />
+                                        </div>
+                                    </div>
+                                    <div class="col-3" id="ContenedorRetorno" style="display: none">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="Retorno">Retorno  </label>
+                                            <input class="form-control" id="Retorno" type="number" placeholder="0" value="20.0" />
+                                        </div>
+                                    </div>
                                     <input type="hidden" id="CodigoCliente">
                                     <div class="col-3" id="ContenedorBoton">
-                                        <div class="mt-4">
+                                        <div class="mt-3">
                                             <button type="button" id="BtnGenerar" class="btn btn-phoenix-primary me-1 mb-1">Generar</button>
                                         </div>
                                     </div>
@@ -215,7 +237,13 @@
         InputPaginaFin = document.getElementById("PaginaFin");
         InputPaginaInicio = document.getElementById("PaginaInicio");
         InputCantidadEtiquetas = document.getElementById("CantidadEtiquetas");
+        InputRetorno = document.getElementById("Retorno");
+        InputInsercion = document.getElementById("Insercion");
+        InputCantidadCajas = document.getElementById("CantidadCajas");
+        ContenedorInsercion = document.getElementById("ContenedorInsercion");
+        ContenedorRetorno = document.getElementById("ContenedorRetorno");
         ContenedorCantidadBolsa = document.getElementById("ContenedorCantidadBolsa");
+        ContenedorCantidadCajas = document.getElementById("ContenedorCantidadCajas");
         ContenedorPaginaFin = document.getElementById("ContenedorPaginaFin");
         ContenedorPaginaInicio = document.getElementById("ContenedorPaginaInicio");
         ContenedorSociedad = document.getElementById("ContenedorSociedad");
@@ -223,6 +251,11 @@
         ContenedorPorcentajeB = document.getElementById("ContenedorPorcentajeB");
         ContenedorBoton = document.getElementById("ContenedorBoton");
         ContenedorCantidadEtiquetas = document.getElementById("ContenedorCantidadEtiquetas");
+
+        InputRetorno = 20.0;
+        InputInsercion = 0.50;
+        ContenedorInsercion.style.display = "none";
+        ContenedorRetorno.style.display = "none";
         ContenedorCantidadBolsa.style.display = "none";
         ContenedorPaginaFin.style.display = "none";
         ContenedorPaginaInicio.style.display = "none";
@@ -230,6 +263,7 @@
         ContenedorPorcentajeA.style.display = "none";
         ContenedorPorcentajeB.style.display = "none";
         ContenedorBoton.style.display = "none";
+        ContenedorCantidadCajas.style.display = "none";
         ContenedorCantidadEtiquetas.style.display = "none";
         document.getElementById('pdfIframe').src = "";
         document.getElementById('pdfIframe').style.display = "none";
@@ -245,10 +279,12 @@
         .then(data => {
             InputPaginaInicio.value = 1;
             InputPaginaFin.value = data.CantidadTotal;
+            InputCantidadCajas.value = data.CantidadTotal;
             CantidadEtiquetas.value = data.CantidadTotal;
             TextoDetallesOV.innerHTML = "Orden de Venta: "+data.OrdenVenta+ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+"Orden Fabricación: "+data.OrdenFabricacion;
             TextoDetallesCliente.innerHTML = data.Cliente+"   ("+data.CodigoCliente+")";
             CodigoCliente.value = data.CodigoCliente;
+            
         })
         .catch(error1 => {
             $('#ModalDetalle').modal('hide');    
@@ -263,6 +299,19 @@
         InputSociedad = document.getElementById("Sociedad");
         InputPorcentajeA = document.getElementById("PorcentajeA");
         InputPorcentajeB = document.getElementById("PorcentajeB");
+        InputRetorno = document.getElementById("Retorno");
+        InputInsercion = document.getElementById("Insercion");
+        InputCantidadCajas = document.getElementById("CantidadCajas");
+
+        InputCantidadBolsa.value = 1;
+        InputPorcentajeA.value = 50;
+        InputPorcentajeB.value = 50;
+        InputRetorno.value = 20.0;
+        InputInsercion.value = 0.50;
+        InputCantidadCajas.value = 1;
+
+        ContenedorInsercion = document.getElementById("ContenedorInsercion");
+        ContenedorRetorno = document.getElementById("ContenedorRetorno");
         ContenedorCantidadBolsa = document.getElementById("ContenedorCantidadBolsa");
         ContenedorPaginaFin = document.getElementById("ContenedorPaginaFin");
         ContenedorPaginaInicio = document.getElementById("ContenedorPaginaInicio");
@@ -271,7 +320,11 @@
         ContenedorPorcentajeB = document.getElementById("ContenedorPorcentajeB");
         ContenedorBoton = document.getElementById("ContenedorBoton");
         ContenedorCantidadEtiquetas = document.getElementById("ContenedorCantidadEtiquetas");
+        ContenedorCantidadCajas = document.getElementById("ContenedorCantidadCajas");
+
         TituloEtiqueta = document.getElementById("TituloEtiqueta");
+        ContenedorInsercion.style.display = "none";
+        ContenedorRetorno.style.display = "none";
         ContenedorPaginaFin.style.display = "none";
         ContenedorPaginaInicio.style.display = "none";
         ContenedorBoton.style.display = "none";
@@ -280,6 +333,7 @@
         ContenedorCantidadBolsa.style.display = "none";
         ContenedorPorcentajeA.style.display = "none";
         ContenedorPorcentajeB.style.display = "none";
+        ContenedorCantidadCajas.style.display = "none";
         BtnGenerar = document.getElementById("BtnGenerar");
         BtnGenerar.onclick = "";
         $('#PdfAlerta').hide();
@@ -327,8 +381,11 @@
                 TituloEtiqueta.innerHTML = "ETIQUETA DE NÚMERO DE PIEZAS";
                 break;
             case 'ETIQ6':
-                ContenedorCantidadEtiquetas.style.display = "";
+                ContenedorPaginaInicio.style.display = "";
+                ContenedorPaginaFin.style.display = "";
                 ContenedorBoton.style.display = "";
+                ContenedorInsercion.style.display = "";
+                ContenedorRetorno.style.display = "";
                 TituloEtiqueta.innerHTML = "ETIQUETA DE TRAZABILIDAD MPO";
                 break;
             case 'ETIQ7':
@@ -343,6 +400,22 @@
                 ContenedorPorcentajeB.style.display = "";
                 TituloEtiqueta.innerHTML = "ETIQUETA DE DIVISOR";
                 break;
+            case 'ETIQ9':
+                ContenedorPaginaFin.style.display = "";
+                ContenedorPaginaInicio.style.display = "";
+                ContenedorCantidadBolsa.style.display = "";
+                ContenedorCantidadCajas.style.display = "";
+                ContenedorBoton.style.display = "";
+                TituloEtiqueta.innerHTML = "ETIQUETA DE CAJA HUAWEI";
+                break;
+            case 'ETIQ10':
+                ContenedorPaginaFin.style.display = "";
+                ContenedorPaginaInicio.style.display = "";
+                ContenedorCantidadBolsa.style.display = "";
+                ContenedorCantidadCajas.style.display = "";
+                ContenedorBoton.style.display = "";
+                TituloEtiqueta.innerHTML = "ETIQUETA DE CAJA NOKIA";
+                break;
             default:
                 break;
         }
@@ -356,7 +429,10 @@
         InputPorcentajeA = document.getElementById("PorcentajeA");
         InputPorcentajeB = document.getElementById("PorcentajeB");
         InputCodigoCliente = document.getElementById("CodigoCliente");
+        InputCantidadCajas = document.getElementById("CantidadCajas");
         CantidadEtiquetas = document.getElementById("CantidadEtiquetas");
+        InputRetorno = document.getElementById("Retorno");
+        InputInsercion = document.getElementById("Insercion");
         PdfAlerta = document.getElementById("PdfAlerta");
         InputTipoEtiqueta = document.getElementById("TipoEtiqueta").value;
         const URL = '{{ route("Etiquetas.Generar") }}';
@@ -372,6 +448,9 @@
             PorcentajeA:InputPorcentajeA.value,
             PorcentajeB:InputPorcentajeB.value,
             CodigoCliente:InputCodigoCliente.value,
+            Insercion:InputInsercion.value,
+            Retorno:InputRetorno.value,
+            CantidadCajas:InputCantidadCajas.value,
 
         };
         SpinnerInsert('PdfEspinner');

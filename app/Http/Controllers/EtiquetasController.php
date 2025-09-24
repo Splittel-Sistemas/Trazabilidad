@@ -8,13 +8,20 @@ use App\Models\Partidasof_Areas;
 use App\Models\PartidasOF;
 use App\Models\OrdenFabricacion;
 use App\Models\OrdenVenta;
+use Carbon\Carbon;
 use TCPDF;
 use Illuminate\Support\Facades\Auth;
 class EtiquetasController extends Controller
 {
     protected $funcionesGenerales;
+    protected $HuaweiInternacional;
+    protected $Nokia;
+    protected $Drai;
     public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
+        $this->HuaweiInternacional = "C0563";
+        $this->Nokia = "C0675";
+        $this->Drai = "C0003";
     }
     public function index(){
          $user = Auth::user();
@@ -52,6 +59,9 @@ class EtiquetasController extends Controller
         $PorcentajeA = $request->PorcentajeA;
         $PorcentajeB = $request->PorcentajeB;
         $CodigoCliente = $request->CodigoCliente;
+        $Insercion = $request->Insercion;
+        $Retorno = $request->Retorno;
+        $CantidadCajas = $request->CantidadCajas;
         switch($TipoEtiqueta){
             case 'ETIQ1':
                 return $this->EtiquetaHUAWEI($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CodigoCliente);
@@ -72,13 +82,19 @@ class EtiquetasController extends Controller
                 return $this->EtiquetaNumeroPiezas($Sociedad,$CantidadEtiquetas,$CantidadBolsa,$PDFOrdenFabricacion);
                 break;
             case 'ETIQ6':
-                return $this->EtiquetaTrazabilidadMPO($CantidadEtiquetas,$PDFOrdenFabricacion);
+                return $this->EtiquetaTrazabilidadMPO($PaginaInicio,$PaginaFin,$Insercion,$Retorno,$PDFOrdenFabricacion,$CodigoCliente);
                 break;
             case 'ETIQ7':
                 return $this->EtiquetaInyeccion($CantidadEtiquetas,$PDFOrdenFabricacion);
                 break;
             case 'ETIQ8':
                 return $this->EtiquetaDivisor($CantidadEtiquetas,$PDFOrdenFabricacion,$PorcentajeA,$PorcentajeB);
+                break;
+            case 'ETIQ9':
+                return $this->EtiquetaCajaHuawei($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CantidadCajas,$CantidadBolsa,$CodigoCliente);
+                break;
+            case 'ETIQ10':
+                return $this->EtiquetaCajaNokia($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CantidadEtiquetas,$CantidadBolsa,$CodigoCliente);
                 break;
             default:
                 break;
@@ -108,7 +124,7 @@ class EtiquetasController extends Controller
                     return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es especial para el cliente HUAWEI INTERNATIONAL.']);
                 }else{
                     $NumeroHuawei =  $DatosSAP[0]['SubCatNum'];
-                    if($CodigoCliente != "C0563"){
+                    if($CodigoCliente != $this->HuaweiInternacional){
                         return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es especial para el cliente HUAWEI INTERNATIONAL.']);
                     }
                 }
@@ -159,9 +175,10 @@ class EtiquetasController extends Controller
                 $pdf->MultiCell(60, 0, "Specification:  ", 0, 'L', 0, 1);
                 //Codigo de barras
                 $NumeroProveedorOpt = '4U1003';
-                $Year = $fecha = date('Y');
+                $fecha = Carbon::parse($DatosSAP[0]["DocDate"]);
+                $Year = $fecha->isoFormat('GG');
                 $Year = substr($Year, -2);
-                $NumeroSemana = date('W');
+                $NumeroSemana = $fecha->isoWeek(); 
                 $CantidadBolsa = 'Q0001';
                 $UltimosDigOF = 'S'.substr($OrdenFabricacion->OrdenFabricacion,-2);
                 $CodigoBarras = '19'.$NumeroHuawei."/".$NumeroProveedorOpt.$Year.str_pad($NumeroSemana, 2, '0', STR_PAD_LEFT).$CantidadBolsa.$UltimosDigOF.str_pad(($i+1), 4, '0', STR_PAD_LEFT);
@@ -448,9 +465,9 @@ class EtiquetasController extends Controller
                             if($DatosSAP[0]['SubCatNum']==""){
                                 return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es solo para Cliente Especial.']);
                             }else{
-                                if($CodigoCliente == "C0563"){
+                                if($CodigoCliente == $this->HuaweiInternacional){
                                     $NumeroEspecial =  $DatosSAP[0]['SubCatNum'];
-                                }elseif($CodigoCliente == "C0675"){
+                                }elseif($CodigoCliente == $this->Nokia){
                                     $NumeroEspecial =  $DatosSAP[0]['ItemCode'];
                                     $LetraEspecial = 1.5;
                                     $AumentoLetraEspecial =0.5;
@@ -487,9 +504,9 @@ class EtiquetasController extends Controller
                         if($DatosSAP[0]['SubCatNum']==""){
                             return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es solo para Cliente Especial']);
                         }else{
-                            if($CodigoCliente == "C0563"){
+                            if($CodigoCliente == $this->HuaweiInternacional){
                                 $NumeroEspecial =  $DatosSAP[0]['SubCatNum'];
-                            }elseif($CodigoCliente == "C0675"){
+                            }elseif($CodigoCliente == $this->Nokia){
                                 $NumeroEspecial =  $DatosSAP[0]['ItemCode'];
                                 $LetraEspecial = 1.5;
                                 $AumentoLetraEspecial = 0.5;
@@ -694,18 +711,122 @@ class EtiquetasController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    public function EtiquetaTrazabilidadMPO($CantidadEtiquetas,$OrdenFabricacion){
-         try {
-            $NombreFabricacante = "Optronics S.A. de C.V.";
+    /*public function EtiquetaTrazabilidadMPO($CantidadEtiquetas,$OrdenFabricacion){
+        try {
+            // create new PDF document
+            $pdf = new TCPDF();
+
+            // set document information
+            $pdf->SetCreator(PDF_CREATOR);
+            $pdf->SetAuthor('Nicola Asuni');
+            $pdf->SetTitle('TCPDF Example 060');
+            $pdf->SetSubject('TCPDF Tutorial');
+            $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+
+            // set default header data
+            $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 060', PDF_HEADER_STRING);
+
+            // set header and footer fonts
+            $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+            $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+            // set default monospaced font
+            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+            // set margins
+            $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+            $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+            $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+            // set auto page breaks
+            $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+            // set image scale factor
+            $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+            // set some language-dependent strings (optional)
+            if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+                require_once(dirname(__FILE__).'/lang/eng.php');
+                $pdf->setLanguageArray($l);
+            }
+
+            // set font
+            $pdf->SetFont('helvetica', '', 20);
+
+            // ---------------------------------------------------------
+
+            // set page format (read source code documentation for further information)
+            $page_format = array(
+                'MediaBox' => array ('llx' => 0, 'lly' => 0, 'urx' => 210, 'ury' => 297),
+                'CropBox' => array ('llx' => 0, 'lly' => 0, 'urx' => 210, 'ury' => 297),
+                'BleedBox' => array ('llx' => 5, 'lly' => 5, 'urx' => 205, 'ury' => 292),
+                'TrimBox' => array ('llx' => 10, 'lly' => 10, 'urx' => 200, 'ury' => 287),
+                'ArtBox' => array ('llx' => 15, 'lly' => 15, 'urx' => 195, 'ury' => 282),
+                'Dur' => 3,
+                'trans' => array(
+                    'D' => 1.5,
+                    'S' => 'Split',
+                    'Dm' => 'V',
+                    'M' => 'O'
+                ),
+                'Rotate' => 90,
+                'PZ' => 1,
+            );
+
+            // Check the example n. 29 for viewer preferences
+
+            // add first page ---
+            $pdf->AddPage('P', $page_format, false, false);
+            $pdf->Cell(0, 12, 'First Page', 1, 1, 'C');
+
+            // add second page ---
+            $page_format['Rotate'] =90;
+            $pdf->AddPage('P', $page_format, false, false);
+            $pdf->Cell(0, 12, 'Second Page', 1, 1, 'C');
+
+            ob_end_clean();
+            // Generar el archivo PDF y devolverlo al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumper_'.date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }*/
+    public function EtiquetaTrazabilidadMPO($PaginaInicio,$PaginaFin,$Insercion,$Retorno,$OrdenFabricacion,$CodigoCliente){
+        try {
+            if ($Insercion != floor($Insercion)) {
+                    $Insercion = number_format((float)$Insercion, 2);
+            }else{
+                $Insercion = $Insercion = number_format((float)$Insercion, 1);
+            }
+            if ($Retorno != floor($Retorno)) {
+                    $Retorno = number_format((float)$Retorno, 2);
+            }else{
+                $Retorno = $Retorno = number_format((float)$Retorno, 1);
+            }
+            $NombreFabricante = "Optronics S.A. de C.V.";
             $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first(); 
             if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
-                return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']);
+                return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']); return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']);
             }
-            $NumeroParte = $OrdenFabricacion->Articulo;
+            if ($PaginaFin<$PaginaInicio) {
+                return json_encode(["error" => 'Página de inicio tiene que ser menor a Página fin.']);
+            }
+            $NumeroParte = "";
+            if($this->Nokia == $CodigoCliente OR $this->HuaweiInternacional == $CodigoCliente OR $this->Drai == $CodigoCliente){
+                $NumOV = $OrdenFabricacion->OrdenVenta->OrdenVenta;
+                $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($NumOV);
+                if($this->HuaweiInternacional == $CodigoCliente){
+                    $NumeroParte = $DatosSAP[0]["SubCatNum"];
+                }elseif($this->Nokia == $CodigoCliente OR $this->Drai == $CodigoCliente){
+                    $NumeroParte = $DatosSAP[0]["ItemCode"];
+                }
+            }else{
+                $NumeroParte = $OrdenFabricacion->Articulo;
+            }
             $Descripcion = $OrdenFabricacion->Descripcion;
             $OrdenVenta = $OrdenFabricacion->OrdenVenta;
-            $ValorMedicionA = "PERDIDA DE INSERCCION ≤ 0.50 dB";
-            $ValorMedicionB = "PERDIDA DE RETORNO ≥ 20.0 dB";
+            $ValorMedicionA = "PERDIDA DE INSERCCION ≤ ".$Insercion." dB";
+            $ValorMedicionB = "PERDIDA DE RETORNO   ≥ ".$Retorno." dB";
             $nombre = auth()->user()->name;
             $nombre = $nombre[0];
             if($OrdenVenta == ""){
@@ -714,7 +835,7 @@ class EtiquetasController extends Controller
                 $OrdenVenta = $OrdenVenta->OrdenVenta;
             }
             // Crear PDF
-            $pdf = new TCPDF();
+            $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             // Ajustar márgenes
             $pdf->SetMargins(2, 2, 2); 
             $pdf->SetFont('dejavusans', '', 10);
@@ -723,47 +844,80 @@ class EtiquetasController extends Controller
             $pdf->SetPrintHeader(false);
 
             // Contador para saber cuántas etiquetas se han colocado en la página
-            for ($i=0; $i<$CantidadEtiquetas; $i++) {
-                $pdf->AddPage('P', array(35,22));
+            $CompletoCantidadEtiquetas = $PaginaFin;
+            $CantidadEtiquetas = $CompletoCantidadEtiquetas/2;
+            $serial = $PaginaInicio;
+            $PaginaInicio = ($PaginaInicio-1)/2;
+            //return $PaginaInicio."     ".$CantidadEtiquetas;
+            for ($i=$PaginaInicio; $i<$CantidadEtiquetas; $i++) {
+                //Sirve para girar la pagina 270 grados
+                //Si hay duda revisar documentacion Tcpdf Ejemplo 060: configuración de página avanzada
+                $page_format = array(
+                    'MediaBox' => array('llx' => 0, 'lly' => 0, 'urx' => 80, 'ury' => 27.5),
+                    'CropBox' => array('llx' => 0, 'lly' => 0, 'urx' => 80, 'ury' => 27.5),
+                    'BleedBox' => array('llx' => 2, 'lly' => 2, 'urx' => 78, 'ury' => 25.5),
+                    'TrimBox' => array('llx' => 4, 'lly' => 4, 'urx' => 76, 'ury' => 23.5),
+                    'ArtBox' => array('llx' => 6, 'lly' => 6, 'urx' => 74, 'ury' => 21.5),
+                    'Dur' => 3,
+                    'trans' => array(
+                        'D' => 1.5,
+                        'S' => 'Split',
+                        'Dm' => 'V',
+                        'M' => 'O'
+                    ),
+                    'Rotate' => 270,
+                    'PZ' => 1,
+                );
+                $pdf->AddPage('P',$page_format,false, false); //Cada Etiqueta sera de 35X22
                 $pdf->SetFont('dejavusans', '', 5);
-                $pdf->SetXY(1, 3); 
-                $pdf->MultiCell(22, 0, $NombreFabricacante, 0, 'L', 0, 1);
-                $pdf->SetFont('dejavusans', 'B', 5);
-                $pdf->SetXY(1,6); 
-                $pdf->MultiCell(22, 0, $NumeroParte, 0, 'L', 0, 1);
-                $pdf->SetFont('dejavusans', '', 5);
-                $pdf->SetXY(1,10); 
-                $pdf->MultiCell(22, 0, $Descripcion, 0, 'L', 0, 1);
-                $pdf->SetXY(1,19); 
-                $pdf->MultiCell(22, 0, $ValorMedicionA, 0, 'L', 0, 1);
-                $pdf->SetXY(1,25); 
-                $pdf->MultiCell(22, 0, $ValorMedicionB, 0, 'L', 0, 1);
-                $pdf->SetXY(1,30); 
-                $pdf->MultiCell(22, 0, "ORDEN:", 0, 'L', 0, 1);
-                $pdf->SetFont('dejavusans', 'B', 5);
-                $pdf->SetXY(10,30); 
-                $pdf->MultiCell(22, 0, $nombre.$OrdenFabricacion->OrdenFabricacion, 0, 'L', 0, 1);
-                $pdf->SetFont('dejavusans', '', 5);
-                $pdf->SetXY(18,32); 
-                $pdf->MultiCell(22, 0, str_pad(($i+1), 2, '0', STR_PAD_LEFT), 0, 'L', 0, 1);
-                /*$pdf->setFontSpacing(-0.2);
-
-                $ParteNo = 'Denomination:  '."\n\n\n\n".
-                            'Specification:  ';
-                $pdf->SetXY(1.5, 17); 
-                $pdf->MultiCell(90, 0, $ParteNo, 0, 'L', 0, 1);
-                $pdf->SetFont('dejavusans', '', 10);
-                $Descripcion= $OrdenFabricacion->Descripcion;
-                $pdf->SetXY(25.5, 17); 
-                $pdf->MultiCell(66, 0, $Descripcion, 0, 'L', 0, 1);
-                //Codigo de barras
-                $CodigoBarras = $OrdenFabricacion->Articulo;
-                //$pdf->SetXY($posX + 30, 1);
-                $pdf->write1DBarcode($CodigoBarras, 'C128',18, 39, 65, 4, 0.4, array(), 'N');
-                $pdf->SetFont('dejavusans', '', 10);
-                $pdf->setFontSpacing(0);
-                $pdf->SetXY(23.5, 33);
-                $pdf->MultiCell(65, 0, $CodigoBarras, 0, 'L', 0, 1);*/
+                    $Resx = 40;
+                    $pdf->SetXY(3,3); 
+                    $pdf->MultiCell(23, 0, $NombreFabricante, 0, 'L', 0, 1);
+                    $pdf->SetFont('dejavusans', 'B', 4.2);
+                    $pdf->SetXY(3,6); 
+                    $pdf->MultiCell(23, 0, $NumeroParte, 0, 'L', 0, 1);
+                    $pdf->SetFont('dejavusans', '', 5);
+                    $pdf->SetXY(3,8); 
+                    $pdf->MultiCell(23, 0, $Descripcion, 0, 'L', 0, 1);
+                    $pdf->SetFont('dejavusans', '', 4.5);
+                    $pdf->SetXY(3,19); 
+                    $pdf->MultiCell(23, 0, $ValorMedicionA, 0, 'L', 0, 1);
+                    $pdf->SetXY(3,23); 
+                    $pdf->MultiCell(23, 0, $ValorMedicionB, 0, 'L', 0, 1);
+                    $pdf->SetXY(3,28); 
+                    $pdf->MultiCell(23, 0, "ORDEN:", 0, 'L', 0, 1);
+                    $pdf->SetFont('dejavusans', 'B', 5);
+                    $pdf->SetXY(13,28); 
+                    $pdf->MultiCell(23, 0, $nombre.$OrdenFabricacion->OrdenFabricacion, 0, 'L', 0, 1);
+                    $pdf->SetFont('dejavusans', '', 5);
+                    $pdf->SetXY(21,30); 
+                    $pdf->MultiCell(23, 0, str_pad(($serial), 2, '0', STR_PAD_LEFT), 0, 'L', 0, 1);
+                    $serial++;
+                    if($serial<=$CompletoCantidadEtiquetas){
+                        $pdf->SetFont('dejavusans', '', 5);
+                        $pdf->SetXY(3,48); 
+                        $pdf->MultiCell(23, 0, $NombreFabricante, 0, 'L', 0, 1);
+                        $pdf->SetFont('dejavusans', 'B', 4.2);
+                        $pdf->SetXY(3,51); 
+                        $pdf->MultiCell(23, 0, $NumeroParte, 0, 'L', 0, 1);
+                        $pdf->SetFont('dejavusans', '', 5);
+                        $pdf->SetXY(3,53); 
+                        $pdf->MultiCell(23, 0, $Descripcion, 0, 'L', 0, 1);
+                        $pdf->SetFont('dejavusans', '', 4.5);
+                        $pdf->SetXY(3,64); 
+                        $pdf->MultiCell(23, 0, $ValorMedicionA, 0, 'L', 0, 1);
+                        $pdf->SetXY(3,68); 
+                        $pdf->MultiCell(23, 0, $ValorMedicionB, 0, 'L', 0, 1);
+                        $pdf->SetXY(3,73); 
+                        $pdf->MultiCell(23, 0, "ORDEN:", 0, 'L', 0, 1);
+                        $pdf->SetFont('dejavusans', 'B', 5);
+                        $pdf->SetXY(13,73); 
+                        $pdf->MultiCell(23, 0, $nombre.$OrdenFabricacion->OrdenFabricacion, 0, 'L', 0, 1);
+                        $pdf->SetFont('dejavusans', '', 5);
+                        $pdf->SetXY(21,75); 
+                        $pdf->MultiCell(23, 0, str_pad(($serial), 2, '0', STR_PAD_LEFT), 0, 'L', 0, 1);
+                        $serial++;
+                    }
             }
             ob_end_clean();
             // Generar el archivo PDF y devolverlo al navegador
@@ -788,22 +942,46 @@ class EtiquetasController extends Controller
             $pdf->SetAutoPageBreak(TRUE, 0);   
 
             // Contador para saber cuántas etiquetas se han colocado en la página
+            $ResiduoCantidadEtiquetas = $CantidadEtiquetas % 2;
+            $CantidadEtiquetas = $CantidadEtiquetas / 2;
             for ($i=0; $i<$CantidadEtiquetas; $i++) {
-                $pdf->AddPage('L', array(51,24));
+                $pdf->AddPage('L', array(108,28));
                 if(!file_exists(storage_path('app/Logos/Optronics.jpg'))){
                         throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
                 }else{
                     $imagePath = storage_path('app/Logos/Optronics.jpg');
-                    $pdf->Image($imagePath, 18, 1, 15);
+                    $pdf->Image($imagePath, 20.5, 1, 15);
                     $pdf->SetFont('helvetica', '', 9);
-                    $pdf->SetXY(0, 6);
-                    $pdf->MultiCell(51, 0, "FECHA:         GRUPO:", 0, 'L', 0, 1);
-                    $pdf->SetXY(0, 10);
+                    $pdf->setFontSpacing(0);                  // Sin espaciado adicional entre letras
+                    $pdf->setCellPadding(0);
+                    $pdf->SetXY(3, 6);
+                    $pdf->MultiCell(51, 0, "FECHA:                    GRUPO:", 0, 'L', 0, 1);
+                    $pdf->SetXY(3, 11);
                     $pdf->MultiCell(51, 0, "HORA DE INGRESO:", 0, 'L', 0, 1);
-                    $pdf->SetXY(0, 14);
+                    $pdf->SetXY(3, 16);
+                    $pdf->SetFont('helvetica', '', 8);
+                    $pdf->setFontSpacing(-0.3);
                     $pdf->MultiCell(51, 0, "CONECTORES INYECTADOS:", 0, 'L', 0, 1);
-                    $pdf->SetXY(0, 18);
+                    $pdf->SetXY(3, 20);
+                    $pdf->SetFont('helvetica', '', 9);
                     $pdf->MultiCell(51, 0, "HORA DE DESECHO:", 0, 'L', 0, 1);
+                    if(($i+1 < $CantidadEtiquetas) OR ($ResiduoCantidadEtiquetas == 0)){
+                        $pdf->Image($imagePath, 72.5, 1, 15);
+                        $pdf->SetFont('helvetica', '', 9);
+                        $pdf->setFontSpacing(0);                  // Sin espaciado adicional entre letras
+                        $pdf->setCellPadding(0);
+                        $pdf->SetXY(58, 6);
+                        $pdf->MultiCell(51, 0, "FECHA:                    GRUPO:", 0, 'L', 0, 1);
+                        $pdf->SetXY(58, 11);
+                        $pdf->MultiCell(51, 0, "HORA DE INGRESO:", 0, 'L', 0, 1);
+                        $pdf->SetXY(58, 16);
+                        $pdf->SetFont('helvetica', '', 8);
+                        $pdf->setFontSpacing(-0.3);
+                        $pdf->MultiCell(51, 0, "CONECTORES INYECTADOS :", 0, 'L', 0, 1);
+                        $pdf->SetXY(58, 20);
+                        $pdf->SetFont('helvetica', '', 9);
+                        $pdf->MultiCell(51, 0, "HORA DE DESECHO:", 0, 'L', 0, 1);
+                    }
                 }
             }
             ob_end_clean();
@@ -837,66 +1015,71 @@ class EtiquetasController extends Controller
                 $pdf->SetLineWidth(0.3);
                 //Cuadro 1
                 $pdf->Rect(3, 6, 8 , 5 );
-                $pdf->Rect(13, 6, 8 , 5 );
-                $pdf->Rect(23, 6, 8 , 5 );
-                $pdf->Rect(3, 15, 8 , 5 );
-                $pdf->Rect(13, 15, 8 , 5 );
-                $pdf->Rect(23, 15, 8 , 5 );
-                $pdf->SetXY(20.7, 4);
+                $pdf->Rect(11, 6, 8 , 5 );
+                $pdf->Rect(19, 6, 8 , 5 );
+                $pdf->Rect(3, 11, 8 , 5 );
+                $pdf->Rect(11, 11, 8 , 5 );
+                $pdf->Rect(19, 11, 8 , 5 );
+                $pdf->SetXY(19, 6);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(1, 13);
+                $pdf->SetXY(3, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(10.7, 13);
+                $pdf->SetXY(10.7, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
-                $pdf->SetXY(20.7, 13);
+                $pdf->SetXY(19, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
-
                 $pdf->SetFont('helvetica', 'B', 10);
-                $pdf->SetXY(10.2, 4);
+                $pdf->SetXY(10.3, 6);
                 $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
-                $pdf->SetXY(2.5, 4);
+                $pdf->SetXY(4, 6);
                 $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
                 // Cuadro 2
+                $pdf->SetFont('helvetica', 'B', 9.5);
+                $pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetLineWidth(0.3);
                 $pdf->Rect(41, 6, 8 , 5 );
-                $pdf->Rect(51, 6, 8 , 5 );
-                $pdf->Rect(61, 6, 8 , 5 );
-                $pdf->Rect(41, 15, 8 , 5 );
-                $pdf->Rect(51, 15, 8 , 5 );
-                $pdf->Rect(61, 15, 8 , 5 );
-                $pdf->SetXY(57.7, 4);
+                $pdf->Rect(49, 6, 8 , 5 );
+                $pdf->Rect(57, 6, 8 , 5 );
+                $pdf->Rect(41, 11, 8 , 5 );
+                $pdf->Rect(49, 11, 8 , 5 );
+                $pdf->Rect(57, 11, 8 , 5 );
+                $pdf->SetXY(57, 6);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(37.7, 13);
+                $pdf->SetXY(41, 12);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(47.7, 13);
+                $pdf->SetXY(49, 12);
                 $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
-                $pdf->SetXY(57.7, 13);
+                $pdf->SetXY(57, 12);
                 $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
 
                 $pdf->SetFont('helvetica', 'B', 10);
-                $pdf->SetXY(47.2, 4);
+                $pdf->SetXY(48.3, 6);
                 $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
-                $pdf->SetXY(39.7, 4);
+                $pdf->SetXY(42, 6);
                 $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
                 // Cuadro 3
+                $pdf->SetFont('helvetica', 'B', 9.5);
+                $pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetLineWidth(0.3);
                 $pdf->Rect(75, 6, 8 , 5 );
-                $pdf->Rect(85, 6, 8 , 5 );
-                $pdf->Rect(95, 6, 8 , 5 );
-                $pdf->Rect(75, 15, 8 , 5 );
-                $pdf->Rect(85, 15, 8 , 5 );
-                $pdf->Rect(95, 15, 8 , 5 );
-                $pdf->SetXY(97.7, 4);
+                $pdf->Rect(83, 6, 8 , 5 );
+                $pdf->Rect(91, 6, 8 , 5 );
+                $pdf->Rect(75, 11, 8 , 5 );
+                $pdf->Rect(83, 11, 8 , 5 );
+                $pdf->Rect(91, 11, 8 , 5 );
+                $pdf->SetXY(91, 6);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(77.7, 13);
+                $pdf->SetXY(75, 12);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(87.7, 13);
+                $pdf->SetXY(83, 12);
                 $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
-                $pdf->SetXY(97.7, 13);
+                $pdf->SetXY(91, 12);
                 $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
 
                 $pdf->SetFont('helvetica', 'B', 10);
-                $pdf->SetXY(87.2, 4);
+                $pdf->SetXY(82.3, 6);
                 $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
-                $pdf->SetXY(79.7, 4);
+                $pdf->SetXY(76, 6);
                 $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
             }
             if($ResiduoCantidadEtiquetas >= 1){
@@ -905,47 +1088,49 @@ class EtiquetasController extends Controller
                 $pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetLineWidth(0.3);
                 //Cuadro 1
-                $pdf->Rect(1, 4, 8 , 5 );
-                $pdf->Rect(11, 4, 8 , 5 );
-                $pdf->Rect(21, 4, 8 , 5 );
-                $pdf->Rect(1, 13, 8 , 5 );
-                $pdf->Rect(11, 13, 8 , 5 );
-                $pdf->Rect(21, 13, 8 , 5 );
-                $pdf->SetXY(20.7, 4);
+                $pdf->Rect(3, 6, 8 , 5 );
+                $pdf->Rect(11, 6, 8 , 5 );
+                $pdf->Rect(19, 6, 8 , 5 );
+                $pdf->Rect(3, 11, 8 , 5 );
+                $pdf->Rect(11, 11, 8 , 5 );
+                $pdf->Rect(19, 11, 8 , 5 );
+                $pdf->SetXY(19, 6);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(1, 13);
+                $pdf->SetXY(3, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(10.7, 13);
+                $pdf->SetXY(10.7, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
-                $pdf->SetXY(20.7, 13);
+                $pdf->SetXY(19, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
-
                 $pdf->SetFont('helvetica', 'B', 10);
-                $pdf->SetXY(10.2, 4);
+                $pdf->SetXY(10.3, 6);
                 $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
-                $pdf->SetXY(2.5, 4);
+                $pdf->SetXY(4, 6);
                 $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
             }
             if($ResiduoCantidadEtiquetas >= 2){
-                $pdf->Rect(38, 4, 8 , 5 );
-                $pdf->Rect(48, 4, 8 , 5 );
-                $pdf->Rect(58, 4, 8 , 5 );
-                $pdf->Rect(38, 13, 8 , 5 );
-                $pdf->Rect(48, 13, 8 , 5 );
-                $pdf->Rect(58, 13, 8 , 5 );
-                $pdf->SetXY(57.7, 4);
+               $pdf->SetFont('helvetica', 'B', 9.5);
+                $pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetLineWidth(0.3);
+                $pdf->Rect(41, 6, 8 , 5 );
+                $pdf->Rect(49, 6, 8 , 5 );
+                $pdf->Rect(57, 6, 8 , 5 );
+                $pdf->Rect(41, 11, 8 , 5 );
+                $pdf->Rect(49, 11, 8 , 5 );
+                $pdf->Rect(57, 11, 8 , 5 );
+                $pdf->SetXY(57, 6);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(37.7, 13);
+                $pdf->SetXY(41, 12);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(47.7, 13);
+                $pdf->SetXY(49, 12);
                 $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
-                $pdf->SetXY(57.7, 13);
+                $pdf->SetXY(57, 12);
                 $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
 
                 $pdf->SetFont('helvetica', 'B', 10);
-                $pdf->SetXY(47.2, 4);
+                $pdf->SetXY(48.3, 6);
                 $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
-                $pdf->SetXY(39.7, 4);
+                $pdf->SetXY(42, 6);
                 $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
             }
             ob_end_clean();
@@ -953,6 +1138,274 @@ class EtiquetasController extends Controller
             return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaNumeroPiezas_'.$OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function EtiquetaCajaNokia($PaginaInicio,$PaginaFin,$OrdenFabricacion,$CantidadEtiquetas,$CantidadBolsa,$CodigoCliente){
+        if($CodigoCliente == $this->Nokia){
+            try {
+                $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
+                if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
+                    return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']);
+                }
+                if ($PaginaFin<$PaginaInicio) {
+                    return json_encode(["error" => 'Página de inicio tiene que ser menor a Página fin.']);
+                }
+                $OrdenVenta = $OrdenFabricacion->OrdenVenta;
+                if($OrdenVenta == ""){
+                    $OrdenVenta = "N/A";
+                }else{
+                    $OrdenVenta = $OrdenVenta->OrdenVenta;
+                }
+                //Datos de SAP
+                $NumeroHuawei = "";
+                $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta);
+                $NumeroRegistros = count($DatosSAP);
+                // Crear PDF
+                $pdf = new TCPDF();
+                // Ajustar márgenes
+                $pdf->SetMargins(1, 1, 1); 
+                $pdf->SetFont('dejavusans', '', 9);  //dejavusans equivalente a Arial helvetica
+                $pdf->SetAutoPageBreak(TRUE, 0.5);   
+                $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
+                $pdf->SetPrintHeader(false);
+
+                // Contador para saber cuántas etiquetas se han colocado en la página
+                $PaginaInicio = ($PaginaInicio<1)?1:$PaginaInicio;
+                $NumOV = $OrdenFabricacion->OrdenVenta->OrdenVenta;
+                $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($NumOV);
+                for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
+                    $page_format = array(
+                        'MediaBox' => array('llx' => 0, 'lly' => 0, 'urx' => 101, 'ury' => 66),
+                        'CropBox' => array('llx' => 0, 'lly' => 0, 'urx' => 101, 'ury' => 66),
+                        'BleedBox' => array('llx' => 2, 'lly' => 2, 'urx' => 99, 'ury' => 64),
+                        'TrimBox' => array('llx' => 4, 'lly' => 4, 'urx' => 97, 'ury' => 63),
+                        'ArtBox' => array('llx' => 6, 'lly' => 6, 'urx' => 94, 'ury' => 61),
+                        'Dur' => 3,
+                        'trans' => array(
+                            'D' => 1.5,
+                            'S' => 'Split',
+                            'Dm' => 'V',
+                            'M' => 'O'
+                        ),
+                        'Rotate' => 270,
+                        'PZ' => 1,
+                    );
+                    $pdf->AddPage('P', $page_format,false,false);
+                    $pdf->SetFont('times', 'B', 10);
+                    $pdf->setFontSpacing(-0.2);
+                    $pdf->SetXY(3, 3);
+                    $pdf->Cell(63, 6, "Descripción:", 0, 1, 'L', 0);
+                    $pdf->SetXY(9, 9);
+                    $pdf->MultiCell(56, 0, $OrdenFabricacion->Descripcion, 0, 'L', 0, 1);
+                    $pdf->SetXY(3, 27);
+                    $pdf->Cell(63, 6, "No. departe:", 0, 1, 'L', 0);
+                    $x = 10;
+                    $y = 34;
+                    $w = 38;
+                    $h = 5.5;
+                    $NoParte = $OrdenFabricacion->Articulo;
+                    $pdf->write1DBarcode($NoParte,'C128', $x, $y, $w, $h, 0.4, null, 'L');
+                    $textWidth = $pdf->GetStringWidth($NoParte);
+                    $textX = $x + ($w - $textWidth) / 2;
+                    $textY = $y + $h ;
+                    $pdf->SetXY($textX, $textY);
+                    $pdf->Cell($textWidth, 4, $NoParte, 0, 1, 'C');
+                    $pdf->SetXY(3, 45);
+                    $pdf->Cell(63, 6, "Codigo especial:", 0, 1, 'L', 0);
+                    $CodigoEspecial = $DatosSAP[0]["ItemCode"];
+                    $x = 10;
+                    $y = 52;
+                    $w = 45;
+                    $h = 5.5;
+                    $pdf->write1DBarcode($CodigoEspecial,'C128', $x, $y, $w, $h, 0.4, null, 'L');
+                    $textWidth = $pdf->GetStringWidth($CodigoEspecial);
+                    $textX = $x + ($w - $textWidth) / 2;
+                    $textY = $y + $h ;
+                    $pdf->SetXY($textX, $textY);
+                    $pdf->Cell($textWidth, 4, $CodigoEspecial , 0, 1, 'C');
+                    $pdf->SetXY(3, 63);
+                    $pdf->Cell(63, 6, "(O.V.)         ".$NumOV, 0, 1, 'L', 0);
+                    $pdf->SetXY(3, 68);
+                    $pdf->Cell(63, 6, "Caja            ".($i+1)." / ".$CantidadEtiquetas, 0, 1, 'L', 0);
+                    $pdf->SetXY(3, 80);
+                    $pdf->Cell(20, 6, "Cantidad", 0, 1, 'L', 0);
+                    $pdf->SetXY(50, 80);
+                    $pdf->Cell(10, 6, "PCS", 0, 1, 'L', 0);
+                    $x = 25;
+                    $y = 80;
+                    $w = 20;
+                    $h = 5.5;
+                    $pdf->write1DBarcode($CantidadBolsa,'C128', $x, $y, $w, $h, 0.4, null, 'L');
+                    $textWidth = $pdf->GetStringWidth($CantidadBolsa);
+                    $textX = $x + ($w - $textWidth) / 2;
+                    $textY = $y + $h ;
+                    $pdf->SetXY($textX, $textY);
+                    $pdf->Cell($textWidth, 4, $CantidadBolsa , 0, 1, 'C');
+                }
+                ob_end_clean();
+                // Generar el archivo PDF y devolverlo al navegador
+                return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaHUAWEI_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+            } catch (\Exception $e) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+        }else{
+            return response()->json(['error' => "Etiqueta permitida solo para el cliente NOKIA."], 500);
+        }
+    }
+    public function EtiquetaCajaHuawei($PaginaInicio,$PaginaFin,$OrdenFabricacion,$CantidadCajas,$CantidadBolsa,$CodigoCliente){
+        if($CodigoCliente == $this->HuaweiInternacional){
+            try {
+                $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
+                if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
+                    return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']);
+                }
+                if ($PaginaFin<$PaginaInicio) {
+                    return json_encode(["error" => 'Página de inicio tiene que ser menor a Página fin.']);
+                }
+                $OrdenVenta = $OrdenFabricacion->OrdenVenta;
+                if($OrdenVenta == ""){
+                    $OrdenVenta = "N/A";
+                }else{
+                    $OrdenVenta = $OrdenVenta->OrdenVenta;
+                }
+                //Datos de SAP
+                $NumeroHuawei = "";
+                $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta);
+                $NumeroRegistros = count($DatosSAP);
+                // Crear PDF
+                $pdf = new TCPDF();
+                // Ajustar márgenes
+                $pdf->SetMargins(1, 1, 1); 
+                $pdf->SetAutoPageBreak(TRUE, 0.5);   
+                $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
+                $pdf->SetPrintHeader(false);
+
+                // Contador para saber cuántas etiquetas se han colocado en la página
+                $PaginaFin = ($PaginaFin>$CantidadCajas)?$CantidadCajas:$PaginaFin;
+                $PaginaInicio = ($PaginaInicio<1)?1:$PaginaInicio;
+                $NumOV = $OrdenFabricacion->OrdenVenta->OrdenVenta;
+                $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($NumOV);
+                for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
+                    $page_format = array(
+                        'MediaBox' => array('llx' => 0, 'lly' => 0, 'urx' => 101, 'ury' => 66),
+                        'CropBox' => array('llx' => 0, 'lly' => 0, 'urx' => 101, 'ury' => 66),
+                        'BleedBox' => array('llx' => 2, 'lly' => 2, 'urx' => 99, 'ury' => 64),
+                        'TrimBox' => array('llx' => 4, 'lly' => 4, 'urx' => 97, 'ury' => 63),
+                        'ArtBox' => array('llx' => 6, 'lly' => 6, 'urx' => 94, 'ury' => 61),
+                        'Dur' => 3,
+                        'trans' => array(
+                            'D' => 1.5,
+                            'S' => 'Split',
+                            'Dm' => 'V',
+                            'M' => 'O'
+                        ),
+                        'Rotate' => 270,
+                        'PZ' => 1,
+                    );
+                    $pdf->AddPage('P',$page_format,false,false);
+                    $pdf->setFontSpacing(-0.2);
+                    $pdf->SetFont('helvetica', 'B', 12);
+                    $pdf->SetXY(23, 2);
+                    $pdf->Cell(10, 6, $DatosSAP[0]["SubCatNum"], 0, 1, 'L', 0);
+                    $pdf->SetFont('helvetica', '', 9);
+                    $pdf->write1DBarcode($DatosSAP[0]["SubCatNum"],'C128', 21, 8, 24, 4, 0.4, null, 'L');
+
+                    $pdf->SetXY(3, 7);
+                    $pdf->Cell(10, 6, "(ITEM)", 0, 1, 'L', 0);
+                    $pdf->SetXY(3, 14);
+                    $pdf->Cell(10, 6, "(DESC)", 0, 1, 'L', 0);
+                    $pdf->SetXY(16, 13);
+                    $pdf->MultiCell(48, 0, $DatosSAP[0]["U_BPItmDsc"], 0, 'L', 0, 1);
+                    
+                    $pdf->SetXY(3, 25);
+                    $pdf->Cell(10, 6, "(MODEL)", 0, 1, 'L', 0);
+                    $pdf->SetXY(16, 22);
+                    $pdf->MultiCell(48, 0, $OrdenFabricacion->Descripcion, 0, 'L', 0, 1);
+
+                    $pdf->SetXY(3, 34);
+                    $pdf->Cell(10, 6, "(C.O.)", 0, 1, 'L', 0);
+                    $pdf->SetFont('helvetica', 'B', 9);
+                    $pdf->setFontSpacing(0);
+                    $pdf->SetXY(16, 34);
+                    $pdf->Cell(10, 6, "Queretaro / Mexico", 0, 1, 'L', 0);
+                    $pdf->setFontSpacing(-0.2);
+                    $pdf->SetFont('helvetica', '', 9);
+                    $pdf->SetXY(3, 40);
+                    $pdf->Cell(10, 6, "(O.V.)", 0, 1, 'L', 0);
+                    $pdf->write1DBarcode($NumOV,'C128', 20, 41, 20, 4, 0.4, null, 'L');
+
+                    $pdf->SetXY(3, 48);
+                    $pdf->Cell(10, 6, "(QTY)", 0, 1, 'L', 0);
+                    $x = 18;
+                    $y = 52;
+                    $w = 15;
+                    $h = 4;
+                    $pdf->write1DBarcode($CantidadBolsa,'C128', $x, $y, $w, $h, 0.4, null, 'L');
+                    $textWidth = $pdf->GetStringWidth($CantidadBolsa);
+                    $textX = $x + ($w - $textWidth) / 2;
+                    $textY = $y + $h ;
+                    $pdf->SetFont('helvetica', '', 10);
+                    $pdf->SetXY($textX, $textY-9);
+                    $pdf->Cell($textWidth, 4, $CantidadBolsa, 0, 1, 'C');
+                    $pdf->SetXY($textX+10, $textY-9);
+                    $pdf->Cell(10, 4, "PCS", 0, 1, 'C');
+                    $pdf->SetXY(3, 45);
+
+                    $pdf->SetFont('helvetica', '', 9);
+                    $pdf->SetXY(3, 58);
+                    $pdf->Cell(10, 6, "(SN/TN)", 0, 1, 'L', 0);
+                    $pdf->SetFont('helvetica', 'B', 10);
+                    $pdf->SetXY(24, 58);
+                    $pdf->Cell(18, 6, ($i+1)." / ".$CantidadCajas, 0, 1, 'L', 0);
+
+                    $pdf->SetFont('helvetica', '', 9);
+                    $pdf->SetXY(3, 63);
+                    $pdf->Cell(10, 6, "(CODE)", 0, 1, 'L', 0);
+                    $pdf->SetXY(16, 63);
+                    $pdf->Cell(10, 6, $OrdenFabricacion->Articulo, 0, 1, 'L', 0);
+
+                    $pdf->SetXY(3, 68);
+                    $pdf->Cell(10, 6, "(PO No)", 0, 1, 'L', 0);
+                    $pdf->SetXY(16, 68);
+                    $pdf->Cell(10, 6, $DatosSAP[0]["NumAtCard"], 0, 1, 'L', 0);
+
+                    $pdf->SetXY(3, 73);
+                    $pdf->Cell(10, 6, "(LOT No)", 0, 1, 'L', 0);
+                    $pdf->SetXY(16, 73);
+                    $pdf->Cell(10, 6, $NumOV, 0, 1, 'L', 0);
+
+                    $pdf->SetXY(3, 78);
+                    $pdf->Cell(10, 6, "(DATE)", 0, 1, 'L', 0);
+                    $fecha = Carbon::parse($DatosSAP[0]["DocDate"]);
+                    $Year = $fecha->isoFormat('GG');
+                    $Year = substr($Year, -2);
+                    $Week = $fecha->isoWeek(); 
+                    $pdf->SetXY(16, 78);
+                    $pdf->Cell(10, 6,  $Year.$Week, 0, 1, 'L', 0);
+
+                    $pdf->SetXY(3, 83);
+                    $pdf->Cell(10, 6, "(REMARK)", 0, 1, 'L', 0);
+                    $CodigoBarras = "19".$DatosSAP[0]["SubCatNum"]."/4U1003".$Year.$Week;
+                    $x = 14;
+                    $y = 89;
+                    $w = 40;
+                    $h = 4;
+                    $pdf->write1DBarcode($CodigoBarras,'C128', $x, $y, $w, $h, 0.4, null, 'L');
+                    $textWidth = $pdf->GetStringWidth($CodigoBarras);
+                    $textX = $x + ($w - $textWidth) / 2;
+                    $textY = $y + $h ;
+                    $pdf->SetFont('helvetica', '', 10);
+                    $pdf->SetXY($textX, $textY);
+                    $pdf->Cell($textWidth, 4, $CodigoBarras, 0, 1, 'C');
+                }
+                ob_end_clean();
+                // Generar el archivo PDF y devolverlo al navegador
+                return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaHUAWEI_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+            } catch (\Exception $e) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+        }else{
+            return response()->json(['error' => "Etiqueta permitida solo para el cliente Huawei Internacional."], 500);
         }
     }
 }
