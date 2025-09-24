@@ -459,7 +459,7 @@ class PlaneacionController extends Controller
                         $respuestaOF->OrdenVenta_id=$respuestaOV->id;
                         $respuestaOF->OrdenFabricacion=$DatosPlaneacion[$i]->OF;
                         $respuestaOF->Articulo=$DatosPlaneacion[$i]->Articulo;
-                        $respuestaOF->Descripcion=$DatosPlaneacion[$i]->Descripcion;
+                        $respuestaOF->Descripcion=html_entity_decode($DatosPlaneacion[$i]->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                         $respuestaOF->CantidadTotal=$DatosPlaneacion[$i]->Cantidad;
                         $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
                         if(!($DatosPlaneacion[$i]->Corte==1)){
@@ -492,7 +492,7 @@ class PlaneacionController extends Controller
                         $respuestaOF->OrdenVenta_id=$datos->id;
                         $respuestaOF->OrdenFabricacion=$DatosPlaneacion[$i]->OF;
                         $respuestaOF->Articulo=$DatosPlaneacion[$i]->Articulo;
-                        $respuestaOF->Descripcion=$DatosPlaneacion[$i]->Descripcion;
+                        $respuestaOF->Descripcion=html_entity_decode($DatosPlaneacion[$i]->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                         $respuestaOF->CantidadTotal=$DatosPlaneacion[$i]->Cantidad;
                         $respuestaOF->FechaEntregaSAP=$Fecha_entrega;
                         if(!($DatosPlaneacion[$i]->Corte==1)){
