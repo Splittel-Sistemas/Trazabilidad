@@ -240,12 +240,12 @@ class EtiquetasController extends Controller
                 if($CodigoCliente == $this->Drai){
                     $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
                     $Articulo = $DatosSAP[0]["SubCatNum"];
-                }if($CodigoCliente == $this->Nokia){
+                }elseif($CodigoCliente == $this->Nokia){
                     $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
                     $Articulo = $DatosSAP[0]["ItemCode"];
                 }
                 else{
-                    $OrdenFabricacion->Articulo;
+                    $Articulo = $OrdenFabricacion->Articulo;
                 }
             // Contador para saber cuántas etiquetas se han colocado en la página
             for ($i=0; $i<$CantidadEtiquetas; $i++) {
