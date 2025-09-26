@@ -17,12 +17,14 @@ class EtiquetasController extends Controller
     protected $HuaweiInternacional;
     protected $Nokia;
     protected $Drai;
+    protected $RadioMovil;
     protected $Fibremex;
     public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
         $this->HuaweiInternacional = "C0563";
         $this->Nokia = "C0675";
         $this->Drai = "C0003";
+        $this->RadioMovil = "C0101";
     }
     public function index(){
          $user = Auth::user();
@@ -211,6 +213,9 @@ class EtiquetasController extends Controller
         try {
             if($CodigoCliente == $this->HuaweiInternacional){
                 return json_encode(["error" => 'Esta etiqueta no corresponde al cliente HUAWEI INTERNATIONAL.']);
+            }
+            if($CodigoCliente == $this->RadioMovil){
+                return json_encode(["error" => 'Esta etiqueta es para cliente especial, y aún esta en proceso.']);
             }
             $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
             if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
@@ -405,8 +410,8 @@ class EtiquetasController extends Controller
             $pdf->SetPrintHeader(false);
             $OrdenFabricacion5P = substr($OrdenFabricacion->OrdenFabricacion,0,6);
             $TotalPaginas = $PaginaFin;
-            $PaginaFin = $PaginaFin/2;
-            $NumSerie = 1;
+            $PaginaFin = $PaginaFin;
+            $NumSerie = $PaginaInicio;
             for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
                 $Aumento = 0;
                 $Aumentox  = 0;
@@ -450,6 +455,7 @@ class EtiquetasController extends Controller
                 $pdf->write2DBarcode($CodigoQR,'QRCODE,M',$x,$y,12,12,null,'N');
                 //END
                 //Codigo 2
+                $i++;
                 if($i+1 < $PaginaFin OR (($i+1) == $PaginaFin AND $TotalPaginas%2 == 0)){
                     $x = 39.5;
                     $y = 3.5+$Aumento+$AumentoLetra ;
@@ -488,26 +494,22 @@ class EtiquetasController extends Controller
                         if($NumeroRegistros==0){
                             return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es solo para Cliente Especial.']);
                         }else{
-                            //if($DatosSAP[0]['SubCatNum']==""){
-                            //    return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es solo para Cliente Especial.']);
-                            //}else{
-                                if($CodigoCliente == $this->HuaweiInternacional){
-                                    $NumeroEspecial =  $DatosSAP[0]['SubCatNum'];
-                                }elseif($CodigoCliente == $this->Nokia){
-                                    $NumeroEspecial =  $DatosSAP[0]['ItemCode'];
-                                    $LetraEspecial = 1.5;
-                                    $AumentoLetraEspecial =0.5;
-                                }elseif($CodigoCliente == $this->Drai){
-                                    $NumeroEspecial =  $DatosSAP[0]['SubCatNum'];
-                                    if($NumeroEspecial == ""){
-                                        return json_encode(["error" => 'Número Especial no Encontrado, Si el problema perciste Contacta a TI!.']);
-                                    }
-                                    $LetraEspecial = 2;
-                                    $AumentoLetraEspecial = 0.5;
-                                }else{
-                                    return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es solo para Cliente Especial.']);
+                            if($CodigoCliente == $this->HuaweiInternacional){
+                                $NumeroEspecial =  $DatosSAP[0]['SubCatNum'];
+                            }elseif($CodigoCliente == $this->Nokia){
+                                $NumeroEspecial =  $DatosSAP[0]['ItemCode'];
+                                $LetraEspecial = 1.5;
+                                $AumentoLetraEspecial =0.5;
+                            }elseif($CodigoCliente == $this->Drai){
+                                $NumeroEspecial =  $DatosSAP[0]['SubCatNum'];
+                                if($NumeroEspecial == ""){
+                                    return json_encode(["error" => 'Número Especial no Encontrado, Si el problema perciste Contacta a TI!.']);
                                 }
-                            //}
+                                $LetraEspecial = 2;
+                                $AumentoLetraEspecial = 0.5;
+                            }else{
+                                return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es solo para Cliente Especial.']);
+                            }
                         }
                         $pdf->SetFont('dejavusans', 'B', 5.5-$LetraEspecial);
                         $pdf->SetXY(55-$AumentoLetraEspecial, 19);
@@ -576,210 +578,6 @@ class EtiquetasController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    /*public function EtiquetaBanderillaQR($PaginaInicio,$PaginaFin,$OrdenFabricacion,$TipoEtiqBan,$CodigoCliente){
-        try {
-            $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
-            if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
-                return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']);
-            }
-            $OrdenVenta = $OrdenFabricacion->OrdenVenta;
-            if($OrdenVenta == ""){
-                $OrdenVenta = "N/A";
-            }else{
-                $OrdenVenta = $OrdenVenta->OrdenVenta;
-            }
-            $DatosSAP = [];
-            if($TipoEtiqBan == 2){
-                $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
-            }else{
-                if($CodigoCliente == $this->Nokia){
-                    return json_encode(["error" => 'Esta etiqueta no corresponde al cliente NOKIA.']);
-                }elseif($CodigoCliente == $this->Drai){
-                    return json_encode(["error" => 'Esta etiqueta no corresponde al cliente DRAI.']);
-                }elseif($CodigoCliente == $this->HuaweiInternacional){
-                    return json_encode(["error" => 'Esta etiqueta no corresponde al cliente HUAWEI INTERNACIONAL.']);
-                }
-            }
-            // Crear PDF
-            $pdf = new TCPDF();
-            $pdf->SetMargins(1, 1, 1); 
-            $pdf->SetFont('dejavusans', '', 7);
-            $pdf->SetAutoPageBreak(TRUE, 0.5);   
-            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
-            $pdf->SetPrintHeader(false);
-            $OrdenFabricacion5P = substr($OrdenFabricacion->OrdenFabricacion,0,6);
-            $TotalPaginas = $PaginaFin;
-            $PaginaFin = $PaginaFin/2;
-            $NumSerie = 1;
-            for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
-                $Aumento = 0;
-                $Aumentox  = 0;
-                $AumentoLetra = 0;
-                $pdf->SetFont('dejavusans', 'B', 4.75);
-                $pdf->AddPage('L', array(80, 27.5));
-                if($TipoEtiqBan == 2){
-                    $Aumento = 1;
-                    $Aumentox = 0;
-                    $AumentoLetra = 0.5;
-                }
-                //Codigo 
-                //Primer Codigo
-                $x = 1;
-                $y = 3.5+$Aumento+$AumentoLetra;
-                $cx = $x + 17.75 / 2;
-                $cy = $y + 4 / 2;
-                $pdf->StartTransform();
-                $pdf->Rotate(180, $cx, $cy);
-                $pdf->SetXY($x, $y); // posición X=3 mm, Y=0 mm
-                $pdf->Cell(17.5, 4,$OrdenFabricacion5P." ".str_pad(($NumSerie), 4, '0', STR_PAD_LEFT), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
-                $pdf->StopTransform();
-
-                $x = 16;
-                $y = 18-$Aumento-$AumentoLetra ;
-                $pdf->SetXY($x, $y);
-                $pdf->Cell(19.5, 2, "  " . $OrdenFabricacion5P . " " . str_pad(($NumSerie), 4, '0', STR_PAD_LEFT), 0, 0, 'C');
-
-                $x = 2;
-                $y = 6+$Aumento;
-                $cx = $x + 14/2;//$x + 8 / 2;
-                $cy = $y + 14/2;
-                $pdf->StartTransform();
-                $pdf->Rotate(180, $cx, $cy);   // rotar 180° sobre el centro del QR
-                $CodigoQR = 'https://optronics.com.mx/360/Inspeccion-Visual-1/'.$OrdenFabricacion->OrdenFabricacion.str_pad(($NumSerie), 4, '0', STR_PAD_LEFT).".html";
-                $pdf->write2DBarcode($CodigoQR, 'QRCODE,M', $x, $y, 12, 12, null, 'N');
-                $pdf->StopTransform();
-
-                $x = 20;
-                $y = 4.5-$Aumento;
-                $pdf->write2DBarcode($CodigoQR,'QRCODE,M',$x,$y,12,12,null,'N');
-                //END
-                //Codigo 2
-                if($i+1 < $PaginaFin OR (($i+1) == $PaginaFin AND $TotalPaginas%2 == 0)){
-                    $x = 39.5;
-                    $y = 3.5+$Aumento+$AumentoLetra ;
-                    $cx = $x + 17.75 / 2;
-                    $cy = $y + 4 / 2;
-                    $pdf->StartTransform();
-                    $pdf->Rotate(180, $cx, $cy);
-                    $pdf->SetXY($x, $y); // posición X=3 mm, Y=0 mm
-                    $pdf->Cell(17.5, 4,$OrdenFabricacion5P." ".str_pad(($NumSerie+1), 4, '0', STR_PAD_LEFT), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
-                    $pdf->StopTransform();
-
-                    $x = 54;
-                    $y = 18-$Aumento-$AumentoLetra ;
-                    $pdf->SetXY($x, $y);
-                    $pdf->Cell(19.5, 2, "  " . $OrdenFabricacion5P . " " . str_pad(($NumSerie+1), 4, '0', STR_PAD_LEFT), 0, 0, 'C');
-
-                    $x = 41;
-                    $y = 6+$Aumento;
-                    $cx = $x + 14/2;
-                    $cy = $y + 14/2;
-                    $pdf->StartTransform();
-                    $pdf->Rotate(180, $cx, $cy);   // rotar 180° sobre el centro del QR
-                    $CodigoQR = 'https://optronics.com.mx/360/Inspeccion-Visual-1/'.$OrdenFabricacion->OrdenFabricacion.str_pad(($NumSerie + 1), 4, '0', STR_PAD_LEFT).".html";
-                    $pdf->write2DBarcode($CodigoQR, 'QRCODE,M', $x, $y, 12, 12, null, 'N');
-                    $pdf->StopTransform();
-                    $x = 58;
-                    $y = 4.5-$Aumento;
-                    $pdf->StartTransform();
-                    $pdf->write2DBarcode($CodigoQR,'QRCODE,M',$x,$y,12,12,null,'N');
-                    $LetraEspecial = 0;
-                    $AumentoLetraEspecial = 0;
-                    if($TipoEtiqBan == 2){
-                        //Datos de SAP
-                        $NumeroEspecial = "";
-                        $NumeroRegistros = count($DatosSAP);
-                        if($NumeroRegistros==0){
-                            return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es solo para Cliente Especial.']);
-                        }else{
-                            //if($DatosSAP[0]['SubCatNum']==""){
-                            //    return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es solo para Cliente Especial.']);
-                            //}else{
-                                if($CodigoCliente == $this->HuaweiInternacional){
-                                    $NumeroEspecial =  $DatosSAP[0]['SubCatNum'];
-                                }elseif($CodigoCliente == $this->Nokia){
-                                    $NumeroEspecial =  $DatosSAP[0]['ItemCode'];
-                                    $LetraEspecial = 1.5;
-                                    $AumentoLetraEspecial =0.5;
-                                }elseif($CodigoCliente == $this->Drai){
-                                    $NumeroEspecial =  $DatosSAP[0]['SubCatNum'];
-                                    if($NumeroEspecial == ""){
-                                        return json_encode(["error" => 'Número Especial no Encontrado, Si el problema perciste Contacta a TI!.']);
-                                    }
-                                    $LetraEspecial = 2;
-                                    $AumentoLetraEspecial = 0.5;
-                                }else{
-                                    return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es solo para Cliente Especial.']);
-                                }
-                            //}
-                        }
-                        $pdf->SetFont('dejavusans', 'B', 5.5-$LetraEspecial);
-                        $pdf->SetXY(55-$AumentoLetraEspecial, 19);
-                        $pdf->Cell(20, 2,$NumeroEspecial, 0, 0, 'C');
-                        $x = 39.5+$AumentoLetraEspecial;
-                        $y = 1.5;
-                        $cx = $x + 17 / 2;
-                        $cy = $y + 4 / 2;
-                        $pdf->StartTransform();
-                        $pdf->Rotate(180, $cx, $cy);
-                        $pdf->SetXY($x, $y);
-                        $pdf->Cell(17.5, 2,$NumeroEspecial, 0, 0, 'C');
-                        $pdf->StopTransform();
-                    }
-                }
-                $NumSerie += 2;
-                //END
-                if($TipoEtiqBan == 2){
-                    //Datos de SAP
-                    $NumeroEspecial = "";
-                    $NumeroRegistros = count($DatosSAP);
-                    $LetraEspecial = 0;
-                    $AumentoLetraEspecial = 0;
-                    if($NumeroRegistros==0){
-                        return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es solo para Cliente Especial.']);
-                    }else{
-                        //if($DatosSAP[0]['SubCatNum']==""){
-                        //    return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es solo para Cliente Especial']);
-                        //}else{
-                            if($CodigoCliente == $this->HuaweiInternacional){
-                                $NumeroEspecial =  $DatosSAP[0]['SubCatNum'];
-                            }elseif($CodigoCliente == $this->Nokia){
-                                $NumeroEspecial =  $DatosSAP[0]['ItemCode'];
-                                $LetraEspecial = 1.5;
-                                $AumentoLetraEspecial = 0.5;
-                            }elseif($CodigoCliente == $this->Drai){
-                                $LetraEspecial = 2;
-                                $AumentoLetraEspecial = 0.5;
-                                $NumeroEspecial =  $DatosSAP[0]['SubCatNum'];
-                                if($NumeroEspecial == ""){
-                                    return json_encode(["error" => 'Número Especial no Encontrado, Si el problema perciste Contacta a TI!.']);
-                                }
-                            }else{
-                                return json_encode(["error" => 'Cliente no encontrado, esta etiqueta es solo para Cliente Especial.']);
-                            }
-                       // }
-                    }
-                    $pdf->SetFont('dejavusans', 'B', 5.5-$LetraEspecial);
-                    $pdf->SetXY(17-$AumentoLetraEspecial, 19);
-                    $pdf->Cell(20, 2,$NumeroEspecial, 0, 0, 'C');
-                    $x = 1+$AumentoLetraEspecial;
-                    $y = 1.5;
-                    $cx = $x + 17 / 2;
-                    $cy = $y + 4 / 2;
-                    $pdf->StartTransform();
-                    $pdf->Rotate(180, $cx, $cy);
-                    $pdf->SetXY($x, $y);
-                    $pdf->Cell(17.5, 2,$NumeroEspecial, 0, 0, 'C');
-                    $pdf->StopTransform();
-                }
-            }
-            ob_end_clean();
-            // Generar el archivo PDF y devolverlo al navegador
-            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaVisualQR_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }*/
     //Etiqueta de Número de piezas
     public function EtiquetaNumeroPiezas($Sociedad,$CantidadEtiquetas,$CantidadBolsa,$OrdenFabricacion,$CodigoCliente){
         try {
@@ -1262,8 +1060,8 @@ class EtiquetasController extends Controller
             $pdf->SetPrintHeader(false);
 
             // Contador para saber cuántas etiquetas se han colocado en la página
-            $ResiduoCantidadEtiquetas = $CantidadEtiquetas%3;
-            $CantidadEtiquetas = intval($CantidadEtiquetas/3);
+            $ResiduoCantidadEtiquetas = $CantidadEtiquetas%2;
+            $CantidadEtiquetas = intval($CantidadEtiquetas/2);
             for ($i=0; $i<$CantidadEtiquetas; $i++) {
                 $pdf->SetFont('helvetica', 'B', 9.5);
                 $pdf->AddPage('L', array(114, 25));
@@ -1314,7 +1112,7 @@ class EtiquetasController extends Controller
                 $pdf->SetXY(42, 6);
                 $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
                 // Cuadro 3
-                $pdf->SetFont('helvetica', 'B', 9.5);
+                /*$pdf->SetFont('helvetica', 'B', 9.5);
                 $pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetLineWidth(0.4);
                 $pdf->Rect(77, 6, 8 , 5 );
@@ -1336,7 +1134,7 @@ class EtiquetasController extends Controller
                 $pdf->SetXY(84.3, 6);
                 $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
                 $pdf->SetXY(78, 6);
-                $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
+                $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);*/
             }
             if($ResiduoCantidadEtiquetas >= 1){
                 $pdf->SetFont('helvetica', 'B', 9.5);
@@ -1700,8 +1498,9 @@ class EtiquetasController extends Controller
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
                 return $etiqueta[0] !== 1 && $etiqueta[0] !== 2 &&
                         $etiqueta[0] !== 3 && $etiqueta[0] !== 5 &&
-                        $etiqueta[0] !== 7 && $etiqueta[0] !== 12 &&
-                        $etiqueta[0] !== 13 && $etiqueta[0] !== 14;
+                        $etiqueta[0] !== 6 && $etiqueta[0] !== 7 && 
+                        $etiqueta[0] !== 12 && $etiqueta[0] !== 13 && 
+                        $etiqueta[0] !== 14;
             });
         }else{
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
