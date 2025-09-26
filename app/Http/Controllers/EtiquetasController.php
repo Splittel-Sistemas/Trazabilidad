@@ -240,6 +240,9 @@ class EtiquetasController extends Controller
                 if($CodigoCliente == $this->Drai){
                     $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
                     $Articulo = $DatosSAP[0]["SubCatNum"];
+                }if($CodigoCliente == $this->Nokia){
+                    $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
+                    $Articulo = $DatosSAP[0]["ItemCode"];
                 }
                 else{
                     $OrdenFabricacion->Articulo;
@@ -1498,14 +1501,13 @@ class EtiquetasController extends Controller
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
                 return $etiqueta[0] !== 1 && $etiqueta[0] !== 2 &&
                         $etiqueta[0] !== 3 && $etiqueta[0] !== 5 &&
-                        $etiqueta[0] !== 6 && $etiqueta[0] !== 7 && 
-                        $etiqueta[0] !== 12 && $etiqueta[0] !== 13 && 
-                        $etiqueta[0] !== 14;
+                        $etiqueta[0] !== 7 && $etiqueta[0] !== 12 && 
+                        $etiqueta[0] !== 13 && $etiqueta[0] !== 14;
             });
         }else{
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
                 return $etiqueta[0] !== 2 && $etiqueta[0] !== 3 &&
-                        $etiqueta[0] !== 4 && $etiqueta[0] !== 6 &&
+                        $etiqueta[0] !== 4 && $etiqueta[0] !== 6 && 
                         $etiqueta[0] !== 13 && $etiqueta[0] !== 14;
             });
         }

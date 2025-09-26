@@ -109,13 +109,13 @@
                                     <div class="col-3" id="ContenedorPorcentajeA" style="display: none">
                                         <div class="mb-3">
                                             <label class="form-label" for="PorcentaAje">Medida 1  </label>
-                                            <input class="form-control" id="PorcentajeA" type="number" placeholder="0" value="50" />
+                                            <input class="form-control" id="PorcentajeA" type="number" oninput="RegexNumeros(this);ValorDivisor(this, 'A')" placeholder="0" min="1" max="100" value="50" />
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorPorcentajeB" style="display: none">
                                         <div class="mb-3">
                                             <label class="form-label" for="PorcentajeB">Medida 2  </label>
-                                            <input class="form-control" id="PorcentajeB" type="number" placeholder="0" value="50" />
+                                            <input class="form-control" id="PorcentajeB" type="number" oninput="RegexNumeros(this);ValorDivisor(this, 'B')" placeholder="0" min="1" max="100" value="50" />
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorInsercion" style="display: none">
@@ -508,6 +508,21 @@
     function SeleccionarCampo(valor){
         $('#TipoEtiqueta').val(valor).change();
         $('#ListaOpciones').hide();
+    }
+    function ValorDivisor(elemento, id){
+        if(elemento.value > 100){
+            elemento.value = 100;
+        }
+        if(elemento.value < 0){
+            elemento.value = 0;
+        }
+        PorcentajeA = document.getElementById('PorcentajeA');
+        PorcentajeB = document.getElementById('PorcentajeB');
+        if(id=='A'){
+            PorcentajeB.value = 100-elemento.value;
+        }else{
+            PorcentajeA.value = 100-elemento.value;
+        }
     }
 </script>
 @endsection
