@@ -55,33 +55,8 @@
                                 <label class="form-label mt-2" for="Sociedad">Tipo de Etiqueta</label>
                                 <input class="form-control" onclick="" oninput="BuscarEtiquetaFiltro(this);" type="text" id="Etiquetaitems" placeholder="buscar" style="display:none;">
                                 <select id="TipoEtiqueta" onchange="Etiqueta(this);" class="form-select" style="width: 100%;">
-                                    <option value="" disabled>Selecciona una Opci&oacute;n</option>
-                                    <option value="ETIQ1">ETIQUETA ESPECIAL HUAWEI</option>
-                                    <option value="ETIQ2">ETIQUETA DE BANDERILLA QR GENERAL</option>
-                                    <option value="ETIQ3">ETIQUETA DE BANDERILLA QR NÚMERO ESPECIAL</option>
-                                    <option value="ETIQ4">ETIQUETA DE BOLSA JUMPER</option>
-                                    <option value="ETIQ4CEDIS">ETIQUETA DE BOLSA JUMPER CEDIS</option>
-                                    <option value="ETIQ5">ETIQUETA DE NÚMERO DE PIEZAS</option>
-                                    <!--<option value="ETIQ6">ETIQUETA DE TRAZABILIDAD MPO</option>
-                                    <option value="ETIQ7">ETIQUETA DE INYECCIÓN</option>
-                                    <option value="ETIQ8">ETIQUETA DE DIVISOR</option>
-                                    <option value="ETIQ4">ETIQUETA DE BOLSA PATCH CORD GENERAL</option>
-                                    <option value="ETIQ9">ETIQUETA DE CAJA HUAWEI</option>
-                                    <option value="ETIQ10">ETIQUETA DE CAJA NOKIA</option>-->
                                 </select>
                                 <div id="ListaOpciones" class="list-group" style="display:none;">
-                                    <a onclick="SeleccionarCampo('ETIQ1')" class="list-group-item list-group-item-action active" style="font-size: 12px; padding: 4px 8px;">ETIQUETA ESPECIAL HUAWEI</a>
-                                    <a onclick="SeleccionarCampo('ETIQ2')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE BANDERILLA QR GENERAL</a>
-                                    <a onclick="SeleccionarCampo('ETIQ3')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE BANDERILLA QR GENERAL ESPECIAL</a>
-                                    <a onclick="SeleccionarCampo('ETIQ4')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE BOLSA JUMPER</a>
-                                    <a onclick="SeleccionarCampo('ETIQ4CEDIS')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE BOLSA JUMPER CEDIS</a>
-                                    <a onclick="SeleccionarCampo('ETIQ5')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE NÚMERO DE PIEZAS</a>
-                                    <a onclick="SeleccionarCampo('ETIQ6')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE TRAZABILIDAD MPO</a>
-                                    <a onclick="SeleccionarCampo('ETIQ7')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE INYECCIÓN</a>
-                                    <a onclick="SeleccionarCampo('ETIQ8')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE DIVISOR</a>
-                                    <a onclick="SeleccionarCampo('ETIQ4')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE BOLSA PATCH CORD GENERAL</a>
-                                    <a onclick="SeleccionarCampo('ETIQ9')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE CAJA HUAWEI</a>
-                                    <a onclick="SeleccionarCampo('ETIQ10')" class="list-group-item list-group-item-action" style="font-size: 12px; padding: 4px 8px;">ETIQUETA DE CAJA NOKIA</a>
                                 </div>
                             </div>
                             <div class="col-8">
@@ -234,6 +209,8 @@
         $('#PdfAlerta').hide();
         $('#TipoEtiqueta').val("");
         $('#Etiquetaitems').hide();
+        $('#TipoEtiqueta').html("");
+        $('#ListaOpciones').html("");
         InputPaginaFin = document.getElementById("PaginaFin");
         InputPaginaInicio = document.getElementById("PaginaInicio");
         InputCantidadEtiquetas = document.getElementById("CantidadEtiquetas");
@@ -284,6 +261,8 @@
             TextoDetallesOV.innerHTML = "Orden de Venta: "+data.OrdenVenta+ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+"Orden Fabricación: "+data.OrdenFabricacion;
             TextoDetallesCliente.innerHTML = data.Cliente+"   ("+data.CodigoCliente+")";
             CodigoCliente.value = data.CodigoCliente;
+            $('#TipoEtiqueta').html(data.MenuOption);
+            $('#ListaOpciones').html(data.MenuBtn);
             
         })
         .catch(error1 => {

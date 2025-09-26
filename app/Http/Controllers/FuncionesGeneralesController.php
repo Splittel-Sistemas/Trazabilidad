@@ -206,7 +206,7 @@ class FuncionesGeneralesController extends Controller
                     WHERE T2."DocNum" = '.$OrdenFabricacion.' AND T4."InvntryUom" = \'MTR\' AND  (T3."ItemName" LIKE \'%Cable%\' OR T3."ItemCode" = \'SP012930190B\' OR T3."ItemName" LIKE \'%fiber/print%\') LIMIT 1';
         return $Detalles = $this->ejecutarConsulta($sql);
     }
-    public function EtiquetasDatosSAP($NumOV){
+    public function EtiquetasDatosSAP($NumOV,$NumOF){
         $schema = 'HN_OPTRONICS';
         $where="";
         $datos="";
@@ -217,7 +217,9 @@ class FuncionesGeneralesController extends Controller
                 FROM  ' . $schema . '.ORDR T0
 				INNER JOIN  ' . $schema . '.RDR1 T2 ON T2."DocEntry" = T0."DocEntry" 
                 LEFT JOIN  ' . $schema . '.OSCN T1 ON T0."CardCode" = T1."CardCode" AND T1."Substitute" = T2."SubCatNum" AND T2."ItemCode" = T1."ItemCode"
-                WHERE T0."DocNum" = '. $NumOV.';';
+                WHERE T0."DocNum" = '. $NumOV.'
+                AND T2."PoTrgNum" = '.$NumOF.';';
+
             $datos = $this->ejecutarConsulta($sql);
         } catch (\Exception $e) {
             return $datos=[];
