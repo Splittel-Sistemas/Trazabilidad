@@ -108,14 +108,26 @@
                                     </div>
                                     <div class="col-3" id="ContenedorPorcentajeA" style="display: none">
                                         <div class="mb-3">
-                                            <label class="form-label" for="PorcentaAje">Medida 1  </label>
-                                            <input class="form-control" id="PorcentajeA" type="number" oninput="RegexNumeros(this);ValorDivisor(this, 'A')" placeholder="0" min="1" max="100" value="50" />
+                                            <label class="form-label" for="PorcentajeA">Medida 1  </label>
+                                            <input class="form-control" id="PorcentajeA" type="number" oninput="ValorDivisor(this, 'A')" placeholder="0" min="1" max="100" value="50" />
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorPorcentajeB" style="display: none">
                                         <div class="mb-3">
                                             <label class="form-label" for="PorcentajeB">Medida 2  </label>
-                                            <input class="form-control" id="PorcentajeB" type="number" oninput="RegexNumeros(this);ValorDivisor(this, 'B')" placeholder="0" min="1" max="100" value="50" />
+                                            <input class="form-control" id="PorcentajeB" type="number" oninput="ValorDivisor(this, 'B')" placeholder="0" min="1" max="100" value="50" />
+                                        </div>
+                                    </div>
+                                    <div class="col-3" id="ContenedorPorcentajeC" style="display: none">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="PorcentajeC">Medida 3  </label>
+                                            <input class="form-control" id="PorcentajeC" type="number" oninput="ValorDivisor(this, 'C')" placeholder="0" min="1" max="100" value="50" />
+                                        </div>
+                                    </div>
+                                    <div class="col-3" id="ContenedorPorcentajeD" style="display: none">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="PorcentajeD">Medida 4  </label>
+                                            <input class="form-control" id="PorcentajeD" type="number" oninput="ValorDivisor(this, 'D')" placeholder="0" min="1" max="100" value="50" />
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorInsercion" style="display: none">
@@ -226,6 +238,8 @@
         ContenedorSociedad = document.getElementById("ContenedorSociedad");
         ContenedorPorcentajeA = document.getElementById("ContenedorPorcentajeA");
         ContenedorPorcentajeB = document.getElementById("ContenedorPorcentajeB");
+        ContenedorPorcentajeC = document.getElementById("ContenedorPorcentajeC");
+        ContenedorPorcentajeD = document.getElementById("ContenedorPorcentajeD");
         ContenedorBoton = document.getElementById("ContenedorBoton");
         ContenedorCantidadEtiquetas = document.getElementById("ContenedorCantidadEtiquetas");
 
@@ -239,6 +253,8 @@
         ContenedorSociedad.style.display = "none";
         ContenedorPorcentajeA.style.display = "none";
         ContenedorPorcentajeB.style.display = "none";
+        ContenedorPorcentajeC.style.display = "none";
+        ContenedorPorcentajeD.style.display = "none";
         ContenedorBoton.style.display = "none";
         ContenedorCantidadCajas.style.display = "none";
         ContenedorCantidadEtiquetas.style.display = "none";
@@ -278,6 +294,8 @@
         InputSociedad = document.getElementById("Sociedad");
         InputPorcentajeA = document.getElementById("PorcentajeA");
         InputPorcentajeB = document.getElementById("PorcentajeB");
+        InputPorcentajeC = document.getElementById("PorcentajeC");
+        InputPorcentajeD = document.getElementById("PorcentajeD");
         InputRetorno = document.getElementById("Retorno");
         InputInsercion = document.getElementById("Insercion");
         InputCantidadCajas = document.getElementById("CantidadCajas");
@@ -285,6 +303,8 @@
         InputCantidadBolsa.value = 1;
         InputPorcentajeA.value = 50;
         InputPorcentajeB.value = 50;
+        InputPorcentajeC.value = 50;
+        InputPorcentajeD.value = 50;
         InputRetorno.value = 20.0;
         InputInsercion.value = 0.50;
         InputCantidadCajas.value = 1;
@@ -297,6 +317,8 @@
         ContenedorSociedad = document.getElementById("ContenedorSociedad");
         ContenedorPorcentajeA = document.getElementById("ContenedorPorcentajeA");
         ContenedorPorcentajeB = document.getElementById("ContenedorPorcentajeB");
+        ContenedorPorcentajeC = document.getElementById("ContenedorPorcentajeC");
+        ContenedorPorcentajeD = document.getElementById("ContenedorPorcentajeD");
         ContenedorBoton = document.getElementById("ContenedorBoton");
         ContenedorCantidadEtiquetas = document.getElementById("ContenedorCantidadEtiquetas");
         ContenedorCantidadCajas = document.getElementById("ContenedorCantidadCajas");
@@ -312,6 +334,8 @@
         ContenedorCantidadBolsa.style.display = "none";
         ContenedorPorcentajeA.style.display = "none";
         ContenedorPorcentajeB.style.display = "none";
+        ContenedorPorcentajeC.style.display = "none";
+        ContenedorPorcentajeD.style.display = "none";
         ContenedorCantidadCajas.style.display = "none";
         BtnGenerar = document.getElementById("BtnGenerar");
         BtnGenerar.onclick = "";
@@ -377,6 +401,8 @@
                 ContenedorBoton.style.display = "";
                 ContenedorPorcentajeA.style.display = "";
                 ContenedorPorcentajeB.style.display = "";
+                ContenedorPorcentajeC.style.display = "";
+                ContenedorPorcentajeD.style.display = "";
                 TituloEtiqueta.innerHTML = "ETIQUETA DE DIVISOR";
                 break;
             case 'ETIQ9':
@@ -407,6 +433,8 @@
         InputSociedad = document.getElementById("Sociedad");
         InputPorcentajeA = document.getElementById("PorcentajeA");
         InputPorcentajeB = document.getElementById("PorcentajeB");
+        InputPorcentajeC = document.getElementById("PorcentajeC");
+        InputPorcentajeD = document.getElementById("PorcentajeD");
         InputCodigoCliente = document.getElementById("CodigoCliente");
         InputCantidadCajas = document.getElementById("CantidadCajas");
         CantidadEtiquetas = document.getElementById("CantidadEtiquetas");
@@ -426,6 +454,8 @@
             TipoEtiqueta:InputTipoEtiqueta,
             PorcentajeA:InputPorcentajeA.value,
             PorcentajeB:InputPorcentajeB.value,
+            PorcentajeC:InputPorcentajeC.value,
+            PorcentajeD:InputPorcentajeD.value,
             CodigoCliente:InputCodigoCliente.value,
             Insercion:InputInsercion.value,
             Retorno:InputRetorno.value,
@@ -518,10 +548,17 @@
         }
         PorcentajeA = document.getElementById('PorcentajeA');
         PorcentajeB = document.getElementById('PorcentajeB');
+        PorcentajeA = document.getElementById('PorcentajeA');
+        PorcentajeB = document.getElementById('PorcentajeB');
         if(id=='A'){
-            PorcentajeB.value = 100-elemento.value;
+            PorcentajeB.value = (100-elemento.value);
         }else{
-            PorcentajeA.value = 100-elemento.value;
+            //PorcentajeA.value = (100-elemento.value).toFixed(2);
+        }
+        if(id=='C'){
+            PorcentajeD.value = (100-elemento.value);
+        }else{
+            //PorcentajeA.value = (100-elemento.value).toFixed(2);
         }
     }
 </script>

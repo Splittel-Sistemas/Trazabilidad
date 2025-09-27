@@ -71,6 +71,8 @@ class EtiquetasController extends Controller
         $TipoEtiqueta = $request->TipoEtiqueta;
         $PorcentajeA = $request->PorcentajeA;
         $PorcentajeB = $request->PorcentajeB;
+        $PorcentajeC = $request->PorcentajeC;
+        $PorcentajeD = $request->PorcentajeD;
         $CodigoCliente = $request->CodigoCliente;
         $Insercion = $request->Insercion;
         $Retorno = $request->Retorno;
@@ -92,7 +94,7 @@ class EtiquetasController extends Controller
                 return $this->EtiquetaBolsaJumperCEDIS($CantidadEtiquetas,$PDFOrdenFabricacion);
                 break;
             case 'ETIQ5':
-                return $this->EtiquetaNumeroPiezas($Sociedad,$CantidadEtiquetas,$CantidadBolsa,$PDFOrdenFabricacion);
+                return $this->EtiquetaNumeroPiezas($Sociedad,$CantidadEtiquetas,$CantidadBolsa,$PDFOrdenFabricacion,$CodigoCliente);
                 break;
             case 'ETIQ6':
                 return $this->EtiquetaTrazabilidadMPO($PaginaInicio,$PaginaFin,$Insercion,$Retorno,$PDFOrdenFabricacion,$CodigoCliente);
@@ -101,7 +103,7 @@ class EtiquetasController extends Controller
                 return $this->EtiquetaInyeccion($CantidadEtiquetas,$PDFOrdenFabricacion);
                 break;
             case 'ETIQ8':
-                return $this->EtiquetaDivisor($CantidadEtiquetas,$PDFOrdenFabricacion,$PorcentajeA,$PorcentajeB);
+                return $this->EtiquetaDivisor($CantidadEtiquetas,$PDFOrdenFabricacion,$PorcentajeA,$PorcentajeB,$PorcentajeC,$PorcentajeD);
                 break;
             case 'ETIQ9':
                 return $this->EtiquetaCajaHuawei($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CantidadCajas,$CantidadBolsa,$CodigoCliente);
@@ -873,7 +875,7 @@ class EtiquetasController extends Controller
             }
             $Descripcion = html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $OrdenVenta = $OrdenFabricacion->OrdenVenta;
-            $ValorMedicionA = "PERDIDA DE INSERCCION \n≤ ".$Insercion." dB";
+            $ValorMedicionA = "PERDIDA DE INSERCCION\n≤ ".$Insercion." dB";
             $ValorMedicionB = "PERDIDA DE RETORNO \n≥ ".$Retorno." dB";
             $nombre = auth()->user()->name;
             $nombre = $nombre[0];
@@ -886,7 +888,8 @@ class EtiquetasController extends Controller
             $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             // Ajustar márgenes
             $pdf->SetMargins(2, 2, 2); 
-            $pdf->SetFont('dejavusans', '', 5);
+            $pdf->SetFont('dejavusans', '', 4.5);
+            //$pdf->SetTextColor(0, 0, 0);
             //$pdf->setFontSpacing(-0.1);
             $pdf->SetAutoPageBreak(TRUE, 0);   
             $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
@@ -918,60 +921,69 @@ class EtiquetasController extends Controller
                     'PZ' => 1,
                 );
                 $pdf->AddPage('P',$page_format,false, false); //Cada Etiqueta sera de 35X22
-                $pdf->SetFont('dejavusans', '', 5);
-                $pdf->SetFontStretching(95);
+                $pdf->SetFont('dejavusans', 'B', 5.5);
                     $Resx = 40;
-                    $pdf->SetXY(5,1); 
-                    $pdf->MultiCell(21, 0, $NombreFabricante, 0, 'L', 0, 1);
-                    $pdf->SetFont('dejavusans', '', 4.7);
+                    $pdf->SetXY(5,2); 
                     $pdf->SetFontStretching(90);
+                    $pdf->setFontSpacing(-0.1);
+                    $pdf->MultiCell(23, 0, $NombreFabricante, 0, 'L', 0, 1);
+
+                    $pdf->SetFontStretching(60);
+                    $pdf->setFontSpacing(0.1);
                     $pdf->SetXY(5,4); 
-                    $pdf->MultiCell(21, 0, $NumeroParte, 0, 'L', 0, 1);
-                    $pdf->SetFont('dejavusans', '', 4.7);
-                    $pdf->SetXY(5,6); 
+                    $pdf->MultiCell(24, 0, $NumeroParte, 0, 'L', 0, 1);
+                    
+                    $pdf->SetFontStretching(70);
+                    $pdf->setFontSpacing(-0.1);
+                    $pdf->SetXY(5,7); 
                     $pdf->MultiCell(21, 0, $Descripcion, 0, 'L', 0, 1);
-                    $pdf->SetFont('dejavusans', '', 4.7);
-                    $pdf->SetFontStretching(80);
-                    $pdf->SetXY(5,17); 
+
+                    $pdf->SetFontStretching(70);
+                    $pdf->setFontSpacing(-0.1);
+                    $pdf->SetXY(5,19); 
                     $pdf->MultiCell(21, 0, $ValorMedicionA, 0, 'L', 0, 1);
-                    $pdf->SetXY(5,21); 
+                    $pdf->SetXY(5,24); 
                     $pdf->MultiCell(21, 0, $ValorMedicionB, 0, 'L', 0, 1);
-                    $pdf->SetXY(5,26); 
+                    $pdf->SetXY(5,29); 
+                    $pdf->SetFontStretching(100);
+                    $pdf->setFontSpacing(-0.1);
                     $pdf->MultiCell(21, 0, "ORDEN:", 0, 'L', 0, 1);
-                    $pdf->SetFont('dejavusans', 'B', 4.7);
-                    $pdf->SetFontStretching(95);
-                    $pdf->SetXY(15,26); 
+                    $pdf->SetXY(15,29); 
                     $pdf->MultiCell(21, 0, $nombre.$OrdenFabricacion->OrdenFabricacion, 0, 'L', 0, 1);
-                    $pdf->SetFont('dejavusans', '', 4.7);
-                    $pdf->SetXY(23,28); 
+                    $pdf->SetXY(22,31); 
                     $pdf->MultiCell(21, 0, str_pad(($serial), 2, '0', STR_PAD_LEFT), 0, 'L', 0, 1);
                     $serial++;
                     if($serial<=$CompletoCantidadEtiquetas){
-                        $pdf->SetFontStretching(95);
-                        $pdf->SetFont('dejavusans', '', 5);
-                        $pdf->SetXY(5,40); 
-                        $pdf->MultiCell(21, 0, $NombreFabricante, 0, 'L', 0, 1);
-                        $pdf->SetFont('dejavusans', '', 4.7);
+                        $pdf->SetFont('dejavusans', 'B', 5.5);
+                        $pdf->SetFontStretching(90);
+                        $pdf->setFontSpacing(-0.1);
+                        $pdf->SetXY(5,41); 
+                        $pdf->MultiCell(23, 0, $NombreFabricante, 0, 'L', 0, 1);
+
                         $pdf->SetXY(5,43); 
-                        $pdf->SetFontStretching(80);
-                        $pdf->MultiCell(21, 0, $NumeroParte, 0, 'L', 0, 1);
-                        $pdf->SetFont('dejavusans', '', 4.7);
-                        $pdf->SetXY(5,45); 
+                        $pdf->SetFontStretching(60);
+                        $pdf->setFontSpacing(0.1);
+                        $pdf->MultiCell(24, 0, $NumeroParte, 0, 'L', 0, 1);
+                        
+                        $pdf->SetFontStretching(70);
+                        $pdf->setFontSpacing(-0.1);
+                        $pdf->SetXY(5,46); 
                         $pdf->MultiCell(21, 0, $Descripcion, 0, 'L', 0, 1);
-                        $pdf->SetFont('dejavusans', '', 4.7);
-                        $pdf->SetFontStretching(80);
-                        $pdf->SetXY(5,56); 
+                        
+                        $pdf->SetFontStretching(70);
+                        $pdf->setFontSpacing(-0.1);
+                        $pdf->SetXY(5,58); 
                         $pdf->MultiCell(21, 0, $ValorMedicionA, 0, 'L', 0, 1);
-                        $pdf->SetXY(5,60); 
+                        $pdf->SetXY(5,63); 
                         $pdf->MultiCell(21, 0, $ValorMedicionB, 0, 'L', 0, 1);
-                        $pdf->SetXY(5,65); 
+                        
+                        $pdf->SetFontStretching(100);
+                        $pdf->setFontSpacing(-0.1);
+                        $pdf->SetXY(5,68); 
                         $pdf->MultiCell(21, 0, "ORDEN:", 0, 'L', 0, 1);
-                        $pdf->SetFont('dejavusans', 'B', 4.7);
-                        $pdf->SetFontStretching(95);
-                        $pdf->SetXY(15,65); 
+                        $pdf->SetXY(15,68); 
                         $pdf->MultiCell(21, 0, $nombre.$OrdenFabricacion->OrdenFabricacion, 0, 'L', 0, 1);
-                        $pdf->SetFont('dejavusans', '', 4.7);
-                        $pdf->SetXY(23,67); 
+                        $pdf->SetXY(22,70); 
                         $pdf->MultiCell(21, 0, str_pad(($serial), 2, '0', STR_PAD_LEFT), 0, 'L', 0, 1);
                         $serial++;
                     }
@@ -994,6 +1006,7 @@ class EtiquetasController extends Controller
             // Ajustar márgenes
             $pdf->SetMargins(2, 2, 2); 
             $pdf->SetFont('helvetica', '', 10);
+            $pdf->SetFontStretching(105);
             $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
             $pdf->SetPrintHeader(false);
             $pdf->SetAutoPageBreak(TRUE, 0);   
@@ -1007,36 +1020,36 @@ class EtiquetasController extends Controller
                         throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
                 }else{
                     $imagePath = storage_path('app/Logos/Optronics.jpg');
-                    $pdf->Image($imagePath, 20.5, 1, 15);
-                    $pdf->SetFont('helvetica', '', 9);
+                    $pdf->Image($imagePath, 20.5, 3, 15);
+                    $pdf->SetFont('helvetica', 'B', 8);
                     $pdf->setFontSpacing(0);                  // Sin espaciado adicional entre letras
                     $pdf->setCellPadding(0);
-                    $pdf->SetXY(3, 6);
+                    $pdf->SetXY(3, 8);
                     $pdf->MultiCell(51, 0, "FECHA:                    GRUPO:", 0, 'L', 0, 1);
-                    $pdf->SetXY(3, 11);
+                    $pdf->SetXY(3, 13);
                     $pdf->MultiCell(51, 0, "HORA DE INGRESO:", 0, 'L', 0, 1);
-                    $pdf->SetXY(3, 16);
-                    $pdf->SetFont('helvetica', '', 8);
+                    $pdf->SetXY(3, 18);
+                    $pdf->SetFont('helvetica', 'B', 7);
                     $pdf->setFontSpacing(-0.3);
                     $pdf->MultiCell(51, 0, "CONECTORES INYECTADOS:", 0, 'L', 0, 1);
-                    $pdf->SetXY(3, 20);
-                    $pdf->SetFont('helvetica', '', 9);
+                    $pdf->SetXY(3, 22);
+                    $pdf->SetFont('helvetica', 'B', 8);
                     $pdf->MultiCell(51, 0, "HORA DE DESECHO:", 0, 'L', 0, 1);
                     if(($i+1 < $CantidadEtiquetas) OR ($ResiduoCantidadEtiquetas == 0)){
-                        $pdf->Image($imagePath, 72.5, 1, 15);
-                        $pdf->SetFont('helvetica', '', 9);
+                        $pdf->Image($imagePath, 72.5, 3, 15);
+                        $pdf->SetFont('helvetica', 'B', 8);
                         $pdf->setFontSpacing(0);                  // Sin espaciado adicional entre letras
                         $pdf->setCellPadding(0);
-                        $pdf->SetXY(58, 6);
+                        $pdf->SetXY(58, 8);
                         $pdf->MultiCell(51, 0, "FECHA:                    GRUPO:", 0, 'L', 0, 1);
-                        $pdf->SetXY(58, 11);
+                        $pdf->SetXY(58, 13);
                         $pdf->MultiCell(51, 0, "HORA DE INGRESO:", 0, 'L', 0, 1);
-                        $pdf->SetXY(58, 16);
-                        $pdf->SetFont('helvetica', '', 8);
+                        $pdf->SetXY(58, 18);
+                        $pdf->SetFont('helvetica', 'B', 7);
                         $pdf->setFontSpacing(-0.3);
                         $pdf->MultiCell(51, 0, "CONECTORES INYECTADOS :", 0, 'L', 0, 1);
-                        $pdf->SetXY(58, 20);
-                        $pdf->SetFont('helvetica', '', 9);
+                        $pdf->SetXY(58, 22);
+                        $pdf->SetFont('helvetica', 'B', 8);
                         $pdf->MultiCell(51, 0, "HORA DE DESECHO:", 0, 'L', 0, 1);
                     }
                 }
@@ -1048,7 +1061,7 @@ class EtiquetasController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    public function EtiquetaDivisor($CantidadEtiquetas,$OrdenFabricacion,$PorcentajeA,$PorcentajeB){
+    public function EtiquetaDivisor($CantidadEtiquetas,$OrdenFabricacion,$PorcentajeA,$PorcentajeB,$PorcentajeC,$PorcentajeD){
         try {
             if($PorcentajeA <1 OR $PorcentajeB<1){
                 return response()->json(['error' => "Medida 1 y Medida 2 tienen que ser mayor a 0"], 500);
@@ -1080,11 +1093,11 @@ class EtiquetasController extends Controller
                 $pdf->SetXY(19, 6);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
                 $pdf->SetXY(3, 11.5);
-                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
+                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
                 $pdf->SetXY(10.7, 11.5);
-                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+                $pdf->MultiCell(10, 0, $PorcentajeC."%", 0, 'L', 0, 1);
                 $pdf->SetXY(19, 11.5);
-                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+                $pdf->MultiCell(10, 0, $PorcentajeD."%", 0, 'L', 0, 1);
                 $pdf->SetFont('helvetica', 'B', 10);
                 $pdf->SetXY(10.3, 6);
                 $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
@@ -1103,11 +1116,11 @@ class EtiquetasController extends Controller
                 $pdf->SetXY(57, 6);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
                 $pdf->SetXY(41, 12);
-                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
+                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
                 $pdf->SetXY(49, 12);
-                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+                $pdf->MultiCell(10, 0, $PorcentajeC."%", 0, 'L', 0, 1);
                 $pdf->SetXY(57, 12);
-                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+                $pdf->MultiCell(10, 0, $PorcentajeD."%", 0, 'L', 0, 1);
 
                 $pdf->SetFont('helvetica', 'B', 10);
                 $pdf->SetXY(48.3, 6);
