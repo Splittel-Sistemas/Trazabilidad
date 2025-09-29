@@ -158,9 +158,6 @@ class CorteController extends Controller
                 'id' => $id
             ], 200);
         }
-        $Hijo = isset($DetallesCable[0]['Hijo'])?$DetallesCable[0]['Hijo']:"";
-        $CantidadBase = isset($DetallesCable[0]['Cantidad Base'])?$DetallesCable[0]['Cantidad Base']:"";
-        $NombreHijo = isset($DetallesCable[0]['Nombre Hijo'])?$DetallesCable[0]['Nombre Hijo']:"";
         $Ordenfabricacionpartidas = '
                     <table id="TablePartidasModal" class="table table-sm fs--1 mb-0" style="width:100%">
                         <thead>
@@ -230,18 +227,21 @@ class CorteController extends Controller
                             </th></tr>';
             }
             $Ordenfabricacioninfo.='<tr>
-                                        <th class="bg-light p-1"  style="width: 30%;">Número Parte Cable</th>
-                                        <td class="text-center p-1"  style="width: 20%;">'.$Hijo.'</td>
-                                        <th class="bg-light p-1"  style="width: 30%;">Medida del Corte</th>
-                                        <td class="text-center p-1"  style="width: 20%;">'.$CantidadBase.'</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="bg-light p-1"  style="width: 30%;">Descripción Cable</th>
-                                        <td class="text-center p-1"  style="width: 20%;" colspan="3">'.$NombreHijo.'</td>
-                                    </tr>
-                                </tbody>
-                            </table>';
-
+                                    <th class="bg-light p-1">Número Parte Cable</th>
+                                    <th class="bg-light p-1" colspan="2">Descripción Cable</th>
+                                    <th class="bg-light p-1">Medida del Corte</th>
+                                </tr>';
+            foreach($DetallesCable as $DCable){
+                $Hijo = isset($DCable['Hijo'])?$DCable['Hijo']:"";
+                $CantidadBase = isset($DCable['Cantidad Base'])?$DCable['Cantidad Base']:"";
+                $NombreHijo = isset($DCable['Nombre Hijo'])?$DCable['Nombre Hijo']:"";
+                $Ordenfabricacioninfo.='<tr>
+                                        <td class="text-center p-1">'.$Hijo.'</td>
+                                        <td class="text-center p-1" colspan="2">'.$NombreHijo.'</td>
+                                        <td class="text-center p-1">'.$CantidadBase.'</td>
+                                    </tr>';
+            }
+            $Ordenfabricacioninfo.='</tbody></table>';
             $PartidasOF=$OrdenFabricacion->partidasOF()->first();
             $PartidasOF = $PartidasOF->Areas()->where('Areas_id',2)->get();
             $RangoEtiquetas=1;

@@ -729,10 +729,10 @@ class EtiquetasController extends Controller
                         $pdf->SetXY(3, 19);
                         $pdf->MultiCell(95, 0, $ParteNo, 0, 'L', 0, 1);
 
-                        $ParteNo = $NoPEDIDO;
-                        $pdf->SetFont('dejavusans', 'B', 8);
+                        $ParteNo = str_replace("OC ", "\nOC ", $NoPEDIDO);
+                        $pdf->SetFont('dejavusans', 'B', 7.5);
                         $pdf->SetXY(5, 32);
-                        $pdf->MultiCell(23, 0, $ParteNo, 0, 'L', 0, 1);
+                        $pdf->MultiCell(24, 0, $ParteNo, 0, 'L', 0, 1);
                         $ParteNo = $OrdenVenta;
                         $pdf->SetFont('dejavusans', 'B', 16);
                         $pdf->SetXY(28, 32);

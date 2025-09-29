@@ -25,10 +25,10 @@
         <div class="mb-2 col-6">
             <label for="NumeroOrden" class="form-label">Ingresa orden de Fabricación</label>
             <div class="input-group">
-                <input type="text" oninput="RegexNumeros(this)" class="form-control form-control-sm" id="NumeroOrden" placeholder="Número de Orden de Fabricación">
+                <input type="text" oninput="RegexNumeros(this)" class="form-control form-control-sm" autocomplete="off" id="NumeroOrden" placeholder="Número de Orden de Fabricación">
                 <button class="btn btn-outline-primary btn-sm" id="Btn-BuscarOrden" onclick="BuscarOF()">Buscar</button>
             </div>
-            <div class="list-group lista-busqueda" id="ListaBusquedas" style="display: none;">
+            <div class="list-group lista-busqueda" id="ListaBusquedas" style="max-height: 20rem;overflow-y: auto;display: none;">
             </div>
         </div>
     </div>
@@ -561,5 +561,10 @@
             //PorcentajeA.value = (100-elemento.value).toFixed(2);
         }
     }
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        document.getElementById("Btn-BuscarOrden").click();
+      }
+    });
 </script>
 @endsection

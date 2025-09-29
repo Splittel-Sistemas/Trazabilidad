@@ -203,7 +203,7 @@ class FuncionesGeneralesController extends Controller
                     FROM  HN_OPTRONICS."OWOR" T2 
                     INNER JOIN HN_OPTRONICS."WOR1" T3 ON T3."DocEntry" = T2."DocEntry" 
                     INNER JOIN HN_OPTRONICS."OITM" T4 ON T4."ItemCode" = T3."ItemCode"
-                    WHERE T2."DocNum" = '.$OrdenFabricacion.' AND T4."InvntryUom" = \'MTR\' AND  (T3."ItemName" LIKE \'%Cable%\' OR T3."ItemCode" = \'SP012930190B\' OR T3."ItemName" LIKE \'%fiber/print%\') LIMIT 1';
+                    WHERE T2."DocNum" = '.$OrdenFabricacion.' AND T4."InvntryUom" = \'MTR\' AND  (T3."ItemName" LIKE \'%Cable%\' OR T3."ItemCode" = \'SP012930190B\' OR T3."ItemName" LIKE \'%fiber/print%\')';
         return $Detalles = $this->ejecutarConsulta($sql);
     }
     public function EtiquetasDatosSAP($NumOV,$NumOF){
