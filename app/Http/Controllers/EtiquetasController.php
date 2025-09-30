@@ -949,9 +949,9 @@ class EtiquetasController extends Controller
                     $pdf->SetFontStretching(100);
                     $pdf->setFontSpacing(-0.1);
                     $pdf->MultiCell(21, 0, "ORDEN:", 0, 'L', 0, 1);
-                    $pdf->SetXY(15,29); 
+                    $pdf->SetXY(14,29); 
                     $pdf->MultiCell(21, 0, $nombre.$OrdenFabricacion->OrdenFabricacion, 0, 'L', 0, 1);
-                    $pdf->SetXY(22,31); 
+                    $pdf->SetXY(21,31); 
                     $pdf->MultiCell(21, 0, str_pad(($serial), 2, '0', STR_PAD_LEFT), 0, 'L', 0, 1);
                     $serial++;
                     if($serial<=$CompletoCantidadEtiquetas){
@@ -982,9 +982,9 @@ class EtiquetasController extends Controller
                         $pdf->setFontSpacing(-0.1);
                         $pdf->SetXY(5,68); 
                         $pdf->MultiCell(21, 0, "ORDEN:", 0, 'L', 0, 1);
-                        $pdf->SetXY(15,68); 
+                        $pdf->SetXY(14,68); 
                         $pdf->MultiCell(21, 0, $nombre.$OrdenFabricacion->OrdenFabricacion, 0, 'L', 0, 1);
-                        $pdf->SetXY(22,70); 
+                        $pdf->SetXY(21,70); 
                         $pdf->MultiCell(21, 0, str_pad(($serial), 2, '0', STR_PAD_LEFT), 0, 'L', 0, 1);
                         $serial++;
                     }
