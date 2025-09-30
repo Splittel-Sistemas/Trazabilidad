@@ -109,7 +109,7 @@ class EtiquetasController extends Controller
                 return $this->EtiquetaCajaHuawei($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CantidadCajas,$CantidadBolsa,$CodigoCliente);
                 break;
             case 'ETIQ10':
-                return $this->EtiquetaCajaNokia($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CantidadEtiquetas,$CantidadBolsa,$CodigoCliente);
+                return $this->EtiquetaCajaNokia($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CantidadCajas,$CantidadBolsa,$CodigoCliente);
                 break;
             default:
                 break;
@@ -273,18 +273,18 @@ class EtiquetasController extends Controller
                             'phase' => 0,
                             'color' => array(0, 0, 0) // RGB negro
                         );
-                $pdf->RoundedRect(0.5,5, 97, 45, 1, '1111', 'D', $border_style, array());
+                $pdf->RoundedRect(2,5, 97, 45, 1, '1111', 'D', $border_style, array());
                 $pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetLineWidth(0.3);
-                $pdf->Rect(0.5, 15, 97 , 0 );
+                $pdf->Rect(2, 15, 97 , 0 );
 
                 $ParteNo = 'Denomination:  '."\n\n\n\n".
                             'Specification:  ';
-                $pdf->SetXY($posX+1.5, 17); 
+                $pdf->SetXY($posX+3.5, 17); 
                 $pdf->MultiCell(90, 0, $ParteNo, 0, 'L', 0, 1);
                 $pdf->SetFont('dejavusans', '', 10);
-                $pdf->SetXY($posX+25.5, 17); 
+                $pdf->SetXY($posX+27.5, 17); 
                 $pdf->MultiCell(66, 0, $Descripcion, 0, 'L', 0, 1);
                 //Codigo de barras
                 $CodigoBarras = $Articulo;
@@ -292,7 +292,7 @@ class EtiquetasController extends Controller
                 $pdf->write1DBarcode($CodigoBarras, 'C128',18, 39, 65, 4, 0.4, array(), 'N');
                 $pdf->SetFont('dejavusans', '', 10);
                 $pdf->setFontSpacing(0);
-                $pdf->SetXY($posX+23.5, 33);
+                $pdf->SetXY($posX+25.5, 33);
                 $pdf->MultiCell(65, 0, $CodigoBarras, 0, 'L', 0, 1);
             }
             ob_end_clean();
@@ -842,6 +842,7 @@ class EtiquetasController extends Controller
         }
     }*/
     public function EtiquetaTrazabilidadMPO($PaginaInicio,$PaginaFin,$Insercion,$Retorno,$OrdenFabricacion,$CodigoCliente){
+            
         try {
             if ($Insercion != floor($Insercion)) {
                     $Insercion = number_format((float)$Insercion, 2);
@@ -1244,12 +1245,15 @@ class EtiquetasController extends Controller
                 $NumOV = $OrdenFabricacion->OrdenVenta->OrdenVenta;
                 $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($NumOV,$OrdenFabricacion->OrdenFabricacion);
                 for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
+                    if($i == $CantidadEtiquetas ){
+                        break;
+                    }
                     $page_format = array(
-                        'MediaBox' => array('llx' => 0, 'lly' => 0, 'urx' => 101, 'ury' => 66),
-                        'CropBox' => array('llx' => 0, 'lly' => 0, 'urx' => 101, 'ury' => 66),
-                        'BleedBox' => array('llx' => 2, 'lly' => 2, 'urx' => 99, 'ury' => 64),
-                        'TrimBox' => array('llx' => 4, 'lly' => 4, 'urx' => 97, 'ury' => 63),
-                        'ArtBox' => array('llx' => 6, 'lly' => 6, 'urx' => 94, 'ury' => 61),
+                        'MediaBox' => array('llx' => 0, 'lly' => 0, 'urx' => 80, 'ury' => 105),
+                        'CropBox' => array('llx' => 0, 'lly' => 0, 'urx' => 80, 'ury' => 105),
+                        'BleedBox' => array('llx' => 2, 'lly' => 2, 'urx' => 79, 'ury' => 104),
+                        'TrimBox' => array('llx' => 4, 'lly' => 4, 'urx' => 78, 'ury' => 103),
+                        'ArtBox' => array('llx' => 6, 'lly' => 6, 'urx' => 77, 'ury' => 102),
                         'Dur' => 3,
                         'trans' => array(
                             'D' => 1.5,
@@ -1257,7 +1261,7 @@ class EtiquetasController extends Controller
                             'Dm' => 'V',
                             'M' => 'O'
                         ),
-                        'Rotate' => 270,
+                        'Rotate' => 90,
                         'PZ' => 1,
                     );
                     $pdf->AddPage('P', $page_format,false,false);
