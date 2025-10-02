@@ -77,6 +77,30 @@ class EtiquetasController extends Controller
         $Insercion = $request->Insercion;
         $Retorno = $request->Retorno;
         $CantidadCajas = $request->CantidadCajas;
+        $Etiquetas = [
+            [1,"ETIQ4","ETIQUETA DE BOLSA JUMPER"],
+            [2,"ETIQ1","ETIQUETA DE BOLSA ESPECIAL HUAWEI"],
+            [3,"ETIQ4","ETIQUETA DE BOLSA ESPECIAL NOKIA"],
+            [4,"ETIQ4","ETIQUETA DE BOLSA ESPECIAL DRAI"],
+            [5,"ETIQ2","ETIQUETA DE BANDERILLA QR GENERAL"],
+            [6,"ETIQ3","ETIQUETA DE BANDERILLA QR NÚMERO ESPECIAL"],
+            [7,"ETIQ4CEDIS","ETIQUETA DE BOLSA JUMPER CEDIS"],
+            [8,"ETIQ5","ETIQUETA DE NÚMERO DE PIEZAS"],
+            [9,"ETIQ6","ETIQUETA DE TRAZABILIDAD MPO (PRUEBA)"],
+            [10,"ETIQ7","ETIQUETA DE INYECCIÓN (PRUEBA)"],
+            [11,"ETIQ8","ETIQUETA DE DIVISOR (PRUEBA)"],
+            [12,"ETIQ4","ETIQUETA DE BOLSA PATCH CORD GENERAL"],
+            [13,"ETIQ9","ETIQUETA DE CAJA HUAWEI (PRUEBA)"],
+            [14,"ETIQ10","ETIQUETA DE CAJA NOKIA (PRUEBA)"],
+        ];
+        $TituloEtiqueta = "";
+        foreach ($Etiquetas as $etiqueta) {
+            if ($etiqueta[1] === $TipoEtiqueta) {
+                $TituloEtiqueta = $etiqueta[2];
+                break;
+            }
+        }
+        $this->funcionesGenerales->Logs("Etiquetas","imprimir Etiqueta","Etiqueta ".$TituloEtiqueta);
         switch($TipoEtiqueta){
             case 'ETIQ1':
                 return $this->EtiquetaHUAWEI($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CodigoCliente);
@@ -842,17 +866,125 @@ class EtiquetasController extends Controller
         }
     }*/
     public function EtiquetaTrazabilidadMPO($PaginaInicio,$PaginaFin,$Insercion,$Retorno,$OrdenFabricacion,$CodigoCliente){
-            
-        try {
-            if ($Insercion != floor($Insercion)) {
-                    $Insercion = number_format((float)$Insercion, 2);
-            }else{
-                $Insercion = $Insercion = number_format((float)$Insercion, 1);
+            $BanderaDiferente = (($Insercion == $Retorno) || $Retorno == "")? true : false;
+            $Insercion1 = "";
+            $Retorno1 = "";
+            $Insercion2 = "";
+            $Retorno2 = "";
+            switch($Insercion){
+                case "MUPC":
+                    $Insercion1 = 0.20;
+                    $Retorno1 = 40.0;
+                    break;
+                case "MOUPC":
+                    $Insercion1 = 0.20;
+                    $Retorno1 = 55.0;
+                    break;
+                case "MOAPC":
+                    $Insercion1 = 0.20;
+                    $Retorno1 = 65.0;
+                    break;
+                case "MULMTRJ":
+                    $Insercion1 = 0.70;
+                    $Retorno1 = 40.0;
+                    break;
+                case "MONMTRJ":
+                    $Insercion1 = 0.40;
+                    $Retorno1 = 35.0;
+                    break;
+                case "MUMPO":
+                    $Insercion1 = 0.50;
+                    $Retorno1 = 20.0;
+                    break;
+                case "MOMPO":
+                    $Insercion1 = 0.35;
+                    $Retorno1 = 60.0;
+                    break;
+                case "MUMTP":
+                    $Insercion1 = 0.50;
+                    $Retorno1 = 20.0;
+                    break;
+                case "MOMTP":
+                    $Insercion1 = 0.35;
+                    $Retorno1 = 60.0;
+                    break;
+                case "MUMTP_PRO":
+                    $Insercion1 = 0.35;
+                    $Retorno1 = 25.0;        
+                    break;
+                case "MOMTP_PRO":
+                    $Insercion1 = 0.35;
+                    $Retorno1 = 25.0;
+                    break;
             }
-            if ($Retorno != floor($Retorno)) {
-                    $Retorno = number_format((float)$Retorno, 2);
+            if(!$BanderaDiferente){
+                switch($Retorno){
+                    case "MUPC":
+                        $Insercion2 = 0.20;
+                        $Retorno2 = 40.0;
+                        break;
+                    case "MOUPC":
+                        $Insercion2 = 0.20;
+                        $Retorno2 = 55.0;
+                        break;
+                    case "MOAPC":
+                        $Insercion2 = 0.20;
+                        $Retorno2 = 65.0;
+                        break;
+                    case "MULMTRJ":
+                        $Insercion2 = 0.70;
+                        $Retorno2 = 40.0;
+                        break;
+                    case "MONMTRJ":
+                        $Insercion2 = 0.40;
+                        $Retorno2 = 35.0;
+                        break;
+                    case "MUMPO":
+                        $Insercion2 = 0.50;
+                        $Retorno2 = 20.0;
+                        break;
+                    case "MOMPO":
+                        $Insercion2 = 0.35;
+                        $Retorno2 = 60.0;
+                        break;
+                    case "MUMTP":
+                        $Insercion2 = 0.50;
+                        $Retorno2 = 20.0;
+                        break;
+                    case "MOMTP":
+                        $Insercion2 = 0.35;
+                        $Retorno2 = 60.0;
+                        break;
+                    case "MUMTP_PRO":
+                        $Insercion2 = 0.35;
+                        $Retorno2 = 25.0;        
+                        break;
+                    case "MOMTP_PRO":
+                        $Insercion2 = 0.35;
+                        $Retorno2 = 25.0;
+                        break;
+                }
+                if ($Insercion2 != floor($Insercion2)) {
+                    $Insercion2 = number_format((float)$Insercion2, 2);
+                }else{
+                    $Insercion2 = $Insercion2 = number_format((float)$Insercion2, 1);
+                }
+                if ($Retorno2 != floor($Retorno2)) {
+                        $Retorno2 = number_format((float)$Retorno2, 2);
+                }else{
+                    $Retorno2 = $Retorno2 = number_format((float)$Retorno2, 1);
+                }
+            }
+        try {
+            if ($Insercion1 != floor($Insercion1)) {
+                    $Insercion1 = number_format((float)$Insercion1, 2);
             }else{
-                $Retorno = $Retorno = number_format((float)$Retorno, 1);
+                $Insercion1 = $Insercion1 = number_format((float)$Insercion1, 1);
+            }
+            if ($Retorno1 != floor($Retorno1)) {
+                    $Retorno1 = number_format((float)$Retorno1, 2);
+            }else{
+                $Retorno1 = $Retorno1 = number_format((float)$Retorno1, 1);
             }
             $NombreFabricante = "Optronics S.A. de C.V.";
             $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first(); 
@@ -876,8 +1008,14 @@ class EtiquetasController extends Controller
             }
             $Descripcion = html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $OrdenVenta = $OrdenFabricacion->OrdenVenta;
-            $ValorMedicionA = "PERDIDA DE INSERCCION\n≤ ".$Insercion." dB";
-            $ValorMedicionB = "PERDIDA DE RETORNO \n≥ ".$Retorno." dB";
+            $ValorMedicionA = "PERDIDA DE INSERCCION\n≤ ".$Insercion1." dB";
+            if(!$BanderaDiferente){
+                $ValorMedicionA .= " / ".$Insercion2." dB";
+            }
+            $ValorMedicionB = "PERDIDA DE RETORNO \n≥ ".$Retorno1." dB";
+            if(!$BanderaDiferente){
+                $ValorMedicionB .= " / ".$Retorno2." dB";
+            }
             $nombre = auth()->user()->name;
             $nombre = $nombre[0];
             if($OrdenVenta == ""){
@@ -1064,23 +1202,28 @@ class EtiquetasController extends Controller
     }
     public function EtiquetaDivisor($CantidadEtiquetas,$OrdenFabricacion,$PorcentajeA,$PorcentajeB,$PorcentajeC,$PorcentajeD){
         try {
-            if($PorcentajeA <1 OR $PorcentajeB<1){
+            if($PorcentajeA <0 OR $PorcentajeB<0){
                 return response()->json(['error' => "Medida 1 y Medida 2 tienen que ser mayor a 0"], 500);
             }
             // Crear PDF
             $pdf = new TCPDF();
             // Ajustar márgenes
             $pdf->SetMargins(1, 1, 1); 
-            $pdf->SetFont('dejavusans', '', 10);  //dejavusans equivalente a Arial helvetica
+            $pdf->SetFont('dejavusans', '', 9);  //dejavusans equivalente a Arial helvetica
             $pdf->SetAutoPageBreak(TRUE, 0.5);   
             $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
             $pdf->SetPrintHeader(false);
-
+            $PorcentajeA = (intval($PorcentajeA) === 0)?number_format($PorcentajeA, 2, '.', ''):number_format($PorcentajeA, 1, '.', '');
+            $PorcentajeB = (intval($PorcentajeB) === 0)?number_format($PorcentajeB, 2, '.', ''):number_format($PorcentajeB, 1, '.', '');
+            $PorcentajeC = (intval($PorcentajeC) === 0)?number_format($PorcentajeC, 2, '.', ''):number_format($PorcentajeC, 1, '.', '');
+            $PorcentajeD = (intval($PorcentajeD) === 0)?number_format($PorcentajeD, 2, '.', ''):number_format($PorcentajeD, 1, '.', '');
             // Contador para saber cuántas etiquetas se han colocado en la página
             $ResiduoCantidadEtiquetas = $CantidadEtiquetas%2;
             $CantidadEtiquetas = intval($CantidadEtiquetas/2);
             for ($i=0; $i<$CantidadEtiquetas; $i++) {
-                $pdf->SetFont('helvetica', 'B', 9.5);
+                $pdf->SetFont('helvetica', 'B', 10);
+                $pdf->SetFontStretching(76);
+                $pdf->setFontSpacing(-0.1);
                 $pdf->AddPage('L', array(114, 25));
                 $pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetLineWidth(0.4);
@@ -1091,21 +1234,25 @@ class EtiquetasController extends Controller
                 $pdf->Rect(3, 11, 8 , 5 );
                 $pdf->Rect(11, 11, 8 , 5 );
                 $pdf->Rect(19, 11, 8 , 5 );
-                $pdf->SetXY(19, 6);
+                $pdf->SetXY(18.5, 6.5);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(3, 11.5);
+                $pdf->SetXY(2.5, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
-                $pdf->SetXY(10.7, 11.5);
+                $pdf->SetXY(10.5, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeC."%", 0, 'L', 0, 1);
-                $pdf->SetXY(19, 11.5);
+                $pdf->SetXY(18.5, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeD."%", 0, 'L', 0, 1);
-                $pdf->SetFont('helvetica', 'B', 10);
-                $pdf->SetXY(10.3, 6);
+                $pdf->SetFont('helvetica', 'B', 9.5);
+                $pdf->SetFontStretching(100);
+                $pdf->setFontSpacing(0);
+                $pdf->SetXY(10.4, 6.5);
                 $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
-                $pdf->SetXY(4, 6);
+                $pdf->SetXY(4, 6.5);
                 $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
                 // Cuadro 2
-                $pdf->SetFont('helvetica', 'B', 9.5);
+                $pdf->SetFont('helvetica', 'B', 10);
+                $pdf->SetFontStretching(76);
+                $pdf->setFontSpacing(-0.1);
                 $pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetLineWidth(0.5);
                 $pdf->Rect(41, 6, 8 , 5 );
@@ -1114,47 +1261,51 @@ class EtiquetasController extends Controller
                 $pdf->Rect(41, 11, 8 , 5 );
                 $pdf->Rect(49, 11, 8 , 5 );
                 $pdf->Rect(57, 11, 8 , 5 );
-                $pdf->SetXY(57, 6);
+                $pdf->SetXY(56.5, 6.5);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(41, 12);
+                $pdf->SetXY(40.5, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
-                $pdf->SetXY(49, 12);
+                $pdf->SetXY(48.5, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeC."%", 0, 'L', 0, 1);
-                $pdf->SetXY(57, 12);
+                $pdf->SetXY(56.5, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeD."%", 0, 'L', 0, 1);
 
-                $pdf->SetFont('helvetica', 'B', 10);
-                $pdf->SetXY(48.3, 6);
+                $pdf->SetFont('helvetica', 'B', 9.5);
+                $pdf->SetFontStretching(100);
+                $pdf->setFontSpacing(0);
+                $pdf->SetXY(48.4, 6.5);
                 $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
-                $pdf->SetXY(42, 6);
+                $pdf->SetXY(42, 6.5);
                 $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
                 // Cuadro 3
-                /*$pdf->SetFont('helvetica', 'B', 9.5);
-                $pdf->SetDrawColor(0, 0, 0);
-                $pdf->SetLineWidth(0.4);
-                $pdf->Rect(77, 6, 8 , 5 );
-                $pdf->Rect(85, 6, 8 , 5 );
-                $pdf->Rect(93, 6, 8 , 5 );
-                $pdf->Rect(77, 11, 8 , 5 );
-                $pdf->Rect(85, 11, 8 , 5 );
-                $pdf->Rect(93, 11, 8 , 5 );
-                $pdf->SetXY(93, 6);
-                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(77, 12);
-                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(85, 12);
-                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
-                $pdf->SetXY(93, 12);
-                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+                    /*$pdf->SetFont('helvetica', 'B', 9.5);
+                    $pdf->SetDrawColor(0, 0, 0);
+                    $pdf->SetLineWidth(0.4);
+                    $pdf->Rect(77, 6, 8 , 5 );
+                    $pdf->Rect(85, 6, 8 , 5 );
+                    $pdf->Rect(93, 6, 8 , 5 );
+                    $pdf->Rect(77, 11, 8 , 5 );
+                    $pdf->Rect(85, 11, 8 , 5 );
+                    $pdf->Rect(93, 11, 8 , 5 );
+                    $pdf->SetXY(93, 6);
+                    $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
+                    $pdf->SetXY(77, 12);
+                    $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
+                    $pdf->SetXY(85, 12);
+                    $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
+                    $pdf->SetXY(93, 12);
+                    $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
 
-                $pdf->SetFont('helvetica', 'B', 10);
-                $pdf->SetXY(84.3, 6);
-                $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
-                $pdf->SetXY(78, 6);
-                $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);*/
+                    $pdf->SetFont('helvetica', 'B', 10);
+                    $pdf->SetXY(84.3, 6);
+                    $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
+                    $pdf->SetXY(78, 6);
+                    $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);*/
             }
             if($ResiduoCantidadEtiquetas >= 1){
-                $pdf->SetFont('helvetica', 'B', 9.5);
+                $pdf->SetFont('helvetica', 'B', 10);
+                $pdf->SetFontStretching(76);
+                $pdf->setFontSpacing(-0.1);
                 $pdf->AddPage('L', array(114, 25));
                 $pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetLineWidth(0.4);
@@ -1165,43 +1316,20 @@ class EtiquetasController extends Controller
                 $pdf->Rect(3, 11, 8 , 5 );
                 $pdf->Rect(11, 11, 8 , 5 );
                 $pdf->Rect(19, 11, 8 , 5 );
-                $pdf->SetXY(19, 6);
+                $pdf->SetXY(18.5, 6.5);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(3, 11.5);
+                $pdf->SetXY(2.5, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(10.7, 11.5);
+                $pdf->SetXY(10.5, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
-                $pdf->SetXY(19, 11.5);
+                $pdf->SetXY(18.5, 11.5);
                 $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
-                $pdf->SetFont('helvetica', 'B', 10);
-                $pdf->SetXY(10.3, 6);
+                $pdf->SetFont('helvetica', 'B', 9.5);
+                $pdf->SetFontStretching(100);
+                $pdf->setFontSpacing(0);
+                $pdf->SetXY(10.3, 6.5);
                 $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
-                $pdf->SetXY(4, 6);
-                $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
-            }
-            if($ResiduoCantidadEtiquetas >= 2){
-               $pdf->SetFont('helvetica', 'B', 9.5);
-                $pdf->SetDrawColor(0, 0, 0);
-                $pdf->SetLineWidth(0.4);
-                $pdf->Rect(41, 6, 8 , 5 );
-                $pdf->Rect(49, 6, 8 , 5 );
-                $pdf->Rect(57, 6, 8 , 5 );
-                $pdf->Rect(41, 11, 8 , 5 );
-                $pdf->Rect(49, 11, 8 , 5 );
-                $pdf->Rect(57, 11, 8 , 5 );
-                $pdf->SetXY(57, 6);
-                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(41, 12);
-                $pdf->MultiCell(10, 0, $PorcentajeA."%", 0, 'L', 0, 1);
-                $pdf->SetXY(49, 12);
-                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
-                $pdf->SetXY(57, 12);
-                $pdf->MultiCell(10, 0, $PorcentajeB."%", 0, 'L', 0, 1);
-
-                $pdf->SetFont('helvetica', 'B', 10);
-                $pdf->SetXY(48.3, 6);
-                $pdf->MultiCell(10, 0, "OUT", 0, 'L', 0, 1);
-                $pdf->SetXY(42, 6);
+                $pdf->SetXY(4, 6.5);
                 $pdf->MultiCell(10, 0, "IN", 0, 'L', 0, 1);
             }
             ob_end_clean();
@@ -1235,7 +1363,7 @@ class EtiquetasController extends Controller
                 $pdf = new TCPDF();
                 // Ajustar márgenes
                 $pdf->SetMargins(1, 1, 1); 
-                $pdf->SetFont('dejavusans', '', 9);  //dejavusans equivalente a Arial helvetica
+                $pdf->SetFont('dejavusans', '', 10);  //dejavusans equivalente a Arial helvetica
                 $pdf->SetAutoPageBreak(TRUE, 0.5);   
                 $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
                 $pdf->SetPrintHeader(false);
@@ -1244,16 +1372,20 @@ class EtiquetasController extends Controller
                 $PaginaInicio = ($PaginaInicio<1)?1:$PaginaInicio;
                 $NumOV = $OrdenFabricacion->OrdenVenta->OrdenVenta;
                 $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($NumOV,$OrdenFabricacion->OrdenFabricacion);
+                $SumarY = 5;
+                $SumarX = 5;
                 for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
                     if($i == $CantidadEtiquetas ){
                         break;
                     }
+                    $yp = 80 ;
+                    $xp = 105;
                     $page_format = array(
-                        'MediaBox' => array('llx' => 0, 'lly' => 0, 'urx' => 80, 'ury' => 105),
-                        'CropBox' => array('llx' => 0, 'lly' => 0, 'urx' => 80, 'ury' => 105),
-                        'BleedBox' => array('llx' => 2, 'lly' => 2, 'urx' => 79, 'ury' => 104),
-                        'TrimBox' => array('llx' => 4, 'lly' => 4, 'urx' => 78, 'ury' => 103),
-                        'ArtBox' => array('llx' => 6, 'lly' => 6, 'urx' => 77, 'ury' => 102),
+                        'MediaBox' => array('llx' => 0, 'lly' => 0, 'urx' => $xp, 'ury' => $yp),
+                        'CropBox' => array('llx' => 0, 'lly' => 0, 'urx' => $xp, 'ury' => $yp),
+                        'BleedBox' => array('llx' => 2, 'lly' => 2, 'urx' => $xp-2, 'ury' => $yp-2),
+                        'TrimBox' => array('llx' => 4, 'lly' => 4, 'urx' => $xp-4, 'ury' => $yp-4),
+                        'ArtBox' => array('llx' => 6, 'lly' => 6, 'urx' => $xp-6, 'ury' => $yp-6),
                         'Dur' => 3,
                         'trans' => array(
                             'D' => 1.5,
@@ -1265,17 +1397,17 @@ class EtiquetasController extends Controller
                         'PZ' => 1,
                     );
                     $pdf->AddPage('P', $page_format,false,false);
-                    $pdf->SetFont('times', 'B', 10);
+                    $pdf->SetFont('times', 'B', 10.5);
                     $pdf->setFontSpacing(-0.2);
-                    $pdf->SetXY(3, 3);
+                    $pdf->SetXY(3+$SumarX, 3+$SumarY);
                     $pdf->Cell(63, 6, "Descripción:", 0, 1, 'L', 0);
-                    $pdf->SetXY(9, 9);
+                    $pdf->SetXY(9+$SumarX, 9+$SumarY);
                     $pdf->MultiCell(56, 0, html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 0, 'L', 0, 1);
-                    $pdf->SetXY(3, 27);
-                    $pdf->Cell(63, 6, "No. departe:", 0, 1, 'L', 0);
-                    $x = 10;
-                    $y = 34;
-                    $w = 38;
+                    $pdf->SetXY(3+$SumarX, 27+$SumarY);
+                    $pdf->Cell(63, 6, "No. de departe:", 0, 1, 'L', 0);
+                    $x = 25+$SumarX;
+                    $y = 34+$SumarY;
+                    $w = 35;
                     $h = 5.5;
                     $NoParte = $OrdenFabricacion->Articulo;
                     $pdf->write1DBarcode($NoParte,'C128', $x, $y, $w, $h, 0.4, null, 'L');
@@ -1284,12 +1416,12 @@ class EtiquetasController extends Controller
                     $textY = $y + $h ;
                     $pdf->SetXY($textX, $textY);
                     $pdf->Cell($textWidth, 4, $NoParte, 0, 1, 'C');
-                    $pdf->SetXY(3, 45);
+                    $pdf->SetXY(3+$SumarX, 45+$SumarY);
                     $pdf->Cell(63, 6, "Codigo especial:", 0, 1, 'L', 0);
                     $CodigoEspecial = $DatosSAP[0]["ItemCode"];
-                    $x = 10;
-                    $y = 52;
-                    $w = 45;
+                    $x = 15+$SumarX;
+                    $y = 52+$SumarY;
+                    $w = 46;
                     $h = 5.5;
                     $pdf->write1DBarcode($CodigoEspecial,'C128', $x, $y, $w, $h, 0.4, null, 'L');
                     $textWidth = $pdf->GetStringWidth($CodigoEspecial);
@@ -1297,16 +1429,16 @@ class EtiquetasController extends Controller
                     $textY = $y + $h ;
                     $pdf->SetXY($textX, $textY);
                     $pdf->Cell($textWidth, 4, $CodigoEspecial , 0, 1, 'C');
-                    $pdf->SetXY(3, 63);
-                    $pdf->Cell(63, 6, "(O.V.)         ".$NumOV, 0, 1, 'L', 0);
-                    $pdf->SetXY(3, 68);
-                    $pdf->Cell(63, 6, "Caja            ".($i+1)." / ".$CantidadEtiquetas, 0, 1, 'L', 0);
-                    $pdf->SetXY(3, 80);
-                    $pdf->Cell(20, 6, "Cantidad", 0, 1, 'L', 0);
-                    $pdf->SetXY(50, 80);
+                    $pdf->SetXY(3+$SumarX, 63+$SumarY);
+                    $pdf->Cell(63, 6, "(O.V.)                     ".$NumOV, 0, 1, 'L', 0);
+                    $pdf->SetXY(3+$SumarX, 70+$SumarY);
+                    $pdf->Cell(63, 6, "Caja:                        ".($i+1)." / ".$CantidadEtiquetas, 0, 1, 'L', 0);
+                    $pdf->SetXY(3+$SumarX, 80+$SumarY);
+                    $pdf->Cell(20, 6, "Cantidad:", 0, 1, 'L', 0);
+                    $pdf->SetXY(50+$SumarX, 85+$SumarY);
                     $pdf->Cell(10, 6, "PCS", 0, 1, 'L', 0);
-                    $x = 25;
-                    $y = 80;
+                    $x = 25+$SumarX;
+                    $y = 80+$SumarY;
                     $w = 20;
                     $h = 5.5;
                     $pdf->write1DBarcode($CantidadBolsa,'C128', $x, $y, $w, $h, 0.4, null, 'L');
@@ -1349,7 +1481,7 @@ class EtiquetasController extends Controller
                 // Crear PDF
                 $pdf = new TCPDF();
                 // Ajustar márgenes
-                $pdf->SetMargins(1, 1, 1); 
+                $pdf->SetMargins(0, 0, 0); 
                 $pdf->SetAutoPageBreak(TRUE, 0.5);   
                 $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
                 $pdf->SetPrintHeader(false);
@@ -1359,6 +1491,8 @@ class EtiquetasController extends Controller
                 $PaginaInicio = ($PaginaInicio<1)?1:$PaginaInicio;
                 $NumOV = $OrdenFabricacion->OrdenVenta->OrdenVenta;
                 $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($NumOV,$OrdenFabricacion->OrdenFabricacion);
+                $SumarX = 10;
+                $SumarY = 7;
                 for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
                     $page_format = array(
                         'MediaBox' => array('llx' => 0, 'lly' => 0, 'urx' => 106, 'ury' => 80),
@@ -1377,98 +1511,99 @@ class EtiquetasController extends Controller
                         'PZ' => 1,
                     );
                     $pdf->AddPage('P',$page_format,false,false);
-                    $pdf->setFontSpacing(-0.2);
-                    $pdf->SetFont('helvetica', 'B', 12);
-                    $pdf->SetXY(23, 2);
+                    $pdf->setFontSpacing(-0.1);
+                    $pdf->SetFont('helvetica', 'B', 14);
+                    $pdf->SetXY(23+$SumarX , 2+$SumarY );
                     $pdf->Cell(10, 6, $DatosSAP[0]["SubCatNum"], 0, 1, 'L', 0);
-                    $pdf->SetFont('helvetica', '', 9);
-                    $pdf->write1DBarcode($DatosSAP[0]["SubCatNum"],'C128', 21, 8, 24, 4, 0.4, null, 'L');
+                    $pdf->SetFont('helvetica', '', 8.5);
+                    $pdf->write1DBarcode($DatosSAP[0]["SubCatNum"],'C128', 21+$SumarX , 8+$SumarY, 30, 4, 0.4, null, 'L');
 
-                    $pdf->SetXY(3, 7);
+                    $pdf->SetXY(3+$SumarX , 7+$SumarY);
                     $pdf->Cell(10, 6, "(ITEM)", 0, 1, 'L', 0);
-                    $pdf->SetXY(3, 14);
+                    $pdf->SetXY(3+$SumarX , 14+$SumarY);
                     $pdf->Cell(10, 6, "(DESC)", 0, 1, 'L', 0);
-                    $pdf->SetXY(16, 13);
-                    $pdf->MultiCell(48, 0, $DatosSAP[0]["U_BPItmDsc"], 0, 'L', 0, 1);
+                    $pdf->SetXY(16+$SumarX , 13+$SumarY);
+                    $pdf->MultiCell(40, 0, $DatosSAP[0]["U_BPItmDsc"], 0, 'L', 0, 1);
                     
-                    $pdf->SetXY(3, 25);
+                    $pdf->SetXY(3+$SumarX , 23+$SumarY);
                     $pdf->Cell(10, 6, "(MODEL)", 0, 1, 'L', 0);
-                    $pdf->SetXY(16, 22);
-                    $pdf->MultiCell(48, 0,html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 0, 'L', 0, 1);
+                    $pdf->SetXY(16+$SumarX , 24+$SumarY);
+                    $pdf->MultiCell(40, 0,html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 0, 'L', 0, 1);
 
-                    $pdf->SetXY(3, 34);
+                    $pdf->SetXY(3+$SumarX , 34+$SumarY);
                     $pdf->Cell(10, 6, "(C.O.)", 0, 1, 'L', 0);
-                    $pdf->SetFont('helvetica', 'B', 9);
+                    $pdf->SetFont('helvetica', 'B', 10);
                     $pdf->setFontSpacing(0);
-                    $pdf->SetXY(16, 34);
+                    $pdf->SetXY(16+$SumarX , 34+$SumarY);
                     $pdf->Cell(10, 6, "Queretaro / Mexico", 0, 1, 'L', 0);
                     $pdf->setFontSpacing(-0.2);
                     $pdf->SetFont('helvetica', '', 9);
-                    $pdf->SetXY(3, 40);
+                    $pdf->SetXY(3+$SumarX , 40+$SumarY);
                     $pdf->Cell(10, 6, "(O.V.)", 0, 1, 'L', 0);
-                    $pdf->write1DBarcode($NumOV,'C128', 20, 41, 20, 4, 0.4, null, 'L');
+                    $pdf->write1DBarcode($NumOV,'C128', 20+$SumarX , 41+$SumarY, 30, 4, 0.4, null, 'L');
 
-                    $pdf->SetXY(3, 48);
+                    $pdf->SetXY(3+$SumarX , 45+$SumarY);
                     $pdf->Cell(10, 6, "(QTY)", 0, 1, 'L', 0);
-                    $x = 18;
-                    $y = 52;
-                    $w = 15;
-                    $h = 4;
+                    $x = 18+$SumarX ;
+                    $y = 47+$SumarY;
+                    $w = 18;
+                    $h = 3;
                     $pdf->write1DBarcode($CantidadBolsa,'C128', $x, $y, $w, $h, 0.4, null, 'L');
                     $textWidth = $pdf->GetStringWidth($CantidadBolsa);
                     $textX = $x + ($w - $textWidth) / 2;
                     $textY = $y + $h ;
-                    $pdf->SetFont('helvetica', '', 10);
-                    $pdf->SetXY($textX, $textY-9);
+                    $pdf->SetFont('helvetica', 'B', 14);
+                    $pdf->SetXY($textX, $textY);
                     $pdf->Cell($textWidth, 4, $CantidadBolsa, 0, 1, 'C');
-                    $pdf->SetXY($textX+10, $textY-9);
+                    $pdf->SetXY($textX+10, $textY);
+                    $pdf->SetFont('helvetica', '', 10);
                     $pdf->Cell(10, 4, "PCS", 0, 1, 'C');
-                    $pdf->SetXY(3, 45);
+                    $pdf->SetXY(3+$SumarX, 45+$SumarY);
 
                     $pdf->SetFont('helvetica', '', 9);
-                    $pdf->SetXY(3, 58);
+                    $pdf->SetXY(3+$SumarX , 55+$SumarY);
                     $pdf->Cell(10, 6, "(SN/TN)", 0, 1, 'L', 0);
-                    $pdf->SetFont('helvetica', 'B', 10);
-                    $pdf->SetXY(24, 58);
+                    $pdf->SetFont('helvetica', 'B', 14);
+                    $pdf->SetXY(24+$SumarX , 56+$SumarY);
                     $pdf->Cell(18, 6, ($i+1)." / ".$CantidadCajas, 0, 1, 'L', 0);
 
                     $pdf->SetFont('helvetica', '', 9);
-                    $pdf->SetXY(3, 63);
+                    $pdf->SetXY(3+$SumarX , 61+$SumarY);
                     $pdf->Cell(10, 6, "(CODE)", 0, 1, 'L', 0);
-                    $pdf->SetXY(16, 63);
+                    $pdf->SetXY(16+$SumarX , 61+$SumarY);
                     $pdf->Cell(10, 6, $OrdenFabricacion->Articulo, 0, 1, 'L', 0);
 
-                    $pdf->SetXY(3, 68);
+                    $pdf->SetXY(3+$SumarX , 66+$SumarY);
                     $pdf->Cell(10, 6, "(PO No)", 0, 1, 'L', 0);
-                    $pdf->SetXY(16, 68);
+                    $pdf->SetXY(16+$SumarX , 66+$SumarY);
                     $pdf->Cell(10, 6, $DatosSAP[0]["NumAtCard"], 0, 1, 'L', 0);
 
-                    $pdf->SetXY(3, 73);
+                    $pdf->SetXY(3+$SumarX , 71+$SumarY);
                     $pdf->Cell(10, 6, "(LOT No)", 0, 1, 'L', 0);
-                    $pdf->SetXY(16, 73);
+                    $pdf->SetXY(16+$SumarX , 71+$SumarY);
                     $pdf->Cell(10, 6, $NumOV, 0, 1, 'L', 0);
 
-                    $pdf->SetXY(3, 78);
+                    $pdf->SetXY(3+$SumarX , 76+$SumarY);
                     $pdf->Cell(10, 6, "(DATE)", 0, 1, 'L', 0);
                     $fecha = Carbon::parse($DatosSAP[0]["DocDate"]);
                     $Year = $fecha->isoFormat('GG');
                     $Year = substr($Year, -2);
                     $Week = $fecha->isoWeek(); 
-                    $pdf->SetXY(16, 78);
+                    $pdf->SetXY(16+$SumarX , 76+$SumarY);
                     $pdf->Cell(10, 6,  $Year.$Week, 0, 1, 'L', 0);
 
-                    $pdf->SetXY(3, 83);
+                    $pdf->SetXY(3+$SumarX , 81+$SumarY);
                     $pdf->Cell(10, 6, "(REMARK)", 0, 1, 'L', 0);
                     $CodigoBarras = "19".$DatosSAP[0]["SubCatNum"]."/4U1003".$Year.$Week;
-                    $x = 14;
-                    $y = 89;
-                    $w = 40;
-                    $h = 4;
+                    $x = 10+$SumarX ;
+                    $y = 87+$SumarY;
+                    $w = 50;
+                    $h = 5;
                     $pdf->write1DBarcode($CodigoBarras,'C128', $x, $y, $w, $h, 0.4, null, 'L');
                     $textWidth = $pdf->GetStringWidth($CodigoBarras);
                     $textX = $x + ($w - $textWidth) / 2;
                     $textY = $y + $h ;
-                    $pdf->SetFont('helvetica', '', 10);
+                    $pdf->SetFont('helvetica', 'B', 11);
                     $pdf->SetXY($textX, $textY);
                     $pdf->Cell($textWidth, 4, $CodigoBarras, 0, 1, 'C');
                 }

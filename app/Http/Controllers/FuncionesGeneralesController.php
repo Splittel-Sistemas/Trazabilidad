@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\OrdenVenta;
+use App\Models\Logs;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Auth;
 
@@ -239,5 +240,12 @@ class FuncionesGeneralesController extends Controller
             return $datos=[];
         }
         return $datos;
+    }
+    public function Logs($Vista,$Accion,$log){
+        $Log = new Logs();
+        $Usuario = $this->InfoUsuario();
+        $Log->id_user = $Usuario;
+        $Log->log = "Usuario: ".$Usuario."  Vista: ".$Vista."  Accion: ".$Accion."[Log]:".$log;
+        $Log->save();
     }
 }

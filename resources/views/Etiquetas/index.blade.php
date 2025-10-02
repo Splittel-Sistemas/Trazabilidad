@@ -53,7 +53,7 @@
                             </div>
                             <div class="col-4 border border-light">
                                 <label class="form-label mt-2" for="Sociedad">Tipo de Etiqueta</label>
-                                <input class="form-control" onclick="" oninput="BuscarEtiquetaFiltro(this);" type="text" id="Etiquetaitems" placeholder="buscar" style="display:none;">
+                                <input class="form-control" autocomplete="off" onclick="" oninput="BuscarEtiquetaFiltro(this);" type="text" id="Etiquetaitems" placeholder="buscar" style="display:none;">
                                 <select id="TipoEtiqueta" onchange="Etiqueta(this);" class="form-select" style="width: 100%;">
                                 </select>
                                 <div id="ListaOpciones" class="list-group" style="display:none;">
@@ -79,67 +79,105 @@
                                     <div class="col-3" id="ContenedorCantidadEtiquetas">
                                         <div class="mb-3">
                                             <label class="form-label" for="CantidadEtiquetas">Cantidad de Etiquetas  </label>
-                                            <input class="form-control" id="CantidadEtiquetas" type="number" placeholder="0" />
+                                            <input class="form-control" oninput="RegexNumeros(this)" id="CantidadEtiquetas" type="number" placeholder="0" />
+                                            <small id="ErrorCantidadEtiquetas" class="text-danger"></small>
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorPaginaInicio">
                                         <div class="mb-3">
                                             <label class="form-label" for="PaginaInicio">Etiqueta inicio </label>
-                                            <input class="form-control" id="PaginaInicio" type="number" placeholder="0" />
+                                            <input class="form-control" id="PaginaInicio" oninput="RegexNumeros(this)" type="number" placeholder="0" />
+                                            <small id="ErrorPaginaInicio" class="text-danger"></small>
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorPaginaFin">
                                         <div class="mb-3">
                                             <label class="form-label" for="PaginaFin">Etiqueta fin  </label>
-                                            <input class="form-control" id="PaginaFin" type="number" placeholder="0" />
+                                            <input class="form-control" id="PaginaFin" oninput="RegexNumeros(this)" type="number" placeholder="0" />
+                                            <small id="ErrorPaginaFin" class="text-danger"></small>
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorCantidadCajas">
                                         <div class="mb-3">
                                             <label class="form-label" for="CantidadCajas">Cantidad de Cajas  </label>
-                                            <input class="form-control" id="CantidadCajas" type="number" placeholder="0" />
+                                            <input class="form-control" id="CantidadCajas" oninput="CantidadFinal();RegexNumeros(this);" type="number" placeholder="0" />
+                                            <small id="ErrorCantidadCajas" class="text-danger"></small>
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorCantidadBolsa">
                                         <div class="mb-3">
                                             <label class="form-label" for="CantidadBolsa">Cantidad por bolsa o caja  </label>
-                                            <input class="form-control" id="CantidadBolsa" type="number" placeholder="0" value="1" />
+                                            <input class="form-control" id="CantidadBolsa" oninput="RegexNumeros(this)" type="number" placeholder="0" value="1" />
+                                            <small id="ErrorCantidadBolsa" class="text-danger"></small>
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorPorcentajeA" style="display: none">
                                         <div class="mb-3">
                                             <label class="form-label" for="PorcentajeA">Medida 1  </label>
                                             <input class="form-control" id="PorcentajeA" type="number" oninput="ValorDivisor(this, 'A')" placeholder="0" min="1" max="100" value="50" />
+                                            <small id="ErrorPorcentajeA" class="text-danger"></small>
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorPorcentajeB" style="display: none">
                                         <div class="mb-3">
                                             <label class="form-label" for="PorcentajeB">Medida 2  </label>
                                             <input class="form-control" id="PorcentajeB" type="number" oninput="ValorDivisor(this, 'B')" placeholder="0" min="1" max="100" value="50" />
+                                            <small id="ErrorPorcentajeB" class="text-danger"></small>
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorPorcentajeC" style="display: none">
                                         <div class="mb-3">
                                             <label class="form-label" for="PorcentajeC">Medida 3  </label>
                                             <input class="form-control" id="PorcentajeC" type="number" oninput="ValorDivisor(this, 'C')" placeholder="0" min="1" max="100" value="50" />
+                                            <small id="ErrorPorcentajeC" class="text-danger"></small>
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorPorcentajeD" style="display: none">
                                         <div class="mb-3">
                                             <label class="form-label" for="PorcentajeD">Medida 4  </label>
                                             <input class="form-control" id="PorcentajeD" type="number" oninput="ValorDivisor(this, 'D')" placeholder="0" min="1" max="100" value="50" />
+                                            <small id="ErrorPorcentajeD" class="text-danger"></small>
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorInsercion" style="display: none">
                                         <div class="mb-3">
-                                            <label class="form-label" for="Insercion">Insercion  </label>
-                                            <input class="form-control" id="Insercion" type="number" placeholder="0" value="0.50" />
+                                            <label class="form-label" for="Insercion">CONECTORIZACI&Oacute;N A</label>
+                                            <!--<input class="form-control" id="Insercion" type="number" placeholder="0" value="0.50" />-->
+                                            <select class="form-select" id="Insercion">
+                                                <option value="" disabled selected>Selecciona una opci&oacute;n</option>
+                                                <option value="MUPC">MULTIMODO (MM) PC</option>
+                                                <option value="MOUPC">MONOMODO (SM) UPC</option>
+                                                <option value="MOAPC">MONOMODO (SM) APC</option>
+                                                <option value="MULMTRJ">ESPECIALES MULTIMODO MTRJ</option>
+                                                <option value="MONMTRJ">ESPECIALES MONOMODO MTRJ</option>
+                                                <option value="MUMPO">MULTIMODO MPO (UPC)</option>
+                                                <option value="MOMPO">MONOMODO MPO (UPC-APC)</option>
+                                                <option value="MUMTP">MULTIMODO MTP Est&aacute;ndar (UPC)</option>
+                                                <option value="MOMTP">MONOMODO MTP Est&aacute;ndar (UPC-APC)</option>
+                                                <option value="MUMTP_PRO">MULTIMODO MTP-PRO (UPC)</option>
+                                                <option value="MOMTP_PRO">MONOMODO MTR-PRO (UPC-APC)</option>
+                                            </select>
+                                            <small id="ErrorInsercion" class="text-danger"></small>
                                         </div>
                                     </div>
                                     <div class="col-3" id="ContenedorRetorno" style="display: none">
                                         <div class="mb-3">
-                                            <label class="form-label" for="Retorno">Retorno  </label>
-                                            <input class="form-control" id="Retorno" type="number" placeholder="0" value="20.0" />
+                                            <label class="form-label" for="Retorno">CONECTORIZACI&Oacute;N B</label>
+                                            <select class="form-select" id="Retorno">
+                                                <option value="" selected disabled>Selecciona una opci&oacute;n</option>
+                                                <option value="MUPC">MULTIMODO (MM) PC</option>
+                                                <option value="MOUPC">MONOMODO (SM) UPC</option>
+                                                <option value="MOAPC">MONOMODO (SM) APC</option>
+                                                <option value="MULMTRJ">ESPECIALES MULTIMODO MTRJ</option>
+                                                <option value="MONMTRJ">ESPECIALES MONOMODO MTRJ</option>
+                                                <option value="MUMPO">MULTIMODO MPO (UPC)</option>
+                                                <option value="MOMPO">MONOMODO MPO (UPC-APC)</option>
+                                                <option value="MUMTP">MULTIMODO MTP Est&aacute;ndar (UPC)</option>
+                                                <option value="MOMTP">MONOMODO MTP Est&aacute;ndar (UPC-APC)</option>
+                                                <option value="MUMTP_PRO">MULTIMODO MTP-PRO (UPC)</option>
+                                                <option value="MOMTP_PRO">MONOMODO MTR-PRO (UPC-APC)</option>
+                                            </select>
+                                            <small id="ErrorRetorno" class="text-danger"></small>
                                         </div>
                                     </div>
                                     <input type="hidden" id="CodigoCliente">
@@ -266,8 +304,8 @@
         TextoDetallesCliente.innerHTML = "";
         CodigoCliente = document.getElementById('CodigoCliente');
         CodigoCliente.value = "";
-        URL = '{{ route("Etiquetas.show", ":OF")}}'.replace(":OF", OF);
-        fetch(URL)
+        URLcontroller = '{{ route("Etiquetas.show", ":OF")}}'.replace(":OF", OF);
+        fetch(URLcontroller)
         .then(response => response.json())
         .then(data => {
             InputPaginaInicio.value = 1;
@@ -442,7 +480,78 @@
         InputInsercion = document.getElementById("Insercion");
         PdfAlerta = document.getElementById("PdfAlerta");
         InputTipoEtiqueta = document.getElementById("TipoEtiqueta").value;
-        const URL = '{{ route("Etiquetas.Generar") }}';
+        document.getElementById('pdfIframe').src = "";
+
+        //Errores
+        ErrorPaginaFin = document.getElementById('ErrorPaginaFin');
+        ErrorPaginaFin.innerHTML = "";
+        ErrorPaginaInicio = document.getElementById('ErrorPaginaInicio');
+        ErrorPaginaInicio.innerHTML = "";
+        ErrorCantidadBolsa = document.getElementById('ErrorCantidadBolsa');
+        ErrorCantidadBolsa.innerHTML = "";
+        ErrorCantidadEtiquetas = document.getElementById('ErrorCantidadEtiquetas');
+        ErrorCantidadEtiquetas.innerHTML = "";
+        ErrorInsercion = document.getElementById('ErrorInsercion');
+        ErrorInsercion.innerHTML = "";
+        ErrorRetorno = document.getElementById('ErrorRetorno');
+        ErrorRetorno.innerHTML = "";
+        if(InputTipoEtiqueta == "ETIQ1" || InputTipoEtiqueta == "ETIQ3"){
+            if(InputPaginaInicio.value == 0 || InputPaginaInicio.value == ""){
+                ErrorPaginaInicio.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+            if(InputPaginaFin.value == 0 || InputPaginaFin.value == ""){
+                ErrorPaginaFin.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+            if(InputPaginaFin.value<InputPaginaInicio.value){
+                ErrorPaginaInicio.innerHTML = "El valor nicio no puede ser mayor a valor fin.";
+                return 0;
+            }
+        }else if(InputTipoEtiqueta == "ETIQ2"){
+            if(InputPaginaInicio.value == 0 || InputPaginaInicio.value == ""){
+                ErrorPaginaInicio.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+            if(InputPaginaFin.value == 0 || InputPaginaFin.value == ""){
+                ErrorPaginaFin.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+            if(InputPaginaFin.value<InputPaginaInicio.value){
+                ErrorPaginaInicio.innerHTML = "El valor nicio no puede ser mayor a valor fin.";
+                return 0;
+            }
+
+        }else if(InputTipoEtiqueta == "ETIQ3"){
+
+
+        }else if(InputTipoEtiqueta == "ETIQ5"){
+            if(CantidadEtiquetas.value == 0 || CantidadEtiquetas.value == ""){
+                ErrorCantidadEtiquetas.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+            if(InputCantidadBolsa.value == 0 || InputCantidadBolsa.value == ""){
+                ErrorCantidadBolsa.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+        }else if(InputTipoEtiqueta == "ETIQ6"){
+            if(InputInsercion.value == ""){
+                ErrorInsercion.innerHTML = "Selecciona una opción valida";
+                return 0;
+            }
+        }else if(InputTipoEtiqueta == "ETIQ7" || InputTipoEtiqueta == "ETIQ8" || InputTipoEtiqueta == "ETIQ4" || InputTipoEtiqueta == "ETIQ4CEDIS"){
+             if(CantidadEtiquetas.value == 0 || CantidadEtiquetas.value == ""){
+                ErrorCantidadEtiquetas.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+        }else if(InputTipoEtiqueta == "ETIQ9"){
+
+
+        }else if(InputTipoEtiqueta == "ETIQ10"){
+
+
+        }
+        const URLcontroller = '{{ route("Etiquetas.Generar") }}';
         const payload = {
             PDFOrdenFabricacion: InputPDFOrdenFabricacion.value,
             CantidadBolsa: InputCantidadBolsa.value,
@@ -463,7 +572,7 @@
 
         };
         SpinnerInsert('PdfEspinner');
-        fetch(URL, {
+        fetch(URLcontroller, {
             method: 'POST',
             credentials: 'same-origin', // importante para enviar cookies de sesión
             headers: {
@@ -484,8 +593,18 @@
             }else{
                 PdfAlerta.style.display = "none";
                 $('#TextoSelecciona').hide();
-                url = "data:application/pdf;base64," + data.pdf;
-                document.getElementById('pdfIframe').src = url;
+                base64Data = data.pdf;
+                const byteCharacters = atob(base64Data);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+                // Crear URL temporal y mostrar en el iframe
+                const blobUrl = window.URL.createObjectURL(blob);
+                document.getElementById('pdfIframe').src = blobUrl;
                 document.getElementById('pdfIframe').style.display = "";
             }
         })
@@ -566,5 +685,9 @@
         document.getElementById("Btn-BuscarOrden").click();
       }
     });
+    function CantidadFinal() {
+        const valor = document.getElementById("CantidadCajas").value;
+        document.getElementById("PaginaFin").value = valor;
+  }
 </script>
 @endsection
