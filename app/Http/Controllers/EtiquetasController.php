@@ -19,12 +19,46 @@ class EtiquetasController extends Controller
     protected $Drai;
     protected $RadioMovil;
     protected $Fibremex;
+    protected $Etiquetas;
     public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
+        //📝Son clientes a los cuales se les generan etiquetas especiales 
         $this->HuaweiInternacional = "C0563";
         $this->Nokia = "C0675";
         $this->Drai = "C0003";
         $this->RadioMovil = "C0101";
+        $this->Fibremex = "C0004";
+        //📝Etiquetas fabricacdas hasta el momento
+        //📌Si se requiere agregar una nueva etiqueta, agregarla  a este arreglo y en los metodos Menu y Campos revizar ya que 
+            //allí es donde se crea el Menu para cada cliente y los campos que se deben completar para generar la etiqueta
+            //Las validaciones la mayoria estan en el FRONT-END y ALGUNOS TIENE VALIDACION EN EL BACKEND
+        $this->Etiquetas = [
+            [1,"ETIQ4","ETIQUETA DE BOLSA JUMPER"],
+            [2,"ETIQ1","ETIQUETA DE BOLSA ESPECIAL HUAWEI"],
+            [3,"ETIQ4","ETIQUETA DE BOLSA ESPECIAL NOKIA"],
+            [4,"ETIQ4","ETIQUETA DE BOLSA ESPECIAL DRAI"],
+            [5,"ETIQ2","ETIQUETA DE BANDERILLA QR GENERAL"],
+            [6,"ETIQ3","ETIQUETA DE BANDERILLA QR NÚMERO ESPECIAL"],
+            [7,"ETIQ4CEDIS","ETIQUETA DE BOLSA JUMPER CEDIS"],
+            [8,"ETIQ5","ETIQUETA DE NÚMERO DE PIEZAS"],
+            [9,"ETIQ6","ETIQUETA DE TRAZABILIDAD MPO (PRUEBA)"],
+            [10,"ETIQ7","ETIQUETA DE INYECCIÓN (PRUEBA)"],
+            [11,"ETIQ8","ETIQUETA DE DIVISOR (PRUEBA)"],
+            [12,"ETIQ4","ETIQUETA DE BOLSA PATCH CORD GENERAL"],
+            [13,"ETIQ9","ETIQUETA DE CAJA HUAWEI (PRUEBA)"],
+            [14,"ETIQ10","ETIQUETA DE CAJA NOKIA (PRUEBA)"],
+            [15,"ETIQ11","ETIQUETA DE CAJA CABLE DE SERVICIO (PRUEBA)"],
+            [16,"ETIQ12","ETIQUETA PARA MARCADORES DE FIBRA OPTICA (PRUEBA)"],
+            [17,"ETIQ13","ETIQUETA CERTIFICADO DE MEDICIÓN OPTRONICS (PRUEBA)"],
+            [18,"ETIQ14","DISTRIBUIDOR ETIQUETA DE TRAZABILIDAD (PRUEBA)"],
+            [19,"ETIQ15","DISTRIBUIDOR ETIQUETA DE TUBO (PRUEBA)"],
+            [20,"ETIQ16","ETIQUETA DE IDENTIFICACIÓN DE CHAROLAS TRANSTELCO"],
+            [21,"ETIQ17","DISTRIBUIDOR: 1UR"],
+            [22,"ETIQ18","DISTRIBUIDOR: 2UR"],
+            [23,"ETIQ19","DISTRIBUIDOR: 4UR"],
+            [24,"ETIQ20","DISTRIBUIDOR DE PARED"],
+            [25,"ETIQ21","DISTRIBUIDOR DE PARED EXTERIOR"],
+        ];
     }
     public function index(){
          $user = Auth::user();
@@ -77,22 +111,8 @@ class EtiquetasController extends Controller
         $Insercion = $request->Insercion;
         $Retorno = $request->Retorno;
         $CantidadCajas = $request->CantidadCajas;
-        $Etiquetas = [
-            [1,"ETIQ4","ETIQUETA DE BOLSA JUMPER"],
-            [2,"ETIQ1","ETIQUETA DE BOLSA ESPECIAL HUAWEI"],
-            [3,"ETIQ4","ETIQUETA DE BOLSA ESPECIAL NOKIA"],
-            [4,"ETIQ4","ETIQUETA DE BOLSA ESPECIAL DRAI"],
-            [5,"ETIQ2","ETIQUETA DE BANDERILLA QR GENERAL"],
-            [6,"ETIQ3","ETIQUETA DE BANDERILLA QR NÚMERO ESPECIAL"],
-            [7,"ETIQ4CEDIS","ETIQUETA DE BOLSA JUMPER CEDIS"],
-            [8,"ETIQ5","ETIQUETA DE NÚMERO DE PIEZAS"],
-            [9,"ETIQ6","ETIQUETA DE TRAZABILIDAD MPO (PRUEBA)"],
-            [10,"ETIQ7","ETIQUETA DE INYECCIÓN (PRUEBA)"],
-            [11,"ETIQ8","ETIQUETA DE DIVISOR (PRUEBA)"],
-            [12,"ETIQ4","ETIQUETA DE BOLSA PATCH CORD GENERAL"],
-            [13,"ETIQ9","ETIQUETA DE CAJA HUAWEI (PRUEBA)"],
-            [14,"ETIQ10","ETIQUETA DE CAJA NOKIA (PRUEBA)"],
-        ];
+        $Etiquetas = $this->Etiquetas;
+        $TipoDistribuidor = $request->TipoDistribuidor;
         $TituloEtiqueta = "";
         foreach ($Etiquetas as $etiqueta) {
             if ($etiqueta[1] === $TipoEtiqueta) {
@@ -134,6 +154,24 @@ class EtiquetasController extends Controller
                 break;
             case 'ETIQ10':
                 return $this->EtiquetaCajaNokia($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CantidadCajas,$CantidadBolsa,$CodigoCliente);
+                break;
+            case 'ETIQ11':
+                return $this->EtiquetaCajaCableServicio_MarcadoresFO($CantidadEtiquetas,$PDFOrdenFabricacion,$CantidadBolsa,$CodigoCliente,$TipoEtiqueta);
+                break;
+            case 'ETIQ12':
+                return $this->EtiquetaCajaCableServicio_MarcadoresFO($CantidadEtiquetas,$PDFOrdenFabricacion,$CantidadBolsa,$CodigoCliente,$TipoEtiqueta);
+                break;
+            case 'ETIQ13':
+                return $this->EtiquetaCertificadoMedicion($PaginaInicio,$PaginaFin,$Insercion,$Retorno,$PDFOrdenFabricacion,$CodigoCliente);
+                break;
+            case 'ETIQ14':
+                return $this->DistribuidorEtiquetaTrazabilidad($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$TipoDistribuidor,$CodigoCliente);
+                break;
+            case 'ETIQ15':
+                return $this->DistribuidorEtiquetaTubo($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CodigoCliente);
+                break;
+            case 'ETIQ16':
+                return $this->EtiquetaIdentificacionCharolasTranstelco($CantidadEtiquetas,$CodigoCliente);
                 break;
             default:
                 break;
@@ -214,13 +252,11 @@ class EtiquetasController extends Controller
                 $pdf->MultiCell(60, 0, "Specification:  ", 0, 'L', 0, 1);
                 //Codigo de barras
                 $NumeroProveedorOpt = '4U1003';
-                $fecha = Carbon::parse($DatosSAP[0]["DocDate"]);
-                $Year = $fecha->isoFormat('GG');
-                $Year = substr($Year, -2);
-                $NumeroSemana = $fecha->isoWeek(); 
+
+                $Fecha = $this->SemanaFecha($DatosSAP[0]["DocDate"]);
                 $CantidadBolsa = 'Q0001';
                 $UltimosDigOF = 'S'.substr($OrdenFabricacion->OrdenFabricacion,-2);
-                $CodigoBarras = '19'.$NumeroHuawei."/".$NumeroProveedorOpt.$Year.str_pad($NumeroSemana, 2, '0', STR_PAD_LEFT).$CantidadBolsa.$UltimosDigOF.str_pad(($i+1), 4, '0', STR_PAD_LEFT);
+                $CodigoBarras = '19'.$NumeroHuawei."/".$NumeroProveedorOpt.$Fecha['Year'].str_pad($Fecha['Week'], 2, '0', STR_PAD_LEFT).$CantidadBolsa.$UltimosDigOF.str_pad(($i+1), 4, '0', STR_PAD_LEFT);
                 $pdf->SetXY($posX + 30, 2);
                 $pdf->write1DBarcode($CodigoBarras, 'C128',14, 36, 69, 5.5, 0.4, array(), 'N');
                  $pdf->SetXY($posX+15.5, 42.5); 
@@ -234,7 +270,6 @@ class EtiquetasController extends Controller
         }
     }
     //Etiqueta Bolsa de Jumper
-    //Productivo
     public function EtiquetaBolsaJumper($CantidadEtiquetas,$OrdenFabricacion,$CodigoCliente){
         try {
             if($CodigoCliente == $this->HuaweiInternacional){
@@ -326,7 +361,6 @@ class EtiquetasController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    //Prueba
     public function EtiquetaBolsaJumperCEDIS($CantidadEtiquetas,$OrdenFabricacion){
         try {
             $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
@@ -785,86 +819,7 @@ class EtiquetasController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    /*public function EtiquetaTrazabilidadMPO($CantidadEtiquetas,$OrdenFabricacion){
-        try {
-            // create new PDF document
-            $pdf = new TCPDF();
-
-            // set document information
-            $pdf->SetCreator(PDF_CREATOR);
-            $pdf->SetAuthor('Nicola Asuni');
-            $pdf->SetTitle('TCPDF Example 060');
-            $pdf->SetSubject('TCPDF Tutorial');
-            $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
-
-            // set default header data
-            $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 060', PDF_HEADER_STRING);
-
-            // set header and footer fonts
-            $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-            $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
-
-            // set default monospaced font
-            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
-            // set margins
-            $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-            $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-            $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-
-            // set auto page breaks
-            $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-
-            // set image scale factor
-            $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-            // set some language-dependent strings (optional)
-            if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-                require_once(dirname(__FILE__).'/lang/eng.php');
-                $pdf->setLanguageArray($l);
-            }
-
-            // set font
-            $pdf->SetFont('helvetica', '', 20);
-
-            // ---------------------------------------------------------
-
-            // set page format (read source code documentation for further information)
-            $page_format = array(
-                'MediaBox' => array ('llx' => 0, 'lly' => 0, 'urx' => 210, 'ury' => 297),
-                'CropBox' => array ('llx' => 0, 'lly' => 0, 'urx' => 210, 'ury' => 297),
-                'BleedBox' => array ('llx' => 5, 'lly' => 5, 'urx' => 205, 'ury' => 292),
-                'TrimBox' => array ('llx' => 10, 'lly' => 10, 'urx' => 200, 'ury' => 287),
-                'ArtBox' => array ('llx' => 15, 'lly' => 15, 'urx' => 195, 'ury' => 282),
-                'Dur' => 3,
-                'trans' => array(
-                    'D' => 1.5,
-                    'S' => 'Split',
-                    'Dm' => 'V',
-                    'M' => 'O'
-                ),
-                'Rotate' => 90,
-                'PZ' => 1,
-            );
-
-            // Check the example n. 29 for viewer preferences
-
-            // add first page ---
-            $pdf->AddPage('P', $page_format, false, false);
-            $pdf->Cell(0, 12, 'First Page', 1, 1, 'C');
-
-            // add second page ---
-            $page_format['Rotate'] =90;
-            $pdf->AddPage('P', $page_format, false, false);
-            $pdf->Cell(0, 12, 'Second Page', 1, 1, 'C');
-
-            ob_end_clean();
-            // Generar el archivo PDF y devolverlo al navegador
-            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumper_'.date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }*/
+    //Etiqueta de Trazabilidad MPO
     public function EtiquetaTrazabilidadMPO($PaginaInicio,$PaginaFin,$Insercion,$Retorno,$OrdenFabricacion,$CodigoCliente){
             $BanderaDiferente = (($Insercion == $Retorno) || $Retorno == "")? true : false;
             $Insercion1 = "";
@@ -1134,6 +1089,7 @@ class EtiquetasController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    //Etiqueta de Inyeccion
     public function EtiquetaInyeccion($CantidadEtiquetas,$OrdenFabricacion){
          try {
             $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first(); 
@@ -1200,6 +1156,7 @@ class EtiquetasController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    //Etiqueta de Divisor
     public function EtiquetaDivisor($CantidadEtiquetas,$OrdenFabricacion,$PorcentajeA,$PorcentajeB,$PorcentajeC,$PorcentajeD){
         try {
             if($PorcentajeA <0 OR $PorcentajeB<0){
@@ -1339,6 +1296,7 @@ class EtiquetasController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    //Etiqueta de Caja Nokia
     public function EtiquetaCajaNokia($PaginaInicio,$PaginaFin,$OrdenFabricacion,$CantidadEtiquetas,$CantidadBolsa,$CodigoCliente){
         if($CodigoCliente == $this->Nokia){
             try {
@@ -1458,6 +1416,7 @@ class EtiquetasController extends Controller
             return response()->json(['error' => "Etiqueta permitida solo para el cliente NOKIA."], 500);
         }
     }
+    //Etiqueta de Caja Huawei
     public function EtiquetaCajaHuawei($PaginaInicio,$PaginaFin,$OrdenFabricacion,$CantidadCajas,$CantidadBolsa,$CodigoCliente){
         if($CodigoCliente == $this->HuaweiInternacional){
             try {
@@ -1585,16 +1544,14 @@ class EtiquetasController extends Controller
 
                     $pdf->SetXY(3+$SumarX , 76+$SumarY);
                     $pdf->Cell(10, 6, "(DATE)", 0, 1, 'L', 0);
-                    $fecha = Carbon::parse($DatosSAP[0]["DocDate"]);
-                    $Year = $fecha->isoFormat('GG');
-                    $Year = substr($Year, -2);
-                    $Week = $fecha->isoWeek(); 
+
+                    $Fecha = $this->SemanaFecha($DatosSAP[0]["DocDate"]);
                     $pdf->SetXY(16+$SumarX , 76+$SumarY);
-                    $pdf->Cell(10, 6,  $Year.$Week, 0, 1, 'L', 0);
+                    $pdf->Cell(10, 6,  $Fecha['Year'].$Fecha['Week'], 0, 1, 'L', 0);
 
                     $pdf->SetXY(3+$SumarX , 81+$SumarY);
                     $pdf->Cell(10, 6, "(REMARK)", 0, 1, 'L', 0);
-                    $CodigoBarras = "19".$DatosSAP[0]["SubCatNum"]."/4U1003".$Year.$Week;
+                    $CodigoBarras = "19".$DatosSAP[0]["SubCatNum"]."/4U1003".$Fecha['Year'].$Fecha['Week'];
                     $x = 10+$SumarX ;
                     $y = 87+$SumarY;
                     $w = 50;
@@ -1617,23 +1574,567 @@ class EtiquetasController extends Controller
             return response()->json(['error' => "Etiqueta permitida solo para el cliente Huawei Internacional."], 500);
         }
     }
+    //Etiqueta sirve para  caja de cable de servicio y para  Marcadores de Fibra Optica
+    public function EtiquetaCajaCableServicio_MarcadoresFO($CantidadEtiquetas,$OrdenFabricacion,$CantidadBolsa,$CodigoCliente,$TipoEtiqueta){
+        try {
+            $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
+            if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
+                return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']);
+            }
+            $OrdenVenta = $OrdenFabricacion->OrdenVenta;
+            $Articulo = "";
+            $Articulo = $OrdenFabricacion->Articulo;
+            if($OrdenVenta == "" || $OrdenVenta == "00000"){
+                $OrdenVenta = "N/A";
+            }else{
+                $OrdenVenta = $OrdenVenta->OrdenVenta;
+                if($this->Nokia == $CodigoCliente OR $this->HuaweiInternacional == $CodigoCliente OR $this->Drai == $CodigoCliente){
+                    $Articulo = $this->CodigoEspecial($CodigoCliente,$OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
+                    if($Articulo == ""){
+                        return json_encode(["error" => 'Número Especial no Encontrado, Si el problema perciste Contacta a TI!.']);
+                    }
+                }
+            }
+            $NoPEDIDO = "";
+            if($TipoEtiqueta != "ETIQ11"){
+                $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAPFMX($OrdenVenta);
+                $NumeroRegistros = count($DatosSAP);
+                if($NumeroRegistros==0){
+                throw new \Exception('Etiqueta permitida solo para Cliente Fibremex (Intercompañias).');
+                }else{
+                    if($DatosSAP[0]['NumAtCard']==""){
+                        throw new \Exception('No.PEDIDO no encontrado.');
+                    }else{
+                        $NoPEDIDO =  $DatosSAP[0]['NumAtCard'];
+                    }
+                }
+            }
+            // Crear PDF
+            $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetFont('dejavusans', '', 10);
+            $pdf->SetAutoPageBreak(TRUE, 0);   
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
+            $pdf->SetPrintHeader(false);
+            $Descripcion = html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            // Contador para saber cuántas etiquetas se han colocado en la página
+            for ($i=0; $i<$CantidadEtiquetas; $i++) {
+                $pdf->AddPage('L', array(101, 51));
+                $pdf->SetFont('dejavusans', '', 9);
+                $pdf->setFontSpacing(-0.2);
+                // Color de fondo y texto en la parte superior de la etiqueta
+                $posX = 0;
+                //Agregar la imagen
+                if($TipoEtiqueta == "ETIQ11"){
+                    $Imagen = 'app/Logos/Optronics.jpg';
+                    $TamImg = 0;
+                    $TamCodigo = 70;
+                    $TamCodigoPosx = 0;
+                }else{
+                    $Imagen = 'app/Logos/Fibremex.png';
+                    $TamImg = 6;
+                    $TamCodigo = 40;
+                    $TamCodigoPosx = 15;
+                }
+                if(!file_exists(storage_path($Imagen))){
+                    throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
+                }else{
+                    $imagePath = storage_path($Imagen);
+                    $pdf->Image($imagePath, 3.5, 6, 25+$TamImg);
+                }
+                //Se agrega el margen a la pagina
+                $margen = 1;
+                $border_style = array(
+                            'width' => 0.3,
+                            'cap' => 'butt',
+                            'join' => 'miter',
+                            'dash' => 0,
+                            'phase' => 0,
+                            'color' => array(0, 0, 0) // RGB negro
+                        );
+                $pdf->RoundedRect(2,5, 97, 45, 1, '1111', 'D', $border_style, array());
+                $pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetLineWidth(0.3);
+                $pdf->Rect(2, 12.5, 97 , 0 );
+
+                $ParteNo = 'Denomination:  '."\n\n".
+                            'Specification:  ';
+                $pdf->SetXY($posX+3.5, 15); 
+                $pdf->MultiCell(90, 0, $ParteNo, 0, 'L', 0, 1);
+                $pdf->SetFont('dejavusans', '', 7);
+                $pdf->SetXY($posX+27.5, 14); 
+                $pdf->MultiCell(68, 0, $Descripcion, 0, 'L', 0, 1);
+                //Codigo de barras
+                $CodigoBarras = $Articulo;
+                //$pdf->SetXY($posX + 30, 1);
+                $pdf->write1DBarcode($CodigoBarras, 'C128',15+$TamCodigoPosx, 28, $TamCodigo, 3, 0.4, array(), 'N');
+                $pdf->SetFont('dejavusans', '', 9);
+                $pdf->setFontSpacing(0);
+                $pdf->SetXY($posX+26.5, 23);
+                $pdf->MultiCell(65, 0, $CodigoBarras, 0, 'L', 0, 1);
+                if($TipoEtiqueta == "ETIQ11"){
+                    $pdf->RoundedRect(4.5,33, 92, 15, 1, '1111', 'D', $border_style, array());
+                    $pdf->Rect(4.5, 39, 92 , 0 );
+                    $pdf->Rect(35.5, 33, 0, 15);
+                    $pdf->Rect(65.5, 33, 0, 15);
+                    $pdf->Text(15, 34, "O.V");
+                    $pdf->Text(46, 34, "O.F.");
+                    $pdf->Text(71, 34, "CANTIDAD");
+                    $pdf->SetFont('dejavusans', 'B', 12);
+                    $RestarEspacio = 0;
+                    if($OrdenVenta == "N/A"){
+                        $RestarEspacio = 3;
+                    }
+                    $pdf->Text(11+$RestarEspacio, 41, $OrdenVenta);
+                    $pdf->Text(40, 41, $OrdenFabricacion->OrdenFabricacion);
+                    $pdf->SetFont('dejavusans', 'B', 14);
+                    $NumeroDigitos = strlen($CantidadBolsa);
+                    $RestarEspacio = ($NumeroDigitos == 1)?78:76;
+                    $RestarEspacio = ($NumeroDigitos > 2)?74:$RestarEspacio;
+                    $pdf->Text($RestarEspacio, 41, $CantidadBolsa);
+                }else{
+                    $pdf->RoundedRect(4.5,33, 92, 15, 1, '1111', 'D', $border_style, array());
+                    $pdf->Rect(4.5, 39, 92 , 0 );
+                    $pdf->Rect(27.5, 33, 0, 15);
+                    $pdf->Rect(50.5, 33, 0, 15);
+                    $pdf->Rect(73.5, 33, 0, 15);
+                    $pdf->Text(6, 34, "No. PEDIDO");
+                    $pdf->Text(35, 34, "O.V");
+                    $pdf->Text(57, 34, "O.F.");
+                    $pdf->Text(75, 34, "CANTIDAD");
+                    $RestarEspacio = 0;
+                    if($OrdenVenta == "N/A"){
+                        $RestarEspacio = 3;
+                    }
+                    $pdf->SetFont('dejavusans', 'B', 8);
+                    //$pdf->Text(3, 41, $NoPEDIDO);
+                    $pdf->SetXY(5, 41); 
+                    $pdf->MultiCell(24, 0, $NoPEDIDO."", 0, 'L', 0, 1);
+                    $pdf->SetFont('dejavusans', 'B', 12);
+                    $pdf->Text(30+$RestarEspacio, 41, $OrdenVenta);
+                    $pdf->Text(52, 41, $OrdenFabricacion->OrdenFabricacion);
+                    $pdf->SetFont('dejavusans', 'B', 14);
+                    $NumeroDigitos = strlen($CantidadBolsa);
+                    $RestarEspacio = ($NumeroDigitos == 1)?82:80;
+                    $RestarEspacio = ($NumeroDigitos > 2)?78:$RestarEspacio;
+                    $pdf->Text($RestarEspacio, 41, $CantidadBolsa);
+                }
+            }
+            ob_end_clean();
+            // Generar el archivo PDF y devolverlo al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumper_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    //Etiqueta de Certificado de Medicion Optronics
+    public function EtiquetaCertificadoMedicion($PaginaInicio,$PaginaFin,$Insercion,$Retorno,$OrdenFabricacion,$CodigoCliente){
+        try{
+            $BanderaDiferente = (($Insercion == $Retorno) || $Retorno == "" || $Retorno == null)? true : false;
+            $Insercion1 = "";
+            $Retorno1 = "";
+            $Insercion2 = "";
+            $Retorno2 = "";
+            $LongitudOnda1 = "";
+            $LongitudOnda2 = "";
+            switch($Insercion){
+                    case "MUPC":
+                        $Insercion1 = 0.20;
+                        $Retorno1 = 40.0;
+                        $LongitudOnda1 = "850nm / 1300nm";
+                        break;
+                    case "MOUPC":
+                        $Insercion1 = 0.20;
+                        $Retorno1 = 55.0;
+                        $LongitudOnda1 = "1310nm / 1550nm";
+                        break;
+                    case "MOAPC":
+                        $Insercion1 = 0.20;
+                        $Retorno1 = 65.0;
+                        $LongitudOnda1 = "1310nm / 1550nm";
+                        break;
+                    case "MULMTRJ":
+                        $Insercion1 = 0.70;
+                        $Retorno1 = 40.0;
+                        $LongitudOnda1 = "850nm / 1300nm";
+                        break;
+                    case "MONMTRJ":
+                        $Insercion1 = 0.40;
+                        $Retorno1 = 35.0;
+                        $LongitudOnda1 = "1310nm / 1550nm";
+                        break;
+                    case "MUMPO":
+                        $Insercion1 = 0.50;
+                        $Retorno1 = 20.0;
+                        $LongitudOnda1 = "850nm / 1300nm";
+                        break;
+                    case "MOMPO":
+                        $Insercion1 = 0.35;
+                        $Retorno1 = 60.0;
+                        $LongitudOnda1 = "1310nm / 1550nm";
+                        break;
+                    case "MUMTP":
+                        $Insercion1 = 0.50;
+                        $Retorno1 = 20.0;
+                        $LongitudOnda1 = "850nm / 1300nm";
+                        break;
+                    case "MOMTP":
+                        $Insercion1 = 0.35;
+                        $Retorno1 = 60.0;
+                        $LongitudOnda1 = "1310nm / 1550nm";
+                        break;
+                    case "MUMTP_PRO":
+                        $Insercion1 = 0.35;
+                        $Retorno1 = 25.0;        
+                        $LongitudOnda1 = "850nm / 1300nm";
+                        break;
+                    case "MOMTP_PRO":
+                        $Insercion1 = 0.35;
+                        $Retorno1 = 25.0;
+                        $LongitudOnda1 = "1310nm / 1550nm";
+                        break;
+            }
+            if(!$BanderaDiferente){
+                    switch($Retorno){
+                        case "MUPC":
+                            $Insercion2 = 0.20;
+                            $Retorno2 = 40.0;
+                            $LongitudOnda2 = "850nm / 1300nm";
+                            break;
+                        case "MOUPC":
+                            $Insercion2 = 0.20;
+                            $Retorno2 = 55.0;
+                            $LongitudOnda2 = "1310nm / 1550nm";
+                            break;
+                        case "MOAPC":
+                            $Insercion2 = 0.20;
+                            $Retorno2 = 65.0;
+                            $LongitudOnda2 = "1310nm / 1550nm";
+                            break;
+                        case "MULMTRJ":
+                            $Insercion2 = 0.70;
+                            $Retorno2 = 40.0;
+                            $LongitudOnda2 = "850nm / 1300nm";
+                            break;
+                        case "MONMTRJ":
+                            $Insercion2 = 0.40;
+                            $Retorno2 = 35.0;
+                            $LongitudOnda2 = "1310nm / 1550nm";
+                            break;
+                        case "MUMPO":
+                            $Insercion2 = 0.50;
+                            $Retorno2 = 20.0;
+                            $LongitudOnda2 = "850nm / 1300nm";
+                            break;
+                        case "MOMPO":
+                            $Insercion2 = 0.35;
+                            $Retorno2 = 60.0;
+                            $LongitudOnda2 = "1310nm / 1550nm";
+                            break;
+                        case "MUMTP":
+                            $Insercion2 = 0.50;
+                            $Retorno2 = 20.0;
+                            $LongitudOnda2 = "850nm / 1300nm";
+                            break;
+                        case "MOMTP":
+                            $Insercion2 = 0.35;
+                            $Retorno2 = 60.0;
+                            $LongitudOnda2 = "1310nm / 1550nm";
+                            break;
+                        case "MUMTP_PRO":
+                            $Insercion2 = 0.35;
+                            $Retorno2 = 25.0;        
+                            $LongitudOnda2 = "850nm / 1300nm";
+                            break;
+                        case "MOMTP_PRO":
+                            $Insercion2 = 0.35;
+                            $Retorno2 = 25.0;
+                            $LongitudOnda2 = "1310nm / 1550nm";
+                            break;
+                    }
+                    if ($Insercion2 != floor($Insercion2)) {
+                        $Insercion2 = number_format((float)$Insercion2, 2);
+                    }else{
+                        $Insercion2 = $Insercion2 = number_format((float)$Insercion2, 1);
+                    }
+                    if ($Retorno2 != floor($Retorno2)) {
+                            $Retorno2 = number_format((float)$Retorno2, 2);
+                    }else{
+                        $Retorno2 = $Retorno2 = number_format((float)$Retorno2, 1);
+                    }
+            }
+            if($LongitudOnda1 != $LongitudOnda2 AND $LongitudOnda2 != ""){
+                $LongitudOnda1 = $LongitudOnda1. "\n".$LongitudOnda2;
+            }
+            if ($Insercion1 != floor($Insercion1)) {
+                $Insercion1 = number_format((float)$Insercion1, 2);
+            }else{
+                $Insercion1 = $Insercion1 = number_format((float)$Insercion1, 1);
+            }
+            if ($Retorno1 != floor($Retorno1)) {
+                $Retorno1 = number_format((float)$Retorno1, 2);
+            }else{
+                $Retorno1 = $Retorno1 = number_format((float)$Retorno1, 1);
+            }
+            $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first(); 
+            if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
+                return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']); 
+            }
+            if ($PaginaFin<$PaginaInicio) {
+                return json_encode(["error" => 'Página de inicio tiene que ser menor a Página fin.']);
+            }
+            $OrdenVenta = $OrdenFabricacion->OrdenVenta;
+            $CodigoEspecial = $OrdenFabricacion->Articulo;
+            if($OrdenVenta == "" || $OrdenVenta == "00000"){
+                $OrdenVenta = "N/A";
+            }else{
+                $OrdenVenta = $OrdenVenta->OrdenVenta;
+                if($this->Nokia == $CodigoCliente OR $this->HuaweiInternacional == $CodigoCliente OR $this->Drai == $CodigoCliente){
+                    $CodigoEspecial = $this->CodigoEspecial($CodigoCliente,$OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
+                    if($CodigoEspecial == ""){
+                        return json_encode(["error" => 'Número Especial no Encontrado, Si el problema perciste Contacta a TI!.']);
+                    }
+                }
+            }
+            $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
+             $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetFontStretching(105);
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
+            $pdf->SetPrintHeader(false);
+            $pdf->SetAutoPageBreak(TRUE, 0);   
+            for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
+                $page_format = array(
+                    'MediaBox' => array('llx' => 0, 'lly' => 0, 'urx' => 106, 'ury' => 80),
+                    'CropBox' => array('llx' => 0, 'lly' => 0, 'urx' => 106, 'ury' => 80),
+                    'BleedBox' => array('llx' => 2, 'lly' => 2, 'urx' => 104, 'ury' => 78),
+                    'TrimBox' => array('llx' => 4, 'lly' => 4, 'urx' => 102, 'ury' => 76),
+                    'ArtBox' => array('llx' => 6, 'lly' => 6, 'urx' => 100, 'ury' => 74),
+                    'Dur' => 3,
+                    'trans' => array(
+                        'D' => 1.5,
+                        'S' => 'Split',
+                        'Dm' => 'V',
+                        'M' => 'O'
+                    ),
+                    'Rotate' => 90,
+                    'PZ' => 1,
+                );
+                $pdf->AddPage('L', array(80,106));//$page_format,false,false);
+                if(!file_exists(storage_path('app/Logos/Optronics.jpg'))){
+                    throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
+                }else{
+                    $imagePath = storage_path('app/Logos/Optronics.jpg');
+                    $pdf->Image($imagePath, 4.5, 6, 20);
+                }
+                $pdf->SetFont('helvetica', '', 10);
+                $pdf->setFontSpacing(-0);
+                $pdf->Text(50,6,"Certificado de Medición");
+                $pdf->SetXY(3.5, 15); 
+                $pdf->MultiCell(25, 0, "Descripción del producto: ", 0, 'L', 0, 1);
+                $pdf->SetXY(35, 15); 
+                $pdf->setFontSpacing(-0.2);
+                $pdf->MultiCell(65, 0, $OrdenFabricacion->Descripcion, 0, 'L', 0, 1);
+                $pdf->Text(3.5,35,"Número de parte: ");
+                $pdf->Text(50,35,$CodigoEspecial);
+                $pdf->Text(3.5,40,"Número de serie: ");
+                $Tipo = (stripos($OrdenFabricacion->Descripcion, 'multimodo'))?'M':'S';
+
+                $Fecha = $this->SemanaFecha($DatosSAP[0]["DocDate"]);
+                $pdf->Text(50,40,$Tipo.$OrdenFabricacion->OrdenFabricacion."-".($Fecha['Week']).($Fecha['Year']).str_pad($i+1, 4, "0", STR_PAD_LEFT));
+                $pdf->Text(3.5,45,"Fecha de prueba: ");
+                $FechaPrueba = date('d/m/Y');
+                $pdf->Text(50,45,$FechaPrueba);
+                $pdf->Text(35,52.5,$LongitudOnda1);
+                $pdf->Text(3.5,60,"Perdida permitida:");
+                $ValorMedicionA = "≤ ".$Insercion1." dB"; 
+                $ValorMedicionB ="≥ ".$Retorno1." dB";
+                $pdf->SetFont('dejavusans', '', 9);
+                if(!$BanderaDiferente){
+                    $ValorMedicionA .= " / ".$Insercion2." dB";
+                }
+                if(!$BanderaDiferente){
+                    $ValorMedicionB .= " / ".$Retorno2." dB";
+                }
+                $pdf->Text(3.5,65,"Inserción: ".$ValorMedicionA);
+                $pdf->Text(3.5,70,"Retorno: ".$ValorMedicionB);
+                $pdf->SetFont('dejavusans', '', 10);
+                $pdf->Text(60,72,"Resultado: APROBADO");
+            }
+            ob_end_clean();
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumper_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    //Distribuidor Etiqueta de Trazabilidad
+    public function DistribuidorEtiquetaTrazabilidad($PaginaInicio,$PaginaFin,$OrdenFabricacion,$TipoDistribuidor,$CodigoCliente){
+        try{
+            $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first(); 
+            if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
+                return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']); 
+            }
+            if ($PaginaFin<$PaginaInicio) {
+                return json_encode(["error" => 'Página de inicio tiene que ser menor a Página fin.']);
+            }
+            $OrdenVenta = $OrdenFabricacion->OrdenVenta;
+            $CodigoEspecial = $OrdenFabricacion->Articulo;
+            $DatosSAP=[];
+            if($OrdenVenta == "" || $OrdenVenta == "00000"){
+                return json_encode(["error" => 'No se encontro la Orden de Fabricacion.']);
+                $OrdenVenta = "N/A";
+            }else{
+                $OrdenVenta = $OrdenVenta->OrdenVenta;
+                $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
+                if($this->Nokia == $CodigoCliente OR $this->HuaweiInternacional == $CodigoCliente OR $this->Drai == $CodigoCliente){
+                    $CodigoEspecial = $this->CodigoEspecial($CodigoCliente,$OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
+                    if($CodigoEspecial == ""){
+                        return json_encode(["error" => 'Número Especial no Encontrado, Si el problema perciste Contacta a TI!.']);
+                    }
+                }
+            }
+            $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
+            $pdf->SetPrintHeader(false);
+            $pdf->SetAutoPageBreak(TRUE, 0);   
+            $Fecha = $this->SemanaFecha(date('d-m-Y'));
+            for ($i=$PaginaInicio; $i<($PaginaFin+1); $i++) {
+                $pdf->AddPage('L', array(108,28));
+                if(!file_exists(storage_path('app/Logos/Optronics.jpg'))){
+                        throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
+                }else{
+                    $imagePath = storage_path('app/Logos/Optronics.jpg');
+                    $pdf->Image($imagePath, 8, 3, 25);
+                    $pdf->SetFont('helvetica', 'B', 10);
+                    $pdf->setFontSpacing(-0.1);
+                    $pdf->SetXY(3, 10);
+                    $pdf->SetFont('helvetica', 'B', 8);
+                    $pdf->MultiCell(35, 0, $CodigoEspecial, 0, 'C', 0, 1);
+                    $pdf->SetXY(3, 15);
+                    $pdf->SetFont('helvetica', 'B', 10);
+                    $pdf->MultiCell(35, 0,  $TipoDistribuidor.$OrdenVenta."-".$Fecha['Week'].$Fecha['Year'].str_pad($i, 4, '0', STR_PAD_LEFT), 0, 'C', 0, 1);
+
+                    $i++;
+                    $pdf->Image($imagePath, 63, 3, 25);
+                    $pdf->SetFont('helvetica', 'B', 10);
+                    $pdf->setFontSpacing(-0.1);
+                    $pdf->SetXY(58, 10);
+                    $pdf->SetFont('helvetica', 'B', 8);
+                    $pdf->MultiCell(35, 0, $CodigoEspecial, 0, 'C', 0, 1);
+                    $pdf->SetXY(58, 15);
+                    $pdf->SetFont('helvetica', 'B', 10);
+                    $pdf->MultiCell(35, 0,  $TipoDistribuidor.$OrdenVenta."-".$Fecha['Week'].$Fecha['Year'].str_pad($i, 4, '0', STR_PAD_LEFT), 0, 'C', 0, 1);
+                }
+            }
+            ob_end_clean();
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumper_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador*/
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+    }
+    //Distribuidor Etiqueta de Tubo
+    public function DistribuidorEtiquetaTubo($PaginaInicio,$PaginaFin,$OrdenFabricacion,$CodigoCliente){
+        try {
+            // Crear PDF
+            $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetFont('helvetica', '', 10);
+            $pdf->SetFontStretching(105);
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseO
+            $pdf->SetPrintHeader(false);
+            $pdf->SetAutoPageBreak(TRUE, 0);   
+            $pdf->SetDrawColor(0, 0, 0);
+            $pdf->SetLineWidth(0.4);
+            for ($i=$PaginaInicio; $i<($PaginaFin+1); $i++) {
+                $pdf->AddPage('L', array(108,28));
+                $pdf->Rect(3, 3, 35 ,22);
+                $pdf->Rect(10, 3, 0 ,22);
+                $pdf->SetFont('helvetica', 'B',12);
+                $pdf->StartTransform();
+                $pdf->Rotate(90, 11, 17);
+                $pdf->SetXY(5, 10); // posición X=3 mm, Y=0 mm
+                $pdf->Cell(17.5, 4,"TUBO ".($i), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
+                $pdf->StopTransform();
+                if($i<$PaginaFin){
+                    $i++;
+                    $pdf->Rect(58, 3, 35 ,22);
+                    $pdf->Rect(65, 3, 0 ,22);
+                    $pdf->SetFont('helvetica', 'B',12);
+                    $pdf->StartTransform();
+                    $pdf->Rotate(90, 58, 12);
+                    $pdf->SetXY(47, 13);
+                    $pdf->Cell(17.5, 4,"TUBO ".($i), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
+                    $pdf->StopTransform();
+                }
+            }
+            ob_end_clean();
+            // Generar el archivo PDF y devolverlo al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaDistribuidorTubo_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        }catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+        
+    }
+    //
+    public function EtiquetaIdentificacionCharolasTranstelco($CantidadEtiquetas,$CodigoCliente){
+        try {
+            $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetFont('dejavusans', '', 10);
+            $pdf->SetAutoPageBreak(TRUE, 0);   
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
+            $pdf->SetPrintHeader(false);
+            for ($i=0; $i<$CantidadEtiquetas; $i++) {
+                $pdf->AddPage('L', array(101, 51));
+                $pdf->SetFont('dejavusans', '', 9);
+                $pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetLineWidth(0.3);
+                $pdf->Rect(7, 5, 32 , 6 );
+                $pdf->Rect(7, 12, 32 , 6 );
+                $pdf->Rect(7, 19, 32 , 6 );
+                $pdf->Rect(7, 26, 32 , 6 );
+                $pdf->Rect(7, 33, 32 , 6 );
+                $pdf->Rect(7, 40, 32 , 6 );
+                $pdf->Text(7,6,"Tubo 12 (133-144)");
+                $pdf->Text(7,13,"Tubo 11 (121-132)");
+                $pdf->Text(7,20,"Tubo 10 (109-120)");
+                $pdf->Text(7,27,"Tubo 9 (97-108)");
+                $pdf->Text(7,34,"Tubo 8 (85-96)");
+                $pdf->Text(7,41,"Tubo 7 (73-84)");
+
+                $pdf->SetLineWidth(0.3);
+                $pdf->Rect(46, 5, 32 , 6 );
+                $pdf->Rect(46, 12, 32 , 6 );
+                $pdf->Rect(46, 19, 32 , 6 );
+                $pdf->Rect(46, 26, 32 , 6 );
+                $pdf->Rect(46, 33, 32 , 6 );
+                $pdf->Rect(46, 40, 32 , 6 );
+                $pdf->Text(46,6,"Tubo 6 (61-72)");
+                $pdf->Text(46,13,"Tubo 5 (49-60)");
+                $pdf->Text(46,20,"Tubo 4 (37-48)");
+                $pdf->Text(46,27,"Tubo 3 (25-36)");
+                $pdf->Text(46,34,"Tubo 2 (13-24)");
+                $pdf->Text(46,41,"Tubo 1 (1-12)");
+            }
+            ob_end_clean();
+            // Generar el archivo PDF y devolverlo al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaIdentificacionCharolasTranstelco_'.date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    //Menu etiquetas y restricciones clientes etiquetas
     public function Menu($CodigoCliente){
-        $Etiquetas = [
-            [1,"ETIQ4","ETIQUETA DE BOLSA JUMPER"],
-            [2,"ETIQ1","ETIQUETA DE BOLSA ESPECIAL HUAWEI"],
-            [3,"ETIQ4","ETIQUETA DE BOLSA ESPECIAL NOKIA"],
-            [4,"ETIQ4","ETIQUETA DE BOLSA ESPECIAL DRAI"],
-            [5,"ETIQ2","ETIQUETA DE BANDERILLA QR GENERAL"],
-            [6,"ETIQ3","ETIQUETA DE BANDERILLA QR NÚMERO ESPECIAL"],
-            [7,"ETIQ4CEDIS","ETIQUETA DE BOLSA JUMPER CEDIS"],
-            [8,"ETIQ5","ETIQUETA DE NÚMERO DE PIEZAS"],
-            [9,"ETIQ6","ETIQUETA DE TRAZABILIDAD MPO (PRUEBA)"],
-            [10,"ETIQ7","ETIQUETA DE INYECCIÓN (PRUEBA)"],
-            [11,"ETIQ8","ETIQUETA DE DIVISOR (PRUEBA)"],
-            [12,"ETIQ4","ETIQUETA DE BOLSA PATCH CORD GENERAL"],
-            [13,"ETIQ9","ETIQUETA DE CAJA HUAWEI (PRUEBA)"],
-            [14,"ETIQ10","ETIQUETA DE CAJA NOKIA (PRUEBA)"],
-        ];
+        $Etiquetas = $this->Etiquetas;
         if($CodigoCliente == $this->HuaweiInternacional){
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
                 return $etiqueta[0] !== 1 && $etiqueta[0] !== 3 &&
@@ -1668,5 +2169,345 @@ class EtiquetasController extends Controller
             return strcmp($a[2], $b[2]);
         });
         return $Etiquetas;
+    }
+    public function Campos(Request $request){
+        $TipoEtiqueta = $request->input('TipoEtiqueta');
+        $OrdenFabricacion = $request->input('OrdenFabricacion');
+        $CodigoCliente = $request->input('CodigoCliente');
+        $OF = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
+        $Logo = "OPT";
+        $Opciones = '<option value="FMX">Fibremex</option>
+                    <option value="OPT" selected>Optronics</option>';
+        if($CodigoCliente == $this->Fibremex){
+            $Logo = "FMX";
+             $Opciones = '<option value="FMX" selected>Fibremex</option>
+                        <option value="OPT">Optronics</option>';
+        }
+        $Titulo = "";
+        foreach($this->Etiquetas as $TituloE){
+            if($TituloE[1] == $TipoEtiqueta){
+                $Titulo = $TituloE[2];
+            }
+        }
+        switch($TipoEtiqueta){
+            case 'ETIQ1':
+                $CamposRequeridos = ['PaginaInicio','PaginaFin'];
+                break;
+            case 'ETIQ2':
+                $CamposRequeridos = ['PaginaInicio','PaginaFin',];
+                break;
+            case 'ETIQ3':
+                $CamposRequeridos = ['PaginaInicio','PaginaFin',];
+                break;
+            case 'ETIQ4':
+                $CamposRequeridos = ['CantidadEtiquetas'];
+                break;
+            case 'ETIQ4CEDIS':
+                $CamposRequeridos = ['CantidadEtiquetas'];
+                break;
+            case 'ETIQ5':
+                $CamposRequeridos = ['Sociedad','CantidadEtiquetas','CantidadBolsa'];
+                break;
+            case 'ETIQ6':
+                $CamposRequeridos = ['PaginaInicio','PaginaFin','Insercion','Retorno'];
+                break;
+            case 'ETIQ7':
+                $CamposRequeridos = ['CantidadEtiquetas'];
+                break;
+            case 'ETIQ8':
+                $CamposRequeridos = ['CantidadEtiquetas','PorcentajeA','PorcentajeB','PorcentajeC','PorcentajeD'];
+                break;
+            case 'ETIQ9':
+                $CamposRequeridos = ['PaginaInicio','PaginaFin','CantidadBolsa','CantidadCajas'];
+                break;
+            case 'ETIQ10':
+                $CamposRequeridos = ['PaginaInicio','PaginaFin','CantidadBolsa','CantidadCajas'];
+                break;
+            case 'ETIQ11':
+                $CamposRequeridos = ['CantidadEtiquetas','CantidadBolsa'];
+                break;
+            case 'ETIQ12':
+                $CamposRequeridos = ['CantidadEtiquetas','CantidadBolsa'];
+                break;
+            case 'ETIQ13':
+                $CamposRequeridos = ['PaginaInicio','PaginaFin','Insercion','Retorno'];
+                break;
+            case 'ETIQ14':
+                $CamposRequeridos = $CamposRequeridos = ['PaginaInicio','PaginaFin','TipoDistribuidor'];
+                break;
+            case 'ETIQ15':
+                $CamposRequeridos = $CamposRequeridos = ['PaginaInicio','PaginaFin'];
+                break;
+            case 'ETIQ15':
+                $CamposRequeridos = $CamposRequeridos = ['PaginaInicio','PaginaFin'];
+                break;
+            case 'ETIQ16':
+                $CamposRequeridos = $CamposRequeridos = ['CantidadEtiquetas'];
+                break;
+            case 'ETIQ17':
+                $CamposRequeridos = $CamposRequeridos = ['CantidadEtiquetas','MenuDistribuidor1UR'];
+                break;
+            case 'ETIQ18':
+                $CamposRequeridos = $CamposRequeridos = ['CantidadEtiquetas','MenuDistribuidor2UR'];
+                break;
+            case 'ETIQ19':
+                $CamposRequeridos = $CamposRequeridos = ['CantidadEtiquetas','MenuDistribuidor4UR'];
+                break;
+            case 'ETIQ20':
+                $CamposRequeridos = $CamposRequeridos = ['CantidadEtiquetas','MenuDistribuidorPared'];
+                break;
+            case 'ETIQ21':
+                $CamposRequeridos = $CamposRequeridos = ['CantidadEtiquetas','MenuDistribuidorExterior'];
+                break;
+            default:
+            $CamposRequeridos = [];
+                break;
+        }
+        array_push($CamposRequeridos, 'Boton');
+        $Cantidad = ($OF->CantidadTotal>0)?$OF->CantidadTotal:1;
+                    $Campos = [["Sociedad",' <div class="col-3" id="ContenedorSociedad">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="Sociedad">Logo</label>
+                                            <select class="form-select" id="Sociedad" data-choices="data-choices" size="1" required="required" name="organizerSingle" data-options=\'{"removeItemButton":true,"placeholder":true}\'>
+                                                <option value="" disabled>Selecciona una Opci&oacute;n</option>
+                                                '.$Opciones.'
+                                            </select>
+                                    </div>
+                                </div>'],
+                    ["CantidadEtiquetas",'<div class="col-3" id="ContenedorCantidadEtiquetas">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="CantidadEtiquetas">Cantidad de Etiquetas  </label>
+                                            <input class="form-control" oninput="RegexNumeros(this)" id="CantidadEtiquetas" value ="'.$Cantidad.'" type="number" placeholder="0" />
+                                            <small id="ErrorCantidadEtiquetas" class="text-danger"></small>
+                                        </div>
+                                    </div>'],
+                    ["PaginaInicio",'<div class="col-3" id="ContenedorPaginaInicio">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="PaginaInicio">Etiqueta inicio </label>
+                                            <input class="form-control" id="PaginaInicio" oninput="RegexNumeros(this)" type="number" value="1" min="1" max="'.$Cantidad.'" placeholder="0" />
+                                            <small id="ErrorPaginaInicio" class="text-danger"></small>
+                                        </div>
+                                    </div>'],
+                    ["PaginaFin",' <div class="col-3" id="ContenedorPaginaFin">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="PaginaFin">Etiqueta fin  </label>
+                                            <input class="form-control" id="PaginaFin" oninput="RegexNumeros(this)" type="number"min="1" value="'.$Cantidad.'" max="'.$Cantidad.'" placeholder="0" />
+                                            <small id="ErrorPaginaFin" class="text-danger"></small>
+                                        </div>
+                                    </div>'],
+                    ["CantidadCajas",'<div class="col-3" id="ContenedorCantidadCajas">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="CantidadCajas">Cantidad de Cajas  </label>
+                                            <input class="form-control" id="CantidadCajas" oninput="CantidadFinal();RegexNumeros(this);" value="'.$Cantidad.'" type="number" placeholder="0" />
+                                            <small id="ErrorCantidadCajas" class="text-danger"></small>
+                                        </div>
+                                    </div>'],
+                    ["CantidadBolsa",'<div class="col-3" id="ContenedorCantidadBolsa">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="CantidadBolsa">Cantidad por bolsa o caja  </label>
+                                            <input class="form-control" id="CantidadBolsa" oninput="RegexNumeros(this)" type="number" placeholder="0" value="1" />
+                                            <small id="ErrorCantidadBolsa" class="text-danger"></small>
+                                        </div>
+                                    </div>'],
+                    ["PorcentajeA",'<div class="col-3" id="ContenedorPorcentajeA">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="PorcentajeA">Medida 1  </label>
+                                            <input class="form-control" id="PorcentajeA" type="number" oninput="ValorDivisor(this, \'A\')" placeholder="0" min="1" max="100" value="50" />
+                                            <small id="ErrorPorcentajeA" class="text-danger"></small>
+                                        </div>
+                                    </div>'],
+                    ["PorcentajeB",'<div class="col-3" id="ContenedorPorcentajeB">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="PorcentajeB">Medida 2  </label>
+                                            <input class="form-control" id="PorcentajeB" type="number" oninput="ValorDivisor(this, \'B\')" placeholder="0" min="1" max="100" value="50" />
+                                            <small id="ErrorPorcentajeB" class="text-danger"></small>
+                                        </div>
+                                    </div>'],
+                    ["PorcentajeC",'<div class="col-3" id="ContenedorPorcentajeC">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="PorcentajeC">Medida 3  </label>
+                                            <input class="form-control" id="PorcentajeC" type="number" oninput="ValorDivisor(this, \'C\')" placeholder="0" min="1" max="100" value="50" />
+                                            <small id="ErrorPorcentajeC" class="text-danger"></small>
+                                        </div>
+                                    </div>'],
+                    ["PorcentajeD",'<div class="col-3" id="ContenedorPorcentajeD">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="PorcentajeD">Medida 4  </label>
+                                            <input class="form-control" id="PorcentajeD" type="number" oninput="ValorDivisor(this, \'D\')" placeholder="0" min="1" max="100" value="50" />
+                                            <small id="ErrorPorcentajeD" class="text-danger"></small>
+                                        </div>
+                                    </div>'],
+                    ["Insercion",'<div class="col-3" id="ContenedorInsercion">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="Insercion">CONECTORIZACI&Oacute;N A</label>
+                                            <!--<input class="form-control" id="Insercion" type="number" placeholder="0" value="0.50" />-->
+                                            <select class="form-select" id="Insercion">
+                                                <option value="" selected disabled>Selecciona una opci&oacute;n</option>
+                                                <option value="MUPC">MULTIMODO (MM) PC</option>
+                                                <option value="MOUPC">MONOMODO (SM) UPC</option>
+                                                <option value="MOAPC">MONOMODO (SM) APC</option>
+                                                <option value="MULMTRJ">ESPECIALES MULTIMODO MTRJ</option>
+                                                <option value="MONMTRJ">ESPECIALES MONOMODO MTRJ</option>
+                                                <option value="MUMPO">MULTIMODO MPO (UPC)</option>
+                                                <option value="MOMPO">MONOMODO MPO (UPC-APC)</option>
+                                                <option value="MUMTP">MULTIMODO MTP Est&aacute;ndar (UPC)</option>
+                                                <option value="MOMTP">MONOMODO MTP Est&aacute;ndar (UPC-APC)</option>
+                                                <option value="MUMTP_PRO">MULTIMODO MTP-PRO (UPC)</option>
+                                                <option value="MOMTP_PRO">MONOMODO MTR-PRO (UPC-APC)</option>
+                                            </select>
+                                            <small id="ErrorInsercion" class="text-danger"></small>
+                                        </div>
+                                    </div>'],
+                    ["Retorno",'<div class="col-3" id="ContenedorRetorno">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="Retorno">CONECTORIZACI&Oacute;N B</label>
+                                            <select class="form-select" id="Retorno">
+                                                <option value="" selected>Selecciona una opci&oacute;n</option>
+                                                <option value="MUPC">MULTIMODO (MM) PC</option>
+                                                <option value="MOUPC">MONOMODO (SM) UPC</option>
+                                                <option value="MOAPC">MONOMODO (SM) APC</option>
+                                                <option value="MULMTRJ">ESPECIALES MULTIMODO MTRJ</option>
+                                                <option value="MONMTRJ">ESPECIALES MONOMODO MTRJ</option>
+                                                <option value="MUMPO">MULTIMODO MPO (UPC)</option>
+                                                <option value="MOMPO">MONOMODO MPO (UPC-APC)</option>
+                                                <option value="MUMTP">MULTIMODO MTP Est&aacute;ndar (UPC)</option>
+                                                <option value="MOMTP">MONOMODO MTP Est&aacute;ndar (UPC-APC)</option>
+                                                <option value="MUMTP_PRO">MULTIMODO MTP-PRO (UPC)</option>
+                                                <option value="MOMTP_PRO">MONOMODO MTR-PRO (UPC-APC)</option>
+                                            </select>
+                                            <small id="ErrorRetorno" class="text-danger"></small>
+                                        </div>
+                                    </div>'],
+                    ["TipoDistribuidor",'<div class="col-3" id="ContenedorTipoDistribuidor"><div class="mb-3">
+                                            <label class="form-label" for="TipoDistribuidor">Tipo de Distribuidor</label>
+                                            <select class="form-select" id="TipoDistribuidor">
+                                                <option value="" selected disabled>Selecciona una opci&oacute;n</option>
+                                                <option value="M">MULTIMODO </option>
+                                                <option value="S">MONOMODO</option>
+                                                <option value="MA">RE EMPAQUE </option>
+                                            </select><small id="ErrorTipoDistribuidor" class="text-danger"></small></div>
+                                    </div>'],
+                    ["Boton",'<div class="col-3 d-flex align-items-end" id="ContenedorBoton"><div class="mb-2">
+                                    <button type="button" id="BtnGenerar" class="btn btn-phoenix-primary me-1 mb-1">Generar</button>
+                                </div></div>'],
+
+                    ["MenuDistribuidor1UR",'<div class="col-6" id="ContenedorMenuDistribuidor">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="MenuDistribuidor">Distribuidor</label>
+                                                    <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">
+                                                        <option value="" selected disabled>Selecciona una opci&oacute;n</option>
+                                                        <option value="D1UR6SFCST">6 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
+                                                        <option value="D1UR6SSC">6 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
+                                                        <option value="D1UR6DLC">6 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="D1UR6DSC">6 ACOPLADORES DUPLEX HORIZONTAL SC</option>
+                                                        <option value="D1UR8SFCST">8 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
+                                                        <option value="D1UR12SFCST">12 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
+                                                        <option value="D1UR18CLC">18 ACOPLADORES CUADRUPLEX LC</option>
+                                                        <option value="D1UR24DDRAI">24 ACOPLADORES DUPLEX HORIZONTAL DRAI</option>
+                                                    </select>
+                                                    <small id="ErrorMenuDistribuidor" class="text-danger"></small>
+                                                </div>
+                                            </div>'],
+                    ["MenuDistribuidor2UR",'<div class="col-6" id="ContenedorMenuDistribuidor">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="MenuDistribuidor">Distribuidor</label>
+                                                    <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">
+                                                        <option value="" selected disabled>Selecciona una opci&oacute;n</option>
+                                                        <option value="MUPC">6 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
+                                                        <option value="MOUPC">6 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
+                                                        <option value="MOAPC">6 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="MULMTRJ">6 ACOPLADORES DUPLEX HORIZONTAL SC</option>
+                                                        <option value="MULMTRJ">6 ACOPLADORES HORIZONTAL CUADRUPLEX LC</option>
+                                                        <option value="MONMTRJ">8 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
+                                                        <option value="MONMTRJ">8 ACOPLADORES SIMPLEX HORIZONTAL FC-ST TELEFONICA</option>
+                                                        <option value="MUMPO">12 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
+                                                    </select>
+                                                    <small id="ErrorMenuDistribuidor" class="text-danger"></small>
+                                                </div>
+                                            </div>'],
+                    ["MenuDistribuidor4UR",'<div class="col-6" id="ContenedorMenuDistribuidor">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="MenuDistribuidor">Distribuidor</label>
+                                                    <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">
+                                                        <option value="" selected disabled>Selecciona una opci&oacute;n</option>
+                                                        <option value="MUPC">6 ACOPLADORES SIMPLEX VERTICAL FC-ST</option>
+                                                        <option value="MOUPC">6 ACOPLADORES SIMPLEX VERTICAL SC</option>
+                                                        <option value="MOAPC">6 ACOPLADORES DUPLEX VERTICAL LC</option>
+                                                        <option value="MULMTRJ">6 ACOPLADORES DUPLEX VERTICAL SC</option>
+                                                        <option value="MULMTRJ">6 ACOPLADORES CUADRUPLEX VERTICAL LC</option>
+                                                        <option value="MONMTRJ">8 ACOPLADORES SIMPLEX VERTICAL FC-ST TELEFONICA</option>
+                                                        <option value="MUMPO">12 ACOPLADORES SIMPLEX VERTICAL FC-ST</option>
+                                                    </select>
+                                                    <small id="ErrorMenuDistribuidor" class="text-danger"></small>
+                                                </div>
+                                            </div>'],
+                    ["MenuDistribuidorPared",'<div class="col-6" id="ContenedorMenuDistribuidor">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="MenuDistribuidor">Distribuidor</label>
+                                                    <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">
+                                                        <option value="" selected disabled>Selecciona una opci&oacute;n</option>
+                                                        <option value="MUPC">12W DE 6 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="MUPC">12W DE 6 ACOPLADORES SIMPLEX SC</option>
+                                                        <option value="MUPC">12W DE 6 ACOPLADORES DUPLEX SC</option>
+                                                        <option value="MUPC">12W DE 6 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="MUPC">12W DE 6 ACOPLADORES CUADRUPLEX LC</option>
+                                                        <option value="MUPC">12W DE 8 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="MUPC">12W DE 12 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="MUPC">24W DE 6 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="MUPC">24W DE 6 ACOPLADORES SIMPLEX SC</option>
+                                                        <option value="MUPC">24W DE 6 ACOPLADORES DUPLEX SC</option>
+                                                        <option value="MUPC">24W DE 6 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="MUPC">24W DE 6 ACOPLADORES CUADRUPLEX LC</option>
+                                                        <option value="MUPC">24W DE 8 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="MUPC">24W DE 12 ACOPLADORES SIMPLEX FC-ST</option>
+                                                    </select>
+                                                    <small id="ErrorMenuDistribuidor" class="text-danger"></small>
+                                                </div>
+                                            </div>'],
+                    ["MenuDistribuidorExterior",'<div class="col-6" id="ContenedorMenuDistribuidor">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="MenuDistribuidor">Distribuidor</label>
+                                                    <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">
+                                                        <option value="" selected disabled>Selecciona una opci&oacute;n</option>
+                                                        <option value="MUPC">24W DE 6 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="MUPC">24W DE 6 ACOPLADORES SIMPLEX SC</option>
+                                                        <option value="MUPC">24W DE 6 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="MUPC">24W DE 6 ACOPLADORES DUPLEX SC</option>
+                                                        <option value="MUPC">24W DE 8 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="MUPC">24W DE 12 ACOPLADORES SIMPLEX FC-ST</option>
+                                                    </select>
+                                                    <small id="ErrorMenuDistribuidor" class="text-danger"></small>
+                                                </div>
+                                            </div>'
+                    ]];
+        $CadenaCampos = '';
+        foreach ($CamposRequeridos as $campoBuscado) {
+            foreach ($Campos as $campo) {
+                if ($campo[0] === $campoBuscado) {
+                    $CadenaCampos .= $campo[1]; 
+                    break;
+                }
+            }
+        }
+        return json_encode(["Menu" => $CadenaCampos,"Titulo"=>$Titulo]);
+    }
+    public function SemanaFecha($fecha){
+        $fecha = Carbon::parse($fecha);
+        $Year = $fecha->isoFormat('GG');
+        $Year = substr($Year, -2);
+        $Week = $fecha->isoWeek();
+        return array("Week"=>$Week, "Year"=>$Year);
+    }
+    public function CodigoEspecial($CodigoCliente,$OrdenVenta,$OrdenFabricacion){
+        $CodigoEspecial = "";
+        if($this->Nokia == $CodigoCliente OR $this->HuaweiInternacional == $CodigoCliente OR $this->Drai == $CodigoCliente){
+            $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta,$OrdenFabricacion);
+            if($this->HuaweiInternacional == $CodigoCliente){
+                $CodigoEspecial = $DatosSAP[0]["SubCatNum"];
+            }elseif($this->Nokia == $CodigoCliente OR $this->Drai == $CodigoCliente){
+                $CodigoEspecial = $DatosSAP[0]["ItemCode"];
+            }
+        }
+        return $CodigoEspecial;
     }
 }

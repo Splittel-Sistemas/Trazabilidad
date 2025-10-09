@@ -76,40 +76,39 @@
       background-color: white;
     }
     .carousel-title {
-    margin-bottom: 0.5rem; 
-  }
-
-  .carousel-content {
-    margin-top: 0; 
-  }
-  .custom-rounded {
-    border-radius: 15px;
-   }
-   .carousel-title{
+        margin-bottom: 0.5rem; 
+    }
+    .carousel-content {
+        margin-top: 0; 
+    }
+    .custom-rounded {
+        border-radius: 15px;
+    }
+    .carousel-title{
         color: #fdfdfd;
-   }
-   .carousel-content{
-    color: #ffffff;
-   }
-   #ImgSinAvisos{
-    margin-top: 2rem;
-    display: flex;
-    justify-content: center; /* Centra horizontalmente */
-    align-items: center;     /* Centra verticalmente */
-   }
-   #ImgSinAvisos img{
-    width: 40%;
-   }
-   .Div-centrar{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-   }
-   .welcome-message{
-    font-weight: bolder;
-    color: #5a5a5a;
-    font-size:large;
-   }
+    }
+    .carousel-content{
+            color: #ffffff;
+    }
+    #ImgSinAvisos{
+        margin-top: 2rem;
+        display: flex;
+        justify-content: center; /* Centra horizontalmente */
+        align-items: center;     /* Centra verticalmente */
+    }
+    #ImgSinAvisos img{
+        width: 40%;
+    }
+    .Div-centrar{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .welcome-message{
+        font-weight: bolder;
+        color: #5a5a5a;
+        font-size:large;
+    }
   </style>
 @endsection
 @section('content')

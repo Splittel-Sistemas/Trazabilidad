@@ -140,6 +140,7 @@ Route::post('/generar-pdf-rangos', [CorteController::class, 'PDFCondicion'])->na
 Route::get('/Etiquetas', [EtiquetasController::class, 'index'])->name('Etiquetas.index')->middleware('auth');
 Route::get('/Etiquetas/{OrdenFabricacion}', [EtiquetasController::class, 'show'])->name('Etiquetas.show')->middleware('auth');
 Route::post('/Etiquetas/Generar', [EtiquetasController::class, 'Generar'])->name('Etiquetas.Generar')->middleware('auth');
+Route::post('/Etiquetas/Generar/Campos', [EtiquetasController::class, 'Campos'])->name('Etiquetas.Campos')->middleware('auth');
 
 //ruta para el formulario de registro
 Route::get('/registro', [RegistroController::class, 'index'])->name('registro.index')->middleware('auth');

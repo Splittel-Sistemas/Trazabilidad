@@ -15,11 +15,6 @@
                 <h4 class="mb-2 text-1100">Etiquetas</h4>
             </div>
         </div>
-        <!--<div class="alert alert-outline-info d-flex align-items-center" role="alert">
-            <span class="fas fa-info-circle text-info fs-1 me-3"></span>
-            <p class="mb-0 flex-1"> Las etiquetas, solo se pueden generar de acuerdo a parametros establecidos!</p>
-            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>-->
     </div>
     <div class="row">
         <div class="mb-2 col-6">
@@ -60,132 +55,16 @@
                                 </div>
                             </div>
                             <div class="col-8">
-                                <div id="DatosEtiquetas" class="row mt-2">
+                                <div id="DatosEtiquetas" class="row mt-1">
                                     <div class="col-12">
                                         <div class="alert alert-danger p-2" role="alert" id="PdfAlerta" style="display: none">
                                         </div>
                                         <h5 class="text-center" id="TituloEtiqueta"></h5>
                                     </div>
-                                    <div class="col-3" id="ContenedorSociedad">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="Sociedad">Logo</label>
-                                                <select class="form-select" id="Sociedad" data-choices="data-choices" size="1" required="required" name="organizerSingle" data-options='{"removeItemButton":true,"placeholder":true}'>
-                                                    <option value="" disabled>Selecciona una Opci&oacute;n</option>
-                                                    <option value="FMX">Fibremex</option>
-                                                    <option value="OPT">Optronics</option>
-                                                </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-3" id="ContenedorCantidadEtiquetas">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="CantidadEtiquetas">Cantidad de Etiquetas  </label>
-                                            <input class="form-control" oninput="RegexNumeros(this)" id="CantidadEtiquetas" type="number" placeholder="0" />
-                                            <small id="ErrorCantidadEtiquetas" class="text-danger"></small>
-                                        </div>
-                                    </div>
-                                    <div class="col-3" id="ContenedorPaginaInicio">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="PaginaInicio">Etiqueta inicio </label>
-                                            <input class="form-control" id="PaginaInicio" oninput="RegexNumeros(this)" type="number" placeholder="0" />
-                                            <small id="ErrorPaginaInicio" class="text-danger"></small>
-                                        </div>
-                                    </div>
-                                    <div class="col-3" id="ContenedorPaginaFin">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="PaginaFin">Etiqueta fin  </label>
-                                            <input class="form-control" id="PaginaFin" oninput="RegexNumeros(this)" type="number" placeholder="0" />
-                                            <small id="ErrorPaginaFin" class="text-danger"></small>
-                                        </div>
-                                    </div>
-                                    <div class="col-3" id="ContenedorCantidadCajas">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="CantidadCajas">Cantidad de Cajas  </label>
-                                            <input class="form-control" id="CantidadCajas" oninput="CantidadFinal();RegexNumeros(this);" type="number" placeholder="0" />
-                                            <small id="ErrorCantidadCajas" class="text-danger"></small>
-                                        </div>
-                                    </div>
-                                    <div class="col-3" id="ContenedorCantidadBolsa">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="CantidadBolsa">Cantidad por bolsa o caja  </label>
-                                            <input class="form-control" id="CantidadBolsa" oninput="RegexNumeros(this)" type="number" placeholder="0" value="1" />
-                                            <small id="ErrorCantidadBolsa" class="text-danger"></small>
-                                        </div>
-                                    </div>
-                                    <div class="col-3" id="ContenedorPorcentajeA" style="display: none">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="PorcentajeA">Medida 1  </label>
-                                            <input class="form-control" id="PorcentajeA" type="number" oninput="ValorDivisor(this, 'A')" placeholder="0" min="1" max="100" value="50" />
-                                            <small id="ErrorPorcentajeA" class="text-danger"></small>
-                                        </div>
-                                    </div>
-                                    <div class="col-3" id="ContenedorPorcentajeB" style="display: none">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="PorcentajeB">Medida 2  </label>
-                                            <input class="form-control" id="PorcentajeB" type="number" oninput="ValorDivisor(this, 'B')" placeholder="0" min="1" max="100" value="50" />
-                                            <small id="ErrorPorcentajeB" class="text-danger"></small>
-                                        </div>
-                                    </div>
-                                    <div class="col-3" id="ContenedorPorcentajeC" style="display: none">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="PorcentajeC">Medida 3  </label>
-                                            <input class="form-control" id="PorcentajeC" type="number" oninput="ValorDivisor(this, 'C')" placeholder="0" min="1" max="100" value="50" />
-                                            <small id="ErrorPorcentajeC" class="text-danger"></small>
-                                        </div>
-                                    </div>
-                                    <div class="col-3" id="ContenedorPorcentajeD" style="display: none">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="PorcentajeD">Medida 4  </label>
-                                            <input class="form-control" id="PorcentajeD" type="number" oninput="ValorDivisor(this, 'D')" placeholder="0" min="1" max="100" value="50" />
-                                            <small id="ErrorPorcentajeD" class="text-danger"></small>
-                                        </div>
-                                    </div>
-                                    <div class="col-3" id="ContenedorInsercion" style="display: none">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="Insercion">CONECTORIZACI&Oacute;N A</label>
-                                            <!--<input class="form-control" id="Insercion" type="number" placeholder="0" value="0.50" />-->
-                                            <select class="form-select" id="Insercion">
-                                                <option value="" disabled selected>Selecciona una opci&oacute;n</option>
-                                                <option value="MUPC">MULTIMODO (MM) PC</option>
-                                                <option value="MOUPC">MONOMODO (SM) UPC</option>
-                                                <option value="MOAPC">MONOMODO (SM) APC</option>
-                                                <option value="MULMTRJ">ESPECIALES MULTIMODO MTRJ</option>
-                                                <option value="MONMTRJ">ESPECIALES MONOMODO MTRJ</option>
-                                                <option value="MUMPO">MULTIMODO MPO (UPC)</option>
-                                                <option value="MOMPO">MONOMODO MPO (UPC-APC)</option>
-                                                <option value="MUMTP">MULTIMODO MTP Est&aacute;ndar (UPC)</option>
-                                                <option value="MOMTP">MONOMODO MTP Est&aacute;ndar (UPC-APC)</option>
-                                                <option value="MUMTP_PRO">MULTIMODO MTP-PRO (UPC)</option>
-                                                <option value="MOMTP_PRO">MONOMODO MTR-PRO (UPC-APC)</option>
-                                            </select>
-                                            <small id="ErrorInsercion" class="text-danger"></small>
-                                        </div>
-                                    </div>
-                                    <div class="col-3" id="ContenedorRetorno" style="display: none">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="Retorno">CONECTORIZACI&Oacute;N B</label>
-                                            <select class="form-select" id="Retorno">
-                                                <option value="" selected disabled>Selecciona una opci&oacute;n</option>
-                                                <option value="MUPC">MULTIMODO (MM) PC</option>
-                                                <option value="MOUPC">MONOMODO (SM) UPC</option>
-                                                <option value="MOAPC">MONOMODO (SM) APC</option>
-                                                <option value="MULMTRJ">ESPECIALES MULTIMODO MTRJ</option>
-                                                <option value="MONMTRJ">ESPECIALES MONOMODO MTRJ</option>
-                                                <option value="MUMPO">MULTIMODO MPO (UPC)</option>
-                                                <option value="MOMPO">MONOMODO MPO (UPC-APC)</option>
-                                                <option value="MUMTP">MULTIMODO MTP Est&aacute;ndar (UPC)</option>
-                                                <option value="MOMTP">MONOMODO MTP Est&aacute;ndar (UPC-APC)</option>
-                                                <option value="MUMTP_PRO">MULTIMODO MTP-PRO (UPC)</option>
-                                                <option value="MOMTP_PRO">MONOMODO MTR-PRO (UPC-APC)</option>
-                                            </select>
-                                            <small id="ErrorRetorno" class="text-danger"></small>
-                                        </div>
+                                    <div class="row" id="CamposEtiquetas">
+
                                     </div>
                                     <input type="hidden" id="CodigoCliente">
-                                    <div class="col-3" id="ContenedorBoton">
-                                        <div class="mt-3">
-                                            <button type="button" id="BtnGenerar" class="btn btn-phoenix-primary me-1 mb-1">Generar</button>
-                                        </div>
-                                    </div>
                                 </div>
                                 <!--PDF Etiquetas-->
                                 <div class="modal-header bg-dark p-2">
@@ -251,6 +130,8 @@
         $('#NumeroOrden').trigger('input');
     }
     function SeleccionarNumOrden(OF){
+        CamposEtiquetas = document.getElementById('CamposEtiquetas');
+        CamposEtiquetas.innerHTML = "";
         $('#ListaBusquedas').hide();
         $('#ModalDetalle').modal('show');
         $('#ModalDetalleLabel').html('Etiquetas Orden de Fabricación '+OF);
@@ -261,41 +142,7 @@
         $('#Etiquetaitems').hide();
         $('#TipoEtiqueta').html("");
         $('#ListaOpciones').html("");
-        InputPaginaFin = document.getElementById("PaginaFin");
-        InputPaginaInicio = document.getElementById("PaginaInicio");
-        InputCantidadEtiquetas = document.getElementById("CantidadEtiquetas");
-        InputRetorno = document.getElementById("Retorno");
-        InputInsercion = document.getElementById("Insercion");
-        InputCantidadCajas = document.getElementById("CantidadCajas");
-        ContenedorInsercion = document.getElementById("ContenedorInsercion");
-        ContenedorRetorno = document.getElementById("ContenedorRetorno");
-        ContenedorCantidadBolsa = document.getElementById("ContenedorCantidadBolsa");
-        ContenedorCantidadCajas = document.getElementById("ContenedorCantidadCajas");
-        ContenedorPaginaFin = document.getElementById("ContenedorPaginaFin");
-        ContenedorPaginaInicio = document.getElementById("ContenedorPaginaInicio");
-        ContenedorSociedad = document.getElementById("ContenedorSociedad");
-        ContenedorPorcentajeA = document.getElementById("ContenedorPorcentajeA");
-        ContenedorPorcentajeB = document.getElementById("ContenedorPorcentajeB");
-        ContenedorPorcentajeC = document.getElementById("ContenedorPorcentajeC");
-        ContenedorPorcentajeD = document.getElementById("ContenedorPorcentajeD");
-        ContenedorBoton = document.getElementById("ContenedorBoton");
-        ContenedorCantidadEtiquetas = document.getElementById("ContenedorCantidadEtiquetas");
 
-        InputRetorno = 20.0;
-        InputInsercion = 0.50;
-        ContenedorInsercion.style.display = "none";
-        ContenedorRetorno.style.display = "none";
-        ContenedorCantidadBolsa.style.display = "none";
-        ContenedorPaginaFin.style.display = "none";
-        ContenedorPaginaInicio.style.display = "none";
-        ContenedorSociedad.style.display = "none";
-        ContenedorPorcentajeA.style.display = "none";
-        ContenedorPorcentajeB.style.display = "none";
-        ContenedorPorcentajeC.style.display = "none";
-        ContenedorPorcentajeD.style.display = "none";
-        ContenedorBoton.style.display = "none";
-        ContenedorCantidadCajas.style.display = "none";
-        ContenedorCantidadEtiquetas.style.display = "none";
         document.getElementById('pdfIframe').src = "";
         document.getElementById('pdfIframe').style.display = "none";
         TextoDetallesOV = document.getElementById("TextoDetallesOV");
@@ -304,14 +151,12 @@
         TextoDetallesCliente.innerHTML = "";
         CodigoCliente = document.getElementById('CodigoCliente');
         CodigoCliente.value = "";
+        TituloEtiqueta = document.getElementById("TituloEtiqueta");
+        TituloEtiqueta.innerHTML = "";
         URLcontroller = '{{ route("Etiquetas.show", ":OF")}}'.replace(":OF", OF);
         fetch(URLcontroller)
         .then(response => response.json())
         .then(data => {
-            InputPaginaInicio.value = 1;
-            InputPaginaFin.value = data.CantidadTotal;
-            InputCantidadCajas.value = data.CantidadTotal;
-            CantidadEtiquetas.value = data.CantidadTotal;
             TextoDetallesOV.innerHTML = "Orden de Venta: "+data.OrdenVenta+ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+"Orden Fabricación: "+data.OrdenFabricacion;
             TextoDetallesCliente.innerHTML = data.Cliente+"   ("+data.CodigoCliente+")";
             CodigoCliente.value = data.CodigoCliente;
@@ -325,143 +170,45 @@
         });
     }
     function Etiqueta(TIPOETIQUETA){
+        CamposEtiquetas = document.getElementById('CamposEtiquetas');
+        CamposEtiquetas.innerHTML = "";
+
         InputPDFOrdenFabricacion = document.getElementById("PDFOrdenFabricacion");
-        InputCantidadBolsa = document.getElementById("CantidadBolsa");
-        InputPaginaFin = document.getElementById("PaginaFin");
-        InputPaginaInicio = document.getElementById("PaginaInicio");
-        InputSociedad = document.getElementById("Sociedad");
-        InputPorcentajeA = document.getElementById("PorcentajeA");
-        InputPorcentajeB = document.getElementById("PorcentajeB");
-        InputPorcentajeC = document.getElementById("PorcentajeC");
-        InputPorcentajeD = document.getElementById("PorcentajeD");
-        InputRetorno = document.getElementById("Retorno");
-        InputInsercion = document.getElementById("Insercion");
-        InputCantidadCajas = document.getElementById("CantidadCajas");
-
-        InputCantidadBolsa.value = 1;
-        InputPorcentajeA.value = 50;
-        InputPorcentajeB.value = 50;
-        InputPorcentajeC.value = 50;
-        InputPorcentajeD.value = 50;
-        InputRetorno.value = 20.0;
-        InputInsercion.value = 0.50;
-        InputCantidadCajas.value = 1;
-
-        ContenedorInsercion = document.getElementById("ContenedorInsercion");
-        ContenedorRetorno = document.getElementById("ContenedorRetorno");
-        ContenedorCantidadBolsa = document.getElementById("ContenedorCantidadBolsa");
-        ContenedorPaginaFin = document.getElementById("ContenedorPaginaFin");
-        ContenedorPaginaInicio = document.getElementById("ContenedorPaginaInicio");
-        ContenedorSociedad = document.getElementById("ContenedorSociedad");
-        ContenedorPorcentajeA = document.getElementById("ContenedorPorcentajeA");
-        ContenedorPorcentajeB = document.getElementById("ContenedorPorcentajeB");
-        ContenedorPorcentajeC = document.getElementById("ContenedorPorcentajeC");
-        ContenedorPorcentajeD = document.getElementById("ContenedorPorcentajeD");
-        ContenedorBoton = document.getElementById("ContenedorBoton");
-        ContenedorCantidadEtiquetas = document.getElementById("ContenedorCantidadEtiquetas");
-        ContenedorCantidadCajas = document.getElementById("ContenedorCantidadCajas");
-
         TituloEtiqueta = document.getElementById("TituloEtiqueta");
-        ContenedorInsercion.style.display = "none";
-        ContenedorRetorno.style.display = "none";
-        ContenedorPaginaFin.style.display = "none";
-        ContenedorPaginaInicio.style.display = "none";
-        ContenedorBoton.style.display = "none";
-        ContenedorSociedad.style.display = "none";
-        ContenedorCantidadEtiquetas.style.display = "none";
-        ContenedorCantidadBolsa.style.display = "none";
-        ContenedorPorcentajeA.style.display = "none";
-        ContenedorPorcentajeB.style.display = "none";
-        ContenedorPorcentajeC.style.display = "none";
-        ContenedorPorcentajeD.style.display = "none";
-        ContenedorCantidadCajas.style.display = "none";
-        BtnGenerar = document.getElementById("BtnGenerar");
-        BtnGenerar.onclick = "";
+        TituloEtiqueta.innerHTML = "";
         $('#PdfAlerta').hide();
         $('#Etiquetaitems').hide();
         document.getElementById('TipoEtiqueta').blur();
-        BtnGenerar.onclick = function() {GenerarEtiquetas(InputPDFOrdenFabricacion.value,TIPOETIQUETA);};
         document.getElementById('pdfIframe').src = "";
         document.getElementById('pdfIframe').style.display = "none";
-        switch(TIPOETIQUETA.value){
-            case 'ETIQ1':
-                ContenedorPaginaFin.style.display = "";
-                ContenedorPaginaInicio.style.display = "";
-                ContenedorBoton.style.display = "";
-                TituloEtiqueta.innerHTML = "ETIQUETA ESPECIAL HUAWEI";
-                break;
-            case 'ETIQ2':
-                ContenedorPaginaFin.style.display = "";
-                ContenedorPaginaInicio.style.display = "";
-                ContenedorBoton.style.display = "";
-                TituloEtiqueta.innerHTML = "ETIQUETA DE BANDERILLA QR GENERAL";
-                break;
-            case 'ETIQ3':
-                ContenedorPaginaFin.style.display = "";
-                ContenedorPaginaInicio.style.display = "";
-                ContenedorBoton.style.display = "";
-                TituloEtiqueta.innerHTML = "ETIQUETA DE BANDERILLA QR NÚMERO ESPECIAL";
-                break;
-            case 'ETIQ4':
-                ContenedorCantidadEtiquetas.style.display = "";
-                ContenedorBoton.style.display = "";
-                TituloEtiqueta.innerHTML = "ETIQUETA DE BOLSA JUMPER";
-                break;
-            case 'ETIQ4CEDIS':
-                ContenedorCantidadEtiquetas.style.display = "";
-                ContenedorBoton.style.display = "";
-                TituloEtiqueta.innerHTML = "ETIQUETA DE BOLSA JUMPER";
-                break;
-            case 'ETIQ5':
-                ContenedorSociedad.style.display = "";
-                ContenedorCantidadEtiquetas.style.display = "";
-                ContenedorCantidadBolsa.style.display = "";   ContenedorSociedad.style.display = "";
-                ContenedorCantidadEtiquetas.style.display = "";
-                ContenedorCantidadBolsa.style.display = "";
-                ContenedorBoton.style.display = "";
-                TituloEtiqueta.innerHTML = "ETIQUETA DE NÚMERO DE PIEZAS";
-                break;
-            case 'ETIQ6':
-                ContenedorPaginaInicio.style.display = "";
-                ContenedorPaginaFin.style.display = "";
-                ContenedorBoton.style.display = "";
-                ContenedorInsercion.style.display = "";
-                ContenedorRetorno.style.display = "";
-                TituloEtiqueta.innerHTML = "ETIQUETA DE TRAZABILIDAD MPO";
-                break;
-            case 'ETIQ7':
-                ContenedorCantidadEtiquetas.style.display = "";
-                ContenedorBoton.style.display = "";
-                TituloEtiqueta.innerHTML = "ETIQUETA DE INYECCIÓN";
-                break;
-            case 'ETIQ8':
-                ContenedorCantidadEtiquetas.style.display = "";
-                ContenedorBoton.style.display = "";
-                ContenedorPorcentajeA.style.display = "";
-                ContenedorPorcentajeB.style.display = "";
-                ContenedorPorcentajeC.style.display = "";
-                ContenedorPorcentajeD.style.display = "";
-                TituloEtiqueta.innerHTML = "ETIQUETA DE DIVISOR";
-                break;
-            case 'ETIQ9':
-                ContenedorPaginaFin.style.display = "";
-                ContenedorPaginaInicio.style.display = "";
-                ContenedorCantidadBolsa.style.display = "";
-                ContenedorCantidadCajas.style.display = "";
-                ContenedorBoton.style.display = "";
-                TituloEtiqueta.innerHTML = "ETIQUETA DE CAJA HUAWEI";
-                break;
-            case 'ETIQ10':
-                ContenedorPaginaFin.style.display = "";
-                ContenedorPaginaInicio.style.display = "";
-                ContenedorCantidadBolsa.style.display = "";
-                ContenedorCantidadCajas.style.display = "";
-                ContenedorBoton.style.display = "";
-                TituloEtiqueta.innerHTML = "ETIQUETA DE CAJA NOKIA";
-                break;
-            default:
-                break;
-        }
+        InputCodigoCliente = document.getElementById("CodigoCliente").value;
+        const payload = {
+            TipoEtiqueta: TIPOETIQUETA.value,
+            OrdenFabricacion: InputPDFOrdenFabricacion.value,
+            CodigoCliente: InputCodigoCliente,
+        };
+        URLcontroller = '{{ route("Etiquetas.Campos") }}';
+        fetch(URLcontroller, {
+            method: 'POST',
+            credentials: 'same-origin', // importante para enviar cookies de sesión
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': window.CSRF_TOKEN
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            TituloEtiqueta.innerHTML = data.Titulo;
+            CamposEtiquetas.innerHTML = data.Menu;
+            BtnGenerar = document.getElementById('BtnGenerar');
+            BtnGenerar.onclick = function() {GenerarEtiquetas(InputPDFOrdenFabricacion.value,TIPOETIQUETA);};
+
+        })
+        .catch(err => {
+            //console.error('Error en la petición:', err);
+        });
     }
     function GenerarEtiquetas(OF,TipoEtiqueta){
         InputPDFOrdenFabricacion = document.getElementById("PDFOrdenFabricacion");
@@ -478,23 +225,48 @@
         CantidadEtiquetas = document.getElementById("CantidadEtiquetas");
         InputRetorno = document.getElementById("Retorno");
         InputInsercion = document.getElementById("Insercion");
+        InputTipoDistribuidor = document.getElementById("TipoDistribuidor");
+        InputMenuDistribuidor = document.getElementById("MenuDistribuidor");
         PdfAlerta = document.getElementById("PdfAlerta");
         InputTipoEtiqueta = document.getElementById("TipoEtiqueta").value;
         document.getElementById('pdfIframe').src = "";
-
         //Errores
         ErrorPaginaFin = document.getElementById('ErrorPaginaFin');
-        ErrorPaginaFin.innerHTML = "";
+        if (ErrorPaginaFin) {
+            ErrorPaginaFin.innerHTML = "";
+        }
         ErrorPaginaInicio = document.getElementById('ErrorPaginaInicio');
-        ErrorPaginaInicio.innerHTML = "";
+        if (ErrorPaginaInicio) {
+            ErrorPaginaInicio.innerHTML = "";
+        }
         ErrorCantidadBolsa = document.getElementById('ErrorCantidadBolsa');
-        ErrorCantidadBolsa.innerHTML = "";
+        if (ErrorCantidadBolsa) {
+            ErrorCantidadBolsa.innerHTML = "";
+        }
         ErrorCantidadEtiquetas = document.getElementById('ErrorCantidadEtiquetas');
-        ErrorCantidadEtiquetas.innerHTML = "";
+        if (ErrorCantidadEtiquetas) {
+            ErrorCantidadEtiquetas.innerHTML = "";
+        }
         ErrorInsercion = document.getElementById('ErrorInsercion');
-        ErrorInsercion.innerHTML = "";
+        if (ErrorInsercion) {
+            ErrorInsercion.innerHTML = "";
+        }
         ErrorRetorno = document.getElementById('ErrorRetorno');
-        ErrorRetorno.innerHTML = "";
+        if (ErrorRetorno) {
+            ErrorRetorno.innerHTML = "";
+        }
+        ErrorCantidadCajas = document.getElementById("ErrorCantidadCajas");
+        if (ErrorCantidadCajas) {
+            ErrorCantidadCajas.innerHTML = "";
+        }
+        ErrorTipoDistribuidor = document.getElementById("ErrorTipoDistribuidor");
+        if (ErrorTipoDistribuidor) {
+            ErrorTipoDistribuidor.innerHTML = "";
+        }
+        ErrorMenuDistribuidor = document.getElementById("ErrorMenuDistribuidor");
+        if (ErrorMenuDistribuidor) {
+            ErrorMenuDistribuidor.innerHTML = "";
+        }
         if(InputTipoEtiqueta == "ETIQ1" || InputTipoEtiqueta == "ETIQ3"){
             if(InputPaginaInicio.value == 0 || InputPaginaInicio.value == ""){
                 ErrorPaginaInicio.innerHTML = "Ingresa un valor mayor a 0.";
@@ -505,10 +277,10 @@
                 return 0;
             }
             if(InputPaginaFin.value<InputPaginaInicio.value){
-                ErrorPaginaInicio.innerHTML = "El valor nicio no puede ser mayor a valor fin.";
+                ErrorPaginaInicio.innerHTML = "El valor inicio no puede ser mayor a valor fin.";
                 return 0;
             }
-        }else if(InputTipoEtiqueta == "ETIQ2"){
+        }else if(InputTipoEtiqueta == "ETIQ2" || InputTipoEtiqueta == "ETIQ15"){
             if(InputPaginaInicio.value == 0 || InputPaginaInicio.value == ""){
                 ErrorPaginaInicio.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
@@ -518,12 +290,9 @@
                 return 0;
             }
             if(InputPaginaFin.value<InputPaginaInicio.value){
-                ErrorPaginaInicio.innerHTML = "El valor nicio no puede ser mayor a valor fin.";
+                ErrorPaginaInicio.innerHTML = "El valor inicio no puede ser mayor a valor fin.";
                 return 0;
             }
-
-        }else if(InputTipoEtiqueta == "ETIQ3"){
-
 
         }else if(InputTipoEtiqueta == "ETIQ5"){
             if(CantidadEtiquetas.value == 0 || CantidadEtiquetas.value == ""){
@@ -534,7 +303,7 @@
                 ErrorCantidadBolsa.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
             }
-        }else if(InputTipoEtiqueta == "ETIQ6"){
+        }else if(InputTipoEtiqueta == "ETIQ6" || InputTipoEtiqueta == "ETIQ13"){
             if(InputInsercion.value == ""){
                 ErrorInsercion.innerHTML = "Selecciona una opción valida";
                 return 0;
@@ -545,31 +314,96 @@
                 return 0;
             }
         }else if(InputTipoEtiqueta == "ETIQ9"){
-
-
+             if(InputPaginaInicio.value == 0 || InputPaginaInicio.value == ""){
+                ErrorPaginaInicio.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+            if(InputPaginaFin.value == 0 || InputPaginaFin.value == ""){
+                ErrorPaginaFin.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+            if(InputPaginaFin.value<InputPaginaInicio.value){
+                ErrorPaginaInicio.innerHTML = "El valor inicio no puede ser mayor a valor fin.";
+                return 0;
+            }
+            if(CantidadCajas.value == 0 || CantidadCajas.value == ""){
+                ErrorCantidadCajas.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
         }else if(InputTipoEtiqueta == "ETIQ10"){
+             if(InputPaginaInicio.value == 0 || InputPaginaInicio.value == ""){
+                ErrorPaginaInicio.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+            if(InputPaginaFin.value == 0 || InputPaginaFin.value == ""){
+                ErrorPaginaFin.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+            if(InputPaginaFin.value<InputPaginaInicio.value){
+                ErrorPaginaInicio.innerHTML = "El valor inicio no puede ser mayor a valor fin.";
+                return 0;
+            }
+            if(CantidadCajas.value == 0 || CantidadCajas.value == ""){
+                ErrorCantidadCajas.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
 
-
+        }else if(InputTipoEtiqueta == "ETIQ11" || InputTipoEtiqueta == "ETIQ12"){
+            if(CantidadEtiquetas.value == 0 || CantidadEtiquetas.value == ""){
+                ErrorCantidadEtiquetas.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+            if(CantidadBolsa.value == 0 || CantidadBolsa.value == ""){
+                ErrorCantidadBolsa.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+        }else if(InputTipoEtiqueta == "ETIQ14"){
+            if(InputPaginaInicio.value == 0 || InputPaginaInicio.value == ""){
+                ErrorPaginaInicio.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+            if(InputPaginaFin.value == 0 || InputPaginaFin.value == ""){
+                ErrorPaginaFin.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+            if(InputPaginaFin.value<InputPaginaInicio.value){
+                ErrorPaginaInicio.innerHTML = "El valor inicio no puede ser mayor a valor fin.";
+                return 0;
+            }
+            if(InputTipoDistribuidor.value == null || InputTipoDistribuidor.value == ""){
+                ErrorTipoDistribuidor.innerHTML = "Campo requerido";
+                return 0;
+            }
+        }else if(InputTipoEtiqueta == "ETIQ16"){
+            if(CantidadEtiquetas.value == 0 || CantidadEtiquetas.value == ""){
+                ErrorCantidadEtiquetas.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
+        }else if(InputTipoEtiqueta == "ETIQ17" || InputTipoEtiqueta == "ETIQ18" || InputTipoEtiqueta == "ETIQ19" || InputTipoEtiqueta == "ETIQ20" || InputTipoEtiqueta == "ETIQ21"){
+            if(InputMenuDistribuidor.value == null || InputMenuDistribuidor.value == ""){
+                ErrorMenuDistribuidor.innerHTML = "Campo requerido.";
+                return 0;
+            }
         }
         const URLcontroller = '{{ route("Etiquetas.Generar") }}';
         const payload = {
-            PDFOrdenFabricacion: InputPDFOrdenFabricacion.value,
-            CantidadBolsa: InputCantidadBolsa.value,
-            PaginaFin: InputPaginaFin.value,
-            PaginaInicio: InputPaginaInicio.value,
-            Sociedad: InputSociedad.value,
-            CantidadEtiquetas: CantidadEtiquetas.value,
-            OF:OF,
-            TipoEtiqueta:InputTipoEtiqueta,
-            PorcentajeA:InputPorcentajeA.value,
-            PorcentajeB:InputPorcentajeB.value,
-            PorcentajeC:InputPorcentajeC.value,
-            PorcentajeD:InputPorcentajeD.value,
-            CodigoCliente:InputCodigoCliente.value,
-            Insercion:InputInsercion.value,
-            Retorno:InputRetorno.value,
-            CantidadCajas:InputCantidadCajas.value,
-
+            PDFOrdenFabricacion: InputPDFOrdenFabricacion?.value || 0,
+            CantidadBolsa: InputCantidadBolsa?.value || 0,
+            PaginaFin: InputPaginaFin?.value || 0,
+            PaginaInicio: InputPaginaInicio?.value || 0,
+            Sociedad: InputSociedad?.value || 0,
+            CantidadEtiquetas: CantidadEtiquetas?.value || 0,
+            OF: OF, // ya es una variable, no hace falta validarla aquí
+            TipoEtiqueta: InputTipoEtiqueta || 0,
+            PorcentajeA: InputPorcentajeA?.value || 0,
+            PorcentajeB: InputPorcentajeB?.value || 0,
+            PorcentajeC: InputPorcentajeC?.value || 0,
+            PorcentajeD: InputPorcentajeD?.value || 0,
+            CodigoCliente: InputCodigoCliente?.value || 0,
+            Insercion: InputInsercion?.value || 0,
+            Retorno: InputRetorno?.value || 0,
+            CantidadCajas: InputCantidadCajas?.value || 0,
+            TipoDistribuidor:InputTipoDistribuidor?.value || 0,
         };
         SpinnerInsert('PdfEspinner');
         fetch(URLcontroller, {
@@ -610,7 +444,7 @@
         })
         .catch(err => {
             document.getElementById('PdfEspinner').innerHTML = "";
-            $('#ModalDetalle').modal('hide');
+            //$('#ModalDetalle').modal('hide');
             error('Ocurrió un error', err);
             document.getElementById('pdfIframe').style.display = "none";
             $('#TextoSelecciona').show();
@@ -688,6 +522,15 @@
     function CantidadFinal() {
         const valor = document.getElementById("CantidadCajas").value;
         document.getElementById("PaginaFin").value = valor;
-  }
+    }
+    function mostrarSeleccion(select) {
+        // Obtener el texto de la opción seleccionada
+        Titulo = document.getElementById("TituloEtiqueta");
+        Tituloinicio = document.getElementById("TipoEtiqueta");
+        const texto = select.options[select.selectedIndex].text;
+        const texto1 = Tituloinicio.options[Tituloinicio.selectedIndex].text;
+        Titulo.innerHTML = texto1+" "+ texto;
+    }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
 @endsection

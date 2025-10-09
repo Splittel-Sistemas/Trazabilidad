@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=0.8, user-scalable=no">
     <link rel="shortcut icon" type="image/x-icon" href="{{asset('imagenes/splittel.png') }}">
     <title>Login</title>
     <script src="//code.jquery.com/jquery-3.6.0.min.js"></script>
