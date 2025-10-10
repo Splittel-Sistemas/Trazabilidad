@@ -5,6 +5,12 @@
     border-radius: 5px;
     overflow-y: auto;
 }
+@media (max-width: 575.98px) {
+    #container_table_OV,
+    #container_table_OV_Vencidas {
+        height: 35rem; /* aumenta la altura */
+    }
+}
 #container_table_OF_migrados,#container_table_OF_migrados_vencidos{
     height: 23rem;
     border: solid 1px;

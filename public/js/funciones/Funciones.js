@@ -64,6 +64,31 @@ function error(titulo,mensaje){
         }, 300); // tiempo para la animación fade
     }, 20000);
 }
+function warning(titulo,mensaje){
+    const contenedor = document.getElementById('Notificaciones');
+    const toastWrapper = document.createElement('div');
+    toastWrapper.className = 'position-relative mb-2';
+    toastWrapper.innerHTML = `
+          <div class="d-flex">
+                <div class="toast show align-items-center text-white bg-warning border-0 position-relative" role="alert" data-bs-autohide="false" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                           <strong>${titulo}</strong><br>
+                            ${mensaje}
+                        </div>
+                        <button class="btn btn-close-white position-absolute top-2 end-0 m-0" type="button" data-bs-dismiss="toast" aria-label="Close"><span class="uil uil-times fs-2"></span></button>
+                    </div>
+              </div>
+          </div>
+    `;
+    contenedor.appendChild(toastWrapper);
+    setTimeout(() => {
+        toastWrapper.classList.add('fade'); // efecto visual
+        setTimeout(() => {
+            toastWrapper.remove();
+        }, 300); // tiempo para la animación fade
+    }, 20000);
+}
 function errorBD(){
     error("¡Ocurrio un Error!","revisa tu conexión, si el problema persiste contacta a tu supervisor o a TI!");
     /*Swal.fire({

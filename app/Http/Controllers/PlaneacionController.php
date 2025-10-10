@@ -270,7 +270,7 @@ class PlaneacionController extends Controller
                     foreach ($datos as $index => $orden) {
                         if($orden['Estatus']>0){
                             $banderaOV=1;
-                            $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)">
+                            $tablaOrdenes .= '<tr class="bg-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)">
                                             <td role="button" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '" onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] .', `' . $orden['Cliente'] . '`)">
                                                 ' . $orden['OV'] . " - " . $orden['Cliente'] . '
                                             </td>
@@ -315,7 +315,7 @@ class PlaneacionController extends Controller
                     foreach ($datos as $index => $orden) {
                         if($orden['Estatus']>0){
                              $banderaOV=1;
-                            $tablaOrdenes .= '<tr class="table-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)">
+                            $tablaOrdenes .= '<tr class="bg-light" id="details' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)">
                                                 <td role="button" data-bs-toggle="collapse" data-bs-target="#details' . $index . '" aria-expanded="false" aria-controls="details' . $index . '" onclick="loadContent(\'details' . $index . '\', ' . $orden['OV'] .', `' . $orden['Cliente'] . '`)">
                                                     ' . $orden['OV'] . " - " . $orden['Cliente'] . '
                                                 </td>
@@ -598,11 +598,11 @@ class PlaneacionController extends Controller
                         }  
                         $tabla .= '></td>
                             <td class="text-center">
-                                <button type="button" '.$disabled.' class="btn btn-sm btn-danger">
-                                    <i class="fa fa-arrow-left"></i> Cancelar
-                                </button>
                                 <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm float-end btn-primary">
                                     <i class="fa fa-eye"></i> Detalles
+                                </button>
+                                <button type="button" '.$disabled.' class="btn btn-sm float-start btn-danger">
+                                    <i class="fa fa-arrow-left"></i> Cancelar
                                 </button>
                             </td>
                         </tr>';
@@ -616,11 +616,11 @@ class PlaneacionController extends Controller
                         }  
                         $tabla .= '></td>
                         <td class="text-center">
-                            <button type="button" '.$disabled.' class=" btn btn-sm btn-danger">
-                                <i class="fa fa-arrow-left"></i> Cancelar
-                            </button>
-                            <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm float-end btn-primary">
+                            <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm float-start btn-primary">
                                 <i class="fa fa-eye"></i> Detalles
+                            </button>
+                            <button type="button" '.$disabled.' class=" btn float-start btn-sm btn-danger">
+                                <i class="fa fa-arrow-left"></i> Cancelar
                             </button>
                         </td>
                         </tr>';
@@ -634,7 +634,7 @@ class PlaneacionController extends Controller
                             }  
                             $tabla .= '></td>
                             <td class="text-center">
-                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm float-end btn-primary">
+                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm float-start btn-primary">
                                     <i class="fa fa-eye"></i> Detalles
                                 </button>
                             </td>
@@ -671,7 +671,7 @@ class PlaneacionController extends Controller
             $status="success";
             foreach ($datos as $index => $orden) {
                 $datosSAP=$this->OrdenesVenta("","", $orden['OrdenVentaB']);
-                $tablaOrdenes .= '<tr class="table-light" id="detailsVencidos' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" >
+                $tablaOrdenes .= '<tr class="bg-light" id="detailsVencidos' . $index . 'cerrar" style="cursor: pointer;" draggable="true" ondragstart="drag(event)" >
                                     <td  role="button" data-bs-toggle="collapse" data-bs-target="#detailsVencidos' . $index . '" onclick="loadContentVencidas(\'detailsVencidos' . $index . '\', ' . $datosSAP[0]['OV'] .', `' . $datosSAP[0]['Cliente'] . '`)">
                                         ' . $datosSAP[0]['OV'] . " - " . $datosSAP[0]['Cliente'] . '
                                     </td>
@@ -844,27 +844,6 @@ class PlaneacionController extends Controller
     }
     public function OrdenFabricacionWhere($OrdenFabricacion,$Where){
         $schema = 'HN_OPTRONICS';
-        //Consulta a SAP para traer las partidas de una OV
-        /*$sql = "SELECT T2.\"ItemCode\" AS \"Articulo\", 
-                    T2.\"ProdName\" AS \"Descripcion\", 
-                    ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
-                    T2.\"DueDate\" AS \"Fecha entrega OF\", 
-                    T1.\"PoTrgNum\" AS \"Orden de F.\" ,
-                    T1.\"LineNum\" AS \"LineNum\",
-                    T2.\"CardCode\" AS \"Cliente\",
-                    CASE T2.\"Status\"
-                    	WHEN 'P' THEN 'Planeado'
-                    	WHEN 'R' THEN 'Liberado'
-                    	WHEN 'L' THEN 'Cerrado'
-                    	WHEN 'C' THEN 'Cancelado'
-                    END \"Estatus\"
-                    FROM {$schema}.\"ORDR\" T0
-                    INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
-                    LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"DocEntry\" = T2.\"OriginAbs\" AND T2.\"Status\" NOT IN ('C') AND T2.\"ItemCode\" = T1.\"ItemCode\"
-                    WHERE  (T2.\"Status\" = 'R' OR T2.\"Status\" = 'P' OR T2.\"Status\" = 'C' OR T2.\"Status\" = 'L')
-                    AND ".$Where."
-                    ORDER BY T1.\"PoTrgNum\""; 
-                //ORDER BY T1.\"VisOrder\"";*/
         $sql='SELECT T2."ItemCode" AS "Articulo", 
                     T2."ProdName" AS "Descripcion", 
                     ROUND(T2."PlannedQty", 0) AS "Cantidad OF", 
@@ -1022,7 +1001,7 @@ class PlaneacionController extends Controller
                                 <th class="table-active">Fecha Planeación</th>
                                 <td class="text-center">
                                     <div class="row d-flex justify-content-center">
-                                        <div class=" col-5 d-flex justify-content-center"">
+                                        <div class=" col-8 col-md-6 d-flex justify-content-center"">
                                             <div class="input-group text-center">
                                                     <input type="date" class="form-control form-control-sm " disabled id="fechaSeleccionada_'.$datos->OrdenFabricacion.'" value="'.$datos->FechaEntrega.'">
                                                     <button id="btnEditar_'.$datos->OrdenFabricacion.'" class="btn btn-outline-info btn-xs p-1" onclick="mostrarCalendario(\''.$datos->OrdenFabricacion.'\')"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -1054,7 +1033,7 @@ class PlaneacionController extends Controller
                             <tr>
                                 <th class="table-active">Responsable Corte</th>
                                 <td class="text-center d-flex justify-content-center">
-                                    <div class="col-6">
+                                    <div class="col-8 col-md-6">
                                         <select name="EncargadoCorteUpdate" id="EncargadoCorteUpdate" onChange="CambiarEstatusCorte(\''.$this->funcionesGenerales->encrypt($datos->ordenfabricacionid).'\',\'change\')" class="form-select form-select-sm border-primary w-100"';
                                         if($PartidasOFCount>0){
                                             $cadena.=' disabled ';
@@ -1120,11 +1099,11 @@ class PlaneacionController extends Controller
                         }  
                         $tabla .='></td>
                             <td class="text-center">
-                                <button type="button" '.$disabled .' class="btn btn-sm btn-danger">
-                                    <i class="fa fa-arrow-left"></i> Cancelar
-                                </button>
-                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn float-end btn-sm btn-primary">
+                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn float-strat btn-sm btn-primary">
                                     <i class="fa fa-eye"></i> Detalles
+                                </button>
+                                <button type="button" '.$disabled .' class="btn btn-sm float-start btn-danger">
+                                    <i class="fa fa-arrow-left"></i> Cancelar
                                 </button>
                             </td>
                         </tr>';
@@ -1138,11 +1117,11 @@ class PlaneacionController extends Controller
                         }  
                         $tabla .= '></td>
                         <td class="text-center">
-                            <button type="button" '.$disabled .' class="btn btn-sm btn-danger">
-                                <i class="fa fa-arrow-left"></i> Cancelar
-                            </button>
-                            <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm float-end btn-primary">
+                            <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm float-start btn-primary">
                                 <i class="fa fa-eye"></i> Detalles
+                            </button>
+                            <button type="button" '.$disabled .' class="btn btn-sm float-start btn-danger">
+                                <i class="fa fa-arrow-left"></i> Cancelar
                             </button>
                         </td>
                         </tr>';
@@ -1156,7 +1135,7 @@ class PlaneacionController extends Controller
                             }  
                             $tabla .= '></td>
                             <td>
-                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm float-end btn-primary">
+                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm float-start btn-primary">
                                     <i class="fa fa-eye"></i> Detalles
                                 </button>
                             </td>

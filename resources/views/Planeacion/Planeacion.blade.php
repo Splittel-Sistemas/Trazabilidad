@@ -12,7 +12,7 @@
     </div>
     <!-- Filtro por fecha -->
     <div class="row mb-2">
-        <div class="col-6">
+        <div class="col-12 col-sm-10 col-md-6">
             <div class="col-sm-12">
                 <div class="card border border-light ">
                   <div class="card-body p-2">
@@ -20,15 +20,15 @@
                         <div class="accordion-item border-top border-300 p-0">
                             <h4 class="accordion-header mx-2" id="headingOne">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltroOV" aria-expanded="true" aria-controls="collapseFiltroOV">
-                                Filtros <!--FechaOrden de Venta-->
+                                Filtros
                                 </button>
                             </h4>
-                            <div class="accordion-collapse collapse show" id="collapseFiltroOV" aria-labelledby="headingOne" data-bs-parent="#accordionFiltroOV">
+                            <div class="accordion-collapse collapse show pt-2" id="collapseFiltroOV" aria-labelledby="headingOne" data-bs-parent="#accordionFiltroOV">
                                 <div class="accordion-body pt-0">
                                     <form id="filtroForm" method="post" class="form-horizontal row g-3 needs-validation" novalidate="">
                                         @csrf
                                         <div class="row">
-                                            <div class="col-12 ">
+                                            <div class="col-12 mb-0 pb-0">
                                                 <h5 class="mt-2">Filtro por Fecha</h5>
                                                 <div class="row">
                                                     <div class=" col-6">
@@ -49,10 +49,10 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            <h5 class="mt-2">Filtro por Orden</h5>
+                                            <h5 class="mt-0 py-0">Filtro por Orden</h5>
                                             <div class="col-6">
                                                 <label class="form-label" for="TipoOrden">Tipo de Orden</label>
-                                                <select class="form-select" onchange="BuscarOrden();" id="TipoOrden" aria-label="Default select example">
+                                                <select class="form-select form-select-sm" onchange="BuscarOrden();" id="TipoOrden" aria-label="Default select example">
                                                     <option value="OV">Orden Venta</option>
                                                     <option value="OF">Orden Fabricaci&oacute;n</option>
                                                   </select>
@@ -115,7 +115,7 @@
                                         @foreach ($datos as $orden)
                                             @if($orden['Estatus']>0)
                                             @php $bandera=1; @endphp
-                                                <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true">
+                                                <tr class="bg-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true">
                                                     <td role="button" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" aria-expanded="false" aria-controls="details{{ $loop->index }}" onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, `{{ $orden['Cliente'] }}`)">
                                                         {{ $orden['OV']." - ".$orden['Cliente']}}
                                                     </td>
@@ -244,7 +244,7 @@
                                     </thead>
                                     <tbody id="table_OV_body_Vencidas">
                                         @foreach ($datos as $orden)
-                                            <tr class="table-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true">
+                                            <tr class="bg-light" id="details{{ $loop->index }}cerrar" style="cursor: pointer;" draggable="true">
                                                 <td role="button" data-bs-toggle="collapse" data-bs-target="#details{{ $loop->index }}" onclick="loadContent('details{{ $loop->index }}', {{ $orden['OV'] }}, `{{ $orden['Cliente'] }}`)">
                                                     {{ $orden['OV']." - ".$orden['Cliente']}}
                                                 </td>
@@ -324,7 +324,7 @@
         </div>
     </div>
     <!-- Modal Detalles Ordenes de Fabricacion-->
-    <div class="modal fade m-4" id="ModalOrdenesFabricacion" data-bs-focus="false" role="dialog" aria-labelledby="ModalOrdenesFabricacionLabel" aria-hidden="true" >
+    <div class="modal fade my-4" id="ModalOrdenesFabricacion" data-bs-focus="false" role="dialog" aria-labelledby="ModalOrdenesFabricacionLabel" aria-hidden="true" >
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-info">
@@ -346,6 +346,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     currentRequest = null;
+    currentRequestFiltroOF_table2 = null;
     $(document).ready(function() {
         $('#ElementAlert').toast('show');
         TablaOrdenFabricacion("{{$FechaFin}}");
@@ -391,43 +392,10 @@
                 }
             });
         });
-        /*$('#Filtro_buscarOV').on('input',function() {
-            RegexNumeros(document.getElementById('Filtro_buscarOV'));
-            OV=$('#Filtro_buscarOV').val();
-            if(CadenaVacia(OV)){
-                return 0;
-            }
-            if(OV.length<2){
-                $('#Filtro_fecha-btn').trigger('click');
-                return 0;
-            }else{$('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>Filtro: '+OV+'</p>');}
-            $.ajax({
-                url: "{{route('PlaneacionFOV')}}", 
-                type: 'PUT',
-                data: {
-                    OV: OV,
-                    _token: '{{ csrf_token() }}'  
-                },
-                beforeSend: function() {
-                    $('#table_OV_body').html("<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'><span class='visually-hidden'>Loading...</span></div></div></td></tr>")
-                    // You can display a loading spinner here
-                },
-                success: function(response) {
-                    if (response.status === 'success') {
-                        $('#filtro-fecha-Ov').html('Órdenes de Venta<br><p>Filtro: '+OV+'</p>');
-                        $('#table_OV_body').html(response.data);
-                    } else if(response.status==="empty") {
-                        $('#table_OV_body').html('<p>No existen registros para lo orden de venta '+OV+'</p>');
-                    }else{
-                        error("Ocurrio un error!....","Los datos no pudieron ser procesados correctamente");
-                    }
-                },
-                error: function(xhr, status, error) {
-                    //errorBD();
-                }
-            });
-        });*/
         $('#FiltroOF_table2').on('input',function() {
+            if (currentRequestFiltroOF_table2) {
+                currentRequestFiltroOF_table2.abort();
+            }
             RegexNumeros(document.getElementById('FiltroOF_table2'));
             FiltroOF_table2=$('#FiltroOF_table2').val();
             $('#FiltroOF_text').html('<p>Filtro: '+FiltroOF_table2+'</p>');
@@ -439,7 +407,7 @@
                 $('#FiltroOF_Fecha_table2').trigger('change');
                 return 0;
             }else{$('#FiltroOF_Fecha_table2').html('<br><p>Filtro: '+FiltroOF_table2+'</p>');}
-            $.ajax({
+            currentRequestFiltroOF_table2 = $.ajax({
                 url: "{{route('PlaneacionFOFOV')}}", 
                 type: 'GET',
                 data: {
@@ -715,10 +683,7 @@
                 DatosPlaneacion: JSON.stringify(Datosenviar),
                 _token: '{{ csrf_token() }}'  
             },
-            
             beforeSend: function() {
-                //$('#table_OV_body').html("<p align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
-                // You can display a loading spinner here
             },
             success: function(response) {
                 if (response.status === 'success') {
@@ -727,7 +692,7 @@
                         if(i==0){
                             OrdenFabricacion+=response.NumOF[i];
                         }else{
-                            OrdenFabricacion+=","+response.NumOF[i];
+                            OrdenFabricacion+=", "+response.NumOF[i];
                         }
                     }
                     if (modal.is(':visible')) {
@@ -903,34 +868,6 @@
             }
         }); 
     }
-    /*function CambiarEscaner(escaner,id){
-        escanear=escaner.checked;
-        $.ajax({
-            url: "{{route('CambiarEstatusEscaner')}}", 
-            type: 'POST',
-            data: {
-                Escanear: escanear,
-                Id: id,
-                _token: '{{ csrf_token() }}'  
-            },
-            beforeSend: function() {
-                //Cuerpo.html("<p colspan='100%' align='center'><img src='{{ asset('storage/ImagenesGenerales/ajax-loader.gif') }}' /></p>")
-                // You can display a loading spinner here
-            },
-            success: function(response) {
-                if(response.status=='success'){
-                    if(response.valor=='false'){
-                        success('Guardado correctamente!','Escáner desactivado!')
-                    }else{
-                        success('Guardado correctamente!','Escáner Activado!')
-                    }
-                }
-            },
-            error: function(xhr, status, error) {
-                error('Ocurrio un erro!', 'El Tipo Escaner no se pudo actualizar')
-            }
-        }); 
-    }*/
     function CambiarUrgencia(urgente,id){
         urgente=urgente.checked;
         $.ajax({
@@ -1000,10 +937,10 @@
     function PartidasOF_modal(fecha){
         TablaOrdenFabricacion(fecha.value);
     }
-    // Función para buscar una palabra en una tabla con clase 'table-light'
+    // Función para buscar una palabra en una tabla con clase 'bg-light'
     function buscarPalabraEnTabla(palabra) {
-        // Obtener todas las filas de la tabla con la clase 'table-light'
-        const filas = document.querySelectorAll('.table-light tbody tr');
+        // Obtener todas las filas de la tabla con la clase 'bg-light'
+        const filas = document.querySelectorAll('.bg-light tbody tr');
         
         // Iterar sobre cada fila
         filas.forEach(fila => {
@@ -1051,12 +988,7 @@
         $('#Error_'+OrdenFabricacion).html('');
         let fecha = document.getElementById('fechaSeleccionada_' + OrdenFabricacion).value;
         if (!fecha) {
-            Swal.fire({
-                title: 'Atención',
-                text: 'Por favor selecciona una fecha.',
-                icon: 'warning',
-                confirmButtonText: 'Cerrar'
-            });
+            warning("Atención ","Por favor selecciona una fecha.");
             return;
         }
         // Obtener la fecha actual en formato YYYY-MM-DD
@@ -1113,22 +1045,12 @@
                             document.getElementById('btnEditar_' + OrdenFabricacion).classList.remove('d-none');
                         },
                         error: function(xhr, status, error) {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'Hubo un problema al actualizar la fecha.',
-                                icon: 'error',
-                                confirmButtonText: 'Cerrar'
-                            });
+                            error('Error, ','Hubo un problema al actualizar la fecha.');
                             console.error('Error:', error);
                         }
                     });
                 } else {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'No se encontró el token CSRF.',
-                        icon: 'error',
-                        confirmButtonText: 'Cerrar'
-                    });
+                    error('Error, ','No se encontró el token CSRF.')
                 }
             }
         });
