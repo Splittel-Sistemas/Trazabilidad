@@ -1099,7 +1099,7 @@ class PlaneacionController extends Controller
                         }  
                         $tabla .='></td>
                             <td class="text-center">
-                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn float-strat btn-sm btn-primary">
+                                <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn float-start btn-sm btn-primary">
                                     <i class="fa fa-eye"></i> Detalles
                                 </button>
                                 <button type="button" '.$disabled .' class="btn btn-sm float-start btn-danger">

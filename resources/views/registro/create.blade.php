@@ -13,7 +13,6 @@
     align-items: center; /* Alinea el checkbox con el texto */
 }
 
-    
 </style>
 @section('content')
     <div class="breadcrumbs mb-4">
