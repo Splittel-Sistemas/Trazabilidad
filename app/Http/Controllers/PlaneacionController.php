@@ -597,7 +597,7 @@ class PlaneacionController extends Controller
                             $tabla .=' checked ';
                         }  
                         $tabla .= '></td>
-                            <td class="text-center">
+                            <td class="d-flex justify-content-center">
                                 <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm float-end btn-primary">
                                     <i class="fa fa-eye"></i> Detalles
                                 </button>
@@ -615,7 +615,7 @@ class PlaneacionController extends Controller
                             $tabla .=' checked ';
                         }  
                         $tabla .= '></td>
-                        <td class="text-center">
+                        <td class="d-flex justify-content-center">
                             <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm float-start btn-primary">
                                 <i class="fa fa-eye"></i> Detalles
                             </button>
@@ -633,9 +633,12 @@ class PlaneacionController extends Controller
                                 $tabla .=' checked ';
                             }  
                             $tabla .= '></td>
-                            <td class="text-center">
+                            <td class="d-flex justify-content-center">
                                 <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($dato['ordenfabricacion_id']).'\')" class="btn btn-sm float-start btn-primary">
                                     <i class="fa fa-eye"></i> Detalles
+                                </button>
+                                <button type="button" disabled class=" btn float-start btn-sm btn-danger">
+                                    <i class="fa fa-arrow-left"></i> Cancelar
                                 </button>
                             </td>
                         </tr>';
@@ -1098,7 +1101,7 @@ class PlaneacionController extends Controller
                             $tabla .=' checked ';
                         }  
                         $tabla .='></td>
-                            <td class="text-center">
+                            <td class="d-flex justify-content-center">
                                 <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn float-start btn-sm btn-primary">
                                     <i class="fa fa-eye"></i> Detalles
                                 </button>
@@ -1116,7 +1119,7 @@ class PlaneacionController extends Controller
                             $tabla .=' checked ';
                         }  
                         $tabla .= '></td>
-                        <td class="text-center">
+                        <td class="d-flex justify-content-center">
                             <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm float-start btn-primary">
                                 <i class="fa fa-eye"></i> Detalles
                             </button>
@@ -1134,9 +1137,12 @@ class PlaneacionController extends Controller
                                 $tabla .=' checked ';
                             }  
                             $tabla .= '></td>
-                            <td>
+                            <td class="d-flex justify-content-center">
                                 <button type="button" onclick="DetallesOrdenFabricacion(\''.$this->funcionesGenerales->encrypt($datos[$i]['ordenfabricacion_id']).'\')" class="btn btn-sm float-start btn-primary">
                                     <i class="fa fa-eye"></i> Detalles
+                                </button>
+                                <button type="button" disabled class="btn btn-sm float-start btn-danger">
+                                    <i class="fa fa-arrow-left"></i> Cancelar
                                 </button>
                             </td>
                         </tr>';
