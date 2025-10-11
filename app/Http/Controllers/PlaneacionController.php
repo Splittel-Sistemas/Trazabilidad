@@ -1105,7 +1105,7 @@ class PlaneacionController extends Controller
                                 <button type="button" '.$disabled .' class="btn btn-sm float-start btn-danger">
                                     <i class="fa fa-arrow-left"></i> Cancelar
                                 </button>
-                            </td>
+                            </td> 
                         </tr>';
                     }else if($countPartidasSinCortes == 0 AND $countdatosOrdenFabricacion->Corte == 0){
                         $tabla .= '<tr>
