@@ -963,7 +963,7 @@ class EtiquetasController extends Controller
             }
             $Descripcion = html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $OrdenVenta = $OrdenFabricacion->OrdenVenta;
-            $ValorMedicionA = "PERDIDA DE INSERCCION\n≤ ".$Insercion1." dB";
+            $ValorMedicionA = "PERDIDA DE INSERCION\n≤ ".$Insercion1." dB";
             if(!$BanderaDiferente){
                 $ValorMedicionA .= " / ".$Insercion2." dB";
             }
