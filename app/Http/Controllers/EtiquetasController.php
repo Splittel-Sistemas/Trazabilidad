@@ -787,7 +787,7 @@ class EtiquetasController extends Controller
                         $pdf->SetXY(3, 19);
                         $pdf->MultiCell(95, 0, $ParteNo, 0, 'L', 0, 1);
 
-                        $ParteNo = str_replace("OC ", "\nOC ", $NoPEDIDO);
+                        $ParteNo = str_ireplace("OC ", "\nOC ", $NoPEDIDO);
                         $pdf->SetFont('dejavusans', 'B', 7.5);
                         $pdf->SetXY(5, 32);
                         $pdf->MultiCell(24, 0, $ParteNo, 0, 'L', 0, 1);
@@ -2054,8 +2054,8 @@ class EtiquetasController extends Controller
             $pdf->SetLineWidth(0.4);
             for ($i=$PaginaInicio; $i<($PaginaFin+1); $i++) {
                 $pdf->AddPage('L', array(108,28));
-                $pdf->Rect(3, 3, 35 ,22);
-                $pdf->Rect(10, 3, 0 ,22);
+                //$pdf->Rect(3, 3, 35 ,22);
+                //$pdf->Rect(10, 3, 0 ,22);
                 $pdf->SetFont('helvetica', 'B',12);
                 $pdf->StartTransform();
                 $pdf->Rotate(90, 11, 17);
@@ -2064,12 +2064,12 @@ class EtiquetasController extends Controller
                 $pdf->StopTransform();
                 if($i<$PaginaFin){
                     $i++;
-                    $pdf->Rect(58, 3, 35 ,22);
-                    $pdf->Rect(65, 3, 0 ,22);
+                    //$pdf->Rect(58, 3, 35 ,22);
+                    //$pdf->Rect(65, 3, 0 ,22);
                     $pdf->SetFont('helvetica', 'B',12);
                     $pdf->StartTransform();
                     $pdf->Rotate(90, 58, 12);
-                    $pdf->SetXY(47, 13);
+                    $pdf->SetXY(47, 0);
                     $pdf->Cell(17.5, 4,"TUBO ".($i), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
                     $pdf->StopTransform();
                 }

@@ -257,7 +257,7 @@
         @endif
     });
     function refreshCsrfToken(Formulario) {
-        $.get("{{ route('UpdateToken') }}", function (data) {
+        $.get("{{--route('UpdateToken')--}}", function (data) {
             const newToken = data.token;
             // 1. Actualizar <meta name="csrf-token">
             $('meta[name="csrf-token"]').attr('content', newToken);
