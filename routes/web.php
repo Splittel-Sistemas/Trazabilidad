@@ -28,11 +28,7 @@ Route::get('/lineas/progreso', [HomeController::class, 'lineas'])->name('lineas.
 Route::get('/UpdateSession', [HomeController::class, 'UpdateSession'])->name('UpdateSession');
 
 //Retorna un nuevo token
-Route::get('/refresh-csrf', function () {
-    return response()->json([
-        'token' => csrf_token(),
-    ]);
-})->name('UpdateToken');
+Route::get('/refresh-csrf', function () {return response()->json(['token' => csrf_token(),]);})->name('UpdateToken');
 //Ruta Home
 Route::get('/', [HomeController::class, 'index'])->name('Home')->middleware('auth');
 Route::post('/Dashboard/Principal', [HomeController::class, 'DashboardPrincipal'])->name('DashboardPrincipal')->middleware('auth');
@@ -52,6 +48,7 @@ Route::post('/Planeacion/partidas/CorteEstatus', [PlaneacionController::class,'C
 Route::get('/Planeacion/detalles', [PlaneacionController::class,'PartidasOF_Detalles'])->name('PartidasOF_Detalles')->middleware('auth');
 Route::get('/Planeacion/PorcentajesPlaneacion', [PlaneacionController::class,'PorcentajesPlaneacion'])->name('PorcentajesPlaneacion')->middleware('auth');
 Route::post('/Planeacion/Porcentaje/Guardar', [PlaneacionController::class,'GuardarParametrosPorcentajes'])->name('GuardarParametrosPorcentajes')->middleware('auth');
+Route::get('/refresh-csrf', function () {return response()->json(['token' => csrf_token(),]);})->name('UpdateToken');
 //Rutas Ares
 //Corte Nuevas
 Route::get('/Area/Corte', [CorteController::class, 'index'])->name('corte.index')->middleware('auth');

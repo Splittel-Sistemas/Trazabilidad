@@ -184,21 +184,31 @@
             <div class="modal-body p-1">
                 <form action="{{ route('guardarAviso') }}" method="POST">
                     @csrf
-                    <div class="mb-1">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="CodigoHtml">
+                        <label class="form-check-label" for="flexSwitchCheckDefault"><i class="fas fa-code"></i>  Codigo HTML</label>
+                    </div>
+                    <div class="mb-1 px-4">
                         <label for="titulo" class="form-label fw-semibold">Título (Opcional)</label>
                         <input type="text" class="form-control border-2 rounded-3" id="titulo" name="titulo" placeholder="Escribe un título...">
                     </div>
-                    <div class="mb-1">
-                        <label for="fecha" class="form-label fw-semibold">Fecha</label>
-                        <input type="date" class="form-control border-2 rounded-3" id="fecha" name="fecha">
+                    <div class="row px-4">
+                        <div class="mb-1 col-6">
+                            <label for="FechaInicio" class="form-label fw-semibold">Fecha Inicio</label>
+                            <input type="date" class="form-control border-2 rounded-3" id="Fechainicio" value="{{ date('Y-m-d') }}"  name="FechaInicio">
+                        </div>
+                        <div class="mb-1 col-6">
+                            <label for="FechaFin" class="form-label fw-semibold">Fecha Fin</label>
+                            <input type="date" class="form-control border-2 rounded-3" id="FechaFin" value="{{ date('Y-m-d') }}" name="FechaFin">
+                        </div>
                     </div>
-                    <div class="mb-1">
+                    <div class="mb-1 px-4">
                         <label for="aviso" class="form-label fw-semibold">Aviso</label>
                         <textarea class="form-control border-2 rounded-3" id="aviso" name="aviso" rows="4" placeholder="Escribe tu aviso aquí..." style="resize: none;"></textarea>
                     </div>
                     <div style="height: 5px;"></div>
                     <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary fw-bold px-4 py-2 rounded-3 shadow-sm">Enviar </button>
+                        <button type="submit" class="btn btn-primary fw-bold px-4 py-2 rounded-3 shadow-sm">Guardar </button>
                     </div>
                     <div style="height: 5px;"></div>
                 </form>

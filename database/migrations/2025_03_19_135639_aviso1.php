@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id(); // ID autoincrementable
             $table->string('titulo')->nullable(); // Ahora es opcional
             $table->text('contenido'); // Contenido del aviso
-            $table->datetimes('FechaInicio'); 
-            $table->datetimes('FechaFin');
+            $table->datetime('FechaInicio'); 
+            $table->datetime('FechaFin');
             $table->timestamps(); 
         });
     }

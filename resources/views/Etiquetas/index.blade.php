@@ -404,6 +404,7 @@
             Retorno: InputRetorno?.value || 0,
             CantidadCajas: InputCantidadCajas?.value || 0,
             TipoDistribuidor:InputTipoDistribuidor?.value || 0,
+            MenuDistribuidor: InputMenuDistribuidor?.value || "",
         };
         SpinnerInsert('PdfEspinner');
         fetch(URLcontroller, {
