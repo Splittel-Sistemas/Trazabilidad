@@ -113,6 +113,7 @@ class EtiquetasController extends Controller
         $CantidadCajas = $request->CantidadCajas;
         $Etiquetas = $this->Etiquetas;
         $TipoDistribuidor = $request->TipoDistribuidor;
+        $MenuDistribuidor = $request->MenuDistribuidor;
         $TituloEtiqueta = "";
         foreach ($Etiquetas as $etiqueta) {
             if ($etiqueta[1] === $TipoEtiqueta) {
@@ -172,6 +173,13 @@ class EtiquetasController extends Controller
                 break;
             case 'ETIQ16':
                 return $this->EtiquetaIdentificacionCharolasTranstelco($CantidadEtiquetas,$CodigoCliente);
+                break;
+            case 'ETIQ17':
+            case 'ETIQ18':
+            case 'ETIQ19':
+            case 'ETIQ20':
+            case 'ETIQ21':
+                return $this->EtiquetaDistribuidores($CantidadEtiquetas,$MenuDistribuidor);
                 break;
             default:
                 break;
@@ -2082,7 +2090,7 @@ class EtiquetasController extends Controller
         }
         
     }
-    //
+    //Charola Trnastelco
     public function EtiquetaIdentificacionCharolasTranstelco($CantidadEtiquetas,$CodigoCliente){
         try {
             $pdf = new TCPDF();
@@ -2131,7 +2139,34 @@ class EtiquetasController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
+    public function EtiquetaDistribuidores($CantidadEtiquetas, $TipoDistribuidor){
+         try {
+            // Crear PDF
+            $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetFont('dejavusans', '', 10);
+            $pdf->SetAutoPageBreak(TRUE, 0);   
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
+            $pdf->SetPrintHeader(false);
+            // Contador para saber cuántas etiquetas se han colocado en la página
+            for ($i=0; $i<$CantidadEtiquetas; $i++) {
+                $pdf->AddPage('L', array(101, 51));
+                //Agregar la imagen
+                if(!file_exists(storage_path('app/Etiquetas/'.$TipoDistribuidor.'.png'))){
+                    throw new \Exception('No se encontro la imagen, La etiqueta '.$TipoDistribuidor.' es requerida, por favor contactate con TI.');
+                }else{
+                    $imagePath = storage_path('app/Etiquetas/'.$TipoDistribuidor.'.png');
+                    $pdf->Image($imagePath, 2.5, 2, 95);
+                }
+            }
+            ob_end_clean();
+            // Generar el archivo PDF y devolverlo al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output($TipoDistribuidor.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
     //Menu etiquetas y restricciones clientes etiquetas
     public function Menu($CodigoCliente){
         $Etiquetas = $this->Etiquetas;
@@ -2396,14 +2431,9 @@ class EtiquetasController extends Controller
                                                     <label class="form-label" for="MenuDistribuidor">Distribuidor</label>
                                                     <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">
                                                         <option value="" selected disabled>Selecciona una opci&oacute;n</option>
+
                                                         <option value="D1UR6SFCST">6 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
-                                                        <option value="D1UR6SSC">6 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
-                                                        <option value="D1UR6DLC">6 ACOPLADORES DUPLEX HORIZONTAL LC</option>
-                                                        <option value="D1UR6DSC">6 ACOPLADORES DUPLEX HORIZONTAL SC</option>
-                                                        <option value="D1UR8SFCST">8 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
-                                                        <option value="D1UR12SFCST">12 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
-                                                        <option value="D1UR18CLC">18 ACOPLADORES CUADRUPLEX LC</option>
-                                                        <option value="D1UR24DDRAI">24 ACOPLADORES DUPLEX HORIZONTAL DRAI</option>
+                                                    
                                                     </select>
                                                     <small id="ErrorMenuDistribuidor" class="text-danger"></small>
                                                 </div>
@@ -2446,20 +2476,33 @@ class EtiquetasController extends Controller
                                                     <label class="form-label" for="MenuDistribuidor">Distribuidor</label>
                                                     <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">
                                                         <option value="" selected disabled>Selecciona una opci&oacute;n</option>
-                                                        <option value="MUPC">12W DE 6 ACOPLADORES SIMPLEX FC-ST</option>
-                                                        <option value="MUPC">12W DE 6 ACOPLADORES SIMPLEX SC</option>
-                                                        <option value="MUPC">12W DE 6 ACOPLADORES DUPLEX SC</option>
-                                                        <option value="MUPC">12W DE 6 ACOPLADORES DUPLEX LC</option>
-                                                        <option value="MUPC">12W DE 6 ACOPLADORES CUADRUPLEX LC</option>
-                                                        <option value="MUPC">12W DE 8 ACOPLADORES SIMPLEX FC-ST</option>
-                                                        <option value="MUPC">12W DE 12 ACOPLADORES SIMPLEX FC-ST</option>
-                                                        <option value="MUPC">24W DE 6 ACOPLADORES SIMPLEX FC-ST</option>
-                                                        <option value="MUPC">24W DE 6 ACOPLADORES SIMPLEX SC</option>
-                                                        <option value="MUPC">24W DE 6 ACOPLADORES DUPLEX SC</option>
-                                                        <option value="MUPC">24W DE 6 ACOPLADORES DUPLEX LC</option>
-                                                        <option value="MUPC">24W DE 6 ACOPLADORES CUADRUPLEX LC</option>
-                                                        <option value="MUPC">24W DE 8 ACOPLADORES SIMPLEX FC-ST</option>
-                                                        <option value="MUPC">24W DE 12 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="12W12ACOPLADORESDUPLEXLC">12W DE 12 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="12W6ACOPLADORESSIMPLEXFC-ST">12W DE 6 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="12W8ACOPLADORESFC-ST">12W DE 8 ACOPLADORES FC-ST</option>
+                                                        <option value="12W12ACOPLADORESSIMPLEXFC-ST">12W DE 12 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="12W2ACOPLADORESDUPLEXLC">12W DE 2 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="12W3ACOPLADORESDUPLEXLC">12W DE 3 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="12W6ACOPLADORESDUPLEXLC">12W DE 6 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="12W2ACOPLADORESDUPLEXSC">12W DE 2 ACOPLADORES DUPLEX SC</option>
+                                                        <option value="12W6ACOPLADORESCUADRUPLEXLC">12W DE 6 ACOPLADORES CUADRUPLEX LC</option>
+                                                        <option value="12W6ACOPLADORESDUPLEXSC">12W DE 6 ACOPLADORES DUPLEX SC</option>
+                                                        <option value="12W6ACOPLADORESSIMPLEXSC">12W DE 6 ACOPLADORES SIMPLEX SC</option>
+                                                        <option value="24WDE6ACOPLADORESSIMPLEXFC-ST2mm">24W DE 6 ACOPLADORES SIMPLEX FC-ST. 2mm</option>
+                                                        <option value="24W6ACOPLADORESSIMPLEXFC-ST">24W DE 6 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="24W8ACOPLADORESSIMPLEXFC-ST">24W DE 8 ACOPLADORES  SIMPLEX FC-ST</option>
+                                                        <option value="24W12ACOPLADORESSIMPLEXFC-ST">24W DE 12 ACOPLADORES  SIMPLEX FC-ST</option>
+                                                        <option value="24W24ACOPLADORESSIMPLEXFC-ST">24W DE 24 ACOPLADORES  SIMPLEX FC-ST</option>
+                                                        <option value="24W3ACOPLADORESDUPLEXLC">24W DE 3 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="24W6ACOPLADORESDUPLEXLC">24W DE 6 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="24W12ACOPLADORESDUPLEXLC">24W DE 12 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="24W3ACOPLADORESDUPLEXSC">24W DE 3 ACOPLADORES DUPLEX SC</option>
+                                                        <option value="24W6ACOPLADORESCUADRUPLEXLC">24W DE 6 ACOPLADORES CUADRUPLEX LC</option>
+                                                        <option value="24W6ACOPLADORESDUPLEXSC">24W DE 6 ACOPLADORES DUPLEX SC</option>
+                                                        <option value="24W12ACOPLADORESDUPLEXSC">24W DE 12 ACOPLADORES DUPLEX SC</option>
+                                                        <option value="24W6ACOPLADORESSIMPLEXSC">24W DE 6 ACOPLADORES SIMPLEX SC</option>
+                                                        <option value="24W12ACOPLADORESSIMPLEXSC">24W DE 12 ACOPLADORES SIMPLEX SC</option>
+                                                        <option value="24WSLIM12ACOPLADORESDUPLEXHORIZONTALLC">24W SLIM DE 12 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="24WSLIM24ACOPLADORESSIMPLEXHORIZONTALST">24W SLIM DE 24 ACOPLADORES SIMPLEX HORIZONTAL ST</option>
                                                     </select>
                                                     <small id="ErrorMenuDistribuidor" class="text-danger"></small>
                                                 </div>
@@ -2467,15 +2510,24 @@ class EtiquetasController extends Controller
                     ["MenuDistribuidorExterior",'<div class="col-6" id="ContenedorMenuDistribuidor">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="MenuDistribuidor">Distribuidor</label>
-                                                    <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">
-                                                        <option value="" selected disabled>Selecciona una opci&oacute;n</option>
-                                                        <option value="MUPC">24W DE 6 ACOPLADORES SIMPLEX FC-ST</option>
-                                                        <option value="MUPC">24W DE 6 ACOPLADORES SIMPLEX SC</option>
-                                                        <option value="MUPC">24W DE 6 ACOPLADORES DUPLEX LC</option>
-                                                        <option value="MUPC">24W DE 6 ACOPLADORES DUPLEX SC</option>
-                                                        <option value="MUPC">24W DE 8 ACOPLADORES SIMPLEX FC-ST</option>
-                                                        <option value="MUPC">24W DE 12 ACOPLADORES SIMPLEX FC-ST</option>
-                                                    </select>
+                                                    <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">'.
+                                                        '<option value="" selected disabled>Selecciona una opci&oacute;n</option>
+                                                        <option value="24ACOPLADORESSIMPLEXFC-ST">24W DE 24 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="8ACOPLADORESSIMPLEXFC-ST">24W DE 8 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="12ACOPLADORESSIMPLEXFC-ST">24W DE 12 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="2ACOPLADORESDUPLEXLCUNITARIO">24W DE 2 ACOPLADORES DUPLEX LC UNITARIO</option>
+                                                        <option value="2ACOPLADORESDUPLEXLC">24W DE 2 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="3ACOPLADORESDUPLEXLC">24W DE 3 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="4ACOPLADORESDUPLEXLC">24W DE 4 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="6ACOPLADORESDUPLEXLC">24W DE 6 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="12ACOPLADORESDUPLEXLC">24W DE 12 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="24ACOPLADORESDUPLEXLC">24W DE 24 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="2ACOPLADORESSCDUPLEX">24W DE 2 ACOPLADORES SC DUPLEX</option>
+                                                        <option value="24ACOPLADORESCUADRUPLEXLC">24W DE 24 ACOPLADORES CUADRUPLEX LC</option>
+                                                        <option value="24ACOPLADORESDUPLEXSC">24W DE 24 ACOPLADORES DUPLEX SC</option>
+                                                        <option value="24ACOPLADORESSIMPLEXSC">24W DE 24 ACOPLADORES SIMPLEX SC</option>
+                                                        '.
+                                                    '</select>
                                                     <small id="ErrorMenuDistribuidor" class="text-danger"></small>
                                                 </div>
                                             </div>'

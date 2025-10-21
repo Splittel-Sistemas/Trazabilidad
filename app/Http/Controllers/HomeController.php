@@ -777,18 +777,18 @@ class HomeController extends Controller
     {
         $manana = Carbon::now()->addDay()->format('Y-m-d H:i:s'); 
         $hoy = Carbon::now()->format('Y-m-d H:i:s');
-        $avisos = DB::table('avisos')
+        /*$avisos = DB::table('avisos')
             ->where('Fechainicio','>=',$hoy)
             ->where('Fechafin','<=',$manana)
             ->orderBy('created_at', 'desc')
-            ->get();
-        $linea = Linea::where('active', 1)->get();
+            ->get();*/
+        $avisos = collect();
         $user = Auth::user();
         if (!$user || !$user->active) {
             Auth::logout();
             return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
         }
-        return view('HomeOperador', compact('user', 'linea', 'avisos'));
+        return view('HomeOperador', compact('user', 'avisos'));
     }
     //vista sin permisos
     public function error(Request $request)
