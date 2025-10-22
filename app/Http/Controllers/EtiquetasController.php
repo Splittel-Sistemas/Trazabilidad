@@ -58,6 +58,7 @@ class EtiquetasController extends Controller
             [23,"ETIQ19","DISTRIBUIDOR: 4UR"],
             [24,"ETIQ20","DISTRIBUIDOR DE PARED"],
             [25,"ETIQ21","DISTRIBUIDOR DE PARED EXTERIOR"],
+            [26,"ETIQ22","DISTRIBUIDOR RIEL DIN"],
         ];
     }
     public function index(){
@@ -179,6 +180,7 @@ class EtiquetasController extends Controller
             case 'ETIQ19':
             case 'ETIQ20':
             case 'ETIQ21':
+            case 'ETIQ22':
                 return $this->EtiquetaDistribuidores($CantidadEtiquetas,$MenuDistribuidor);
                 break;
             default:
@@ -2153,11 +2155,11 @@ class EtiquetasController extends Controller
             for ($i=0; $i<$CantidadEtiquetas; $i++) {
                 $pdf->AddPage('L', array(101, 51));
                 //Agregar la imagen
-                if(!file_exists(storage_path('app/Etiquetas/'.$TipoDistribuidor.'.png'))){
+                if(!file_exists(storage_path('app/Etiquetas/Distribuidores/'.$TipoDistribuidor.'.png'))){
                     throw new \Exception('No se encontro la imagen, La etiqueta '.$TipoDistribuidor.' es requerida, por favor contactate con TI.');
                 }else{
-                    $imagePath = storage_path('app/Etiquetas/'.$TipoDistribuidor.'.png');
-                    $pdf->Image($imagePath, 2.5, 2, 95);
+                    $imagePath = storage_path('app/Etiquetas/Distribuidores/'.$TipoDistribuidor.'.png');
+                    $pdf->Image($imagePath, ($pdf->GetPageWidth()-95)/2, 2, 95);
                 }
             }
             ob_end_clean();
@@ -2293,6 +2295,9 @@ class EtiquetasController extends Controller
                 break;
             case 'ETIQ21':
                 $CamposRequeridos = $CamposRequeridos = ['CantidadEtiquetas','MenuDistribuidorExterior'];
+                break;
+            case 'ETIQ22':
+                $CamposRequeridos = $CamposRequeridos = ['CantidadEtiquetas','MenuDistribuidorRielDin'];
                 break;
             default:
             $CamposRequeridos = [];
@@ -2431,9 +2436,50 @@ class EtiquetasController extends Controller
                                                     <label class="form-label" for="MenuDistribuidor">Distribuidor</label>
                                                     <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">
                                                         <option value="" selected disabled>Selecciona una opci&oacute;n</option>
-
-                                                        <option value="D1UR6SFCST">6 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
-                                                    
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>MPO HIGT DENSITY</option>
+                                                        <option value="1UR12CassettesMPOTypeA-B1">12 Cassettes MPO Type A-B1</option>
+                                                        <option value="1UR12CassettesMPOTypeB">12 Cassettes MPO Type B</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA FC-ST SIMPLEX</option>
+                                                        <option value="1URPLACA6DE4ACOPLADORESSXHORIZONTALFC-ST">PLACA 6 DE 4 ACOPLADORES SX HORIZONTAL FC-ST</option>
+                                                        <option value="1URPLACA6DE6ACOPLADORESSXHORIZONTALFC-ST">PLACA 6 DE 6 ACOPLADORES SX HORIZONTAL FC-ST</option>
+                                                        <option value="1URPLACA6DE12ACOPLADORESSXHORIZONTALFC-ST">PLACA 6 DE 12 ACOPLADORES  SX HORIZONTAL FC-ST</option>
+                                                        <option value="1URPLACA88ACOPLADORESSXHORIZONTALFC-ST">PLACA 8 DE 8 ACOPLADORES SX HORIZONTAL FC-ST</option>
+                                                        <option value="1URPLACA812ACOPLADORESSXHORIZONTALFC-ST">PLACA 8 DE 12 ACOPLADORES SX HORIZONTAL FC-ST</option>
+                                                        <option value="1URPLACA824ACOPLADORESSXHORIZONTALFC-ST">PLACA 8 DE 24 ACOPLADORES SX HORIZONTAL FC-ST</option>
+                                                        <option value="1UR12ACOPLADORESSXHORIZONTALFC-STABBDEMEXICO">PLACA 12 DE 12 ACOPLADORES SX HORIZONTAL FC-ST ABB DE MEXICO</option>
+                                                        <option value="1UR12ACOPLADORESSXHORIZONTALFC-ST">PLACA 12 DE 12 ACOPLADORES SX HORIZONTAL FC-ST</option>
+                                                        <option value="1UR24ACOPLADORESSXHORIZONTALFC-ST">PLACA 12 DE 24 ACOPLADORES SX HORIZONTAL FC-ST</option>
+                                                        <option value="1UR36ACOPLADORESSXHORIZONTALFC-ST">PLACA 12 DE 36 ACOPLADORES SX HORIZONTAL FC-ST</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA LC DUPLEX</option>
+                                                        <option value="1UR2ACOPLADORESDUPLEXHORIZONTALLCECO">2 ACOPLADORES DUPLEX HORIZONTAL LC ECO</option>
+                                                        <option value="1UR2ACOPLADORESDUPLEXHORIZONTALLC">2 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="1UR3ACOPLADORESDUPLEXHORIZONTALLC">3 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="1UR4ACOPLADORESDUPLEXHORIZONTALLCATC">4 ACOPLADORES DUPLEX HORIZONTAL LC (ATC)</option>
+                                                        <option value="1UR4ACOPLADORESDUPLEXHORIZONTALLC">4 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="1UR6ACOPLADORESDUPLEXHORIZONTALLC">6 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="1UR9ACOPLADORESDUPLEXHORIZONTALLC">9 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="1UR12ACOPDUPLEXHLC6SC">12 ACOP DUPLEX H LC  6 SC</option>
+                                                        <option value="1UR12ACOPLADORESCUADRUPLEXLC">12 ACOPLADORES CUADRUPLEX LC</option>
+                                                        <option value="1UR12ACOPLADORESDUPLEXHORIZONTALLC">12 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="1UR18ACOPLADORESCUADRUPLEXLC">18 ACOPLADORES CUADRUPLEX LC</option>
+                                                        <option value="1UR18ACOPLADORESDUPLEXHORIZONTALLC">18 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA SC DUPLEX</option>
+                                                        <option value="1UR2ACOPLADORESDUPLEXHORIZONTALSCECO">2 ACOPLADORES DUPLEX HORIZONTAL SC ECO</option>
+                                                        <option value="1UR2ACOPLADORESDUPLEXHORIZONTALSC">2 ACOPLADORES DUPLEX HORIZONTAL SC</option>
+                                                        <option value="1UR3ACOPLADORESDUPLEXHORIZONTALSC">3 ACOPLADORES DUPLEX HORIZONTAL SC</option>
+                                                        <option value="1UR6ACOPLADORESDUPLEXHORIZONTALSC">6 ACOPLADORES DUPLEX HORIZONTAL SC</option>
+                                                        <option value="1UR9ACOPLADORESDUPLEXHORIZONTALSC">9 ACOPLADORES DUPLEX HORIZONTAL SC</option>
+                                                        <option value="1UR12ACOPLADORESDUPLEXHORIZONTALSC">12 ACOPLADORES DUPLEX HORIZONTAL SC</option>
+                                                        <option value="1UR18ACOPLADORESDUPLEXHORIZONTALSC6PIGTAIL6COLORES">18 ACOPLADORES DUPLEX HORIZONTAL SC 6 PIGTAIL 6 COLORES</option>
+                                                        <option value="1UR18ACOPLADORESDUPLEXHORIZONTALSC">18 ACOPLADORES DUPLEX HORIZONTAL SC</option>
+                                                        <option value="1UR24ACOPLADORESDUPLEXHORIZONTALSCDRAI">24 ACOPLADORES DUPLEX HORIZONTAL SC DRAI</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA SC SIMPLEX</option>
+                                                        <option value="1UR4ACOPLADORESSIMPLEXHORIZONTALSC">4 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
+                                                        <option value="1UR6ACOPLADORESSIMPLEXHORIZONTALSC">6 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
+                                                        <option value="1UR12ACOPLADORESSIMPLEXHORIZONTALSC">12 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
+                                                        <option value="1UR18ACOPLADORESSIMPLEXHORIZONTALSC">18 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
+                                                        <option value="1UR24ACOPLADORESSIMPLEXHORIZONTALSC">24 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
+                                                        <option value="1UR96ACOPLADORESSIMPLEXHORIZONTALSC">96 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
                                                     </select>
                                                     <small id="ErrorMenuDistribuidor" class="text-danger"></small>
                                                 </div>
@@ -2443,14 +2489,48 @@ class EtiquetasController extends Controller
                                                     <label class="form-label" for="MenuDistribuidor">Distribuidor</label>
                                                     <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">
                                                         <option value="" selected disabled>Selecciona una opci&oacute;n</option>
-                                                        <option value="MUPC">6 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
-                                                        <option value="MOUPC">6 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
-                                                        <option value="MOAPC">6 ACOPLADORES DUPLEX HORIZONTAL LC</option>
-                                                        <option value="MULMTRJ">6 ACOPLADORES DUPLEX HORIZONTAL SC</option>
-                                                        <option value="MULMTRJ">6 ACOPLADORES HORIZONTAL CUADRUPLEX LC</option>
-                                                        <option value="MONMTRJ">8 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
-                                                        <option value="MONMTRJ">8 ACOPLADORES SIMPLEX HORIZONTAL FC-ST TELEFONICA</option>
-                                                        <option value="MUMPO">12 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA FC-ST SIMPLEX</option>
+
+                                                        <option value="2UR6ACOPLADORESSIMPLEXHORIZONTALFC-ST(ABBDEMEXICO)">6 ACOPLADORES SIMPLEX HORIZONTAL FC-ST (ABB DE MEXICO)</option>
+                                                        <option value="2UR6ACOPLADORESSIMPLEXHORIZONTALFC-ST">6 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
+                                                        <option value="2UR8ACOPLADORESSIMPLEXHORIZONTALFC-STTELEFONICA">8 ACOPLADORES SIMPLEX HORIZONTAL FC-ST TELEFONICA</option>
+                                                        <option value="2UR8ACOPLADORESSIMPLEXHORIZONTALFC-ST">8 ACOPLADORES SIMPLEX HORIZONTAL FC-ST</option>
+                                                        <option value="2UR24ACOPLADORESSXHORIZONTALFC-ST">24 ACOPLADORES SX HORIZONTAL FC-ST</option>
+                                                        <option value="2UR36ACOPLADORESSXHORIZONTALFC-ST">36 ACOPLADORES SX HORIZONTAL FC-ST</option>
+                                                        <option value="2UR48ACOPLADORESSXHORIZONTALFC-ST">48 ACOPLADORES SX HORIZONTAL FC-ST</option>
+                                                        <option value="2UR64ACOPLADORESSXHORIZONTALFC-ST">64 ACOPLADORES SX HORIZONTAL FC-ST</option>
+                                                        <option value="2UR72ACOPLADORESSXHORIZONTALFC-ST">72 ACOPLADORES SX HORIZONTAL FC-ST</option>
+
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA LC DUPLEX</option>
+                                                        <option value="2UR3ACOPLADORESDUPLEXHORIZONTALLC">3 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="2UR6ACOPLADORESDUPLEXHORIZONTALLC">6 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="2UR12ACOPLADORESDUPLEXHORIZONTALLC-copia">12 ACOPLADORES DUPLEX HORIZONTAL LC - copia</option>
+                                                        <option value="2UR12ACOPLADORESDUPLEXHORIZONTALLC">12 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="2UR12ACOPLADORESLCDUPLEX-12ACOPLADORESSCDUPLEX">12 ACOPLADORES LC DUPLEX-12 ACOPLADORES SC DUPLEX</option>
+                                                        <option value="2UR18ACOPLADORESDUPLEXHORIZONTALLC">18 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="2UR18ACOPLADORESDUPLEXHORIZONTALLCFR">18 ACOPLADORES DUPLEX HORIZONTAL LC FR</option>
+                                                        <option value="2UR24ACOPLADORESDUPLEXHORIZONTALLC">24 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="2UR30ACOPLADORESDUPLEXHORIZONTALLC">30 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+                                                        <option value="2UR36ACOPLADORESDUPLEXHORIZONTALLC">36 ACOPLADORES DUPLEX HORIZONTAL LC</option>
+
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA SC DUPLEX</option>
+                                                        <option value="2UR9ACOPLADORESDUPLEXLCHORIZONTAL18PIGTAIL">9 ACOPLADORES DUPLEX LC HORIZONTAL 18 PIGTAIL</option>
+                                                        <option value="2UR9ACOPLADORESDUPLEXLCY9ACOPLADORESDUPLEXSC2">9 ACOPLADORES DUPLEX LC Y 9 ACOPLADORES DUPLEX SC.2</option>
+                                                        <option value="2UR9ACOPLADORESDUPLEXLCY9ACOPLADORESDUPLEXSC">9 ACOPLADORES DUPLEX LC Y 9 ACOPLADORES DUPLEX SC</option>
+                                                        <option value="2UR12ACOPLADORESDUPLEXHORIZONTALSC">12 ACOPLADORES DUPLEX HORIZONTAL SC</option>
+                                                        <option value="2UR18ACOPLADORESDUPLEXHORIZONTALSC">18 ACOPLADORES DUPLEX HORIZONTAL SC</option>
+                                                        <option value="2UR24ACOPLADORESDUPLEXHORIZONTALSC">24 ACOPLADORES DUPLEX HORIZONTAL SC</option>
+                                                        <option value="2UR24ACOPLADORESHORIZONTALCUADRUPLEXLC">24 ACOPLADORES HORIZONTAL CUADRUPLEX LC</option>
+                                                        <option value="2UR36ACOPLADORESDUPLEXHORIZONTALSC">36 ACOPLADORES DUPLEX HORIZONTAL SC</option>
+                                                        <option value="2UR36ACOPLADORESHORIZONTALCUADRUPLEXLC">36 ACOPLADORES HORIZONTAL CUADRUPLEX LC</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA SC SIMPLEX</option>
+                                                        <option value="2UR6ACOPLADORESSIMPLEXHORIZONTALSC">6 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
+                                                        <option value="2UR16ACOPLADORESSIMPLEXHORIZONTALSCFBTCOUPLER">16 ACOPLADORES SIMPLEX HORIZONTAL SC FBT COUPLER</option>
+                                                        <option value="2UR18ACOPLADORESSIMPLEXHORIZONTALSC">18 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
+                                                        <option value="2UR24ACOPLADORESSIMPLEXHORIZONTALSCy12LCDUPLEX">24 ACOPLADORES SIMPLEX HORIZONTAL SC y 12 LC DUPLEX</option>
+                                                        <option value="2UR24ACOPLADORESSIMPLEXHORIZONTALSC">24 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
+                                                        <option value="2UR36ACOPLADORESSIMPLEXHORIZONTALSC">36 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
+                                                        <option value="2UR48ACOPLADORESSIMPLEXHORIZONTALSC">48 ACOPLADORES SIMPLEX HORIZONTAL SC</option>
                                                     </select>
                                                     <small id="ErrorMenuDistribuidor" class="text-danger"></small>
                                                 </div>
@@ -2460,13 +2540,31 @@ class EtiquetasController extends Controller
                                                     <label class="form-label" for="MenuDistribuidor">Distribuidor</label>
                                                     <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">
                                                         <option value="" selected disabled>Selecciona una opci&oacute;n</option>
-                                                        <option value="MUPC">6 ACOPLADORES SIMPLEX VERTICAL FC-ST</option>
-                                                        <option value="MOUPC">6 ACOPLADORES SIMPLEX VERTICAL SC</option>
-                                                        <option value="MOAPC">6 ACOPLADORES DUPLEX VERTICAL LC</option>
-                                                        <option value="MULMTRJ">6 ACOPLADORES DUPLEX VERTICAL SC</option>
-                                                        <option value="MULMTRJ">6 ACOPLADORES CUADRUPLEX VERTICAL LC</option>
-                                                        <option value="MONMTRJ">8 ACOPLADORES SIMPLEX VERTICAL FC-ST TELEFONICA</option>
-                                                        <option value="MUMPO">12 ACOPLADORES SIMPLEX VERTICAL FC-ST</option>
+
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA FC-ST SIMPLEX</option>
+                                                        <option value="4URPLACA6DE6ACOPLADORESSIMPLEXVERTICALFC-ST">PLACA 6 DE 6 ACOPLADORES SIMPLEX VERTICAL FC-ST</option>
+                                                        <option value="4URPLACA8ACOPLADORESSIMPLEXVERTICALFC-STTELEFONICA">PLACA 8 DE 8 ACOPLADORES SIMPLEX VERTICAL FC-ST TELEFONICA</option>
+                                                        <option value="4URPLACA12DE48ACOPLADORESSIMPLEXVERTICALFC-ST">PLACA 12 DE 48 ACOPLADORES SIMPLEX VERTICAL FC-ST</option>
+                                                        <option value="4URPLACA12DE144ACOPLADORESSIMPLEXVERTICALFC-ST">PLACA 12 DE 144 ACOPLADORES SIMPLEX VERTICAL FC-ST</option>
+
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA LC DUPLEX</option>
+                                                        <option value="4UR6ACOPLADORESDUPLEXVERTICALLC">6 ACOPLADORES DUPLEX VERTICAL LC (Propuesta)</option>
+                                                        <option value="4UR18ACOPLADORESDUPLEXVERTICALLC">18 ACOPLADORES DUPLEX VERTICAL LC</option>
+                                                        <option value="4UR48ACOPLADORESDUPLEXVERTICALLC">48 ACOPLADORES DUPLEX VERTICAL LC</option>
+                                                        <option value="4UR72ACOPLADORESDUPLEXVERTICALLC">72 ACOPLADORES DUPLEX VERTICAL LC</option>
+
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA SC DUPLEX</option>
+                                                        <option value="4UR18ACOPLADORESDUPLEXVERTICALSC">18 ACOPLADORES DUPLEX VERTICAL SC</option>
+                                                        <option value="4UR24ACOPLADORESDUPLEXVERTICALSC">24 ACOPLADORES DUPLEX VERTICAL SC</option>
+                                                        <option value="4UR48ACOPLADORESCUADRUPLEXVERTICALLC">48 ACOPLADORES CUADRUPLEX VERTICAL LC</option>
+                                                        <option value="4UR48ACOPLADORESDUPLEXVERTICALSC">48 ACOPLADORES DUPLEX VERTICAL SC</option>
+                                                        <option value="4UR72ACOPLADORESCUADRUPLEXVERTICALLC">72 ACOPLADORES CUADRUPLEX VERTICAL LC</option>
+                                                        <option value="4UR72ACOPLADORESDUPLEXVERTICALSC">72 ACOPLADORES DUPLEX VERTICAL SC</option>
+
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA SC SIMPLEX</option>
+                                                        <option value="4UR48ACOPLADORESSIMPLEXVERTICALSC">48 ACOPLADORES SIMPLEX VERTICAL SC</option>
+                                                        <option value="4UR72ACOPLADORESSIMPLEXVERTICALSC">72 ACOPLADORES SIMPLEX VERTICAL SC</option>
+                                                        <option value="4UR96ACOPLADORESSIMPLEXVERTICALSC">96 ACOPLADORES SIMPLEX VERTICAL SC</option>
                                                     </select>
                                                     <small id="ErrorMenuDistribuidor" class="text-danger"></small>
                                                 </div>
@@ -2476,6 +2574,7 @@ class EtiquetasController extends Controller
                                                     <label class="form-label" for="MenuDistribuidor">Distribuidor</label>
                                                     <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">
                                                         <option value="" selected disabled>Selecciona una opci&oacute;n</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>DISTRIBUIDOR DE PARED 12W</option>
                                                         <option value="12W12ACOPLADORESDUPLEXLC">12W DE 12 ACOPLADORES DUPLEX LC</option>
                                                         <option value="12W6ACOPLADORESSIMPLEXFC-ST">12W DE 6 ACOPLADORES SIMPLEX FC-ST</option>
                                                         <option value="12W8ACOPLADORESFC-ST">12W DE 8 ACOPLADORES FC-ST</option>
@@ -2487,20 +2586,25 @@ class EtiquetasController extends Controller
                                                         <option value="12W6ACOPLADORESCUADRUPLEXLC">12W DE 6 ACOPLADORES CUADRUPLEX LC</option>
                                                         <option value="12W6ACOPLADORESDUPLEXSC">12W DE 6 ACOPLADORES DUPLEX SC</option>
                                                         <option value="12W6ACOPLADORESSIMPLEXSC">12W DE 6 ACOPLADORES SIMPLEX SC</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>DISTRIBUIDOR DE PARED 24W PLACA FC-ST SIMPLEX</option>
                                                         <option value="24WDE6ACOPLADORESSIMPLEXFC-ST2mm">24W DE 6 ACOPLADORES SIMPLEX FC-ST. 2mm</option>
                                                         <option value="24W6ACOPLADORESSIMPLEXFC-ST">24W DE 6 ACOPLADORES SIMPLEX FC-ST</option>
                                                         <option value="24W8ACOPLADORESSIMPLEXFC-ST">24W DE 8 ACOPLADORES  SIMPLEX FC-ST</option>
                                                         <option value="24W12ACOPLADORESSIMPLEXFC-ST">24W DE 12 ACOPLADORES  SIMPLEX FC-ST</option>
                                                         <option value="24W24ACOPLADORESSIMPLEXFC-ST">24W DE 24 ACOPLADORES  SIMPLEX FC-ST</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>DISTRIBUIDOR DE PARED 24W PLACA LC DUPLEX</option>
                                                         <option value="24W3ACOPLADORESDUPLEXLC">24W DE 3 ACOPLADORES DUPLEX LC</option>
                                                         <option value="24W6ACOPLADORESDUPLEXLC">24W DE 6 ACOPLADORES DUPLEX LC</option>
                                                         <option value="24W12ACOPLADORESDUPLEXLC">24W DE 12 ACOPLADORES DUPLEX LC</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>DISTRIBUIDOR DE PARED 24W PLACA SC DUPLEX</option>
                                                         <option value="24W3ACOPLADORESDUPLEXSC">24W DE 3 ACOPLADORES DUPLEX SC</option>
                                                         <option value="24W6ACOPLADORESCUADRUPLEXLC">24W DE 6 ACOPLADORES CUADRUPLEX LC</option>
                                                         <option value="24W6ACOPLADORESDUPLEXSC">24W DE 6 ACOPLADORES DUPLEX SC</option>
                                                         <option value="24W12ACOPLADORESDUPLEXSC">24W DE 12 ACOPLADORES DUPLEX SC</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>DISTRIBUIDOR DE PARED 24W PLACA SC SIMPLEX</option>
                                                         <option value="24W6ACOPLADORESSIMPLEXSC">24W DE 6 ACOPLADORES SIMPLEX SC</option>
                                                         <option value="24W12ACOPLADORESSIMPLEXSC">24W DE 12 ACOPLADORES SIMPLEX SC</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>DISTRIBUIDOR DE PARED 24W SLIM</option>
                                                         <option value="24WSLIM12ACOPLADORESDUPLEXHORIZONTALLC">24W SLIM DE 12 ACOPLADORES DUPLEX HORIZONTAL LC</option>
                                                         <option value="24WSLIM24ACOPLADORESSIMPLEXHORIZONTALST">24W SLIM DE 24 ACOPLADORES SIMPLEX HORIZONTAL ST</option>
                                                     </select>
@@ -2512,9 +2616,11 @@ class EtiquetasController extends Controller
                                                     <label class="form-label" for="MenuDistribuidor">Distribuidor</label>
                                                     <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">'.
                                                         '<option value="" selected disabled>Selecciona una opci&oacute;n</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA FC-ST SIMPLEX</option>
                                                         <option value="24ACOPLADORESSIMPLEXFC-ST">24W DE 24 ACOPLADORES SIMPLEX FC-ST</option>
                                                         <option value="8ACOPLADORESSIMPLEXFC-ST">24W DE 8 ACOPLADORES SIMPLEX FC-ST</option>
                                                         <option value="12ACOPLADORESSIMPLEXFC-ST">24W DE 12 ACOPLADORES SIMPLEX FC-ST</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA LC DUPLEX</option>
                                                         <option value="2ACOPLADORESDUPLEXLCUNITARIO">24W DE 2 ACOPLADORES DUPLEX LC UNITARIO</option>
                                                         <option value="2ACOPLADORESDUPLEXLC">24W DE 2 ACOPLADORES DUPLEX LC</option>
                                                         <option value="3ACOPLADORESDUPLEXLC">24W DE 3 ACOPLADORES DUPLEX LC</option>
@@ -2522,15 +2628,29 @@ class EtiquetasController extends Controller
                                                         <option value="6ACOPLADORESDUPLEXLC">24W DE 6 ACOPLADORES DUPLEX LC</option>
                                                         <option value="12ACOPLADORESDUPLEXLC">24W DE 12 ACOPLADORES DUPLEX LC</option>
                                                         <option value="24ACOPLADORESDUPLEXLC">24W DE 24 ACOPLADORES DUPLEX LC</option>
-                                                        <option value="2ACOPLADORESSCDUPLEX">24W DE 2 ACOPLADORES SC DUPLEX</option>
                                                         <option value="24ACOPLADORESCUADRUPLEXLC">24W DE 24 ACOPLADORES CUADRUPLEX LC</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA SC DUPLEX</option>
+                                                        <option value="2ACOPLADORESSCDUPLEX">24W DE 2 ACOPLADORES DUPLEX SC</option>
                                                         <option value="24ACOPLADORESDUPLEXSC">24W DE 24 ACOPLADORES DUPLEX SC</option>
+                                                        <option value="" style="background-color: #54c8faff; font-weight: bold;" disabled>PLACA SC SIMPLEX</option>
                                                         <option value="24ACOPLADORESSIMPLEXSC">24W DE 24 ACOPLADORES SIMPLEX SC</option>
                                                         '.
                                                     '</select>
                                                     <small id="ErrorMenuDistribuidor" class="text-danger"></small>
                                                 </div>
+                                            </div>'],
+                    ["MenuDistribuidorRielDin",'<div class="col-6" id="ContenedorMenuDistribuidor">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="MenuDistribuidor">Distribuidor</label>
+                                                    <select class="form-select" id="MenuDistribuidor" onchange="mostrarSeleccion(this)">'.
+                                                        '<option value="" selected disabled>Selecciona una opci&oacute;n</option>
+                                                        <option value="RIELDIN6ACOPLADORESLCDUPLEX">6 ACOPLADORES LC DUPLEX</option>
+                                                        '.
+                                                    '</select>
+                                                    <small id="ErrorMenuDistribuidor" class="text-danger"></small>
+                                                </div>
                                             </div>'
+                                            
                     ]];
         $CadenaCampos = '';
         foreach ($CamposRequeridos as $campoBuscado) {

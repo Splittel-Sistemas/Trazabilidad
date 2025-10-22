@@ -17,7 +17,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="mb-2 col-6">
+        <div class="mb-2 col-12 col-sx-8 col-sm-6">
             <label for="NumeroOrden" class="form-label">Ingresa orden de Fabricación</label>
             <div class="input-group">
                 <input type="text" oninput="RegexNumeros(this)" class="form-control form-control-sm" autocomplete="off" id="NumeroOrden" placeholder="Número de Orden de Fabricación">
@@ -46,7 +46,7 @@
                                 <h5 class="text-center pt-1" id="TextoDetallesCliente"></h5>
                                 <h6 class="text-center text-muted" id="TextoDetallesOV"></h6>
                             </div>
-                            <div class="col-4 border border-light">
+                            <div class="col-12 col-sm-4 border border-light">
                                 <label class="form-label mt-2" for="Sociedad">Tipo de Etiqueta</label>
                                 <input class="form-control" autocomplete="off" onclick="" oninput="BuscarEtiquetaFiltro(this);" type="text" id="Etiquetaitems" placeholder="buscar" style="display:none;">
                                 <select id="TipoEtiqueta" onchange="Etiqueta(this);" class="form-select" style="width: 100%;">
@@ -54,7 +54,7 @@
                                 <div id="ListaOpciones" class="list-group" style="display:none;">
                                 </div>
                             </div>
-                            <div class="col-8">
+                            <div class="col-12 col-sm-8">
                                 <div id="DatosEtiquetas" class="row mt-1">
                                     <div class="col-12">
                                         <div class="alert alert-danger p-2" role="alert" id="PdfAlerta" style="display: none">
@@ -379,7 +379,7 @@
                 ErrorCantidadEtiquetas.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
             }
-        }else if(InputTipoEtiqueta == "ETIQ17" || InputTipoEtiqueta == "ETIQ18" || InputTipoEtiqueta == "ETIQ19" || InputTipoEtiqueta == "ETIQ20" || InputTipoEtiqueta == "ETIQ21"){
+        }else if(InputTipoEtiqueta == "ETIQ17" || InputTipoEtiqueta == "ETIQ18" || InputTipoEtiqueta == "ETIQ19" || InputTipoEtiqueta == "ETIQ20" || InputTipoEtiqueta == "ETIQ21"|| InputTipoEtiqueta == "ETIQ22"){
             if(InputMenuDistribuidor.value == null || InputMenuDistribuidor.value == ""){
                 ErrorMenuDistribuidor.innerHTML = "Campo requerido.";
                 return 0;

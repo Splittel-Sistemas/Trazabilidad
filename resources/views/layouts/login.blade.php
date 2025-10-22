@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=0.8, user-scalable=no">
-    <link rel="shortcut icon" type="image/x-icon" href="{{asset('imagenes/splittel.png') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9, user-scalable=no">
+    <link rel="shortcut icon" type="image/x-icon" href="{{asset('imagenes/Trazabilidad.png') }}">
     <title>Login</title>
     <script src="//code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -257,7 +257,7 @@
         @endif
     });
     function refreshCsrfToken(Formulario) {
-        $.get("{{--route('UpdateToken')--}}", function (data) {
+        $.get("{{route('UpdateToken')}}", function (data) {
             const newToken = data.token;
             // 1. Actualizar <meta name="csrf-token">
             $('meta[name="csrf-token"]').attr('content', newToken);
