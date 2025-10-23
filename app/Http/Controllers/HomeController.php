@@ -773,30 +773,10 @@ class HomeController extends Controller
     public function EstacionAnterior($OrdenFabricacion,$Area){
 
     }
-    //dasboard operador 
-    public function indexoperador(Request $request)
-    {
-        $manana = Carbon::now()->addDay()->format('Y-m-d H:i:s'); 
-        $hoy = Carbon::now()->format('Y-m-d H:i:s');
-        /*$avisos = DB::table('avisos')
-            ->where('Fechainicio','>=',$hoy)
-            ->where('Fechafin','<=',$manana)
-            ->orderBy('created_at', 'desc')
-            ->get();*/
-        $avisos = collect();
-        $user = Auth::user();
-        if (!$user || !$user->active) {
-            Auth::logout();
-            return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
-        }
-        return view('HomeOperador', compact('user', 'avisos'));
-    }
     //vista sin permisos
     public function error(Request $request)
     {
         return view('Error');
-            
-        
     }
     public function lineas(Request $request)
     {
@@ -882,19 +862,35 @@ class HomeController extends Controller
             'porcentajeCerradas' => $porcentajeCerradas
         ]);
     }
-    public function guardarAviso(Request $request)
-    {
+    //dasboard operador 
+    public function indexoperador(Request $request){
+        //$manana = Carbon::now()->addDay()->format('Y-m-d H:i:s'); 
+        $Inicio = Carbon::now()->format('Y-m-d 00:00:00');
+        $Fin = Carbon::now()->format('Y-m-d H:i:s');
+        $Avisos = DB::table('avisos')
+                        ->where('FechaInicio','>=',$Inicio)
+                        ->where('FechaFin','>=',$Fin)
+                        ->get();
+        $user = Auth::user();
+        if (!$user || !$user->active) {
+            Auth::logout();
+            return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
+        }
+        return view('HomeOperador', compact('user', 'Avisos'));
+    }
+    //Guardar aviso
+    public function guardarAviso(Request $request){
         // Valida la entrada del usuario
         $rules = [
-            'Titulo'      => 'required|string|min:1|max:255',
+            'Titulo'      => 'max:255',
             'FechaInicio' => 'required',
             'FechaFin'    => 'required|after_or_equal:FechaInicio',
             'Aviso'       => 'required|string|min:1',
         ];
 
         $messages = [
-            'Titulo.required'      => '*Campo título es obligatoria.',
-            'Titulo.min'           => '*Se requiere minimo :min caracteres.',
+            //'Titulo.required'      => '*Campo título es obligatoria.',
+            'Titulo.max'           => '*Máximo :max caracteres.',
             'FechaInicio.required' => '*Campo Fecha Inicio es obligatoria.',
             'FechaInicio.date'     => '*Campo Fecha Inicio no es válida.',
             'FechaFin.required'    => '*Campo Fecha Fin es obligatoria.',
@@ -946,8 +942,7 @@ class HomeController extends Controller
             }
             return view('ManualesUsuario.ManualesUsuario'); // O la vista que corresponda
     }
-    public function MostrarManual($manual)
-    {
+    public function MostrarManual($manual){
         $path = storage_path('app/public/Manuales/Estaciones/'.$manual.'_TRAZABILIDAD.pdf');
         if (!file_exists($path)) {
             abort(404, 'El archivo no fue encontrado');
