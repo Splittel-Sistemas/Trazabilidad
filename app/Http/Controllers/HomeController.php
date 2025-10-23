@@ -1,19 +1,20 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use App\Models\PorcentajePlaneacion;
 use App\Models\OrdenFabricacion;
 use App\Models\Areas;
 use App\Models\Permission;
 use App\Models\Partidasof_Areas;
-use Illuminate\Support\Facades\Log;
 use App\Models\Linea;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 use function GuzzleHttp\json_decode;
 
@@ -884,21 +885,42 @@ class HomeController extends Controller
     public function guardarAviso(Request $request)
     {
         // Valida la entrada del usuario
-        $request->validate([
-            'titulo' => 'nullable|string|max:255', 
-            'aviso' => 'required|string',
-        ]);
+        $rules = [
+            'Titulo'      => 'required|string|min:1|max:255',
+            'FechaInicio' => 'required',
+            'FechaFin'    => 'required|after_or_equal:FechaInicio',
+            'Aviso'       => 'required|string|min:1',
+        ];
 
+        $messages = [
+            'Titulo.required'      => '*Campo título es obligatoria.',
+            'Titulo.min'           => '*Se requiere minimo :min caracteres.',
+            'FechaInicio.required' => '*Campo Fecha Inicio es obligatoria.',
+            'FechaInicio.date'     => '*Campo Fecha Inicio no es válida.',
+            'FechaFin.required'    => '*Campo Fecha Fin es obligatoria.',
+            'FechaFin.date'        => '*Campo Fecha Fin no es válida.',
+            'FechaFin.after_or_equal' => '*Campo Fecha Fin debe ser mayor o igual a Fecha Inicio.',
+            'Aviso.required'       => '*Campo aviso no puede estar vacío.',
+            'Aviso.min'            => '*Campo aviso requiere minimo :min caracteres.',
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+        $Html  = 'no';
+        if ($request->has('CodigoHtml')) {
+            $Html  = 'si';
+        }
         // Inserta el aviso en la base de datos
-        //Se le aumentan 24 de la fecha para saber cuanto va durar, solo dura 1 dia
-        $Fecha = $request->input('fecha').' '.date('H:i:d');
-        $Fecha = Carbon::parse($Fecha);
-        $Fecha = $Fecha->addHours(24);
-        $Fecha = $Fecha->format('Y-m-d H:i:s');
         DB::table('avisos')->insert([
-            'titulo' => $request->input('titulo'),
-            'contenido' => $request->input('aviso'),
-            'fecha_envio' => $Fecha,
+            'Titulo' => $request->input('Titulo'),
+            'Contenido' => $request->input('Aviso'),
+            'FechaInicio' => $request->input('FechaInicio'),
+            'FechaFin' => $request->input('FechaFin'),
+            'Html' => $Html,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

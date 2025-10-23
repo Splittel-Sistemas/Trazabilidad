@@ -185,26 +185,41 @@
                 <form action="{{ route('guardarAviso') }}" method="POST">
                     @csrf
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="CodigoHtml">
+                        <input class="form-check-input" type="checkbox" role="switch" id="CodigoHtml" name="CodigoHtml" {{ old('CodigoHtml') ? 'checked' : '' }}>
                         <label class="form-check-label" for="flexSwitchCheckDefault"><i class="fas fa-code"></i>  Codigo HTML</label>
                     </div>
                     <div class="mb-1 px-4">
-                        <label for="titulo" class="form-label fw-semibold">Título (Opcional)</label>
-                        <input type="text" class="form-control border-2 rounded-3" id="titulo" name="titulo" placeholder="Escribe un título...">
+                        <label for="Titulo" class="form-label fw-semibold">Título (Opcional)</label>
+                        <input type="text" class="form-control border-2 rounded-3" id="Titulo" name="Titulo" value="{{ old('Titulo') }}" placeholder="Escribe un título...">
+                        @error('Titulo')
+                            <small class="text-danger">{{ $message }}</small>
+                        @enderror
                     </div>
                     <div class="row px-4">
                         <div class="mb-1 col-6">
                             <label for="FechaInicio" class="form-label fw-semibold">Fecha Inicio</label>
-                            <input type="date" class="form-control border-2 rounded-3" id="Fechainicio" value="{{ date('Y-m-d') }}"  name="FechaInicio">
+                            <input type="datetime-local" class="form-control border-2 rounded-3" id="FechaInicio" value="{{ old('FechaInicio', date('Y-m-d\TH:i')) }}"  name="FechaInicio">
+                            @error('FechaInicio')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                         <div class="mb-1 col-6">
                             <label for="FechaFin" class="form-label fw-semibold">Fecha Fin</label>
-                            <input type="date" class="form-control border-2 rounded-3" id="FechaFin" value="{{ date('Y-m-d') }}" name="FechaFin">
+                            <input type="datetime-local" class="form-control border-2 rounded-3" id="FechaFin" value="{{ old('FechaFin', date('Y-m-d\TH:i')) }}" name="FechaFin">
+                            @error('FechaFin')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                     </div>
                     <div class="mb-1 px-4">
-                        <label for="aviso" class="form-label fw-semibold">Aviso</label>
-                        <textarea class="form-control border-2 rounded-3" id="aviso" name="aviso" rows="4" placeholder="Escribe tu aviso aquí..." style="resize: none;"></textarea>
+                        <label for="Aviso" class="form-label fw-semibold">Aviso</label>
+                        <textarea class="form-control border-2 rounded-3" id="Aviso" name="Aviso" rows="4" placeholder="Escribe tu aviso aquí..." style="resize: none;"></textarea>
+                        @error('Aviso')
+                            <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                        @error('Aviso')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div style="height: 5px;"></div>
                     <div class="d-flex justify-content-end">

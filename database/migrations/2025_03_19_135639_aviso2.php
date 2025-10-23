@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('Contenido'); // Contenido del aviso
             $table->datetime('FechaInicio'); 
             $table->datetime('FechaFin');
-            $table->string('Html',2);
+            $table->text('Html');
             $table->timestamps(); 
         });
     }
