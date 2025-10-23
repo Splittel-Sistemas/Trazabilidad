@@ -70,7 +70,7 @@
         align-items: center;
     }
     #ImgSinAvisos img{
-        width: 60%;
+        width: 50%;
     }
     .Div-centrar{
         display: flex;
