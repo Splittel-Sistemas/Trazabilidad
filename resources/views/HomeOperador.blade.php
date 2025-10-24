@@ -108,7 +108,7 @@
             <h3 class="text-center text-muted">¡Te damos la bienvenida! </h3>
             <h4 class="text-center text-dark">{{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}</h4> 
             <img class="d-block mx-auto" src="{{asset('imagenes/Trazabilidad.png') }}" style="width: 3.5rem">
-            <h3 class="text-center text-bold mx-2" style="color: #c00000">Avisos</h3>
+            <h3 class="text-center text-bold my-2" style="color: #c00000">Comunicados</h3>
             <div class="Div-centrar">
                 <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="false">
                     <ol class="carousel-indicators">
@@ -120,12 +120,12 @@
                         @foreach($Avisos as $index => $Aviso)
                             <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" 
                                 @if($Aviso->Html == 'no')style="background-color: {{ $colores[$index % count($colores)] }};"@else style="background-color:white;"@endif>
-                                <div class="carousel-content-wrapper">
+                                <div class="">
                                     @if($Aviso->Html == 'no')
-                                    <h3 class="carousel-title">{{ ucwords($Aviso->titulo ?? 'Avisos') }}</h3>
+                                    <h3 class="carousel-title">{{ ucwords($Aviso->Titulo ?? 'Avisos') }}</h3>
                                     <p class="carousel-content">{{ $Aviso->Contenido }}</p>
                                     @else
-                                    <h3 class="text-dark">{{ ucwords($Aviso->titulo ?? 'Avisos') }}</h3>
+                                    <h3 class="text-dark">{{ ucwords($Aviso->Titulo ?? 'Avisos') }}</h3>
                                     <div class="text-dark">
                                         {!! $Aviso->Contenido !!}
                                     </div>
