@@ -110,7 +110,7 @@
             <img class="d-block mx-auto" src="{{asset('imagenes/Trazabilidad.png') }}" style="width: 3.5rem">
             <h3 class="text-center text-bold my-2" style="color: #c00000">Comunicados</h3>
             <div class="Div-centrar">
-                <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="false">
+                <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
                     <ol class="carousel-indicators">
                         @foreach($Avisos as $index => $aviso)
                             <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ $index }}" class="{{ $index === 0 ? 'active' : '' }}"></li>
@@ -208,49 +208,14 @@
 @endsection
 @section('scripts')
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    /*setTimeout(function() {
         var myCarousel = new bootstrap.Carousel(document.getElementById('carouselExampleIndicators'), {
-            interval: 4000,  
+            interval: 6000,  
             ride: true,      
             wrap: true     
         });
-    });
-    /*function updateClock() {
-        const now = new Date();
-        const day = now.getDate();
-        const year = now.getFullYear();
-        const months = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-        const month = months[now.getMonth()];
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        const seconds = now.getSeconds().toString().padStart(2, '0');
-        document.getElementById('date').textContent = `${day} de ${month} del ${year}`;
-        document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
-    }*/
-    //setInterval(updateClock, 1000);
-    //updateClock();
-    /*function updateMessage() {
-        const now = new Date();
-        const hour = now.getHours();
-        let message = "¡Que tengas un gran día!";
-        if (hour >= 5 && hour < 12) {
-            message = "🌞 ¡Buenos días!";
-        } else if (hour >= 12 && hour < 18) {
-            message = "🌤️ ¡Buenas tardes!";
-        } else if (hour >= 18 && hour < 22) {
-            message = "🌆 ¡Buenas noches!";
-        } else {
-            message = "🌆 ¡Buenas noches!";
-        }
+    }, 2000);*/
 
-        const messageElement = document.getElementById('message');
-        messageElement.style.opacity = 0;
-        setTimeout(() => {
-            messageElement.textContent = message;
-            messageElement.style.opacity = 1;
-        }, 500);
-    }*/
-    //updateMessage();
     document.addEventListener("DOMContentLoaded", function() {
         const btnAbrirModal = document.getElementById('enviaraviso');
         const modal = new bootstrap.Modal(document.getElementById('avisoModal'));
@@ -258,14 +223,6 @@
             modal.show();
         });
     });
-    /*document.addEventListener("DOMContentLoaded", function() {
-        var fechaInput = document.getElementById('fecha');
-        var today = new Date();
-        var day = String(today.getDate()).padStart(2, '0'); 
-        var month = String(today.getMonth() + 1).padStart(2, '0'); 
-        var year = today.getFullYear();
-        fechaInput.value = year + '-' + month + '-' + day;
-    });*/
     setTimeout(function() {
         let alert = document.querySelector(".alert");
         if (alert) {
