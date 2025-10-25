@@ -2008,7 +2008,7 @@ class EtiquetasController extends Controller
             }
             $pdf = new TCPDF();
             // Ajustar márgenes
-            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetMargins(1, 1, 1); 
             $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseOutlines'
             $pdf->SetPrintHeader(false);
             $pdf->SetAutoPageBreak(TRUE, 0);   
@@ -2019,26 +2019,26 @@ class EtiquetasController extends Controller
                         throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
                 }else{
                     $imagePath = storage_path('app/Logos/Optronics.jpg');
-                    $pdf->Image($imagePath, 8, 3, 25);
-                    $pdf->SetFont('helvetica', 'B', 10);
-                    $pdf->setFontSpacing(-0.1);
-                    $pdf->SetXY(3, 10);
-                    $pdf->SetFont('helvetica', 'B', 8);
-                    $pdf->MultiCell(35, 0, $CodigoEspecial, 0, 'C', 0, 1);
-                    $pdf->SetXY(3, 15);
-                    $pdf->SetFont('helvetica', 'B', 10);
-                    $pdf->MultiCell(35, 0,  $TipoDistribuidor.$OrdenVenta."-".$Fecha['Week'].$Fecha['Year'].str_pad($i, 4, '0', STR_PAD_LEFT), 0, 'C', 0, 1);
+                    $pdf->Image($imagePath, 9, 3, 20);
+                    $pdf->SetFont('helvetica', '', 8);
+                    $pdf->setFontSpacing(-0.2);
+                    $pdf->SetXY(2, 10);
+                    $pdf->SetFont('helvetica', '', 8);
+                    $pdf->MultiCell(40, 0, $CodigoEspecial, 0, 'L', 0, 1);
+                    $pdf->SetXY(4, 15);
+                    $pdf->SetFont('helvetica', '', 9);
+                    $pdf->MultiCell(40, 0,  $TipoDistribuidor.$OrdenFabricacion->OrdenFabricacion."-".$Fecha['Week'].$Fecha['Year'].str_pad($i, 4, '0', STR_PAD_LEFT), 0, 'L', 0, 1);
 
                     $i++;
-                    $pdf->Image($imagePath, 63, 3, 25);
-                    $pdf->SetFont('helvetica', 'B', 10);
+                    $pdf->Image($imagePath, 45, 3, 20);
+                    $pdf->SetFont('helvetica', '', 8);
                     $pdf->setFontSpacing(-0.1);
-                    $pdf->SetXY(58, 10);
-                    $pdf->SetFont('helvetica', 'B', 8);
+                    $pdf->SetXY(38, 10);
+                    $pdf->SetFont('helvetica', '', 8);
                     $pdf->MultiCell(35, 0, $CodigoEspecial, 0, 'C', 0, 1);
-                    $pdf->SetXY(58, 15);
-                    $pdf->SetFont('helvetica', 'B', 10);
-                    $pdf->MultiCell(35, 0,  $TipoDistribuidor.$OrdenVenta."-".$Fecha['Week'].$Fecha['Year'].str_pad($i, 4, '0', STR_PAD_LEFT), 0, 'C', 0, 1);
+                    $pdf->SetXY(37, 15);
+                    $pdf->SetFont('helvetica', '', 9);
+                    $pdf->MultiCell(35, 0,  $TipoDistribuidor.$OrdenFabricacion->OrdenFabricacion."-".$Fecha['Week'].$Fecha['Year'].str_pad($i, 4, '0', STR_PAD_LEFT), 0, 'C', 0, 1);
                 }
             }
             ob_end_clean();
@@ -2062,27 +2062,35 @@ class EtiquetasController extends Controller
             $pdf->SetAutoPageBreak(TRUE, 0);   
             $pdf->SetDrawColor(0, 0, 0);
             $pdf->SetLineWidth(0.4);
+            $pdf->setFontSpacing(-0.2);
             for ($i=$PaginaInicio; $i<($PaginaFin+1); $i++) {
                 $pdf->AddPage('L', array(108,28));
-                //$pdf->Rect(3, 3, 35 ,22);
-                //$pdf->Rect(10, 3, 0 ,22);
                 $pdf->SetFont('helvetica', 'B',12);
                 $pdf->StartTransform();
                 $pdf->Rotate(90, 11, 17);
-                $pdf->SetXY(5, 10); // posición X=3 mm, Y=0 mm
+                $pdf->SetXY(7, 6); // posición X=3 mm, Y=0 mm
                 $pdf->Cell(17.5, 4,"TUBO ".($i), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
                 $pdf->StopTransform();
-                if($i<$PaginaFin){
-                    $i++;
-                    //$pdf->Rect(58, 3, 35 ,22);
-                    //$pdf->Rect(65, 3, 0 ,22);
-                    $pdf->SetFont('helvetica', 'B',12);
-                    $pdf->StartTransform();
-                    $pdf->Rotate(90, 58, 12);
-                    $pdf->SetXY(47, 0);
-                    $pdf->Cell(17.5, 4,"TUBO ".($i), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
-                    $pdf->StopTransform();
+                if($i>=$PaginaFin){
+                    break;
                 }
+                $i++;
+                $pdf->SetFont('helvetica', 'B',12);
+                //Ejmeplo
+                $pdf->StartTransform();
+                $pdf->Rotate(90, 54, 16);
+                $pdf->SetXY(49, 0);
+                $pdf->Cell(17.5, 4,"TUBO ".($i), 0, 0, 'C');
+                $pdf->StopTransform();
+                if($i>=$PaginaFin){
+                    break;
+                }
+                $i++;
+                $pdf->StartTransform();
+                $pdf->Rotate(90, 73, -3);
+                $pdf->SetXY(49, 0);
+                $pdf->Cell(17.5, 4,"TUBO ".($i), 0, 0, 'C');
+                $pdf->StopTransform();
             }
             ob_end_clean();
             // Generar el archivo PDF y devolverlo al navegador

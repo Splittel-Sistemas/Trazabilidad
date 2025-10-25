@@ -24,13 +24,13 @@
     }*/
     .carousel-inner {
         width: 100%;
-        min-height: 20rem;
+        min-height: 19rem;
         position: relative;
         overflow: hidden; 
         border-radius: 15px;
     }
     .carousel-item {
-        min-height: 20rem;
+        min-height: 19rem;
         color: white;
         position: relative;
         text-align: center;
@@ -105,9 +105,9 @@
                 <img class="" src="{{asset('imagenes/splittel.png') }}" alt="Splittel">
             </div>
         @else
-            <h3 class="text-center text-muted">¡Te damos la bienvenida! </h3>
+            <h3 class="text-center text-muted" style="margin-top: -3rem">¡Te damos la bienvenida! </h3>
             <h4 class="text-center text-dark">{{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}</h4> 
-            <img class="d-block mx-auto" src="{{asset('imagenes/Trazabilidad.png') }}" style="width: 3.5rem">
+            <!--<img class="d-block mx-auto" src="{{asset('imagenes/Trazabilidad.png') }}" style="width: 3.5rem">-->
             <h3 class="text-center text-bold my-2" style="color: #c00000">Comunicados</h3>
             <div class="Div-centrar">
                 <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
@@ -121,6 +121,7 @@
                             <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" 
                                 @if($Aviso->Html == 'no')style="background-color: {{ $colores[$index % count($colores)] }};"@else style="background-color:white;"@endif>
                                 <div class="">
+                                    <button class="btn btn-warning" style="right: 1rem;width: 10%;position:absolute;"><i class="fas fa-edit"></i></button>
                                     @if($Aviso->Html == 'no')
                                     <h3 class="carousel-title">{{ ucwords($Aviso->Titulo ?? 'Avisos') }}</h3>
                                     <p class="carousel-content">{{ $Aviso->Contenido }}</p>

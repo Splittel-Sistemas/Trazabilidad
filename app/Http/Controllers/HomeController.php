@@ -865,10 +865,10 @@ class HomeController extends Controller
     //dasboard operador 
     public function indexoperador(Request $request){
         //$manana = Carbon::now()->addDay()->format('Y-m-d H:i:s'); 
-        $Inicio = Carbon::now()->format('Y-m-d 00:00:00');
+        $Inicio = Carbon::now()->format('Y-m-d H:i:s');
         $Fin = Carbon::now()->format('Y-m-d H:i:s');
         $Avisos = DB::table('avisos')
-                        ->where('FechaInicio','>=',$Inicio)
+                        ->where('FechaInicio','<=',$Inicio)
                         ->where('FechaFin','>=',$Fin)
                         ->get();
         $user = Auth::user();
