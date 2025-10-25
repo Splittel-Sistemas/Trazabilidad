@@ -121,7 +121,7 @@
                             <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" 
                                 @if($Aviso->Html == 'no')style="background-color: {{ $colores[$index % count($colores)] }};"@else style="background-color:white;"@endif>
                                 <div class="">
-                                    <button class="btn btn-warning" style="right: 1rem;width: 10%;position:absolute;"><i class="fas fa-edit"></i></button>
+                                    {{--<button class="btn btn-warning" style="right: 1rem;width: 10%;position:absolute;"><i class="fas fa-edit"></i></button>--}}
                                     @if($Aviso->Html == 'no')
                                     <h3 class="carousel-title">{{ ucwords($Aviso->Titulo ?? 'Avisos') }}</h3>
                                     <p class="carousel-content">{{ $Aviso->Contenido }}</p>
