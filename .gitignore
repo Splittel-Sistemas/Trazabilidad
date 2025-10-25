@@ -22,3 +22,4 @@ yarn-error.log
 /vendor
 storage/logs/laravel.log
 storage/logs/laravel.log
+/storage/logs
