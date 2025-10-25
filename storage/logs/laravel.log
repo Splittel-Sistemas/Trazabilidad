@@ -96,3 +96,199 @@
 #9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
 #10 {main}
 "} 
+[2025-10-25 01:00:41] production.ERROR: include(C:\xampp\htdocs\Laravel\Trazabilidad\vendor\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): include(C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory at C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php:576)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(290): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#1 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#2 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): include('C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('C:\\\\xampp\\\\htdocs...')
+#4 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1008): Composer\\Autoload\\ClassLoader->loadClass('Laravel\\\\Breeze\\\\...')
+#5 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(988): Illuminate\\Foundation\\Application->registerDeferredProvider('Laravel\\\\Breeze\\\\...', 'Laravel\\\\Breeze\\\\...')
+#6 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(964): Illuminate\\Foundation\\Application->loadDeferredProvider('Laravel\\\\Breeze\\\\...')
+#7 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(477): Illuminate\\Foundation\\Application->loadDeferredProviders()
+#8 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 {main}
+"} 
+[2025-10-25 01:00:43] production.ERROR: include(C:\xampp\htdocs\Laravel\Trazabilidad\vendor\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): include(C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory at C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php:576)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(290): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#1 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#2 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): include('C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('C:\\\\xampp\\\\htdocs...')
+#4 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1008): Composer\\Autoload\\ClassLoader->loadClass('Laravel\\\\Breeze\\\\...')
+#5 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(988): Illuminate\\Foundation\\Application->registerDeferredProvider('Laravel\\\\Breeze\\\\...', 'Laravel\\\\Breeze\\\\...')
+#6 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(964): Illuminate\\Foundation\\Application->loadDeferredProvider('Laravel\\\\Breeze\\\\...')
+#7 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(477): Illuminate\\Foundation\\Application->loadDeferredProviders()
+#8 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 {main}
+"} 
+[2025-10-25 01:00:45] production.ERROR: include(C:\xampp\htdocs\Laravel\Trazabilidad\vendor\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): include(C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory at C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php:576)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(290): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#1 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#2 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): include('C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('C:\\\\xampp\\\\htdocs...')
+#4 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1008): Composer\\Autoload\\ClassLoader->loadClass('Laravel\\\\Breeze\\\\...')
+#5 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(988): Illuminate\\Foundation\\Application->registerDeferredProvider('Laravel\\\\Breeze\\\\...', 'Laravel\\\\Breeze\\\\...')
+#6 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(964): Illuminate\\Foundation\\Application->loadDeferredProvider('Laravel\\\\Breeze\\\\...')
+#7 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(477): Illuminate\\Foundation\\Application->loadDeferredProviders()
+#8 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 {main}
+"} 
+[2025-10-25 01:00:46] production.ERROR: include(C:\xampp\htdocs\Laravel\Trazabilidad\vendor\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): include(C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory at C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php:576)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(290): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#1 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#2 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): include('C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('C:\\\\xampp\\\\htdocs...')
+#4 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1008): Composer\\Autoload\\ClassLoader->loadClass('Laravel\\\\Breeze\\\\...')
+#5 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(988): Illuminate\\Foundation\\Application->registerDeferredProvider('Laravel\\\\Breeze\\\\...', 'Laravel\\\\Breeze\\\\...')
+#6 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(964): Illuminate\\Foundation\\Application->loadDeferredProvider('Laravel\\\\Breeze\\\\...')
+#7 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(477): Illuminate\\Foundation\\Application->loadDeferredProviders()
+#8 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 {main}
+"} 
+[2025-10-25 01:00:47] production.ERROR: include(C:\xampp\htdocs\Laravel\Trazabilidad\vendor\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): include(C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory at C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php:576)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(290): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#1 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#2 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): include('C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('C:\\\\xampp\\\\htdocs...')
+#4 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1008): Composer\\Autoload\\ClassLoader->loadClass('Laravel\\\\Breeze\\\\...')
+#5 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(988): Illuminate\\Foundation\\Application->registerDeferredProvider('Laravel\\\\Breeze\\\\...', 'Laravel\\\\Breeze\\\\...')
+#6 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(964): Illuminate\\Foundation\\Application->loadDeferredProvider('Laravel\\\\Breeze\\\\...')
+#7 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(477): Illuminate\\Foundation\\Application->loadDeferredProviders()
+#8 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 {main}
+"} 
+[2025-10-25 01:00:48] production.ERROR: include(C:\xampp\htdocs\Laravel\Trazabilidad\vendor\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): include(C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory at C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php:576)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(290): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#1 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#2 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): include('C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('C:\\\\xampp\\\\htdocs...')
+#4 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1008): Composer\\Autoload\\ClassLoader->loadClass('Laravel\\\\Breeze\\\\...')
+#5 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(988): Illuminate\\Foundation\\Application->registerDeferredProvider('Laravel\\\\Breeze\\\\...', 'Laravel\\\\Breeze\\\\...')
+#6 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(964): Illuminate\\Foundation\\Application->loadDeferredProvider('Laravel\\\\Breeze\\\\...')
+#7 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(477): Illuminate\\Foundation\\Application->loadDeferredProviders()
+#8 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 {main}
+"} 
+[2025-10-25 01:00:50] production.ERROR: include(C:\xampp\htdocs\Laravel\Trazabilidad\vendor\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): include(C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory at C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php:576)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(290): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#1 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#2 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): include('C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('C:\\\\xampp\\\\htdocs...')
+#4 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1008): Composer\\Autoload\\ClassLoader->loadClass('Laravel\\\\Breeze\\\\...')
+#5 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(988): Illuminate\\Foundation\\Application->registerDeferredProvider('Laravel\\\\Breeze\\\\...', 'Laravel\\\\Breeze\\\\...')
+#6 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(964): Illuminate\\Foundation\\Application->loadDeferredProvider('Laravel\\\\Breeze\\\\...')
+#7 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(477): Illuminate\\Foundation\\Application->loadDeferredProviders()
+#8 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 {main}
+"} 
+[2025-10-25 01:00:51] production.ERROR: include(C:\xampp\htdocs\Laravel\Trazabilidad\vendor\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): include(C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory at C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php:576)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(290): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#1 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#2 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): include('C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('C:\\\\xampp\\\\htdocs...')
+#4 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1008): Composer\\Autoload\\ClassLoader->loadClass('Laravel\\\\Breeze\\\\...')
+#5 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(988): Illuminate\\Foundation\\Application->registerDeferredProvider('Laravel\\\\Breeze\\\\...', 'Laravel\\\\Breeze\\\\...')
+#6 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(964): Illuminate\\Foundation\\Application->loadDeferredProvider('Laravel\\\\Breeze\\\\...')
+#7 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(477): Illuminate\\Foundation\\Application->loadDeferredProviders()
+#8 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 {main}
+"} 
+[2025-10-25 01:00:52] production.ERROR: include(C:\xampp\htdocs\Laravel\Trazabilidad\vendor\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): include(C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory at C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php:576)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(290): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#1 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#2 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): include('C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('C:\\\\xampp\\\\htdocs...')
+#4 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1008): Composer\\Autoload\\ClassLoader->loadClass('Laravel\\\\Breeze\\\\...')
+#5 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(988): Illuminate\\Foundation\\Application->registerDeferredProvider('Laravel\\\\Breeze\\\\...', 'Laravel\\\\Breeze\\\\...')
+#6 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(964): Illuminate\\Foundation\\Application->loadDeferredProvider('Laravel\\\\Breeze\\\\...')
+#7 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(477): Illuminate\\Foundation\\Application->loadDeferredProviders()
+#8 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 {main}
+"} 
+[2025-10-25 01:00:53] production.ERROR: include(C:\xampp\htdocs\Laravel\Trazabilidad\vendor\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): include(C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory at C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php:576)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(290): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#1 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#2 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): include('C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('C:\\\\xampp\\\\htdocs...')
+#4 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1008): Composer\\Autoload\\ClassLoader->loadClass('Laravel\\\\Breeze\\\\...')
+#5 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(988): Illuminate\\Foundation\\Application->registerDeferredProvider('Laravel\\\\Breeze\\\\...', 'Laravel\\\\Breeze\\\\...')
+#6 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(964): Illuminate\\Foundation\\Application->loadDeferredProvider('Laravel\\\\Breeze\\\\...')
+#7 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(477): Illuminate\\Foundation\\Application->loadDeferredProviders()
+#8 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 {main}
+"} 
+[2025-10-25 01:00:55] production.ERROR: include(C:\xampp\htdocs\Laravel\Trazabilidad\vendor\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): include(C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory at C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php:576)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(290): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#1 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#2 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): include('C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('C:\\\\xampp\\\\htdocs...')
+#4 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1008): Composer\\Autoload\\ClassLoader->loadClass('Laravel\\\\Breeze\\\\...')
+#5 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(988): Illuminate\\Foundation\\Application->registerDeferredProvider('Laravel\\\\Breeze\\\\...', 'Laravel\\\\Breeze\\\\...')
+#6 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(964): Illuminate\\Foundation\\Application->loadDeferredProvider('Laravel\\\\Breeze\\\\...')
+#7 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(477): Illuminate\\Foundation\\Application->loadDeferredProviders()
+#8 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 {main}
+"} 
+[2025-10-25 01:00:56] production.ERROR: include(C:\xampp\htdocs\Laravel\Trazabilidad\vendor\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): include(C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory at C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php:576)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(290): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#1 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#2 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): include('C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('C:\\\\xampp\\\\htdocs...')
+#4 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1008): Composer\\Autoload\\ClassLoader->loadClass('Laravel\\\\Breeze\\\\...')
+#5 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(988): Illuminate\\Foundation\\Application->registerDeferredProvider('Laravel\\\\Breeze\\\\...', 'Laravel\\\\Breeze\\\\...')
+#6 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(964): Illuminate\\Foundation\\Application->loadDeferredProvider('Laravel\\\\Breeze\\\\...')
+#7 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(477): Illuminate\\Foundation\\Application->loadDeferredProviders()
+#8 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 {main}
+"} 
+[2025-10-25 01:00:57] production.ERROR: include(C:\xampp\htdocs\Laravel\Trazabilidad\vendor\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): include(C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory at C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php:576)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(290): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#1 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#2 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): include('C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('C:\\\\xampp\\\\htdocs...')
+#4 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1008): Composer\\Autoload\\ClassLoader->loadClass('Laravel\\\\Breeze\\\\...')
+#5 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(988): Illuminate\\Foundation\\Application->registerDeferredProvider('Laravel\\\\Breeze\\\\...', 'Laravel\\\\Breeze\\\\...')
+#6 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(964): Illuminate\\Foundation\\Application->loadDeferredProvider('Laravel\\\\Breeze\\\\...')
+#7 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(477): Illuminate\\Foundation\\Application->loadDeferredProviders()
+#8 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 {main}
+"} 
+[2025-10-25 01:00:58] production.ERROR: include(C:\xampp\htdocs\Laravel\Trazabilidad\vendor\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory {"exception":"[object] (ErrorException(code: 0): include(C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer/../laravel/breeze/src/BreezeServiceProvider.php): Failed to open stream: No such file or directory at C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php:576)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(290): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#1 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'include(C:\\\\xamp...', 'C:\\\\xampp\\\\htdocs...', 576)
+#2 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(576): include('C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\composer\\ClassLoader.php(427): Composer\\Autoload\\{closure}('C:\\\\xampp\\\\htdocs...')
+#4 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1008): Composer\\Autoload\\ClassLoader->loadClass('Laravel\\\\Breeze\\\\...')
+#5 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(988): Illuminate\\Foundation\\Application->registerDeferredProvider('Laravel\\\\Breeze\\\\...', 'Laravel\\\\Breeze\\\\...')
+#6 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(964): Illuminate\\Foundation\\Application->loadDeferredProvider('Laravel\\\\Breeze\\\\...')
+#7 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(477): Illuminate\\Foundation\\Application->loadDeferredProviders()
+#8 C:\\xampp\\htdocs\\Laravel\\Trazabilidad\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#9 Command line code(1): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 {main}
+"} 
