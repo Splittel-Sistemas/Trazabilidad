@@ -34,22 +34,22 @@ class EtiquetasController extends Controller
             //Las validaciones la mayoria estan en el FRONT-END y ALGUNOS TIENE VALIDACION EN EL BACKEND
         $this->Etiquetas = [
             [1,"ETIQ4","ETIQUETA DE BOLSA JUMPER"],
-            [2,"ETIQ1","ETIQUETA DE BOLSA ESPECIAL HUAWEI"],
-            [3,"ETIQ4","ETIQUETA DE BOLSA ESPECIAL NOKIA"],
-            [4,"ETIQ4","ETIQUETA DE BOLSA ESPECIAL DRAI"],
+            [2,"ETIQ1","BOLSA ESPECIAL HUAWEI"],
+            [3,"ETIQ4","BOLSA ESPECIAL NOKIA"],
+            [4,"ETIQ4","BOLSA ESPECIAL DRAI"],
             [5,"ETIQ2","ETIQUETA DE BANDERILLA QR GENERAL"],
-            [6,"ETIQ3","ETIQUETA DE BANDERILLA QR NÚMERO ESPECIAL"],
+            [6,"ETIQ3","BANDERILLA QR NÚMERO ESPECIAL"],
             [7,"ETIQ4CEDIS","ETIQUETA DE BOLSA JUMPER CEDIS"],
             [8,"ETIQ5","ETIQUETA DE NÚMERO DE PIEZAS"],
             [9,"ETIQ6","ETIQUETA DE TRAZABILIDAD MPO (PRUEBA)"],
             [10,"ETIQ7","ETIQUETA DE INYECCIÓN (PRUEBA)"],
             [11,"ETIQ8","ETIQUETA DE DIVISOR (PRUEBA)"],
             [12,"ETIQ4","ETIQUETA DE BOLSA PATCH CORD GENERAL"],
-            [13,"ETIQ9","ETIQUETA DE CAJA HUAWEI (PRUEBA)"],
-            [14,"ETIQ10","ETIQUETA DE CAJA NOKIA (PRUEBA)"],
-            [15,"ETIQ11","ETIQUETA DE CAJA CABLE DE SERVICIO (PRUEBA)"],
+            [13,"ETIQ9","CAJA HUAWEI"],
+            [14,"ETIQ10","CAJA NOKIA"],
+            [15,"ETIQ11","CAJA CABLE DE SERVICIO"],
             [16,"ETIQ12","ETIQUETA PARA MARCADORES DE FIBRA OPTICA (PRUEBA)"],
-            [17,"ETIQ13","ETIQUETA CERTIFICADO DE MEDICIÓN OPTRONICS (PRUEBA)"],
+            [17,"ETIQ13","CERTIFICADO DE MEDICIÓN OPTRONICS"],
             [18,"ETIQ14","DISTRIBUIDOR ETIQUETA DE TRAZABILIDAD (PRUEBA)"],
             [19,"ETIQ15","DISTRIBUIDOR ETIQUETA DE TUBO (PRUEBA)"],
             [20,"ETIQ16","ETIQUETA DE IDENTIFICACIÓN DE CHAROLAS TRANSTELCO"],
@@ -2184,31 +2184,69 @@ class EtiquetasController extends Controller
         $Etiquetas = $this->Etiquetas;
         if($CodigoCliente == $this->HuaweiInternacional){
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
-                return $etiqueta[0] !== 1 && $etiqueta[0] !== 3 &&
-                        $etiqueta[0] !== 4 && $etiqueta[0] !== 5 &&
-                        $etiqueta[0] !== 7 && $etiqueta[0] !== 12 &&
-                        $etiqueta[0] !== 14 ;
+                return $etiqueta[0] !== 1 &&
+                        $etiqueta[0] !== 3 && $etiqueta[0] !== 4 &&
+                        $etiqueta[0] !== 5 &&
+                        $etiqueta[0] !== 7 && $etiqueta[0] !== 8 && 
+                        $etiqueta[0] !== 9 && $etiqueta[0] !== 10 &&
+                        $etiqueta[0] !== 11 && $etiqueta[0] !== 12 && 
+                        $etiqueta[0] !== 14 &&
+                        $etiqueta[0] !== 15 && $etiqueta[0] !== 16 &&
+                        $etiqueta[0] !== 17 && $etiqueta[0] !== 18 &&
+                        $etiqueta[0] !== 19 && $etiqueta[0] !== 20 &&
+                        $etiqueta[0] !== 21 && $etiqueta[0] !== 22 &&
+                        $etiqueta[0] !== 23 && $etiqueta[0] !== 24 && 
+                        $etiqueta[0] !== 25 && $etiqueta[0] !== 26;
             });
         
         }elseif($CodigoCliente == $this->Nokia){
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
                 return $etiqueta[0] !== 1 && $etiqueta[0] !== 2 &&
-                        $etiqueta[0] !== 4 && $etiqueta[0] !== 5 &&
-                        $etiqueta[0] !== 7 && $etiqueta[0] !== 12 &&
-                        $etiqueta[0] !== 13 ;
+                        $etiqueta[0] !== 4 &&
+                        $etiqueta[0] !== 5 &&
+                        $etiqueta[0] !== 7 && $etiqueta[0] !== 8 && 
+                        $etiqueta[0] !== 9 && $etiqueta[0] !== 10 &&
+                        $etiqueta[0] !== 11 && $etiqueta[0] !== 12 && 
+                        $etiqueta[0] !== 13 &&
+                        $etiqueta[0] !== 15 && $etiqueta[0] !== 16 &&
+                        $etiqueta[0] !== 17 && $etiqueta[0] !== 18 &&
+                        $etiqueta[0] !== 19 && $etiqueta[0] !== 20 &&
+                        $etiqueta[0] !== 21 && $etiqueta[0] !== 22 &&
+                        $etiqueta[0] !== 23 && $etiqueta[0] !== 24 && 
+                        $etiqueta[0] !== 25 && $etiqueta[0] !== 26;
             });
         }elseif($CodigoCliente == $this->Drai){
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
                 return $etiqueta[0] !== 1 && $etiqueta[0] !== 2 &&
-                        $etiqueta[0] !== 3 && $etiqueta[0] !== 5 &&
-                        $etiqueta[0] !== 7 && $etiqueta[0] !== 12 && 
-                        $etiqueta[0] !== 13 && $etiqueta[0] !== 14;
+                        $etiqueta[0] !== 3 &&
+                        $etiqueta[0] !== 5 &&
+                        $etiqueta[0] !== 7 && $etiqueta[0] !== 8 && 
+                        $etiqueta[0] !== 9 && $etiqueta[0] !== 10 &&
+                        $etiqueta[0] !== 11 && $etiqueta[0] !== 12 && 
+                        $etiqueta[0] !== 13 && $etiqueta[0] !== 14 &&
+                        $etiqueta[0] !== 16 &&
+                        $etiqueta[0] !== 18 &&
+                        $etiqueta[0] !== 19 && $etiqueta[0] !== 20 &&
+                        $etiqueta[0] !== 21 && $etiqueta[0] !== 22 &&
+                        $etiqueta[0] !== 23 && $etiqueta[0] !== 24 && 
+                        $etiqueta[0] !== 25 && $etiqueta[0] !== 26;
             });
         }else{
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
-                return $etiqueta[0] !== 2 && $etiqueta[0] !== 3 &&
-                        $etiqueta[0] !== 4 && $etiqueta[0] !== 6 && 
-                        $etiqueta[0] !== 13 && $etiqueta[0] !== 14;
+                return $etiqueta[0] !== 1 && 
+                        $etiqueta[0] !== 3 && $etiqueta[0] !== 4 &&
+                        $etiqueta[0] !== 5 && 
+                        $etiqueta[0] !== 7 && $etiqueta[0] !== 8 && 
+                        $etiqueta[0] !== 9 && $etiqueta[0] !== 10 &&
+                        $etiqueta[0] !== 10 && $etiqueta[0] !== 11 && 
+                        $etiqueta[0] !== 12 &&
+                        $etiqueta[0] !== 14 && $etiqueta[0] !== 15 &&
+                        $etiqueta[0] !== 16 && $etiqueta[0] !== 17 &&
+                        $etiqueta[0] !== 18 && $etiqueta[0] !== 19 &&
+                        $etiqueta[0] !== 20 && $etiqueta[0] !== 21 &&
+                        $etiqueta[0] !== 22 && $etiqueta[0] !== 23 && 
+                        $etiqueta[0] !== 24 && $etiqueta[0] !== 25 && 
+                        $etiqueta[0] !== 26;
             });
         }
          //Ordenar por el nombre de la etiqueta en Orden Alfabetico
