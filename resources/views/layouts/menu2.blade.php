@@ -57,6 +57,18 @@
                     border-color: transparent;
                 }
             }
+            .badge-scale {
+                position: relative;
+                right: 2rem;
+                transform: scale(1.3);
+                transition: transform 0.2s ease;
+            }
+            @media (min-width: 576px) {
+                .badge-scale {
+                    right: 2.6rem;
+                    transform: scale(1.7);
+                }
+            }
 
         </style>
         <script>
@@ -567,7 +579,7 @@
                     <li class="nav-item">
                          @if(app()->environment('local', 'staging'))
                             {{--Solo Ambiente de pruebas--}}
-                            <span class="badge bg-danger" style="transform: scale(1.7);position:relative;right:2.6rem">⚠️ Ambiente de pruebas</span>
+                            <span class="badge bg-danger badge-scale">⚠️ Ambiente de pruebas</span>
                         @endif
                     </li>
                     <li class="nav-item">
