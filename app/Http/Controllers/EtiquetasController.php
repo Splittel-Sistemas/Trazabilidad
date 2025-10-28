@@ -2022,10 +2022,10 @@ class EtiquetasController extends Controller
                     $pdf->Image($imagePath, 9, 4, 20);
                     $pdf->SetFont('helvetica', '', 8);
                     $pdf->setFontSpacing(-0.2);
-                    $pdf->SetXY(1, 10);
+                    $pdf->SetXY(0, 10);
                     $pdf->SetFont('helvetica', '', 8);
                     $pdf->MultiCell(35, 0, $CodigoEspecial, 0, 'C', 0, 1);
-                    $pdf->SetXY(1, 15);
+                    $pdf->SetXY(0, 15);
                     $pdf->SetFont('helvetica', '', 9);
                     $pdf->MultiCell(35, 0,  $TipoDistribuidor.$OrdenFabricacion->OrdenFabricacion."-".$Fecha['Week'].$Fecha['Year'].str_pad($i, 4, '0', STR_PAD_LEFT), 0, 'C', 0, 1);
 
@@ -2033,10 +2033,10 @@ class EtiquetasController extends Controller
                     $pdf->Image($imagePath, 47, 4, 20);
                     $pdf->SetFont('helvetica', '', 8);
                     $pdf->setFontSpacing(-0.1);
-                    $pdf->SetXY(40, 10);
+                    $pdf->SetXY(38, 10);
                     $pdf->SetFont('helvetica', '', 8);
                     $pdf->MultiCell(35, 0, $CodigoEspecial, 0, 'C', 0, 1);
-                    $pdf->SetXY(40, 15);
+                    $pdf->SetXY(38, 15);
                     $pdf->SetFont('helvetica', '', 9);
                     $pdf->MultiCell(35, 0,  $TipoDistribuidor.$OrdenFabricacion->OrdenFabricacion."-".$Fecha['Week'].$Fecha['Year'].str_pad($i, 4, '0', STR_PAD_LEFT), 0, 'C', 0, 1);
                 }
