@@ -2019,23 +2019,25 @@ class EtiquetasController extends Controller
                         throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
                 }else{
                     $imagePath = storage_path('app/Logos/Optronics.jpg');
-                    $pdf->Image($imagePath, 9, 4, 20);
+                    $pdf->Image($imagePath, 8, 4, 20);
                     $pdf->SetFont('helvetica', '', 8);
                     $pdf->setFontSpacing(-0.2);
                     $pdf->SetXY(0, 10);
                     $pdf->SetFont('helvetica', '', 8);
                     $pdf->MultiCell(35, 0, $CodigoEspecial, 0, 'C', 0, 1);
+                    $pdf->setFontSpacing(-0.1);
                     $pdf->SetXY(0, 15);
                     $pdf->SetFont('helvetica', '', 9);
                     $pdf->MultiCell(35, 0,  $TipoDistribuidor.$OrdenFabricacion->OrdenFabricacion."-".$Fecha['Week'].$Fecha['Year'].str_pad($i, 4, '0', STR_PAD_LEFT), 0, 'C', 0, 1);
 
                     $i++;
-                    $pdf->Image($imagePath, 47, 4, 20);
+                    $pdf->Image($imagePath, 46, 4, 20);
                     $pdf->SetFont('helvetica', '', 8);
-                    $pdf->setFontSpacing(-0.1);
+                    $pdf->setFontSpacing(-0.2);
                     $pdf->SetXY(38, 10);
                     $pdf->SetFont('helvetica', '', 8);
                     $pdf->MultiCell(35, 0, $CodigoEspecial, 0, 'C', 0, 1);
+                    $pdf->setFontSpacing(-0.1);
                     $pdf->SetXY(38, 15);
                     $pdf->SetFont('helvetica', '', 9);
                     $pdf->MultiCell(35, 0,  $TipoDistribuidor.$OrdenFabricacion->OrdenFabricacion."-".$Fecha['Week'].$Fecha['Year'].str_pad($i, 4, '0', STR_PAD_LEFT), 0, 'C', 0, 1);
