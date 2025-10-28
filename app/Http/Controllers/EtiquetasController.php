@@ -2019,24 +2019,24 @@ class EtiquetasController extends Controller
                         throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
                 }else{
                     $imagePath = storage_path('app/Logos/Optronics.jpg');
-                    $pdf->Image($imagePath, 9, 3, 20);
+                    $pdf->Image($imagePath, 9, 4, 20);
                     $pdf->SetFont('helvetica', '', 8);
                     $pdf->setFontSpacing(-0.2);
-                    $pdf->SetXY(2, 10);
-                    $pdf->SetFont('helvetica', '', 8);
-                    $pdf->MultiCell(40, 0, $CodigoEspecial, 0, 'L', 0, 1);
-                    $pdf->SetXY(4, 15);
-                    $pdf->SetFont('helvetica', '', 9);
-                    $pdf->MultiCell(40, 0,  $TipoDistribuidor.$OrdenFabricacion->OrdenFabricacion."-".$Fecha['Week'].$Fecha['Year'].str_pad($i, 4, '0', STR_PAD_LEFT), 0, 'L', 0, 1);
-
-                    $i++;
-                    $pdf->Image($imagePath, 45, 3, 20);
-                    $pdf->SetFont('helvetica', '', 8);
-                    $pdf->setFontSpacing(-0.1);
-                    $pdf->SetXY(38, 10);
+                    $pdf->SetXY(1, 10);
                     $pdf->SetFont('helvetica', '', 8);
                     $pdf->MultiCell(35, 0, $CodigoEspecial, 0, 'C', 0, 1);
-                    $pdf->SetXY(37, 15);
+                    $pdf->SetXY(1, 15);
+                    $pdf->SetFont('helvetica', '', 9);
+                    $pdf->MultiCell(35, 0,  $TipoDistribuidor.$OrdenFabricacion->OrdenFabricacion."-".$Fecha['Week'].$Fecha['Year'].str_pad($i, 4, '0', STR_PAD_LEFT), 0, 'C', 0, 1);
+
+                    $i++;
+                    $pdf->Image($imagePath, 47, 4, 20);
+                    $pdf->SetFont('helvetica', '', 8);
+                    $pdf->setFontSpacing(-0.1);
+                    $pdf->SetXY(40, 10);
+                    $pdf->SetFont('helvetica', '', 8);
+                    $pdf->MultiCell(35, 0, $CodigoEspecial, 0, 'C', 0, 1);
+                    $pdf->SetXY(40, 15);
                     $pdf->SetFont('helvetica', '', 9);
                     $pdf->MultiCell(35, 0,  $TipoDistribuidor.$OrdenFabricacion->OrdenFabricacion."-".$Fecha['Week'].$Fecha['Year'].str_pad($i, 4, '0', STR_PAD_LEFT), 0, 'C', 0, 1);
                 }
@@ -2067,7 +2067,7 @@ class EtiquetasController extends Controller
                 $pdf->AddPage('L', array(108,28));
                 $pdf->SetFont('helvetica', 'B',12);
                 $pdf->StartTransform();
-                $pdf->Rotate(90, 11, 17);
+                $pdf->Rotate(90, 13, 15);
                 $pdf->SetXY(7, 6); // posición X=3 mm, Y=0 mm
                 $pdf->Cell(17.5, 4,"TUBO ".($i), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
                 $pdf->StopTransform();
@@ -2078,19 +2078,19 @@ class EtiquetasController extends Controller
                 $pdf->SetFont('helvetica', 'B',12);
                 //Ejmeplo
                 $pdf->StartTransform();
-                $pdf->Rotate(90, 54, 16);
+                $pdf->Rotate(90, 56, 14);
                 $pdf->SetXY(49, 0);
                 $pdf->Cell(17.5, 4,"TUBO ".($i), 0, 0, 'C');
                 $pdf->StopTransform();
                 if($i>=$PaginaFin){
                     break;
                 }
-                $i++;
+                /*$i++;
                 $pdf->StartTransform();
                 $pdf->Rotate(90, 73, -3);
                 $pdf->SetXY(49, 0);
                 $pdf->Cell(17.5, 4,"TUBO ".($i), 0, 0, 'C');
-                $pdf->StopTransform();
+                $pdf->StopTransform();*/
             }
             ob_end_clean();
             // Generar el archivo PDF y devolverlo al navegador
