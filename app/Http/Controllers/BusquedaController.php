@@ -58,21 +58,27 @@ class BusquedaController extends Controller
         $Ordenes = '';
         $Lista = '';
         if($TipoOrden == 'OF'){
-            $Ordenes=OrdenFabricacion::where('OrdenFabricacion', 'like', '%' . $NumeroOrden . '%')->orderBy('OrdenFabricacion', 'asc')->get();
+            $Ordenes = OrdenFabricacion::where('OrdenFabricacion', 'like', '%' . $NumeroOrden . '%')->orderBy('OrdenFabricacion', 'asc')->get();
+            /*if($Ordenes->count()==0){
+                $Lista ='<a class="list-group-item list-group-item-action p-1 m-0 disabled" style="background:#CDCECF">Sin resultados</a>';
+                return $Lista;
+            }
+            $Cliente = $Ordenes->first()->OrdenVenta->NombreCliente;*/
             foreach($Ordenes as $key=>$Orden){
+                $Cliente = $Orden->OrdenVenta->NombreCliente;
                 if($key==0){
-                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 active" data-cantidad="'.$Orden->CantidadTotal.'" onclick="SeleccionarNumOrden('.$Orden->OrdenFabricacion.')">'.$Orden->OrdenFabricacion.'</a>';
+                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 active" data-cantidad="'.$Orden->CantidadTotal.'" onclick="SeleccionarNumOrden('.$Orden->OrdenFabricacion.')">'.$Orden->OrdenFabricacion."-". $Cliente.'</a>';
                 }else{
-                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 " data-cantidad="'.$Orden->CantidadTotal.'" onclick="SeleccionarNumOrden('.$Orden->OrdenFabricacion.')">'.$Orden->OrdenFabricacion.'</a>';
+                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 " data-cantidad="'.$Orden->CantidadTotal.'" onclick="SeleccionarNumOrden('.$Orden->OrdenFabricacion.')">'.$Orden->OrdenFabricacion."-". $Cliente.'</a>';
                 }
             }
         }else{
             $Ordenes=OrdenVenta::where('OrdenVenta', 'like', '%' . $NumeroOrden . '%')->orderBy('OrdenVenta', 'asc')->get();
             foreach($Ordenes as $key=>$Orden){
                 if($key==0){
-                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 active" onclick="SeleccionarNumOrden('.$Orden->OrdenVenta.')">'.$Orden->OrdenVenta.'</a>';
+                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 active" onclick="SeleccionarNumOrden('.$Orden->OrdenVenta.')">'.$Orden->OrdenVenta."-".$Orden->NombreCliente.'</a>';
                 }else{
-                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 " onclick="SeleccionarNumOrden('.$Orden->OrdenVenta.')">'.$Orden->OrdenVenta.'</a>';
+                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 " onclick="SeleccionarNumOrden('.$Orden->OrdenVenta.')">'.$Orden->OrdenVenta."-".$Orden->NombreCliente.'</a>';
                 }
             }
         }

@@ -213,7 +213,6 @@ class FuncionesGeneralesController extends Controller
         $where="";
         $datos="";
         try {
-            $where = 'T0."DocNum" LIKE \'%' . $NumOV . '%\'';
             $sql = ' SELECT  T0."DocNum" AS "OV",T2."SubCatNum"  AS "SubCatNum", T2."ItemCode" as "ItemCode", 
                             T1."U_BPItmDsc" as "U_BPItmDsc", T0."DocDate", T0."NumAtCard"
                 FROM  ' . $schema . '.ORDR T0
@@ -221,7 +220,6 @@ class FuncionesGeneralesController extends Controller
                 LEFT JOIN  ' . $schema . '.OSCN T1 ON T0."CardCode" = T1."CardCode" AND T1."Substitute" = T2."SubCatNum" AND T2."ItemCode" = T1."ItemCode"
                 WHERE T0."DocNum" = '. $NumOV.'
                 AND T2."PoTrgNum" = '.$NumOF.';';
-
             $datos = $this->ejecutarConsulta($sql);
         } catch (\Exception $e) {
             return $datos=[];

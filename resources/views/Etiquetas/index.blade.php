@@ -118,7 +118,7 @@
             success: function (response) {
                 $('#ListaBusquedas').html(response);
                 if(response!=""){
-                    $('#ListaBusquedas').show();
+                    $('#ListaBusquedas').show()
                 }
             },
             error: function () {
@@ -162,6 +162,7 @@
             CodigoCliente.value = data.CodigoCliente;
             $('#TipoEtiqueta').html(data.MenuOption);
             $('#ListaOpciones').html(data.MenuBtn);
+            selectedIndex = 0;
             
         })
         .catch(error1 => {
@@ -229,6 +230,7 @@
         InputMenuDistribuidor = document.getElementById("MenuDistribuidor");
         PdfAlerta = document.getElementById("PdfAlerta");
         InputTipoEtiqueta = document.getElementById("TipoEtiqueta").value;
+        InputColorCable = document.getElementById("ColorCable");
         document.getElementById('pdfIframe').src = "";
         //Errores
         ErrorPaginaFin = document.getElementById('ErrorPaginaFin');
@@ -267,7 +269,12 @@
         if (ErrorMenuDistribuidor) {
             ErrorMenuDistribuidor.innerHTML = "";
         }
-        if(InputTipoEtiqueta == "ETIQ1" || InputTipoEtiqueta == "ETIQ3"){
+        ErrorColorCable = document.getElementById("ErrorColorCable");
+        if (ErrorColorCable) {
+            ErrorColorCable.innerHTML = "";
+        }
+
+        if(InputTipoEtiqueta == "ETIQ1" || InputTipoEtiqueta == "ETIQ3" || InputTipoEtiqueta == "ETIQ24"){
             if(InputPaginaInicio.value == 0 || InputPaginaInicio.value == ""){
                 ErrorPaginaInicio.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
@@ -294,7 +301,7 @@
                 return 0;
             }
 
-        }else if(InputTipoEtiqueta == "ETIQ5"){
+        }else if(InputTipoEtiqueta == "ETIQ5" || InputTipoEtiqueta == "ETIQ26"){
             if(CantidadEtiquetas.value == 0 || CantidadEtiquetas.value == ""){
                 ErrorCantidadEtiquetas.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
@@ -308,8 +315,8 @@
                 ErrorInsercion.innerHTML = "Selecciona una opción valida";
                 return 0;
             }
-        }else if(InputTipoEtiqueta == "ETIQ7" || InputTipoEtiqueta == "ETIQ8" || InputTipoEtiqueta == "ETIQ4" || InputTipoEtiqueta == "ETIQ4CEDIS"){
-             if(CantidadEtiquetas.value == 0 || CantidadEtiquetas.value == ""){
+        }else if(InputTipoEtiqueta == "ETIQ7" || InputTipoEtiqueta == "ETIQ8" || InputTipoEtiqueta == "ETIQ4" || InputTipoEtiqueta == "ETIQ4CEDIS" || InputTipoEtiqueta == "ETIQ25"){
+            if(CantidadEtiquetas.value == 0 || CantidadEtiquetas.value == ""){
                 ErrorCantidadEtiquetas.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
             }
@@ -384,6 +391,15 @@
                 ErrorMenuDistribuidor.innerHTML = "Campo requerido.";
                 return 0;
             }
+        }else if(InputTipoEtiqueta == "ETIQ23"){
+            if(InputColorCable.value == null || InputColorCable.value == ""){
+                ErrorColorCable.innerHTML = "Campo requerido.";
+                return 0;
+            }
+            if(CantidadEtiquetas.value == 0 || CantidadEtiquetas.value == ""){
+                ErrorCantidadEtiquetas.innerHTML = "Ingresa un valor mayor a 0.";
+                return 0;
+            }
         }
         const URLcontroller = '{{ route("Etiquetas.Generar") }}';
         const payload = {
@@ -405,6 +421,7 @@
             CantidadCajas: InputCantidadCajas?.value || 0,
             TipoDistribuidor:InputTipoDistribuidor?.value || 0,
             MenuDistribuidor: InputMenuDistribuidor?.value || "",
+            ColorCable: InputColorCable?.value || "",
         };
         SpinnerInsert('PdfEspinner');
         fetch(URLcontroller, {
@@ -515,11 +532,6 @@
             //PorcentajeA.value = (100-elemento.value).toFixed(2);
         }
     }
-    document.addEventListener("keydown", function(event) {
-      if (event.key === "Enter") {
-        document.getElementById("Btn-BuscarOrden").click();
-      }
-    });
     function CantidadFinal() {
         const valor = document.getElementById("CantidadCajas").value;
         document.getElementById("PaginaFin").value = valor;
@@ -531,6 +543,45 @@
         const texto = select.options[select.selectedIndex].text;
         const texto1 = Tituloinicio.options[Tituloinicio.selectedIndex].text;
         Titulo.innerHTML = texto1+" "+ texto;
+    }
+
+    //Logica para mover con las fechas arriba y abajo
+    selectedIndex = 0;
+    document.addEventListener('keydown', e => {
+        lista = document.getElementById('ListaBusquedas');
+        ModalDetalle = document.getElementById('ModalDetalle');
+        if (event.key === 'Backspace' || event.key === 'Delete') {
+            if(ModalDetalle.classList.contains('show'))return;
+            $('#NumeroOrden').focus();
+        }
+        if(!isVisible(lista)){
+            if (e.key === 'Enter') {
+                if(ModalDetalle.classList.contains('show'))return;
+                document.getElementById("Btn-BuscarOrden").click()
+            }
+        }
+        if (!isVisible(lista)) return;
+        if (e.key === 'ArrowDown') {
+            items = Array.from(lista.querySelectorAll('a'));
+            e.preventDefault();
+            actualizarSeleccion(selectedIndex + 1);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            actualizarSeleccion(selectedIndex - 1);
+        } else if (e.key === 'Enter') {
+            items[selectedIndex].click();
+        }
+    });
+    function isVisible(lista) {
+        const style = window.getComputedStyle(lista);
+        return !(style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0' || !lista.offsetParent);
+    }
+    function actualizarSeleccion(nuevoIndex) {
+        if (nuevoIndex < 0 || nuevoIndex >= items.length) return;
+        items[selectedIndex].classList.remove('active');
+        selectedIndex = nuevoIndex;
+        items[selectedIndex].classList.add('active');
+        items[selectedIndex].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>

@@ -18,8 +18,11 @@ class EtiquetasController extends Controller
     protected $Nokia;
     protected $Drai;
     protected $RadioMovil;
+    protected $Broadata;
+    protected $RM;
     protected $Fibremex;
     protected $Etiquetas;
+    protected $OptronicsLLC;
     public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
         //📝Son clientes a los cuales se les generan etiquetas especiales 
@@ -28,6 +31,9 @@ class EtiquetasController extends Controller
         $this->Drai = "C0003";
         $this->RadioMovil = "C0101";
         $this->Fibremex = "C0004";
+        $this->RM = "C0875";
+        $this->Broadata = "P45689";
+        $this->OptronicsLLC = "C0912";
         //📝Etiquetas fabricacdas hasta el momento
         //📌Si se requiere agregar una nueva etiqueta, agregarla  a este arreglo y en los metodos Menu y Campos revizar ya que 
             //allí es donde se crea el Menu para cada cliente y los campos que se deben completar para generar la etiqueta
@@ -59,6 +65,12 @@ class EtiquetasController extends Controller
             [24,"ETIQ20","DISTRIBUIDOR DE PARED"],
             [25,"ETIQ21","DISTRIBUIDOR DE PARED EXTERIOR"],
             [26,"ETIQ22","DISTRIBUIDOR RIEL DIN"],
+            //Etiquetas Broadata
+            [27,"ETIQ23","BROADATA CH"],
+            [28,"ETIQ24","BROADATA CABLE"],
+            [29,"ETIQ25","BROADATA BOLSA"],
+            [30,"ETIQ26","BROADATA CAJA"],
+            [31,"ETIQ27","BROADATA CERTIFICADO"],
         ];
     }
     public function index(){
@@ -115,6 +127,7 @@ class EtiquetasController extends Controller
         $Etiquetas = $this->Etiquetas;
         $TipoDistribuidor = $request->TipoDistribuidor;
         $MenuDistribuidor = $request->MenuDistribuidor;
+        $ColorCable = $request->ColorCable;
         $TituloEtiqueta = "";
         foreach ($Etiquetas as $etiqueta) {
             if ($etiqueta[1] === $TipoEtiqueta) {
@@ -182,6 +195,21 @@ class EtiquetasController extends Controller
             case 'ETIQ21':
             case 'ETIQ22':
                 return $this->EtiquetaDistribuidores($CantidadEtiquetas,$MenuDistribuidor);
+                break;
+            case 'ETIQ23':
+                return $this->BroadataCH($CantidadEtiquetas,$ColorCable);
+                break;
+            case 'ETIQ24':
+                return $this->BroadataCable($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CodigoCliente);
+                break;
+            case 'ETIQ25':
+                return $this->BroadataBolsa($CantidadEtiquetas,$PDFOrdenFabricacion,$CodigoCliente);
+                break;
+            case 'ETIQ26':
+                return $this->BroadataCaja($CantidadEtiquetas,$PDFOrdenFabricacion,$CantidadBolsa,$CodigoCliente);
+                break;
+            case 'ETIQ27':
+                return $this->BroadataCertificado($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CodigoCliente);
                 break;
             default:
                 break;
@@ -444,7 +472,7 @@ class EtiquetasController extends Controller
             }
             ob_end_clean();
             // Generar el archivo PDF y devolverlo al navegador
-            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumper_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumperCEDIS_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -1094,7 +1122,7 @@ class EtiquetasController extends Controller
             }
             ob_end_clean();
             // Generar el archivo PDF y devolverlo al navegador
-            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumper_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaTrazabilidadMPO_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -1161,7 +1189,7 @@ class EtiquetasController extends Controller
             }
             ob_end_clean();
             // Generar el archivo PDF y devolverlo al navegador
-            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumper_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaInyeccion_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -1734,7 +1762,7 @@ class EtiquetasController extends Controller
             }
             ob_end_clean();
             // Generar el archivo PDF y devolverlo al navegador
-            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumper_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('CableServicioMarcadores_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -1975,7 +2003,7 @@ class EtiquetasController extends Controller
                 $pdf->Text(60,72,"Resultado: APROBADO");
             }
             ob_end_clean();
-            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumper_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('CertificadoMedicion_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -2044,7 +2072,7 @@ class EtiquetasController extends Controller
                 }
             }
             ob_end_clean();
-            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBolsaJumper_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador*/
+            return json_encode(["pdf"=>base64_encode($pdf->Output('DistribuidorTrazabilidad_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador*/
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -2151,6 +2179,312 @@ class EtiquetasController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    //Etiquetas Broadata
+    public function BroadataCH($CantidadEtiquetas,$ColorCable){
+        try {
+            // Crear PDF
+            $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetFont('helvetica', '', 10);
+            $pdf->SetFontStretching(105);
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseO
+            $pdf->SetPrintHeader(false);
+            $pdf->SetAutoPageBreak(TRUE, 0);   
+            $pdf->SetDrawColor(0, 0, 0);
+            $pdf->SetLineWidth(0.4);
+            for ($i=0; $i<($CantidadEtiquetas/4); $i++) {
+                $pdf->AddPage('L', array(63.5,25));
+                $pdf->SetFont('helvetica', 'B',6);
+                $AumentoX = 0;
+                for($j=0; $j<4; $j++){
+                    $pdf->SetXY(3+$AumentoX, 2); // posición X=3 mm, Y=0 mm
+                    $pdf->Cell(12.70, 9.53,$ColorCable, 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
+                    $AumentoX += 15; 
+                    if($CantidadEtiquetas-1 == ($i*4)+$j){
+                        break;
+                    }
+                }
+            }
+            ob_end_clean();
+            // Generar el archivo PDF y devolverlo al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaDistribuidorTubo_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        }catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function BroadataCable($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CodigoCliente){
+        try {
+            // Crear PDF
+            $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseO
+            $pdf->SetPrintHeader(false);
+            $pdf->SetAutoPageBreak(TRUE, 0);   
+            $pdf->SetDrawColor(0, 0, 0);
+            $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$PDFOrdenFabricacion)->first();
+            $Fecha = $this->SemanaFecha(date('Y-m-d'));
+            $CantidadEtiquetas = $PaginaFin-$PaginaInicio+1;
+            for ($i=0; $i<$CantidadEtiquetas/3; $i++) {
+                $pdf->AddPage('P', array(86,103));
+                $pdf->SetFont('helvetica', 'B',8);
+                $AumentoX = 0; 
+                for($j=0; $j<3; $j++){
+                    $pdf->SetXY(3+$AumentoX, 2); // posición X=3 mm, Y=0 mm 
+                    $pdf->MultiCell(26,9.50,"BRO-".($Fecha['Year']).($Fecha['Week'])."-P".str_pad($PaginaInicio+($i*3)+$j, 4, "0", STR_PAD_LEFT)."\nP455689 Rev.A \n".$OrdenFabricacion->OrdenFabricacion.str_pad($PaginaInicio+($i*3)+$j, 4, "0", STR_PAD_LEFT),0,'C',false,0);
+                    $CantidadEtiquetas-1;
+                    $AumentoX += 27;
+                    if($CantidadEtiquetas-1 == ($i*3)+$j){
+                        break;
+                    }
+                }
+            }
+            ob_end_clean();
+            // Generar el archivo PDF y devolverlo al navegador
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaDistribuidorTubo_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        }catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function BroadataBolsa($CantidadEtiquetas,$OrdenFabricacion,$CodigoCliente){
+        try {
+            $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
+            if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
+                return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']);
+            }
+            $OrdenVenta = $OrdenFabricacion->OrdenVenta;
+            if($OrdenVenta == ""){
+                $OrdenVenta = "N/A";
+            }else{
+                $OrdenVenta = $OrdenVenta->OrdenVenta;
+            }
+            // Crear PDF
+            $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetFont('dejavusans', '', 10);
+            $pdf->SetAutoPageBreak(TRUE, 0);   
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseO
+            $pdf->SetPrintHeader(false);
+            $Descripcion = html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $Articulo = "";
+            $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
+            $NumeroRegistros = count($DatosSAP);
+            $NumCatalogo = "";
+            if($NumeroRegistros==0){
+                throw new \Exception('Número de parte del cliente no encontrado, consulta a tu supervisor!.');
+            }else{
+                if($DatosSAP[0]['NumAtCard']==""){
+                    throw new \Exception('Número de parte del cliente no encontrado, consulta a tu supervisor!.');
+                }else{
+                    $NumCatalogo =  $DatosSAP[0]['NumAtCard'];
+                }
+            }
+            // Contador para saber cuántas etiquetas se han colocado en la página
+            for ($i=0; $i<$CantidadEtiquetas; $i++) {
+                $pdf->AddPage('L', array(101, 51));
+                $pdf->SetFont('dejavusans', 'B', 16);
+                //$pdf->setFontSpacing(-0.2);
+                $margen = 1;
+                $border_style = array(
+                            'width' => 0.5,
+                            'cap' => 'butt',
+                            'join' => 'miter',
+                            'dash' => 0,
+                            'phase' => 0,
+                            'color' => array(0, 0, 0) // RGB negro
+                        );
+                $pdf->RoundedRect(2,5, 97, 43, 1, '1111', 'D', $border_style, array());
+                $pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetLineWidth(0.3);
+                $pdf->SetXY(2,20);
+                $pdf->MultiCell(97, 0,$NumCatalogo, 0, 'C', 0, 1);
+                //$pdf->MultiCell(97, 0, "F2-P-OM3-LC-LC-075 \n P45689 Rev.A\n", 0, 'C', 0, 1);
+            }
+            ob_end_clean();
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBroadataBolsa_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function BroadataCaja($CantidadEtiquetas,$PDFOrdenFabricacion,$CantidadBolsa,$CodigoCliente){
+        try {
+            $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$PDFOrdenFabricacion)->first();
+            if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
+                return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']);
+            }
+            $OrdenVenta = $OrdenFabricacion->OrdenVenta;
+            if($OrdenVenta == ""){
+                $OrdenVenta = "N/A";
+            }else{
+                $OrdenVenta = $OrdenVenta->OrdenVenta;
+            }
+            // Crear PDF
+            $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetFont('dejavusans', '', 10);
+            $pdf->SetAutoPageBreak(TRUE, 0);   
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseO
+            $pdf->SetPrintHeader(false);
+            $Descripcion = html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $Articulo = "";
+            $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
+            $NumeroRegistros = count($DatosSAP);
+            $NumCatalogo = "";
+            if($NumeroRegistros==0){
+                throw new \Exception('Número de parte del cliente no encontrado, consulta a tu supervisor!.');
+            }else{
+                if($DatosSAP[0]['NumAtCard']==""){
+                    throw new \Exception('Número de parte del cliente no encontrado, consulta a tu supervisor!.');
+                }else{
+                    $NumCatalogo =  $DatosSAP[0]['NumAtCard'];
+                }
+            }
+            // Contador para saber cuántas etiquetas se han colocado en la página
+            for ($i=0; $i<$CantidadEtiquetas; $i++) {
+                $pdf->AddPage('L', array(101, 51));
+                $pdf->SetFont('dejavusans', 'B', 16);
+                //$pdf->setFontSpacing(-0.2);
+                $margen = 1;
+                $border_style = array(
+                            'width' => 0.5,
+                            'cap' => 'butt',
+                            'join' => 'miter',
+                            'dash' => 0,
+                            'phase' => 0,
+                            'color' => array(0, 0, 0) // RGB negro
+                        );
+                $pdf->RoundedRect(2,5, 97, 43, 1, '1111', 'D', $border_style, array());
+                $pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetLineWidth(0.3);
+                $pdf->SetXY(2,20); 
+                $pdf->MultiCell(97, 0, $NumCatalogo."\nQTY:".$CantidadBolsa, 0, 'C', 0, 1);
+                //$pdf->MultiCell(97, 0, "F2-P-OM3-LC-LC-075 \n P45689 Rev.A\nQTY:".$CantidadBolsa, 0, 'C', 0, 1);
+            }
+            ob_end_clean();
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBroadataCaja_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function BroadataCertificado($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CodigoCliente){
+        try {
+            $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$PDFOrdenFabricacion)->first();
+            if (is_null( $OrdenFabricacion) || is_null( $OrdenFabricacion)) {
+                return json_encode(["error" => 'No se encontraron datos para esta orden de Fabricación.']);
+            }
+            $OrdenVenta = $OrdenFabricacion->OrdenVenta;
+            if($OrdenVenta == ""){
+                $OrdenVenta = "N/A";
+            }else{
+                $OrdenVenta = $OrdenVenta->OrdenVenta;
+            }
+            // Crear PDF
+            $pdf = new TCPDF();
+            // Ajustar márgenes
+            $pdf->SetMargins(2, 2, 2); 
+            $pdf->SetAutoPageBreak(TRUE, 0);   
+            $pdf->SetDisplayMode('fullpage', 'SinglePage', 'UseNone'); // NO usar 'UseAnnots' o 'UseO
+            $pdf->SetPrintHeader(false);
+
+            $Fecha = $this->SemanaFecha(date('Y-m-d'));
+            $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
+            $NumeroRegistros = count($DatosSAP);
+            $NumCatalogo = "F2-P-OM3-LC-LC-075";
+            if($NumeroRegistros==0){
+                throw new \Exception('Número de parte del cliente no encontrado, consulta a tu supervisor!.');
+            }else{
+                if($DatosSAP[0]['NumAtCard']==""){
+                    throw new \Exception('Número de parte del cliente no encontrado, consulta a tu supervisor!.');
+                }else{
+                    $NumCatalogo =  $DatosSAP[0]['NumAtCard'];
+                }
+            }
+            // Contador para saber cuántas etiquetas se han colocado en la página
+            for ($i=$PaginaInicio-1; $i<$PaginaFin; $i++) {
+                $pdf->AddPage('P', 'LETTER'); //Tamaño Carta 216 mm × 279 mm 263 
+                $pdf->SetFont('dejavusans', 'B', 16);
+                //$pdf->setFontSpacing(-0.2);
+                $margen = 1;
+                $pdf->SetDrawColor(0, 0, 0);
+                $pdf->SetLineWidth(0.3);
+                //Horizontal
+                $pdf->Rect(16, 16, 184 , 120 );
+                $pdf->Rect(16, 32, 184 , 0 );
+                $pdf->Rect(16, 45, 184 , 0 );
+                $pdf->Rect(16, 58, 184 , 0 );
+                $pdf->Rect(16, 71, 184 , 0 );
+                $pdf->Rect(16, 84, 184 , 0 );
+                $pdf->Rect(16, 98, 184 , 0 );
+                $pdf->Rect(16, 111, 184 , 0 );
+                $pdf->Rect(16, 124, 184 , 0 );
+                $pdf->Rect(16, 177, 184 , 85 );
+                //Vertical
+                $pdf->Rect(96, 16, 0 , 16);
+                $pdf->Rect(70, 32, 0 , 39);
+                $pdf->Rect(108, 71, 0 , 13);
+                $pdf->Rect(104, 84, 0 , 52);
+                $pdf->Rect(60, 84, 0 , 52);
+                $pdf->Rect(152, 84, 0 , 52);
+
+                //Información
+                if(!file_exists(storage_path('app/Logos/Broadata.png'))){
+                    return json_encode(["error" => 'No se encontraron el Logo requerido, por favor contactate con TI.']);
+                }else{
+                    $imagePath = storage_path('app/Logos/Broadata.png');
+                    $pdf->Image($imagePath, 22, 18, 48);
+                }
+                $pdf->setFontSpacing(-0.4);
+                $pdf->SetFont('dejavusans', '', 22);
+                $pdf->SetXY(100, 17);
+                $pdf->Cell(88, 16,'Fiber Optics Test Report', 0, 0, 'C');
+                $pdf->setFontSpacing(-0.2);
+                $pdf->SetFont('dejavusans', '', 18);
+                $pdf->SetXY(10, 33);
+                $pdf->Cell(70, 13,'P/N:', 0, 0, 'C');
+                $pdf->SetXY(96, 33);
+                $pdf->Cell(70, 13,'BRO-'.$Fecha['Year'].$Fecha['Week']."P".str_pad(($i+1), 4, "0", STR_PAD_LEFT), 0, 0, 'C');
+                $pdf->SetXY(10, 46);
+                $pdf->Cell(70, 13,'Description:', 0, 0, 'C');
+                $pdf->SetXY(96, 46);
+                $pdf->Cell(70, 13,$NumCatalogo, 0, 0, 'C');
+                $pdf->SetXY(10, 59);
+                $pdf->Cell(70, 13,'Serial No:', 0, 0, 'C');
+                $pdf->SetXY(96, 59);
+                $pdf->Cell(70, 13,$OrdenFabricacion->OrdenFabricacion.str_pad(($i+1), 4, "0", STR_PAD_LEFT), 0, 0, 'C');
+                $pdf->SetXY(16, 72);
+                $pdf->Cell(92, 13,'End A:', 0, 0, 'C');
+                $pdf->SetXY(108, 72);
+                $pdf->Cell(92, 13,'End B:', 0, 0, 'C');
+                $pdf->SetXY(16, 85);
+                $pdf->Cell(184, 13,'  Wavelength        850 nm         Wavelength         850nm', 0, 0, 'L');
+                $pdf->SetXY(16, 98);
+                $pdf->Cell(184, 13,'                               IL (dB)                                        IL(dB)', 0, 0, 'L');
+                $pdf->SetXY(16, 111);
+                $pdf->Cell(184, 13,'        CH1                 P/N:                   CH1                   P/N:', 0, 0, 'L');
+                $pdf->SetXY(16, 124);
+                $pdf->Cell(184, 13,'        CH2                 P/N:                   CH2                   P/N:', 0, 0, 'L');
+                $pdf->SetXY(16, 165);
+                $pdf->SetFont('dejavusans', 'B', 18);
+                $pdf->Cell(184, 13,'Fiber Optic Connector Handling Quick Tips:', 0, 0, 'C');
+                $pdf->SetFont('dejavusans', '', 12);
+                $pdf->SetXY(16,178); 
+                $pdf->MultiCell(184, 0, "Safety:\n1. Disconnect sources before inspecting connector ends.\nCleaning:\n2. ALWAYS Visual inspect the connector inmediately prior to Mate. Re-clean if the connector is contaminated then mate connector.\n3. Do NOT use compressed air directly on the connector's end face.\n4. Use ONLY CLETOP or optical grade alcohol with lint-free wipes for cleaning. Make sure the end face is dried before inserting the connector.\nHandling:\n5. Prevent connector end surface from contacting any other object during insertion.\n6. Do not pull the fiber when extracting connector.\n7. Do not apply excessive force when cleaning.\n8. Keep dust cap on when not using connector", 0, 'L', 0, 1);
+                $pdf->SetXY(16,250);
+                $pdf->SetFont('dejavusans', 'B', 18);
+                $pdf->Cell(184, 13,'www.broadatacom.com', 0, 0, 'C');
+                
+            }
+            ob_end_clean();
+            return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBroadataCaja_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
     public function EtiquetaDistribuidores($CantidadEtiquetas, $TipoDistribuidor){
          try {
             // Crear PDF
@@ -2184,7 +2518,9 @@ class EtiquetasController extends Controller
         $Etiquetas = $this->Etiquetas;
         if($CodigoCliente == $this->HuaweiInternacional){
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
-                return $etiqueta[0] !== 1 &&
+                return $etiqueta[0] == 2 || $etiqueta[0] == 6 ||
+                        $etiqueta[0] == 13;
+                /*return $etiqueta[0] !== 1 &&
                         $etiqueta[0] !== 3 && $etiqueta[0] !== 4 &&
                         $etiqueta[0] !== 5 &&
                         $etiqueta[0] !== 7 && $etiqueta[0] !== 8 && 
@@ -2196,12 +2532,14 @@ class EtiquetasController extends Controller
                         $etiqueta[0] !== 19 && $etiqueta[0] !== 20 &&
                         $etiqueta[0] !== 21 && $etiqueta[0] !== 22 &&
                         $etiqueta[0] !== 23 && $etiqueta[0] !== 24 && 
-                        $etiqueta[0] !== 25 && $etiqueta[0] !== 26;
+                        $etiqueta[0] !== 25 && $etiqueta[0] !== 26;*/
             });
         
         }elseif($CodigoCliente == $this->Nokia){
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
-                return $etiqueta[0] !== 1 && $etiqueta[0] !== 2 &&
+                return $etiqueta[0] == 3 ||  $etiqueta[0] == 6 ||
+                        $etiqueta[0] == 14;
+                /*return $etiqueta[0] !== 1 && $etiqueta[0] !== 2 &&
                         $etiqueta[0] !== 4 &&
                         $etiqueta[0] !== 5 &&
                         $etiqueta[0] !== 7 && $etiqueta[0] !== 8 && 
@@ -2213,11 +2551,13 @@ class EtiquetasController extends Controller
                         $etiqueta[0] !== 19 && $etiqueta[0] !== 20 &&
                         $etiqueta[0] !== 21 && $etiqueta[0] !== 22 &&
                         $etiqueta[0] !== 23 && $etiqueta[0] !== 24 && 
-                        $etiqueta[0] !== 25 && $etiqueta[0] !== 26;
+                        $etiqueta[0] !== 25 && $etiqueta[0] !== 26;*/
             });
         }elseif($CodigoCliente == $this->Drai){
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
-                return $etiqueta[0] !== 1 && $etiqueta[0] !== 2 &&
+                return $etiqueta[0] == 4 || $etiqueta[0] == 6 ||
+                     $etiqueta[0] == 17 ||  $etiqueta[0] == 19;
+                /*return $etiqueta[0] !== 1 && $etiqueta[0] !== 2 &&
                         $etiqueta[0] !== 3 &&
                         $etiqueta[0] !== 5 &&
                         $etiqueta[0] !== 7 && $etiqueta[0] !== 8 && 
@@ -2229,13 +2569,38 @@ class EtiquetasController extends Controller
                         $etiqueta[0] !== 19 && $etiqueta[0] !== 20 &&
                         $etiqueta[0] !== 21 && $etiqueta[0] !== 22 &&
                         $etiqueta[0] !== 23 && $etiqueta[0] !== 24 && 
-                        $etiqueta[0] !== 25 && $etiqueta[0] !== 26;
+                        $etiqueta[0] !== 25 && $etiqueta[0] !== 26;*/
+            });
+        }elseif($CodigoCliente == $this->OptronicsLLC ){
+            $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
+            return  $etiqueta[0] == 1 || 
+                    $etiqueta[0] == 5 || 
+                    $etiqueta[0] == 7 || $etiqueta[0] == 8 ||
+                    $etiqueta[0] == 9 || $etiqueta[0] == 10 ||
+                    $etiqueta[0] == 11 || $etiqueta[0] == 12 ||
+                    $etiqueta[0] == 15 || $etiqueta[0] == 16 ||
+                    $etiqueta[0] == 18 ||
+                    $etiqueta[0] == 20 ||
+                    $etiqueta[0] == 21 || $etiqueta[0] == 22 ||
+                    $etiqueta[0] == 23 || $etiqueta[0] == 24 ||
+                    $etiqueta[0] == 25 || $etiqueta[0] == 26 ||
+                    $etiqueta[0] == 27 || $etiqueta[0] == 28 ||
+                    $etiqueta[0] == 29 ||  $etiqueta[0] == 30 ||  
+                    $etiqueta[0] == 31;
             });
         }else{
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
-                return $etiqueta[0] !== 2 && $etiqueta[0] !== 6 && $etiqueta[0] !== 13 &&
-                        $etiqueta[0] !== 3 && $etiqueta[0] !== 14 &&
-                         $etiqueta[0] !== 4;
+                return $etiqueta[0] == 1 || 
+                    $etiqueta[0] == 5 || 
+                    $etiqueta[0] == 7 || $etiqueta[0] == 8 ||
+                    $etiqueta[0] == 9 || $etiqueta[0] == 10 ||
+                    $etiqueta[0] == 11 || $etiqueta[0] == 12 ||
+                    $etiqueta[0] == 15 || $etiqueta[0] == 16 ||
+                    $etiqueta[0] == 18 ||
+                    $etiqueta[0] == 20 ||
+                    $etiqueta[0] == 21 || $etiqueta[0] == 22 ||
+                    $etiqueta[0] == 23 || $etiqueta[0] == 24 ||
+                    $etiqueta[0] == 25 || $etiqueta[0] == 26;
             });
         }
          //Ordenar por el nombre de la etiqueta en Orden Alfabetico
@@ -2335,6 +2700,21 @@ class EtiquetasController extends Controller
                 break;
             case 'ETIQ22':
                 $CamposRequeridos = $CamposRequeridos = ['CantidadEtiquetas','MenuDistribuidorRielDin'];
+                break;
+            case 'ETIQ23':
+                $CamposRequeridos = $CamposRequeridos = ['CantidadEtiquetas','ColorCable'];
+                break;
+            case 'ETIQ24':
+                $CamposRequeridos = $CamposRequeridos = ['PaginaInicio','PaginaFin'];
+                break;
+            case 'ETIQ25':
+                $CamposRequeridos = $CamposRequeridos = ['CantidadEtiquetas'];
+                break;
+            case 'ETIQ26':
+                $CamposRequeridos = $CamposRequeridos = ['CantidadEtiquetas','CantidadBolsa'];
+                break;
+             case 'ETIQ27':
+                $CamposRequeridos = $CamposRequeridos = ['PaginaInicio','PaginaFin'];
                 break;
             default:
             $CamposRequeridos = [];
@@ -2686,9 +3066,19 @@ class EtiquetasController extends Controller
                                                     '</select>
                                                     <small id="ErrorMenuDistribuidor" class="text-danger"></small>
                                                 </div>
-                                            </div>'
-                                            
-                    ]];
+                                            </div>'],
+                    ["ColorCable",'<div class="col-6" id="ContenedorColorCable">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="ColorCable">Cable</label>
+                                                    <select class="form-select" id="ColorCable" onchange="mostrarSeleccion(this)">
+                                                        <option value="" selected disabled>Selecciona una opci&oacute;n</option>
+                                                        <option value="Ch.1">Blue</option>
+                                                        <option value="Ch.2">Orange</option>
+                                                    </select>
+                                                    <small id="ErrorColorCable" class="text-danger"></small>
+                                                </div>
+                                            </div>'],
+                ];
         $CadenaCampos = '';
         foreach ($CamposRequeridos as $campoBuscado) {
             foreach ($Campos as $campo) {
