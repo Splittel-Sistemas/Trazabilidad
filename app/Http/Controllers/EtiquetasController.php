@@ -567,10 +567,10 @@ class EtiquetasController extends Controller
                     $pdf->SetXY($x, $y); // posición X=3 mm, Y=0 mm
                     $pdf->Cell(17.5, 4,$OrdenFabricacion5P." ".str_pad(($NumSerie+1), 4, '0', STR_PAD_LEFT), 0, 0, 'C'); // ancho=3 mm, alto=4 mm 
                     $pdf->StopTransform();
-
+                    $Provisional = 2;
                     $x = 54;
                     $y = 18-$Aumento-$AumentoLetra ;
-                    $pdf->SetXY($x, $y);
+                    $pdf->SetXY($x+$Provisional, $y);
                     $pdf->Cell(19.5, 2, "  " . $OrdenFabricacion5P . " " . str_pad(($NumSerie+1), 4, '0', STR_PAD_LEFT), 0, 0, 'C');
 
                     $x = 41;
@@ -582,7 +582,7 @@ class EtiquetasController extends Controller
                     $CodigoQR = 'https://optronics.com.mx/360/Inspeccion-Visual-1/'.$OrdenFabricacion->OrdenFabricacion.str_pad(($NumSerie + 1), 4, '0', STR_PAD_LEFT).".html";
                     $pdf->write2DBarcode($CodigoQR, 'QRCODE,M', $x, $y, 12, 12, null, 'N');
                     $pdf->StopTransform();
-                    $x = 58;
+                    $x = 58+$Provisional;
                     $y = 4.5-$Aumento;
                     $pdf->StartTransform();
                     $pdf->write2DBarcode($CodigoQR,'QRCODE,M',$x,$y,12,12,null,'N');
