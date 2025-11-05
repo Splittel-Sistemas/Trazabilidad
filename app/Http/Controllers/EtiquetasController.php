@@ -2278,7 +2278,7 @@ class EtiquetasController extends Controller
                 if($DatosSAP[0]['NumAtCard']==""){
                     throw new \Exception('Número de parte del cliente no encontrado, consulta a tu supervisor!.');
                 }else{
-                    $NumCatalogo =  $DatosSAP[0]['NumAtCard'];
+                    $NumCatalogo =  $DatosSAP[0]['ItemCode'];
                 }
             }
             // Contador para saber cuántas etiquetas se han colocado en la página
@@ -2300,8 +2300,8 @@ class EtiquetasController extends Controller
                 $pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetLineWidth(0.3);
                 $pdf->SetXY(2,20);
-                $pdf->MultiCell(97, 0,$NumCatalogo, 0, 'C', 0, 1);
-                //$pdf->MultiCell(97, 0, "F2-P-OM3-LC-LC-075 \n P45689 Rev.A\n", 0, 'C', 0, 1);
+                //$pdf->MultiCell(97, 0,$NumCatalogo, 0, 'C', 0, 1);
+                $pdf->MultiCell(97, 0, $NumCatalogo."\n P45689 Rev.A\n", 0, 'C', 0, 1);
             }
             ob_end_clean();
             return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBroadataBolsa_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
@@ -2340,7 +2340,7 @@ class EtiquetasController extends Controller
                 if($DatosSAP[0]['NumAtCard']==""){
                     throw new \Exception('Número de parte del cliente no encontrado, consulta a tu supervisor!.');
                 }else{
-                    $NumCatalogo =  $DatosSAP[0]['NumAtCard'];
+                    $NumCatalogo =  $DatosSAP[0]['ItemCode'];
                 }
             }
             // Contador para saber cuántas etiquetas se han colocado en la página
@@ -2362,8 +2362,8 @@ class EtiquetasController extends Controller
                 $pdf->SetDrawColor(0, 0, 0);
                 $pdf->SetLineWidth(0.3);
                 $pdf->SetXY(2,20); 
-                $pdf->MultiCell(97, 0, $NumCatalogo."\nQTY:".$CantidadBolsa, 0, 'C', 0, 1);
-                //$pdf->MultiCell(97, 0, "F2-P-OM3-LC-LC-075 \n P45689 Rev.A\nQTY:".$CantidadBolsa, 0, 'C', 0, 1);
+                //$pdf->MultiCell(97, 0, $NumCatalogo."\nQTY:".$CantidadBolsa, 0, 'C', 0, 1);
+                $pdf->MultiCell(97, 0, $NumCatalogo."\n P45689 Rev.A\nQTY:".$CantidadBolsa, 0, 'C', 0, 1);
             }
             ob_end_clean();
             return json_encode(["pdf"=>base64_encode($pdf->Output('EtiquetaBroadataCaja_'.$OrdenFabricacion->OrdenFabricacion.'_' .date('dmY'). '.pdf', 'S'))]); // 'I' para devolver el PDF al navegador
