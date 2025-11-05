@@ -2275,7 +2275,7 @@ class EtiquetasController extends Controller
             if($NumeroRegistros==0){
                 throw new \Exception('Número de parte del cliente no encontrado, consulta a tu supervisor!.');
             }else{
-                if($DatosSAP[0]['NumAtCard']==""){
+                if($DatosSAP[0]['ItemCode']==""){
                     throw new \Exception('Número de parte del cliente no encontrado, consulta a tu supervisor!.');
                 }else{
                     $NumCatalogo =  $DatosSAP[0]['ItemCode'];
@@ -2337,7 +2337,7 @@ class EtiquetasController extends Controller
             if($NumeroRegistros==0){
                 throw new \Exception('Número de parte del cliente no encontrado, consulta a tu supervisor!.');
             }else{
-                if($DatosSAP[0]['NumAtCard']==""){
+                if($DatosSAP[0]['ItemCode']==""){
                     throw new \Exception('Número de parte del cliente no encontrado, consulta a tu supervisor!.');
                 }else{
                     $NumCatalogo =  $DatosSAP[0]['ItemCode'];
@@ -2398,10 +2398,10 @@ class EtiquetasController extends Controller
             if($NumeroRegistros==0){
                 throw new \Exception('Número de parte del cliente no encontrado, consulta a tu supervisor!.');
             }else{
-                if($DatosSAP[0]['NumAtCard']==""){
+                if($DatosSAP[0]['ItemCode']==""){
                     throw new \Exception('Número de parte del cliente no encontrado, consulta a tu supervisor!.');
                 }else{
-                    $NumCatalogo =  $DatosSAP[0]['NumAtCard'];
+                    $NumCatalogo =  $DatosSAP[0]['ItemCode'];
                 }
             }
             // Contador para saber cuántas etiquetas se han colocado en la página
