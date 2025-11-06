@@ -34,7 +34,7 @@ class EtiquetasController extends Controller
         $this->RM = "C0875";
         $this->Broadata = "P45689";
         $this->OptronicsLLC = "C0912";
-        //📝Etiquetas fabricacdas hasta el momento
+        //📝Etiquetas fabricadas hasta el momento
         //📌Si se requiere agregar una nueva etiqueta, agregarla  a este arreglo y en los metodos Menu y Campos revizar ya que 
             //allí es donde se crea el Menu para cada cliente y los campos que se deben completar para generar la etiqueta
             //Las validaciones la mayoria estan en el FRONT-END y ALGUNOS TIENE VALIDACION EN EL BACKEND

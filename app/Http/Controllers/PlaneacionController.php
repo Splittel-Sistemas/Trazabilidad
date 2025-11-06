@@ -151,7 +151,8 @@ class PlaneacionController extends Controller
         }
         //Consulta a SAP para traer las partidas de una OV
         $sql = "SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", 
-                    T1.\"Dscription\" AS \"Descripcion\", 
+                    --T1.\"Dscription\" AS \"Descripcion\",--
+                    T2.\"ProdName\" AS \"Descripcion\", 
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
                     T2.\"DueDate\" AS \"Fecha entrega OF\", 
                     T1.\"PoTrgNum\",
@@ -818,7 +819,8 @@ class PlaneacionController extends Controller
         $schema = 'HN_OPTRONICS';
         //Consulta a SAP para traer las partidas de una OV
         $sql = "SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", 
-                    T1.\"Dscription\" AS \"Descripcion\", 
+                    --T1.\"Dscription\" AS \"Descripcion\",--
+                    T2.\"ProdName\" AS \"Descripcion\",
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
                     T2.\"DueDate\" AS \"Fecha entrega OF\", 
                     T1.\"PoTrgNum\",
@@ -897,7 +899,8 @@ class PlaneacionController extends Controller
         $ordenventa = $OV;
         //Consulta a SAP para traer las partidas de una OV
         $sql = "SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", 
-        T1.\"Dscription\" AS \"Descripcion\", 
+        --T1.\"Dscription\" AS \"Descripcion\",--
+        T2.\"ProdName\" AS \"Descripcion\", 
         ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
         T2.\"DueDate\" AS \"Fecha entrega OF\", 
         T1.\"PoTrgNum\" ,
@@ -1202,7 +1205,8 @@ class PlaneacionController extends Controller
         }
         //Consulta a SAP para traer las partidas de una OV
         $sql = "SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", 
-                    T1.\"Dscription\" AS \"Descripcion\", 
+                    --T1.\"Dscription\" AS \"Descripcion\",--
+                    T2.\"ProdName\" AS \"Descripcion\", 
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
                     T2.\"DueDate\" AS \"Fecha entrega OF\", 
                     T1.\"PoTrgNum\" ,
