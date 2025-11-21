@@ -2538,7 +2538,7 @@ class EtiquetasController extends Controller
         }elseif($CodigoCliente == $this->Nokia){
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
                 return $etiqueta[0] == 3 ||  $etiqueta[0] == 6 ||
-                        $etiqueta[0] == 14;
+                        $etiqueta[0] == 8 || $etiqueta[0] == 14;
                 /*return $etiqueta[0] !== 1 && $etiqueta[0] !== 2 &&
                         $etiqueta[0] !== 4 &&
                         $etiqueta[0] !== 5 &&
