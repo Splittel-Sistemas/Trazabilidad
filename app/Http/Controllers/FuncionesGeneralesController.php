@@ -123,6 +123,25 @@ class FuncionesGeneralesController extends Controller
         
         //End
         $sql = "SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", 
+                    T1.\"Dscription\" AS \"Descripcion\",
+                    ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
+                    T2.\"DueDate\" AS \"Fecha entrega OF\", 
+                    --T1.\"LineNum\" AS \"LineNum\",
+                    T2.\"DocNum\" AS \"Orden de F.\",
+                    T2.\"CardCode\" AS \"Cliente\",
+                    CASE T2.\"Status\"
+                    	WHEN 'P' THEN 'Planeado'
+                    	WHEN 'R' THEN 'Liberado'
+                    	WHEN 'L' THEN 'Cerrado'
+                    	WHEN 'C' THEN 'Cancelado'
+                    END \"Estatus\"
+                FROM {$schema}.\"ORDR\" T0
+                INNER JOIN {$schema}.\"RDR1\" T1 ON T0.\"DocEntry\" = T1.\"DocEntry\"
+                LEFT JOIN {$schema}.\"OWOR\" T2 ON T1.\"DocEntry\" = T2.\"OriginAbs\" AND T2.\"Status\" NOT IN ('C') AND T2.\"ItemCode\" = T1.\"ItemCode\"
+                WHERE T0.\"DocNum\" = '{$ordenventa}'
+                AND  (T2.\"Status\" = 'R' OR T2.\"Status\" = 'P')
+                ORDER BY T2.\"DocNum\"";
+        /*$sql = "SELECT DISTINCT T1.\"ItemCode\" AS \"Articulo\", 
                     T1.\"Dscription\" AS \"Descripcion\", 
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
                     T2.\"DueDate\" AS \"Fecha entrega OF\", 
@@ -141,7 +160,7 @@ class FuncionesGeneralesController extends Controller
                 WHERE T0.\"DocNum\" = '{$ordenventa}'
                 AND  T2.\"Status\" = 'R'
                 ORDER BY T1.\"PoTrgNum\",T2.\"DocNum\"
-                ORDER BY T1.\"VisOrder\"";
+                ORDER BY T1.\"VisOrder\"";*/
         //Consulta a SAP para traer las partidas de una OV
         /*$sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
                     T1.\"Dscription\" AS \"Descripcion\", 
