@@ -2557,7 +2557,7 @@ class EtiquetasController extends Controller
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
                 return $etiqueta[0] == 4 || $etiqueta[0] == 6 ||
                      $etiqueta[0] == 17 ||  $etiqueta[0] == 19;
-                /*return $etiqueta[0] !== 1 && $etiqueta[0] !== 2 &&
+                    /*return $etiqueta[0] !== 1 && $etiqueta[0] !== 2 &&
                         $etiqueta[0] !== 3 &&
                         $etiqueta[0] !== 5 &&
                         $etiqueta[0] !== 7 && $etiqueta[0] !== 8 && 
@@ -2596,7 +2596,7 @@ class EtiquetasController extends Controller
                     $etiqueta[0] == 9 || $etiqueta[0] == 10 ||
                     $etiqueta[0] == 11 || $etiqueta[0] == 12 ||
                     $etiqueta[0] == 15 || $etiqueta[0] == 16 ||
-                    $etiqueta[0] == 18 ||
+                    $etiqueta[0] == 17 || $etiqueta[0] == 18 ||
                     $etiqueta[0] == 20 ||
                     $etiqueta[0] == 21 || $etiqueta[0] == 22 ||
                     $etiqueta[0] == 23 || $etiqueta[0] == 24 ||
