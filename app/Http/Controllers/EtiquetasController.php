@@ -71,6 +71,8 @@ class EtiquetasController extends Controller
             [29,"ETIQ25","BROADATA BOLSA"],
             [30,"ETIQ26","BROADATA CAJA"],
             [31,"ETIQ27","BROADATA CERTIFICADO"],
+            [32,"ETIQ28","CERTIFICADO DE MEDICIÓN PSS"],
+
         ];
     }
     public function index(){
@@ -177,7 +179,7 @@ class EtiquetasController extends Controller
                 return $this->EtiquetaCajaCableServicio_MarcadoresFO($CantidadEtiquetas,$PDFOrdenFabricacion,$CantidadBolsa,$CodigoCliente,$TipoEtiqueta);
                 break;
             case 'ETIQ13':
-                return $this->EtiquetaCertificadoMedicion($PaginaInicio,$PaginaFin,$Insercion,$Retorno,$PDFOrdenFabricacion,$CodigoCliente);
+                return $this->EtiquetaCertificadoMedicion($PaginaInicio,$PaginaFin,$Insercion,$Retorno,$PDFOrdenFabricacion,$CodigoCliente,'opt');
                 break;
             case 'ETIQ14':
                 return $this->DistribuidorEtiquetaTrazabilidad($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$TipoDistribuidor,$CodigoCliente);
@@ -210,6 +212,9 @@ class EtiquetasController extends Controller
                 break;
             case 'ETIQ27':
                 return $this->BroadataCertificado($PaginaInicio,$PaginaFin,$PDFOrdenFabricacion,$CodigoCliente);
+                break;
+            case 'ETIQ28':
+                return $this->EtiquetaCertificadoMedicion($PaginaInicio,$PaginaFin,$Insercion,$Retorno,$PDFOrdenFabricacion,$CodigoCliente,'pss');
                 break;
             default:
                 break;
@@ -613,7 +618,7 @@ class EtiquetasController extends Controller
                             }
                         }
                         $pdf->SetFont('dejavusans', 'B', 5.5-$LetraEspecial);
-                        $pdf->SetXY(55-$AumentoLetraEspecial, 19);
+                        $pdf->SetXY(57-$AumentoLetraEspecial, 19);
                         $pdf->Cell(20, 2,$NumeroEspecial, 0, 0, 'C');
                         $x = 39.5+$AumentoLetraEspecial;
                         $y = 1.5;
@@ -645,7 +650,7 @@ class EtiquetasController extends Controller
                             }elseif($CodigoCliente == $this->Nokia){
                                 $NumeroEspecial =  $DatosSAP[0]['ItemCode'];
                                 $LetraEspecial = 1.5;
-                                $AumentoLetraEspecial = 0.5;
+                                $AumentoLetraEspecial = 0.8;
                             }elseif($CodigoCliente == $this->Drai){
                                 $LetraEspecial = 2;
                                 $AumentoLetraEspecial = 0.5;
@@ -1768,7 +1773,7 @@ class EtiquetasController extends Controller
         }
     }
     //Etiqueta de Certificado de Medicion Optronics
-    public function EtiquetaCertificadoMedicion($PaginaInicio,$PaginaFin,$Insercion,$Retorno,$OrdenFabricacion,$CodigoCliente){
+    public function EtiquetaCertificadoMedicion($PaginaInicio,$PaginaFin,$Insercion,$Retorno,$OrdenFabricacion,$CodigoCliente,$tipo){
         try{
             $BanderaDiferente = (($Insercion == $Retorno) || $Retorno == "" || $Retorno == null)? true : false;
             $Insercion1 = "";
@@ -1965,12 +1970,17 @@ class EtiquetasController extends Controller
                 if(!file_exists(storage_path('app/Logos/Optronics.jpg'))){
                     throw new \Exception('No se encontraron el Logo requerido, por favor contactate con TI.');
                 }else{
-                    $imagePath = storage_path('app/Logos/Optronics.jpg');
-                    $pdf->Image($imagePath, 4.5, 6, 20);
+                    if($tipo == 'pss'){
+                        $imagePath = storage_path('app/Logos/PSS.png');
+                        $pdf->Image($imagePath, 4.5, 5, 20);
+                    }else{
+                        $imagePath = storage_path('app/Logos/Optronics.jpg');
+                        $pdf->Image($imagePath, 4.5, 6, 25);
+                    }
                 }
                 $pdf->SetFont('helvetica', '', 10);
                 $pdf->setFontSpacing(-0);
-                $pdf->Text(50,6,"Certificado de Medición");
+                $pdf->Text(40,6,"Certificado de Medición");
                 $pdf->SetXY(3.5, 15); 
                 $pdf->MultiCell(25, 0, "Descripción del producto: ", 0, 'L', 0, 1);
                 $pdf->SetXY(35, 15); 
@@ -2556,7 +2566,9 @@ class EtiquetasController extends Controller
         }elseif($CodigoCliente == $this->Drai){
             $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
                 return $etiqueta[0] == 4 || $etiqueta[0] == 6 ||
-                     $etiqueta[0] == 17 ||  $etiqueta[0] == 19;
+                    $etiqueta[0] == 8 || $etiqueta[0] == 15 ||
+                    $etiqueta[0] == 17 ||  $etiqueta[0] == 19 ||
+                    $etiqueta[0] == 32;
                     /*return $etiqueta[0] !== 1 && $etiqueta[0] !== 2 &&
                         $etiqueta[0] !== 3 &&
                         $etiqueta[0] !== 5 &&
@@ -2669,6 +2681,7 @@ class EtiquetasController extends Controller
                 $CamposRequeridos = ['CantidadEtiquetas','CantidadBolsa'];
                 break;
             case 'ETIQ13':
+            case 'ETIQ28':
                 $CamposRequeridos = ['PaginaInicio','PaginaFin','Insercion','Retorno'];
                 break;
             case 'ETIQ14':

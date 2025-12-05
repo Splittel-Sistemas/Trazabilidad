@@ -360,7 +360,7 @@
                 $('#error_endDate').html('');
             }else{
                 $('#endDate').addClass('is-invalid');
-                $('#error_endDate').html('Requerido Fecha fin menor a Fecha inicio');
+                $('#error_endDate').html('Fecha fin tiene que ser menor a Fecha inicio');
                 return 0;
             }
             $('#FechaInicioActual').val(startDate);

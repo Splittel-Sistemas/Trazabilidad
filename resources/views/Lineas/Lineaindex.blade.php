@@ -152,7 +152,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="NumeroLinea">Número de Línea</label>
-                                    <input type="text" name="NumeroLineaE" id="NumeroLineaE" class="form-control form-control-sm">
+                                    <input type="text" name="NumeroLineaE" id="NumeroLineaE" oninput="RegexNumeros(this);" class="form-control form-control-sm">
                                     <small class="text-danger" id="Error_NumeroLineaE" style="display: none"></small>
                                 </div>
                             </div>
@@ -209,7 +209,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="NumeroLinea">Número de Línea</label>
-                                <input type="text" name="NumeroLinea" id="NumeroLinea" class="form-control form-control-sm" placeholder="Ingrese el número de línea" >
+                                <input type="text" name="NumeroLinea" id="NumeroLinea" oninput="RegexNumeros(this);" class="form-control form-control-sm" placeholder="Ingrese el número de línea" >
                                 <small class="text-danger" id="Error_NumeroLinea" style="display: none"></small>
                             </div>
                         </div>
@@ -404,7 +404,7 @@
                 error: function (xhr, status, error) {
                     console.log("Error en la solicitud AJAX:", error);
                     checkbox.prop('checked', !isActive);
-                    alert('Hubo un error al cambiar el estado.');
+                    errormessage('Ocurrio un error','Hubo un error al cambiar el estatus Activar.');
                 }
             });
         };
