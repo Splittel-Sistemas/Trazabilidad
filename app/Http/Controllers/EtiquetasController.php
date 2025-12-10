@@ -1460,6 +1460,7 @@ class EtiquetasController extends Controller
     }
     //Etiqueta de Caja Huawei
     public function EtiquetaCajaHuawei($PaginaInicio,$PaginaFin,$OrdenFabricacion,$CantidadCajas,$CantidadBolsa,$CodigoCliente){
+        $Tam_Varacion = 9;
         if($CodigoCliente == $this->HuaweiInternacional){
             try {
                 $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
@@ -1492,9 +1493,25 @@ class EtiquetasController extends Controller
                 $PaginaInicio = ($PaginaInicio<1)?1:$PaginaInicio;
                 $NumOV = $OrdenFabricacion->OrdenVenta->OrdenVenta;
                 $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($NumOV,$OrdenFabricacion->OrdenFabricacion);
-                $SumarX = 10;
+                $SumarX = 10-$Tam_Varacion;
                 $SumarY = 7;
                 for ($i=($PaginaInicio-1); $i<$PaginaFin; $i++) {
+                    /*$page_format = array(
+                        'MediaBox' => array('llx' => 0, 'lly' => 0, 'urx' => 106, 'ury' => 80),
+                        'CropBox' => array('llx' => 0, 'lly' => 0, 'urx' => 106, 'ury' => 80),
+                        'BleedBox' => array('llx' => 2, 'lly' => 2, 'urx' => 104, 'ury' => 78),
+                        'TrimBox' => array('llx' => 4, 'lly' => 4, 'urx' => 102, 'ury' => 76),
+                        'ArtBox' => array('llx' => 6, 'lly' => 6, 'urx' => 100, 'ury' => 74),
+                        'Dur' => 3,
+                        'trans' => array(
+                            'D' => 1.5,
+                            'S' => 'Split',
+                            'Dm' => 'V',
+                            'M' => 'O'
+                        ),
+                        'Rotate' => 90,
+                        'PZ' => 1,
+                    );*/
                     $page_format = array(
                         'MediaBox' => array('llx' => 0, 'lly' => 0, 'urx' => 106, 'ury' => 80),
                         'CropBox' => array('llx' => 0, 'lly' => 0, 'urx' => 106, 'ury' => 80),
