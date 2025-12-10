@@ -341,12 +341,11 @@ class EtiquetasController extends Controller
             $pdf->SetPrintHeader(false);
             $Descripcion = html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $Articulo = "";
-                if($CodigoCliente == $this->Drai){
-                    $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
-                    $Articulo = $DatosSAP[0]["SubCatNum"];
-                }elseif($CodigoCliente == $this->Nokia){
-                    $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
-                    $Articulo = $DatosSAP[0]["ItemCode"];
+                if($CodigoCliente == $this->Drai || $CodigoCliente == $this->Nokia){
+                    $Articulo = $this->CodigoEspecial($CodigoCliente,$OrdenVenta,$OrdenFabricacion->OrdenFabricacion);
+                    if($Articulo == ""){
+                        return json_encode(["error" => 'Número Especial no Encontrado, Si el problema perciste Contacta a TI!.']);
+                    }
                 }
                 else{
                     $Articulo = $OrdenFabricacion->Articulo;
@@ -1518,8 +1517,8 @@ class EtiquetasController extends Controller
                     $pdf->SetXY(23+$SumarX , 2+$SumarY );
                     $pdf->Cell(10, 6, $DatosSAP[0]["SubCatNum"], 0, 1, 'L', 0);
                     $pdf->SetFont('helvetica', '', 8.5);
-                    $pdf->write1DBarcode($DatosSAP[0]["SubCatNum"],'C128', 21+$SumarX , 8+$SumarY, 30, 4, 0.4, null, 'L');
-
+                    $style = array('stretch' => true);
+                    $pdf->write1DBarcode($DatosSAP[0]["SubCatNum"],'C128', 21+$SumarX +2 , 8+$SumarY, 27, 4, 0.3, $style, 'L');
                     $pdf->SetXY(3+$SumarX , 7+$SumarY);
                     $pdf->Cell(10, 6, "(ITEM)", 0, 1, 'L', 0);
                     $pdf->SetXY(3+$SumarX , 14+$SumarY);
@@ -1542,20 +1541,20 @@ class EtiquetasController extends Controller
                     $pdf->SetFont('helvetica', '', 9);
                     $pdf->SetXY(3+$SumarX , 40+$SumarY);
                     $pdf->Cell(10, 6, "(O.V.)", 0, 1, 'L', 0);
-                    $pdf->write1DBarcode($NumOV,'C128', 20+$SumarX , 41+$SumarY, 30, 4, 0.4, null, 'L');
+                    $pdf->write1DBarcode($NumOV,'C128', 20+$SumarX , 41+$SumarY, 25, 4, 0.3, $style, 'L');
 
                     $pdf->SetXY(3+$SumarX , 45+$SumarY);
                     $pdf->Cell(10, 6, "(QTY)", 0, 1, 'L', 0);
                     $x = 18+$SumarX ;
                     $y = 47+$SumarY;
-                    $w = 18;
+                    $w = 12;
                     $h = 3;
-                    $pdf->write1DBarcode($CantidadBolsa,'C128', $x, $y, $w, $h, 0.4, null, 'L');
+                    $pdf->write1DBarcode($CantidadBolsa,'C128', $x+2, $y, $w, $h, 0.3, $style, 'L');
                     $textWidth = $pdf->GetStringWidth($CantidadBolsa);
                     $textX = $x + ($w - $textWidth) / 2;
                     $textY = $y + $h ;
                     $pdf->SetFont('helvetica', 'B', 14);
-                    $pdf->SetXY($textX, $textY);
+                    $pdf->SetXY($textX+2, $textY);
                     $pdf->Cell($textWidth, 4, $CantidadBolsa, 0, 1, 'C');
                     $pdf->SetXY($textX+10, $textY);
                     $pdf->SetFont('helvetica', '', 10);
@@ -1599,7 +1598,7 @@ class EtiquetasController extends Controller
                     $y = 87+$SumarY;
                     $w = 50;
                     $h = 5;
-                    $pdf->write1DBarcode($CodigoBarras,'C128', $x, $y, $w, $h, 0.4, null, 'L');
+                    $pdf->write1DBarcode($CodigoBarras,'C128', $x, $y, $w, $h, 0.3, null, 'L');
                     $textWidth = $pdf->GetStringWidth($CodigoBarras);
                     $textX = $x + ($w - $textWidth) / 2;
                     $textY = $y + $h ;
@@ -1973,6 +1972,7 @@ class EtiquetasController extends Controller
                     if($tipo == 'pss'){
                         $imagePath = storage_path('app/Logos/PSS.png');
                         $pdf->Image($imagePath, 4.5, 5, 20);
+                        
                     }else{
                         $imagePath = storage_path('app/Logos/Optronics.jpg');
                         $pdf->Image($imagePath, 4.5, 6, 25);
@@ -3114,9 +3114,9 @@ class EtiquetasController extends Controller
         $CodigoEspecial = "";
         if($this->Nokia == $CodigoCliente OR $this->HuaweiInternacional == $CodigoCliente OR $this->Drai == $CodigoCliente){
             $DatosSAP = $this->funcionesGenerales->EtiquetasDatosSAP($OrdenVenta,$OrdenFabricacion);
-            if($this->HuaweiInternacional == $CodigoCliente){
+            if($this->HuaweiInternacional == $CodigoCliente OR $this->Drai == $CodigoCliente){
                 $CodigoEspecial = $DatosSAP[0]["SubCatNum"];
-            }elseif($this->Nokia == $CodigoCliente OR $this->Drai == $CodigoCliente){
+            }elseif($this->Nokia == $CodigoCliente){
                 $CodigoEspecial = $DatosSAP[0]["ItemCode"];
             }
         }
