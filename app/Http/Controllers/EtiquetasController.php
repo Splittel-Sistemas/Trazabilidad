@@ -1460,7 +1460,7 @@ class EtiquetasController extends Controller
     }
     //Etiqueta de Caja Huawei
     public function EtiquetaCajaHuawei($PaginaInicio,$PaginaFin,$OrdenFabricacion,$CantidadCajas,$CantidadBolsa,$CodigoCliente){
-        $Tam_Varacion = 9;
+        $Tam_Varacion = 6;
         if($CodigoCliente == $this->HuaweiInternacional){
             try {
                 $OrdenFabricacion = OrdenFabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
