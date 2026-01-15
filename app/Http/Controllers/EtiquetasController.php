@@ -1767,9 +1767,9 @@ class EtiquetasController extends Controller
                     if($OrdenVenta == "N/A"){
                         $RestarEspacio = 3;
                     }
-                    $pdf->SetFont('dejavusans', 'B', 8);
+                    $pdf->SetFont('dejavusans', 'B', 7);
                     //$pdf->Text(3, 41, $NoPEDIDO);
-                    $pdf->SetXY(5, 41); 
+                    $pdf->SetXY(5, 39); 
                     $pdf->MultiCell(24, 0, str_ireplace("OC ", "\nOC ", $NoPEDIDO)."", 0, 'L', 0, 1);
                     $pdf->SetFont('dejavusans', 'B', 12);
                     $pdf->Text(30+$RestarEspacio, 41, $OrdenVenta);

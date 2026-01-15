@@ -1545,6 +1545,460 @@ class AreasController extends Controller
             ]);
         }
     }
+    /*
+    public function PreparadoBuscar(Request $request){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+        if ($request->has('Confirmacion')) {
+            $confirmacion=1;
+        }else{
+            $confirmacion=0;
+        }
+        $Codigo = $request->Codigo;
+        $Inicio = $request->Inicio;
+        $Finalizar = $request->Finalizar;
+        $NumeroLinea = $request->Linea;
+        $NumeroLinea = Linea::where('NumeroLinea',$NumeroLinea)->first();
+        $TipoEscaneo = "";
+        if($NumeroLinea == ""){
+            return response()->json([
+                'tabla' => "",
+                'Escaner' => "",
+                'status' => "ErrorLínea",
+                'CantidadTotal' => "",
+                'CantidadCompletada' => 4,
+                'OF' => ''
+
+            ]);
+        }
+        $NumeroLinea = $NumeroLinea->id;
+        $Area = $this->funcionesGenerales->decrypt($request->Area);
+        $CodigoPartes = explode("-", $Codigo);
+        $CodigoTam = count($CodigoPartes);
+        $TipoEscanerrespuesta=0;
+        $menu="";
+        $Escaner="";
+        $CantidadCompletada=0;
+        $EscanerExiste=0;
+        $NumeroBloque=0;
+        $EstatusBloque = "";
+        $PartidasFaltantesList='<li class="list-group-item d-flex justify-content-between align-items-center">Núm. Línea<span class="badge badge-light-danger rounded-pill">Faltantes</span><span class="badge badge-light-success rounded-pill">Completadas</span><span class="badge badge-light-primary rounded-pill">Total</span></li>';
+        //Valida si el codigo es aceptado tiene que ser mayor a 2
+        //if(($CodigoTam==3 && !($CodigoPartes[2]=="" || $CodigoPartes[2]==0)) || $CodigoTam==2){
+        if($CodigoTam==3 || $CodigoTam==2){
+            $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
+            if($datos=="" OR $datos==null){
+                return response()->json([
+                    'tabla' => $menu,
+                    'Escaner' => $Escaner,
+                    'status' => "empty",
+                    'CantidadTotal' => "",
+                    'CantidadCompletada' => $CantidadCompletada,
+                    'OF' => $CodigoPartes[0]
+        
+                ]);
+            }else{
+                if($Area != $this->AreaEspecialMontaje){
+                    if($datos->Cerrada == 0){//Valida que la Orden de fabricacion no se encuentre cerrada
+                        return response()->json([
+                            'tabla' => $menu,
+                            'Escaner' => "",
+                            'status' => "Cerrada",
+                            'CantidadTotal' => "",
+                            'CantidadCompletada' => 4,
+                            'OF' => $CodigoPartes[0]
+            
+                        ]);
+                    }
+                }
+                $status = 'success'; 
+                $CantidadTotal=$datos->CantidadTotal;
+                //Variable  guarda el valor de Escaner para saber si es no 0=No escaner 1=escaner
+                $Escaner=$datos->Escaner;
+                if($CodigoTam==3 || $CodigoTam==2){
+                    //Comprobamos que la etiqueta si coincida con su numero de parte
+                    if($Escaner==1 && isset($CodigoPartes[2])){
+                        $CodigoValido=$this->ComprobarNumEtiqueta($CodigoPartes,$Area);
+                        if($CodigoValido==0){
+                            return response()->json([
+                                'tabla' => $menu,
+                                'Escaner' => "",
+                                'status' => "NoExiste",
+                                'CantidadTotal' => "",
+                                'CantidadCompletada' => 4,
+                                'OF' => $CodigoPartes[0]
+                
+                            ]);
+                        }
+                        if($Inicio==1){ 
+                            $TipoEscanerrespuesta=$this->CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                            $CantidadArea=$this->ComprobarCantidadArea($CodigoPartes,$Area,$NumeroLinea);
+                            if($CantidadArea=='ErrorLinea'){
+                                return response()->json([
+                                    'tabla' => $menu,
+                                    'Escaner' => "",
+                                    'status' => "ErrorLinea",
+                                    'CantidadTotal' => "",
+                                    'CantidadCompletada' => "",
+                                    'OF' => $CodigoPartes[0]
+                    
+                                ]);
+                            }elseif($CantidadArea=='ErrorLineaCodigo'){
+                                return response()->json([
+                                    'tabla' => $menu,
+                                    'Escaner' => "",
+                                    'status' => "ErrorLineaCodigo",
+                                    'CantidadTotal' => "",
+                                    'CantidadCompletada' => "",
+                                    'OF' => $CodigoPartes[0],
+                                    'Linea' => $NumeroLinea
+                                ]);
+                            }
+                            if($TipoEscanerrespuesta!=6 AND $CantidadArea>=1){
+                                if($Area!=4){//Si el area es diferente de Suministro 4
+                                    $TipoEscanerrespuesta=$this->CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                                    if($TipoEscanerrespuesta != 5){
+                                        $retrabajo=$request->Retrabajo;
+                                        if($Area==$this->AreaEspecialTransicion){
+                                            $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo,$NumeroLinea);
+                                        }else{
+                                            $TipoEscanerrespuesta=$this->ValidarPasoUnaVezAA($Area,$CodigoPartes);
+                                            if($TipoEscanerrespuesta>0){
+                                                $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo,$NumeroLinea);
+                                            }else{$TipoEscanerrespuesta=5;}
+                                        }
+                                    }
+                                }else{
+                                    $retrabajo=$request->Retrabajo;
+                                    $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo,$NumeroLinea);
+                                }
+                            }
+                            if($CantidadArea<1){
+                                    $ComprobarAreaClasificacion = $datos->PartidasOF->first();
+                                    $ComprobarAreaClasificacion = $ComprobarAreaClasificacion->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get()->count();
+                                    if($ComprobarAreaClasificacion == 0){
+                                        $status = 'ErrorNoAsignado';
+                                    }else{
+                                        $status = 'ErrorLineaComplete'; 
+                                    }
+                            }
+                        }else{
+                                $TipoEscanerrespuesta=$this->FinalizarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
+                        }
+                    }else if($Escaner==0){
+                        $TipoManualrespuesta=$datos->partidasOF()->where('NumeroPartida','=',$CodigoPartes[1])->first();
+                        if(!($TipoManualrespuesta=="" || $TipoManualrespuesta==null)){
+                            $EscanerExiste = 1;
+                        }else{
+                            $EscanerExiste = 0;
+                        }
+                        if($Inicio==1){
+                            $CantidadArea=$this->ComprobarCantidadArea($CodigoPartes,$Area,$NumeroLinea);
+                            if($CantidadArea<1){
+                                $ComprobarAreaClasificacion = $datos->PartidasOF->first();
+                                $ComprobarAreaClasificacion = $ComprobarAreaClasificacion->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get()->count();
+                                if($ComprobarAreaClasificacion == 0){
+                                    $status = 'ErrorNoAsignado';
+                                }
+                            }
+                        }
+                    }
+                    if(!isset($CodigoPartes[2])){
+                        $TipoEscanerrespuesta=7;
+                    }
+                }
+                $CantidadCompletada=$this->NumeroCompletadas($CodigoPartes,$Area);
+                if($CantidadCompletada<0){
+                    $CantidadCompletada=0; 
+                }
+                $IniciadosMostrar = 0; 
+                if($Escaner==1){
+                    $TipoEscaneo = "1 a 1";
+                    //Opciones de la tabla
+                    $Opciones='<option selected="" value="">Todos</option>
+                        <option value="Abierta">Abiertas</option>
+                        <option value="Cerrada">Cerradas</option>';
+                    //Mostrar las partidas    
+                    $partidas = $datos->partidasOF()->OrderBy('id','desc')->get();
+                            foreach( $partidas as $PartidasordenFabricacion){
+                                if($Area == $this->AreaEspecialPulido){
+                                    $NumeroBloqueDatos = $PartidasordenFabricacion->Areas()->where('Areas_id',$this->AreaEspecialPulido)->where('Linea_id',$NumeroLinea)->orderBy('FechaComienzo','desc')->first();
+                                    if($NumeroBloqueDatos==""){
+                                        $NumeroBloqueDatos = [];
+                                    }else{
+                                        $NumeroBloqueDatos = Partidasof_Areas::select('*')->where('Areas_id',$this->AreaEspecialPulido)
+                                        ->where('NumeroBloque',$NumeroBloqueDatos['pivot']->NumeroBloque)
+                                        ->addSelect(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01")) AS FechaMayor'))
+                                        ->orderBy(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01"))'), 'desc')
+                                        ->get();
+                                    }
+                                    foreach($NumeroBloqueDatos as $PartdaAr){
+                                        $PartidasPulido = PartidasOF::find($PartdaAr->PartidasOF_id);
+                                        $OrdenFabricacionPulido = $PartidasPulido->OrdenFabricacion;
+                                        $menu.='<tr>
+                                                <td class="align-middle ps-3 NumParte">'.$OrdenFabricacionPulido->OrdenFabricacion.'-'.$PartidasPulido->NumeroPartida.'-'.$PartdaAr->NumeroEtiqueta.'</td>
+                                                <td class="align-middle text-center Cantidad">'.$PartdaAr->Cantidad.'</td>';
+                                                if($PartdaAr->TipoPartida=="R"){
+                                                    $menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Retrabajo</span><span class="ms-1 fas fa-cogs"></span></div></td>';
+                                                }else{$menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Normal</span><span class="ms-1 fas fa-check"></span></div></td>';
+                                                }
+                                                
+                                        $menu.='<td class="align-middle Inicio">'.$PartdaAr->FechaComienzo.'</td>
+                                                <td class="align-middle Fin">'.$PartdaAr->FechaTermina.'</td>';
+                                                if($PartdaAr->FechaTermina==""){
+                                                    $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Abierta</span><span class="ms-1 fas fa-cogs"></span></div></td>';
+                                                }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Cerrada</span><span class="ms-1 fas fa-check"></span></div></td>';
+                                                }
+                                        $Linea = Linea::find($PartdaAr->Linea_id);
+                                                $menu.='<td class="align-middle text-center Linea"><h5 class="text-light text-center p-0 mx-1" style="background:'.$Linea->ColorLinea.'">'.$Linea->NumeroLinea.'</h5></td></tr>';
+                                        $NumeroBloque = $PartdaAr->NumeroBloque;
+                                        $EstatusBloque = $PartdaAr->CerrarBloque;
+                                    }
+                                    if($EstatusBloque != 1){
+                                        $EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">Plato Abierto</span></div>';
+                                    }else{$EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Plato Cerrado</span></div>';}
+                                    //Mostrar Partidas
+                                    $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
+                                    foreach($registrosporLinea as $MostrarPartidas){
+                                        $LineaMostrar = Linea::find($MostrarPartidas['pivot']->Linea_id)->NumeroLinea;
+                                        $TotalMostrar = Partidasof_Areas::where('PartidasOF_id',$MostrarPartidas['pivot']->PartidasOF_id)->where('Areas_id', $this->AreaEspecialClasificacion)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->get()->SUM('Cantidad');
+                                        $CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad')
+                                        -$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('TipoPartida','R')->SUM('Cantidad');
+    
+                                        $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span class="text" style="font-size:0.8em;">'.$LineaMostrar.'</span><span class="badge badge-light-danger rounded-pill">'.$TotalMostrar-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$TotalMostrar.'</span></li>';
+                                    }
+                                }else{
+                                    $PartdaArea=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)
+                                    ->addSelect(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01")) AS FechaMayor'))
+                                    ->orderBy(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01"))'), 'desc')
+                                    ->get();
+                                    foreach($PartdaArea as $PartdaAr){
+                                        $menu.='<tr>
+                                                <td class="align-middle ps-3 NumParte">'.$datos->OrdenFabricacion.'-'.$PartidasordenFabricacion->NumeroPartida.'-'.$PartdaAr['pivot']->NumeroEtiqueta.'</td>
+                                                <td class="align-middle text-center Cantidad">'.$PartdaAr['pivot']->Cantidad.'</td>';
+                                                if($PartdaAr['pivot']->TipoPartida=="R"){
+                                                    $menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Retrabajo</span><span class="ms-1 fas fa-cogs"></span></div></td>';
+                                                }else{$menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Normal</span><span class="ms-1 fas fa-check"></span></div></td>';
+                                                }
+                                                
+                                        $menu.='<td class="align-middle Inicio">'.$PartdaAr['pivot']->FechaComienzo.'</td>
+                                                <td class="align-middle Fin">'.$PartdaAr['pivot']->FechaTermina.'</td>';
+                                                if($PartdaAr['pivot']->FechaTermina==""){
+                                                    $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Abierta</span><span class="ms-1 fas fa-cogs"></span></div></td>';
+                                                }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Cerrada</span><span class="ms-1 fas fa-check"></span></div></td>';
+                                                }
+                                        $Linea = Linea::find($PartdaAr['pivot']->Linea_id);
+                                                $menu.='<td class="align-middle text-center Linea"><h5 class="text-light text-center p-0 mx-1" style="background:'.$Linea->ColorLinea.'">'.$Linea->NumeroLinea.'</h5></td></tr>';
+                                    }
+                                    //Mostrar Partidas
+                                    $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
+                                    foreach($registrosporLinea as $MostrarPartidas){
+                                        $LineaMostrar = Linea::find($MostrarPartidas['pivot']->Linea_id)->NumeroLinea;
+                                        $TotalMostrar = Partidasof_Areas::where('PartidasOF_id',$MostrarPartidas['pivot']->PartidasOF_id)->where('Areas_id', $this->AreaEspecialClasificacion)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->get()->SUM('Cantidad');
+                                        $CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad')
+                                        -$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('TipoPartida','R')->SUM('Cantidad');
+    
+                                        $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span class="text" style="font-size:0.8em;">'.$LineaMostrar.'</span><span class="badge badge-light-danger rounded-pill">'.$TotalMostrar-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$TotalMostrar.'</span></li>';
+                                    }
+                                }
+                            }
+                    $IniciadosMostrar = $partidas->first();
+                    $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNull('FechaTermina')->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->get()->SUM('pivot.Cantidad');//->get();
+                }else{
+                    $TipoEscaneo = "Masivo";
+                    $Opciones='<option selected="" value="">Todos</option>
+                        <option value="Iniciado">Iniciado</option>
+                        <option value="Finalizado">Finalizado</option>';
+                            //Mostrar las partidas    
+                            $partidas = $datos->partidasOF()->OrderBy('id','desc')->get();
+                            foreach( $partidas as $PartidasordenFabricacion){
+                                if($Area == $this->AreaEspecialPulido){
+                                    $NumeroBloqueDatos = $PartidasordenFabricacion->Areas()->where('Areas_id',$this->AreaEspecialPulido)->where('Linea_id',$NumeroLinea)->orderBy('FechaComienzo','desc')->first();
+                                    if($NumeroBloqueDatos==""){
+                                        $NumeroBloqueDatos = [];
+                                    }else{
+                                        $NumeroBloqueDatos = Partidasof_Areas::select('*')->where('Areas_id',$this->AreaEspecialPulido)
+                                        ->where('NumeroBloque',$NumeroBloqueDatos['pivot']->NumeroBloque)
+                                        ->addSelect(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01")) AS FechaMayor'))
+                                        ->orderBy(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01"))'), 'desc')
+                                        ->get();
+                                        foreach($NumeroBloqueDatos as $PartdaAr){
+                                            $PartidasPulido = PartidasOF::find($PartdaAr->PartidasOF_id);
+                                            $OrdenFabricacionPulido = $PartidasPulido->OrdenFabricacion;
+                                            $menu.='<tr>
+                                                    <td class="align-middle ps-3 NumParte">'.$OrdenFabricacionPulido->OrdenFabricacion.'-'.$PartidasPulido->NumeroPartida.'-'.$PartdaAr->NumeroEtiqueta.'</td>
+                                                    <td class="align-middle text-center Cantidad">'.$PartdaAr->Cantidad.'</td>';
+                                                    if($PartdaAr->TipoPartida=="R"){
+                                                        $menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Retrabajo</span><span class="ms-1 fas fa-cogs"></span></div></td>';
+                                                    }else{$menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Normal</span><span class="ms-1 fas fa-check"></span></div></td>';
+                                                    }
+                                                    
+                                            $menu.='<td class="align-middle Inicio">'.$PartdaAr->FechaComienzo.'</td>
+                                                    <td class="align-middle Fin">'.$PartdaAr->FechaTermina.'</td>';
+                                                    if($PartdaAr->FechaTermina==""){
+                                                        $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Abierta</span><span class="ms-1 fas fa-cogs"></span></div></td>';
+                                                    }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Cerrada</span><span class="ms-1 fas fa-check"></span></div></td>';
+                                                    }
+                                            $Linea = Linea::find($PartdaAr->Linea_id);
+                                                    $menu.='<td class="align-middle text-center Linea"><h5 class="text-light text-center p-0 mx-1" style="background:'.$Linea->ColorLinea.'">'.$Linea->NumeroLinea.'</h5></td></tr>';
+                                            $NumeroBloque = $PartdaAr->NumeroBloque;
+                                            $EstatusBloque = $PartdaAr->CerrarBloque;
+                                        }
+                                        if($EstatusBloque != 1){
+                                            $EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">Plato Abierto</span></div>';
+                                        }else{$EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Plato Cerrado</span></div>';}
+                                        $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
+                                        foreach($registrosporLinea as $MostrarPartidas){
+                                            $LineaMostrar = Linea::find($MostrarPartidas['pivot']->Linea_id)->NumeroLinea;
+                                            $TotalMostrar = Partidasof_Areas::where('PartidasOF_id',$MostrarPartidas['pivot']->PartidasOF_id)->where('Areas_id', $this->AreaEspecialClasificacion)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->get()->SUM('Cantidad');
+                                            //$CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad')
+                                            //-$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('TipoPartida','R')->SUM('Cantidad');
+                                            $CantidadCompletadaPartidas=$this->NumeroCompletadas($CodigoPartes,$Area);
+                                            $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span class="text" style="font-size:0.8em;">'.$LineaMostrar.'</span><span class="badge badge-light-danger rounded-pill">'.$TotalMostrar-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$TotalMostrar.'</span></li>';
+                                        }
+                                    }
+                                }else{
+                                    $PartdaArea=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->OrderBy('pivot_id','desc')->get();
+                                    foreach($PartdaArea as $PartdaAr){
+                                        $menu.='<tr>
+                                                <td class="align-middle ps-3 NumParte">'.$datos->OrdenFabricacion.'-'.$PartidasordenFabricacion->NumeroPartida.'-0'.'</td>
+                                                <td class="align-middle text-center Cantidad">'.$PartdaAr['pivot']->Cantidad.'</td>';
+                                                if($PartdaAr['pivot']->TipoPartida=="R"){
+                                                    $menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Retrabajo</span><span class="ms-1 fas fa-cogs"></span></div></td>';
+                                                }else{$menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Normal</span><span class="ms-1 fas fa-check"></span></div></td>';
+                                                }
+                                                
+                                        $menu.='<td class="align-middle Inicio">'.$PartdaAr['pivot']->FechaComienzo.'</td>
+                                                <td class="align-middle Fin">'.$PartdaAr['pivot']->FechaTermina.'</td>';
+                                                if($PartdaAr['pivot']->FechaTermina==""){
+                                                    $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">iniciado</span><span class="ms-1 fas fa-cogs"></span></div></td>';
+                                                }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">finalizado</span><span class="ms-1 fas fa-check"></span></div></td>';
+                                                }
+                                        $Linea = Linea::find($PartdaAr['pivot']->Linea_id);
+                                                $menu.='<td class="align-middle text-center Linea"><h5 class="text-light text-center p-0 mx-1" style="background:'.$Linea->ColorLinea.'">'.$Linea->NumeroLinea.'</h5></td></tr>';
+                                    }
+                                    //Mostrar Partidas
+                                    $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
+                                    foreach($registrosporLinea as $MostrarPartidas){
+                                        $CantidadCompletadaPartidas=$this->NumeroCompletadas($CodigoPartes,$Area);//$PartidasordenFabricacion->Areas()->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('Areas_id', $Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
+                                        ($PartidasordenFabricacion->Areas()->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('Areas_id', $Area)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
+                                        - $PartidasordenFabricacion->Areas()->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('Areas_id', $Area)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad'));
+                                        $LineaMostrar = Linea::find($MostrarPartidas['pivot']->Linea_id)->NumeroLinea;
+                                        $TotalMostrar = Partidasof_Areas::where('PartidasOF_id',$MostrarPartidas['pivot']->PartidasOF_id)->where('Areas_id', $this->AreaEspecialClasificacion)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->get()->SUM('Cantidad');
+                                        $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span class="text" style="font-size:0.8em;">'.$LineaMostrar.'</span><span class="badge badge-light-danger rounded-pill">'.$TotalMostrar.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$TotalMostrar.'</span></li>';
+                                    }
+                                }
+                            }
+                            $IniciadosMostrar = $partidas->first();
+                            $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNotNull('FechaComienzo')->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->get()->SUM('pivot.Cantidad')
+                                                - $IniciadosMostrar->Areas()->whereNull('FechaComienzo')->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->get()->SUM('pivot.Cantidad');//->get();
+                }
+                $menu='<div class="card-body">
+                    <div id="ContainerTableSuministros" class="table-list">
+                        <div class="row">
+                            <h5 class="text-center text-secondary p-0 m-0">Tipo de Escaneo : '.$TipoEscaneo.'</h5>
+                            <div class="col-6">
+                                <div class="row justify-content-start g-0">
+                                    <div class="col-auto px-3">
+                                        <h6 class="text-center">Orden de Fabricación '.$datos->OrdenFabricacion.'</h6> 
+                                        <div class="badge badge-phoenix fs--4 badge-phoenix-secondary"><span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span></div>
+                                        <br><div class="badge badge-phoenix fs--4 badge-phoenix-info"><span class="fw-bold"><span class="ms-1 fas fa-angle-double-right"></span> Pendientes de finalizar </span>'.$IniciadosMostrar.'</div>
+                                     </div>
+                                     <div class="col-auto px-3" style="transform:scale(1.4);">
+                                    '.$EstatusBloque.'
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="row justify-content-end g-0">
+                                    <div class="col-auto px-3">
+                                        <div class="dropdown font-sans-serif d-inline-block">
+                                            <button class="btn btn-phoenix-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Partidas <i class="fas fa-grip-horizontal"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto px-3">
+                                        <select class="form-select form-select-sm mb-3" data-list-filter="data-list-filter">
+                                        '.$Opciones.'
+                                        </select>
+                                    </div>
+                                    <div class="collapse p-1" id="collapseExample">
+                                        <ul class="list-group">
+                                        '.$PartidasFaltantesList.'    
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="table-responsive scrollbar mb-3">
+                        <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
+                            <thead>
+                                <tr class="bg-primary text-white">
+                                <th class="sort border-top ps-3" data-sort="NumParte">Codigo</th>
+                                    <th class="sort border-top" data-sort="Cantidad">Cantidad</th>
+                                    <th class="sort border-top" data-sort="TipoPartida">Tipo Partida</th>
+                                    <th class="sort border-top" data-sort="Inicio">Fecha Inicio</th>
+                                    <th class="sort border-top" data-sort="Fin">Fecha Fin</th>
+                                    <th class="sort border-top" data-sort="Estatus">Estatus</th>
+                                    <th class="sort border-top ps-3" data-sort="Linea">Linea</th>
+                                
+                                </tr>
+                            </thead>
+                            <tbody class="list" id="TablaBody">
+                                '.$menu.'
+                            </tbody>
+                        </table>
+                        </div>
+                        <div class="d-flex justify-content-center mt-3">
+                            <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                            <ul class="mb-0 pagination"></ul>
+                            <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
+                        </div>
+                    </div>';
+                    $BanderaFinalizar=1;
+                    if($Area==$this->AreaEspecialMontaje){
+                        if($Inicio==1 && $Escaner==1){
+                            $datos->Cerrada = 1; 
+                            $datos->save();
+                        }elseif($Inicio==0 && $Escaner==1){
+                            $CantidadTotalCorte = $datos->PartidasOF->first();
+                            $CantidadTotalCorte = $CantidadTotalCorte->Areas()->where('Areas_id',$this->AreaEspecialCorte)->get()->SUM('pivot.Cantidad');
+                            if(($CantidadTotal-$CantidadCompletada)==0 || ($CantidadTotalCorte-$CantidadCompletada)==0){
+                                $datos->Cerrada = 0; 
+                                $datos->save();
+                                $BanderaFinalizar=0;
+                            }
+                        }
+                    }
+                return response()->json([
+                    'tabla' => $menu,
+                    'Escaner' => $Escaner,
+                    'EscanerExiste' => $EscanerExiste,
+                    'status' => $status,
+                    'CantidadTotal' => $CantidadTotal,
+                    'Inicio' => $Inicio,
+                    'Finalizar' =>$Finalizar,
+                    'BanderaFinalizar' => $BanderaFinalizar,
+                    'TipoEscanerrespuesta'=>$TipoEscanerrespuesta,
+                    'CantidadCompletada' => $CantidadCompletada,
+                    'OF' => $CodigoPartes[0],
+                    'NumeroBloque' =>$NumeroBloque,
+        
+                ]);
+            }
+        }else{
+            return response()->json([
+                'tabla' => $menu,
+                'Escaner' => "",
+                'status' => "NoExiste",
+                'CantidadTotal' => "",
+                'CantidadCompletada' => 4,
+                'OF' => $CodigoPartes[0]
+            ]);
+        }
+    }
+    */
     public function CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada){
         $user= Auth::user();
         if (!$user) {
