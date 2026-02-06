@@ -2006,8 +2006,11 @@ class EtiquetasController extends Controller
                 $pdf->Text(3.5,35,"Número de parte: ");
                 $pdf->Text(50,35,$CodigoEspecial);
                 $pdf->Text(3.5,40,"Número de serie: ");
-                $Tipo = (stripos($OrdenFabricacion->Descripcion, 'multimodo'))?'M':'S';
 
+                //$Tipo = (stripos($OrdenFabricacion->Descripcion, 'multimodo'))?'M':'S';
+                $Tipo = (stripos($Insercion, 'MU') !== false) ? 'M' : 'S';
+                $OrdenFabricacion->Descripcion;
+                $OrdenFabricacion->Descripcion;
                 $Fecha = $this->SemanaFecha($DatosSAP[0]["DocDate"]);
                 $pdf->Text(50,40,$Tipo.$OrdenFabricacion->OrdenFabricacion."-".($Fecha['Week']).($Fecha['Year']).str_pad($i+1, 4, "0", STR_PAD_LEFT));
                 $pdf->Text(3.5,45,"Fecha de prueba: ");
