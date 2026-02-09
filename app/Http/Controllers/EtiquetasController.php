@@ -2009,9 +2009,8 @@ class EtiquetasController extends Controller
 
                 //$Tipo = (stripos($OrdenFabricacion->Descripcion, 'multimodo'))?'M':'S';
                 $Tipo = (stripos($Insercion, 'MU') !== false) ? 'M' : 'S';
-                $OrdenFabricacion->Descripcion;
-                $OrdenFabricacion->Descripcion;
-                $Fecha = $this->SemanaFecha($DatosSAP[0]["DocDate"]);
+                $Fecha = $this->SemanaFecha(date('y-m-d h:i:s'));
+                //$Fecha = $this->SemanaFecha($DatosSAP[0]["DocDate"]);
                 $pdf->Text(50,40,$Tipo.$OrdenFabricacion->OrdenFabricacion."-".($Fecha['Week']).($Fecha['Year']).str_pad($i+1, 4, "0", STR_PAD_LEFT));
                 $pdf->Text(3.5,45,"Fecha de prueba: ");
                 $FechaPrueba = date('d/m/Y');
