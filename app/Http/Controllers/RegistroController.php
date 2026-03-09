@@ -59,7 +59,7 @@ class RegistroController extends Controller
         return response()->json([
             'apellido' => $registro->apellido,
             'name' => $registro->name,
-            'email' => $registro->email,
+            'email' => preg_replace('/\s+/', '',$registro->email),
             'role' => $registro->role,
             'roles' => $roles 
         ]);
@@ -67,23 +67,33 @@ class RegistroController extends Controller
     // Método para actualizar un usuario
     public function update(Request $request, $id){
         $user = User::findOrFail($id);
+        $messages = [
+            'apellido.required' => '* Campo obligatorio.',
+            'name.required'     => '* Campo obligatorio.',
+            'email.required'    => '* Campo obligatorio.',
+            'email.email'       => '* La dirección de correo no tiene un formato válido.',
+            'email.unique'      => '* Este correo ya está registrado por otro administrador.',
+            'password.min'      => '* La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => '* Las contraseñas no coinciden.',
+        ];
         $validatedData = $request->validate([
             'apellido' => 'required|string|max:255',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8|confirmed',
-        ]);
+        ], $messages);
         $user->update([
             'apellido' => $validatedData['apellido'],
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'password' => $validatedData['password'] ? Hash::make($validatedData['password']) : $user->password,
         ]);
+
         $user->roles()->sync($request->roles);
-        return response()->json([
-            'success' => true,
-            'message' => 'Usuario actualizado exitosamente.'
-        ]);
+        $nombre = $request->name;
+        $apellido = $request->apellido;
+        return redirect()->route('registro.index')
+                     ->with('success', 'Usuario '.$nombre.' '.$apellido.' actualizado exitosamente.');
     }
      // Método para mostrar el formulario de creación de un nuevo usuario
     public function create(){
@@ -118,11 +128,16 @@ class RegistroController extends Controller
         return response()->json(['success' => false, 'message' => 'Usuario no encontrado.'], 404);
     }
     public function storeoperador(Request $request){
+        $messages = [
+            'Oapellido.required' => '* Campo obligatorio.',
+            'Oname.required'     => '* Campo obligatorio.',
+            'roles.required'    => '* Selecciona una opcion valida'
+        ];
         $validatedData = $request->validate([
-        'apellido' => 'required|string|max:255',
-        'name' => 'required|string|max:255',
+        'Oapellido' => 'required|string|max:255',
+        'Oname' => 'required|string|max:255',
         'roles' => 'required|array', 
-        ]);
+        ],$messages);
 
         // Generación de la clave y el correo
         $clave = str_pad(rand(10000, 99999), 5, '0', STR_PAD_LEFT); 
@@ -136,26 +151,37 @@ class RegistroController extends Controller
 
         // Creación del usuario
         $user = new User();
-        $user->name = $validatedData['name'];
-        $user->apellido = $validatedData['apellido'];
+        $user->name = $validatedData['Oname'];
+        $user->apellido = $validatedData['Oapellido'];
         $user->email = $email;
         $user->password = $clave;  
         $user->role = 'O';
         $user->save();
 
         $user->roles()->sync($validatedData['roles']); 
-        $Usuario = $validatedData['name']." ".$validatedData['apellido'];
-        return redirect()->route('registro.index',['Usuarios' => $Usuario,'Clave' =>$clave])->with('status', 'Usuario creado exitosamente.');
+        $Usuario = $validatedData['Oname']." ".$validatedData['Oapellido'];
+        return redirect()->route('registro.index',['Usuarios' => $Usuario,'Clave' =>$clave])->with('status', 'Usuario '.$Usuario.' creado exitosamente.');
     }
     // Validaciones y crear usuario
     public function store(Request $request){
+        $messages = [
+            'apellido.required' => '* Campo obligatorio.',
+            'name.required'     => '* Campo obligatorio.',
+            'email.required'    => '* Campo obligatorio.',
+            'email.email'       => '* La dirección de correo no tiene un formato válido.',
+            'email.unique'      => '* Este correo ya está registrado por otro usuario.',
+            'password.required'      => '* Campo obligatorio',
+            'password.min'      => '* La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => '* Las contraseñas no coinciden.',
+            'roles.required'    => '* Selecciona una opcion valida'
+        ];
         $validatedData = $request->validate([
             'apellido' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
             'roles' => 'required|array', 
-        ]);
+        ], $messages);
         $user = User::create([
             'name' => $validatedData['name'],
             'apellido' => $validatedData['apellido'],
@@ -166,6 +192,6 @@ class RegistroController extends Controller
         $Usuario = $validatedData['name']." ".$validatedData['apellido'];
         $Email = $validatedData['email'];
         $user->roles()->sync($validatedData['roles']); 
-        return redirect()->route('registro.index',['Usuarios' => $Usuario,'Email' =>$Email])->with('status', 'Usuario creado exitosamente.');
+        return redirect()->route('registro.index',['Usuarios' => $Usuario,'Email' =>$Email])->with('status', 'Usuario '.$Usuario.' creado exitosamente.');
     }
 }

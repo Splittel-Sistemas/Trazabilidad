@@ -32,26 +32,14 @@ class LineasController extends Controller
             $validatedData = $request->validate([
                 'Nombre' => 'required|string|max:255',
                 'NumeroLinea' => 'required|integer|',
-                'Descripcion' => 'nullable|string',
                 'ColorLinea' => 'required',
-                'AreasPosiblesCrear' => 'required',
             ]);
             // Verificar si el NumeroLinea ya existe
-            if (Linea::where('NumeroLinea', $request->NumeroLinea)->exists()) {
-                    return response()->json([
-                        'status' =>'LineaExiste',
-                        'message' => 'Número de línea ya existe',
-                        'numlinea' =>$request->NumeroLinea,
-                    ], 200);
-            }
-            $Areasposibles = implode(",", $request->AreasPosiblesCrear);
             $linea = new Linea();
             $linea->NumeroLinea = $request->NumeroLinea;
             $linea->Nombre = $request->Nombre;
             $linea->ColorLinea = $request->ColorLinea;
             $linea->active = 1;
-            $linea->Descripcion = $request->Descripcion;
-            $linea->Areasposibles = $Areasposibles;
             $linea->save();
             // Si es una solicitud AJAX, retornar una respuesta JSON
             if ($request->ajax()) {
@@ -98,29 +86,14 @@ class LineasController extends Controller
             $validatedData = $request->validate([
                 'NombreE' => 'required|string|max:255',
                 'NumeroLineaE' => 'required|integer|',
-                'DescripcionE' => 'nullable|string',
                 'ColorLineaE' => 'required',
-                'AreasPosiblesE' => 'required',
                 'lineaId' => 'required'
             ]);
             $id=$request->lineaId;
             $linea = Linea::findOrFail($id);
-            // Verificar si el NumeroLinea ya existe
-            if(!($linea->NumeroLinea == $request->NumeroLineaE)){
-                if (Linea::where('NumeroLinea', $request->NumeroLineaE)->exists()) {
-                        return response()->json([
-                            'status' =>'LineaExiste',
-                            'message' => 'Número de línea ya existe',
-                            'numlinea' =>$request->NumeroLineaE,
-                        ], 200);
-                }
-            }
-            $AreasposiblesE = implode(",", $request->AreasPosiblesE);
             $linea->NumeroLinea = $request->NumeroLineaE;
             $linea->Nombre = $request->NombreE;
             $linea->ColorLinea = $request->ColorLineaE;
-            $linea->Descripcion = $request->DescripcionE;
-            $linea->Areasposibles = $AreasposiblesE;
             if ($linea->save()) {
                 return response()->json([
                     'status' =>'success',

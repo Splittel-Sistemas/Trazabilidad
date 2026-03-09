@@ -65,10 +65,6 @@ class CorteController extends Controller
                 }else{
                     $Nombre = $Usuario->name."  ".$Usuario->apellido;
                 }
-                /*$tabla.='<tr ';
-                if($orden->Urgencia=='U'){
-                    $tabla.='style="background:#8be0fc"';
-                }*/
                 $data[] = [
                         'OrdenFabricacion' => $orden->OrdenFabricacion,
                         'Responsable_Corte' => '<span class="badge badge-phoenix badge-phoenix-primary">'.$Nombre.'</span>',
@@ -82,23 +78,7 @@ class CorteController extends Controller
                         'Accion' => '<button class="btn btn-sm btn-outline-primary px-3 py-1" onclick="Planear(\''.$orden->idEncript.'\')">Cortes</button>',
                         'Urgencia' => $orden->Urgencia
                     ];
-                /*$tabla.='>
-                        <td>'. $orden->OrdenFabricacion .'</td>
-                        <td class="text-center"><span class="badge badge-phoenix badge-phoenix-primary">'.$Nombre.'</span></td>
-                        <td>'. $orden->Articulo .'</td>
-                        <td>'. $orden->Descripcion .'</td>
-                        <td>'. $orden->Piezascortadas.'</td>
-                        <td>'. $orden->PiezascortadasR.'</td>
-                        <td>'. $orden->CantidadTotal .'</td>
-                        <td>'. $orden->FechaEntrega .'</td>
-                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                        <td><button class="btn btn-sm btn-outline-primary px-3 py-1" onclick="Planear(\''.$orden->idEncript.'\')">Cortes</button></td>
-                    </tr>';*/
             }
-            /*return response()->json([
-                    'status' => 'success',
-                    'table' => $tabla,
-                ], 200);*/
             return response()->json([
                 'data' => $data,
             ], 200);

@@ -95,16 +95,18 @@ Route::get('/Area/Crimpado', [AreasController::class,'Crimpado'])->name('Crimpad
 Route::get('/Area/Medición', [AreasController::class,'Medicion'])->name('Medicion')->middleware('auth');
 Route::get('/Area/Visual', [AreasController::class,'Visualizacion'])->name('Visualizacion')->middleware('auth');
 Route::get('/Area/Partidas', [AreasController::class,'AreaPartidas'])->name('AreaPartidas')->middleware('auth');
-Route::get('/Area/Montaje', [AreasController::class,'Montaje'])->name('Montaje')->middleware('auth');
+Route::get('/Area/Empaque', [AreasController::class,'Empaque'])->name('Empaque')->middleware('auth');
 Route::post('/Area/Tabla/Pendientes', [AreasController::class,'AreaTablaPendientes'])->name('AreaTablaPendientes')->middleware('auth');
-//Clasificacion
-Route::get('/Area/Clasificación', [AreasController::class,'Clasificacion'])->name('Clasificacion')->middleware('auth');
-Route::get('/Area/Clasificación/RecargarTabla', [AreasController::class,'ClasificacionRecargarTabla'])->name('ClasificacionRecargarTabla')->middleware('auth');
-Route::post('/Area/Clasificación/InfoModal', [AreasController::class,'ClasificacionInfoModal'])->name('ClasificacionInfoModal')->middleware('auth');
-Route::post('/Area/Clasificación/Asignar', [AreasController::class,'ClasificacionAsignar'])->name('ClasificacionAsignar')->middleware('auth');
-Route::post('/Area/Clasificación/Busqueda', [AreasController::class,'ClasificacionBusqueda'])->name('ClasificacionBusqueda')->middleware('auth');
-Route::post('/Area/Clasificación/Finalizar', [AreasController::class,'FinalizarOrdenFabricacion'])->name('FinalizarOrdenFabricacion')->middleware('auth');
-Route::post('/Area/Clasificación/Eliminar', [AreasController::class,'EliminarAsignacion'])->name('EliminarAsignacion')->middleware('auth');
+//Asignacion
+Route::get('/Area/Asignación', [AreasController::class,'Asignacion'])->name('Asignacion')->middleware('auth');
+Route::get('/Area/Asignación/RecargarTabla', [AreasController::class,'AsignacionRecargarTabla'])->name('AsignacionRecargarTabla')->middleware('auth');
+Route::post('/Area/Asignación/InfoModal', [AreasController::class,'AsignacionInfoModal'])->name('AsignacionInfoModal')->middleware('auth');
+Route::post('/Area/Asignación/Asignar', [AreasController::class,'AsignacionAsignar'])->name('AsignacionAsignar')->middleware('auth');
+Route::post('/Area/Asignación/Busqueda', [AreasController::class,'AsignacionBusqueda'])->name('AsignacionBusqueda')->middleware('auth');
+Route::post('/Area/Asignación/Finalizar', [AreasController::class,'FinalizarOrdenFabricacion'])->name('FinalizarOrdenFabricacion')->middleware('auth');
+Route::post('/Area/Asignación/Eliminar', [AreasController::class,'EliminarAsignacion'])->name('EliminarAsignacion')->middleware('auth');
+Route::post('/Area/Asignación/Detener', [AreasController::class,'DetenerAsignacion'])->name('DetenerAsignacion')->middleware('auth');
+Route::post('/Area/Asignación/Prioridad', [AreasController::class,'PrioridadAsignacion'])->name('PrioridadAsignacion')->middleware('auth');
 //Corte
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden')->middleware('auth');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida')->middleware('auth');

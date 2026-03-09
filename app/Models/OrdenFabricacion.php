@@ -30,5 +30,9 @@ class OrdenFabricacion extends Model
     {
         return $this->belongsTo(Linea::class, 'Linea_id', 'id');
     }
+    public function ordenfabricacions_estatus()
+    {
+        return $this->hasMany(OrdenFabricacionEstatus::class, 'ordenfabricacion_estatus_id');
+    } 
     
 }

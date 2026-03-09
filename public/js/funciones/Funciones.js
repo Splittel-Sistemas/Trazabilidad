@@ -30,7 +30,7 @@ function confirmacion(titulo,mensaje,confirmButtonText,funcion){
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
+        cancelButtonColor: "rgb(221, 119, 51)",
         cancelButtonText:"Cancelar",
         confirmButtonText: confirmButtonText,
       }).then((result) => {

@@ -466,11 +466,7 @@ class PlaneacionController extends Controller
                             $respuestaOF->EstatusEntrega=1;
                         }else{$respuestaOF->EstatusEntrega=0;$respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->responsablecorte;}
                         $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
-                        if($DatosPlaneacion[$i]->Cantidad>$this->CantidadParaEscanner){
-                            $respuestaOF->Escaner=0;
-                        }else{
-                            $respuestaOF->Escaner=1;
-                        }
+                        $respuestaOF->Escaner=0;
                         $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;
                         $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
                         $respuestaOF->LLC = $LLC;// 1 si 0 no
@@ -499,11 +495,12 @@ class PlaneacionController extends Controller
                             $respuestaOF->EstatusEntrega=1;
                         }else{$respuestaOF->EstatusEntrega=0;$respuestaOF->ResponsableUser_id = $DatosPlaneacion[$i]->responsablecorte;}
                         $respuestaOF->FechaEntrega=$DatosPlaneacion[$i]->Fecha_planeada;
-                        if($DatosPlaneacion[$i]->Cantidad>$this->CantidadParaEscanner){
+                        $respuestaOF->Escaner=0;
+                        /*if($DatosPlaneacion[$i]->Cantidad>$this->CantidadParaEscanner){
                             $respuestaOF->Escaner=0;
                         }else{
                             $respuestaOF->Escaner=1;
-                        }
+                        }*/
                         $respuestaOF->linea_id = $DatosPlaneacion[$i]->Linea;
                         $respuestaOF->Corte = $DatosPlaneacion[$i]->Corte;
                         $respuestaOF->LLC = $LLC; // 1 si 0 no

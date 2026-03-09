@@ -72,6 +72,7 @@
                                             <th>Cantidad Cortes</th>
                                             <th>Estatus</th>
                                             <th>Acciones</th>
+                                            <th style="display:none;">Urgencia</th>
                                         </tr>
                                     </thead>
                                     <tbody id="TablaSuministroAbiertasBody" class="list">
@@ -86,6 +87,7 @@
                                                 <td class="text-center">{{$partida->TotalPartida }}</td>
                                                 <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
                                                 <td><button class="btn btn-sm btn-outline-info px-3 py-2" onclick="Planear('{{$partida->idEncript}}')">Detalles</button></td>
+                                                <td style="display:none;">{{$partida->Urgencia}}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -670,6 +672,7 @@
             "searching": busqueda, // Habilitar búsqueda
             "ordering": true, // Habilitar ordenación de columnas
             "info": true, // Muestra información sobre el total de elementos
+            "order": [[9, "desc"]],
             "language": {
                 "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
                 "search":"Buscar",

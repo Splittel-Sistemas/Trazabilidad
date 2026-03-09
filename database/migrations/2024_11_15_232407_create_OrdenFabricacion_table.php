@@ -29,6 +29,7 @@ class CreateOrdenFabricacionTable extends Migration
             $table->string('Urgencia',1)->default('N');//N normal, U urgente
             $table->foreign('OrdenVenta_id')->references('id')->on('OrdenVenta');
             $table->foreign('ResponsableUser_id')->references('id')->on('users');
+            $table->boolean('status')->default(true);// 1 Si 0 No
             $table->timestamps();
             // Definir la clave foránea correctamente
             //$table->foreign('Linea_id')->references('id')->on(DB::raw('`Linea`'))->onDelete('cascade');

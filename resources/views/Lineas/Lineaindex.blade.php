@@ -48,10 +48,16 @@
     <h4 class="mb-2 text-1100">Lineas</h4>
     </div>
 </div>
+<nav style="--phoenix-breadcrumb-divider: '&gt;&gt;';" aria-label="breadcrumb">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="{{route('index.operador')}}">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">L&iacute;neas</li>
+  </ol>
+</nav>
 <!-- Contenido principal -->
-<div class="container my-4">
+<div class="container my-2">
     @if(Auth::user()->hasPermission("Crear Linea"))
-        <a href="{{ route('linea.create') }}" class="btn btn-outline-info mb-3" data-bs-toggle="modal" data-bs-target="#crearModal">Agregar Linea</a>
+        <a href="{{ route('linea.create') }}" class="btn btn-outline-info mb-3" data-bs-toggle="modal" data-bs-target="#crearModal"><i class="fas fa-plus"></i> Nueva L&iacute;nea</a>
     @endif
     @if (session('status'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -73,14 +79,13 @@
             </form>
         </div>
         <div class=" table-responsive">
-            <table class="table table-striped table-sm fs--1 mb-0">
-                <thead class="bg-primary text-white">
+            <table class="table table-sm table-striped table-sm fs--1 mb-0">
+                <thead class="bg-light">
                     <tr>
                         <th class="sort border-top text-center ps-3" data-sort="numero">Número de línea</th>
-                        <th class="sort border-top ps-3" data-sort="nombre">Nombre</th>
-                        <th class="sort border-top ps-3" data-sort="descripcion">Descripción</th>
-                        <th class="sort border-top ps-3" data-sort="activacion">Activar</th>    
-                        <th class="sort border-top ps-3" data-sort="color">Color</th>
+                        <th class="sort border-top text-center ps-3" data-sort="nombre">Nombre</th>
+                        <th class="sort border-top text-center ps-3" data-sort="activacion">Activar</th>    
+                        <th class="sort border-top text-center ps-3" data-sort="color">Color</th>
                         <th class="sort border-top text-center ps-3">Acción</th>
                     </tr>
                 </thead>
@@ -88,11 +93,10 @@
                     @foreach ($linea as $linea)
                     <tr>
                         <td class="align-middle text-center numero ps-3">{{ $linea->NumeroLinea }}</td>
-                        <td class="align-middle nombre ps-3">{{ $linea->Nombre }}</td>
-                        <td class="align-middle descripcion ps-3">{{ $linea->Descripcion }}</td>
-                        <td class="align-center activacion ps-8">
+                        <td class="align-middle text-center nombre ps-3">{{ $linea->Nombre }}</td>
+                        <td class="align-center activacion  ps-8">
                             @if(Auth::user()->hasPermission("Activar/Desactivar Linea"))
-                                <div class="form-check form-switch">
+                                <div class="form-check form-switch float-center">
                                     <input class="form-check-input toggle-status" style="transform:scale(1.5);" type="checkbox" id="ActivarUsuario{{ $linea->id }}" data-id="{{ $linea->id }}" 
                                         data-active="{{ $linea->active ? '1' : '0' }}" 
                                         {{ $linea->active ? 'checked' : '' }} 
@@ -133,56 +137,43 @@
     <div class="modal fade" id="lineaModal" tabindex="-1" role="dialog" aria-labelledby="lineaModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header bg-primary">
-                    <h5 class="modal-title text-white" id="userModalLabel">Editar L&iacute;nea</h5>
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title text-muted" id="userModalLabel">Editar L&iacute;nea</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <form id="userEditForm">
-                    @csrf
-                    @method('PUT')
                     <div class="modal-body">
-                        <div class="row mb-1">
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label for="Nombre">Nombre</label>
-                                    <input type="text" name="NombreE" id="NombreE" class="form-control form-control-sm">
-                                    <small class="text-danger" id="Error_NombreE" style="display: none"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="NumeroLinea">Número de Línea</label>
-                                    <input type="text" name="NumeroLineaE" id="NumeroLineaE" oninput="RegexNumeros(this);" class="form-control form-control-sm">
-                                    <small class="text-danger" id="Error_NumeroLineaE" style="display: none"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="NumeroLinea">Color</label>
-                                    <input type="color" id="ColorLineaE" name="ColorLineaE"  class="form-control form-control-color" title="Selecciona un color">
-                                    <small class="text-danger" id="Error_ColorLineaE" style="display: none"></small>
-                                </div>
-                            </div>
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-body">
+                                <div class="row mb-1">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="NumeroLinea">Número de Línea</label>
+                                            <input type="text" name="NumeroLineaE" id="NumeroLineaE" oninput="RegexNumeros(this);" class="form-control form-control-sm">
+                                            <small class="text-danger" id="Error_NumeroLineaE" style="display: none"></small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label for="Nombre">Nombre</label>
+                                            <input type="text" name="NombreE" id="NombreE" class="form-control form-control-sm">
+                                            <small class="text-danger" id="Error_NombreE" style="display: none"></small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="NumeroLinea">Color</label>
+                                            <input type="color" id="ColorLineaE" name="ColorLineaE"  class="form-control form-control-color" title="Selecciona un color">
+                                            <small class="text-danger" id="Error_ColorLineaE" style="display: none"></small>
+                                        </div>
+                                    </div>
+                                </div>            
                         </div>
-                        <div class="form-group my-1">
-                            <label for="Descripcion">Descripción</label>
-                            <textarea name="DescripcionE" id="DescripcionE" class="form-control form-control-sm"></textarea>
-                            <small class="text-danger" id="Error_DescripcionE" style="display: none"></small>
-                        </div>  
-                        <div class="form-group my-1">
-                            <label for="Descripcion">Selecciona &Aacute;reas</label><br>
-                            <small class="mb-1">Presiona la tecla Ctrl o Shift para seleccionar m&aacute;s de una opci&oacute;n.</small>
-                            <select class="form-select form-select-sm" aria-label=".form-select-sm example" size="4" name="AreasPosiblesE[]" id="AreasPosiblesE" multiple>
-                                @foreach($Areas as $Area)
-                                        <option value="{{$Area->id}}">{{$Area->nombre}}</option>
-                                @endforeach
-                            </select>
-                            <small class="text-danger" id="Error_AreasPosiblesE" style="display: none"></small>
-                        </div>                   
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button  id="BtnEditarLinea" class="btn btn-sm btn-primary">Guardar cambios</button>
+                        <button  id="BtnEditarLinea" class="btn btn-sm btn-primary">Guardar</button>
+                        <button type="button" class="btn btn-sm btn-soft-primary" data-bs-dismiss="modal">Cancelar</button>
                     </div>
                 </form>
             </div>
@@ -192,66 +183,49 @@
     <div class="modal fade" id="crearModal" tabindex="-1" role="dialog" aria-labelledby="crearModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header bg-primary">
-                    <h5 class="modal-title text-white" id="crearModalLabel">Crear L&iacute;nea</h5>
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title text-muted" id="crearModalLabel">Crear L&iacute;nea</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
                 </div>
-                <form id="createLineForm" class="p-3 rounded bg-white">
-                    @csrf
-                    <div class="row mb-1">
-                        <div class="col-md-5">
-                            <div class="form-group">
-                                <label for="Nombre">Nombre</label>
-                                <input type="text" name="Nombre" id="Nombre" class="form-control form-control-sm" placeholder="Ingrese el nombre" >
-                                <small class="text-danger" id="Error_Nombre" style="display: none"></small>
+                <form id="createLineForm" class=" mt-0 rounded">
+                    <div class="modal-body">
+                        <div class="modal-body">
+                            @csrf
+                            <div class="row mb-1">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="NumeroLinea">Número de Línea</label>
+                                        <input type="text" name="NumeroLinea" id="NumeroLinea" oninput="RegexNumeros(this);" autocomplete="off" class="form-control form-control-sm" placeholder="Ingrese el número de línea" >
+                                        <small class="text-danger" id="Error_NumeroLinea" style="display: none"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="Nombre">Nombre</label>
+                                        <input type="text" name="Nombre" id="Nombre" class="form-control form-control-sm" autocomplete="off" placeholder="Ingrese el nombre" >
+                                        <small class="text-danger" id="Error_Nombre" style="display: none"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="NumeroLinea">Color</label>
+                                        <input type="color" id="ColorLinea" name="ColorLinea"  class="form-control form-control-color" title="Selecciona un color">
+                                        <small class="text-danger" id="Error_ColorLinea" style="display: none"></small>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="NumeroLinea">Número de Línea</label>
-                                <input type="text" name="NumeroLinea" id="NumeroLinea" oninput="RegexNumeros(this);" class="form-control form-control-sm" placeholder="Ingrese el número de línea" >
-                                <small class="text-danger" id="Error_NumeroLinea" style="display: none"></small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="NumeroLinea">Color</label>
-                                <input type="color" id="ColorLinea" name="ColorLinea"  class="form-control form-control-color" title="Selecciona un color">
-                                <small class="text-danger" id="Error_ColorLinea" style="display: none"></small>
-                            </div>
+                            @if(session('error'))
+                                <div class="alert alert-danger mt-2" role="alert">
+                                    {{ session('error') }}
+                                </div>
+                            @endif
                         </div>
                     </div>
-                    <div class="row mb-1">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="Descripcion">Descripción</label>
-                                <textarea name="Descripcion" id="Descripcion" class="form-control form-control-sm" placeholder="Ingrese la descripción" ></textarea>
-                                <small class="text-danger" id="Error_Descripcion" style="display: none"></small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group my-1">
-                        <label for="Descripcion">Selecciona &Aacute;reas</label><br>
-                        <small class="mb-1">Presiona la tecla Ctrl o Shift para seleccionar m&aacute;s de una opci&oacute;n.</small>
-                        <select class="form-select form-select-sm" aria-label=".form-select-sm example" size="4" name="AreasPosibles[]" id="AreasPosiblesCrear" multiple>
-                            {{--<option selected="" disabled>Selecciona Areas</option>--}}
-                            @foreach($Areas as $Area)
-                                    <option value="{{$Area->id}}">{{$Area->nombre}}</option>
-                            @endforeach
-                        </select>
-                        <small class="text-danger" id="Error_AreasPosiblesCrear" style="display: none"></small>
-                    </div> 
-                    <!-- Verifica si hay un mensaje de error -->
-                    @if(session('error'))
-                        <div class="alert alert-danger mt-2" role="alert">
-                            {{ session('error') }}
-                        </div>
-                    @endif
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button id="BtnCrearLinea" class="btn btn-sm btn-primary">
-                           Guardar
-                        </button>
+                            <button id="BtnCrearLinea" class="btn btn-sm btn-primary">
+                            Guardar
+                            </button>
+                            <button type="button" class="btn btn-sm btn-soft-primary" data-bs-dismiss="modal">Cancelar</button>
                     </div> 
                 </form>
             </div>
@@ -266,37 +240,24 @@
     $(document).ready(function() {
         var lineaId;
         function Editarlinea(linea) {
-            $('#userEditForm')[0].reset();
-            $('#AreasPosiblesE').prop('selectedIndex', -1);
+            //$('#userEditForm')[0].reset();
             $('#Error_NombreE').hide();
             $('#Error_NumeroLineaE').hide();
             $('#Error_ColorLineaE').hide();
-            $('#Error_DescripcionE').hide();
-            $('#Error_AreasPosiblesE').hide();
             lineaId = $(linea).data('id');  
             var url = "{{ route('linea.show', ['id' => '__lineaId__']) }}".replace('__lineaId__', lineaId);
-            $('#Nombre').val('');
-            $('#Descripcion').val('');
-            $('#NumeroLinea').val('');
-            $('#ColorLinea').val('');
+            $('#NombreE').val('');
+            $('#NumeroLineaE').val('');
+            $('#ColorLineaE').val('');
             $.ajax({
                 url: url,
                 method: 'GET',
                 success: function(response) {
                     $('#NombreE').val(response.Nombre);
-                    $('#DescripcionE').val(response.Descripcion);
                     $('#NumeroLineaE').val(response.NumeroLinea);
                     $('#ColorLineaE').val(response.ColorLinea);
                     $('#userEditForm').attr('action', '{{ route('linea.update', 'lineaId') }}'.replace('lineaId', lineaId));
                     $('#lineaModal').modal('show');
-                    if(!(response.AreasPosibles==null || response.AreasPosibles=="")){
-                        AreasPosibles=(response.AreasPosibles).split(',').map(Number);
-                        const SelectAreasPosiblesE = document.getElementById('AreasPosiblesE');
-                        AreasPosibles.forEach(valor => {
-                            const opcion = SelectAreasPosiblesE.querySelector(`option[value="${valor}"]`);
-                            if (opcion) opcion.selected = true;
-                        });
-                    }
                 },
                 error: function() {
                     Swal.fire('Error', 'No se pudo cargar la información del servidor', 'error');
@@ -313,8 +274,8 @@
             Error_NombreE = $('#Error_NombreE');
             Error_NumeroLineaE = $('#Error_NumeroLineaE');
             Error_ColorLineaE = $('#Error_ColorLineaE');
-            Error_DescripcionE = $('#Error_DescripcionE');
-            Error_AreasPosiblesE = $('#Error_AreasPosiblesE');
+            //Error_DescripcionE = $('#Error_DescripcionE');
+            //Error_AreasPosiblesE = $('#Error_AreasPosiblesE');
 
             BanderaEnvioE=0;
             NombreE = $('#NombreE').val();
@@ -324,18 +285,10 @@
             ColorLineaE = $('#ColorLineaE').val();
             if(!CadenaVacia(ColorLineaE)){Error_ColorLineaE.html('');Error_ColorLineaE.hide();}else{Error_ColorLineaE.html('*Campo Requerido');Error_ColorLineaE.show();BanderaEnvioE=1;}
             DescripcionE = $('#DescripcionE').val();
-            if(!CadenaVacia(DescripcionE)){Error_DescripcionE.html('');Error_DescripcionE.hide();}else{Error_DescripcionE.html('*Campo Requerido');Error_DescripcionE.show();BanderaEnvioE=1;}
-            AreasPosiblesE = $('#AreasPosiblesE').val();
-            if(!CadenaVacia(AreasPosiblesE)){Error_AreasPosiblesE.html('');Error_AreasPosiblesE.hide();}else{Error_AreasPosiblesE.html('*Selecciona minimo una opción');Error_AreasPosiblesE.show();BanderaEnvioE=1;}
-            if(BanderaEnvioE==1){
-                return 0;
-            }
 
             NombreE = $('#NombreE').val();
             NumeroLineaE = $('#NumeroLineaE').val();
             ColorLineaE = $('#ColorLineaE').val();
-            DescripcionE = $('#DescripcionE').val();
-            AreasPosiblesE = $('#AreasPosiblesE').val();
             lineaId = lineaId;
             enviando();
 
@@ -346,8 +299,6 @@
                     NombreE : NombreE,
                     NumeroLineaE : NumeroLineaE,
                     ColorLineaE : ColorLineaE,
-                    DescripcionE : DescripcionE,
-                    AreasPosiblesE : AreasPosiblesE,
                     lineaId : lineaId,
                 },
                 success: function(response) {
@@ -424,8 +375,6 @@
             Error_Nombre = $('#Error_Nombre');
             Error_NumeroLinea = $('#Error_NumeroLinea');
             Error_ColorLinea = $('#Error_ColorLinea');
-            Error_Descripcion = $('#Error_Descripcion');
-            Error_AreasPosiblesCrear = $('#Error_AreasPosiblesCrear');
 
             Nombre = $('#Nombre').val();
             if(!CadenaVacia(Nombre)){Error_Nombre.html('');Error_Nombre.hide();}else{Error_Nombre.html('*Campo Requerido');Error_Nombre.show();BanderaEnvio=1;}
@@ -433,10 +382,6 @@
             if(!CadenaVacia(NumeroLinea)){Error_NumeroLinea.html('');Error_NumeroLinea.hide();}else{Error_NumeroLinea.html('*Campo Requerido');Error_NumeroLinea.show();BanderaEnvio=1;}
             ColorLinea = $('#ColorLinea').val();
             if(!CadenaVacia(ColorLinea)){Error_ColorLinea.html('');Error_ColorLinea.hide();}else{Error_ColorLinea.html('*Campo Requerido');Error_ColorLinea.show();BanderaEnvio=1;}
-            Descripcion = $('#Descripcion').val();
-            if(!CadenaVacia(Descripcion)){Error_Descripcion.html('');Error_Descripcion.hide();}else{Error_Descripcion.html('*Campo Requerido');Error_Descripcion.show();BanderaEnvio=1;}
-            AreasPosiblesCrear = $('#AreasPosiblesCrear').val();
-            if(!CadenaVacia(AreasPosiblesCrear)){Error_AreasPosiblesCrear.html('');Error_AreasPosiblesCrear.hide();}else{Error_AreasPosiblesCrear.html('*Selecciona minimo una opción');Error_AreasPosiblesCrear.show();BanderaEnvio=1;}
             if(BanderaEnvio==1){
                 return 0;
             }
@@ -444,8 +389,6 @@
             formData.append("Nombre", $('#Nombre').val());
             formData.append("NumeroLinea", $('#NumeroLinea').val());
             formData.append("ColorLinea", $('#ColorLinea').val());
-            formData.append("Descripcion", $('#Descripcion').val());
-            formData.append("AreasPosiblesCrear", $('#AreasPosiblesCrear').val());
             enviando();
             // Enviar los datos por AJAX
             $.ajax({
@@ -455,8 +398,6 @@
                     Nombre:Nombre,
                     NumeroLinea:NumeroLinea,
                     ColorLinea:ColorLinea,
-                    Descripcion:Descripcion,
-                    AreasPosiblesCrear:AreasPosiblesCrear,
                 },
                 success: function(response) {
                     if(response.status=='LineaExiste')

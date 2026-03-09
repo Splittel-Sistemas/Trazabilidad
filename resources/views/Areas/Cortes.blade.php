@@ -484,6 +484,7 @@
                     errorBD();
                 }
             },
+            order: [[10, 'desc']],
             columns: [
                 { data: 'OrdenFabricacion' },
                 { data: 'Responsable_Corte' },
@@ -494,12 +495,14 @@
                 { data: 'Cantidad_Total' },
                 { data: 'Fecha_Planeada' },
                 { data: 'Estatus' },
-                 { data: 'Accion' },
+                { data: 'Accion' },
+                { data: 'Urgencia'}
             ],
             columnDefs: [
                 { targets: [5, 6, 7], orderable: false }, // Opcional: desactiva orden en acciones
                 { targets: [5, 6, 7], searchable: false }, // Opcional: desactiva búsqueda
-                { targets: [5, 6, 7], className: 'text-center' } // Centra los botones y checkbox
+                { targets: [5, 6, 7], className: 'text-center' }, // Centra los botones y checkbox
+                { targets: [10], visible: false, searchable: false }
             ],
             language: {
                             "info": "Mostrando _START_ a _END_ de _TOTAL_ entrada(s)",
@@ -514,24 +517,6 @@
         });
         $('.dt-layout-start:first').append(
         '<button class="btn btn-info mb-0" data-bs-toggle="modal" data-bs-target="#ModalRetrabajo" onclick="LimpiarOF()"><i class="fas fa-plus"></i> Retrabajo</button>');
-        /*$.ajax({
-            url: "{{route('CorteRecargarTabla')}}", 
-            type: 'GET',
-            data: {
-                _token: '{{ csrf_token() }}'  
-            },
-            beforeSend: function() {
-            },
-            success: function(response) {
-                if(response.status=="success"){
-                    $('#procesoTable').DataTable().destroy();
-                    $('#procesoTableBody').html(response.table);
-                    DataTable('procesoTable',true);
-                    $('.dt-layout-start:first').append(
-                    '<button class="btn btn-info mb-0" data-bs-toggle="modal" data-bs-target="#ModalRetrabajo" onclick="LimpiarOF()"><i class="fas fa-plus"></i> Retrabajo</button>');
-                }
-            }
-        });*/
     }
     function Planear(OrdenFabricacion){
         $('#Retrabajo').prop('checked', false);

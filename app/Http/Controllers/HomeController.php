@@ -32,9 +32,6 @@ class HomeController extends Controller
                 Auth::logout();
                 return redirect()->route('login_view')->withErrors(['email' => 'Tu cuenta ha sido desactivada.']);
             }
-            // Si el usuario está autenticado y su cuenta está activa
-            //$OFDia = $this->Dia();
-            //$OFDia = $OFDia->getData();
             $FechaHoy = date('Y-m-d');
             $FechaAyer = date('Y-m-d', strtotime('-1 day'));
             return view('Home', compact('FechaHoy','FechaAyer')); // O la vista que corresponda
