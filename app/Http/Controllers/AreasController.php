@@ -118,7 +118,7 @@ class AreasController extends Controller
         $fecham = Carbon::parse($fecha)->addDay();
         $OrdnesAbiertas = array();
         $Area=3;
-        $where = "";
+        $where = '';
         //Consulta traer Ordenes abiertas en esta estacion
         $PartidasOFA=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
         foreach($PartidasOFA as $key1=>$orden) {
@@ -282,7 +282,7 @@ class AreasController extends Controller
         try {
             $PartidasOF=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
             $tabla = "";
-            $where = "";
+            $where = '';
             foreach($PartidasOF as $key1=>$orden) {
                 $ordenFabri=$orden->ordenFabricacion;
                 if($ordenFabri->Cerrada == 1){
@@ -291,7 +291,6 @@ class AreasController extends Controller
                         unset($PartidasOFA[$key1]);
                 }
             }
-            
             $ordenesSAP1=$this->funcionesGenerales->EmisionesWhere($where);
             $ordenesSAP = array_filter($ordenesSAP1, function($item) {
                     return $item['Cantidad'] !== null;
