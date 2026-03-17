@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('ordenfabricacion_prioridad', function (Blueprint $table) {
             $table->id();
             $table->integer('Posicion');
-            $table->boolean('posicion')->default(false);
+            //$table->boolean('posicion')->default(false);
             $table->integer('OrdenFabricacion_id');
             /*$table->integer('OrdenFabricacion_id_down');*/
             $table->timestamps();
