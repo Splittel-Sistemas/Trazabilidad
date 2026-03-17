@@ -67,7 +67,7 @@ class PlaneacionController extends Controller
         } else {
     
             // Redirigir a una página de error si no tiene permiso
-            return redirect()->route('error.');
+            return redirect()->route('error');
         }
     }
     public function PorcentajesPlaneacion(Request $request){

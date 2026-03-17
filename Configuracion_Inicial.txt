@@ -1,18 +1,45 @@
+//Ejecutamos el comando para asignar un nuevo usuario y su contraseña
+    En la direccion ..\xampp\mysql\bin
+    mysqladmin -u root password 8kLv29!zP_mQ&7wR*x
+    Pasos para actualizar config.inc.php en XAMPP:
+    Ve a la carpeta de phpMyAdmin: C:\xampp\phpMyAdmin\
+    Busca el archivo llamado config.inc.php y ábrelo con el Bloc de notas o VS Code.
+    Busca estas líneas (normalmente están cerca de la línea 18-25):
+        PHP
+        /* Authentication type */
+        $cfg['Servers'][$i]['auth_type'] = 'config'; // Cambia 'config' por 'cookie' si quieres que te pida la clave al entrar
+        $cfg['Servers'][$i]['user'] = 'root';
+        $cfg['Servers'][$i]['password'] = ''; // <-- AQUÍ ESTÁ EL PROBLEMA
+        Pon tu nueva contraseña entre las comillas simples:
+        PHP
+        $cfg['Servers'][$i]['password'] = '8kLv29!zP_mQ&7wR*x';
+    //Seguridad extra: Contraseña al directorio
+    En el panel de XAMPP, haz clic en el botón Config de la fila de Apache.
+    Selecciona Apache (httpd-xampp.conf).
+    Busca el bloque <Directory "C:/xampp/phpMyAdmin"> y asegúrar que tenga la instrucción Require local o añade una autenticación básica por .htaccess
+
 //Migrar la base de datos
-php artisan migrate:refresh  
+    php artisan migrate:refresh 
 
 //Comondos para agregar la información de los seeders
-1.php artisan db:seed --class=UserSeeder
-2.php artisan db:seed --class=RolSeeder
-3.php artisan db:seed --class=PermissionSeeder
-4.php artisan db:seed --class=PermissionRoleSeeder
+    1.php artisan db:seed --class=UserSeeder
+    2.php artisan db:seed --class=RolSeeder
+    3.php artisan db:seed --class=PermissionSeeder
+    4.php artisan db:seed --class=PermissionRoleSeeder
 
 //Manualmente agregamos el rol con el Usuario Admin
 
 //Direcciones 
-//Publica
-http://170.247.226.28:8181/login desarrollo
+    //Publica
+    http://170.247.226.28:8181/login    //Produccion
 
-//Interna
-http://192.168.2.91:8080/login
-http://192.168.2.91:login
+    //Interna
+    http://192.168.2.91:8080/login  //desarrollo
+    http://192.168.2.91:login       //produccion
+//DB ACCESS
+DB PRODUCTIVO
+ pass : PROD_8kLv29!zP_mQ&7wR*x
+ user: root
+DB DESARROLLO
+ pass : DEV_8kLv29!zP_mQ&7wR*x
+ user: root

@@ -81,7 +81,7 @@ class EtiquetasController extends Controller
         if ($user->hasPermission('Vista Etiquetas')) {
             return view('Etiquetas.index');
         } else {
-            return redirect()->route('error.');
+            return redirect()->route('error');
         }
     }
     public function show( $OrdenFabricacion){

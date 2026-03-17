@@ -107,6 +107,12 @@ Route::post('/Area/Asignación/Finalizar', [AreasController::class,'FinalizarOrd
 Route::post('/Area/Asignación/Eliminar', [AreasController::class,'EliminarAsignacion'])->name('EliminarAsignacion')->middleware('auth');
 Route::post('/Area/Asignación/Detener', [AreasController::class,'DetenerAsignacion'])->name('DetenerAsignacion')->middleware('auth');
 Route::post('/Area/Asignación/Prioridad', [AreasController::class,'PrioridadAsignacion'])->name('PrioridadAsignacion')->middleware('auth');
+Route::post('/Area/Asignación/Urgencia', [AreasController::class,'UrgenciaAsignacion'])->name('UrgenciaAsignacion')->middleware('auth');
+//Gestor De Orden
+Route::get('/Area/Gestor', [AreasController::class,'GestorDeOrden'])->name('GestorDeOrden')->middleware('auth');
+Route::get('/Area/Gestor/RecargarTabla', [AreasController::class,'GestorRecargarTabla'])->name('GestorRecargarTabla')->middleware('auth');
+//Ordenes Lineas
+Route::get('/Area/OrdenesLinea', [AreasController::class,'OrdenesLinea'])->name('OrdenesLinea')->middleware('auth');
 //Corte
 Route::get('/corte/getDetalleOrden', [CorteController::class, 'getDetalleOrden'])->name('corte.getDetalleOrden')->middleware('auth');
 Route::post('/guardarpartida', [CorteController::class, 'guardarPartidasOF'])->name('guardar.partida')->middleware('auth');
@@ -204,7 +210,7 @@ Route::post('/guardar-dashboard', [HomeController::class, 'guardarDasboard'])->n
 
 //area empaquetado
 Route::get('/Area/Empaquetado',[AreasController::class,'Empaquetado'])->name('Empacado')->middleware('auth');
-Route::get('/Tabla/principal',[AreasController::class,'tablaEmpacado'])->name('tabla.principal')->middleware('auth');
+Route::post('/Tabla/principal',[AreasController::class,'tablaEmpacado'])->name('tablaEmpacado')->middleware('auth');
 Route::post('/Area/Empaquetado/buscar', [AreasController::class,'EmpaquetadoBuscar'])->name('EmpaquetadoBuscar')->middleware('auth');
 Route::get('/fin/Proceso',[AreasController::class,'finProcesoEmpaque'])->name('finProceso.empacado')->middleware('auth');
 Route::post('/regresar-proceso', [AreasController::class, 'RegresarProceso'])->name('regresar.proceso')->middleware('auth');
@@ -226,7 +232,7 @@ Route::get('/index/perfil',[PerfilController::class, 'index'])->name('index.perf
 Route::put('/update/perfil', [PerfilController::class, 'update'])->name('update.perfil')->middleware('auth');
 
 //error
-Route::get('/Error/permiso',[HomeController::class, 'error'])->name('error.')->middleware('auth'); 
+Route::get('/Error/permiso',[HomeController::class, 'error'])->name('error')->middleware('auth'); 
 
 //dasboard operador
 Route::get('/Home',[HomeController::class, 'indexoperador'])->name('index.operador')->middleware('auth'); 

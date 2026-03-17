@@ -29,7 +29,7 @@ class RegistroController extends Controller
             return view('registro.index', compact('personal', 'roles', 'permissions'));
         } else {
             
-            return redirect()->route('error.');
+            return redirect()->route('error');
 
         }
     }

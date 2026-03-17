@@ -11,13 +11,16 @@ use App\Models\PartidasOF;
 use App\Models\Partidas;
 use App\Models\Emision;
 use App\Models\Linea;
+use App\Models\User;
 use App\Models\Partidasof_Areas;
 use App\Models\Comentarios;
 use App\Models\OrdenFabricacionPrioridad;
 use App\Models\OrdenFabricacionEstatus;
+use App\Models\PartidasArea;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use PhpParser\Node\Stmt\TryCatch;
 
 use function PHPUnit\Framework\returnSelf;
 
@@ -30,21 +33,21 @@ class AreasController extends Controller
     protected $AreaEspecialSuministro;
     protected $AreaEspecialTransicion;
     protected $AreaEspecialPulido;
-    protected $AreaEspecialEmpaque1;
+    //protected $AreaEspecialEmpaque1;
     protected $AreaEspecialEmpaque;
-    protected $AreaEspecialClasificacion;
+    protected $AreaEspecialAsignacion;
     public function __construct(FuncionesGeneralesController $funcionesGenerales){
         $this->funcionesGenerales = $funcionesGenerales;
         $this->AreaEspecialCorte = 2;//Corte
         $this->AreaEspecialSuministro = 3;//Suministro
         $this->AreaEspecialTransicion = 4;//Transición
         $this->AreaEspecialPulido = 9;//Pulido
-        $this->AreaEspecialEmpaque1= 16;//Empaque
+        //$this->AreaEspecialEmpaque1= 16;//Empaque
         $this->AreaEspecialEmpaque = 17;//Empaque
-        $this->AreaEspecialClasificacion = 18;//Empaque
+        $this->AreaEspecialAsignacion = 18;//Empaque
     }
     //Area Suministro
-    public function Suministro(){
+    /*public function Suministro(){
         $user= Auth::user();
         if (!$user) {
             return redirect()->route('login');
@@ -54,7 +57,7 @@ class AreasController extends Controller
         $fechaAtras=date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
         $fecham = Carbon::parse($fecha)->addDay();
         $Area=3;
-         //Consulta traer Ordenes abiertas en esta estacion
+        //Consulta traer Ordenes abiertas en esta estacion
         $PartidasOFA=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
         foreach($PartidasOFA as $key1=>$orden) {
             $ordenFabri=$orden->ordenFabricacion;
@@ -94,35 +97,6 @@ class AreasController extends Controller
                 unset($PartidasOFA[$key1]);
            }
         }
-        //Consulta traer Ordenes cerradas en esta estacion
-        /*$PartidasOFC = PartidasOF::Join('partidasof_areas','partidasof.id','=','partidasof_areas.PartidasOF_id')
-                        ->select('partidasof_areas.*','partidasof.*')
-                        ->where('partidasof_areas.Areas_id', 3)
-                        ->where('EstatusPartidaOFSuministro','1')
-                        ->orderByDesc('partidasof_areas.FechaTermina')
-                        ->whereBetween('FechaTermina', [$fechaAtras.' 00:00:00', $fecham.' 00:00:00'])
-                        ->get()
-                        ->unique('PartidasOF_id');
-        foreach($PartidasOFC as $key1=>$orden) {
-            $ordenFabri=$orden->ordenFabricacion;
-            $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
-            $orden['OrdenFabricacion']=$ordenFabri->OrdenFabricacion;
-            $TotalCortes = $ordenFabri->PartidasOF->first();
-            $TotalCortes = $TotalCortes->Areas()->where('Areas_id',2)->get();
-            $TotalCortes = $TotalCortes->whereNotNull('pivot.FechaTermina')->SUM('pivot.Cantidad');
-            $orden['TotalPartida']=$TotalCortes;//$ordenFabri->CantidadTotal;//PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida')-$ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida');
-            $orden['Articulo']=$ordenFabri->Articulo;
-            $orden['Descripcion']=$ordenFabri->Descripcion;
-            $orden->id="";
-            $Normal=0;
-            $Retrabajo=0;
-            foreach($ordenFabri->PartidasOF as $partidasOF){
-                $Normal+=$partidasOF->Areas()->where('Areas_id',3)->where('TipoPartida','N')->SUM('Cantidad');
-                $Retrabajo+=$partidasOF->Areas()->where('Areas_id',3)->where('TipoPartida','R')->SUM('Cantidad');
-            }
-            $orden['Normal']=$Normal;
-            $orden['Retrabajo']=$Retrabajo;
-        }*/
         $Area=$this->funcionesGenerales->encrypt(3);
         $user = Auth::user();
         if ($user->hasPermission('Vista Suministro')) {
@@ -130,7 +104,76 @@ class AreasController extends Controller
             return view('Areas.Suministro',compact('Area','PartidasOFA','fecha','fechaAtras'));
         }else {
            
-            return redirect()->route('error.');
+            return redirect()->route('error');
+        }
+    }*/
+    public function Suministro(){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+        //EstatusEntrega==0 aun no iniciado; 1 igual a terminado
+        $fecha = date('Y-m-d');
+        $fechaAtras=date('Y-m-d', strtotime('-1 week', strtotime($fecha)));
+        $fecham = Carbon::parse($fecha)->addDay();
+        $OrdnesAbiertas = array();
+        $Area=3;
+        $where = "";
+        //Consulta traer Ordenes abiertas en esta estacion
+        $PartidasOFA=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
+        foreach($PartidasOFA as $key1=>$orden) {
+            $ordenFabri=$orden->ordenFabricacion;
+            if($ordenFabri->Cerrada == 1){
+                $where .= ($key1== 0)?" T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ":"OR T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ";
+           }else{
+                unset($PartidasOFA[$key1]);
+           }
+        }
+        $ordenesSAP1=$this->funcionesGenerales->EmisionesWhere($where);
+        $ordenesSAP = array_filter($ordenesSAP1, function($item) {
+                return $item['Cantidad'] !== null;
+        });
+        foreach($PartidasOFA as $key1=>$orden) {
+            $ordenFabri=$orden->ordenFabricacion;
+            $ordenesSAP_OF = array_filter($ordenesSAP, function($item) use ($ordenFabri) {
+                return $item['OF'] == $ordenFabri->OrdenFabricacion;
+            });
+            $ordenesLocal=$ordenFabri->Emisions()->get();
+            foreach($ordenesLocal as $ordenesLoc){
+                foreach ($ordenesSAP_OF as $key => $item) {
+                    if ($item["NoEmision"] == $ordenesLoc->NumEmision) {
+                        unset($ordenesSAP_OF[$key]);  // Eliminar el elemento del array
+                        break;  // Detener el bucle después de eliminar
+                        }
+                    }
+                }
+                $orden['OrdenFaltantes']=count($ordenesSAP_OF);
+                $orden['idEncript'] = $this->funcionesGenerales->encrypt($orden->id);
+                $orden['OrdenFabricacion']=$ordenFabri->OrdenFabricacion;
+                $orden['Urgencia']=$ordenFabri->Urgencia;
+                //$orden['TotalPartida']=$ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida')-$ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida');
+                $orden['TotalPartida']=$ordenFabri->CantidadTotal;
+                $Normal=0;
+                $Retrabajo=0;
+                $ordenFabri->PartidasOF;
+                foreach($ordenFabri->PartidasOF as $partidasOF){
+                    $Normal+=$partidasOF->Areas()->where('Areas_id',3)->where('TipoPartida','N')->SUM('Cantidad');
+                    $Retrabajo+=$partidasOF->Areas()->where('Areas_id',3)->where('TipoPartida','R')->SUM('Cantidad');
+                }
+                $orden['Normal']=$Normal;
+                $orden['Retrabajo']=$Retrabajo;
+                $orden['Articulo']=$ordenFabri->Articulo;
+                $orden['Descripcion']=$ordenFabri->Descripcion;
+                $orden->id="";
+        }
+        $Area=$this->funcionesGenerales->encrypt(3);
+        $user = Auth::user();
+        if ($user->hasPermission('Vista Suministro')) {
+           
+            return view('Areas.Suministro',compact('Area','PartidasOFA','fecha','fechaAtras'));
+        }else {
+           
+            return redirect()->route('error');
         }
     }
     public function SuministroGuardar(Request $request){
@@ -238,51 +281,58 @@ class AreasController extends Controller
         //PartidasOF->EstatusPartidaOF==0 aun no iniciado; 1 igual a terminado
         try {
             $PartidasOF=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
-            $tabla="";
+            $tabla = "";
+            $where = "";
             foreach($PartidasOF as $key1=>$orden) {
                 $ordenFabri=$orden->ordenFabricacion;
                 if($ordenFabri->Cerrada == 1){
-                        $ordenesSAP1=$this->funcionesGenerales->Emisiones($ordenFabri->OrdenFabricacion);
-                        $ordenesSAP = array_filter($ordenesSAP1, function($item) {
-                            return $item['Cantidad'] !== null;
-                        });
-                        $ordenesLocal=$ordenFabri->Emisions()->get();
-                        foreach($ordenesLocal as $ordenesLoc){
-                            foreach ($ordenesSAP as $key => $item) {
-                                if ($item["NoEmision"] == $ordenesLoc->NumEmision) {
-                                    unset($ordenesSAP[$key]);  // Eliminar el elemento del array
-                                    break;  // Detener el bucle después de eliminar
-                                }
-                            }
-                        }
-                        $TotalPartida=$ordenFabri->CantidadTotal;//($ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida'))-($ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida'));
-                        $tabla.='<tr';
-                        if($ordenFabri->Urgencia=='U'){
-                        $tabla.=' style="background:#8be0fc;" ';   
-                        }
-                        $tabla.='>
-                                <td>'. $ordenFabri->OrdenFabricacion .'</td>
-                                <td>'. $ordenFabri->Articulo .'</td>
-                                <td>'. $ordenFabri->Descripcion.'</td>
-                                <td>'.count($ordenesSAP).'</td>';
-                                $Normal=0;
-                                $Retrabajo=0;
-                                foreach($ordenFabri->PartidasOF as $partidas){
-                                    $Normal+=$partidas->Areas()->where('Areas_id',3)->where('TipoPartida','N')->SUM('Cantidad');
-                                    $Retrabajo+=$partidas->Areas()->where('Areas_id',3)->where('TipoPartida','R')->SUM('Cantidad');
-                                }
-                                
-                        $tabla.='<td>'. $Normal.'</td>
-                                <td>'. $Retrabajo.'</td>
-                                <td>'. $TotalPartida .'</td>
-                                <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                                <td><button class="btn btn-sm btn-outline-primary" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Detalles</button></td>
-                                <td style="display:none">'. $ordenFabri->Urgencia .'</td>
-                            </tr>';
-
+                    $where .= ($key1== 0)?" T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ":"OR T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ";
                 }else{
-                    unset($PartidasOFA[$key1]);
+                        unset($PartidasOFA[$key1]);
                 }
+            }
+            
+            $ordenesSAP1=$this->funcionesGenerales->EmisionesWhere($where);
+            $ordenesSAP = array_filter($ordenesSAP1, function($item) {
+                    return $item['Cantidad'] !== null;
+            });
+            foreach($PartidasOF as $key1=>$orden) {
+                $ordenFabri=$orden->ordenFabricacion;
+                $ordenesSAP_OF = array_filter($ordenesSAP, function($item) use ($ordenFabri) {
+                    return $item['OF'] == $ordenFabri->OrdenFabricacion;
+                });
+                $ordenesLocal=$ordenFabri->Emisions()->get();
+                foreach($ordenesLocal as $ordenesLoc){
+                    foreach ($ordenesSAP_OF as $key => $item) {
+                        if ($item["NoEmision"] == $ordenesLoc->NumEmision) {
+                            unset($ordenesSAP_OF[$key]);  // Eliminar el elemento del array
+                            break;  // Detener el bucle después de eliminar
+                        }
+                    }
+                }
+                $TotalPartida=$ordenFabri->CantidadTotal;//($ordenFabri->PartidasOF->whereNotNull('FechaFinalizacion')->SUM('cantidad_partida'))-($ordenFabri->PartidasOF->where('TipoPartida','R')->SUM('cantidad_partida'));
+                $tabla.='<tr';
+                if($ordenFabri->Urgencia=='U'){
+                    $tabla.=' style="background:#8be0fc;" ';   
+                }
+                $tabla.='>
+                        <td>'. $ordenFabri->OrdenFabricacion .'</td>
+                        <td>'. $ordenFabri->Articulo .'</td>
+                        <td>'. $ordenFabri->Descripcion.'</td>
+                        <td>'.count($ordenesSAP_OF).'</td>';
+                $Normal=0;
+                $Retrabajo=0;
+                foreach($ordenFabri->PartidasOF as $partidas){
+                    $Normal+=$partidas->Areas()->where('Areas_id',3)->where('TipoPartida','N')->SUM('Cantidad');
+                    $Retrabajo+=$partidas->Areas()->where('Areas_id',3)->where('TipoPartida','R')->SUM('Cantidad');
+                }        
+                $tabla.='<td>'. $Normal.'</td>
+                        <td>'. $Retrabajo.'</td>
+                        <td>'. $TotalPartida .'</td>
+                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                        <td><button class="btn btn-sm btn-outline-primary" onclick="Planear(\''.$this->funcionesGenerales->encrypt($orden->id).'\')">Detalles</button></td>
+                        <td style="display:none">'. $ordenFabri->Urgencia .'</td>
+                </tr>';
             }
             return response()->json([
                     'status' => 'success',
@@ -291,7 +341,7 @@ class AreasController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'table' => "",
+                'table' => "$e",
             ], 500);
         }
     }
@@ -671,20 +721,255 @@ class AreasController extends Controller
         }
         return $opciones;
     }
+
     //Area Empaque
     public function Empaque(){
        $user= Auth::user();
         if (!$user) {
             return redirect()->route('login');
         }
-        if($user->hasPermission('Vista Empaquetado')){
+        if($user->hasPermission('Vista Empaque')){
             $AreaOriginal=17;
             $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
             $Lineas=Linea::where('id','!=',1)->where('active',1)->get();
             return view('Areas.Empaque',compact('Area','Lineas'));
         }else{
-            return redirect()->route('error.');
+            return redirect()->route('error');
         }
+    }
+    public function PreparadoBuscar(Request $request){
+        $user= Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+        $Codigo = $request->Codigo;
+        $Codigo = explode('-', $Codigo)[0];
+        $NumeroLinea = $request->Linea;
+        $NumeroLinea = Linea::find($NumeroLinea);
+        $TablaPartidas = "";
+        if($NumeroLinea == ""){
+            return response()->json([
+                'tabla' => $TablaPartidas,
+                'status' => "error",
+                'message'=>"Para comenzar, Selecciona la línea en la que vas a trabajar!"
+            ]);
+        }
+        $NumeroLinea = $NumeroLinea->id;
+        $Area = $this->funcionesGenerales->decrypt($request->Area);
+        $menu = '';
+        //Valida si el codigo es aceptado tiene que ser mayor a 2
+        $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $Codigo)->first();
+        if($datos=="" OR $datos==null){
+            return response()->json([
+                'tabla' => $TablaPartidas,
+                'status' => "error",
+                'message'=>"La Orden de Fabricacion No exite!"
+            ]);
+        }    
+        $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $Codigo)->first();//->where('Cerrada', 1)->first();
+        if($datos=="" OR $datos==null){
+            return response()->json([
+                'tabla' => $TablaPartidas,
+                'status' => "error",
+                'message'=>"La Orden de Fabricacion ya se encuentra completada!"
+            ]);
+        }    
+        $OV = $datos->OrdenVenta;
+        $NumOV = $OV->OrdenVenta;
+        $Cliente = $OV->NombreCliente;
+        $ListaPorLinea = '<li class="list-group-item d-flex justify-content-between align-items-center">
+                            Línea
+                            <span class="badge badge-light-danger rounded-pill">Faltantes</span>
+                            <span class="badge badge-light-success rounded-pill">Completadas</span>
+                            <span class="badge badge-light-primary rounded-pill">Total</span>
+                        </li>';
+        $CantidadActual = $this->Area_Actual($Codigo,$Area);
+        $CantidadAnteror = $this->Area_Anterior($Codigo,$Area);
+        $CantidadCompletada=$this->Area_Actual($Codigo,$Area);
+        //Traemos las partidas de la OF
+        $PartidasOF = $datos->PartidasOF->first();
+        $POFAreasClasificacion = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialAsignacion)->get();
+        $POFAreasEmpaque = $PartidasOF->Areas()->where('Areas_id',$Area)->get();
+        $Lineas = $POFAreasClasificacion->pluck('pivot.Linea_id')->unique()->values();
+        if($CantidadAnteror == 0){
+            return response()->json([
+                'tabla' => $TablaPartidas,
+                'status' => "warning",
+                'message'=>"La Orden de Fabricación ".$Codigo." aun no ha sido asignada en la estación <strong>Asignación</strong>"
+            ]);
+        }
+        foreach($Lineas as $l){
+            $lCantidadLineaAnterior = $this->Area_Actual_por_linea($Codigo,$this->AreaEspecialAsignacion,$l);
+            $lCantidadLineaActual = $this->Area_Actual_por_linea($Codigo,$Area,$l);
+            $lNumeroLinea = Linea::where('id',$l)->first();
+            $lNumeroLinea = $lNumeroLinea->NumeroLinea;
+            $ListaPorLinea .='<li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span class="text" style="font-size:0.8em;">'.$lNumeroLinea.'</span>
+                                <span class="badge badge-light-danger rounded-pill">'.($lCantidadLineaAnterior-$lCantidadLineaActual).'</span>
+                                <span class="badge badge-light-success rounded-pill">'.$lCantidadLineaActual.'</span>
+                                <span class="badge badge-light-primary rounded-pill">'.$lCantidadLineaAnterior.'</span>
+                            </li> ';
+        }
+        foreach($POFAreasEmpaque as $POFAE){
+            $lNumeroLinea = Linea::where('id',$POFAE['pivot']->Linea_id)->first();
+            $ColorLinea = $lNumeroLinea->ColorLinea;
+            $lNumeroLinea = $lNumeroLinea->NumeroLinea;
+            $menu.= '<tr">
+                        <td class="text-center">'.$POFAE['pivot']->Cantidad.'</td>
+                        <td class="text-center">'.$POFAE['pivot']->FechaComienzo.'</td>
+                        <td class="text-center"><span class="badge badge-phoenix badge-phoenix-success">Guardado</span></td>
+                       <!-- <td class="text-center"><h5 style="background:'.$ColorLinea.';color:white;">'.$lNumeroLinea.'</h5></td> --> 
+                        <td class="text-center"><button class="btn btn-secondary btn-sm float-center" type="button" id="btnEscanearSalida" ';
+            if(auth()->user()->hasPermission("Cancelar partida")){
+                $menu.=' onclick="CancelarPartida('.$POFAE['pivot']->id.',\''.$datos->OrdenFabricacion.'\')" ';
+            }else{
+                $menu.='disabled';
+            }
+
+            $menu.='>Cancelar</button></td>                   
+                    </tr>';
+        }
+        $InfoAdicional = '<h5 class="text-center text-secondary p-0 m-0">Orden de Fabricación: '.$Codigo.'</h5>
+                            <h6 class="text-center">Orden de Venta: <strong>'.$NumOV.'</strong></h6> 
+                            <h6 class="text-center">Cliente: <strong>'.$Cliente.'</strong></h6> ';
+        $CantidadTotal=$datos->CantidadTotal;
+                $menu='<div class="card-body">
+                    <div id="ContainerTableSuministros" class="table-list">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row justify-content-start g-0">
+                                    <div class="col-auto px-3">
+                                        <div class="badge badge-phoenix fs--4 badge-phoenix-secondary"><span class="fw-bold">Piezas Completadas </span>'.$CantidadActual.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span></div>
+                                        <!--<br><div class="badge badge-phoenix fs--4 badge-phoenix-info"><span class="fw-bold"><span class="ms-1 fas fa-angle-double-right"></span> Pendientes de finalizar </span>'.($CantidadTotal-$CantidadActual).'</div>-->
+                                     </div>
+                                     <div class="col-auto px-3">
+                                        <span class=" fw-bold">OF:'.$Codigo.'</span>
+                                     </div>
+                                     <div class="col-auto px-3">
+                                        '.(($datos->Cerrada == 0)?'<div class="badge badge-phoenix fs--4 badge-phoenix-primary"><span class="fw-bold">Cerrada<span class="ms-1 fas fa-stream"></span></div>':'<div class="badge badge-phoenix fs--4 badge-phoenix-success"><span class="fw-bold">Abierta<span class="ms-1 fas fa-stream"></span></div>').'
+                                    </div>
+                                </div>
+                            </div>
+                            <!--<div class="col-6">
+                                <div class="row justify-content-end g-0">
+                                    <div class="col-auto px-3">
+                                        <div class="dropdown font-sans-serif d-inline-block">
+                                            <button class="btn btn-phoenix-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Partidas <i class="fas fa-grip-horizontal"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="collapse p-1" id="collapseExample">
+                                        <ul class="list-group">
+                                        '.$ListaPorLinea.'    
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>-->
+                        </div>
+                    <div class="table-responsive scrollbar mb-3">
+                        <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
+                            <thead>
+                                <tr class="bg-primary text-white">
+                                    <th class="text-center" data-sort="Cantidad">Cantidad</th>
+                                    <th class="text-center" data-sort="Inicio">Fecha Ingreso</th>
+                                    <th class="text-center" data-sort="Estatus">Estatus</th>
+                                    <!--<th class="text-center ps-3" data-sort="Linea">Linea</th>-->
+                                    <th class="text-center ps-3" data-sort="Linea">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody class="list" id="TablaBody">
+                                '.$menu.'
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>';
+                return response()->json([
+                    'tabla' => $menu,
+                    'CantidadTotal' => $CantidadTotal,
+                    'CantidadCompletada' => $CantidadCompletada,
+                    'OF' => $Codigo,
+                    'status'=>'success',
+                    'InfoAdicional'=>$InfoAdicional,
+        
+                ]);
+    }
+    public function tablaEmpacado(Request $request){
+        $OrdenFabricacionPendiente = DB::table('partidasof_areas')
+            ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+            ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
+            ->join('ordenventa', 'ordenfabricacion.OrdenVenta_id', '=', 'ordenventa.id')
+            ->where('ordenfabricacion.Cerrada', '=', 1)
+            ->whereIn('partidasof_areas.Areas_id', [$this->AreaEspecialAsignacion])
+            ->select(
+                'ordenfabricacion.id as OF_id',
+                'ordenfabricacion.Cerrada',
+                'ordenfabricacion.Urgencia',
+                'ordenventa.OrdenVenta',
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal',
+                'ordenfabricacion.FechaEntrega',
+                'partidasof_areas.Areas_id',
+                'ordenfabricacion.id',
+                DB::raw('SUM(partidasof_areas.Cantidad) as CantidadTotalArea') 
+            )
+            ->groupBy(
+                'ordenfabricacion.id',
+                'ordenfabricacion.Cerrada',
+                'ordenfabricacion.Urgencia',
+                'ordenventa.OrdenVenta',
+                'ordenfabricacion.OrdenFabricacion',
+                'ordenfabricacion.CantidadTotal',
+                'ordenfabricacion.FechaEntrega',
+                'partidasof_areas.Areas_id'
+            )
+            ->get()
+            ->groupBy(fn($item) => $item->OrdenVenta . '-' . $item->OrdenFabricacion)
+            ->map(function ($items) {
+                $area17 = $items->firstWhere('Areas_id', $this->AreaEspecialEmpaque );
+                if ($area17) {
+                    return $area17;
+                } else {
+                    $base = $items->first();
+                    return (object) [
+                        'OF_id' => $base->OF_id,
+                        'OrdenVenta' => $base->OrdenVenta,
+                        'Urgencia' => $base->Urgencia,
+                        'OrdenFabricacion' => $base->OrdenFabricacion,
+                        'CantidadTotal' => $base->CantidadTotal,
+                        'FechaEntrega' => $base->FechaEntrega,
+                        'CantidadTotalArea' => $base->CantidadTotalArea, 
+                        'Cerrada' => $base->Cerrada
+                    ];
+                }
+            })
+            ->values();
+        $tabla='';
+        $registro = '';
+        $ArrPosicion = array();
+        foreach($OrdenFabricacionPendiente as $partida){
+            $CantidadActual = $this->Area_Actual($partida->OrdenFabricacion,$this->AreaEspecialEmpaque);
+            $registro='<tr';
+            if($partida->Urgencia == 'U'){
+               $registro.=' style="background:#8be0fc;"';
+            }
+            $registro.='>';
+            $registro.=' <td class="text-center">'.$partida->OrdenFabricacion.'</td>
+                        <td class="text-center">'.$partida->CantidadTotalArea.'</td>
+                        <td class="text-center">'.$CantidadActual .'</td>
+                        <td class="text-center">'.$partida->CantidadTotal.'</td>
+                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>';
+                $registro.='<td class="text-center">
+                            <button class="btn btn-sm btn-warning float-center" type="button" onclick="FinalizarManual('.$partida->OF_id.')">Finalizar</button>
+                        </td>';
+            $registro.='</tr>';
+            if($partida->Urgencia == 'U'){
+                $tabla=$registro.$tabla;
+                array_unshift($ArrPosicion, array('OF'=>$partida->OrdenFabricacion,'registro'=>$registro));
+            }else{
+                $tabla.=$registro;
+                $ArrPosicion[]=array('OF'=>$partida->OrdenFabricacion,'registro'=>$registro);
+            }
+        }
+        return$tabla;
     }
     // Area Asignacion
     public function Asignacion(Request $request){
@@ -693,11 +978,11 @@ class AreasController extends Controller
         if (!$user) {
             return redirect()->route('login');
         }
-        if($user->hasPermission('Vista Clasificación')){
+        if($user->hasPermission('Vista Asignación')){
         $Lineas = Linea::where('active','1')->where('id','!=',1)->orderBy('Nombre', 'asc')->get();
         return view('Areas.Asignacion',compact('Lineas','FechaFin')); 
         }else{
-            return redirect()->route('error.');
+            return redirect()->route('error');
         }
     }
     public function AsignacionRecargarTabla(Request $request){
@@ -710,7 +995,7 @@ class AreasController extends Controller
                 'data' => []
             ]);
         }
-        if($user->hasPermission('Vista Clasificación')){
+        if($user->hasPermission('Vista Asignación')){
             $start = $request->input('start');
             $length = $request->input('length');
             $search = $request->input('search.value');
@@ -728,7 +1013,7 @@ class AreasController extends Controller
                 $ContarPartidasClasificacion = $Partida->Areas()->where('Areas_id',18)->get()->sum('pivot.Cantidad');
                 $OrdenFab['CantidadSuministro'] = $ContarPartidas-$ContarPartidasClasificacion;
                 $OrdenFab['idEncriptOF'] = $this->funcionesGenerales->encrypt($OrdenFab->id);
-                $OrdenFab['EscanerDisabled'] = $Partida->Areas()->where('Areas_id','!=',$this->AreaEspecialClasificacion)->where('Areas_id','>',$this->AreaEspecialSuministro)->count();
+                $OrdenFab['EscanerDisabled'] = $Partida->Areas()->where('Areas_id','!=',$this->AreaEspecialAsignacion)->where('Areas_id','>',$this->AreaEspecialSuministro)->count();
                 $existe = false;
                 if($OrdenFab->status == 1){
                     $btndetener = '<button type="button" class="btn btn-sm btn-soft-warning px-3 py-2" onclick="DetenerOrdenFabricacion(\''.$OrdenFab->idEncriptOF.'\',\'D\')">Detener</button>';
@@ -766,6 +1051,7 @@ class AreasController extends Controller
             foreach($OrdenFabricacionPrioridad as $OFP_key => $OFP){
                 $OFP_id = $OFP->OrdenFabricacion_id;
                 $OFP_Posicion = $OFP->Posicion;
+                $OFP_Prioridad = $OFP->Prioridad;
                 $registro_up = array_filter($data, function($item) use ($OFP_id) {
                     return $item['id_'] == $OFP_id;
                 });
@@ -773,7 +1059,7 @@ class AreasController extends Controller
                 if($registro_up != ""){
                     $registro = $data[$registro_up];
                     unset($data[$registro_up]);
-                    if($OFP_Posicion == 0){
+                    if($OFP_Prioridad == 1){
                         $registro['prioridad'] = 1;
                     }
                     array_splice($data, $OFP_Posicion, 0, [$registro]);
@@ -796,13 +1082,13 @@ class AreasController extends Controller
             ], 200);
         }
         $PartidasOF = $OrdenFabricacion->PartidasOF->first();
-        $PartidasClasificacion = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get();
+        $PartidasClasificacion = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialAsignacion)->get();
         //Valores disponibles
         $Corte_ContarPartidas = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialCorte)->get()->whereNotNull('pivot.FechaTermina')->where('pivot.TipoPartida','N')->sum('pivot.Cantidad');
         $Suministro_ContarPartidas = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialSuministro)->get()->whereNotNull('pivot.FechaTermina')->where('pivot.TipoPartida','N')->sum('pivot.Cantidad');
         
-        $ContarPartidasClasificacion = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get()->sum('pivot.Cantidad');
-        $PartidasIniciadas = $PartidasOF->Areas()->where('Areas_id','>',$this->AreaEspecialSuministro)->where('Areas_id','!=',$this->AreaEspecialClasificacion)->get();
+        $ContarPartidasClasificacion = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialAsignacion)->get()->sum('pivot.Cantidad');
+        $PartidasIniciadas = $PartidasOF->Areas()->where('Areas_id','>',$this->AreaEspecialSuministro)->where('Areas_id','!=',$this->AreaEspecialAsignacion)->get();
         $Ordenfabricacionpartidas='<div class="col-12"><button class="btn btn-sm btn-outline-danger px-3 py-2 float-end"';
         $InputsBloqueo="";
         if($OrdenFabricacion->Cerrada == 0){
@@ -877,14 +1163,15 @@ class AreasController extends Controller
         $Ordenfabricacionpartidas.='<table id="TablePartidasModal" class="table table-sm fs--1 mb-0" style="width:100%">
                         <thead>
                             <tr>
-                                <th class="text-center" colspan="5">Partidas</th>
+                                <th class="text-center" colspan="5"><h4>Partidas</h4></th>
                             </tr>
-                            <tr>
-                                <th class="text-center" style="width:20%">Número Partida</th>
-                                <th class="text-center" style="width:20%">Piezas Asignadas</th>
-                                <th class="text-center" style="width:20%">Linea</th>
-                                <th class="text-center" style="width:20%">Fecha de Ingreso a Línea</th>
-                                <th class="text-center" style="width:20%">Acciones</th>
+                            <tr class="bg-light">
+                                <th class="text-center" style="width:15%">Número Partida</th>
+                                <th class="text-center" style="width:15%">Piezas Asignadas</th>
+                                <th class="text-center" style="width:15%">Linea</th>
+                                <th class="text-center" style="width:15%">Fecha de Ingreso a Línea</th>
+                                <th class="text-center" style="width:15%">Prioridad</th>
+                                <th class="text-center" style="width:15%">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>';
@@ -896,6 +1183,11 @@ class AreasController extends Controller
                     <td class="text-center">'.$Partida['pivot']->Cantidad.'</td>
                     <td class="text-center"><span class="text-white p-1" style="background:'.$Linea->ColorLinea.';">'.$Linea->Nombre.'</span></td>
                     <td class="text-center">'.$Partida['pivot']->FechaComienzo.'</td>
+                    <td class="text-center">
+                        <div class="form-check d-flex justify-content-center align-items-center">
+                            <input class="form-check-input float-center" onclick="PrioridadLinea(this,'.$Partida['pivot']->id.')" type="checkbox" value="" '.(($Partida['pivot']->Prioridad == 'si')?' checked':'').'/>
+                        </div>
+                    </td>
                     <td class="text-center"><button class="btn btn-sm btn-outline-danger" ';
                 if($PartidasIniciadas->count()==0){
                     $Ordenfabricacionpartidas.=' onclick="EliminarPartida(\''. $this->funcionesGenerales->encrypt($Partida['pivot']->id).'\','.($key+1).',\''.$request->id.'\')">Eliminar</button> ';
@@ -906,10 +1198,45 @@ class AreasController extends Controller
             }
         }else{
             $Ordenfabricacionpartidas.='<tr>
-                                        <td class="text-center" colspan="5">Aún no existen partidas asignadas</td>
+                                        <td class="text-center" colspan="6">Aún no existen partidas asignadas</td>
                                     </tr>';
         }
         $Ordenfabricacionpartidas.='</tbody></table>';
+        $OrdenFabricacionEstatus = OrdenFabricacionEstatus::where('OrdenFabricacion_id','=',$OrdenFabricacion->id)->OrderBy('id','desc')->get();
+        $Ordenfabricacionpartidas.='<br><h4 class="text-center mb-3">Comentarios</h4>';
+        if($OrdenFabricacionEstatus->count() == 0){
+            $Ordenfabricacionpartidas.='<p class="text-center text-muted">No hay comentarios</p>';
+        }else{
+            $Ordenfabricacionpartidas .= '<table class="table table-sm">
+                    <thead class="bg-light">
+                        <tr>
+                        <th class="text-center">Usuario</th>
+                        <th class="text-center">Comentario</th>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+            foreach($OrdenFabricacionEstatus as $keycom=>$OFP){
+                $fechaRaw = $OFP->created_a;
+                $dt = Carbon::parse($fechaRaw);
+                $fecha = $dt->format('d/m/Y H:i');
+                $user = user::find($OFP->id_user);
+                $nombre = ($user != "")?$user->name."  ".$user->apellido:'';
+
+                $Ordenfabricacionpartidas .= '<tr>
+                        <td class="text-center">'.$nombre.'</td>
+                        <td class="text-center">'.$OFP->comentario.' </td>
+                        <td class="text-center">'.$fecha.'</td>
+                        <td class="text-center"'; 
+                $Ordenfabricacionpartidas .= ($OrdenFabricacion->status == 0 AND $keycom==0)?' style="background-color: rgb(252, 248, 139);" ':'';
+                $Ordenfabricacionpartidas .= '>Detenida</td>
+                        </tr>
+                        <tr>';
+            }
+            $Ordenfabricacionpartidas .= '</tbody>
+                                    </table>';
+        }
         return response()->json([
             'status' => 'success',
             'Ordenfabricacionpartidas' => $Ordenfabricacionpartidas,
@@ -940,7 +1267,6 @@ class AreasController extends Controller
             $ContarPartidas = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialSuministro)->get()->whereNotNull('pivot.FechaTermina')->where('pivot.TipoPartida','N')->sum('pivot.Cantidad');
             $ContarPartidas = ($ContarPartidas>$Corte_ContarPartidas)?$Corte_ContarPartidas:$ContarPartidas;
             $ContarPartidasClasificacion = $PartidasOF->Areas()->where('Areas_id',18)->get()->sum('pivot.Cantidad');
-
             $ContarPartidas = $ContarPartidas-$ContarPartidasClasificacion;
             if($ContarPartidas<$Cantidad){
                 return response()->json([
@@ -948,14 +1274,22 @@ class AreasController extends Controller
                     'message' => 'Ocurrió un error, la cantidad solicitada es mayor a la cantidad disponible',
                 ], 200);
             }
+            $OrdenFabricacionPrioridad = OrdenFabricacionPrioridad::where('OrdenFabricacion_id',$OrdenFabricacion->id)->first();
+            $OFP_Prioridad = 'no';
+            if($OrdenFabricacionPrioridad != ""){
+                if($OrdenFabricacionPrioridad->Prioridad == 1){
+                    $OFP_Prioridad = 'si';
+                }
+            }
             $data = [
                 'Cantidad' => $Cantidad,
                 'TipoPartida' => 'N', // N = Normal
                 'FechaComienzo' => now(),
                 'Linea_id' => $LineaId,
+                'Prioridad' => $OFP_Prioridad,
                 'Users_id' => $this->funcionesGenerales->InfoUsuario(),
             ];
-            $PartidasOF->Areas()->attach($this->AreaEspecialClasificacion, $data);
+            $PartidasOF->Areas()->attach($this->AreaEspecialAsignacion, $data);
             return response()->json([
                     'status' => 'success',
                     'idOF' => $this->funcionesGenerales->encrypt($id),
@@ -1046,12 +1380,14 @@ class AreasController extends Controller
         ], 200);
     }
     public function PrioridadAsignacion(Request $request){
+        //return $request;
         try {
             $id_OF = $this->funcionesGenerales->decrypt($request->idOF);
             $Posicion = $request->Posicion;
             //revisar si ya existe en la base de datos
             $OFP = OrdenFabricacionPrioridad::where('OrdenFabricacion_id',$id_OF)->first();
-            if($OFP != ""){
+            //Validamos si ya existe en la tabla de OrdenFabricacionPrioridad
+            if($OFP != ""){ //Si existe solo modificamos
                 if($Posicion < $OFP->Posicion){
                     OrdenFabricacionPrioridad::where('Posicion', '>=', $Posicion)
                         ->where('Posicion', '<', $OFP->Posicion)
@@ -1062,21 +1398,37 @@ class AreasController extends Controller
                         ->decrement('Posicion', 1);
                 }
                 $OFP->Posicion = $Posicion;
+                if($request->Posicion == 0){
+                    $OFP->Prioridad = true;
+                }
                 if ($OFP->save()) {
                     $status = "success";
                 }else{
                     $status = "error";
                 }
-            }else{
+            }else{ //Si no existe creamos el registro
                 $OFP = new OrdenFabricacionPrioridad();
                 $OFP->OrdenFabricacion_id = $id_OF;
                 $OFP->Posicion = $Posicion;
+                if($request->Posicion == 0){
+                    $OFP->Prioridad = true;
+                }
                 OrdenFabricacionPrioridad::where('Posicion', '>=', $Posicion)
                         ->increment('Posicion', 1);
                 if ($OFP->save()) {
                     $status = "success";
                 }else{
                     $status = "error";
+                }
+            }
+            //hacemostro if este para ver si tiene partidas en caso de que si marcarlas como prioridad
+            $OF = OrdenFabricacion::find($id_OF);
+            if($OF!= "" AND $request->Posicion==0){
+                $OF_partida = $OF->partidasOF->first();
+                $Partidasof_Areas = Partidasof_Areas::where('PartidasOF_id',$OF_partida->id)->where('Areas_id',$this->AreaEspecialAsignacion)->get();
+                foreach($Partidasof_Areas as $POF_Areas){
+                    $POF_Areas->Prioridad = 'si';
+                    $POF_Areas->save();
                 }
             }
             return response()->json([
@@ -1092,605 +1444,168 @@ class AreasController extends Controller
             ], 200);
         }
     }
-
-    //Funciones  generales estaciones
-    /*public function PreparadoBuscar(Request $request){
-        $user= Auth::user();
-        if (!$user) {
-            return redirect()->route('login');
+    public function UrgenciaAsignacion(Request $request){
+        try {
+            $id = $request->id_partida;
+            $prioridad = ($request->status == "true")?'si':'no';
+            $prioridad_status = ($request->status == "true")?' <strong>asignada</strong> a ':' <strong>quitada</strong> de ';
+            $PartidasArea = Partidasof_Areas::find($id); 
+            $PartidasArea->Prioridad = $prioridad;
+            $PartidasArea->save();
+            $message = "Partida $prioridad_status lista de prioridad";
+            $status = 'success';
+        } catch (\Throwable $th) {
+            $status = 'error';
+            $message = 'Los datos no pudieron ser procesados correctamente, si persiste el error contacta a TI';
         }
-        if ($request->has('Confirmacion')) {
-            $confirmacion=1;
-        }else{
-            $confirmacion=0;
-        }
-        $Codigo = $request->Codigo;
-        $Finalizar = 1;
-        $NumeroLinea = $request->Linea;
-        $NumeroLinea = Linea::where('NumeroLinea',$NumeroLinea)->first();
-        $TipoEscaneo = "";
-        if($NumeroLinea == ""){
-            return response()->json([
-                'tabla' => "",
-                'Escaner' => "",
-                'status' => "ErrorLínea",
-                'CantidadTotal' => "",
-                'CantidadCompletada' => 4,
-                'OF' => ''
-
-            ]);
-        }
-        $NumeroLinea = $NumeroLinea->id;
-        $Area = $this->funcionesGenerales->decrypt($request->Area);
-        $CodigoPartes = explode("-", $Codigo);
-        $CodigoTam = count($CodigoPartes);
-        $TipoEscanerrespuesta=0;
-        $menu="";
-        $Escaner="";
-        $CantidadCompletada=0;
-        $EscanerExiste=0;
-        $NumeroBloque=0;
-        $EstatusBloque = "";
-        $PartidasFaltantesList='<li class="list-group-item d-flex justify-content-between align-items-center">Núm. Línea<span class="badge badge-light-danger rounded-pill">Faltantes</span><span class="badge badge-light-success rounded-pill">Completadas</span><span class="badge badge-light-primary rounded-pill">Total</span></li>';
-        //Valida si el codigo es aceptado tiene que ser mayor a 2
-        //if(($CodigoTam==3 && !($CodigoPartes[2]=="" || $CodigoPartes[2]==0)) || $CodigoTam==2){
-        if($CodigoTam==3 || $CodigoTam==2){
-            $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $CodigoPartes[0])->first();
-            if($datos=="" OR $datos==null){
-                return response()->json([
-                    'tabla' => $menu,
-                    'Escaner' => $Escaner,
-                    'status' => "empty",
-                    'CantidadTotal' => "",
-                    'CantidadCompletada' => $CantidadCompletada,
-                    'OF' => $CodigoPartes[0]
-        
-                ]);
-            }else{
-                if($Area != $this->AreaEspecialEmpaque){
-                    if($datos->Cerrada == 0){//Valida que la Orden de fabricacion no se encuentre cerrada
-                        return response()->json([
-                            'tabla' => $menu,
-                            'Escaner' => "",
-                            'status' => "Cerrada",
-                            'CantidadTotal' => "",
-                            'CantidadCompletada' => 4,
-                            'OF' => $CodigoPartes[0]
-            
-                        ]);
-                    }
-                }
-                $status = 'success'; 
-                $CantidadTotal=$datos->CantidadTotal;
-                //Variable  guarda el valor de Escaner para saber si es no 0=No escaner 1=escaner
-                $Escaner=$datos->Escaner;
-                if($CodigoTam==3 || $CodigoTam==2){
-                    //Comprobamos que la etiqueta si coincida con su numero de parte
-                    if($Escaner==1 && isset($CodigoPartes[2])){
-                        $CodigoValido=$this->ComprobarNumEtiqueta($CodigoPartes,$Area);
-                        if($CodigoValido==0){
-                            return response()->json([
-                                'tabla' => $menu,
-                                'Escaner' => "",
-                                'status' => "NoExiste",
-                                'CantidadTotal' => "",
-                                'CantidadCompletada' => 4,
-                                'OF' => $CodigoPartes[0]
-                
-                            ]);
-                        }
-                        if($Inicio==1){ 
-                            $TipoEscanerrespuesta=$this->CompruebaAreasPosteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
-                            $CantidadArea=$this->ComprobarCantidadArea($CodigoPartes,$Area,$NumeroLinea);
-                            if($CantidadArea=='ErrorLinea'){
-                                return response()->json([
-                                    'tabla' => $menu,
-                                    'Escaner' => "",
-                                    'status' => "ErrorLinea",
-                                    'CantidadTotal' => "",
-                                    'CantidadCompletada' => "",
-                                    'OF' => $CodigoPartes[0]
-                    
-                                ]);
-                            }elseif($CantidadArea=='ErrorLineaCodigo'){
-                                return response()->json([
-                                    'tabla' => $menu,
-                                    'Escaner' => "",
-                                    'status' => "ErrorLineaCodigo",
-                                    'CantidadTotal' => "",
-                                    'CantidadCompletada' => "",
-                                    'OF' => $CodigoPartes[0],
-                                    'Linea' => $NumeroLinea
-                                ]);
-                            }
-                            if($TipoEscanerrespuesta!=6 AND $CantidadArea>=1){
-                                if($Area!=4){//Si el area es diferente de Suministro 4
-                                    $TipoEscanerrespuesta=$this->CompruebaAreasAnteriortodas($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
-                                    if($TipoEscanerrespuesta != 5){
-                                        $retrabajo=$request->Retrabajo;
-                                        if($Area==$this->AreaEspecialTransicion){
-                                            $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo,$NumeroLinea);
-                                        }else{
-                                            $TipoEscanerrespuesta=$this->ValidarPasoUnaVezAA($Area,$CodigoPartes);
-                                            if($TipoEscanerrespuesta>0){
-                                                $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo,$NumeroLinea);
-                                            }else{$TipoEscanerrespuesta=5;}
-                                        }
-                                    }
-                                }else{
-                                    $retrabajo=$request->Retrabajo;
-                                    $TipoEscanerrespuesta=$this->GuardarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada,$retrabajo,$NumeroLinea);
-                                }
-                            }
-                            if($CantidadArea<1){
-                                    $ComprobarAreaClasificacion = $datos->PartidasOF->first();
-                                    $ComprobarAreaClasificacion = $ComprobarAreaClasificacion->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get()->count();
-                                    if($ComprobarAreaClasificacion == 0){
-                                        $status = 'ErrorNoAsignado';
-                                    }else{
-                                        $status = 'ErrorLineaComplete'; 
-                                    }
-                            }
-                        }else{
-                                $TipoEscanerrespuesta=$this->FinalizarPartida($datos,$Area,$CodigoPartes,$menu,$Escaner,$CantidadCompletada);
-                        }
-                    }else if($Escaner==0){
-                        $TipoManualrespuesta=$datos->partidasOF()->where('NumeroPartida','=',$CodigoPartes[1])->first();
-                        if(!($TipoManualrespuesta=="" || $TipoManualrespuesta==null)){
-                            $EscanerExiste = 1;
-                        }else{
-                            $EscanerExiste = 0;
-                        }
-                        if($Inicio==1){
-                            $CantidadArea=$this->ComprobarCantidadArea($CodigoPartes,$Area,$NumeroLinea);
-                            if($CantidadArea<1){
-                                $ComprobarAreaClasificacion = $datos->PartidasOF->first();
-                                $ComprobarAreaClasificacion = $ComprobarAreaClasificacion->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get()->count();
-                                if($ComprobarAreaClasificacion == 0){
-                                    $status = 'ErrorNoAsignado';
-                                }
-                            }
-                        }
-                    }
-                    if(!isset($CodigoPartes[2])){
-                        $TipoEscanerrespuesta=7;
-                    }
-                }
-                $CantidadCompletada=$this->NumeroCompletadas($CodigoPartes,$Area);
-                if($CantidadCompletada<0){
-                    $CantidadCompletada=0; 
-                }
-                $IniciadosMostrar = 0; 
-                if($Escaner==1){
-                    $TipoEscaneo = "1 a 1";
-                    //Opciones de la tabla
-                    $Opciones='<option selected="" value="">Todos</option>
-                        <option value="Abierta">Abiertas</option>
-                        <option value="Cerrada">Cerradas</option>';
-                    //Mostrar las partidas    
-                    $partidas = $datos->partidasOF()->OrderBy('id','desc')->get();
-                            foreach( $partidas as $PartidasordenFabricacion){
-                                if($Area == $this->AreaEspecialPulido){
-                                    $NumeroBloqueDatos = $PartidasordenFabricacion->Areas()->where('Areas_id',$this->AreaEspecialPulido)->where('Linea_id',$NumeroLinea)->orderBy('FechaComienzo','desc')->first();
-                                    if($NumeroBloqueDatos==""){
-                                        $NumeroBloqueDatos = [];
-                                    }else{
-                                        $NumeroBloqueDatos = Partidasof_Areas::select('*')->where('Areas_id',$this->AreaEspecialPulido)
-                                        ->where('NumeroBloque',$NumeroBloqueDatos['pivot']->NumeroBloque)
-                                        ->addSelect(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01")) AS FechaMayor'))
-                                        ->orderBy(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01"))'), 'desc')
-                                        ->get();
-                                    }
-                                    foreach($NumeroBloqueDatos as $PartdaAr){
-                                        $PartidasPulido = PartidasOF::find($PartdaAr->PartidasOF_id);
-                                        $OrdenFabricacionPulido = $PartidasPulido->OrdenFabricacion;
-                                        $menu.='<tr>
-                                                <td class="align-middle ps-3 NumParte">'.$OrdenFabricacionPulido->OrdenFabricacion.'-'.$PartidasPulido->NumeroPartida.'-'.$PartdaAr->NumeroEtiqueta.'</td>
-                                                <td class="align-middle text-center Cantidad">'.$PartdaAr->Cantidad.'</td>';
-                                                if($PartdaAr->TipoPartida=="R"){
-                                                    $menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Retrabajo</span><span class="ms-1 fas fa-cogs"></span></div></td>';
-                                                }else{$menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Normal</span><span class="ms-1 fas fa-check"></span></div></td>';
-                                                }
-                                                
-                                        $menu.='<td class="align-middle Inicio">'.$PartdaAr->FechaComienzo.'</td>
-                                                <td class="align-middle Fin">'.$PartdaAr->FechaTermina.'</td>';
-                                                if($PartdaAr->FechaTermina==""){
-                                                    $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Abierta</span><span class="ms-1 fas fa-cogs"></span></div></td>';
-                                                }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Cerrada</span><span class="ms-1 fas fa-check"></span></div></td>';
-                                                }
-                                        $Linea = Linea::find($PartdaAr->Linea_id);
-                                                $menu.='<td class="align-middle text-center Linea"><h5 class="text-light text-center p-0 mx-1" style="background:'.$Linea->ColorLinea.'">'.$Linea->NumeroLinea.'</h5></td></tr>';
-                                        $NumeroBloque = $PartdaAr->NumeroBloque;
-                                        $EstatusBloque = $PartdaAr->CerrarBloque;
-                                    }
-                                    if($EstatusBloque != 1){
-                                        $EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">Plato Abierto</span></div>';
-                                    }else{$EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Plato Cerrado</span></div>';}
-                                    //Mostrar Partidas
-                                    $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
-                                    foreach($registrosporLinea as $MostrarPartidas){
-                                        $LineaMostrar = Linea::find($MostrarPartidas['pivot']->Linea_id)->NumeroLinea;
-                                        $TotalMostrar = Partidasof_Areas::where('PartidasOF_id',$MostrarPartidas['pivot']->PartidasOF_id)->where('Areas_id', $this->AreaEspecialClasificacion)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->get()->SUM('Cantidad');
-                                        $CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad')
-                                        -$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('TipoPartida','R')->SUM('Cantidad');
-    
-                                        $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span class="text" style="font-size:0.8em;">'.$LineaMostrar.'</span><span class="badge badge-light-danger rounded-pill">'.$TotalMostrar-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$TotalMostrar.'</span></li>';
-                                    }
-                                }else{
-                                    $PartdaArea=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)
-                                    ->addSelect(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01")) AS FechaMayor'))
-                                    ->orderBy(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01"))'), 'desc')
-                                    ->get();
-                                    foreach($PartdaArea as $PartdaAr){
-                                        $menu.='<tr>
-                                                <td class="align-middle ps-3 NumParte">'.$datos->OrdenFabricacion.'-'.$PartidasordenFabricacion->NumeroPartida.'-'.$PartdaAr['pivot']->NumeroEtiqueta.'</td>
-                                                <td class="align-middle text-center Cantidad">'.$PartdaAr['pivot']->Cantidad.'</td>';
-                                                if($PartdaAr['pivot']->TipoPartida=="R"){
-                                                    $menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Retrabajo</span><span class="ms-1 fas fa-cogs"></span></div></td>';
-                                                }else{$menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Normal</span><span class="ms-1 fas fa-check"></span></div></td>';
-                                                }
-                                                
-                                        $menu.='<td class="align-middle Inicio">'.$PartdaAr['pivot']->FechaComienzo.'</td>
-                                                <td class="align-middle Fin">'.$PartdaAr['pivot']->FechaTermina.'</td>';
-                                                if($PartdaAr['pivot']->FechaTermina==""){
-                                                    $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Abierta</span><span class="ms-1 fas fa-cogs"></span></div></td>';
-                                                }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Cerrada</span><span class="ms-1 fas fa-check"></span></div></td>';
-                                                }
-                                        $Linea = Linea::find($PartdaAr['pivot']->Linea_id);
-                                                $menu.='<td class="align-middle text-center Linea"><h5 class="text-light text-center p-0 mx-1" style="background:'.$Linea->ColorLinea.'">'.$Linea->NumeroLinea.'</h5></td></tr>';
-                                    }
-                                    //Mostrar Partidas
-                                    $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
-                                    foreach($registrosporLinea as $MostrarPartidas){
-                                        $LineaMostrar = Linea::find($MostrarPartidas['pivot']->Linea_id)->NumeroLinea;
-                                        $TotalMostrar = Partidasof_Areas::where('PartidasOF_id',$MostrarPartidas['pivot']->PartidasOF_id)->where('Areas_id', $this->AreaEspecialClasificacion)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->get()->SUM('Cantidad');
-                                        $CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad')
-                                        -$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('TipoPartida','R')->SUM('Cantidad');
-    
-                                        $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span class="text" style="font-size:0.8em;">'.$LineaMostrar.'</span><span class="badge badge-light-danger rounded-pill">'.$TotalMostrar-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$TotalMostrar.'</span></li>';
-                                    }
-                                }
-                            }
-                    $IniciadosMostrar = $partidas->first();
-                    $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNull('FechaTermina')->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->get()->SUM('pivot.Cantidad');//->get();
-                }else{
-                    $TipoEscaneo = "Masivo";
-                    $Opciones='<option selected="" value="">Todos</option>
-                        <option value="Iniciado">Iniciado</option>
-                        <option value="Finalizado">Finalizado</option>';
-                            //Mostrar las partidas    
-                            $partidas = $datos->partidasOF()->OrderBy('id','desc')->get();
-                            foreach( $partidas as $PartidasordenFabricacion){
-                                if($Area == $this->AreaEspecialPulido){
-                                    $NumeroBloqueDatos = $PartidasordenFabricacion->Areas()->where('Areas_id',$this->AreaEspecialPulido)->where('Linea_id',$NumeroLinea)->orderBy('FechaComienzo','desc')->first();
-                                    if($NumeroBloqueDatos==""){
-                                        $NumeroBloqueDatos = [];
-                                    }else{
-                                        $NumeroBloqueDatos = Partidasof_Areas::select('*')->where('Areas_id',$this->AreaEspecialPulido)
-                                        ->where('NumeroBloque',$NumeroBloqueDatos['pivot']->NumeroBloque)
-                                        ->addSelect(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01")) AS FechaMayor'))
-                                        ->orderBy(DB::raw('GREATEST(FechaComienzo, COALESCE(FechaTermina, "1000-01-01"))'), 'desc')
-                                        ->get();
-                                        foreach($NumeroBloqueDatos as $PartdaAr){
-                                            $PartidasPulido = PartidasOF::find($PartdaAr->PartidasOF_id);
-                                            $OrdenFabricacionPulido = $PartidasPulido->OrdenFabricacion;
-                                            $menu.='<tr>
-                                                    <td class="align-middle ps-3 NumParte">'.$OrdenFabricacionPulido->OrdenFabricacion.'-'.$PartidasPulido->NumeroPartida.'-'.$PartdaAr->NumeroEtiqueta.'</td>
-                                                    <td class="align-middle text-center Cantidad">'.$PartdaAr->Cantidad.'</td>';
-                                                    if($PartdaAr->TipoPartida=="R"){
-                                                        $menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Retrabajo</span><span class="ms-1 fas fa-cogs"></span></div></td>';
-                                                    }else{$menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Normal</span><span class="ms-1 fas fa-check"></span></div></td>';
-                                                    }
-                                                    
-                                            $menu.='<td class="align-middle Inicio">'.$PartdaAr->FechaComienzo.'</td>
-                                                    <td class="align-middle Fin">'.$PartdaAr->FechaTermina.'</td>';
-                                                    if($PartdaAr->FechaTermina==""){
-                                                        $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Abierta</span><span class="ms-1 fas fa-cogs"></span></div></td>';
-                                                    }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Cerrada</span><span class="ms-1 fas fa-check"></span></div></td>';
-                                                    }
-                                            $Linea = Linea::find($PartdaAr->Linea_id);
-                                                    $menu.='<td class="align-middle text-center Linea"><h5 class="text-light text-center p-0 mx-1" style="background:'.$Linea->ColorLinea.'">'.$Linea->NumeroLinea.'</h5></td></tr>';
-                                            $NumeroBloque = $PartdaAr->NumeroBloque;
-                                            $EstatusBloque = $PartdaAr->CerrarBloque;
-                                        }
-                                        if($EstatusBloque != 1){
-                                            $EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">Plato Abierto</span></div>';
-                                        }else{$EstatusBloque = '<div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">Plato Cerrado</span></div>';}
-                                        $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
-                                        foreach($registrosporLinea as $MostrarPartidas){
-                                            $LineaMostrar = Linea::find($MostrarPartidas['pivot']->Linea_id)->NumeroLinea;
-                                            $TotalMostrar = Partidasof_Areas::where('PartidasOF_id',$MostrarPartidas['pivot']->PartidasOF_id)->where('Areas_id', $this->AreaEspecialClasificacion)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->get()->SUM('Cantidad');
-                                            //$CantidadCompletadaPartidas=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->whereNotNull('FechaTermina')->where('TipoPartida','N')->SUM('Cantidad')
-                                            //-$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('TipoPartida','R')->SUM('Cantidad');
-                                            $CantidadCompletadaPartidas=$this->NumeroCompletadas($CodigoPartes,$Area);
-                                            $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span class="text" style="font-size:0.8em;">'.$LineaMostrar.'</span><span class="badge badge-light-danger rounded-pill">'.$TotalMostrar-$CantidadCompletadaPartidas.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$TotalMostrar.'</span></li>';
-                                        }
-                                    }
-                                }else{
-                                    $PartdaArea=$PartidasordenFabricacion->Areas()->where('Areas_id',$Area)->OrderBy('pivot_id','desc')->get();
-                                    foreach($PartdaArea as $PartdaAr){
-                                        $menu.='<tr>
-                                                <td class="align-middle ps-3 NumParte">'.$datos->OrdenFabricacion.'-'.$PartidasordenFabricacion->NumeroPartida.'-0'.'</td>
-                                                <td class="align-middle text-center Cantidad">'.$PartdaAr['pivot']->Cantidad.'</td>';
-                                                if($PartdaAr['pivot']->TipoPartida=="R"){
-                                                    $menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-warning"><span class="fw-bold">Retrabajo</span><span class="ms-1 fas fa-cogs"></span></div></td>';
-                                                }else{$menu.='<td class="align-middle TipoPartida"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Normal</span><span class="ms-1 fas fa-check"></span></div></td>';
-                                                }
-                                                
-                                        $menu.='<td class="align-middle Inicio">'.$PartdaAr['pivot']->FechaComienzo.'</td>
-                                                <td class="align-middle Fin">'.$PartdaAr['pivot']->FechaTermina.'</td>';
-                                                if($PartdaAr['pivot']->FechaTermina==""){
-                                                    $menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">iniciado</span><span class="ms-1 fas fa-cogs"></span></div></td>';
-                                                }else{$menu.='<td class="align-middle Estatus"><div class="badge badge-phoenix fs--2 badge-phoenix-danger"><span class="fw-bold">finalizado</span><span class="ms-1 fas fa-check"></span></div></td>';
-                                                }
-                                        $Linea = Linea::find($PartdaAr['pivot']->Linea_id);
-                                                $menu.='<td class="align-middle text-center Linea"><h5 class="text-light text-center p-0 mx-1" style="background:'.$Linea->ColorLinea.'">'.$Linea->NumeroLinea.'</h5></td></tr>';
-                                    }
-                                    //Mostrar Partidas
-                                    $registrosporLinea = $PartidasordenFabricacion->Areas()->where('Areas_id', $this->AreaEspecialClasificacion)->get()->unique('pivot.Linea_id');
-                                    foreach($registrosporLinea as $MostrarPartidas){
-                                        $CantidadCompletadaPartidas=$this->NumeroCompletadas($CodigoPartes,$Area);//$PartidasordenFabricacion->Areas()->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('Areas_id', $Area)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
-                                        ($PartidasordenFabricacion->Areas()->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('Areas_id', $Area)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
-                                        - $PartidasordenFabricacion->Areas()->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->where('Areas_id', $Area)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad'));
-                                        $LineaMostrar = Linea::find($MostrarPartidas['pivot']->Linea_id)->NumeroLinea;
-                                        $TotalMostrar = Partidasof_Areas::where('PartidasOF_id',$MostrarPartidas['pivot']->PartidasOF_id)->where('Areas_id', $this->AreaEspecialClasificacion)->where('Linea_id', $MostrarPartidas['pivot']->Linea_id)->get()->SUM('Cantidad');
-                                        $PartidasFaltantesList.='<li class="list-group-item d-flex justify-content-between align-items-center"><span class="text" style="font-size:0.8em;">'.$LineaMostrar.'</span><span class="badge badge-light-danger rounded-pill">'.$TotalMostrar.'</span><span class="badge badge-light-success rounded-pill">'.$CantidadCompletadaPartidas.'</span><span class="badge badge-light-primary rounded-pill">'.$TotalMostrar.'</span></li>';
-                                    }
-                                }
-                            }
-                            $IniciadosMostrar = $partidas->first();
-                            $IniciadosMostrar = $IniciadosMostrar->Areas()->whereNotNull('FechaComienzo')->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->get()->SUM('pivot.Cantidad')
-                                                - $IniciadosMostrar->Areas()->whereNull('FechaComienzo')->where('Areas_id',$Area)->where('Linea_id',$NumeroLinea)->get()->SUM('pivot.Cantidad');//->get();
-                }
-                $menu='<div class="card-body">
-                    <div id="ContainerTableSuministros" class="table-list">
-                        <div class="row">
-                            <h5 class="text-center text-secondary p-0 m-0">Tipo de Escaneo : '.$TipoEscaneo.'</h5>
-                            <div class="col-6">
-                                <div class="row justify-content-start g-0">
-                                    <div class="col-auto px-3">
-                                        <h6 class="text-center">Orden de Fabricación '.$datos->OrdenFabricacion.'</h6> 
-                                        <div class="badge badge-phoenix fs--4 badge-phoenix-secondary"><span class="fw-bold">Piezas Completadas </span>'.$CantidadCompletada.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span></div>
-                                        <br><div class="badge badge-phoenix fs--4 badge-phoenix-info"><span class="fw-bold"><span class="ms-1 fas fa-angle-double-right"></span> Pendientes de finalizar </span>'.$IniciadosMostrar.'</div>
-                                     </div>
-                                     <div class="col-auto px-3" style="transform:scale(1.4);">
-                                    '.$EstatusBloque.'
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="row justify-content-end g-0">
-                                    <div class="col-auto px-3">
-                                        <div class="dropdown font-sans-serif d-inline-block">
-                                            <button class="btn btn-phoenix-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Partidas <i class="fas fa-grip-horizontal"></i></button>
-                                        </div>
-                                    </div>
-                                    <div class="col-auto px-3">
-                                        <select class="form-select form-select-sm mb-3" data-list-filter="data-list-filter">
-                                        '.$Opciones.'
-                                        </select>
-                                    </div>
-                                    <div class="collapse p-1" id="collapseExample">
-                                        <ul class="list-group">
-                                        '.$PartidasFaltantesList.'    
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <div class="table-responsive scrollbar mb-3">
-                        <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
-                            <thead>
-                                <tr class="bg-primary text-white">
-                                <th class="sort border-top ps-3" data-sort="NumParte">Codigo</th>
-                                    <th class="sort border-top" data-sort="Cantidad">Cantidad</th>
-                                    <th class="sort border-top" data-sort="TipoPartida">Tipo Partida</th>
-                                    <th class="sort border-top" data-sort="Inicio">Fecha Inicio</th>
-                                    <th class="sort border-top" data-sort="Fin">Fecha Fin</th>
-                                    <th class="sort border-top" data-sort="Estatus">Estatus</th>
-                                    <th class="sort border-top ps-3" data-sort="Linea">Linea</th>
-                                
-                                </tr>
-                            </thead>
-                            <tbody class="list" id="TablaBody">
-                                '.$menu.'
-                            </tbody>
-                        </table>
-                        </div>
-                        <div class="d-flex justify-content-center mt-3">
-                            <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
-                            <ul class="mb-0 pagination"></ul>
-                            <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
-                        </div>
-                    </div>';
-                    $BanderaFinalizar=1;
-                    if($Area==$this->AreaEspecialEmpaque){
-                        if($Inicio==1 && $Escaner==1){
-                            $datos->Cerrada = 1; 
-                            $datos->save();
-                        }elseif($Inicio==0 && $Escaner==1){
-                            $CantidadTotalCorte = $datos->PartidasOF->first();
-                            $CantidadTotalCorte = $CantidadTotalCorte->Areas()->where('Areas_id',$this->AreaEspecialCorte)->get()->SUM('pivot.Cantidad');
-                            if(($CantidadTotal-$CantidadCompletada)==0 || ($CantidadTotalCorte-$CantidadCompletada)==0){
-                                $datos->Cerrada = 0; 
-                                $datos->save();
-                                $BanderaFinalizar=0;
-                            }
-                        }
-                    }
-                return response()->json([
-                    'tabla' => $menu,
-                    'Escaner' => $Escaner,
-                    'EscanerExiste' => $EscanerExiste,
-                    'status' => $status,
-                    'CantidadTotal' => $CantidadTotal,
-                    'Inicio' => $Inicio,
-                    'Finalizar' =>$Finalizar,
-                    'BanderaFinalizar' => $BanderaFinalizar,
-                    'TipoEscanerrespuesta'=>$TipoEscanerrespuesta,
-                    'CantidadCompletada' => $CantidadCompletada,
-                    'OF' => $CodigoPartes[0],
-                    'NumeroBloque' =>$NumeroBloque,
-        
-                ]);
-            }
-        }else{
-            return response()->json([
-                'tabla' => $menu,
-                'Escaner' => "",
-                'status' => "NoExiste",
-                'CantidadTotal' => "",
-                'CantidadCompletada' => 4,
-                'OF' => $CodigoPartes[0]
-            ]);
-        }
-    }*/
-    public function PreparadoBuscar(Request $request){
-        $user= Auth::user();
-        if (!$user) {
-            return redirect()->route('login');
-        }
-        $Codigo = $request->Codigo;
-        $Codigo = explode('-', $Codigo)[0];
-        $NumeroLinea = $request->Linea;
-        $NumeroLinea = Linea::find($NumeroLinea);
-        $TablaPartidas = "";
-        if($NumeroLinea == ""){
-            return response()->json([
-                'tabla' => $TablaPartidas,
-                'status' => "error",
-                'message'=>"Para comenzar, Selecciona la línea en la que vas a trabajar!"
-            ]);
-        }
-        $NumeroLinea = $NumeroLinea->id;
-        $Area = $this->funcionesGenerales->decrypt($request->Area);
-        $menu = '';
-        //Valida si el codigo es aceptado tiene que ser mayor a 2
-        $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $Codigo)->first();
-        if($datos=="" OR $datos==null){
-            return response()->json([
-                'tabla' => $TablaPartidas,
-                'status' => "error",
-                'message'=>"La Orden de Fabricacion No exite!"
-            ]);
-        }    
-        $datos=OrdenFabricacion::where('OrdenFabricacion', '=', $Codigo)->where('Cerrada', 1)->first();
-        if($datos=="" OR $datos==null){
-            return response()->json([
-                'tabla' => $TablaPartidas,
-                'status' => "error",
-                'message'=>"La Orden de Fabricacion ya se encuentra completada!"
-            ]);
-        }    
-        $OV = $datos->OrdenVenta;
-        $NumOV = $OV->OrdenVenta;
-        $Cliente = $OV->NombreCliente;
-        $ListaPorLinea = '<li class="list-group-item d-flex justify-content-between align-items-center">
-                            Línea
-                            <span class="badge badge-light-danger rounded-pill">Faltantes</span>
-                            <span class="badge badge-light-success rounded-pill">Completadas</span>
-                            <span class="badge badge-light-primary rounded-pill">Total</span>
-                        </li>';
-        $CantidadActual = $this->Area_Actual($Codigo,$Area);
-        $CantidadAnteror = $this->Area_Anterior($Codigo,$Area);
-        $CantidadCompletada=$this->Area_Actual($Codigo,$Area);
-        //Traemos las partidas de la OF
-        $PartidasOF = $datos->PartidasOF->first();
-        $POFAreasClasificacion = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get();
-        $POFAreasEmpaque = $PartidasOF->Areas()->where('Areas_id',$Area)->get();
-        $Lineas = $POFAreasClasificacion->pluck('pivot.Linea_id')->unique()->values();
-        if($CantidadAnteror == 0){
-            return response()->json([
-                'tabla' => $TablaPartidas,
-                'status' => "warning",
-                'message'=>"La Orden de Fabricación ".$Codigo." aun no ha sido asignada en la estación <strong>Asignación</strong>"
-            ]);
-        }
-        foreach($Lineas as $l){
-            $lCantidadLineaAnterior = $this->Area_Actual_por_linea($Codigo,$this->AreaEspecialClasificacion,$l);
-            $lCantidadLineaActual = $this->Area_Actual_por_linea($Codigo,$Area,$l);
-            $lNumeroLinea = Linea::where('id',$l)->first();
-            $lNumeroLinea = $lNumeroLinea->NumeroLinea;
-            $ListaPorLinea .='<li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span class="text" style="font-size:0.8em;">'.$lNumeroLinea.'</span>
-                                <span class="badge badge-light-danger rounded-pill">'.($lCantidadLineaAnterior-$lCantidadLineaActual).'</span>
-                                <span class="badge badge-light-success rounded-pill">'.$lCantidadLineaActual.'</span>
-                                <span class="badge badge-light-primary rounded-pill">'.$lCantidadLineaAnterior.'</span>
-                            </li> ';
-        }
-        foreach($POFAreasEmpaque as $POFAE){
-            $lNumeroLinea = Linea::where('id',$POFAE['pivot']->Linea_id)->first();
-            $ColorLinea = $lNumeroLinea->ColorLinea;
-            $lNumeroLinea = $lNumeroLinea->NumeroLinea;
-            $menu.= '<tr">
-                        <td class="text-center">'.$POFAE['pivot']->Cantidad.'</td>
-                        <td class="text-center">'.$POFAE['pivot']->FechaComienzo.'</td>
-                        <td class="text-center"><span class="badge badge-phoenix badge-phoenix-success">Guardado</span></td>
-                        <td class="text-center"><h5 style="background:'.$ColorLinea.';color:white;">'.$lNumeroLinea.'</h5></td>  
-                        <td class="text-center"><button class="btn btn-secondary btn-sm float-center" type="button" id="btnEscanearSalida" onclick="CancelarPartida('.$POFAE['pivot']->id.',\''.$datos->OrdenFabricacion.'\')">Cancelar</button></td>                   
-                    </tr>';
-        }
-        $CantidadTotal=$datos->CantidadTotal;
-                $menu='<div class="card-body">
-                    <div id="ContainerTableSuministros" class="table-list">
-                        <div class="row">
-                            <h5 class="text-center text-secondary p-0 m-0">Orden de Fabricación: '.$Codigo.'</h5>
-                            <h6 class="text-center">Orden de Venta: <strong>'.$NumOV.'</strong></h6> 
-                            <h6 class="text-center">Cliente: <strong>'.$Cliente.'</strong></h6> 
-                            <div class="col-6">
-                                <div class="row justify-content-start g-0">
-                                    <div class="col-auto px-3">
-                                        <div class="badge badge-phoenix fs--4 badge-phoenix-secondary"><span class="fw-bold">Piezas Completadas </span>'.$CantidadActual.'/'.$CantidadTotal.'<span class="ms-1 fas fa-stream"></span></div>
-                                        <br><div class="badge badge-phoenix fs--4 badge-phoenix-info"><span class="fw-bold"><span class="ms-1 fas fa-angle-double-right"></span> Pendientes de finalizar </span>'.($CantidadTotal-$CantidadActual).'</div>
-                                     </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="row justify-content-end g-0">
-                                    <div class="col-auto px-3">
-                                        <div class="dropdown font-sans-serif d-inline-block">
-                                            <button class="btn btn-phoenix-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Partidas <i class="fas fa-grip-horizontal"></i></button>
-                                        </div>
-                                    </div>
-                                    <div class="collapse p-1" id="collapseExample">
-                                        <ul class="list-group">
-                                        '.$ListaPorLinea.'    
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <div class="table-responsive scrollbar mb-3">
-                        <table id="TableSuministros" class="table table-striped table-sm fs--1 mb-0 overflow-hidden">
-                            <thead>
-                                <tr class="bg-primary text-white">
-                                    <th class="text-center" data-sort="Cantidad">Cantidad</th>
-                                    <th class="text-center" data-sort="Inicio">Fecha Ingreso</th>
-                                    <th class="text-center" data-sort="Estatus">Estatus</th>
-                                    <th class="text-center ps-3" data-sort="Linea">Linea</th>
-                                    <th class="text-center ps-3" data-sort="Linea">Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody class="list" id="TablaBody">
-                                '.$menu.'
-                            </tbody>
-                        </table>
-                        </div>
-                        <div class="d-flex justify-content-center mt-3">
-                            <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
-                            <ul class="mb-0 pagination"></ul>
-                            <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
-                        </div>
-                    </div>';
-                return response()->json([
-                    'tabla' => $menu,
-                    'CantidadTotal' => $CantidadTotal,
-                    'CantidadCompletada' => $CantidadCompletada,
-                    'OF' => $Codigo,
-                    'status'=>'success'
-        
-                ]);
+         return response()->json([
+            'status' => $status,
+            'message'=>$message
+        ], 200);
     }
+
+    //Gestor de Ordenes
+    public function GestorDeOrden(Request $request){
+        $user= Auth::user();
+        $FechaFin= date('d-m-Y');
+        if (!$user) {
+            return redirect()->route('login');
+        }
+        if($user->hasPermission('Vista Gestor de ordenes')){
+            $Lineas = Linea::where('active','1')->where('id','!=',1)->orderBy('Nombre', 'asc')->get();
+            return view('Areas.GestorDeOrden',compact('Lineas','FechaFin')); 
+        }else{
+            return redirect()->route('error');
+        }
+    }
+    public function GestorRecargarTabla(Request $request){
+        $user= Auth::user();
+        if (!$user) {
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => []
+            ]);
+        }
+        if($user->hasPermission('Vista Gestor de ordenes')){
+            $start = $request->input('start');
+            $length = $request->input('length');
+            $search = $request->input('search.value');
+            //Cerrada = 1 es abierta
+            $OrdenFabricacion = OrdenFabricacion::where('Cerrada','1')->orderBy('id', 'desc')->get();
+            // Ordenar por la columna 'prioridad' de menor a mayor
+            $OrdenFabricacionPrioridad = OrdenFabricacionPrioridad::orderBy('Posicion', 'asc')->get();
+            $data = []; 
+            //Se rellena el array y se van quitando las que ya se completaron en esta estación
+            foreach($OrdenFabricacion as $key=>$OrdenFab){
+                $Partida = $OrdenFab->PartidasOF->first();
+                $ContarPartidas = $Partida->Areas()->where('Areas_id',$this->AreaEspecialSuministro)->get()->whereNotNull('pivot.FechaTermina')->where('pivot.TipoPartida','N')->sum('pivot.Cantidad');
+                $Corte_ContarPartidas = $Partida->Areas()->where('Areas_id',$this->AreaEspecialCorte)->get()->whereNotNull('pivot.FechaTermina')->where('pivot.TipoPartida','N')->sum('pivot.Cantidad');
+                $ContarPartidas = ($ContarPartidas>$Corte_ContarPartidas)?$Corte_ContarPartidas:$ContarPartidas;
+                $ContarPartidasClasificacion = $Partida->Areas()->where('Areas_id',18)->get()->sum('pivot.Cantidad');
+                $OrdenFab['CantidadSuministro'] = $ContarPartidas-$ContarPartidasClasificacion;
+                $OrdenFab['idEncriptOF'] = $this->funcionesGenerales->encrypt($OrdenFab->id);
+                $OrdenFab['EscanerDisabled'] = $Partida->Areas()->where('Areas_id','!=',$this->AreaEspecialAsignacion)->where('Areas_id','>',$this->AreaEspecialSuministro)->count();
+                $existe = false;
+                if($OrdenFab->status == 1){
+                    $btndetener = '<button type="button" class="btn btn-sm btn-soft-warning px-3 py-2" onclick="DetenerOrdenFabricacion(\''.$OrdenFab->idEncriptOF.'\',\'D\')">Detener</button>';
+                }else{
+                    $btndetener = '<button type="button" class="btn btn-sm btn-soft-success px-2 py-2" onclick="DetenerOrdenFabricacion(\''.$OrdenFab->idEncriptOF.'\',\'C\')">Continuar</button>';
+                }
+                if($ContarPartidas == 0 OR ($ContarPartidasClasificacion!=0 AND $ContarPartidasClasificacion==$ContarPartidas)){
+                    if(($ContarPartidasClasificacion==0 AND $ContarPartidasClasificacion==$ContarPartidas)){
+                        unset($OrdenFabricacion[$key]);
+                    }else{
+                        $registro = [
+                            'OrdenFabricacion' => $OrdenFab->OrdenFabricacion,
+                            'Articulo' => $OrdenFab->Articulo,
+                            'Descripcion' => $OrdenFab->Descripcion,
+                            'CantidadPendiente' => $ContarPartidas-$ContarPartidasClasificacion,//($OrdenFab->CantidadTotal - $ContarPartidas),//$OrdenFab->CantidadSuministro),
+                            'CantidadTotal' => $OrdenFab->CantidadTotal,
+                            'Asignar' => '',
+                            'Detener' => $btndetener,
+                            'Urgencia' => $OrdenFab->Urgencia,
+                            'Status' => $OrdenFab->status,
+                            'Id' => $OrdenFab->idEncriptOF,
+                            'id_' => $OrdenFab->id,
+                            'prioridad' => 0,
+                        ];
+                        if($OrdenFab->Urgencia == 'U'){
+                            array_unshift($data, $registro);
+                        }else{
+                            $data[] = $registro;
+                        }
+                    }
+                }elseif($ContarPartidas == 0){
+                    unset($OrdenFabricacion[$key]);
+                }else{
+                    $registro = [
+                        'OrdenFabricacion' => $OrdenFab->OrdenFabricacion,
+                        'Articulo' => $OrdenFab->Articulo,
+                        'Descripcion' => $OrdenFab->Descripcion,
+                        'CantidadPendiente' => $ContarPartidas-$ContarPartidasClasificacion,//($OrdenFab->CantidadTotal - $ContarPartidas),//$OrdenFab->CantidadSuministro),
+                        'CantidadTotal' => $OrdenFab->CantidadTotal,
+                        'Asignar' => '',
+                        'Detener' => $btndetener,
+                        'Urgencia' => $OrdenFab->Urgencia,
+                        'Status' => $OrdenFab->status,
+                        'Id' => $OrdenFab->idEncriptOF,
+                        'id_' => $OrdenFab->id,
+                        'prioridad' => 0,
+                    ];
+                    if($OrdenFab->Urgencia == 'U'){
+                        array_unshift($data, $registro);
+                    }else{
+                        $data[] = $registro;
+                    }
+                    //unset($OrdenFabricacion[$key]);
+                }
+            }
+            //Se Organizan de acuerdo a la prioridad
+            foreach($OrdenFabricacionPrioridad as $OFP_key => $OFP){
+                $OFP_id = $OFP->OrdenFabricacion_id;
+                $OFP_Posicion = $OFP->Posicion;
+                $OFP_Prioridad = $OFP->Prioridad;
+                $registro_up = array_filter($data, function($item) use ($OFP_id) {
+                    return $item['id_'] == $OFP_id;
+                });
+                $registro_up = (empty($registro_up->id_))?key($registro_up):"";
+                if($registro_up != ""){
+                    $registro = $data[$registro_up];
+                    unset($data[$registro_up]);
+                    if($OFP_Prioridad == 1){
+                        $registro['prioridad'] = 1;
+                    }
+                    array_splice($data, $OFP_Posicion, 0, [$registro]);
+                }
+            }
+            return response()->json([
+                'data' => $data
+            ], 200);
+        }else{
+            return "";
+        }
+    }
+
+    //Ordenes en Linea
+    public function OrdenesLinea(Request $request){
+        $user= Auth::user();
+        $FechaFin= date('d-m-Y');
+        $AreaOriginal=17;
+        $Area = $this->funcionesGenerales->encrypt($AreaOriginal);
+        if (!$user) {
+            return redirect()->route('login');
+        }
+        if($user->hasPermission('Vista Ordenes en Línea')){
+        $Lineas = Linea::where('active','1')->where('id','!=',1)->orderBy('Nombre', 'asc')->get();
+        return view('Areas.OrdenesLinea',compact('Lineas','Area')); 
+        }else{
+            return redirect()->route('error');
+        }
+    }
+    
+    //Funciones Generales Areas
     public function Area_Actual($Codigo,$Area){
         $OF=OrdenFabricacion::where('OrdenFabricacion',$Codigo)->first();
         $PartidasOF=$OF->PartidasOF->first();
@@ -1700,7 +1615,7 @@ class AreasController extends Controller
     public function Area_Anterior($Codigo,$Area){
         $OF=OrdenFabricacion::where('OrdenFabricacion',$Codigo)->first();
         $PartidasOF=$OF->PartidasOF->first();
-        $POFAreas=$PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get();
+        $POFAreas=$PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialAsignacion)->get();
         
         return$totalCantidad = $POFAreas->SUM('pivot.Cantidad');
     }
@@ -1726,7 +1641,6 @@ class AreasController extends Controller
         $Codigo = $request->Codigo;
         $Cantidad = $request->Cantidad;
         $Linea = $request->Linea;
-        
         $ContarPartidas=0;
         $Codigo = explode("-", $Codigo)[0];
         //Valida que el codigo este completo
@@ -1753,10 +1667,18 @@ class AreasController extends Controller
         }  
         $NumeroLinea = $Linea->NumeroLinea;
         $Linea = $Linea->id;
-        $AreaAnterior = $this->Area_Actual_por_linea($Codigo,$this->AreaEspecialClasificacion,$Linea);
+        $AreaAnterior = $this->Area_Actual_por_linea($Codigo,$this->AreaEspecialAsignacion,$Linea);
         $AreaActual = $this->Area_Actual_por_linea($Codigo,$Area,$Linea);
         //La orden de Fabricacion No existe
-        if($AreaActual+$Cantidad > $AreaAnterior){
+        if(($AreaActual+$Cantidad > $AreaAnterior) AND ($Area != $this->AreaEspecialEmpaque)){
+            return response()->json([
+                'status' => "error",
+                'message'=>"La cantidad ingresada sobrepasa a la asignada en las lineas."
+            ]);
+        }
+        $CantidadAnterior = $this->Area_Actual($Codigo,$this->AreaEspecialAsignacion);
+        $CantidadActual = $this->Area_Actual($Codigo,$Area);
+        if($CantidadActual+$Cantidad > $CantidadAnterior){
             return response()->json([
                 'status' => "error",
                 'message'=>"La cantidad ingresada sobrepasa a la asignada en la línea ".$NumeroLinea."."
@@ -1785,39 +1707,62 @@ class AreasController extends Controller
         $Area=$this->funcionesGenerales->decrypt($request->Area);
         $OrdenFabricacionPendiente = $this->OrdenFabricacionPendienteTabla($Area);
         $tabla='';
+        $registro = '';
+        $ArrPosicion = array();
+        $Posicionprioridad = "";
         foreach($OrdenFabricacionPendiente as $partida){
-                $tabla.='<tr';
+            $color = "";
+            $registro="<tr";//.($partida->Prioridad == 'si')?' style="background-color: rgb(255, 128, 44); color: white;" ':"";
+            if($partida->status == 0){
+                $color = ' style="background-color: rgb(252, 248, 139);" data-status="D" ';
+            }elseif($partida->Prioridad == 'si'){
+                $color = ' style="background-color: rgb(255, 128, 44); color: white;" data-status="P" ';
+            }elseif($partida->Urgencia == 'U'){
+               $color = ' style="background:#8be0fc;" data-status="U" ';
+            }else{
+                $color = ' data-status="N" ';
+            }
+            $registro="<tr $color";
+            if($Area == $this->AreaEspecialEmpaque){
+                $partida->Actual = $this->Area_Actual_por_linea($partida->OrdenFabricacion,$this->AreaEspecialEmpaque,$partida->Linea_id);
+            }
+            $registro.='>';
+            $registro.=' <td class="text-center"><strong>'.$partida->OrdenFabricacion.'</strong></td>
+                        <td>'.$partida->Articulo .'</td>
+                        <td>'.$partida->Descripcion.'</td>
+                        <td class="text-center">'.$partida->Actual.'</td>
+                        <td class="text-center">'.$partida->Anterior-$partida->Actual .'</td>
+                        <td class="text-center">'.$partida->Anterior  .'</td>
+                        <td class="text-center">'.$partida->CantidadTotal.'</td>
+                        <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                        <td class = "text-center"><h5 class="text-light text-center p-0" >'.$partida->Linea_id .'</h5></td>
+                        <td class = "text-center"><h5 class="text-light text-center p-0" style="background: '.$partida->ColorLinea .';">'.$partida->Linea .'</h5></td>';
+            if($Area == $this->AreaEspecialEmpaque){
+                $registro.='<td class="text-center">
+                            <button class="btn btn-sm btn-warning float-center" type="button" onclick="FinalizarManual('.$partida->OrdenFabricacion_id.')">Finalizar</button>
+                        </td>';
+            }
+            $registro.='</tr>';
+            if($partida->Prioridad == 'si'){
+                $Posicionprioridad .= $registro;
+                //array_unshift($ArrPosicionprioridad, array('OF'=>$partida->OrdenFabricacion,'registro'=>$registro));
+            }else{
                 if($partida->Urgencia == 'U'){
-                   $tabla.=' style="background:#8be0fc;"';
+                    $tabla.=$registro.$tabla;
+                    //array_unshift($ArrPosicion, array('OF'=>$partida->OrdenFabricacion,'registro'=>$registro));
+                }else{
+                    $tabla.=$registro;
+                    //$ArrPosicion[]=array('OF'=>$partida->OrdenFabricacion,'registro'=>$registro);
                 }
-                if($Area == $this->AreaEspecialEmpaque){
-                    $partida->Actual = $this->Area_Actual_por_linea($partida->OrdenFabricacion,$this->AreaEspecialEmpaque,$partida->Linea_id);
-                }
-                $tabla.='>
-                            <td class="text-center">'.$partida->OrdenFabricacion.'</td>
-                            <td>'.$partida->Articulo .'</td>
-                            <td>'.$partida->Descripcion.'</td>
-                            <td class="text-center">'.$partida->Actual.'</td>
-                            <td class="text-center">'.$partida->Anterior-$partida->Actual .'</td>
-                            <td class="text-center">'.$partida->Anterior  .'</td>
-                            <td class="text-center">'.$partida->CantidadTotal.'</td>
-                            <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                            <td class = "text-center"><h5 class="text-light text-center p-0" >'.$partida->Linea_id .'</h5></td>
-                            <td class = "text-center"><h5 class="text-light text-center p-0" style="background: '.$partida->ColorLinea .';">'.$partida->Linea .'</h5></td>';
-                if($Area == $this->AreaEspecialEmpaque){
-                    $tabla.='<td class="text-center">
-                                <button class="btn btn-sm btn-warning float-center" type="button" onclick="FinalizarManual('.$partida->OrdenFabricacion_id.')">Finalizar</button>
-                            </td>';
-                }
-                $tabla.='</tr>';
+            }
         }
-        return$tabla;
+        return$Posicionprioridad.$tabla;
     }
     public function OrdenFabricacionPendienteTabla($Area){
             $Area = $Area-1;
             $UltimaEstacion = 'UltimaEstacion';
             $Registros = DB::select("
-                SELECT of.*,of.id AS OrdenFabricacion_id, pof.id AS partidasOF_id, poalin.Linea_id, lin.NumeroLinea, lin.ColorLinea,
+                SELECT of.*,of.id AS OrdenFabricacion_id, pof.id AS partidasOF_id, poalin.Linea_id, lin.NumeroLinea, lin.ColorLinea,poalin.Prioridad,
                     COALESCE((SELECT poa.Areas_id FROM partidasof_areas poa WHERE poa.PartidasOF_id = pof.id  AND poa.Areas_id < ".($Area+1)." AND poa.Linea_id = poalin.Linea_id ORDER BY poa.Areas_id DESC LIMIT 1 /*Ultima estacion*/
                     ),3) AS UltimaEstacion, 
                     COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
@@ -1855,16 +1800,16 @@ class AreasController extends Controller
                         AND FechaTermina IS NULL
                     ),0) AS SumarPosteriorR,
                     COALESCE((SELECT SUM(poa.Cantidad) FROM partidasof_areas poa
-                        WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".$this->AreaEspecialClasificacion." AND TipoPartida = \"N\" AND poa.Linea_id = poalin.Linea_id/*CantidadAnteriorN*/
+                        WHERE poa.partidasof_id = pof.id AND poa.Areas_id = ".$this->AreaEspecialAsignacion." AND TipoPartida = \"N\" AND poa.Linea_id = poalin.Linea_id/*CantidadAnteriorN*/
                     ),0) AS SumarAnterior3N ,
-                    (SELECT COUNT(*) FROM partidasof_areas WHERE PartidasOF_id = pof.id  AND Areas_id > ".($Area+1)." AND Areas_id != ".$this->AreaEspecialClasificacion." AND Linea_id = poalin.Linea_id
+                    (SELECT COUNT(*) FROM partidasof_areas WHERE PartidasOF_id = pof.id  AND Areas_id > ".($Area+1)." AND Areas_id != ".$this->AreaEspecialAsignacion." AND Linea_id = poalin.Linea_id
                     ) AS RegistroAreaPosterior
                     FROM OrdenFabricacion OF
                     JOIN partidasOF pof ON of.id = pof.OrdenFabricacion_id
                     JOIN (
-                        SELECT  PartidasOF_id, Linea_id
+                        SELECT  PartidasOF_id, Linea_id, MAX(Prioridad) AS Prioridad
                         FROM partidasof_Areas
-                        WHERE Areas_id = ".$this->AreaEspecialClasificacion." /*Es el id de asignacion*/
+                        WHERE Areas_id = ".$this->AreaEspecialAsignacion." /*Es el id de asignacion*/
                         group BY PartidasOF_id,Linea_id
                     ) poalin ON poalin.PartidasOF_id = pof.id
                     JOIN (
@@ -2156,7 +2101,7 @@ class AreasController extends Controller
             ]);
         }
     }
-    public function tablaEmpacado(){
+    /*public function tablaEmpacado(){
         return$areas = DB::table('partidasof_areas')
             ->join('partidasof', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
             ->join('ordenfabricacion', 'partidasof.OrdenFabricacion_id', '=', 'ordenfabricacion.id')
@@ -2203,7 +2148,7 @@ class AreasController extends Controller
             })
             ->values();
         return response()->json($areas);
-    }
+    }*/
     //Recargar Tabla de Area Pendiente
     public function OrdenFabricacionPendiente($Area){
         /*return$Registros = OrdenFabricacion::select('OrdenFabricacion.*','OrdenFabricacion.id AS OrdenFabricacion_id', 'partidasOF.id AS partidasOF_id', 'partidasof_Areas.id AS partidasof_Areas_id',
@@ -2509,10 +2454,10 @@ class AreasController extends Controller
             $OrdenFabricacion = OrdenFabricacion::find($registro->OrdenFabricacion_id);
             $Area4=PartidasOF::find($registro->partidasOF_id);
             $PartidasOF = $OrdenFabricacion->PartidasOF()->first();
-            $PartidasOFArea = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get();
+            $PartidasOFArea = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialAsignacion)->get();
             $AreaAnterior=$this->AreaAnteriorregistros($Area+1, $OrdenFabricacion->OrdenFabricacion);
             if($AreaAnterior <=  $this->AreaEspecialSuministro){
-                $PartidasOFArea = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get();
+                $PartidasOFArea = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialAsignacion)->get();
             }else{$PartidasOFArea = $PartidasOF->Areas()->where('Areas_id',$AreaAnterior)->get();}
             if($PartidasOFArea->count() == 0){
                 unset($Registros[$key]);
@@ -2520,7 +2465,7 @@ class AreasController extends Controller
                 $PartidasOFAreaUnique = $PartidasOFArea->unique('pivot.Linea_id');//Sacamos las Lineas en las que tiene registros esta Area
                 foreach($PartidasOFAreaUnique as $key1 => $POFA){
                     if($AreaAnterior <= $this->AreaEspecialSuministro){
-                        $SumarAnterior = $PartidasOF->Areas()->where('Linea_id',$POFA['pivot']->Linea_id)->where('Areas_id',$this->AreaEspecialClasificacion)->get()->sum('pivot.Cantidad');
+                        $SumarAnterior = $PartidasOF->Areas()->where('Linea_id',$POFA['pivot']->Linea_id)->where('Areas_id',$this->AreaEspecialAsignacion)->get()->sum('pivot.Cantidad');
                         if($OrdenFabricacion->Escaner==1){
                             $SumarActual = $PartidasOF->Areas()->where('Linea_id',$POFA['pivot']->Linea_id)->where('Areas_id', $Area+1)->where('TipoPartida', 'N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad') 
                                 - $PartidasOF->Areas()->where('Linea_id',$POFA['pivot']->Linea_id)->where('Areas_id', $Area+1)->where('TipoPartida', 'R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');;
@@ -3145,7 +3090,7 @@ class AreasController extends Controller
                 }
             }
             $PartidasActuales+=$Partidas->Areas()->where('Areas_id',$Area)->get()->count();
-            $PartidasPosteriores+=$Partidas->Areas()->where('Areas_id','>',$Area)->where('Areas_id','!=',$this->AreaEspecialClasificacion)->get()->count();
+            $PartidasPosteriores+=$Partidas->Areas()->where('Areas_id','>',$Area)->where('Areas_id','!=',$this->AreaEspecialAsignacion)->get()->count();
             //$PartidasPosteriores+=$Partidas->Areas()->where('Areas_id','>',$Area)->where('Areas_id','>',$Area)->get()->count();
         }
         if($PartidasActuales== 0 AND $PartidasPosteriores>0){
@@ -3358,7 +3303,7 @@ class AreasController extends Controller
         $partidasOF=$datos->partidasOF()->first();
         //Return 0:No es el codigo; 1:Si es el codigo; 2:Aun no ha pasado por el area Anterior
         //Comprueba si los datos que vienen en el codigo Existen
-        //$NumeroEtiquetas = $partidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->get()->sum('pivot.Cantidad');
+        //$NumeroEtiquetas = $partidasOF->Areas()->where('Areas_id',$this->AreaEspecialAsignacion)->get()->sum('pivot.Cantidad');
         $NumeroEtiquetas = $partidasOF->Areas()->where('Areas_id',$this->AreaEspecialCorte)->get()->sum('pivot.Cantidad');
         if($CodigoPartes[2]>$NumeroEtiquetas){
             return 0;
@@ -3379,7 +3324,7 @@ class AreasController extends Controller
         $partidasOF=$datos->partidasOF()->first();
         //Return 0:No es el codigo; 1:Si es el codigo; 2:Aun no ha pasado por el area Anterior
         //Comprueba si los datos que vienen en el codigo Existen
-        $NumeroMaximo = $partidasOF->Areas()->where('Areas_id',$this->AreaEspecialClasificacion)->where('Linea_id',$NumeroLinea)->get()->SUM('pivot.Cantidad');//->where('Areas_id',$this->AreaEspecialCorte)->sum('pivot.Cantidad');
+        $NumeroMaximo = $partidasOF->Areas()->where('Areas_id',$this->AreaEspecialAsignacion)->where('Linea_id',$NumeroLinea)->get()->SUM('pivot.Cantidad');//->where('Areas_id',$this->AreaEspecialCorte)->sum('pivot.Cantidad');
         $NumeroActual =$partidasOF->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('Linea_id',$NumeroLinea)->where('TipoPartida','N')->SUM('Cantidad')
                             +$partidasOF->Areas()->where('Areas_id',$Area)->whereNotNull('FechaTermina')->where('Linea_id',$NumeroLinea)->where('TipoPartida','N')->SUM('Cantidad')
                             -$partidasOF->Areas()->where('Areas_id',$Area)->whereNull('FechaTermina')->where('Linea_id',$NumeroLinea)->where('TipoPartida','R')->SUM('Cantidad');
@@ -3406,7 +3351,7 @@ class AreasController extends Controller
         }
         $ExisteRegistroAnterior = $partidasOF->Areas()->where('Areas_id','<',$Area)->where('Areas_id','!=',$this->AreaEspecialCorte)
                 ->where('Areas_id','!=',$this->AreaEspecialSuministro)
-                ->where('Areas_id','!=',$this->AreaEspecialClasificacion)
+                ->where('Areas_id','!=',$this->AreaEspecialAsignacion)
                 ->where('TipoPartida','N')->get()->where('pivot.NumeroEtiqueta',$CodigoPartes[2])->first();
         if($ExisteRegistroAnterior!= ""){
             if($ExisteRegistroAnterior['pivot']->Linea_id != $NumeroLinea){

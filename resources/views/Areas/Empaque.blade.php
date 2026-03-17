@@ -2,12 +2,30 @@
 @section('title', 'Empaque')
 @section('styles')
 <style>
-    /* Positioning the toast in the top-right corner */
     #ToastGuardado {
         position: fixed; /* Fixed position */
         top: 5rem; /* Distance from the top */
         right: 20px; /* Distance from the right */
         z-index: 1050; /* Ensure it's above other content */
+    }
+    #DivCointainerTableSuministro{
+        height: 12rem;
+        overflow-y: scroll;
+    }
+    #DivCointainerTableSuministro::-webkit-scrollbar {
+        width: 5px;     /* Ancho para scroll vertical */
+        height: 1px;    /* Alto para scroll horizontal */
+    }
+    #DivCointainerTableSuministro::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    #DivCointainerTableSuministro::-webkit-scrollbar-thumb {
+        background: #dae1e2; /* Color info de Bootstrap */
+        border-radius: 10px;
+    }
+    #DivCointainerTableSuministro::-webkit-scrollbar-thumb:hover {
+        background: #9e9e9e;
     }
 </style>
 @endsection
@@ -50,14 +68,14 @@
                 </div>
             </div>
         </div>
-        <div id="ContentTabla" class="col-12 mt-2" style="display: none">
-            <div class="card" id="DivCointainerTableSuministro" >
+        <div id="ContentTabla" class="col-6">
+            <div class="card" id="DivCointainerTableSuministro" style="display: none">
             </div>
         </div>
         <div id="ContentTablaPendientes" class="col-12 mt-2">
             <div class="card" id="DivCointainerTablePendientes">
                 <h4 class="text-center mt-2 p-0">Ordenes de Fabricaci&oacute;n Pendientes</h4>
-                <div class="d-flex justify-content-start">
+                {{--<div class="d-flex justify-content-start">
                     <div class="col-3 mx-2 Apuntarbox" id="Apuntarbox">
                         <div class="input-group input-group-sm mb-1">
                             <span class="input-group-text" id="inputGroup-sizing-sm">Núm. L&iacute;nea:</span>
@@ -70,25 +88,29 @@
                             </select>
                         </div>
                     </div>
-                </div>
+                </div>--}}
                 <div class="table-responsive">
                     <table id="TablaPreparadoPendientes" class="table table-sm fs--1 mb-1">
                         <thead>
                             <tr class="bg-light">
                                 <th>Orden Fabricación</th>
-                                <th>Artículo</th>
-                                <th>Descripción</th>
-                                <th>Cantidad Completada</th>
-                                <th>Cantidad Faltante</th>
                                 <th>Cantidad Entrante</th>
+                                <th>Cantidad Completada</th>
                                 <th>Total Orden Fabricaci&oacute;n</th>
                                 <th>Estatus</th>
-                                <th>L&iacute;nea</th>
-                                <th>L&iacute;nea</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="TablaPreparadoPendientesBody" class="list">
+                            <tr>
+                                <td colspan='100%' align='center'>
+                                    <div class='d-flex justify-content-center align-items-center'>
+                                        <div class='spinner-grow text-primary' role='status'>
+                                            <span class='visually-hidden'>Loading...</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -103,6 +125,8 @@
     //NUEVOS CODIGOS
     let timeout;
     function ListaCodigo(Codigo,Contenedor,TipoEntrada){
+        DivCointainerTableSuministro = document.getElementById('DivCointainerTableSuministro');
+        DivCointainerTableSuministro.style.display = 'none';
         clearTimeout(timeout);
         timeout = setTimeout(() => {
         document.getElementById('CodigoEscanerSuministro').style.display = "none";
@@ -114,20 +138,7 @@
             return 0;
         }
         OrdenFabricacion = Codigo.split("-")[0];
-        FiltroLinea = $('#FiltroLinea').val();
-        if(FiltroLinea == null || FiltroLinea=="" || FiltroLinea<0){
-            $('#CodigoEscanerSalida').val('');
-            $('#CodigoEscanerEntrada').val('');
-            Mensaje='Para comenzar, Selecciona la línea en la que vas a trabajar!';
-                            Color='bg-danger';
-                            $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
-                            $('#ToastGuardadoBody').html(Mensaje);
-                            $('#ToastGuardado').fadeIn();
-                            setTimeout(function(){
-                                $('#ToastGuardado').fadeOut();
-                            }, 3500);
-            return 0;
-        }
+        FiltroLinea = 1;
         $('#Cantidad').val('');
         $('#CantidadSalida').val('');
         $.ajax({
@@ -149,6 +160,7 @@
                     if(!(TipoEntrada == 'Mostrar' || TipoEntrada == 'Cancelar')){
                         $('#CantidadSalida').focus();
                     }
+                    DivCointainerTableSuministro.style.display = '';
                     $('#DivCointainerTableSuministro').html(response.tabla);
                 }else{
                     Toast_message(response.status,response.message)
@@ -211,25 +223,6 @@
             btn.disabled = true;
             TipoNoEscaner(CodigoEscaner,Cantidad);
         });
-        var table = $('#TablaPreparadoPendientes').DataTable({
-            "columnDefs": [
-                {
-                    "targets": [8], 
-                    "visible": false, 
-                    "searchable": true 
-                }
-            ],
-            "language": {
-                "sProcessing":     "Procesando...",
-                "sLengthMenu":     "Mostrar _MENU_ registros",
-                "sZeroRecords":    "No se encontraron resultados",
-                "sInfo":           "Mostrando de _START_ a _END_ de _TOTAL_ registros",
-                "sInfoEmpty":      "Mostrando de 0 a 0 de 0 registros",
-                "sInfoFiltered":   "(filtrado de _MAX_ registros en total)",
-                "sSearch":         "Buscar:",
-                "sUrl":            "",
-            }
-        });
         $('#FiltroLinea').on('change', function() {
             var val = $(this).val();
             if(!(val == "" || val == null)){
@@ -243,17 +236,11 @@
             }
         });
         setInterval(RecargarTablaPendientes,600000);//180000
-        let loadingRow = table.row.add([
-            '','', '', '','',
-            "<tr><td colspan='100%' align='center'><div class='d-flex justify-content-center align-items-center'><div class='spinner-grow text-primary' role='status'>"+
-                            "<span class='visually-hidden'>Loading...</span></div></div></td></tr>"
-                , '', '', '', '',''
-        ]).draw().node();
         RecargarTablaPendientes();
     });
     function TipoNoEscaner(CodigoEscaner,Cantidad) {
         FiltroLinea = $('#FiltroLinea').val();
-        if( FiltroLinea == null || FiltroLinea=="" || FiltroLinea<0 ){
+        /*if( FiltroLinea == null || FiltroLinea=="" || FiltroLinea<0 ){
             Mensaje='Para comenzar, en el campo Núm. Línea selecciona la línea en la que vas a trabajar!';
                     Color='bg-danger';
                     $('#ContainerToastGuardado').html('<div id="ToastGuardado" class="toast align-items-center text-white '+Color+' border-0" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex justify-content-around"><div id="ToastGuardadoBody" class="toast-body"></div><button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button></div></div>');
@@ -263,7 +250,7 @@
                     $('#ToastGuardado').fadeOut();
                     }, 3500);
             return 0;
-        }
+        }*/
         // Realizar la petición AJAX
         $.ajax({
             url: "{{route('TipoNoEscaner')}}",
@@ -271,7 +258,7 @@
             data: {
                 Codigo: CodigoEscaner,
                 Cantidad: Cantidad,
-                Linea:FiltroLinea,
+                Linea:1,//Se asigna la linea por default
                 Area: '{{$Area}}'
             },
             beforeSend: function() {
@@ -303,6 +290,7 @@
                     }, 3000);
             },
             complete: function() {
+                document.getElementById('btnEscanearSalida').removeAttribute('disabled');
                 const btn = document.getElementById('btnEscanearSalida');
                 btn.disabled = false;
             }
@@ -423,14 +411,16 @@
             Retrabajo.disabled = true;
         }
     }
+    //url: "{{route('AreaTablaPendientes')}}",
     function RecargarTablaPendientes(){
         $.ajax({
-            url: "{{route('AreaTablaPendientes')}}",
+            url: "{{route('tablaEmpacado')}}",
             type: 'POST',
             data: {
                 Area: '{{$Area}}'
             },
             beforeSend: function() {
+
             },
             success: function(response) {
                 if ($.fn.DataTable.isDataTable('#TablaPreparadoPendientes')) {
@@ -438,13 +428,7 @@
                 }
                 $('#TablaPreparadoPendientesBody').html(response);
                 table = $('#TablaPreparadoPendientes').DataTable(
-                    {"columnDefs": [
-                            {
-                                "targets": [8], 
-                                "visible": false, 
-                                "searchable": true 
-                            }
-                        ],"language": {
+                    {"language": {
                             "sProcessing":     "Procesando...",
                             "sLengthMenu":     "Mostrar _MENU_ registros",
                             "sZeroRecords":    "No se encontraron resultados",

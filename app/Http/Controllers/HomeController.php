@@ -773,7 +773,7 @@ class HomeController extends Controller
     //vista sin permisos
     public function error(Request $request)
     {
-        return view('Error');
+        return view('errors.403');
     }
     public function lineas(Request $request)
     {

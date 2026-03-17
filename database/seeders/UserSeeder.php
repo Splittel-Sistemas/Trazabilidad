@@ -11,18 +11,18 @@ class UserSeeder extends Seeder
     public function run()
     {
         User::create([
-            'name' => 'Administrador',
+            'name' => 'ADMINISTRADOR',
             'Apellido' => 'Splittel',
             'email' => 'AdministradorSplittel@gmail.com',
-            'password' => Hash::make('12345678'), // Encriptar la contraseña
+            'password' => Hash::make('sistemas'), // Encriptar la contraseña
             'active' => '1',
             'role' => 'A', // Puedes asignar un rol, como 'A' o 'O'
             'created_at' => now(), 
             'updated_at' => now()
         ]);
           // Nuevo usuario
-          User::create([
-            'name' => 'Operador',
+          /*User::create([
+            'name' => 'OPERADOR',
             'Apellido' => 'Splittel',
             'email' => 'OperadorSplittel@gmail.com',
             'password' => Hash::make('12345678'), // Otra contraseña encriptada
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
             'role' => 'O', // Otro rol
             'created_at' => now(), 
             'updated_at' => now()
-        ]);
+        ]);*/
 
         $users = [
             ['name' => 'VANESSA GUADALUPE', 'apellido' => 'ENRIQUEZ GONZALEZ', 'role' => 'O'],

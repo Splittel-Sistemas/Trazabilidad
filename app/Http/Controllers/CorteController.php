@@ -48,7 +48,7 @@ class CorteController extends Controller
             }*/
             return view('Areas.Cortes', compact('fecha', 'fechaAtras'));
         } else {
-            return redirect()->route('error.');
+            return redirect()->route('error');
         }
     }
     public function CorteRecargarTabla(){

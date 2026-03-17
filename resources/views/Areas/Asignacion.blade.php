@@ -949,7 +949,7 @@
                     tablaBody = document.querySelector("#TablaAsignacionAbiertas tbody");
                     if(PosicionDestino == 0){
                         PrimeraFila = tablaBody.rows[0];
-                        if (PrimeraFila.classList.contains("Urgente")){
+                        /*if (PrimeraFila.classList.contains("Urgente")){
                             PrimeraFila.style.background = "#8be0fc";
                             PrimeraFila.style.color = "";
                         }else if (PrimeraFila.classList.contains("Detenida")){
@@ -958,7 +958,7 @@
                         }else{
                             PrimeraFila.style.background = "";
                             PrimeraFila.style.color = "";
-                        }
+                        }*/
                         var filadestino = tablaBody.children[PosicionDestino];
                         fila = document.getElementById(data);
                         fila.style.background = "rgb(255, 128, 44)";
@@ -1005,5 +1005,31 @@
         const fila = e.target.closest('tr');
         document.getElementById('Container_dropzone').style.display= "none";
     });
+    //Urgencia en la linea
+    function PrioridadLinea(elemento, id_partida){
+        status = elemento.checked;
+         $.ajax({
+            url: "{{route('UrgenciaAsignacion')}}", 
+            type: 'POST',
+            data: {
+                id_partida: id_partida,
+                status: status,
+            },
+            beforeSend: function() {
+            },
+            success: function(response) {
+                if(response.status=='success'){
+                    success('Guardado Correctamente!', response.message)
+                }else{
+                    error('Error al dar Prioridad', response.message);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                errorBD();
+            },
+            complete:function(){
+            }
+        });
+    }
 </script>
 @endsection

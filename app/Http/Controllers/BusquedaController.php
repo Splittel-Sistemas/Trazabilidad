@@ -26,16 +26,16 @@ use Carbon\Carbon as CarbonClass;
 
 class BusquedaController extends Controller
 {
-    protected $AreaClasificacion;
     protected $AreaMontaje;
     protected $AreaPulido;
-    protected $AreaEmpaque;
     protected $ObjBusqueda;
+    protected $AreaEspecialEmpaque;
+    protected $AreaEspecialAsignacion;
     public function __construct(){
-        $this->AreaClasificacion=18;
         $this->AreaPulido=9;
         $this->AreaMontaje=16;
-        $this->AreaEmpaque=17;
+        $this->AreaEspecialEmpaque = 17;//Empaque
+        $this->AreaEspecialAsignacion = 18;//Empaque
     }
     //vista
     public function index(Request $request)
@@ -48,7 +48,7 @@ class BusquedaController extends Controller
         ->get();
         return view('Busqueda.Progreso', compact('partidasAreas'));
         }else
-        return redirect()->route('error.');
+        return redirect()->route('error');
     
     }
     //Nuevos Metodos
@@ -824,15 +824,9 @@ class BusquedaController extends Controller
 
     //detalles OF
     public function DetallesOF(Request $request){
-        $idFabricacion = $request->input('id');
-        $OrdenFabricacion = $request->input('id');
-        $OrdenFabricacion = Ordenfabricacion::where('OrdenFabricacion',$OrdenFabricacion)->first();
-        $OrdenVenta = $OrdenFabricacion->OrdenVenta;
-        $RequiereCorte = $OrdenFabricacion->Corte;//0 es igual a si, 1 es a no
-        $PartidasOF = $OrdenFabricacion->PartidasOF->first();
-        $Estaciones=[];
-        $Areas =[];
-        if($OrdenFabricacion == "" || $PartidasOF==""){
+        $OrdenFabricacion_num = $request->input('id');
+        $OrdenFabricacion = Ordenfabricacion::where('OrdenFabricacion',$OrdenFabricacion_num)->first();
+        if($OrdenFabricacion == ""){
             return response()->json([
                 'Areas' => "",
                 'partidasAreas' => 0,
@@ -841,12 +835,18 @@ class BusquedaController extends Controller
                 "Message" => "La orden de Fabricación no existe!"
             ]);
         }
+        $OrdenVenta = $OrdenFabricacion->OrdenVenta;        
+        $RequiereCorte = $OrdenFabricacion->Corte;//0 es igual a si, 1 es a no
+        $Estatus = ($OrdenFabricacion->Cerrada == 1)?$estatus="Abierta":"Cerrada";
+        $ProgresoTotal = $this->Area_Actual($OrdenFabricacion_num,$this->AreaEspecialEmpaque);
+        $ProgresoTotal = ($OrdenFabricacion->CantidadTotal != 0)?(100/$OrdenFabricacion->CantidadTotal)*$ProgresoTotal:0;
+        $ProgresoEmpaque = $this->Area_Actual($OrdenFabricacion_num,$this->AreaEspecialEmpaque);
+        //$PartidasOF = $OrdenFabricacion->PartidasOF->first();
+        //$Estaciones=[];
+        //$Areas =[];
         //Estatus
-            $estatus = $OrdenFabricacion->Cerrada;
-            if($estatus == 1){$estatus="Abierta";}
-            else{$estatus="Cerrada";}
         //Linea a la que pertenece, 18 es el Area de Clasificacion
-            $Linea = $PartidasOF->Areas()->where('Areas_id',$this->AreaClasificacion)->first();
+            /*$Linea = $PartidasOF->Areas()->where('Areas_id',$this->AreaClasificacion)->first();
             if($Linea == ""){
                 $Areas = '2,3';
                 $Area = $array = explode(",", $Areas);
@@ -867,8 +867,8 @@ class BusquedaController extends Controller
                     ]);
                 }
                 $Area = $array = explode(",", $Areas);
-            }
-            $Progreso=0;
+            }*/
+            /*$Progreso=0;
             $FechaUltima = "";
             if (in_array($this->AreaMontaje, $array)) {
                 if($OrdenFabricacion->Escaner == 1){
@@ -882,12 +882,12 @@ class BusquedaController extends Controller
             }else if(in_array($this->AreaEmpaque, $array)){
                 $Progreso = $PartidasOF->Areas()->where('Areas_id',$this->AreaEmpaque)->get()->SUM('pivot.Cantidad');
                 $FechaUltima = $PartidasOF->Areas()->whereNotNull('FechaTermina')->where('Areas_id',$this->AreaEmpaque)->orderBy('FechaTermina', 'desc')->first();
-            }
+            }*/
         //Progreso
-            $Progreso = ($Progreso/$OrdenFabricacion->CantidadTotal)*100;
-            $Progreso = (fmod($Progreso, 1) == 0) ?$Progreso:number_format(($Progreso),2);
+            //$Progreso = ($Progreso/$OrdenFabricacion->CantidadTotal)*100;
+            //$Progreso = (fmod($Progreso, 1) == 0) ?$Progreso:number_format(($Progreso),2);
         //Tiempos Duracion, Tiempo Total, Tiempo Productivo, Tiempo Mu3rto
-            $TiempoDuracion=0;
+            /*$TiempoDuracion=0;
             $TiempoPromedioSeg=0;
             $FechaPrimera = $OrdenFabricacion->created_at;
             if($Progreso >= 100){
@@ -1021,7 +1021,7 @@ class BusquedaController extends Controller
                                         $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
                                     }
                                 }*/
-                                $TiempoEstacionSegundos = $TiempoTotalEstacion;
+                                /*$TiempoEstacionSegundos = $TiempoTotalEstacion;
                                 if($TiempoTotalEstacion >0){
                                     $TiempoTotalEstacion=$this->Fechas($TiempoTotalEstacion);
                                 }
@@ -1067,7 +1067,7 @@ class BusquedaController extends Controller
                                         $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
                                     }
                                 }*/
-                                $TiempoEstacionSegundos = $TiempoTotalEstacion;
+                                /*$TiempoEstacionSegundos = $TiempoTotalEstacion;
                                 if($TiempoTotalEstacion >0){
 
                                     $TiempoTotalEstacion=$this->Fechas($TiempoTotalEstacion);
@@ -1226,7 +1226,7 @@ class BusquedaController extends Controller
                     }
                 }
         // Asegúra que la respuesta siempre incluya una propiedad, incluso si no hay datos
-        if($estatus =="Abierta"){
+        /*if($estatus =="Abierta"){
             $TiempoTotal = 0;
             $TiempoProductivo = 0;
             $TiempoMuerto = 0;
@@ -1235,23 +1235,24 @@ class BusquedaController extends Controller
             $TiempoMuerto = $this->ConversionSegDias($TiempoTotal-$TiempoProductivo);
             $TiempoTotal = $this->ConversionSegDias($TiempoTotal);
             $TiempoProductivo = $this->ConversionSegDias($TiempoProductivo);
-        }
+        }*/
+        //$progreso = $this->Area_Actual($idFabricacion,$this->AreaEspecialEmpaque);
         $OV = ($OrdenVenta->OrdenVenta != 00000) ? $OrdenVenta->OrdenVenta: "N/A";
         $Cliente = ($OrdenVenta->OrdenVenta != 00000) ? $OrdenVenta->NombreCliente: "N/A";
         return response()->json([
-            'progreso' => round($Progreso,2),
-            "Estatus" => $estatus,
-            "Tiempototal" => $TiempoTotal,
-            "TiempoDuracion" => $TiempoDuracion,
-            "TiempoProductivo" => $TiempoProductivo,
-            "TiempoTotal" => $TiempoTotal,
-            "TiempoMuerto"=> $TiempoMuerto,
-            "Estaciones"=>$Estaciones,
-            "TiempoPromedioSeg"=>$TiempoPromedioSeg,
+            'progreso' => round($ProgresoTotal,2),
+            "Estatus" => $Estatus,
+            "Tiempototal" => [],//$TiempoTotal,
+            "TiempoDuracion" => [],
+            "TiempoProductivo" => [],
+            "TiempoTotal" => [],
+            "TiempoMuerto"=> [],
+            "Estaciones"=>[],
+            "TiempoPromedioSeg"=>0,
             "RequiereCorte"=>$RequiereCorte,
             'OV'=>$OV,
             'Cliente'=>$Cliente,
-            'OrdenFabricacion' =>$idFabricacion
+            'OrdenFabricacion' =>$OrdenFabricacion_num
         ]);
     }
     //Detalles OV
@@ -1537,7 +1538,7 @@ class BusquedaController extends Controller
     //Estatus Ordenes de Fabricación
     public function EstatusOrdenesFabricacion($FechaInicio = null, $FechaFin = null,$Estatus = null){
         $user = Auth::user();
-        if($user->hasPermission('Vista Estatus Orden Fabricación')){
+        if($user->hasPermission('Vista Estatus Orden F.')){
             if(!isset($FechaInicio)){
                 $FechaInicio = now()->subWeek()->toDateString();
             }
@@ -1711,7 +1712,7 @@ class BusquedaController extends Controller
                 return view('Busqueda.EstatusOrdenesFabricacion',compact('OrdenFabricacionAbiertas','OrdenFabricacionCerradas','FechaInicio','FechaFin'));
             }
         }else
-        return redirect()->route('error.');
+        return redirect()->route('error');
     }
     //Sacar nombre del Area
     public function AreaNombre($IdArea){
@@ -1719,4 +1720,11 @@ class BusquedaController extends Controller
         return $Area->nombre;
     }
 
+    //Funcion para traer la cantidad por Area
+    public function Area_Actual($Codigo,$Area){
+        $OF=OrdenFabricacion::where('OrdenFabricacion',$Codigo)->first();
+        $PartidasOF=$OF->PartidasOF->first();
+        $POFAreas=$PartidasOF->Areas()->where('Areas_id',$Area)->get();
+        return$totalCantidad = $POFAreas->SUM('pivot.Cantidad');
+    }
 }

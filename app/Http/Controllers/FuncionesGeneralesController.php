@@ -12,8 +12,7 @@ class FuncionesGeneralesController extends Controller
 {
     private $connection;
 
-    public function checkSapConnection()
-    {
+    public function checkSapConnection(){
         try {
             
             $this->connectToSap();
@@ -23,12 +22,10 @@ class FuncionesGeneralesController extends Controller
             return false;
         }
     }
-    private function connectToSap()
-    {
-        $datasource = 'DRIVER=HDBODBC;SERVERNODE=192.168.2.19:30015;CHAR_AS_UTF8=1;';
-        $username   = "USR_LECTURA";
-        $password   = "SPL.Lectura202xx7.";
-
+    private function connectToSap(){
+        $datasource = config('database.connections.odbc.dsn');
+        $username   = config('database.connections.odbc.username');
+        $password   = config('database.connections.odbc.password');
         
         $conn = odbc_connect($datasource, $username, $password);
 
@@ -39,8 +36,7 @@ class FuncionesGeneralesController extends Controller
 
         $this->connection = $conn;
     }
-    public function ejecutarConsulta($sql)
-    {
+    public function ejecutarConsulta($sql){
         $this->connectToSap();
         if (!$this->connection) {
             throw new \Exception("No se ha establecido conexión a SAP.");
@@ -93,12 +89,25 @@ class FuncionesGeneralesController extends Controller
         $schema = 'HN_OPTRONICS';
         /*$query_emisiones="SELECT T00.\"DocNum\" \"NoEmision\", T00.\"DocDate\" \"FechaEmision\", T111.\"ItemCode\" \"Componente\", T111.\"Dscription\" \"Descripcion\",
                             T111.\"Quantity\" \"Cantidad\", T111.\"WhsCode\" \"Almacen\"*/
-        $query_emisiones="SELECT DISTINCT T00.\"DocNum\" \"NoEmision\", TO_DATE(T00.\"DocDate\") \"FechaEmision\", T00.\"Ref2\" \"Cantidad\"                       
+        $query_emisiones="SELECT DISTINCT T222.\"DocNum\" \"OF\",T00.\"DocNum\" \"NoEmision\", TO_DATE(T00.\"DocDate\") \"FechaEmision\", T00.\"Ref2\" \"Cantidad\"                       
                         FROM {$schema}.\"OIGE\" T00
                         LEFT JOIN {$schema}.\"IGE1\" T111 ON T00.\"DocEntry\" = T111.\"DocEntry\"
                         LEFT JOIN {$schema}.\"OWOR\" T222 ON T111.\"BaseEntry\" = T222.\"DocEntry\" AND T111.\"BaseType\" = T222.\"ObjType\"
                         LEFT JOIN {$schema}.\"WOR1\" T333 ON T222.\"DocEntry\" = T333.\"DocEntry\" AND T111.\"BaseLine\" = T333.\"LineNum\"
                         WHERE T222.\"DocNum\" = ".$OrdenFabricacion."
+                        ORDER BY 1";
+        return$emisiones=$this->ejecutarConsulta($query_emisiones);
+    }
+    public function EmisionesWhere($where){
+        $schema = 'HN_OPTRONICS';
+        /*$query_emisiones="SELECT T00.\"DocNum\" \"NoEmision\", T00.\"DocDate\" \"FechaEmision\", T111.\"ItemCode\" \"Componente\", T111.\"Dscription\" \"Descripcion\",
+                            T111.\"Quantity\" \"Cantidad\", T111.\"WhsCode\" \"Almacen\"*/
+        $query_emisiones="SELECT DISTINCT T222.\"DocNum\" \"OF\",T00.\"DocNum\" \"NoEmision\", TO_DATE(T00.\"DocDate\") \"FechaEmision\", T00.\"Ref2\" \"Cantidad\"                       
+                        FROM {$schema}.\"OIGE\" T00
+                        LEFT JOIN {$schema}.\"IGE1\" T111 ON T00.\"DocEntry\" = T111.\"DocEntry\"
+                        LEFT JOIN {$schema}.\"OWOR\" T222 ON T111.\"BaseEntry\" = T222.\"DocEntry\" AND T111.\"BaseType\" = T222.\"ObjType\"
+                        LEFT JOIN {$schema}.\"WOR1\" T333 ON T222.\"DocEntry\" = T333.\"DocEntry\" AND T111.\"BaseLine\" = T333.\"LineNum\"
+                        WHERE {$where}
                         ORDER BY 1";
         return$emisiones=$this->ejecutarConsulta($query_emisiones);
     }

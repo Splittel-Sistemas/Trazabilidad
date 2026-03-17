@@ -20,7 +20,7 @@ class RolesPermisoController extends Controller
             $permissions1 = Permission::orderBy('name')->get();
             return view('RolesPermisos.index', compact('roles', 'permissions1'));
         } else {
-            return redirect()->route('error.');
+            return redirect()->route('error');
         }
     }
     //Mostrar el formulario para crear un nuevo rol o permiso.

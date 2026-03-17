@@ -59,6 +59,9 @@
         .Estacion_Hover:hover{
             transform: scale(1.04);
         }
+        #EstatusFabricacion{
+            transform: scale(1.2);
+        }
         #GraficaPorcentajeTiempos {
         width: 100%;
         height: 350px;
@@ -69,15 +72,15 @@
     <!-- Breadcrumbs -->
     <div class="row gy-3 mb-1 justify-content-between">
         <div class="col-md-9 col-auto">
-            <h4 class="mb-2 text-1100">Busquedas</h4>
+            <h4 class="mb-2 text-1100">Progreso</h4>
         </div>
     </div>
     <div class="container mt-1">
         <!--Filtro-->
         <div class="row">
-            <div class="card shadow-sm border-light col-8 col-sm-6 p-2 mb-1">
-                <div class="accordion" id="FiltroOrden">
-                    <div class="accordion-item border-top border-300">
+            <div class="col-12 col-sm-6 p-0 mb-1 border-top">
+                <div class="accordion mb-0 pb-0" id="FiltroOrden">
+                    <div class="accordion-item ">
                         <h2 class="accordion-header" id="headingOne">
                             <button id="AccordeFiltroOrdenBtn" class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                 Busqueda por N&uacute;mero de Orden
@@ -87,11 +90,11 @@
                             <div class="accordion-body pt-0">
                                 <div class="btn-group my-0" role="group" aria-label="Tipo de Orden">
                                     <input type="radio" class="btn-check" name="TipoOrden" id="TipoOrden1" autocomplete="off" checked>
-                                    <label class="btn btn-sm btn-outline-primary" for="TipoOrden1">
+                                    <label class="btn btn-sm btn-outline-primary px-5" for="TipoOrden1">
                                         <i class="fas fa-shopping-cart me-1"></i> Orden de venta
                                     </label>
                                     <input type="radio" class="btn-check" name="TipoOrden" id="TipoOrden2" autocomplete="off">
-                                    <label class="btn btn-sm btn-outline-primary" for="TipoOrden2">
+                                    <label class="btn btn-sm btn-outline-primary px-5" for="TipoOrden2">
                                         <i class="fas fa-industry me-1"></i> Orden de fabricaci&oacute;n
                                     </label>
                                 </div>
@@ -116,23 +119,31 @@
         <!--Detalles-->
         <div class="row ">
             <!--Orden Fabricacion-->
-            <div class="col-12 pt-4 card" id="DetallesOrdenFabricacion" style="display: none">
-                <h4 class="mb-3" id="exampleModalLabel">
-                    Orden de Fabricaci&oacute;n:
-                    <span id="ordenFabricacionNumero" class="text-muted"></span>
-                    <span id="EstatusFabricacion"class="" style="position: absolute;right:4rem;">Estatus</span> 
-                </h4>
-                <hr>
-                 <!-- Barra de progreso -->
-                        <h4 class="text-center mb-3 text-muted">Orden de Venta: <span id="OrdenVenta"></span> &nbsp;&nbsp;&nbsp;&nbsp; Cliente: <span id="NombreCliente"></span></h4>
-                        <h5 class="text-center mb-2">Progreso Total de piezas completadas</h5>
-                        <div class="progress" style="height: 22px; border-radius: 5px; box-shadow: 0px 3px 6px rgba(0,0,0,0.2); overflow: hidden; width: 100%;">
-                            <div id="plemasProgressBar" class="progress-bar text-white fw-bold progress-animated" role="progressbar" 
-                                style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;" 
-                                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                0%
-                            </div>
-                            <h6 class="mx-2 mt-2" id="Bloque0porciento">0%</h6>
+            <div class="col-12 pt-3 " id="DetallesOrdenFabricacion" style="display: none">
+                <div class="d-flex mb-4 pt-2">
+                    <span class="fa-stack me-2 ms-n1">
+                        <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fa-inverse fa-stack-1x text-primary-soft fas fa-percentage"></i>
+                    </span>
+                    <div class="col">
+                        <h3 class="mb-0 text-primary position-relative fw-bold">
+                            <span class="pe-2">Orden De Fabricaci&oacute;n <span id="ordenFabricacionNumero" class="bg-soft pe-2"></span></span>
+                            <span class="border border-primary-200 position-absolute top-100 translate-middle-y w-100 start-0"></span>
+                        </h3>
+                        <p class="mb-0 mt-2 mx-3" style="position: absolute;right:1rem;">
+                            <span id="EstatusFabricacion" ></span> 
+                        </p>
+                    </div>
+                </div>
+                <h5 class="fw-bolder mt-0 line-clamp-1 text-center text-muted">Orden de venta</h5>
+                <h5 class="fw-bolder mt-0 line-clamp-1 text-center" id="OrdenVenta"></h5>
+                <h5 class="mt-0 line-clamp-1 text-center text-muted">Cliente</h5>
+                <h5 class="mt-0 line-clamp-1 text-center" id="NombreCliente"></h5>
+                <!-- Barra de progreso -->
+                        <h4 class="text-center mb-3 text-muted"></h4>
+                        <h5 class="text-center mb-2">Progreso <small>(Piezas completadas)</small></h5>
+                        <div id="BarraProgreso" class="progress" style="height:10px">
+                            
                         </div>
                         <div class="row justify-content-center mt-3">
                             <!-- Primera fila (4 elementos) -->
@@ -546,6 +557,7 @@
                 }
             }); 
         }else{
+            //Variables
             var ordenfabricacion = $('#NumeroOrden').val();
             var Bloque0porciento = $('#Bloque0porciento'); 
             var TiempoDuracion = $('#TiempoDuracion');
@@ -556,6 +568,13 @@
             var TiempoPromedio = $('#TiempoPromedio');
             var OrdenVenta = $('#OrdenVenta');
             var NombreCliente = $('#NombreCliente');
+            var BarraProgreso = $('#BarraProgreso')
+            
+            //Limppiar variables
+            BarraProgreso.html('');
+
+
+
             OrdenVenta.html('');
             NombreCliente.html('');
             plemasCanvases.html('');
@@ -570,6 +589,10 @@
                 success: function (response) {
                     var progressBar = $('#plemasProgressBar');
                     if (response.Estatus !== 'Error') {
+                        BarraProgreso.html('<div class="progress-bar rounded-3" role="progressbar" style="width: '+response.progreso+'%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">'+response.progreso+'%</div>');
+           
+
+
                         var progreso = response.progreso;
                         if(progreso==0){
                             Bloque0porciento.show();

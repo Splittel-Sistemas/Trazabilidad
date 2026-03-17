@@ -49,7 +49,7 @@
             <div class="card-body">
                 <!-- Módulos sin corte y completados -->
                 <ul class="nav nav-underline" id="myTab" role="tablist">
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item " role="presentation">
                         <a class="nav-link active" id="Abiertas-tab" data-bs-toggle="tab" href="#tab-OFAbiertas" role="tab" aria-controls="tab-OFAbiertas" aria-selected="false" tabindex="-1">
                             Abiertas
                         </a>

@@ -17,7 +17,7 @@ class LineasController extends Controller
             $Areas=Areas::whereBetween('id', [1, 17])->get();
             return view('Lineas.Lineaindex', compact('linea','Areas'));
         } else {
-            return redirect()->route('error.');
+            return redirect()->route('error');
         }
     }
     // Mostrar el formulario para crear una nueva línea

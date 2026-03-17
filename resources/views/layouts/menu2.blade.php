@@ -5,13 +5,9 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
         <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=0.8, user-scalable=no">
-        <!-- ===============================================-->
         <!--    Document Title-->
-        <!-- ===============================================-->
         <title>@yield('title', 'splittel')</title>
-        <!-- ===============================================-->
         <!--    Favicons-->
-        <!-- ===============================================-->
         <link rel="shortcut icon" type="image/x-icon" href="{{asset('imagenes/Trazabilidad.png') }}" sizes="10x1">
         <link rel="manifest" href="{{asset('menu2/assets/img/favicons/manifest.json')}}">
         <meta name="msapplication-TileImage" content="{{asset('menu2/assets/img/favicons/mstile-150x150.png')}}">
@@ -21,10 +17,7 @@
         <script src="{{asset('menu2/assets/js/config.js')}}"></script>
         <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <!-- ===============================================-->
         <!--    Stylesheets-->
-        <!-- ===============================================-->
-        
         <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
         <link rel="preconnect" href="https://fonts.googleapis.com/">
         <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
@@ -69,7 +62,30 @@
                     transform: scale(1.7);
                 }
             }
-
+            .text-logo{
+                position: absolute;
+                top: 0.5rem;
+                left: 3.3rem;
+                font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                color: #0059ac;
+                font-size: 1.2rem;
+                font-weight: 800;
+                display: none;
+            }
+            @media (min-width: 992px) {
+                .text-logo {
+                    display: block;
+                }
+            }
+            .text-logo-lg{
+                position: absolute;
+                top: 1.2rem;
+                left: 7rem;
+                font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                color: #0059ac;
+                font-size: 1.2rem;
+                font-weight: 800;
+            }
         </style>
         <script>
             var phoenixIsRTL = window.config.config.phoenixIsRTL;
@@ -127,13 +143,13 @@
                                     </div>
                                 @endif                           
                             </li>
-                            @if(Auth::user()->hasPermission("Vista Progreso") OR Auth::user()->hasPermission("Vista Estatus Orden Fabricación"))
+                            @if(Auth::user()->hasPermission("Vista Progreso") OR Auth::user()->hasPermission("Vista Estatus Orden F."))
                                 <li class="nav-item"><!-- Busqueda-->
                                     <!-- label-->
                                     <p class="navbar-vertical-label">B&uacute;squeda</p>
                                     <hr class="navbar-vertical-line" />
                                     <div class="nav-item-wrapper">
-                                        <a class="nav-link dropdown-indicator label-1 {{ Route::is('Busquedas.OV') ? 'nav-tabs active' : '' }} ? 'nav-tabs active' : '' }}" href="#nv-e-busqueda" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-e-busqueda">
+                                        <a class="nav-link dropdown-indicator label-1 {{ (Route::is('Busquedas.OV') OR Route::is('EstatusOrdenesFabricacion')) ? 'nav-tabs active' : '' }} ? 'nav-tabs active' : '' }}" href="#nv-e-busqueda" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-e-busqueda">
                                             <div class="d-flex align-items-center">
                                             <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="search"></span></span><span class="nav-link-text">B&uacute;squeda</span>
                                             </div>
@@ -148,7 +164,7 @@
                                                         </a>
                                                     </li>
                                                 @endif
-                                                @if(Auth::user()->hasPermission("Vista Estatus Orden Fabricación"))
+                                                @if(Auth::user()->hasPermission("Vista Estatus Orden F."))
                                                     <li class="nav-item">
                                                         <a class="nav-link {{ Route::is('EstatusOrdenesFabricacion') ? 'nav-tabs active' : '' }}" href="{{route('EstatusOrdenesFabricacion')}}" data-bs-toggle="" aria-expanded="false">
                                                             <div class="d-flex align-items-center"><span class="nav-link-text">Estatus Orden Fabricaci&oacute;n</span></div>
@@ -269,62 +285,82 @@
                                     </div>
                                 </li>
                             @endif
-                            <li class="nav-item"><!-- Areas-->
-                                <!-- label-->
-                                <p class="navbar-vertical-label">Estaciones</p>
-                                <hr class="navbar-vertical-line" />
-                                <div class="nav-item-wrapper">
-                                    <a class="nav-link dropdown-indicator label-1 {{ Route::is('Planeacion') ? 'nav-tabs active' : '' }}{{ Route::is('corte.index') ? 'nav-tabs active' : '' }}{{ Route::is('Suministro') ? 'nav-tabs active' : '' }}" href="#nv-e-areas" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-e-areas">
-                                        <div class="d-flex align-items-center">
-                                        <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="command"></span></span><span class="nav-link-text">Estaciones</span>
+                            @if(Auth::user()->hasPermission("Vista Planeación") OR 
+                            Auth::user()->hasPermission("Vista Corte") OR 
+                            Auth::user()->hasPermission("Vista Suministro") OR
+                            Auth::user()->hasPermission("Vista Asignación") OR 
+                            Auth::user()->hasPermission("Vista Gestor de ordenes") OR 
+                            Auth::user()->hasPermission("Vista Ordenes en Línea") OR 
+                            Auth::user()->hasPermission("Vista Empaque"))
+                                <li class="nav-item"><!-- Areas-->
+                                    <!-- label-->
+                                    <p class="navbar-vertical-label">Estaciones</p>
+                                    <hr class="navbar-vertical-line" />
+                                    <div class="nav-item-wrapper">
+                                        <a class="nav-link dropdown-indicator label-1 {{ (Route::is('Planeacion') OR Route::is('corte.index') OR Route::is('Suministro') OR Route::is('Asignacion') OR Route::is('GestorDeOrden') OR Route::is('OrdenesLinea') OR Route::is('Empaque')) ? 'nav-tabs active' : '' }}" href="#nv-e-areas" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-e-areas">
+                                            <div class="d-flex align-items-center">
+                                            <div class="dropdown-indicator-icon"><span class="fas fa-caret-right"></span></div><span class="nav-link-icon"><span data-feather="command"></span></span><span class="nav-link-text">Estaciones</span>
+                                            </div>
+                                        </a>
+                                        <div class="parent-wrapper label-1">
+                                            <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-e-areas">
+                                                <li class="collapsed-nav-item-title d-none">Estaciones</li>
+                                                @if(Auth::user()->hasPermission("Vista Planeacion"))
+                                                    <li class="nav-item"><a class="nav-link {{ Route::is('Planeacion') ? 'nav-tabs active' : '' }}" href="{{route('Planeacion')}}" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Planeaci&oacute;n</span></div>
+                                                        </a>
+                                                    </li>
+                                                @endif
+                                                @if(Auth::user()->hasPermission("Vista Corte"))
+                                                    <li class="nav-item"><a class="nav-link {{ Route::is('corte.index') ? 'nav-tabs active' : '' }}" href="{{route('corte.index')}}" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Corte</span></div>
+                                                        </a>
+                                                    </li>
+                                                @endif
+                                                @if(Auth::user()->hasPermission("Vista Suministro"))
+                                                    <li class="nav-item"><a class="nav-link {{ Route::is('Suministro') ? 'nav-tabs active' : '' }}" href="{{route('Suministro')}}" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Suministro</span></div>
+                                                        </a>
+                                                        <hr class="p-0 m-1">
+                                                    </li>
+                                                @endif
+                                                @if(Auth::user()->hasPermission("Vista Asignación"))
+                                                <li class="nav-item"><a class="nav-link {{ Route::is('Asignacion') ? 'nav-tabs active' : '' }}" href="{{route('Asignacion')}}" data-bs-toggle="" aria-expanded="false">
+                                                    <div class="d-flex align-items-center"><span class="nav-link-text">Asignaci&oacute;n</span></div>
+                                                    </a>
+                                                </li>
+                                                @endif
+                                                @if(Auth::user()->hasPermission("Vista Gestor de ordenes"))
+                                                    <li class="nav-item"><a class="nav-link {{ Route::is('GestorDeOrden') ? 'nav-tabs active' : '' }}" href="{{route('GestorDeOrden')}}" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Gestor De Ordenes</span></div>
+                                                        </a>
+                                                    </li>
+                                                @endif
+                                                @if(Auth::user()->hasPermission("Vista Ordenes en Línea"))
+                                                    <li class="nav-item"><a class="nav-link {{ Route::is('OrdenesLinea') ? 'nav-tabs active' : '' }}" href="{{route('OrdenesLinea')}}" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Ordenes en L&iacute;nea</span></div>
+                                                        </a>
+                                                    </li>
+                                                @endif
+                                                @if(Auth::user()->hasPermission("Vista Empaque"))
+                                                    <li class="nav-item"><a class="nav-link {{ Route::is('Empaque') ? 'nav-tabs active' : '' }}" href="{{route('Empaque')}}" data-bs-toggle="" aria-expanded="false">
+                                                        <div class="d-flex align-items-center"><span class="nav-link-text">Empaque</span></div>
+                                                        </a>
+                                                    </li>
+                                                @endif
+                                            </ul>
                                         </div>
-                                    </a>
-                                    <div class="parent-wrapper label-1">
-                                        <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-e-areas">
-                                            <li class="collapsed-nav-item-title d-none">Estaciones</li>
-                                            @if(Auth::user()->hasPermission("Vista Planeacion"))
-                                                <li class="nav-item"><a class="nav-link {{ Route::is('Planeacion') ? 'nav-tabs active' : '' }}" href="{{route('Planeacion')}}" data-bs-toggle="" aria-expanded="false">
-                                                    <div class="d-flex align-items-center"><span class="nav-link-text">Planeaci&oacute;n</span></div>
-                                                    </a>
-                                                </li>
-                                            @endif
-                                            @if(Auth::user()->hasPermission("Vista Corte"))
-                                                <li class="nav-item"><a class="nav-link {{ Route::is('corte.index') ? 'nav-tabs active' : '' }}" href="{{route('corte.index')}}" data-bs-toggle="" aria-expanded="false">
-                                                    <div class="d-flex align-items-center"><span class="nav-link-text">Corte</span></div>
-                                                    </a>
-                                                </li>
-                                            @endif
-                                            @if(Auth::user()->hasPermission("Vista Suministro"))
-                                                <li class="nav-item"><a class="nav-link {{ Route::is('Suministro') ? 'nav-tabs active' : '' }}" href="{{route('Suministro')}}" data-bs-toggle="" aria-expanded="false">
-                                                    <div class="d-flex align-items-center"><span class="nav-link-text">Suministro</span></div>
-                                                    </a>
-                                                    <hr class="p-0 m-1">
-                                                </li>
-                                            @endif
-                                            @if(Auth::user()->hasPermission("Vista Clasificación"))
-                                            <li class="nav-item"><a class="nav-link {{ Route::is('Asignacion') ? 'nav-tabs active' : '' }}" href="{{route('Asignacion')}}" data-bs-toggle="" aria-expanded="false">
-                                                <div class="d-flex align-items-center"><span class="nav-link-text">Asignaci&oacute;n</span></div>
-                                                </a>
-                                            </li>
-                                            @endif
-                                            @if(Auth::user()->hasPermission("Vista Montaje"))
-                                                <li class="nav-item"><a class="nav-link {{ Route::is('Empaque') ? 'nav-tabs active' : '' }}" href="{{route('Empaque')}}" data-bs-toggle="" aria-expanded="false">
-                                                    <div class="d-flex align-items-center"><span class="nav-link-text">Empaque</span></div>
-                                                    </a>
-                                                </li>
-                                            @endif
-                                        </ul>
                                     </div>
-                                </div>
-                                <!--Etiquetas-->
-                                @if(Auth::user()->hasPermission("Vista Etiquetas"))
-                                <div class="nav-item-wrapper">
-                                    <a class="nav-link label-1 {{ Route::is('Etiquetas.index') ? 'active' : '' }}" href="{{route('Etiquetas.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
-                                        <div class="d-flex align-items-center"><span class="nav-link-icon"><i class="fas fa-print"></i></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Etiquetas</span></span></div>
-                                    </a>
-                                </div>
-                                @endif
-                            </li>
+                                    <!--Etiquetas-->
+                                    @if(Auth::user()->hasPermission("Vista Etiquetas"))
+                                    <div class="nav-item-wrapper">
+                                        <a class="nav-link label-1 {{ Route::is('Etiquetas.index') ? 'active' : '' }}" href="{{route('Etiquetas.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
+                                            <div class="d-flex align-items-center"><span class="nav-link-icon"><i class="fas fa-print"></i></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Etiquetas</span></span></div>
+                                        </a>
+                                    </div>
+                                    @endif
+                                </li>
+                            @endif
                             @if(Auth::user()->hasPermission("Vista Usuarios"))
                                 <li class="nav-item"><!-- usuarios-->
                                     <p class="navbar-vertical-label">Usuarios</p>
@@ -378,163 +414,163 @@
             </nav>
             <nav class="navbar navbar-top fixed-top navbar-expand" id="navbarDefault" style="display:none;">
                 <div class="collapse navbar-collapse justify-content-between">
-                <div class="navbar-logo">
-                    <button class="btn navbar-toggler navbar-toggler-humburger-icon hover-bg-transparent collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
-                    <a class="navbar-brand m-0 ">
-                        <div class="d-flex align-items-start">
-                            <div class="d-flex align-items-center">
-                                <a class="navbar-brand p-0" href="./">
-                                    <img src="{{asset('imagenes/splittel.png') }}" alt="Splittel" class="img-fluid" style="max-width: 100px;">
+                    <div class="navbar-logo">
+                        <button class="btn navbar-toggler navbar-toggler-humburger-icon hover-bg-transparent collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse" aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span class="toggle-line"></span></span></button>
+                        <a class="navbar-brand m-0 ">
+                            <div class="d-flex align-items-start">
+                                <div class="d-flex align-items-center">
+                                    <a class="navbar-brand p-0" href="./">
+                                        <img src="{{asset('imagenes/TOR_SNT.png') }}" alt="TOR" class="img-fluid" width="100">
+                                    </a>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="search-box navbar-top-search-box d-none d-lg-block" data-list='{"valueNames":["title"]}' style="width:25rem;">
+                        <div class="dropdown-menu border border-300 font-base start-0 py-0 overflow-hidden w-100">
+                        <div class="scrollbar-overlay" style="max-height: 30rem;">
+                            <div class="list pb-3">
+                            <h6 class="dropdown-header text-1000 fs--2 py-2">24 <span class="text-500">results</span></h6>
+                            <hr class="text-200 my-0" />
+                            <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Recently Searched </h6>
+                            <div class="py-2"><a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
+                                <div class="d-flex align-items-center">
+                                    <div class="fw-normal text-1000 title"><span class="fa-solid fa-clock-rotate-left" data-fa-transform="shrink-2"></span> Store Macbook</div>
+                                </div>
+                                </a>
+                                <a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
+                                <div class="d-flex align-items-center">
+                                    <div class="fw-normal text-1000 title"> <span class="fa-solid fa-clock-rotate-left" data-fa-transform="shrink-2"></span> MacBook Air - 13″</div>
+                                </div>
                                 </a>
                             </div>
+                            <hr class="text-200 my-0" />
+                            <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Products</h6>
+                            <div class="py-2"><a class="dropdown-item py-2 d-flex align-items-center" href="apps/e-commerce/landing/product-details.html">
+                                <div class="flex-1">
+                                    <h6 class="mb-0 text-1000 title">MacBook Air - 13″</h6>
+                                    <p class="fs--2 mb-0 d-flex text-700"><span class="fw-medium text-600">8GB Memory - 1.6GHz - 128GB Storage</span></p>
+                                </div>
+                                </a>
+                                <a class="dropdown-item py-2 d-flex align-items-center" href="apps/e-commerce/landing/product-details.html">
+                                <div class="flex-1">
+                                    <h6 class="mb-0 text-1000 title">MacBook Pro - 13″</h6>
+                                    <p class="fs--2 mb-0 d-flex text-700"><span class="fw-medium text-600 ms-2">30 Sep at 12:30 PM</span></p>
+                                </div>
+                                </a>
+                            </div>
+                            <hr class="text-200 my-0" />
+                            <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Quick Links</h6>
+                            <div class="py-2"><a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
+                                <div class="d-flex align-items-center">
+                                    <div class="fw-normal text-1000 title"><span class="fa-solid fa-link text-900" data-fa-transform="shrink-2"></span> Support MacBook House</div>
+                                </div>
+                                </a>
+                                <a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
+                                <div class="d-flex align-items-center">
+                                    <div class="fw-normal text-1000 title"> <span class="fa-solid fa-link text-900" data-fa-transform="shrink-2"></span> Store MacBook″</div>
+                                </div>
+                                </a>
+                            </div>
+                            <hr class="text-200 my-0" />
+                            <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Files</h6>
+                            <div class="py-2"><a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
+                                <div class="d-flex align-items-center">
+                                    <div class="fw-normal text-1000 title"><span class="fa-solid fa-file-zipper text-900" data-fa-transform="shrink-2"></span> Library MacBook folder.rar</div>
+                                </div>
+                                </a>
+                                <a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
+                                <div class="d-flex align-items-center">
+                                    <div class="fw-normal text-1000 title"> <span class="fa-solid fa-file-lines text-900" data-fa-transform="shrink-2"></span> Feature MacBook extensions.txt</div>
+                                </div>
+                                </a>
+                                <a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
+                                <div class="d-flex align-items-center">
+                                    <div class="fw-normal text-1000 title"> <span class="fa-solid fa-image text-900" data-fa-transform="shrink-2"></span> MacBook Pro_13.jpg</div>
+                                </div>
+                                </a>
+                            </div>
+                            <hr class="text-200 my-0" />
+                            <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Members</h6>
+                            <div class="py-2"><a class="dropdown-item py-2 d-flex align-items-center" href="pages/members.html">
+                                <div class="avatar avatar-l status-online  me-2 text-900">
+                                    <!--<img class="rounded-circle " src="assets/img/team/40x40/10.webp" alt="" />-->
+                                </div>
+                                <div class="flex-1">
+                                    <h6 class="mb-0 text-1000 title">Carry Anna</h6>
+                                    <p class="fs--2 mb-0 d-flex text-700">anna@technext.it</p>
+                                </div>
+                                </a>
+                                <a class="dropdown-item py-2 d-flex align-items-center" href="pages/members.html">
+                                <div class="avatar avatar-l  me-2 text-900">
+                                </div>
+                                <div class="flex-1">
+                                    <h6 class="mb-0 text-1000 title">John Smith</h6>
+                                    <p class="fs--2 mb-0 d-flex text-700">smith@technext.it</p>
+                                </div>
+                                </a>
+                            </div>
+                            <hr class="text-200 my-0" />
+                            <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Related Searches</h6>
+                            <div class="py-2"><a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
+                                <div class="d-flex align-items-center">
+                                    <div class="fw-normal text-1000 title"><span class="fa-brands fa-firefox-browser text-900" data-fa-transform="shrink-2"></span> Search in the Web MacBook</div>
+                                </div>
+                                </a>
+                                <a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
+                                <div class="d-flex align-items-center">
+                                    <div class="fw-normal text-1000 title"> <span class="fa-brands fa-chrome text-900" data-fa-transform="shrink-2"></span> Store MacBook″</div>
+                                </div>
+                                </a>
+                            </div>
+                            </div>
+                            <div class="text-center">
+                            <p class="fallback fw-bold fs-1 d-none">No Result Found.</p>
+                            </div>
                         </div>
-                    </a>
-                </div>
-                <div class="search-box navbar-top-search-box d-none d-lg-block" data-list='{"valueNames":["title"]}' style="width:25rem;">
-                    <div class="dropdown-menu border border-300 font-base start-0 py-0 overflow-hidden w-100">
-                    <div class="scrollbar-overlay" style="max-height: 30rem;">
-                        <div class="list pb-3">
-                        <h6 class="dropdown-header text-1000 fs--2 py-2">24 <span class="text-500">results</span></h6>
-                        <hr class="text-200 my-0" />
-                        <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Recently Searched </h6>
-                        <div class="py-2"><a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
-                            <div class="d-flex align-items-center">
-                                <div class="fw-normal text-1000 title"><span class="fa-solid fa-clock-rotate-left" data-fa-transform="shrink-2"></span> Store Macbook</div>
-                            </div>
-                            </a>
-                            <a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
-                            <div class="d-flex align-items-center">
-                                <div class="fw-normal text-1000 title"> <span class="fa-solid fa-clock-rotate-left" data-fa-transform="shrink-2"></span> MacBook Air - 13″</div>
-                            </div>
-                            </a>
-                        </div>
-                        <hr class="text-200 my-0" />
-                        <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Products</h6>
-                        <div class="py-2"><a class="dropdown-item py-2 d-flex align-items-center" href="apps/e-commerce/landing/product-details.html">
-                            <div class="flex-1">
-                                <h6 class="mb-0 text-1000 title">MacBook Air - 13″</h6>
-                                <p class="fs--2 mb-0 d-flex text-700"><span class="fw-medium text-600">8GB Memory - 1.6GHz - 128GB Storage</span></p>
-                            </div>
-                            </a>
-                            <a class="dropdown-item py-2 d-flex align-items-center" href="apps/e-commerce/landing/product-details.html">
-                            <div class="flex-1">
-                                <h6 class="mb-0 text-1000 title">MacBook Pro - 13″</h6>
-                                <p class="fs--2 mb-0 d-flex text-700"><span class="fw-medium text-600 ms-2">30 Sep at 12:30 PM</span></p>
-                            </div>
-                            </a>
-                        </div>
-                        <hr class="text-200 my-0" />
-                        <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Quick Links</h6>
-                        <div class="py-2"><a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
-                            <div class="d-flex align-items-center">
-                                <div class="fw-normal text-1000 title"><span class="fa-solid fa-link text-900" data-fa-transform="shrink-2"></span> Support MacBook House</div>
-                            </div>
-                            </a>
-                            <a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
-                            <div class="d-flex align-items-center">
-                                <div class="fw-normal text-1000 title"> <span class="fa-solid fa-link text-900" data-fa-transform="shrink-2"></span> Store MacBook″</div>
-                            </div>
-                            </a>
-                        </div>
-                        <hr class="text-200 my-0" />
-                        <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Files</h6>
-                        <div class="py-2"><a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
-                            <div class="d-flex align-items-center">
-                                <div class="fw-normal text-1000 title"><span class="fa-solid fa-file-zipper text-900" data-fa-transform="shrink-2"></span> Library MacBook folder.rar</div>
-                            </div>
-                            </a>
-                            <a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
-                            <div class="d-flex align-items-center">
-                                <div class="fw-normal text-1000 title"> <span class="fa-solid fa-file-lines text-900" data-fa-transform="shrink-2"></span> Feature MacBook extensions.txt</div>
-                            </div>
-                            </a>
-                            <a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
-                            <div class="d-flex align-items-center">
-                                <div class="fw-normal text-1000 title"> <span class="fa-solid fa-image text-900" data-fa-transform="shrink-2"></span> MacBook Pro_13.jpg</div>
-                            </div>
-                            </a>
-                        </div>
-                        <hr class="text-200 my-0" />
-                        <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Members</h6>
-                        <div class="py-2"><a class="dropdown-item py-2 d-flex align-items-center" href="pages/members.html">
-                            <div class="avatar avatar-l status-online  me-2 text-900">
-                                <!--<img class="rounded-circle " src="assets/img/team/40x40/10.webp" alt="" />-->
-                            </div>
-                            <div class="flex-1">
-                                <h6 class="mb-0 text-1000 title">Carry Anna</h6>
-                                <p class="fs--2 mb-0 d-flex text-700">anna@technext.it</p>
-                            </div>
-                            </a>
-                            <a class="dropdown-item py-2 d-flex align-items-center" href="pages/members.html">
-                            <div class="avatar avatar-l  me-2 text-900">
-                            </div>
-                            <div class="flex-1">
-                                <h6 class="mb-0 text-1000 title">John Smith</h6>
-                                <p class="fs--2 mb-0 d-flex text-700">smith@technext.it</p>
-                            </div>
-                            </a>
-                        </div>
-                        <hr class="text-200 my-0" />
-                        <h6 class="dropdown-header text-1000 fs--1 border-bottom border-200 py-2 lh-sm">Related Searches</h6>
-                        <div class="py-2"><a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
-                            <div class="d-flex align-items-center">
-                                <div class="fw-normal text-1000 title"><span class="fa-brands fa-firefox-browser text-900" data-fa-transform="shrink-2"></span> Search in the Web MacBook</div>
-                            </div>
-                            </a>
-                            <a class="dropdown-item" href="apps/e-commerce/landing/product-details.html">
-                            <div class="d-flex align-items-center">
-                                <div class="fw-normal text-1000 title"> <span class="fa-brands fa-chrome text-900" data-fa-transform="shrink-2"></span> Store MacBook″</div>
-                            </div>
-                            </a>
-                        </div>
-                        </div>
-                        <div class="text-center">
-                        <p class="fallback fw-bold fs-1 d-none">No Result Found.</p>
                         </div>
                     </div>
-                    </div>
-                </div>
-                <ul class="navbar-nav navbar-nav-icons flex-row">
-                    <li class="nav-item">
-                         @if(app()->environment('local', 'staging'))
-                            {{--Solo Ambiente de pruebas--}}
-                            <span class="badge bg-danger badge-scale">⚠️ Ambiente de pruebas</span>
-                        @endif
-                    </li>
-                    <li class="nav-item">
-                    <div class="theme-control-toggle fa-icon-wait px-2"><input class="form-check-input ms-0 theme-control-toggle-input" type="checkbox" data-theme-control="phoenixTheme" value="dark" id="themeControlToggle" /><label class="mb-0 theme-control-toggle-label theme-control-toggle-light" for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left" title="Switch theme"><span class="icon" data-feather="moon"></span></label><label class="mb-0 theme-control-toggle-label theme-control-toggle-dark" for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left" title="Switch theme"><span class="icon" data-feather="sun"></span></label></div>
-                    </li>
-                    <li class="nav-item dropdown"><a class="nav-link lh-1 pe-0" id="navbarDropdownUser" href="#!" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
-                        <div class="avatar avatar-l ">
-                        <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
-                        </div>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border border-300" aria-labelledby="navbarDropdownUser">
-                        <div class="card position-relative border-0">
-                        <div class="card-body bg-white p-0">
-                            <div class="text-center pt-4 pb-3">
-                            <div class="avatar avatar-xl ">
-                                <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
-                            </div>
-                            @if (Auth::check())
-                            <h6 class="mt-2 text-black">{{ Auth::user()->name }}</h6>
+                    <ul class="navbar-nav navbar-nav-icons flex-row">
+                        <li class="nav-item">
+                            @if(app()->environment('local', 'staging'))
+                                {{--Solo Ambiente de pruebas--}}
+                                <span class="badge bg-danger badge-scale">⚠️ Ambiente de pruebas</span>
                             @endif
+                        </li>
+                        <li class="nav-item">
+                        <div class="theme-control-toggle fa-icon-wait px-2"><input class="form-check-input ms-0 theme-control-toggle-input" type="checkbox" data-theme-control="phoenixTheme" value="dark" id="themeControlToggle" /><label class="mb-0 theme-control-toggle-label theme-control-toggle-light" for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left" title="Switch theme"><span class="icon" data-feather="moon"></span></label><label class="mb-0 theme-control-toggle-label theme-control-toggle-dark" for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left" title="Switch theme"><span class="icon" data-feather="sun"></span></label></div>
+                        </li>
+                        <li class="nav-item dropdown"><a class="nav-link lh-1 pe-0" id="navbarDropdownUser" href="#!" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar avatar-l ">
+                            <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
                             </div>
-                            
-                        <div class="overflow-auto scrollbar" style="height: 5rem;">
-                            <ul class="nav d-flex flex-column mb-2 pb-1">
-                                <li class="nav-item"><a class="nav-link px-3" href="{{route('index.perfil')}}"> <span class="me-2 text-900" data-feather="user"></span><span>Perfil</span></a></li>
-                                <li class="nav-item"><a class="nav-link px-3" href="{{route('Home')}}"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
-                            </ul>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border border-300" aria-labelledby="navbarDropdownUser">
+                            <div class="card position-relative border-0">
+                            <div class="card-body bg-white p-0">
+                                <div class="text-center pt-4 pb-3">
+                                <div class="avatar avatar-xl ">
+                                    <img class="rounded-circle " src="{{asset('imagenes/user.png') }}" alt="" />
+                                </div>
+                                @if (Auth::check())
+                                <h6 class="mt-2 text-black">{{ Auth::user()->name }}</h6>
+                                @endif
+                                </div>
+                                
+                            <div class="overflow-auto scrollbar" style="height: 5rem;">
+                                <ul class="nav d-flex flex-column mb-2 pb-1">
+                                    <li class="nav-item"><a class="nav-link px-3" href="{{route('index.perfil')}}"> <span class="me-2 text-900" data-feather="user"></span><span>Perfil</span></a></li>
+                                    <li class="nav-item"><a class="nav-link px-3" href="{{route('Home')}}"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
+                                </ul>
+                            </div>
+                            <div class="card-footer p-0 border-top">
+                                <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="{{route('logout')}}"> <span class="me-2" data-feather="log-out"> </span>Cerrar sesi&oacute;n</a></div>
+                                
+                            </div>
+                            </div>
                         </div>
-                        <div class="card-footer p-0 border-top">
-                            <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="{{route('logout')}}"> <span class="me-2" data-feather="log-out"> </span>Cerrar sesi&oacute;n</a></div>
-                            
-                        </div>
-                        </div>
-                    </div>
-                    </li>
-                </ul>
+                        </li>
+                    </ul>
                 </div>
             </nav>
             <nav class="navbar navbar-top navbar-slim fixed-top navbar-expand" id="topNavSlim" style="display:none;">

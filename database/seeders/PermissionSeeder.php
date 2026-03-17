@@ -9,112 +9,133 @@ class PermissionSeeder extends Seeder
 {
     public function run()
     {
-        Permission::create([
-            'name' =>'Vista Dashboard',
-            'groups' => 1, 
-        ]);
-        Permission::create([
-            'name' =>'Vista Progreso',
-            'groups' => 2, 
-        ]);
-        Permission::create([
-            'name' =>'Vista Reportes',
-            'groups' => 3,
-        ]);
-        Permission::create([
-            'name' =>'Vista Planeacion',
-            'groups' => 4,
-        ]);
-        Permission::create([
-            'name' =>'Vista Corte',
-            'groups' => 5, 
-        ]);
-        Permission::create([
-            'name' =>'Vista Suministro',
-            'groups' => 6, 
-        ]);
-        Permission::create([
-            'name' =>'Vista Preparado',
-            'groups' => 7, 
-        ]);
-        Permission::create([
-            'name' =>'Vista Ensamble',
-            'groups' => 8, 
-        ]);
-        Permission::create([
-            'name' =>'Vista Pulido',
-            'groups' => 9, 
-        ]);
-        Permission::create([
-            'name' =>'Vista Medicion',
-            'groups' => 16, 
-        ]);
-        Permission::create([
-            'name' =>'Vista Visualizacion',
-            'groups' => 10, 
-        ]);
-        Permission::create([
-            'name' =>'Vista Empaquetado',
-            'groups' => 11, 
-        ]);
-        Permission::create([
-            'name' =>'Vista Usuarios',
-            'groups' => 12, 
-        ]);
-        Permission::create([
-            'name' =>'Vista Roles y permisos',
-            'groups' => 13, 
-        ]);
-        Permission::create([
-            'name' =>'Vista Lineas',
-            'groups' => 14, 
-        ]);
+        //Permisos por modúlo
+        //Dahboard
+            Permission::create([
+                'name' =>'Vista Dashboard',
+                'groups' => 1, 
+            ]);
+        //Busqueda
+            Permission::create([
+                'name' =>'Vista Progreso',
+                'groups' => 2, 
+            ]);
+            Permission::create([
+                'name' =>'Vista Estatus Orden F.',
+                'groups' => 2, 
+            ]);
 
-        Permission::create([
-            'name' =>'Crear Usuario',
-            'groups' => 12, 
-        ]);
+        //Reportes
+            Permission::create([
+                'name' =>'Vista Reportes',
+                'groups' => 3,
+            ]);
+        //Estaciones
+            //Planeación
+            Permission::create([
+                'name' =>'Vista Planeación',
+                'groups' => 4,
+            ]);
+            //Corte
+            Permission::create([
+                'name' =>'Vista Corte',
+                'groups' => 5, 
+            ]);
+            //Suministro
+            Permission::create([
+                'name' =>'Vista Suministro',
+                'groups' => 6, 
+            ]);
+            //Asignacion
+            Permission::create([
+                'name' =>'Vista Asignación',
+                'groups' => 7, 
+            ]);
+            //Gestor de Ordenes
+            Permission::create([
+                'name' =>'Vista Gestor de ordenes',
+                'groups' => 8, 
+            ]);
+            //Ordnes en Linea
+            Permission::create([
+                'name' =>'Vista Ordenes en Línea',
+                'groups' => 9, 
+            ]);
+            //Empaque
+            Permission::create([
+                'name' =>'Vista Empaque',
+                'groups' => 10, 
+            ]);
+            Permission::create([
+                'name' =>'Cancelar partida',
+                'groups' => 10, 
+            ]);
+        //Usuarios
+            Permission::create([
+                'name' =>'Vista Usuarios',
+                'groups' => 11, 
+            ]);
+            Permission::create([
+                'name' =>'Crear Usuario',
+                'groups' => 11, 
+            ]);
 
-        Permission::create([
-            'name' =>'Editar Usuario',
-            'groups' => 12, 
-        ]);
+            Permission::create([
+                'name' =>'Editar Usuario',
+                'groups' => 11, 
+            ]);
 
-        Permission::create([
-            'name' =>'Activar/Desactivar Usuario',
-            'groups' => 12, 
-        ]);
+            Permission::create([
+                'name' =>'Activar/Desactivar Usuario',
+                'groups' => 11, 
+            ]);
 
-        Permission::create([
-            'name' =>'Crear Linea',
-            'groups' => 14, 
-        ]);
-        Permission::create([
-            'name' =>'Editar Linea',
-            'groups' => 14, 
-        ]);
-        Permission::create([
-            'name' =>'Activar/Desactivar Linea',
-            'groups' => 14, 
-        ]);
-        Permission::create([
-            'name' =>'Crear Rol',
-            'groups' => 13, 
-        ]);
-        Permission::create([
-            'name' =>'Editar Rol',
-            'groups' => 13, 
-        ]);
+        //Roles y permisos
+            Permission::create([
+                'name' =>'Vista Roles y permisos',
+                'groups' => 12, 
+            ]);
+            Permission::create([
+                'name' =>'Crear Rol',
+                'groups' => 12, 
+            ]);
+            Permission::create([
+                'name' =>'Editar Rol',
+                'groups' => 12, 
+            ]);
+        //Lineas
+            Permission::create([
+                'name' =>'Vista Lineas',
+                'groups' => 13, 
+            ]);
+            Permission::create([
+                'name' =>'Crear Linea',
+                'groups' => 13, 
+            ]);
+            Permission::create([
+                'name' =>'Editar Linea',
+                'groups' => 13, 
+            ]);
+            Permission::create([
+                'name' =>'Activar/Desactivar Linea',
+                'groups' => 13, 
+            ]);
+        //Permisos generales
         Permission::create([
             'name' => 'Enviar Avisos',
+            'groups' => 14, 
+        ]);
+        Permission::create([
+            'name' =>'Finalización Trazabilidad',
             'groups' => 15, 
         ]);
-        Permission::create([
-            'name' =>'Finalizar Trazabilidad',
-            'groups' => 11, 
-        ]);
+        //Etiquetas
+            Permission::create([
+                'name' =>'Vista Etiquetas',
+                'groups' => 16, 
+            ]);
         //Nuevas Areas
-        Permission::create([
+        /*Permission::create([
             'name' =>'Vista Ribonizado',
             'groups' => 17, 
         ]);
@@ -157,40 +178,30 @@ class PermissionSeeder extends Seeder
         Permission::create([
             'name' =>'Vista Etiquetas',
             'groups' => 27, 
+        ]);*/
+                /*Permission::create([
+            'name' =>'Vista Preparado',
+            'groups' => 7, 
         ]);
-
-
-/*
-        $permissions = [
-            'Vista Dashboard',
-            'Vista Progreso',
-            'Vista Reportes',
-            'Vista Planeacion',
-            'Vista Corte',
-            'Vista Suministro',
-            'Vista Preparado',
-            'Vista Ensamble',
-            'Vista Pulido',
-            'Vista Medicion',
-            'Vista Visualizacion',
-            'Vista Empaquetado',
-            'Vista Usuarios',
-            'Vista Roles y permisos',
-            'Vista Lineas',
-            'Crear Usuario',
-            'Editar Usuario',
-            'Activar/Desactivar Usuario',
-            'Crear Linea',
-            'Editar Linea',
-            'Activar/Desactivar Linea',
-            'Crear Rol',
-            'Editar Rol',
-            'Enviar Avisos',
-            'Finalizar Trazabilidad',
-        ];   */  
-        /*   
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
-        }*/
+        Permission::create([
+            'name' =>'Vista Ensamble',
+            'groups' => 8, 
+        ]);
+        Permission::create([
+            'name' =>'Vista Pulido',
+            'groups' => 9, 
+        ]);
+        Permission::create([
+            'name' =>'Vista Medicion',
+            'groups' => 16, 
+        ]);
+        Permission::create([
+            'name' =>'Vista Visualizacion',
+            'groups' => 10, 
+        ]);
+        Permission::create([
+            'name' =>'Vista Empaquetado',
+            'groups' => 11, 
+        ]);*/
     }
 }

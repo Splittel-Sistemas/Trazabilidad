@@ -17,11 +17,6 @@
  
         font-family: 'Arial', sans-serif;
     }
-    /*#clock {
-        font-size: 16px;
-        font-weight: bold;
-        color: #c00000;
-    }*/
     .carousel-inner {
         width: 100%;
         min-height: 19rem;
@@ -94,25 +89,26 @@
 <div class="d-flex justify-content-center m-1"> 
     <div class="col-12 col-sm-10 p-2 " > 
         @if($Avisos->count()==0)
-            <img class="d-block mx-auto" src="{{asset('imagenes/Trazabilidad.png') }}" style="width: 5rem">
-            <h3 class="text-center text-muted">¡Te damos la bienvenida! </h3>
-            <h4 class="text-center text-dark">{{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}</h4>          
+            <div class="col-12 position-relative">   
+                <img class="d-block mx-auto" src="{{asset('imagenes/TOR_OPT.png') }}" style="width: 15rem">
+            </div>
+            <h3 class="text-center text-muted mt-2">¡Te damos la bienvenida! </h3>
+            <h4 class="text-center text-dark text-uppercase">{{$user->name}} {{$user->apellido}}</h4>          
             <div id="clock" style="display:none;">
                 <span id="date"></span>
                 <span id="time"></span>
             </div> 
             <div id="ImgSinAvisos">
-                <img class="" src="{{asset('imagenes/splittel.png') }}" alt="Splittel">
+                <!--<img class="" src="{{asset('imagenes/splittel.png') }}" alt="Splittel">-->
             </div>
         @else
-            <h3 class="text-center text-muted" style="margin-top: -3rem">¡Te damos la bienvenida! </h3>
-            <h4 class="text-center text-dark">{{ ucfirst($user->name) }} {{ ucfirst($user->apellido) }}</h4> 
-            <!--<img class="d-block mx-auto" src="{{asset('imagenes/Trazabilidad.png') }}" style="width: 3.5rem">-->
+            <h3 class="text-center text-muted" style="margin-top: -2rem">¡Te damos la bienvenida! </h3>
+            <h4 class="text-center text-dark text-uppercase">{{$user->name}} {{$user->apellido}}</h4> 
             <h3 class="text-center text-bold my-2" style="color: #c00000">Comunicados</h3>
             <div class="Div-centrar">
                 <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
                     <ol class="carousel-indicators">
-                        @foreach($Avisos as $index => $aviso)
+                        @foreach($Avisos as $index => $Aviso)
                             <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ $index }}" class="{{ $index === 0 ? 'active' : '' }}"></li>
                         @endforeach
                     </ol>

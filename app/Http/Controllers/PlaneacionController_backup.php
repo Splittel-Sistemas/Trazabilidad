@@ -59,9 +59,8 @@ class PlaneacionController extends Controller
             return view('Planeacion.Planeacion', compact('datos', 'FechaInicio', 'FechaFin', 'status','VerificarSAP', 'linea', 'UsuariosCortes'));
     
         } else {
-    
             // Redirigir a una página de error si no tiene permiso
-            return redirect()->route('error.');
+            return redirect()->route('error');
         }
     }
     public function PorcentajesPlaneacion(Request $request){

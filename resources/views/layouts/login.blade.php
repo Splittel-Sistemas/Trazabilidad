@@ -15,9 +15,6 @@
             font-family: 'Source Sans Pro', sans-serif;
         }
         body {
-            /*background: linear-gradient(to right, #21598a, #b31b00);*/
-            /*background:linear-gradient(135deg, #ff0000 50%, #0000ff 50%);*/
-            /*background: linear-gradient(to right, #b40018,#747474);/*, #fdfdfd);*/
             overflow: hidden;
             background:linear-gradient(135deg, #00458f 50%,#00254d 50%);
             height: 100vh;
@@ -28,10 +25,10 @@
             color: #333;
         }
         .container {
-            background: rgba(255, 255, 255, 255);
+            background: #003d82c5;
             padding: 12px;
             border-radius: 2.5rem;
-            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.493);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.774);
             text-align: center;
             max-width: 40rem;
             width: 40rem;
@@ -62,8 +59,8 @@
             padding-bottom: 2rem;
         }
         .active{
-            background: #003d82;
-            color: white;
+            background:#0056b3;
+            color: #fff;
         }
         .img{
             margin-top: 0.5rem;
@@ -73,7 +70,7 @@
             width: 90%;
             padding:0.6rem;
             margin: 1rem 0;
-            border: 2px solid #7e0404;
+            border: 2px solid #a0a0a0;
             border-radius: 90px;
             font-size: 16px;
         }
@@ -87,14 +84,13 @@
             padding: 10px;
             border: none;
             border-radius: 90px;
-            background-color: #0056b3;
-            color: white;
             font-size: 16px;
             cursor: pointer;
             transition: 0.3s;
         }
         #login-button:hover {
-            background-color:#003d82;
+            background-color: #0056b3;
+            color: white;
             transform: scale(1.1);
         }
         #login-operador {
@@ -103,7 +99,7 @@
             padding: 10px;
             border: none;
             border-radius: 90px;
-            background-color:#0056b3;
+            background-color: #0056b3;
             color: white;
             font-size: 16px;
             cursor: pointer;
@@ -159,11 +155,12 @@
 <body>
         <div class="wrapper">
             <div class="container">
-                <img class="img" src="{{asset('imagenes/splittel.png') }}" alt="Splittel" width="100" height="40">
-                <h1 class="m-0 p-0">Trazabilidad</h1>
+                <img class="img" src="{{asset('imagenes/TOR.png') }}?v1" alt="Splittel" width="220">
+                <!--<img class="img" src="{{asset('imagenes/splittel.png') }}" alt="Splittel" width="100" height="40">-->
+                <!--<h1 class="m-0 p-0">Trazabilidad</h1>-->
                 @if(app()->environment('local', 'staging'))
                 {{--Solo Ambiente de pruebas--}}
-                    <div class="alert alert-info" role="alert">⚠️ Ambiente de pruebas</div>
+                    <div class="alert alert-info mt-3" role="alert">⚠️ Ambiente de pruebas</div>
                 @endif
                 <div class="text-center mb-1 bg-select">
                     <button class="btn-select active" id="toggleAdministrativo">Administrativo</button>

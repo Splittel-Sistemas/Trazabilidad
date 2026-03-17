@@ -336,12 +336,13 @@
                     }else if(response.status=="errorCantidada"){
                         error('Cantidad no disponible!',response.message);
                     }
-                     btn.disabled = false;
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     error('Error Server',jqXHR.responseJSON.message);
-                     btn.disabled = false;
-                }
+                },
+                complete: function(){
+                    btn.disabled = false;
+                } 
             });
         });
         $('#btnGrupoPiezasCorte1').click(function() {
@@ -415,12 +416,13 @@
                     }else if(response.status=="errorEmision"){
                         error('Orden de emisión requerida!',response.message);
                     }
-                    btn.disabled = false; 
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     error('Error Server',jqXHR.responseJSON.message);
+                },
+                complete: function(){
                     btn.disabled = false;
-                }
+                } 
             });
         });
         $('#buscarUnico').click(function() {

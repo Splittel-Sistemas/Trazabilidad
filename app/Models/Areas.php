@@ -10,6 +10,6 @@ class Areas extends Model
 
     use HasFactory;
     public function PartidasOF(){
-        return $this->belongsToMany(PartidasOF::class,'Partidas_Areas','PartidasOF_id','Areas_id','Cantidad','TipoPartida','NumeroEtiqueta','FechaTermina','NumeroBloque','CerrarBloque');
+        return $this->belongsToMany(PartidasOF::class,'Prioridad','Partidas_Areas','PartidasOF_id','Areas_id','Cantidad','TipoPartida','NumeroEtiqueta','FechaTermina','NumeroBloque','CerrarBloque');
     }
 }
