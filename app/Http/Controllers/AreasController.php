@@ -118,13 +118,13 @@ class AreasController extends Controller
         $fecham = Carbon::parse($fecha)->addDay();
         $OrdnesAbiertas = array();
         $Area=3;
-        $where = '';
+        $where = "";
         //Consulta traer Ordenes abiertas en esta estacion
         $PartidasOFA=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
         foreach($PartidasOFA as $key1=>$orden) {
             $ordenFabri=$orden->ordenFabricacion;
             if($ordenFabri->Cerrada == 1){
-                $where .= ($key1== 0)?" T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ":"OR T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ";
+                $where .= ($key1== 0)?" T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ":" OR T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ";
            }else{
                 unset($PartidasOFA[$key1]);
            }
@@ -282,11 +282,11 @@ class AreasController extends Controller
         try {
             $PartidasOF=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
             $tabla = "";
-            $where = '';
+            $where = "";
             foreach($PartidasOF as $key1=>$orden) {
                 $ordenFabri=$orden->ordenFabricacion;
                 if($ordenFabri->Cerrada == 1){
-                    $where .= ($key1== 0)?" T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ":"OR T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ";
+                    $where .= ($key1== 0)?" T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ":" OR T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ";
                 }else{
                         unset($PartidasOFA[$key1]);
                 }
