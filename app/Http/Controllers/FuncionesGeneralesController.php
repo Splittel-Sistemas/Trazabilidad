@@ -107,7 +107,7 @@ class FuncionesGeneralesController extends Controller
         }else{
             $where ='';
         }
-        $query_emisiones="SELECT DISTINCT T222.\"DocNum\" \"OF\",T00.\"DocNum\" \"NoEmision\", TO_DATE(T00.\"DocDate\") \"FechaEmision\", T00.\"Ref2\" \"Cantidad\"                       
+        return$query_emisiones="SELECT DISTINCT T222.\"DocNum\" \"OF\",T00.\"DocNum\" \"NoEmision\", TO_DATE(T00.\"DocDate\") \"FechaEmision\", T00.\"Ref2\" \"Cantidad\"                       
                         FROM {$schema}.\"OIGE\" T00
                         LEFT JOIN {$schema}.\"IGE1\" T111 ON T00.\"DocEntry\" = T111.\"DocEntry\"
                         LEFT JOIN {$schema}.\"OWOR\" T222 ON T111.\"BaseEntry\" = T222.\"DocEntry\" AND T111.\"BaseType\" = T222.\"ObjType\"
