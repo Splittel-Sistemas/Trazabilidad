@@ -129,7 +129,7 @@ class AreasController extends Controller
                 unset($PartidasOFA[$key1]);
            }
         }
-        $ordenesSAP1=$this->funcionesGenerales->EmisionesWhere($where);
+        return$ordenesSAP1=$this->funcionesGenerales->EmisionesWhere($where);
         $ordenesSAP = array_filter($ordenesSAP1, function($item) {
                 return $item['Cantidad'] !== null;
         });
