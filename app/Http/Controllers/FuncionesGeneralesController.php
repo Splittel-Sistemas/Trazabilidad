@@ -112,7 +112,7 @@ class FuncionesGeneralesController extends Controller
                         LEFT JOIN {$schema}.\"IGE1\" T111 ON T00.\"DocEntry\" = T111.\"DocEntry\"
                         LEFT JOIN {$schema}.\"OWOR\" T222 ON T111.\"BaseEntry\" = T222.\"DocEntry\" AND T111.\"BaseType\" = T222.\"ObjType\"
                         LEFT JOIN {$schema}.\"WOR1\" T333 ON T222.\"DocEntry\" = T333.\"DocEntry\" AND T111.\"BaseLine\" = T333.\"LineNum\"
-                        {$where}
+                         ".$where." 
                         ORDER BY 1";
         return$emisiones=$this->ejecutarConsulta($query_emisiones);
     }
