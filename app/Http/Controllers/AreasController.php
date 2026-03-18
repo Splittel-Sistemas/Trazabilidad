@@ -121,15 +121,17 @@ class AreasController extends Controller
         $where = "";
         //Consulta traer Ordenes abiertas en esta estacion
         $PartidasOFA=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
+        $count_partida = 0;
         foreach($PartidasOFA as $key1=>$orden) {
             $ordenFabri=$orden->ordenFabricacion;
             if($ordenFabri->Cerrada == 1){
-                $where .= ($key1== 0)?" T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ":" OR T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ";
-           }else{
-                unset($PartidasOFA[$key1]);
-           }
+                $where .= ($count_partida== 0)?" T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ":" OR T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ";
+                $count_partida++;
+            }else{
+                    unset($PartidasOFA[$key1]);
+            }
         }
-        return$ordenesSAP1=$this->funcionesGenerales->EmisionesWhere($where);
+        $ordenesSAP1=$this->funcionesGenerales->EmisionesWhere($where);
         $ordenesSAP = array_filter($ordenesSAP1, function($item) {
                 return $item['Cantidad'] !== null;
         });
@@ -283,10 +285,12 @@ class AreasController extends Controller
             $PartidasOF=PartidasOF::where('EstatusPartidaOFSuministro','0')->get();
             $tabla = "";
             $where = "";
+            $count_partida = 0;
             foreach($PartidasOF as $key1=>$orden) {
                 $ordenFabri=$orden->ordenFabricacion;
                 if($ordenFabri->Cerrada == 1){
-                    $where .= ($key1== 0)?" T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ":" OR T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ";
+                    $where .= ($count_partida== 0)?" T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ":" OR T222.\"DocNum\" = $ordenFabri->OrdenFabricacion ";
+                    $count_partida++;
                 }else{
                         unset($PartidasOFA[$key1]);
                 }
