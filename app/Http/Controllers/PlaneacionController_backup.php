@@ -162,7 +162,7 @@ class PlaneacionController extends Controller
                 ORDER BY T1.\"PoTrgNum\""; 
                 //ORDER BY T1.\"VisOrder\"";
         //Ejecucion de la consulta
-        $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
+        return$partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
         
         if ($partidas === false) {
             return response()->json([
