@@ -142,7 +142,7 @@ class PlaneacionController extends Controller
             ]);
         }
         //Consulta a SAP para traer las partidas de una OV
-        return$sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
+        $sql = "SELECT T1.\"ItemCode\" AS \"Articulo\", 
                     T1.\"Dscription\" AS \"Descripcion\", 
                     ROUND(T2.\"PlannedQty\", 0) AS \"Cantidad OF\", 
                     T2.\"DueDate\" AS \"Fecha entrega OF\", 
@@ -162,7 +162,7 @@ class PlaneacionController extends Controller
                 ORDER BY T1.\"PoTrgNum\""; 
                 //ORDER BY T1.\"VisOrder\"";
         //Ejecucion de la consulta
-        return$partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
+        $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
         
         if ($partidas === false) {
             return response()->json([
