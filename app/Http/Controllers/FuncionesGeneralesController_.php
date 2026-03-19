@@ -50,6 +50,7 @@ class FuncionesGeneralesController extends Controller
             throw new \Exception("Error al ejecutar la consulta: " . odbc_errormsg());
         }
         $datos = [];
+        return $row = odbc_fetch_array($result);
         while ($row = odbc_fetch_array($result)) {
             $datos[] = $row;
         }  
