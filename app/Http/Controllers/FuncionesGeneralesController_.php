@@ -45,7 +45,7 @@ class FuncionesGeneralesController extends Controller
         if (!$this->connection) {
             throw new \Exception("No se ha establecido conexión a SAP.");
         }
-        return$result = odbc_exec($this->connection, $sql);
+        $result = odbc_exec($this->connection, $sql);
         if (!$result) {
             throw new \Exception("Error al ejecutar la consulta: " . odbc_errormsg());
         }

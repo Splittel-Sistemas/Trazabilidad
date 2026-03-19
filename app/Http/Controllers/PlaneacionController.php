@@ -171,7 +171,7 @@ class PlaneacionController extends Controller
                 ORDER BY T2.\"DocNum\""; 
                 //ORDER BY T1.\"VisOrder\"";
         //Ejecucion de la consulta
-        return$partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
+        $partidas = $this->funcionesGenerales->ejecutarConsulta($sql);
         
         if ($partidas === false) {
             return response()->json([
