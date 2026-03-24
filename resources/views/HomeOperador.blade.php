@@ -205,14 +205,6 @@
 @endsection
 @section('scripts')
 <script>
-    /*setTimeout(function() {
-        var myCarousel = new bootstrap.Carousel(document.getElementById('carouselExampleIndicators'), {
-            interval: 6000,  
-            ride: true,      
-            wrap: true     
-        });
-    }, 2000);*/
-
     document.addEventListener("DOMContentLoaded", function() {
         const btnAbrirModal = document.getElementById('enviaraviso');
         const modal = new bootstrap.Modal(document.getElementById('avisoModal'));

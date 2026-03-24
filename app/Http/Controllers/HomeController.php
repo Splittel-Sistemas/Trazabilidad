@@ -24,6 +24,7 @@ class HomeController extends Controller
     private $AreaEspecialCorte=2;
     private $AreaEspecialSuministro = 3;
     
+    //Dashboard
     public function index(){   
         $user = Auth::user();
         if ($user->hasPermission('Vista Dashboard')) {
@@ -44,12 +45,13 @@ class HomeController extends Controller
         $FechaHoy = date('Y-m-d');
         $FechaAyer = date('Y-m-d', strtotime('-1 day'));
         $OFDia = OrdenFabricacion::where('FechaEntrega',$FechaHoy)->get();
-        $OFAbierta = OrdenFabricacion::where('FechaEntrega',$FechaHoy)->where('Cerrada',1)->get();
-        $OFCerrada = OrdenFabricacion::where('FechaEntrega',$FechaHoy)->where('Cerrada',0)->get();
+        $OFAbierta = $OFDia->where('Cerrada',1);
+        $OFCerrada = $OFDia->where('Cerrada',0);
         $OFAbiertaCant = $OFAbierta->count();
         $OFCerradaCant = $OFCerrada->count();
-        $OFAbiertaAyer = OrdenFabricacion::where('FechaEntrega',$FechaAyer)->where('Cerrada',1)->get();
-        $OFCerradaAyer = OrdenFabricacion::where('FechaEntrega',$FechaAyer)->where('Cerrada',0)->get();
+        $OFAbiertaAyer_ = OrdenFabricacion::where('FechaEntrega',$FechaAyer)->get();
+        $OFAbiertaAyer = $OFAbiertaAyer_->where('Cerrada',1);
+        $OFCerradaAyer = $OFAbiertaAyer_->where('Cerrada',0);
         $OFAbiertaCantAyer = $OFAbiertaAyer->count();
         $OFCerradaCantAyer = $OFCerradaAyer->count();
         //Orden de Fabricacion
@@ -58,15 +60,15 @@ class HomeController extends Controller
         }else{
             $PorcentajeAvanceA = (($OFAbiertaCant-$OFAbiertaCantAyer)/$OFAbiertaCantAyer)*100;
         }
-        if($OFCerradaCantAyer == 0){
-            $PorcentajeAvanceC = $OFCerradaCant*100;
-        }else{
-            $PorcentajeAvanceC = (($OFCerradaCant-$OFCerradaCantAyer)/$OFCerradaCantAyer)*100;
-        }
         if($PorcentajeAvanceA>=0){
             $PorcentajeAvanceA = "+".$PorcentajeAvanceA; 
         }else{
             $PorcentajeAvanceA = $PorcentajeAvanceA; 
+        }
+        if($OFCerradaCantAyer == 0){
+            $PorcentajeAvanceC = $OFCerradaCant*100;
+        }else{
+            $PorcentajeAvanceC = (($OFCerradaCant-$OFCerradaCantAyer)/$OFCerradaCantAyer)*100;
         }
         if($PorcentajeAvanceC>=0){
             $PorcentajeAvanceC = "+".$PorcentajeAvanceC; 
@@ -90,7 +92,7 @@ class HomeController extends Controller
             ($OFDP->Areas()->where('Areas_id', 18)->COUNT() > 0)?$OFDia[$key1]['LineasOriginal']=$OFDP->Areas()->where('Areas_id', 18)->first()['pivot']->Linea_id: $OFDia[$key1]['LineasOriginal']=0;
         }
         //Estaciones
-        foreach($Estaciones as $key => $Estac){
+        /*foreach($Estaciones as $key => $Estac){
             //Programadas
             $Programadas = 0;
             $Pendientes = 0;
@@ -193,7 +195,7 @@ class HomeController extends Controller
                             $PiezasTiempoTotal += $this->NumeroCompletadas($OFD->OrdenFabricacion,$Estac->id);
                         }
                     }*/
-            }
+            /*}
             //TiempoTotal estacion
                 $TiempoTotal = (($PiezasTiempoTotal==0)?0:$TiempoTotal/$PiezasTiempoTotal);
                 $Estac['TiempoTotal'] = $this->Fechas($TiempoTotal);
@@ -219,7 +221,7 @@ class HomeController extends Controller
                 $Estac['PorcentajeTiempoProductivo'] =round(($TiempoTotal > 0) ? ($TiempoProductivo / $TiempoTotal) * 100 : 0,2);
                 $Estac['PorcentajeTiempoMuerto'] = round(($TiempoTotal > 0) ?100-$TiempoMuerto:0,2);
         }
-        $Lineas = Linea::where('id','!=',1)->get();
+        $Lineas = Linea::where('id','!=',1)->get();*/
         return response()->json([
             "OFAbiertaCant" => $OFAbiertaCant,
             "OFCerradaCant" => $OFCerradaCant,
@@ -234,12 +236,15 @@ class HomeController extends Controller
         $FechaSemana = date('Y-m-d', strtotime('-1 week'));
         $FechaSemanaAtras = date('Y-m-d', strtotime('-2 week'));
         $OFSemana = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaSemana,$FechaHoy])->get();
-        $OFAbierta = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaSemana,$FechaHoy])->where('Cerrada',1)->get();
-        $OFCerrada = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaSemana,$FechaHoy])->where('Cerrada',0)->get();
+        $OFAbierta = $OFSemana->where('Cerrada',1);
+        $OFCerrada = $OFSemana->where('Cerrada',0);
         $OFAbiertaCant = $OFAbierta->count();
         $OFCerradaCant = $OFCerrada->count();
-        $OFAbiertaAyer = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaSemanaAtras,$FechaSemana])->where('Cerrada',1)->get();
-        $OFCerradaAyer = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaSemanaAtras,$FechaSemana])->where('Cerrada',0)->get();
+        //39 =  38A - 1C
+        //33 =  32A - 1C
+        $OFAbiertaAyer_ = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaSemanaAtras,$FechaSemana])->get();
+        $OFAbiertaAyer = $OFAbiertaAyer_->where('Cerrada',1);
+        $OFCerradaAyer = $OFAbiertaAyer_->where('Cerrada',0);
         $OFAbiertaCantAyer = $OFAbiertaAyer->count();
         $OFCerradaCantAyer = $OFCerradaAyer->count();
         if($OFAbiertaCantAyer == 0){
@@ -263,7 +268,7 @@ class HomeController extends Controller
             $PorcentajeAvanceC = $PorcentajeAvanceC; 
         }
         $Estaciones = Areas::where('id','!=',19)->where('id','!=',20)->where('id','!=',21)->get();
-        $Programadas = 0;
+        /*$Programadas = 0;
         $Pendientes = 0;
         $EnProceso = 0;
         $Terminadas = 0;
@@ -399,7 +404,7 @@ class HomeController extends Controller
             $Estac['TiempoTotal'] = $this->Fechas($TiempoTotal);
             $Estac['TiempoProductivo'] = $this->Fechas($TiempoProductivo);
             $Estac['TiempoMuerto'] = $this->Fechas($TiempoTotal-$TiempoProductivo);
-        }
+        }*/
         $Lineas = Linea::where('id','!=',1)->get();
         return response()->json([
             "OFAbiertaCant" => $OFAbiertaCant,
@@ -411,16 +416,17 @@ class HomeController extends Controller
     }
     public function Mes(){
         //Este mes
-        $FechaMesInicio = date('Y-m-01');
+        $FechaMesInicio = date('Y-m-d');
         $FechaMes = date('Y-m-d', strtotime('-1 month'));
         $FechaMesAtras = date('Y-m-d', strtotime('-2 month'));
         $OFMes = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaMes,$FechaMesInicio])->get();
-        $OFAbierta = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaMes,$FechaMesInicio])->where('Cerrada',1)->get();
-        $OFCerrada = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaMes,$FechaMesInicio])->where('Cerrada',0)->get();
+        $OFAbierta = $OFMes->where('Cerrada',1);
+        $OFCerrada = $OFMes->where('Cerrada',0);
         $OFAbiertaCant = $OFAbierta->count();
         $OFCerradaCant = $OFCerrada->count();
-        $OFAbiertaAyer = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaMesAtras,$FechaMes])->where('Cerrada',1)->get();
-        $OFCerradaAyer = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaMesAtras,$FechaMes])->where('Cerrada',0)->get();
+        $OFMesAyer = OrdenFabricacion::whereBetween('FechaEntrega', [$FechaMesAtras,$FechaMes])->get();
+        $OFAbiertaAyer = $OFMesAyer->where('Cerrada',1);
+        $OFCerradaAyer = $OFMesAyer->where('Cerrada',0);
         $OFAbiertaCantAyer = $OFAbiertaAyer->count();
         $OFCerradaCantAyer = $OFCerradaAyer->count();
         if($OFAbiertaCantAyer == 0){
@@ -444,7 +450,7 @@ class HomeController extends Controller
             $PorcentajeAvanceC = $PorcentajeAvanceC; 
         }
         $Estaciones = Areas::where('id','!=',19)->where('id','!=',20)->where('id','!=',21)->get();
-        $Programadas = 0;
+        /*$Programadas = 0;
         $Pendientes = 0;
         $EnProceso = 0;
         $Terminadas = 0;
@@ -580,7 +586,7 @@ class HomeController extends Controller
             $Estac['TiempoTotal'] = $this->Fechas($TiempoTotal);
             $Estac['TiempoProductivo'] = $this->Fechas($TiempoProductivo);
             $Estac['TiempoMuerto'] = $this->Fechas($TiempoTotal-$TiempoProductivo);
-        }
+        }*/
         $Lineas = Linea::where('id','!=',1)->get();
         return response()->json([
             "OFAbiertaCant" => $OFAbiertaCant,
@@ -592,8 +598,6 @@ class HomeController extends Controller
     }
     public function DashboardPrincipal(Request $request){
         $LapsoTiempo = $request->LapsoTiempo;
-        $FechaInicio = $request->FechaInicio;
-        $FechaFin = $request->FechaFin;
         if($LapsoTiempo == 'D'){
             return $this-> Dia();
         }else if($LapsoTiempo == 'S'){
@@ -767,9 +771,8 @@ class HomeController extends Controller
         }
         return $Suma;
     }
-    public function EstacionAnterior($OrdenFabricacion,$Area){
 
-    }
+    //END Dashboard
     //vista sin permisos
     public function error(Request $request)
     {
