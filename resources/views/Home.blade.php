@@ -97,7 +97,7 @@
                                             <div class="d-flex align-items-center icon-wrapper-sm shadow-primary-100" style="transform: rotate(-7.45deg);">
                                                 <span class="far fas fa-calendar-check text-primary fs-1 z-index-1 ms-2"></span>
                                             </div>
-                                            <p class="text-700 fs--1 mb-0 ms-2 mt-3">Ordene de Fabricaci&oacute;n</p>
+                                            <p class="text-700 fs--1 mb-0 ms-2 mt-3">Ordenes de Fabricaci&oacute;n</p>
                                         </div>
                                         <p class="text-success mt-2 fs-2 fw-bold mb-0 mb-sm-4" ><span id="OFCantidadAbierta">0</span><span class="fs-0 text-900 lh-lg"> Abiertas</span></p>
                                     </div>
@@ -120,7 +120,7 @@
                                             <div class="d-flex align-items-center icon-wrapper-sm shadow-info-100" style="transform: rotate(-7.45deg);">
                                                 <span class="fas fa-calendar-minus text-info fs-1 z-index-1 ms-2"></span>
                                             </div>
-                                            <p class="text-700 fs--1 mb-0 ms-2 mt-3">Ordene de Fabricaci&oacute;n</p>
+                                            <p class="text-700 fs--1 mb-0 ms-2 mt-3">Ordenes de Fabricaci&oacute;n</p>
                                         </div>
                                         <p class="text-warning mt-2 fs-2 fw-bold mb-0 mb-sm-4"><span id="OFCantidadCerrada">0</span> <span class="fs-0 text-900 lh-lg">Cerradas</span></p>
                                     </div>
