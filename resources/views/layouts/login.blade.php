@@ -26,9 +26,10 @@
         }
         .container {
             background: #003d82c5;
+            background: #ffffffb2;
             padding: 12px;
             border-radius: 2.5rem;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.774);
+            box-shadow: 0 0 10px rgba(15, 15, 15, 0.774);
             text-align: center;
             max-width: 40rem;
             width: 40rem;
@@ -155,7 +156,7 @@
 <body>
         <div class="wrapper">
             <div class="container">
-                <img class="img" src="{{asset('imagenes/TOR.png') }}?v1" alt="Splittel" width="220">
+                <img class="img my-3" src="{{asset('imagenes/TOR.png') }}?v1" alt="Splittel" width="220">
                 <!--<img class="img" src="{{asset('imagenes/splittel.png') }}" alt="Splittel" width="100" height="40">-->
                 <!--<h1 class="m-0 p-0">Trazabilidad</h1>-->
                 @if(app()->environment('local', 'staging'))

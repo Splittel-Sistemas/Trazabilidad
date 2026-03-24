@@ -228,8 +228,8 @@ Route::get('/linea/show/{id}', [LineasController::class, 'show'])->name('linea.s
 Route::put('/linea/update', [LineasController::class, 'update'])->name('linea.update')->middleware('auth');
 
 //perfil usuarios
-Route::get('/index/perfil',[PerfilController::class, 'index'])->name('index.perfil')->middleware('auth'); 
-Route::put('/update/perfil', [PerfilController::class, 'update'])->name('update.perfil')->middleware('auth');
+Route::get('/Perfil',[PerfilController::class, 'index'])->name('index.perfil')->middleware('auth'); 
+Route::put('/Perfil', [PerfilController::class, 'update'])->name('update.perfil')->middleware('auth');
 
 //error
 Route::get('/Error/permiso',[HomeController::class, 'error'])->name('error')->middleware('auth'); 

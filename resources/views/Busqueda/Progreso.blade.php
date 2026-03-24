@@ -23,292 +23,393 @@
             background-color: #f1f1f1;
             border-radius: 10px;
         }
-        .progress-Porcentaje{
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            border-radius: 100%;
-            width: 4.8rem;
-            height: 4.8rem;
-            display: flex;
-            justify-content: center;
-        }
-        .progress-circle {
-            position: relative;
-            left: 35%;
-            width: 6rem;
-            height: 6rem;
-            border-radius: 50%;
-            border: 3px solid #fff;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1),
-            inset 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .progress-Porcentaje h5{
-            font-size: 1.3rem; /* Ajusta según sea necesario */
-            font-weight: bold;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .Estacion_Hover {
+        .OF-Estacionhover {
             transition: transform 0.3s ease; /* Duración y tipo de transición */
         }
-        .Estacion_Hover:hover{
+        .OF-Estacionhover:hover{
             transform: scale(1.04);
         }
-        #EstatusFabricacion{
+        #OF_EstatusFabricacion, #OV_EstatusFabricacion{
             transform: scale(1.2);
         }
-        #GraficaPorcentajeTiempos {
-        width: 100%;
-        height: 350px;
+        /*Nuevo Codigo CSS*/
+        .gauge-wrapper{
+            position: relative;
+            width: 80%;
+            margin: 0 auto;
+        }
+        .gauge{
+            width: 100%;
+            fill: none;
+            stroke-width: 10;
+            stroke-linecap: round;
+        }
+        .gauge-bg{
+            stroke: #e9ecef;
+        }
+        .gauge-fill{
+            /*stroke: #14a0f7;*/
+            /* El valor 126 representa el largo total del arco */
+            stroke-dasharray: 126;
+            stroke-dashoffset: 126; /* Inicia vacío */
+            transition: stroke-dashoffset 1.5s ease-in-out;
+        }
+        .percentage-label{
+            position: absolute;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 150%;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        /*badge-top*/
+        .badge-top{
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+        #OF_NoCorte{
+            width: 90%;
+            position: absolute;
+            top: 35%;
+            left: 5%;
+            z-index: 2;
+            background: rgb(0, 47, 255);
+            color: white;
+        }
+        #OF_Prioridad{
+            transform: scale(1.2);
+        }
+        .progress{
+            min-width: 10rem;
         }
     </style>
 @endsection
 @section('content')
+    <!--Nuevo Codigo-->
     <!-- Breadcrumbs -->
-    <div class="row gy-3 mb-1 justify-content-between">
+    <div class="row gy-3 mb-2 justify-content-between">
         <div class="col-md-9 col-auto">
             <h4 class="mb-2 text-1100">Progreso</h4>
         </div>
     </div>
-    <div class="container mt-1">
+    <nav style="--phoenix-breadcrumb-divider: '&gt;&gt;';" aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{route('index.operador')}}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Progreso</li>
+        </ol>
+    </nav>
+    <div class="container mt-3">
         <!--Filtro-->
         <div class="row">
-            <div class="col-12 col-sm-6 p-0 mb-1 border-top">
-                <div class="accordion mb-0 pb-0" id="FiltroOrden">
-                    <div class="accordion-item ">
-                        <h2 class="accordion-header" id="headingOne">
-                            <button id="AccordeFiltroOrdenBtn" class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                Busqueda por N&uacute;mero de Orden
+            <div class="col-12 p-0 mb-1">
+                <div class="row justify-content-center">
+                    <div class="col-3">
+                        <label class="form-label" for="tipoOrden">Tipo de Orden</label>
+                        <select class="form-select form-select-sm" aria-label=".form-select-sm" id="TipoOrden">
+                            <option value="OV"><i class="fas fa-shopping-cart me-1"></i> Orden de venta</option>
+                            <option value="OF"><i class="fas fa-industry me-1"></i> Orden de fabricaci&oacute;n</option>
+                        </select>
+                    </div>
+                    <div class="mb-2 col-7">
+                        <label class="form-label" for="basic-url">Ingresa n&uacute;mero de orden</label>
+                        <div class="input-group">
+                            <input type="text" oninput="RegexNumeros(this)" class="form-control form-control-sm" id="NumeroOrden" placeholder="Ingresa número de Orden" autocomplete="off">
+                            <button class="btn btn-outline-primary btn-sm" id="Btn-BuscarOrden">
+                                Buscar
                             </button>
-                        </h2>
-                        <div class="accordion-collapse collapse show" id="collapseOne" aria-labelledby="headingOne" data-bs-parent="#FiltroOrden">
-                            <div class="accordion-body pt-0">
-                                <div class="btn-group my-0" role="group" aria-label="Tipo de Orden">
-                                    <input type="radio" class="btn-check" name="TipoOrden" id="TipoOrden1" autocomplete="off" checked>
-                                    <label class="btn btn-sm btn-outline-primary px-5" for="TipoOrden1">
-                                        <i class="fas fa-shopping-cart me-1"></i> Orden de venta
-                                    </label>
-                                    <input type="radio" class="btn-check" name="TipoOrden" id="TipoOrden2" autocomplete="off">
-                                    <label class="btn btn-sm btn-outline-primary px-5" for="TipoOrden2">
-                                        <i class="fas fa-industry me-1"></i> Orden de fabricaci&oacute;n
-                                    </label>
-                                </div>
-                                <hr class="my-1 p-0">
-                                <div class="mb-2 col-10">
-                                    <label for="NumeroOrden" class="form-label">N&uacute;mero de Orden</label>
-                                    <div class="input-group">
-                                        <input type="text" oninput="RegexNumeros(this)" class="form-control form-control-sm" id="NumeroOrden" placeholder="Ingresa número de Orden" autocomplete="off">
-                                        <button class="btn btn-outline-primary btn-sm" id="Btn-BuscarOrden">
-                                            Buscar
-                                        </button>
-                                    </div>
-                                    <div class="list-group lista-busqueda" id="ListaBusquedas" style="display: none;height: 100%;">
-                                    </div>
-                                </div>
-                            </div>
+                        </div>
+                        <div class="list-group lista-busqueda" id="ListaBusquedas" style="display: none;height: 100%;">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <!--Detalles-->
-        <div class="row ">
-            <!--Orden Fabricacion-->
-            <div class="col-12 pt-3 " id="DetallesOrdenFabricacion" style="display: none">
-                <div class="d-flex mb-4 pt-2">
-                    <span class="fa-stack me-2 ms-n1">
-                        <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                        <i class="fa-inverse fa-stack-1x text-primary-soft fas fa-percentage"></i>
-                    </span>
-                    <div class="col">
-                        <h3 class="mb-0 text-primary position-relative fw-bold">
-                            <span class="pe-2">Orden De Fabricaci&oacute;n <span id="ordenFabricacionNumero" class="bg-soft pe-2"></span></span>
-                            <span class="border border-primary-200 position-absolute top-100 translate-middle-y w-100 start-0"></span>
-                        </h3>
-                        <p class="mb-0 mt-2 mx-3" style="position: absolute;right:1rem;">
-                            <span id="EstatusFabricacion" ></span> 
+        <div class="row">
+            <!--Orden Venta-->
+            <div class="col-12 pt-4 rounded border-0" id="DetallesOrdenVenta" style="display: none;">
+                <div class="card shadow" id="OV_DetallesOrdenFabricacion_Detalles">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">Detalles</h5>
+                        <p class="mb-0 mt-2 mx-3" style="position: absolute;right:1rem;top:0;">
+                            <span class="badge bg-danger" id="OV_EstatusFabricacion"></span> 
                         </p>
                     </div>
+                    <div class="card-body px-0 py-0">
+                        <h5 class="text-center mt-2" id="OV_">OV</h5>
+                        <h5 class="text-center mx-2" id="OV_cliente">Cliente</h5>
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0 table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center">No. OF</th>
+                                        <th class="text-center">Articulo</th>
+                                        <th class="text-center">Descripci&oacute;n</th>
+                                        <th class="text-center">Fecha Entrega</th>
+                                        <th>Estatus</th>
+                                        <th class="text-center">Avance Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="OV_tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <h5 class="fw-bolder mt-0 line-clamp-1 text-center text-muted">Orden de venta</h5>
-                <h5 class="fw-bolder mt-0 line-clamp-1 text-center" id="OrdenVenta"></h5>
-                <h5 class="mt-0 line-clamp-1 text-center text-muted">Cliente</h5>
-                <h5 class="mt-0 line-clamp-1 text-center" id="NombreCliente"></h5>
-                <!-- Barra de progreso -->
-                        <h4 class="text-center mb-3 text-muted"></h4>
-                        <h5 class="text-center mb-2">Progreso <small>(Piezas completadas)</small></h5>
-                        <div id="BarraProgreso" class="progress" style="height:10px">
-                            
-                        </div>
-                        <div class="row justify-content-center mt-3">
-                            <!-- Primera fila (4 elementos) -->
-                            <h4 class="text-center mb-0 mt-2">Tiempos</h4>
-                            <div class="row mt-3">
-                                <div class="mx-0 col-12 col-md-6 mb-3">
-                                    <div class="card">
-                                        <div class="card-header m-0 py-3 bg-info">
-
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="border-0 p-2 text-center">
-                                                <div class="d-flex align-items-center justify-content-center">
-                                                    <span class="fa-stack fa-1x">
-                                                        <i class="fas fa-circle fa-stack-2x text-success"></i>
-                                                        <i class="fas fa-cog fa-stack-1x text-white "></i>
-                                                    </span>
-                                                </div>
-                                                <h5 class="mt-2">Duración Total de Fabricación</h5>
-                                                <p id="TiempoDuracion" class="text-muted fs--1 mb-0"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mx-0 col-12 col-md-6 mb-3">
-                                    <div class="card">
-                                        <div class="card-header m-0 py-3 bg-info">
-
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="border-0 p-2 text-center">
-                                                <div class="d-flex align-items-center justify-content-center">
-                                                    <span class="fa-stack fa-1x">
-                                                        <i class="fas fa-circle fa-stack-2x text-success"></i>
-                                                        <i class="fas fa-cogs fa-stack-1x text-white "></i>
-                                                    </span>
-                                                </div>
-                                                <h5 class="mt-2">Duración Promedio por Pieza</h5>
-                                                <p id="TiempoPromedio" class="text-muted fs--1 mb-0"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4 mb-3">
-                                    <div class="card shadow-sm border-0 text-center" style="background-color: #d4edda;">
-                                        <div class="card-header m-0 py-2 bg-success">
-
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <span class="fa-stack fa-1x">
-                                                    <i class="fas fa-circle fa-stack-2x text-success"></i>
-                                                    <i class="fas fa-stopwatch fa-stack-1x text-white "></i>
-                                                </span>
-                                            </div>
-                                            <h5 class="mt-2">Tiempo Productivo</h5>
-                                            <p id="Produccion"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4 mb-3">
-                                    <div class="card shadow-sm border-0 text-center" style="background-color: #f8d7da;">
-                                        <div class="card-header m-0 py-2 bg-danger">
-
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <span class="fa-stack fa-1x">
-                                                    <i class="fas fa-circle fa-stack-2x text-danger"></i>
-                                                    <i class="fas fa-hourglass-empty fa-stack-1x text-white"></i>
-                                                </span>
-                                            </div>
-                                            <h5 class="mt-2">Tiempo Muerto</h5>
-                                            <p id="Muerto"  class="text-muted fs--1 mb-0">Tiempo Promedio</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4 mb-3">
-                                    <div class="card shadow-sm border-0 text-center" style="background-color: #cce5ff;">
-                                        <div class="card-header m-0 py-2 bg-primary">
-
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <span class="fa-stack fa-1x">
-                                                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                                                    <i class="fas fa-clock fa-stack-1x text-white"></i>
-                                                </span>
-                                            </div>
-                                            <h5 class="mt-2">Tiempo Total Trabajado</h5>
-                                            <p id="TiempoTotal"  class="text-muted fs--1 mb-0">Tiempo Total de la Orden</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <br>
-                            <!---->
-                            <!--<div class="card p-3">-->
-                            <h4 class="text-center mb-2 mt-2">Estaci&oacute;nes</h4>
-                            <div  class="row mb-3" id="plemasCanvases">
-                            </div>
-                            <hr>
-                            <h4 class="text-center mb-0 mt-2">Estad&iacute;sticas</h4>
-                            <div class="col-12 col-sm-8 col-md-8 Estacion_Hover my-1" id="ContainerGraficaPorcentajeTiempos">
-                                <div class="card rounded border-0 p-2">
-                                    <div id="GraficaPorcentajeTiempos"></div>
-                                </div>
-                            </div>
-                            {{--<div class="col-12 col-sm-4 col-md-4 Estacion_Hover my-3" id="ContainerGraficaPorcentajeRetrabajos">
-                                <div class="card rounded border-0 p-2">
-                                    <div id="GraficaPorcentajeTiempos1">1111111</div>
-                                </div>
-                            </div>--}}
-                        </div>
             </div>
-            <!--Orden Venta-->
-            <div class="col-12 pt-4 rounded border-0" id="DetallesOrdenVenta" style="display: none">
-                <div class="py-4 px-2 ">
-                    <h4 class="mb-3">
-                        Orden de Venta 
-                        <span id="OVNumero"></span>
-                        <span id="OVEstatus"class="" style="position: absolute;right:4rem;">Estatus</span> 
-                    </h4>
-                    <hr>
-                    <!-- Barra de progreso -->
-                    <div class="card bg-white py-4 px-4 rounded">
-                        <h4 class="text-start mb-2 text-muted">Cliente: <span id="OVNombreCliente"></span></h4>
-                        <h5 class="text-center mb-2">Progreso de piezas completadas Orden de Venta</h5>
-                        <div class="progress" style="height: 22px; border-radius: 6px; box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.438); overflow: hidden; width: 100%;">
-                            <div id="OVBarrraProgreso" class="progress-bar text-white fw-bold progress-animated" role="progressbar" 
-                                style="width: 0%; transition: width 0.5s ease-in-out; font-size: 14px;" 
-                                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                0%
-                            </div>
-                            <h6 class="mx-2 mt-2" id="OVBloque0porciento">0%</h6>
+            <!--Orden Fabricacion-->
+            <div class="col-12 pt-3 " id="DetallesOrdenFabricacion" style="display: none;">
+                <div class="card shadow" id="DetallesOrdenFabricacion_Detalles">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">Detalles</h5>
+                        <p class="mb-0 mt-2 mx-3" style="position: absolute;right:1rem;top:0;">
+                            <span class="badge bg-danger" id="OF_EstatusFabricacion"></span> 
+                        </p>
+                    </div>
+                    <div class="card-body px-0 py-0">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center">No. OF</th>
+                                        <th class="text-center">No. OV</th>
+                                        <th class="text-center">Cliente</th>
+                                        <th>Estatus</th>
+                                        <th class="text-center">Avance Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center fw-black p-1" id="OF_ordenFabricacionNumero"></td>
+                                        <td class="text-center fw-black p-1" id="OF_OrdenVenta"></td>
+                                        <td class="text-center p-1" id="OF_NombreCliente"></td>
+                                        <td class="p-1"><span id="OF_Prioridad" class="badge rounded-pill">normal</span></td>
+                                        <td class="text-center p-1">
+                                            <div class="d-flex justify-content-between mb-1 mx-4">
+                                                <small><span id="OF_CantidadActual">75</span>/<span id="OF_CantidadTotal">100</span></small>
+                                                <small class="fw-bold" id="OF_CantidadActual_Porcentaje">75%</small>
+                                            </div>
+                                            <div class="progress mx-2" style="height:10px">
+                                                <div  id="OF_CantidadActual_PorcentajeProgress" class="progress-bar bg-info" style="width: 75%"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="bg-light">
+                                        <td class="fw-black py-0 px-5" colspan="3">Descripci&oacute;n</td>
+                                        <td class="text-center fw-black p-0" colspan="1">Fecha Entrega</td>
+                                        <td class="text-center fw-black p-0" colspan="1">Fecha Fin</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center p-1" colspan="3" id="OF_Descripcion" style="font-size: 0.80rem;"></td>
+                                        <td class="text-center p-1" colspan="1" id="OF_FechaEntrega" style="font-size: 0.80rem;"></td>
+                                        <td class="text-center p-1" colspan="1" id="OF_FechaFin" style="font-size: 0.80rem;"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <!-- Avance Orden Fabricacion-->
-                    <div class="my-3 col-xl-6 col-xxl-6 bg-white px-4 py-3 rounded">
-                        <div class="border-top">
-                            <div id="purchasersSellersTable">
-                                <div class="table-responsive scrollbar mx-n1 px-1">
-                                    <table class="table table-sm fs--1 leads-table">
-                                        <thead>
-                                            <tr>
-                                                <th class="ps-0 pe-5 text-uppercase text-nowrap" style="width: 20%;">Orden de fabricaci&oacute;n</th>
-                                                <th class="ps-4 pe-5 text-uppercase text-center" style="width: 80%;"> Progreso</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="list" id="OrdenesCompletadas-body">
-                                        </tbody>
-                                    </table>
+                </div>
+                <div class="row justify-content-center mt-3">
+                    <hr class="my-4">
+                    <h4>Seguimiento</h4>
+                    <p class="mb-1">Órden de Fabricación por Estaci&oacute;n.</p>
+                    <h5 class="mb-4 text-muted" id="OF_TiempoTotal"></h5>
+                    <div class="row">
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 mb-3 OF-Estacionhover">
+                            <div class="card border border-light">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-1">Planeaci&oacute;n</h4>
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="text-700" id="text-planeacion-date"></h6>
+                                        </div>
+                                        <h4>
+                                            <span class=" badge-top badge badge-phoenix badge-phoenix-primary rounded-pill fs--1 ms-2">
+                                                <span class="badge-label" id="text-planeacion-CantidadCompletada"></span>
+                                            </span>
+                                        </h4>
+                                    </div>
+                                    <div class="gauge-container border-bottom">
+                                        <div class="gauge-wrapper">
+                                            <svg viewBox="0 0 100 55" class="gauge">
+                                                <path class="gauge-bg" d="M10,45 A40,40 0 0,1 90,45" />
+                                                <path id="progress_planeacion" class="gauge-fill" d="M10,45 A40,40 0 0,1 90,45" />
+                                            </svg>
+                                            <div class="percentage-label" id="text-planeacion">0%</div>
+                                        </div>
+                                        <div class="mt-2">
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="bullet-item bg-primary me-2"></div>
+                                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">Inicio</h6>
+                                            <h6 class="text-900 fw-semi-bold mb-0" id="text-planeacion-FechaInicio"></h6>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <!--Avance de la Orden-->
-                    <div class="card theme-wizard my-3" data-theme-wizard="data-theme-wizard">
-                        <div class="card-header bg-100 pt-3 pb-2 border-bottom-0">
-                            <ul id="MenuTrazabilidad" class="nav justify-content-between nav-wizard" role="tablist">
-
-                            </ul>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 mb-3 OF-Estacionhover">
+                            <div class="card border border-light h-100">
+                                <div class="card-body pb-1">
+                                    <h4 class="card-title mb-1">Corte</h4>
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="text-700" id="text-corte-date"></h6>
+                                        </div>
+                                        <h4>
+                                            <span class=" badge-top badge badge-phoenix badge-phoenix-primary rounded-pill fs--1 ms-2">
+                                                <span class="badge-label" id="text-corte-CantidadCompletada"></span>
+                                            </span>
+                                        </h4>
+                                    </div>
+                                    <h3 class="text-center px-2" id="OF_NoCorte" style="display: none">No Requiere Corte</h3>
+                                    <div class="gauge-container border-bottom">
+                                        <div class="gauge-wrapper">
+                                            <svg viewBox="0 0 100 55" class="gauge">
+                                                <path class="gauge-bg" d="M10,45 A40,40 0 0,1 90,45" />
+                                                <path id="progress_corte" class="gauge-fill" d="M10,45 A40,40 0 0,1 90,45" />
+                                            </svg>
+                                            <div class="percentage-label" id="text-corte">0%</div>
+                                        </div>
+                                        <div class="mt-2">
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="bullet-item bg-primary me-2"></div>
+                                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">Inicio</h6>
+                                            <h6 class="text-900 fw-semi-bold mb-0" id="text-corte-FechaInicio"></h6>
+                                            </div>
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="bullet-item bg-primary-100 me-2"></div>
+                                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">Fin</h6>
+                                            <h6 class="text-900 fw-semi-bold mb-0" id="text-corte-FechaFin"></h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2" id="UsuariosNombre_Corte">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div id="MenuTrazabilidadBody" class="card-body d-flex justify-content-between pt-4 pb-0">
-                            
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 mb-3 OF-Estacionhover">
+                            <div class="card border border-light h-100">
+                                <div class="card-body pb-1">
+                                    <h4 class="card-title mb-1">Suministro</h4>
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="text-700" id="text-suministro-date"></h6>
+                                        </div>
+                                        <h4>
+                                            <span class=" badge-top badge badge-phoenix badge-phoenix-primary rounded-pill fs--1 ms-2">
+                                                <span class="badge-label" id="text-suministro-CantidadCompletada"></span>
+                                            </span>
+                                        </h4>
+                                    </div>
+                                    <div class="gauge-container border-bottom">
+                                        <div class="gauge-wrapper">
+                                            <svg viewBox="0 0 100 55" class="gauge">
+                                                <path class="gauge-bg" d="M10,45 A40,40 0 0,1 90,45" />
+                                                <path id="progress_suministro" class="gauge-fill" d="M10,45 A40,40 0 0,1 90,45" />
+                                            </svg>
+                                            <div class="percentage-label" id="text-suministro">0%</div>
+                                        </div>
+                                        <div class="mt-2">
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="bullet-item bg-primary me-2"></div>
+                                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">Inicio</h6>
+                                            <h6 class="text-900 fw-semi-bold mb-0" id="text-suministro-FechaInicio"></h6>
+                                            </div>
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="bullet-item bg-primary-100 me-2"></div>
+                                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">Fin</h6>
+                                            <h6 class="text-900 fw-semi-bold mb-0" id="text-suministro-FechaFin"></h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2" id="UsuariosNombre_Suministro">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 mb-3 OF-Estacionhover">
+                            <div class="card border border-light h-100">
+                                <div class="card-body pb-1">
+                                    <h4 class="card-title mb-1">Asignaci&oacute;n</h4>
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="text-700" id="text-asignacion-date"></h6>
+                                        </div>
+                                        <h4>
+                                            <span class=" badge-top badge badge-phoenix badge-phoenix-primary rounded-pill fs--1 ms-2">
+                                                <span class="badge-label" id="text-asignacion-CantidadCompletada"></span>
+                                            </span>
+                                        </h4>
+                                    </div>
+                                    <div class="gauge-container border-bottom">
+                                        <div class="gauge-wrapper">
+                                            <svg viewBox="0 0 100 55" class="gauge">
+                                                <path class="gauge-bg" d="M10,45 A40,40 0 0,1 90,45" />
+                                                <path id="progress_asignacion" class="gauge-fill" d="M10,45 A40,40 0 0,1 90,45" />
+                                            </svg>
+                                            <div class="percentage-label" id="text-asignacion">0%</div>
+                                        </div>
+                                        <div class="mt-2">
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="bullet-item bg-primary me-2"></div>
+                                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">Inicio</h6>
+                                            <h6 class="text-900 fw-semi-bold mb-0" id="text-asignacion-FechaInicio"></h6>
+                                            </div>
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="bullet-item bg-primary-100 me-2"></div>
+                                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">Fin</h6>
+                                            <h6 class="text-900 fw-semi-bold mb-0" id="text-asignacion-FechaFin"></h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2" id="UsuariosNombre_Asignacion">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 mb-3 OF-Estacionhover">
+                            <div class="card border border-light h-100">
+                                <div class="card-body pb-1">
+                                    <h4 class="card-title mb-1">Empaque</h4>
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="text-700" id="text-empaque-date"></h6>
+                                        </div>
+                                        <h4>
+                                            <span class=" badge-top badge badge-phoenix badge-phoenix-primary rounded-pill fs--1 ms-2">
+                                                <span class="badge-label" id="text-empaque-CantidadCompletada"></span>
+                                            </span>
+                                        </h4>
+                                    </div>
+                                    <div class="gauge-container border-bottom">
+                                        <div class="gauge-wrapper">
+                                            <svg viewBox="0 0 100 55" class="gauge">
+                                                <path class="gauge-bg" d="M10,45 A40,40 0 0,1 90,45" />
+                                                <path id="progress_empaque" class="gauge-fill" d="M10,45 A40,40 0 0,1 90,45" />
+                                            </svg>
+                                            <div class="percentage-label" id="text-empaque">0%</div>
+                                        </div>
+                                        <div class="mt-2">
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="bullet-item bg-primary me-2"></div>
+                                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">Inicio</h6>
+                                            <h6 class="text-900 fw-semi-bold mb-0" id="text-empaque-FechaInicio"></h6>
+                                            </div>
+                                            <div class="d-flex align-items-center mb-2">
+                                            <div class="bullet-item bg-primary-100 me-2"></div>
+                                            <h6 class="text-900 fw-semi-bold flex-1 mb-0">Fin</h6>
+                                            <h6 class="text-900 fw-semi-bold mb-0" id="text-empaque-FechaFin"></h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2" id="UsuariosNombre_Empaque">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -318,515 +419,423 @@
 @endsection
 @section('scripts')
     <!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>   
-    //cargar los datos de fabricacion
-    let currentStageOpen = null; // <- para rastrear la etapa activa
-    function cambiarEstatus(estado) {
-        const estatusElement = document.getElementById('Estatus');
-  
-        if (estado === 'abierto') {
-            estatusElement.classList.add('open');
-            estatusElement.classList.remove('closed');
-            estatusElement.textContent = 'Abierto';
-        } else {
-            estatusElement.classList.add('closed');
-            estatusElement.classList.remove('open');
-            estatusElement.textContent = 'Cerrado';
-        }
-    }
-</script>
-<script>
-    //Scripts utiles
-    $('#Btn-BuscarOrden').on('click', function () {
-        var NumeroOrden = $('#NumeroOrden').val().trim();
-        if (NumeroOrden === '') {
-            return;  
-        }
-        $('#NumeroOrden').val(NumeroOrden).trigger('input');
-    });
-    AjaxOrden = null;
-    $('#TipoOrden1').on('change', function() {
-        $('#ListaBusquedas').html('');
-        $('#ListaBusquedas').hide();
-    });
-    $('#TipoOrden2').on('change', function() {
-        $('#ListaBusquedas').html('');
-        $('#ListaBusquedas').hide();
-    });
-    $('#NumeroOrden').on('input', function() {
-        NumeroOrden = $('#NumeroOrden').val();
-         if (AjaxOrden && typeof AjaxOrden.abort === 'function') {
-            AjaxOrden.abort();
-        }
-        if (AjaxOrden && AjaxOrden.readyState !== 4) {
-                AjaxOrden.abort();
-                console.log("Petición anterior cancelada");
+    <script src="{{asset('js/jquery-3.6.0.min.js')}}"></script>
+    <script src="{{asset('menu2/vendors/echarts/echarts.min.js')}}"></script>
+    <script>   
+        //cargar los datos de fabricacion
+        let currentStageOpen = null; // <- para rastrear la etapa activa
+        function cambiarEstatus(estado) {
+            const estatusElement = document.getElementById('Estatus');
+    
+            if (estado === 'abierto') {
+                estatusElement.classList.add('open');
+                estatusElement.classList.remove('closed');
+                estatusElement.textContent = 'Abierto';
+            } else {
+                estatusElement.classList.add('closed');
+                estatusElement.classList.remove('open');
+                estatusElement.textContent = 'Cerrado';
             }
-        if(NumeroOrden.length<3){
+        }
+        //Trae una lista al buscar un numero de orden
+        $('#Btn-BuscarOrden').on('click', function () {
+            var NumeroOrden = $('#NumeroOrden').val().trim();
+            if (NumeroOrden === '') {
+                return;  
+            }
+            $('#NumeroOrden').val(NumeroOrden).trigger('input');
+        });
+        AjaxOrden = null;
+        //Esconde la lista y borra el numero escrito de la OV al cambiar
+        $('#TipoOrden').on('change', function(){
             $('#ListaBusquedas').html('');
-            $('#ListaBusquedas').hide();
-            return 0;
-        }
-        OrdenVenta = $('#TipoOrden1').is(':checked');
-        OrdenFabricacion = $('#TipoOrden2').is(':checked');
-        TipoOrden = "OF";
-        if(OrdenVenta == true){
-            TipoOrden = "OV";
-        }
-        AjaxOrden = $.ajax({
-            url: '{{ route("TipoOrden") }}',
-            type: 'POST',
-            data: { 
-                NumeroOrden:NumeroOrden,
-                TipoOrden:TipoOrden,
-            },
-            success: function (response) {
-                $('#ListaBusquedas').html(response);
-                if(response!=""){
-                    $('#ListaBusquedas').show();
+            $('#ListaBusquedas').hide(); 
+            $('#NumeroOrden').val(''); 
+        })
+        //Al escribir en el input de busqueda, va trayendo las OF u OV
+        $('#NumeroOrden').on('input', function() {
+            NumeroOrden = $('#NumeroOrden').val();
+            if (AjaxOrden && typeof AjaxOrden.abort === 'function') {
+                AjaxOrden.abort();
+            }
+            if (AjaxOrden && AjaxOrden.readyState !== 4) {
+                    AjaxOrden.abort();
+                    console.log("Petición anterior cancelada");
                 }
-            },
-            error: function () {
-                //alert('Error al obtener los datos de la venta.');
+            if(NumeroOrden.length<3){
+                $('#ListaBusquedas').html('');
+                $('#ListaBusquedas').hide();
+                return 0;
+            }
+            TipoOrden = $('#TipoOrden').val();
+            AjaxOrden = $.ajax({
+                url: '{{ route("TipoOrden") }}',
+                type: 'POST',
+                data: { 
+                    NumeroOrden:NumeroOrden,
+                    TipoOrden:TipoOrden,
+                },
+                success: function (response) {
+                    $('#ListaBusquedas').html(response);
+                    if(response!=""){
+                        $('#ListaBusquedas').show();
+                    }
+                },
+                error: function () {
+                    //alert('Error al obtener los datos de la venta.');
+                }
+            });
+        });
+        function SeleccionarNumOrden(NumeroOrden,Tipo){
+            if(Tipo == 'OF'){
+                $('#NumeroOrden').val(NumeroOrden);
+            }
+            $('#ListaBusquedas').hide();
+            $('.ver-fabricacion').trigger('click');
+            if(Tipo == 'OF'){
+                $('#DetallesOrdenVenta').hide();
+            }
+            $('#DetallesOrdenFabricacion').hide();
+            OrdenVenta = $('#TipoOrden').val();
+            DetallesOrdenFabricacion_Detalles =$('#DetallesOrdenFabricacion_Detalles');
+            DetallesOrdenFabricacion_Detalles.css('display','none');
+            if(OrdenVenta == 'OV' && Tipo=='OF'){
+                //Variables
+                OV_= $('#OV_');
+                OV_cliente = $('#OV_cliente');
+                OV_EstatusFabricacion = $('#OV_EstatusFabricacion');
+                OV_tbody = $('#OV_tbody');
+                //Limpiar Variables
+                OV_.html('');
+                OV_cliente.html('');
+                OV_EstatusFabricacion.html('');
+                OV_tbody.html('');
+                $.ajax({
+                    url: '{{ route("Detalles.OrdenVenta") }}',
+                    type: 'GET',
+                    data: { id: NumeroOrden },
+                    success: function (response) {
+                        if(response.Estatus != "error"){
+                            //Generales OV
+                            OV_.html("OV "+response.OV);
+                            OV_cliente.html("Cliente "+ response.OV_Cliente);
+                            OV_EstatusFabricacion.html(response.OV_Estatus);
+                            (response.OV_Estatus=='Cerrada')?OV_EstatusFabricacion.removeClass('bg-success'):OV_EstatusFabricacion.removeClass('bg-danger');
+                            (response.OV_Estatus=='Cerrada')?OV_EstatusFabricacion.addClass('bg-danger'):OV_EstatusFabricacion.addClass('bg-success');
+                            OrdenesFabricacion = "";
+                            (response.OV_Arr).forEach(OF => {
+                                OrdenesFabricacion += `<tr class="tr_OF">
+                                        <td class="text-center fw-black p-1"><button class="btn btn-sm btn-soft-secondary me-1 mb-1 btn-OF" type="button" onclick="SeleccionarNumOrden(${OF.OF},'OV')">${OF.OF}</button></td>
+                                        <td class="text-center p-1" style="font-size: 0.80rem;">${OF.OF_Articulo}</td>
+                                        <td class="text-center p-1" style="font-size: 0.80rem;">${OF.OF_Descripcion}</td>
+                                        <td class="text-center p-1" style="font-size: 0.80rem;">${OF.OF_FechaEntregaSAP}</td>
+                                        <td class="p-1"><span class="badge rounded-pill">${(OF.OF_Cerrada==1)?'<span class="badge bg-success">Abierta</span>':'<span class="badge bg-danger" id="OV_EstatusFabricacion">Cerrada</span>'}</span></td>
+                                        <td class="text-center p-1">
+                                            <div class="d-flex justify-content-between mb-1 mx-4">
+                                                <small><span>${OF.OF_CantidadActual}</span>/<span>${OF.OF_CantidadTotal}</span></small>
+                                                <small class="fw-bold">${OF.OF_ProgresoTotal}%</small>
+                                            </div>
+                                            <div class="progress mx-2" style="height:10px">
+                                                <div class="progress-bar bg-info" style="width: ${OF.OF_ProgresoTotal}%"></div>
+                                            </div>
+                                        </td>
+                                    </tr>`;    
+                            });
+                            OV_tbody.html(OrdenesFabricacion);
+                            $('#DetallesOrdenVenta').show();
+                        }else{
+                            error("Error Orden de Venta "+NumeroOrden, response.message);
+                        }
+                    },
+                    error: function () {
+                        errorBD();
+                    }
+                }); 
+            }else{
+                var ordenfabricacion = NumeroOrden;
+                //Variables
+                if(Tipo=='OF'){
+                    ordenfabricacion = $('#NumeroOrden').val();
+                    DetallesOrdenFabricacion_Detalles.css('display','')
+                }
+                //Nuevas variables
+                var OF_CantidadActual_PorcentajeProgress = $('#OF_CantidadActual_PorcentajeProgress')
+                var OF_CantidadActual = $('#OF_CantidadActual')
+                var OF_CantidadActual_Porcentaje = $('#OF_CantidadActual_Porcentaje')
+                var OF_CantidadTotal = $('#OF_CantidadTotal')
+                var OF_Prioridad = $('#OF_Prioridad')
+                var OF_EstatusFabricacion = $('#OF_EstatusFabricacion')
+                var OF_OrdenVenta = $('#OF_OrdenVenta')
+                var OF_NombreCliente = $('#OF_NombreCliente')
+                var OF_ordenFabricacionNumero = $('#OF_ordenFabricacionNumero')
+                var OF_TiempoTotal = $('#OF_TiempoTotal')
+                var OF_NoCorte = $('#OF_NoCorte');
+                var UsuariosNombre_Corte = $('#UsuariosNombre_Corte')
+                var UsuariosNombre_Suministro = $('#UsuariosNombre_Suministro')
+                var UsuariosNombre_Asignacion = $('#UsuariosNombre_Asignacion')
+                var UsuariosNombre_Empaque = $('#UsuariosNombre_Empaque')
+                OF_Descripcion = $('#OF_Descripcion')
+                OF_FechaEntrega = $('#OF_FechaEntrega')
+                OF_FechaFin = $('#OF_FechaFin')
+                //Planeacion
+                    var OF_text_planeacion_date = $('#text-planeacion-date');
+                    var OF_text_planeacion_CantidadCompletada = $('#text-planeacion-CantidadCompletada');
+                    var OF_text_planeacion_FechaInicio = $('#text-planeacion-FechaInicio');
+                //Corte
+                    var OF_text_corte_date = $('#text-corte-date');
+                    var OF_text_corte_CantidadCompletada = $('#text-corte-CantidadCompletada');
+                    var OF_text_corte_FechaInicio = $('#text-corte-FechaInicio');
+                    var OF_text_corte_FechaFin = $('#text-corte-FechaFin');
+                //Suministro
+                    var OF_text_suministro_date = $('#text-suministro-date');
+                    var OF_text_suministro_CantidadCompletada = $('#text-suministro-CantidadCompletada');
+                    var OF_text_suministro_FechaInicio = $('#text-suministro-FechaInicio');
+                    var OF_text_suministro_FechaFin = $('#text-suministro-FechaFin');
+                //Asignacion
+                    var OF_text_asignacion_date = $('#text-asignacion-date');
+                    var OF_text_asignacion_CantidadCompletada = $('#text-asignacion-CantidadCompletada');
+                    var OF_text_asignacion_FechaInicio = $('#text-asignacion-FechaInicio');
+                    var OF_text_asignacion_FechaFin = $('#text-asignacion-FechaFin');
+                //Empaque
+                    var OF_text_empaque_date = $('#text-empaque-date');
+                    var OF_text_empaque_CantidadCompletada = $('#text-empaque-CantidadCompletada');
+                    var OF_text_empaque_FechaInicio = $('#text-empaque-FechaInicio');
+                    var OF_text_empaque_FechaFin = $('#text-empaque-FechaFin');
+
+                //Limpiar campos nuevos
+                    OF_CantidadActual_PorcentajeProgress.css('width',"0%");;
+                    OF_CantidadActual.html('');
+                    OF_CantidadActual_Porcentaje.html('');
+                    OF_CantidadTotal.html('');
+                    OF_Prioridad.html('');
+                    OF_Prioridad.css('color','')
+                    OF_Prioridad.css('background','#fff')
+                    OF_OrdenVenta.html('');
+                    OF_NombreCliente.html('');
+                    OF_ordenFabricacionNumero.html('');
+                    OF_EstatusFabricacion.html('');
+                    OF_TiempoTotal.html('');
+                    OF_NoCorte.css('display','none')
+                    UsuariosNombre_Corte.html();
+                    UsuariosNombre_Suministro.html('');
+                    UsuariosNombre_Asignacion.html('');
+                    UsuariosNombre_Empaque.html('');
+                    OF_Descripcion.html('');
+                    OF_FechaEntrega.html('');
+                    OF_FechaFin.html('');
+                //Planeacion
+                    OF_text_planeacion_date.html('');
+                    OF_text_planeacion_CantidadCompletada.html('');
+                    OF_text_planeacion_FechaInicio.html('');
+                //Corte
+                    OF_text_corte_date.html('');
+                    OF_text_corte_CantidadCompletada.html('');
+                    OF_text_corte_FechaInicio.html('');
+                    OF_text_corte_FechaFin.html('');
+                //Suministro
+                    OF_text_suministro_date.html('');
+                    OF_text_suministro_CantidadCompletada.html('');;
+                    OF_text_suministro_FechaInicio.html('');
+                    OF_text_suministro_FechaFin.html('');
+                //Asignacion
+                    OF_text_asignacion_date.html('');
+                    OF_text_asignacion_CantidadCompletada.html('');
+                    OF_text_asignacion_FechaInicio.html('');
+                //Empaque
+                    OF_text_empaque_date.html('');
+                    OF_text_empaque_CantidadCompletada.html('');
+                    OF_text_empaque_FechaInicio.html('');
+                    OF_text_empaque_FechaFin.html('');
+                    OF_text_asignacion_FechaFin.html('');
+                Gauge(0,'progress_planeacion','text-planeacion')
+                Gauge(0,'progress_corte','text-corte')
+                Gauge(0,'progress_suministro','text-suministro')
+                Gauge(0,'progress_asignacion','text-asignacion')
+                Gauge(0,'progress_empaque','text-empaque')
+                $.ajax({
+                    url: '{{ route("Detalles.Fabricacion") }}',
+                    type: 'GET',
+                    data: { id: ordenfabricacion },
+                    success: function (response) {
+                        var progressBar = $('#plemasProgressBar');
+                        if (response.Estatus !== 'Error') {
+                            OF_CantidadActual_PorcentajeProgress.css('width',response.ProgresoPorcentaje+"%");;
+                            OF_CantidadActual.html(response.ProgresoCantidad);
+                            OF_CantidadActual_Porcentaje.html(response.ProgresoPorcentaje+"%");
+                            OF_CantidadTotal.html(response.CantidadTotal);
+                            OF_Prioridad.html(response.Prioridad);
+                            OF_Prioridad.css('color',response.Prioridad_color);
+                            OF_Prioridad.css('background',response.Prioridad_background);
+                            OF_OrdenVenta.html(response.OV);
+                            OF_NombreCliente.html(response.Cliente);
+                            OF_ordenFabricacionNumero.html(response.OrdenFabricacion);
+                            OF_Descripcion.html(response.OF_descripcion);
+                            OF_FechaEntrega.html(response.OF_FechaEntrega);
+                            OF_FechaFin.html(response.OF_FechaFin);
+                            OF_EstatusFabricacion.html(response.Estatus);
+                            (response.Estatus=='Cerrada')?OF_EstatusFabricacion.removeClass('bg-success'):OF_EstatusFabricacion.removeClass('bg-danger');
+                            (response.Estatus=='Cerrada')?OF_EstatusFabricacion.addClass('bg-danger'):OF_EstatusFabricacion.addClass('bg-success');
+                            //Cantidad Completada
+                            OF_text_planeacion_CantidadCompletada.html(response.CantidadTotal+"/"+response.CantidadTotal);
+                            OF_text_corte_CantidadCompletada.html(response.PiezasActual_corte+"/"+response.CantidadTotal);
+                            OF_text_suministro_CantidadCompletada.html(response.PiezasActual_suministro+"/"+response.CantidadTotal);
+                            OF_text_asignacion_CantidadCompletada.html(response.PiezasActual_asignacion+"/"+response.CantidadTotal);
+                            OF_text_empaque_CantidadCompletada.html(response.PiezasActual_empaque+"/"+response.CantidadTotal);
+                            //Porcentaje
+                            Porcentaje_planeacion = 100;
+                            Porcentaje_corte = ((response.PiezasActual_corte/response.CantidadTotal)*100);
+                            Porcentaje_suministro = ((response.PiezasActual_suministro/response.CantidadTotal)*100);
+                            Porcentaje_asignacion = ((response.PiezasActual_asignacion/response.CantidadTotal)*100);
+                            Porcentaje_empaque = ((response.PiezasActual_empaque/response.CantidadTotal)*100);
+                            Gauge(Porcentaje_planeacion.toFixed(2) ,'progress_planeacion','text-planeacion')
+                            Gauge(Porcentaje_corte.toFixed(2) ,'progress_corte','text-corte')
+                            Gauge(Porcentaje_suministro.toFixed(2) ,'progress_suministro','text-suministro')
+                            Gauge(Porcentaje_asignacion.toFixed(2) ,'progress_asignacion','text-asignacion')
+                            Gauge(Porcentaje_empaque.toFixed(2) ,'progress_empaque','text-empaque')
+                            //Fecha Inicio
+                            FechaInicio_pla = response.FechaInicio_planeacion;
+                            FechaInicio_pla = (FechaInicio_pla === "") ? '--'  : FechaMexico(FechaInicio_pla);
+                            FechaInicio_corte = (response.FechaInicio_corte === "") ? '--'  : FechaMexico(response.FechaInicio_corte);
+                            FechaInicio_sum = (response.FechaInicio_suministro === "") ? '--'  : FechaMexico(response.FechaInicio_suministro);
+                            FechaInicio_asig = (response.FechaInicio_asignacion === "") ? '--'  : FechaMexico(response.FechaInicio_asignacion);
+                            FechaInicio_emp = (response.FechaInicio_empaque === "") ? '--'  : FechaMexico(response.FechaInicio_empaque);
+                            OF_text_planeacion_FechaInicio.html(FechaInicio_pla);
+                            OF_text_corte_FechaInicio.html(FechaInicio_corte);
+                            OF_text_suministro_FechaInicio.html(FechaInicio_sum);
+                            OF_text_asignacion_FechaInicio.html(FechaInicio_asig);
+                            OF_text_empaque_FechaInicio.html(FechaInicio_emp);
+                            //FechaFin
+                            FechaFin_corte = (response.FechaFin_corte === "") ? '--'  : FechaMexico(response.FechaFin_corte);
+                            FechaFin_sum = (response.FechaFin_suministro === "") ? '--'  : FechaMexico(response.FechaFin_suministro);
+                            FechaFin_asig = (response.FechaFin_asignacion === "") ? '--'  : FechaMexico(response.FechaFin_asignacion);
+                            FechaFin_emp = (response.FechaFin_empaque === "") ? '--'  : FechaMexico(response.FechaFin_empaque);
+                            OF_text_corte_FechaFin.html(FechaFin_corte);
+                            OF_text_suministro_FechaFin.html(FechaFin_sum);
+                            OF_text_asignacion_FechaFin.html(FechaFin_asig);
+                            OF_text_empaque_FechaFin.html(FechaFin_emp);
+                            //TiempoTranscurrido
+                            OF_text_corte_date.html(response.TiempoTotal_corte);
+                            OF_text_suministro_date.html(response.TiempoTotal_suministro);
+                            OF_text_asignacion_date.html(response.TiempoTotal_asignacion);
+                            OF_text_empaque_date.html(response.TiempoTotal_empaque);
+                            OF_TiempoTotal.html(response.TiempoTotalOrden);
+                            //Si no requiere corte aplica esto
+                            if(response.RequiereCorte == 0){
+                                Gauge(0 ,'progress_corte','text-corte');
+                                OF_text_corte_date.html('');
+                                OF_text_corte_FechaFin.html('');
+                                OF_text_corte_FechaInicio.html('');
+                                OF_NoCorte.css('display','');
+                            }
+                            UsuariosNombre_C = ``;
+                            UsuariosNombre_S = ``;
+                            UsuariosNombre_A = ``;
+                            UsuariosNombre_E = ``;
+                            if(response.RequiereCorte==1){
+                                (response.UsuariosEstaciones.Corte).forEach(usuario => {
+                                    UsuariosNombre_C += `<div class="d-flex align-items-center bg-soft rounded-pill mb-1" title="${usuario}">
+                                                        <span class="uil uil-user me-2"></span>
+                                                        <p class="text-800 fw-bold fs--1 mb-0 text-capitalize" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${usuario}</p>
+                                                        </div>`
+                                });
+                            }
+                            (response.UsuariosEstaciones.Suministro).forEach(usuario => {
+                                UsuariosNombre_S += `<div class="d-flex align-items-center bg-soft rounded-pill mb-1" title="${usuario}">
+                                                    <span class="uil uil-user me-2"></span>
+                                                    <p class="text-800 fw-bold fs--1 mb-0 text-capitalize" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${usuario}</p>
+                                                    </div>`
+                            });
+                            (response.UsuariosEstaciones.Asignacion).forEach(usuario => {
+                                UsuariosNombre_A += `<div class="d-flex align-items-center bg-soft rounded-pill mb-1" title="${usuario}">
+                                                    <span class="uil uil-user me-2"></span>
+                                                    <p class="text-800 fw-bold fs--1 mb-0 text-capitalize" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${usuario}</p>
+                                                    </div>`
+                            });
+                            (response.UsuariosEstaciones.Empaque).forEach(usuario => {
+                                UsuariosNombre_E += `<div class="d-flex align-items-center bg-soft rounded-pill mb-1" title="${usuario}">
+                                                    <span class="uil uil-user me-2"></span>
+                                                    <p class="text-800 fw-bold fs--1 mb-0 text-capitalize" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${usuario}</p>
+                                                    </div>`
+                            });
+                            UsuariosNombre_Corte.html(UsuariosNombre_C);
+                            UsuariosNombre_Suministro.html(UsuariosNombre_S);
+                            UsuariosNombre_Asignacion.html(UsuariosNombre_A);
+                            UsuariosNombre_Empaque.html(UsuariosNombre_E);
+                            $('#DetallesOrdenFabricacion').fadeIn();
+                        } else {
+                            error('Error de la Orden de Fabricación',response.Message);
+                        }
+                    },
+                    error: function () {
+                        errorBD();
+                    }
+                });  
+            }
+        }
+        function ColorAleatorio() {
+            const letras = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letras[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+        function Gauge(Porcentaje,Nombre_id,PorcentajeCantidad){
+            const porcentajeObjetivo = Porcentaje; 
+            let ColorProgress="";
+            if(Porcentaje<25){
+                ColorProgress = ' #D32F2F ';
+            }
+            if(Porcentaje>=25 && Porcentaje<50){
+                ColorProgress = ' #FF7043 '; 
+            }
+            if(Porcentaje>=50 && Porcentaje<75){
+                ColorProgress = ' #FFEB3B ';
+            }
+            if(Porcentaje>=75 && Porcentaje<=100){
+                ColorProgress = ' #38f41a ';
+            }
+            const largoMaximo = 126;
+            const offset = largoMaximo - (porcentajeObjetivo / 100 * largoMaximo);
+            $('#'+Nombre_id).css('stroke',ColorProgress);
+            setTimeout(function() {
+                $('#'+Nombre_id).css('stroke-dashoffset', offset);
+            }, 300);
+            $({ countNum: 0 }).animate({ countNum: porcentajeObjetivo }, {
+                duration: 1500,
+                easing: 'swing',
+                step: function() {
+                    $('#'+PorcentajeCantidad).text(Math.ceil(this.countNum) + "%");
+                },
+                complete: function() {
+                    $('#'+PorcentajeCantidad).text(porcentajeObjetivo + "%");
+                }
+            });
+        }
+        function FechaMexico(fechaISO) {
+            const fecha = new Date(fechaISO);
+            const opciones = {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            };
+            return fecha.toLocaleString('es-MX', opciones).replace(',', '');
+        }
+        document.addEventListener('click', function(e) {
+            tr_OF = document.querySelectorAll('.tr_OF');
+            tr_OF.forEach(tr => {
+                tr.classList.remove('bg-300');
+            });
+            // Verificar si el clic fue en un botón con la clase 'btn-accion'
+            if (e.target && e.target.classList.contains('btn-OF')) {
+                // Encontrar el <tr> más cercano al botón clickeado
+                let fila = e.target.closest('tr');
+                // Alternar la clase CSS para pintar/despintar
+                fila.classList.add('bg-300');
             }
         });
-    });
-    function SeleccionarNumOrden(NumeroOrden){
-        $('#NumeroOrden').val(NumeroOrden);
-        $('#ListaBusquedas').hide();
-        $('.ver-fabricacion').trigger('click');
-        $('#DetallesOrdenVenta').hide();
-        $('#DetallesOrdenFabricacion').hide();
-        OrdenVenta = $('#TipoOrden1').is(':checked');
-        OrdenFabricacion = $('#TipoOrden2').is(':checked');
-        if(OrdenVenta == true){
-            OVNumero = document.getElementById('OVNumero');
-            OVEstatus  = document.getElementById('OVEstatus');
-            OVNombreCliente = document.getElementById('OVNombreCliente');
-            OVBloque0porciento = document.getElementById('OVBloque0porciento');
-            OVBarrraProgreso = document.getElementById('OVBarrraProgreso');
-            OrdenesCompletadasbody = document.getElementById('OrdenesCompletadas-body');
-            OrdenesCompletadasbody.innerHTML = "";
-            OVNumero.innerHTML = NumeroOrden;
-            $.ajax({
-                url: '{{ route("Detalles.OrdenVenta") }}',
-                type: 'GET',
-                data: { id: NumeroOrden },
-                success: function (response) {
-                    if(response.Estatus != "error"){
-                        OVNombreCliente.innerHTML = response.Cliente;
-                        OVNumero.innerHTML = response.OV;
-                        if (response.OVEstatus != "") {
-                            var estadoFabricacion = response.OVEstatus || 'Desconocido';
-                            var $estatusElem = $('#OVEstatus');
-                            var icono = '';
-                            $estatusElem.removeClass('bg-success bg-danger bg-secondary').addClass('badge');
-                            if (estadoFabricacion === 'Abierta') {
-                                $estatusElem.removeClass('bg-danger bg-secondary').addClass('bg-success');
-                                icono = '<i class="fas fa-lock-open"></i>';  // Ícono de "Abierta"
-                                $estatusElem.html(icono + ' Abierta');
-                            } else if (estadoFabricacion === 'Cerrada') {
-                                $estatusElem.removeClass('bg-success bg-secondary').addClass('bg-danger');
-                                icono = '<i class="fas fa-lock"></i>';  // Ícono de "Cerrada"
-                                $estatusElem.html(icono + ' Cerrada');
-                                console.log('Estado: Cerrada, Clases: bg-danger');
-                            } else {
-                                $estatusElem.removeClass('bg-success bg-danger').addClass('bg-secondary');
-                                icono = '<i class="fas fa-question-circle"></i>';  // Ícono de "Desconocido"
-                                $estatusElem.html(icono + ' Estado desconocido');
-                            }
-                        }
-                        var progreso = response.progreso;
-                        if(progreso == 0){
-                            $('#OVBloque0porciento').show();
-                        }else{
-                            $('#OVBloque0porciento').hide();
-                        }
-                        var OVprogressBar = $('#OVBarrraProgreso');
-                        OVprogressBar.css('width', progreso + '%').text(progreso + '%');
-                        OVprogressBar.removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
-                        // Asignar color según el porcentaje
-                        if (progreso >= 0 && progreso < 20) {
-                            OVprogressBar.addClass('bg-danger');  // Rojo
-                        } else if (progreso >= 20 && progreso < 40) {
-                            OVprogressBar.addClass('bg-warning');  // Naranja
-                        } else if (progreso >= 40 && progreso < 70) {
-                            OVprogressBar.addClass('bg-primary');  // Azul
-                        } else if (progreso >= 70 && progreso < 90) {
-                            OVprogressBar.addClass('bg-info');  // Celeste
-                        } else {
-                            OVprogressBar.addClass('bg-success');  // Verde
-                        }
-                        $('#DetallesOrdenVenta').fadeIn();
-                        InfoEstaciones = "";
-                        Trazabilidad = "";
-                        AcomodarLista = [];
-                        ListaCompleta = [];
-                        ListaAreas = [];
-                        Colores = [];
-                        MenuTrazabilidad = "";
-                        $NumeroOrdenes = 0;
-                        response.AreasDatos.forEach(([OrdenFabricacion,progreso, Areas]) => {
-                            clase = (progreso < 50) ? 'bg-warning' : 'bg-info';
-                            clase = (progreso>=50 && progreso <= 75) ? 'bg-info' : 'bg-success';
-                            InfoEstaciones += '<tr class="">'
-                                                +'<td class="text-start px-2"><span class=" fw-bold" style="font-size:1rem;">'+OrdenFabricacion+'</span></td>'
-                                                +'<td class="text-star">'
-                                                    +'<div class="progress" style="height: 22px; border-radius: 3px; overflow: hidden; width: 100%;">'
-                                                    +'<div id="OVBarrraProgreso" class="progress-bar text-white fw-bold progress-animated '+clase+'" role="progressbar" style="width: '+progreso+'%; transition: width 0.5s ease-in-out; font-size: 14px;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'+progreso+'%</div>'
-                                                +'</div></td>';
-                                            +'</tr>';
-                            AcomodarLista.push(...Areas.map(item => item.AP));
-                            ListaCompleta.push(Areas);
-                            ListaAreas.push(...Areas.map(item => item));
-                            $NumeroOrdenes++;
-                            Colores.push(ColorAleatorio());
-                        });
-                        AcomodarLista = [...new Set(AcomodarLista)];
-                        PorcentajeArea = "";
-                        AcomodarLista.forEach((IdArea,index) => {
-                            //PorcentajeArea = "";
-                            filtrado = ListaAreas.filter(item => item.AP === IdArea);
-                            color = "#01a524"
-                            icono = "fas fa-check";
-                            AcomodarLista.forEach((elemento,index) => {
-                                if(elemento.PorcentajeActual != 100){
-                                    color = "#ffc107"
-                                    icono = "fas fa-cogs";
-                                }
-                            });
-                            PorcentajeArea += '<div class="p-2 d-flex flex-column justify-content-around">';
-                            ListaCompleta.forEach((registro) =>{
-                                RegistroBan = registro.filter(item => item.AP === IdArea);
-                                if(RegistroBan.length>0){
-                                    PorcentajeArea +='<div class="mb-2"><div class="progress" style="height: 22px; border-radius: 3px; overflow: hidden; width: 90%;"><div id="OVBarrraProgreso" class="progress-bar text-white fw-bold progress-animated bg-success" role="progressbar" style="width: '+RegistroBan[0].PorcentajeActual+'%; transition: width 0.5s ease-in-out; font-size: 14px;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'+RegistroBan[0].PorcentajeActual+'%</div>'
-                                                            +'</div></div>'
-                                }
-                                else{
-                                    PorcentajeArea +='<div class="mb-2"><div class="progress" style="height: 22px; border-radius: 3px; overflow: hidden; width: 90%;"><div id="OVBarrraProgreso" class="progress-bar text-dark fw-bold progress-animated bg-white" role="progressbar" style="width: 100%; transition: width 0.5s ease-in-out; font-size: 14px;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">No asignada</div>'
-                                                            +'</div></div>'
-                                }
-                            });
-                            PorcentajeArea += '</div>';
-                            MenuTrazabilidad += '<li class="nav-item" role="presentation">'
-                                                    +'<a class="nav-link fw-semi-bold" data-bs-toggle="tab" data-wizard-step="'+index+'">'
-                                                        +'<div class="text-center d-inline-block">'
-                                                            +'<span class="nav-item-circle-parent">'
-                                                                +'<span class="nav-item-circle" style="color: '+color+'; border-color:'+color+';">'
-                                                                    +'<span class="'+icono+'"></span>'
-                                                                +'</span>'
-                                                            +'</span>'
-                                                            +'<span class="d-none d-md-block mt-1 fs--1" style="color:'+color+'">'+filtrado[0].NombreArea+'</span>'
-                                                        +'</div>'
-                                                    +'</a>'
-                                                +'</li>';
-                        });
-                        /*AcomodarLista.forEach((item, index) => {
-                            response.AreasDatos.forEach(([OrdenFabricacion, progreso, Areas]) => {
-                            
-                        });*/
-                        //AcomodarLista.sort((a, b) => a - b); 
-                        /*
-                        alert(AcomodarLista);
-                            Areas.forEach((item, index) => {
-                                Trazabilidad = '';
-                                console.log(`AP: ${item.AP}`);
-                                console.log(`Porcentaje: ${item.PorcentajeActual}`);
-                                console.log(`Tiempo: ${item.TiempoOrdenes}`);
-                                console.log('----------------------');
-                            });
-                        */
-                        document.getElementById('MenuTrazabilidadBody').innerHTML = PorcentajeArea;
-                        document.getElementById('MenuTrazabilidad').innerHTML = MenuTrazabilidad;
-                        OrdenesCompletadasbody.innerHTML = InfoEstaciones;
-                    }else{
-                        error("Error Orden de Venta "+NumeroOrden, response.message);
-                    }
-                },
-                error: function () {
-                    OVNumero.innerHTML = "";
-                    OVEstatus.innerHTML = "";
-                    $('#OVBarrraProgreso').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
-                    /*var progressBar = $('#plemasProgressBar');
-                    TiempoDuracion.html("");
-                    progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
-                    $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
-                    $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');*/
-                    errorBD();
-                }
-            }); 
-        }else{
-            //Variables
-            var ordenfabricacion = $('#NumeroOrden').val();
-            var Bloque0porciento = $('#Bloque0porciento'); 
-            var TiempoDuracion = $('#TiempoDuracion');
-            var Produccion = $('#Produccion');
-            var TiempoTotal = $('#TiempoTotal');
-            var Muerto = $('#Muerto')
-            var plemasCanvases = $('#plemasCanvases');
-            var TiempoPromedio = $('#TiempoPromedio');
-            var OrdenVenta = $('#OrdenVenta');
-            var NombreCliente = $('#NombreCliente');
-            var BarraProgreso = $('#BarraProgreso')
-            
-            //Limppiar variables
-            BarraProgreso.html('');
-
-
-
-            OrdenVenta.html('');
-            NombreCliente.html('');
-            plemasCanvases.html('');
-            TiempoTotal.html('Tiempo Total')
-            Produccion.html('Tiempo Total');
-            Muerto.html('Tiempo Total');
-            CadenaTiempo="Aún no ha comenzado el proceso";
-            $.ajax({
-                url: '{{ route("Detalles.Fabricacion") }}',
-                type: 'GET',
-                data: { id: ordenfabricacion },
-                success: function (response) {
-                    var progressBar = $('#plemasProgressBar');
-                    if (response.Estatus !== 'Error') {
-                        BarraProgreso.html('<div class="progress-bar rounded-3" role="progressbar" style="width: '+response.progreso+'%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">'+response.progreso+'%</div>');
-           
-
-
-                        var progreso = response.progreso;
-                        if(progreso==0){
-                            Bloque0porciento.show();
-                        }else{
-                            Bloque0porciento.hide();
-                        }
-                        if(response.TiempoProductivo != 0){
-                            Produccion.html('Tiempo total<br>'+response.TiempoProductivo);
-                        }else{
-                            Produccion.html('El dato se verá reflejado cuando la orden sea finalizada');
-                        }
-                        if(response.TiempoTotal != 0){
-                            TiempoTotal.html('Tiempo total<br>'+response.TiempoTotal);
-                        }else{
-                            TiempoTotal.html('El dato se verá reflejado cuando la orden sea finalizada');
-                        }
-                        if(response.TiempoMuerto != 0){
-                            Muerto.html('Tiempo total<br>'+response.TiempoMuerto);
-                        }else{
-                            Muerto.html('El dato se verá reflejado cuando la orden sea finalizada');
-                        }
-                        if(!response.TiempoDuracion==0){
-                            CadenaTiempo="";
-                            if(response.TiempoDuracion.y!=0){CadenaTiempo+=response.TiempoDuracion.y+" Años "}
-                            if(response.TiempoDuracion.m!=0){CadenaTiempo+=response.TiempoDuracion.m+" Meses "}
-                            if(response.TiempoDuracion.d!=0){CadenaTiempo+=response.TiempoDuracion.d+" Días "}
-                            if(response.TiempoDuracion.h!=0){CadenaTiempo+=response.TiempoDuracion.h+" Horas "}
-                            if(response.TiempoDuracion.i!=0){CadenaTiempo+=response.TiempoDuracion.i+" Minutos "}
-                            if(response.TiempoDuracion.s!=0){CadenaTiempo+=response.TiempoDuracion.s+" Segundos"}
-                        }else{
-                            CadenaTiempo="El dato se verá reflejado cuando la orden sea finalizada";
-                        }
-                        if(!response.TiempoPromedioSeg==""){
-                            TiempoPromedio.html(response.TiempoPromedioSeg);
-                        }else{
-                            TiempoPromedio.html("El dato se verá reflejado cuando la orden sea finalizada");
-                        }
-                        //Orden Venta y Nombre Cliente
-                        OrdenVenta.html(response.OV);
-                        NombreCliente.html(response.Cliente);
-                        TiempoDuracion.html(CadenaTiempo);
-                        // Actualizar la barra de progreso con animación
-                        progressBar.css('width', progreso + '%').text(progreso + '%');
-                        progressBar.removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
-                        // Asignar color según el porcentaje
-                        if (progreso >= 0 && progreso < 20) {
-                            progressBar.addClass('bg-danger');  // Rojo
-                        } else if (progreso >= 20 && progreso < 40) {
-                            progressBar.addClass('bg-warning');  // Naranja
-                        } else if (progreso >= 40 && progreso < 70) {
-                            progressBar.addClass('bg-primary');  // Azul
-                        } else if (progreso >= 70 && progreso < 90) {
-                            progressBar.addClass('bg-info');  // Celeste
-                        } else {
-                            progressBar.addClass('bg-success');  // Verde
-                        }
-                        $('#ordenFabricacionNumero').removeClass('text-muted').text(ordenfabricacion);
-                        if (response.Estatus != "") {
-                            var estadoFabricacion = response.Estatus || 'Desconocido';
-                            var $estatusElem = $('#EstatusFabricacion');
-                            var icono = '';
-                            $estatusElem.removeClass('bg-success bg-danger bg-secondary').addClass('badge');
-                            if (estadoFabricacion === 'Abierta') {
-                                $estatusElem.removeClass('bg-danger bg-secondary').addClass('bg-success');
-                                icono = '<i class="fas fa-lock-open"></i>';  // Ícono de "Abierta"
-                                $estatusElem.html(icono + ' Abierta');
-                            } else if (estadoFabricacion === 'Cerrada') {
-                                $estatusElem.removeClass('bg-success bg-secondary').addClass('bg-danger');
-                                icono = '<i class="fas fa-lock"></i>';  // Ícono de "Cerrada"
-                                $estatusElem.html(icono + ' Cerrada');
-                                console.log('Estado: Cerrada, Clases: bg-danger');
-                            } else {
-                                $estatusElem.removeClass('bg-success bg-danger').addClass('bg-secondary');
-                                icono = '<i class="fas fa-question-circle"></i>';  // Ícono de "Desconocido"
-                                $estatusElem.html(icono + ' Estado desconocido');
-                            }
-                        }
-                        EstacionesGraficas ='';
-                        var ArrayPorcentajeGrafica = [];
-                        var ArrayNombrePorcentajeGrafica = [];
-                        if((response.Estaciones).length!=0){
-                            (response.Estaciones).forEach(area => {
-                                ColorProgress="";
-                                if(area.PorcentajeActual<25){
-                                    ColorProgress = ' #D32F2F ';
-                                }
-                                if(area.PorcentajeActual>=25 && area.PorcentajeActual<50){
-                                    ColorProgress = ' #FF7043 '; 
-                                }
-                                if(area.PorcentajeActual>=50 && area.PorcentajeActual<75){
-                                    ColorProgress = ' #FFEB3B ';
-                                }
-                                if(area.PorcentajeActual>=75 && area.PorcentajeActual<=100){
-                                    ColorProgress = ' #38f41a ';
-                                }
-                                if(area.AP != 1){
-                                    EstacionesGraficas+='<div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4  col-xxl-3 my-2 Estacion_Hover">'+
-                                                            '<div class="card rounded border-0 p-2" style="box-shadow: 3px 3px 3px 2px rgba(0.1, 0.1, 0.1, 0.2);">'+
-                                                                '<div class="card-header py-1" style="background:'+ColorProgress+';"><h5 class="text-center text-white">'+area.NombreArea+'</h5></div>'
-                                                                +'<div class="progress-container">'+
-                                                                    '<div class="progress-circle" style="background: conic-gradient('+ColorProgress+' 0% '+area.PorcentajeActual+'%, #e0e0e0 '+area.PorcentajeActual+'% 100%);">'+
-                                                                        '<div class="progress-Porcentaje"><h5>'+area.PorcentajeActual+'%</h5></div>'+   
-                                                                    '</div>'+
-                                                                '</div>';
-                                    if(response.RequiereCorte == 0 && area.NombreArea=='Corte'){
-                                        EstacionesGraficas+='<span class="badge bg-warning">No requiere Corte</span>';
-                                    }
-                                    EstacionesGraficas+='<small class="float-start"><span class="float-start">Piezas Normales:'+area.Normales+'</span><span class="float-end"> Piezas Retrabajo:'+area.Retrabajo+'</span></small><h6 class="text-center mt-2">Tiempos</h6><small>Duración: '+area.TiempoOrdenes+'</small><small>Productivo: '+area.TiempoProductivoEstacion+'</small>'+
-                                                            '</div>'+
-                                                        '</div>';
-                                    ArrayPorcentajeGrafica.push({ value: area.TiempoEstacionSegundos, name: area.NombreArea});
-                                    ArrayNombrePorcentajeGrafica.push(area.NombreArea);
-                                }
-                            });
-                        }else{
-                            EstacionesGraficas = '<h5 class="text-center">Aún no se asigna una Línea</h5>';
-                        }
-                        plemasCanvases.html(EstacionesGraficas);
-                    } else {
-                        TiempoDuracion.html("");
-                        error('Error de la Orden de Fabricación',response.Message);
-                        Bloque0porciento.show();
-                        progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
-                        $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
-                        $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
-                    }
-                    // Mostrar el modal
-                    $('#DetallesOrdenFabricacion').fadeIn();
-                    $('#AccordeFiltroOrdenBtn').trigger('click');
-                    //if((response.Estaciones).length!=0){
-                        var chart = echarts.init(document.getElementById('GraficaPorcentajeTiempos'));
-                        var option = {
-                            title: {
-                                text: 'Porcentaje de Tiempo por Estación',
-                                subtext: '% Tiempo en segundos',
-                                left: 'center'
-                            },
-                            tooltip: {
-                                trigger: 'item',
-                                formatter: function (params) {
-                                    var totalSeconds = params.value;
-                                    var hours = Math.floor(totalSeconds / 3600);
-                                    var minutes = Math.floor((totalSeconds % 3600) / 60);
-                                    var seconds = totalSeconds % 60;
-                                    var timeParts = [];
-                                    if (hours > 0) {
-                                        timeParts.push(`${hours}h`);
-                                        timeParts.push(`${minutes}m`);
-                                        timeParts.push(`${seconds}s`);
-                                    }
-                                    else if (minutes > 0){
-                                        timeParts.push(`${minutes}m`);
-                                        timeParts.push(`${seconds}s`);
-                                    }
-                                    else if (seconds > 0 || timeParts.length === 0) timeParts.push(`${seconds}s`);
-                                    return `${params.name}: (${timeParts.join(' ')})`;
-                                }
-                                /*formatter: '{b}: ({c} segundos)'*/
-                            },
-                            legend: {
-                                type: 'scroll',
-                                orient: 'vertical',
-                                left: '5%',
-                                top: 'middle',
-                                itemGap: 5,            // Más distancia entre entradas
-                                //bottom: 20,
-                                data: ArrayNombrePorcentajeGrafica
-                            },
-                            series: [
-                                {
-                                name: 'Tiempo en horas',
-                                type: 'pie',
-                                radius: ['25%', '40%'], 
-                                center: ['50%', '50%'],
-                                //avoidLabelOverlap: true,  // Previene superposición de etiquetas
-                                itemStyle: {
-                                    borderWidth: 1,         // Línea entre segmentos para separación visual
-                                    borderColor: '#fff'
-                                },
-                                label: {
-                                    //position: 'outside',    // Etiquetas afuera para mayor espacio
-                                    //alignTo: 'labelLine',
-                                    formatter: '{b}: {d}%', 
-                                    //distance: 1            // Distancia desde el gráfico
-                                },
-                                labelLine: {
-                                    smooth: false,
-                                    length: 20              // Longitud de línea guía
-                                },
-                                data: ArrayPorcentajeGrafica,
-                                    emphasis: {
-                                        itemStyle: {
-                                        shadowBlur: 10,
-                                        shadowOffsetX: 0,
-                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
-                                        }
-                                    }
-                                }
-                            ]
-                        };
-                        if((response.Estaciones).length==0){
-                            chart.setOption(option);
-                            $('#ContainerGraficaPorcentajeTiempos').hide();
-                        }else{
-                            $('#ContainerGraficaPorcentajeTiempos').show();
-                        }
-                    // Establecer la opción y renderizar el gráfico
-                    chart.setOption(option);
-                    //$('#example2Modal').on('shown.bs.modal', function () {
-                    chart.resize();
-                    //});
-                    // Hacer que el gráfico sea responsivo al cambiar el tamaño de la ventana
-                    window.addEventListener('resize', function() {
-                    chart.resize();
-                    });//--}}
-                },
-                error: function () {
-                    var progressBar = $('#plemasProgressBar');
-                    TiempoDuracion.html("");
-                    progressBar.css('width', '0%').text('0%').removeClass('bg-danger bg-warning bg-info bg-success bg-primary');
-                    $('#ordenFabricacionNumero').removeClass('text-info').addClass('text-muted').text(ordenfabricacion);
-                    $('#EstatusFabricacion').removeClass('bg-success bg-danger bg-secondary').text('Sin datos');
-                    errorBD();
-                }
-            });  
-        }
-    }
-    function ColorAleatorio() {
-        const letras = '0123456789ABCDEF';
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += letras[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
-</script>
+    </script>
 @endsection

@@ -90,7 +90,7 @@
     <div class="col-12 col-sm-10 p-2 " > 
         @if($Avisos->count()==0)
             <div class="col-12 position-relative">   
-                <img class="d-block mx-auto" src="{{asset('imagenes/TOR_OPT.png') }}" style="width: 15rem">
+                <img class="d-block mx-auto" src="{{asset('imagenes/TOR_OPT.png') }}" style="width: 30rem">
             </div>
             <h3 class="text-center text-muted mt-2">¡Te damos la bienvenida! </h3>
             <h4 class="text-center text-dark text-uppercase">{{$user->name}} {{$user->apellido}}</h4>          

@@ -30,7 +30,7 @@ class PartidasOF extends Model
     public function Areas()
     {
         return $this->belongsToMany(Areas::class,'PartidasOF_Areas','PartidasOF_id','Areas_id')
-        ->withPivot('Prioridad','FechaComienzo', 'FechaTermina', 'Areas_id', 'Linea_id','Cantidad','id','TipoPartida','NumeroEtiqueta','NumeroBloque','CerrarBloque');
+        ->withPivot('Prioridad','FechaComienzo','Users_id', 'FechaTermina', 'Areas_id', 'Linea_id','Cantidad','id','TipoPartida','NumeroEtiqueta','NumeroBloque','CerrarBloque');
     }
     public function Partidas()
     {

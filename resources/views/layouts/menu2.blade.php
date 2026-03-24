@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es-MX" dir="ltr">
     <head>
+        <meta name="robots" content="noindex, nofollow">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
@@ -559,13 +560,13 @@
                                 
                             <div class="overflow-auto scrollbar" style="height: 5rem;">
                                 <ul class="nav d-flex flex-column mb-2 pb-1">
+                                    <li class="nav-item"><a class="nav-link px-3" id="fullscreen-btn"><i class="me-2 text-900 fas fa-expand"></i>Pantalla Completa</a></li>
                                     <li class="nav-item"><a class="nav-link px-3" href="{{route('index.perfil')}}"> <span class="me-2 text-900" data-feather="user"></span><span>Perfil</span></a></li>
                                     <li class="nav-item"><a class="nav-link px-3" href="{{route('Home')}}"><span class="me-2 text-900" data-feather="pie-chart"></span>Dashboard</a></li>
                                 </ul>
                             </div>
-                            <div class="card-footer p-0 border-top">
+                            <div class="card-footer px-0 py-2 border border-200">
                                 <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" href="{{route('logout')}}"> <span class="me-2" data-feather="log-out"> </span>Cerrar sesi&oacute;n</a></div>
-                                
                             </div>
                             </div>
                         </div>
@@ -941,7 +942,19 @@
             function login() {
                 localStorage.setItem('userLoggedIn', 'true');
             }
+            document.getElementById('fullscreen-btn').addEventListener('click', function() {
+                if (!document.fullscreenElement) {
+                    // Entrar en modo pantalla completa
+                    document.documentElement.requestFullscreen().catch(err => {
+                        alert(`Error al intentar modo pantalla completa: ${err.message}`);
+                    });
+                } else {
+                    // Salir del modo pantalla completa
+                    document.exitFullscreen();
+                }
+            });
         </script>
+        
 
         <!--LINKS A BORRAR-->
             <!--<script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
@@ -955,5 +968,4 @@
 
         @yield('scripts')
     </body>
-
 </html>

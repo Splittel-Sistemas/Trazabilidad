@@ -15,13 +15,14 @@ use App\Models\Role;
 use App\Models\Comentarios;
 use App\Models\Linea;
 use App\Models\Areas;
+use App\Models\OrdenFabricacionPrioridad;
 use App\Models\Partidasof_Areas;
 use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
 use Carbon\Carbon as CarbonClass;
-
+use DateTime;
 
 
 class BusquedaController extends Controller
@@ -29,13 +30,17 @@ class BusquedaController extends Controller
     protected $AreaMontaje;
     protected $AreaPulido;
     protected $ObjBusqueda;
+    protected $AreaEspecialCorte;
+    protected $AreaEspecialSuministro;
     protected $AreaEspecialEmpaque;
     protected $AreaEspecialAsignacion;
     public function __construct(){
         $this->AreaPulido=9;
         $this->AreaMontaje=16;
+        $this->AreaEspecialCorte = 2;//Corte
+        $this->AreaEspecialSuministro = 3;//Suministro
         $this->AreaEspecialEmpaque = 17;//Empaque
-        $this->AreaEspecialAsignacion = 18;//Empaque
+        $this->AreaEspecialAsignacion = 18;//Asignacion
     }
     //vista
     public function index(Request $request)
@@ -51,7 +56,7 @@ class BusquedaController extends Controller
         return redirect()->route('error');
     
     }
-    //Nuevos Metodos
+    //Lista dependiendo si es Orden de Fabricacion u orden de venta
     public function TipoOrden(Request $request){
         $NumeroOrden = $request->NumeroOrden;
         $TipoOrden = $request->TipoOrden;
@@ -59,26 +64,21 @@ class BusquedaController extends Controller
         $Lista = '';
         if($TipoOrden == 'OF'){
             $Ordenes = OrdenFabricacion::where('OrdenFabricacion', 'like', '%' . $NumeroOrden . '%')->orderBy('OrdenFabricacion', 'asc')->get();
-            /*if($Ordenes->count()==0){
-                $Lista ='<a class="list-group-item list-group-item-action p-1 m-0 disabled" style="background:#CDCECF">Sin resultados</a>';
-                return $Lista;
-            }
-            $Cliente = $Ordenes->first()->OrdenVenta->NombreCliente;*/
             foreach($Ordenes as $key=>$Orden){
                 $Cliente = $Orden->OrdenVenta->NombreCliente;
                 if($key==0){
-                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 active" data-cantidad="'.$Orden->CantidadTotal.'" onclick="SeleccionarNumOrden('.$Orden->OrdenFabricacion.')">'.$Orden->OrdenFabricacion."-". $Cliente.'</a>';
+                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 active" data-cantidad="'.$Orden->CantidadTotal.'" onclick="SeleccionarNumOrden('.$Orden->OrdenFabricacion.',\'OF\')">'.$Orden->OrdenFabricacion."-". $Cliente.'</a>';
                 }else{
-                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 " data-cantidad="'.$Orden->CantidadTotal.'" onclick="SeleccionarNumOrden('.$Orden->OrdenFabricacion.')">'.$Orden->OrdenFabricacion."-". $Cliente.'</a>';
+                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 " data-cantidad="'.$Orden->CantidadTotal.'" onclick="SeleccionarNumOrden('.$Orden->OrdenFabricacion.',\'OF\')">'.$Orden->OrdenFabricacion."-". $Cliente.'</a>';
                 }
             }
         }else{
             $Ordenes=OrdenVenta::where('OrdenVenta', 'like', '%' . $NumeroOrden . '%')->orderBy('OrdenVenta', 'asc')->get();
             foreach($Ordenes as $key=>$Orden){
                 if($key==0){
-                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 active" onclick="SeleccionarNumOrden('.$Orden->OrdenVenta.')">'.$Orden->OrdenVenta."-".$Orden->NombreCliente.'</a>';
+                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 active" onclick="SeleccionarNumOrden('.$Orden->OrdenVenta.',\'OF\')">'.$Orden->OrdenVenta."-".$Orden->NombreCliente.'</a>';
                 }else{
-                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 " onclick="SeleccionarNumOrden('.$Orden->OrdenVenta.')">'.$Orden->OrdenVenta."-".$Orden->NombreCliente.'</a>';
+                    $Lista.='<a class="list-group-item list-group-item-action p-1 m-0 " onclick="SeleccionarNumOrden('.$Orden->OrdenVenta.',\'OF\')">'.$Orden->OrdenVenta."-".$Orden->NombreCliente.'</a>';
                 }
             }
         }
@@ -88,10 +88,674 @@ class BusquedaController extends Controller
         return $Lista;
 
     }
-    //End nuevos metodos
+    //detalles OF
+    public function DetallesOF(Request $request){
+        $OrdenFabricacion_num = $request->input('id');
+        $OrdenFabricacion = Ordenfabricacion::where('OrdenFabricacion',$OrdenFabricacion_num)->first();
+        if($OrdenFabricacion == ""){
+            return response()->json([
+                'Areas' => "",
+                'partidasAreas' => 0,
+                'progreso' => 0,
+                "Estatus" => "Error",
+                "Message" => "La orden de Fabricación no existe!"
+            ]);
+        }
+        //Info General
+            $OrdenVenta = $OrdenFabricacion->OrdenVenta;        
+            $RequiereCorte = $OrdenFabricacion->Corte;//0 es igual a si, 1 es a no
+            $Estatus = ($OrdenFabricacion->Cerrada == 1)?$estatus="Abierta":"Cerrada";
+            $ProgresoTotal = $this->Area_Actual($OrdenFabricacion_num,$this->AreaEspecialEmpaque);
+            $CantidadTotal = $OrdenFabricacion->CantidadTotal;
+            $ProgresoTotal = ($OrdenFabricacion->CantidadTotal != 0)?(100/$OrdenFabricacion->CantidadTotal)*$ProgresoTotal:0;
+            $ProgresoCantidad = $this->Area_Actual($OrdenFabricacion_num,$this->AreaEspecialEmpaque);
+            $Priorida = ($OrdenFabricacion->Urgencia == 'U')?'Urgente':'Normal';
+            $Priorida = ($OrdenFabricacion->status == 0)?'Detenida':$Priorida;
+            $OrdenFabricacion_Prioridad = OrdenFabricacionPrioridad::where('OrdenFabricacion_id',$OrdenFabricacion->id)->where('Prioridad',1)->first();
+            $Priorida = ($OrdenFabricacion_Prioridad == "")?$Priorida:'Prioridad';
+            $Priorida_Background = '#198754';
+            $Prioridad_color = 'white';
+            if($Priorida == 'Prioridad'){
+                $Priorida_Background = 'rgb(255, 128, 44)';
+                $Prioridad_color = 'white';
+            }else if($Priorida == 'Detenida'){
+                $Priorida_Background = 'rgb(252, 248, 139)';
+                $Prioridad_color = 'black';
+            }else if($Priorida == 'Urgente'){
+                $Priorida_Background = 'rgb(139, 224, 252)';
+                $Prioridad_color = 'black';
+            }
+        //Piezas
+            $PartidasOF = $OrdenFabricacion->PartidasOF->first();
+            $PiezasActual_corte = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialCorte)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-$PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialCorte)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
+            $PiezasActual_suministro = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialSuministro)->where('TipoPartida','N')->whereNotNull('FechaTermina')->get()->SUM('pivot.Cantidad')-$PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialSuministro)->where('TipoPartida','R')->whereNull('FechaTermina')->get()->SUM('pivot.Cantidad');
+            $PiezasActual_asignacion = $this->Area_Actual($OrdenFabricacion->OrdenFabricacion,$this->AreaEspecialAsignacion);
+            $PiezasActual_empaque = $this->Area_Actual($OrdenFabricacion->OrdenFabricacion,$this->AreaEspecialEmpaque);
+        //Fecha Inicio
+            $FechaInicio_planeacion = $OrdenFabricacion->created_at;
+            $FechaInicio_corte = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialCorte)->get();
+            $FechaInicio_corte = ($FechaInicio_corte->count() >0)?$FechaInicio_corte[0]['pivot']->FechaComienzo:"";
+
+            $FechaInicio_suministro = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialSuministro)->get();
+            $FechaInicio_suministro = ($FechaInicio_suministro->count() >0)?$FechaInicio_suministro[0]['pivot']->FechaComienzo:"";
+
+            $FechaInicio_asignacion = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialAsignacion)->get();
+            $FechaInicio_asignacion = ($FechaInicio_asignacion->count() >0)?$FechaInicio_asignacion[0]['pivot']->FechaComienzo:"";
+            
+            $FechaInicio_empaque = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialEmpaque)->get();
+            $FechaInicio_empaque = ($FechaInicio_empaque->count() >0)?$FechaInicio_empaque[0]['pivot']->FechaComienzo:"";
+        //FechaFin
+            $FechaFin_Corte = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialCorte)->whereNotNull('FechaTermina')->orderByPivot('FechaTermina', 'desc')->get();
+            $FechaFin_Corte = ($FechaFin_Corte->count() >0)?$FechaFin_Corte[0]['pivot']->FechaTermina:"";
+            $FechaFin_Corte = ($PiezasActual_corte>=$CantidadTotal)?$FechaFin_Corte:'';
+
+            $FechaFin_suministro = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialSuministro)->whereNotNull('FechaTermina')->orderByPivot('FechaTermina', 'desc')->get();
+            $FechaFin_suministro = ($FechaFin_suministro->count() >0)?$FechaFin_suministro[0]['pivot']->FechaTermina:"";
+            $FechaFin_suministro = ($PiezasActual_suministro>=$CantidadTotal)?$FechaFin_suministro:'';
+
+            $FechaFin_asignacion = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialAsignacion)->orderByPivot('FechaComienzo', 'desc')->get();
+            $FechaFin_asignacion = ($FechaFin_asignacion->count() >0)?$FechaFin_asignacion[0]['pivot']->FechaComienzo:"";
+            $FechaFin_asignacion = ($PiezasActual_asignacion>=$CantidadTotal)?$FechaFin_asignacion:'';
+
+            $FechaFin_empaque = $PartidasOF->Areas()->where('Areas_id',$this->AreaEspecialEmpaque)->whereNotNull('FechaTermina')->orderByPivot('FechaTermina', 'desc')->get();
+            $FechaFin_empaque = ($FechaFin_empaque->count()>0)?$FechaFin_empaque[0]['pivot']->FechaTermina:"";
+            $FechaFin_empaque = ($CantidadTotal<$PiezasActual_empaque)?'':$FechaFin_empaque;
+            $FechaFin_empaque = ($PiezasActual_empaque>=$CantidadTotal)?$FechaFin_empaque:'';
+        //Tiempo Total por Estacion
+            $TiempoTotalOrden = "";
+            if($FechaFin_empaque != "" AND $FechaInicio_planeacion != ""){
+                $fecha1 = new DateTime($FechaInicio_planeacion);
+                $fecha2 = new DateTime($FechaFin_empaque);
+                $diferencia = $fecha1->diff($fecha2);
+                $TiempoTotalOrden =(($diferencia->m > 0)?$diferencia->m.' meses ':"").
+                                    (($diferencia->d > 0)?$diferencia->d.' días ':"").
+                                    (($diferencia->h > 0)?$diferencia->h.' horas ':"").
+                                    (($diferencia->i > 0)?$diferencia->i.' minutos ':"").
+                                    (($diferencia->s > 0)?$diferencia->s.' segundos ':"");
+                if($TiempoTotalOrden=="")$TiempoTotalOrden='0 segundos';
+            }
+            $TiempoTotal_corte ="";
+            if($FechaFin_Corte != "" AND $FechaInicio_corte != ""){
+                $fecha1 = new DateTime($FechaInicio_corte);
+                $fecha2 = new DateTime($FechaFin_Corte);
+                $diferencia = $fecha1->diff($fecha2);
+                $TiempoTotal_corte= (($diferencia->m > 0)?$diferencia->m.' meses ':"").
+                                    (($diferencia->d > 0)?$diferencia->d.' días ':"").
+                                    (($diferencia->h > 0)?$diferencia->h.' horas ':"").
+                                    (($diferencia->i > 0)?$diferencia->i.' minutos ':"").
+                                    (($diferencia->s > 0)?$diferencia->s.' segundos ':"");
+                if($TiempoTotal_corte=="")$TiempoTotal_corte='0 segundos';
+            }
+            $TiempoTotal_suministro ="";
+            if($FechaFin_suministro != "" AND $FechaInicio_suministro != ""){
+                $fecha1 = new DateTime($FechaInicio_suministro);
+                $fecha2 = new DateTime($FechaFin_suministro);
+                $diferencia = $fecha1->diff($fecha2);
+                $TiempoTotal_suministro = (($diferencia->m > 0)?$diferencia->m.' meses ':"").
+                                    (($diferencia->d > 0)?$diferencia->d.' días ':"").
+                                    (($diferencia->h > 0)?$diferencia->h.' horas ':"").
+                                    (($diferencia->i > 0)?$diferencia->i.' minutos ':"").
+                                    (($diferencia->s > 0)?$diferencia->s.' segundos ':"");
+                if($TiempoTotal_suministro=="")$TiempoTotal_suministro='0 segundos';
+            }
+            $TiempoTotal_asignacion ="";
+            if($FechaFin_asignacion != "" AND $FechaInicio_asignacion != ""){
+                $fecha1 = new DateTime($FechaInicio_asignacion);
+                $fecha2 = new DateTime($FechaFin_asignacion);
+                $diferencia = $fecha1->diff($fecha2);
+                $TiempoTotal_asignacion = (($diferencia->m > 0)?$diferencia->m.' meses ':"").
+                                    (($diferencia->d > 0)?$diferencia->d.' días ':"").
+                                    (($diferencia->h > 0)?$diferencia->h.' horas ':"").
+                                    (($diferencia->i > 0)?$diferencia->i.' minutos ':"").
+                                    (($diferencia->s > 0)?$diferencia->s.' segundos ':"");
+                if($TiempoTotal_asignacion=="")$TiempoTotal_asignacion='0 segundos';
+            }
+            $TiempoTotal_empaque ="";
+            if($FechaInicio_empaque != "" AND $FechaFin_empaque != ""){
+                $fecha1 = new DateTime($FechaInicio_empaque);
+                $fecha2 = new DateTime($FechaFin_empaque);
+                $diferencia = $fecha1->diff($fecha2);
+                $TiempoTotal_empaque = (($diferencia->m > 0)?$diferencia->m.' meses ':"").
+                                    (($diferencia->d > 0)?$diferencia->d.' días ':"").
+                                    (($diferencia->h > 0)?$diferencia->h.' horas ':"").
+                                    (($diferencia->i > 0)?$diferencia->i.' minutos ':"").
+                                    (($diferencia->s > 0)?$diferencia->s.' segundos ':"");
+                if($TiempoTotal_empaque=="")$TiempoTotal_empaque='0 segundos';
+            }
+        //Usuarios por estación
+        $UsuariosEstaciones = [
+            'Corte' => [],
+            'Suministro' => [],
+            'Asignacion' => [], 
+            'Empaque' => []
+        ];
+        $Partida_Usuarios = $PartidasOF->Areas()->get()->unique(function ($item) {
+            // Esto crea una marca única: "AreaID-UsuarioID"
+            // Ejemplo: "2-1" (Corte - Usuario 1)
+            return $item->id . '-' . $item->pivot->Users_id;
+        });
+        foreach($Partida_Usuarios as $PU){
+            $usuario_name = User::find($PU['pivot']->Users_id);
+            $usuario_name = $usuario_name->name." ".$usuario_name->apellido;
+            if($PU['pivot']->Areas_id == $this->AreaEspecialCorte){
+                $UsuariosEstaciones['Corte'][] = $usuario_name;
+            }elseif($PU['pivot']->Areas_id == $this->AreaEspecialSuministro){
+                $UsuariosEstaciones['Suministro'][] = $usuario_name; 
+            }elseif($PU['pivot']->Areas_id == $this->AreaEspecialAsignacion){
+                $UsuariosEstaciones['Asignacion'][] = $usuario_name;
+            }elseif($PU['pivot']->Areas_id == $this->AreaEspecialEmpaque){
+                $UsuariosEstaciones['Empaque'][] = $usuario_name;
+            }
+        }
+        $OV = ($OrdenVenta->OrdenVenta != 00000) ? $OrdenVenta->OrdenVenta: "N/A";
+        $Cliente = ($OrdenVenta->OrdenVenta != 00000) ? $OrdenVenta->NombreCliente: "N/A";
+        return response()->json([
+            'CantidadTotal' => $CantidadTotal,
+            'Estatus' => $Estatus,
+            'RequiereCorte' =>$RequiereCorte,
+            'OrdenFabricacion' =>$OrdenFabricacion_num,
+            'OV' =>$OV,
+            'Cliente' =>$Cliente,
+            'ProgresoPorcentaje' => round($ProgresoTotal,2),
+            'ProgresoCantidad' => $ProgresoCantidad,
+            'Prioridad' => $Priorida,
+            'Prioridad_color' => $Prioridad_color,
+            'Prioridad_background' => $Priorida_Background,
+            'PiezasActual_corte' => $PiezasActual_corte,
+            'PiezasActual_suministro' => $PiezasActual_suministro,
+            'PiezasActual_asignacion' => $PiezasActual_asignacion,
+            'PiezasActual_empaque' => $PiezasActual_empaque,
+            'FechaInicio_planeacion' => $FechaInicio_planeacion,
+            'FechaInicio_corte' => $FechaInicio_corte,
+            'FechaInicio_suministro' => $FechaInicio_suministro,
+            'FechaInicio_asignacion' => $FechaInicio_asignacion,
+            'FechaInicio_empaque' => $FechaInicio_empaque,
+            'FechaFin_corte' => $FechaFin_Corte,
+            'FechaFin_suministro' =>$FechaFin_suministro,
+            'FechaFin_asignacion' => $FechaFin_asignacion,
+            'FechaFin_empaque' => $FechaFin_empaque,
+            'TiempoTotalOrden' => $TiempoTotalOrden,
+            'TiempoTotal_corte' => $TiempoTotal_corte,
+            'TiempoTotal_suministro' => $TiempoTotal_suministro,
+            'TiempoTotal_asignacion' => $TiempoTotal_asignacion,
+            'TiempoTotal_empaque' => $TiempoTotal_empaque, 
+            'UsuariosEstaciones' => $UsuariosEstaciones,
+            'OF_descripcion' => $OrdenFabricacion->Descripcion,
+            'OF_FechaEntrega' => $OrdenFabricacion->FechaEntregaSAP,
+            'OF_FechaFin' => $FechaFin_empaque,
+        ]);
+    }
+    //Detalles OV
+    public function DetallesOV(Request $request){
+        $OV = $request->id;
+        if($OV == "" OR $OV == '00000'){
+            return response()->json([
+            'Estatus' => "error",
+            "message" => "La Orden de Venta no existe!"
+            ]);
+        }
+        $OV_Datos = OrdenVenta::where('OrdenVenta',$OV)->first();
+        if($OV_Datos == ""){
+            return response()->json([
+            'Estatus' => "error",
+            "message" => "La Orden de Venta no existe!"
+            ]);
+        }
+        //Ordenes Estatus Porcentaje de Orden de Fabricacion
+        $OrdenesFabricacion = $OV_Datos->ordenesFabricacions;
+        $OV_Estatus = 'Cerrada';
+        $OV_Arr = array();
+        foreach( $OrdenesFabricacion as $OsF){
+            if($OsF->Cerrada == 1){
+                $OV_Estatus = 'Abierta';
+            }
+            $ProgresoActual = $this->Area_Actual($OsF->OrdenFabricacion,$this->AreaEspecialEmpaque);
+            $CantidadTotal = $OsF->CantidadTotal;
+            $ProgresoTotal = ($OsF->CantidadTotal != 0)?(100/$OsF->CantidadTotal)*$ProgresoActual:0;
+            $OV_Arr[] = [
+                'OF' => $OsF->OrdenFabricacion,
+                'OF_Articulo' => $OsF->Articulo,
+                'OF_Cerrada' => $OsF->Cerrada,
+                'OF_FechaEntregaSAP' => $OsF->FechaEntregaSAP,
+                'OF' => $OsF->OrdenFabricacion,
+                'OF_Descripcion' => $OsF->Descripcion,
+                'OF_ProgresoTotal' => round($ProgresoTotal,2),
+                'OF_CantidadActual' => $ProgresoActual,
+                'OF_CantidadTotal' => $CantidadTotal,
+            ];
+        }
+        return response()->json([
+            'OV' => $OV_Datos->OrdenVenta,
+            'OV_Cliente' => $OV_Datos->NombreCliente,
+            'OV_Estatus' => $OV_Estatus,
+            'Estatus' => "success",   
+            'OV_Arr' => $OV_Arr      
+        ]);
+    }
+
+    //Obtener fecha en formato dias horas minutos segundos
+    function Fechas($TiempoTotalEstacion){
+        $horas = floor($TiempoTotalEstacion / 3600);
+        $minutos = floor(($TiempoTotalEstacion % 3600) / 60);
+        $segundos = $TiempoTotalEstacion % 60;
+        if($horas!=0){$TiempoTotalEstacion = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
+        elseif($minutos!=0){$TiempoTotalEstacion = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
+        elseif($segundos!=0){$TiempoTotalEstacion = sprintf("%02d Segundos",$segundos);}
+        else{$TiempoTotalEstacion = 0;}
+        return $TiempoTotalEstacion;
+    }
+    //Obtener Tiempo en segundos
+    function ConversionSegDias($Tiempo){
+        //Tiempo tiene que ser en segundos
+        if($Tiempo>0){
+            $horas = floor($Tiempo / 3600);
+            $minutos = floor(($Tiempo % 3600) / 60);
+            $segundos = $Tiempo % 60;
+            if($horas!=0){$Tiempo = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
+            elseif($minutos!=0){$Tiempo = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
+            elseif($segundos!=0){$Tiempo = sprintf("%02d Segundos",$segundos);}
+            else{$Tiempo = 0;}
+        }
+        return $Tiempo;
+    }
+    //Estatus Ordenes de Fabricación
+    public function EstatusOrdenesFabricacion($FechaInicio = null, $FechaFin = null,$Estatus = null){
+        $user = Auth::user();
+        if($user->hasPermission('Vista Estatus Orden F.')){
+            if(!isset($FechaInicio)){
+                $FechaInicio = now()->subWeek()->toDateString();
+            }
+            if(!isset($FechaFin)){
+                $FechaFin = now()->toDateString();
+            }
+        $BodyTable = "";
+            if($Estatus=='Abiertas'){
+                $OrdenFabricacionAbiertas = OrdenFabricacion::where('Cerrada','1')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
+                foreach($OrdenFabricacionAbiertas as $key=>$OFA){
+                    $Usuario = "SIN CORTE";
+                    $Escaner = "Masivo";
+                    $OrdenVenta = $OFA->OrdenVenta->OrdenVenta;
+                    if($OFA->Escaner == 1){
+                        $Escaner = "Uno a uno";
+                    }
+                    $Urgencia = "Urgente";
+                    if($OFA->Urgencia == 'N'){
+                        $Urgencia = "Normal";
+                    }
+                    $LLC = "Si";
+                    if($OFA->LLC == 0){
+                        $LLC = "No";
+                    }
+                    if($OFA->ResponsableUser_id){
+                        $user= User::find($OFA->ResponsableUser_id);
+                        $Usuario = $user->name." ".$user->apellido;
+                    }
+                    $PartidaOF = $OFA->PartidasOF()->first();
+                    $UltimaEstacion = "Planeación";
+                    if($PartidaOF != ""){
+                        $PartidaOFAreas = $PartidaOF->Areas()->where('Areas_id','!=',$this->AreaEspecialAsignacion)->orderBy('Areas_id','desc')->get();
+                        if($PartidaOFAreas->count() > 0 ){
+                            $UltimaEstacion  = $PartidaOFAreas->first();
+                            $UltimaEstacion = $UltimaEstacion['pivot']->Areas_id;
+                            $UltimaEstacion = $this->AreaNombre($UltimaEstacion);
+                        }
+                    }
+                    $BodyTable .= '<tr>
+                                    <td class="text-center">'.($key+1).'</td>
+                                    <td class="text-center">'. $OFA->OrdenFabricacion.'</td>
+                                    <td class="text-center">'. $OrdenVenta .'</td>';
+                                    if(Auth::user()->hasPermission("Vista Planeacion")){
+                                        $BodyTable .= '<td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">'.$Usuario.'</span></div></td>';
+                                    }
+                    $BodyTable .= '<td class="text-center">'. $OFA->Articulo.'</td>
+                                    <td class="text-center"> 
+                                        <div class="MostrarMenos" id="collapseA'. $OFA->OrdenFabricacion.'">
+                                            '.$OFA->Descripcion.'
+                                        </div>
+                                        <a  onclick="MostrarMas(\'collapseA'. $OFA->OrdenFabricacion.'\',this);" class="btn btn-sm btn-link">Ver más</a>
+                                    </td>
+                                    <td class="text-center">'. $OFA->CantidadTotal .'</td>
+                                    <td class="text-center">'. $OFA->FechaEntrega .'</td>
+                                    <td class="text-center">'. $OFA->FechaEntregaSAP .'</td>
+                                    <td class="text-center">'.$Escaner.'</td>
+                                    <td class="text-center">'.$Urgencia.'</td>
+                                    <td class="text-center">'. $LLC.'</td>
+                                    <td class="text-center">'.$UltimaEstacion.'</td>
+                                    <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
+                                </tr>';
+                }
+                 return response()->json([
+                    'BodyTabla' => $BodyTable,
+                    "status" => 'success',
+                ]);
+            }elseif($Estatus=='Cerradas'){
+                $OrdenFabricacionCerradas = OrdenFabricacion::where('Cerrada','0')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
+                foreach($OrdenFabricacionCerradas as $key => $OFC){
+                    $OrdenVenta = $OFC->OrdenVenta->OrdenVenta;
+                    $Usuario = "SIN CORTE";
+                    $Escaner = "Masivo";
+                    if($OFC->Escaner == 1){
+                        $Escaner = "Uno a uno";
+                    }
+                    $Urgencia = "Urgente";
+                    if($OFC->Urgencia == 'N'){
+                        $Urgencia = "Normal";
+                    }
+                    $LLC = "Si";
+                    if($OFC->LLC == 0){
+                        $LLC = "No";
+                    }
+                    if($OFC->ResponsableUser_id){
+                        $user= User::find($OFC->ResponsableUser_id);
+                        $Usuario = $user->name." ".$user->apellido;
+                    }
+                    $PartidaOF = $OFC->PartidasOF()->first();
+                    $UltimaEstacion = "Planeación";
+                    if($PartidaOF != ""){
+                        $PartidaOFAreas = $PartidaOF->Areas()->where('Areas_id','!=',$this->AreaEspecialAsignacion)->orderBy('Areas_id','desc')->get();
+                        if($PartidaOFAreas->count() > 0 ){
+                            $UltimaEstacion  = $PartidaOFAreas->first();
+                            $UltimaEstacion = $UltimaEstacion['pivot']->Areas_id;
+                            $UltimaEstacion = $this->AreaNombre($UltimaEstacion);
+                        }
+                    }
+                    $BodyTable .= '<tr>
+                                    <td class="text-center">'.($key+1).'</td>
+                                    <td class="text-center">'. $OFC->OrdenFabricacion.'</td>
+                                    <td class="text-center">'. $OrdenVenta.'</td>';
+                                    if(Auth::user()->hasPermission("Vista Planeacion")){
+                                        $BodyTable .= '<td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">'.$Usuario.'</span></div></td>';
+                                    }
+                    $BodyTable .= ' <td class="text-center">'. $OFC->Articulo .'</td>
+                                    <td class="text-center"> 
+                                        <div class="MostrarMenos" id="collapseC'. $OFC->OrdenFabricacion.'">
+                                            '.$OFC->Descripcion.'
+                                        </div>
+                                        <a  onclick="MostrarMas(\'collapseC'. $OFC->OrdenFabricacion.'\',this);" class="btn btn-sm btn-link">Ver más</a>
+                                    </td>
+                                    <td class="text-center">'. $OFC->CantidadTotal .'</td>
+                                    <td class="text-center">'. $OFC->FechaEntrega .'</td>
+                                    <td class="text-center">'. $OFC->FechaEntregaSAP .'</td>
+                                    <td class="text-center">'.$Escaner.'</td>
+                                    <td class="text-center">'.$Urgencia.'</td>
+                                    <td class="text-center">'. $LLC.'</td>
+                                    <td class="text-center">'.$UltimaEstacion.'</td>
+                                    <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-primary"><span class="fw-bold">Cerrada</span></div></td>
+                                </tr>';
+                }
+                return response()->json([
+                    'BodyTabla' => $BodyTable,
+                    "status" => 'success',
+                ]);
+            }else{
+                $OrdenFabricacionAbiertas = OrdenFabricacion::where('Cerrada','1')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
+                foreach($OrdenFabricacionAbiertas as $OFA){
+                    $PartidaOF = $OFA->PartidasOF()->first();
+                    $OrdenVenta = $OFA->OrdenVenta->OrdenVenta;
+                    $UltimaEstacion = "Planeación";
+                    if($PartidaOF != ""){
+                        $PartidaOFAreas = $PartidaOF->Areas()->where('Areas_id','!=',$this->AreaEspecialAsignacion)->orderBy('Areas_id','desc')->get();
+                        if($PartidaOFAreas->count() > 0 ){
+                            $UltimaEstacion  = $PartidaOFAreas->first();
+                            $UltimaEstacion = $UltimaEstacion['pivot']->Areas_id;
+                            $UltimaEstacion = $this->AreaNombre($UltimaEstacion);
+                        }
+                    }
+                    if($OFA->ResponsableUser_id){
+                        $user= User::find($OFA->ResponsableUser_id);
+                        $OFA['ResponsableUser'] = $user->name."  ".$user->apellido;
+                    }else{
+                        $OFA['ResponsableUser'] = null;
+                    }
+                    $OFA['UltimaEstacion'] = $UltimaEstacion;
+                    $OFA['OrdenVenta'] = ($OrdenVenta == '00000')?"Sin Orden Venta":$OrdenVenta;
+                }
+                $OrdenFabricacionCerradas = OrdenFabricacion::where('Cerrada','0')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
+                foreach($OrdenFabricacionCerradas as $OFC){
+                    $PartidaOF = $OFC->PartidasOF()->first();
+                    $OrdenVenta = $OFC->OrdenVenta->OrdenVenta;
+                    $UltimaEstacion = "Planeación";
+                    if($PartidaOF != ""){
+                        $PartidaOFAreas = $PartidaOF->Areas()->where('Areas_id','!=',$this->AreaEspecialAsignacion)->orderBy('Areas_id','desc')->get();
+                        if($PartidaOFAreas->count() > 0 ){
+                            $UltimaEstacion  = $PartidaOFAreas->first();
+                            $UltimaEstacion = $UltimaEstacion['pivot']->Areas_id;
+                            $UltimaEstacion = $this->AreaNombre($UltimaEstacion);
+                        }
+                    }
+                    if($OFC->ResponsableUser_id){
+                        $user= User::find($OFC->ResponsableUser_id);
+                        $OFC['ResponsableUser'] = $user->name."  ".$user->apellido;
+                    }
+                    else{$OFC['ResponsableUser'] = null;
+                    }
+                    $OFC['UltimaEstacion'] = $UltimaEstacion;
+                    $OFC['OrdenVenta'] = ($OrdenVenta == '00000')?"Sin Orden Venta":$OrdenVenta;
+                }
+                return view('Busqueda.EstatusOrdenesFabricacion',compact('OrdenFabricacionAbiertas','OrdenFabricacionCerradas','FechaInicio','FechaFin'));
+            }
+        }else
+        return redirect()->route('error');
+    }
+    //Sacar nombre del Area
+    public function AreaNombre($IdArea){
+        $Area = Areas::find($IdArea); 
+        return $Area->nombre;
+    }
+    //Funcion para traer la cantidad por Area
+    public function Area_Actual($Codigo,$Area){
+        $OF=OrdenFabricacion::where('OrdenFabricacion',$Codigo)->first();
+        $PartidasOF=$OF->PartidasOF->first();
+        $POFAreas=$PartidasOF->Areas()->where('Areas_id',$Area)->get();
+        return$totalCantidad = $POFAreas->SUM('pivot.Cantidad');
+    }
+    public function tiempoS(Request $request){
+        $idFabricacion = $request->input('id');
+        $duracionFinalCortes =  DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            'partidasof.FechaComienzo',
+            DB::raw('GROUP_CONCAT(partidasof.OrdenFabricacion_id) as ids'),
+            DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'),
+            DB::raw('MAX(partidasof.FechaFinalizacion) as FechaTermina'),
+            DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof.FechaComienzo, partidasof.FechaFinalizacion)) as TotalMinutos')
+        )
+        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
+        ->get();
+        $duracionFinal9 = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->where('partidasof_areas.Areas_id', 17)
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            'partidasof_areas.PartidasOf_id',
+            'partidasof_areas.Areas_id',
+            DB::raw('GROUP_CONCAT(partidasof_areas.id) as ids'),
+            DB::raw('MIN(partidasof_areas.FechaComienzo) as FechaComienzo'),
+            DB::raw('MAX(partidasof_areas.FechaTermina) as FechaTermina'),
+            DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof_areas.FechaComienzo, partidasof_areas.FechaTermina)) as TotalMinutos')
+        )
+        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.PartidasOf_id', 'partidasof_areas.Areas_id')
+        ->get()
+        ->map(function ($item) {
+            if ($item->TotalMinutos == 0) {
+                $item->DuracionTotal = "0 días, 0 horas, 0 minutos";
+            } else {
+                $totalMinutos = $item->TotalMinutos;
+                $dias = floor($totalMinutos / (60 * 24));
+                $horas = floor(($totalMinutos % (60 * 24)) / 60);
+                $minutos = $totalMinutos % 60;
+
+                $duracion = [];
+                if ($dias > 0) $duracion[] = "{$dias} días";
+                if ($horas > 0) $duracion[] = "{$horas} horas";
+                if ($minutos > 0) $duracion[] = "{$minutos} minutos";
+                $item->DuracionTotal = implode(", ", $duracion);
+            }
+            $item->ids = explode(',', $item->ids);
+            return $item;
+        });
+        
+        $fechaComienzoTotal = $duracionFinalCortes->pluck('FechaComienzo')->min();
+        $fechaTerminaTotal = $duracionFinal9->pluck('FechaTermina')->max();
+
+        $fechaComienzoCarbon = Carbon::parse($fechaComienzoTotal);
+        $fechaTerminaCarbon = Carbon::parse($fechaTerminaTotal);
+        $diferencia = $fechaComienzoCarbon->diff($fechaTerminaCarbon);
+
+        $duracion = [];
+
+        if ($diferencia->d > 0) $duracion[] = "{$diferencia->d} días";
+        if ($diferencia->h > 0) $duracion[] = "{$diferencia->h} horas";
+        if ($diferencia->i > 0) $duracion[] = "{$diferencia->i} minutos";
+
+        // Si no hay diferencia de tiempo, mostrar "0 minutos"
+        $DuracionTotal = !empty($duracion) ? implode(", ", $duracion) : "0 minutos";
+
+        $tiempototal = [
+            'FechaComienzo' => $fechaComienzoCarbon->format('Y-m-d H:i'),
+            'FechaTermina' => $fechaTerminaCarbon->format('Y-m-d H:i'),
+            'DuracionTotal' => $DuracionTotal,
+        ];
+
+        // Tiempo de cortes
+        $tiemposcortes = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            'partidasof.FechaComienzo',
+            'partidasof.FechaFinalizacion', 
+            DB::raw('GROUP_CONCAT(partidasof.OrdenFabricacion_id) as ids'),
+            DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'),
+            DB::raw('MAX(partidasof.FechaFinalizacion) as FechaTermina'),
+            DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof.FechaComienzo, partidasof.FechaFinalizacion)) as TotalMinutos'),
+            DB::raw('SUM(TIMESTAMPDIFF(SECOND, partidasof.FechaComienzo, partidasof.FechaFinalizacion)) as TotalSegundos')
+        )
+        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
+        ->get()
+        ->map(function ($item) {
+            if ($item->TotalSegundos == 0) {
+                $item->Duracion = "0 minutos";
+            } else {
+                $FechaComienzo = Carbon::parse($item->FechaComienzo);
+                $FechaFinalizacion = Carbon::parse($item->FechaFinalizacion);
+                
+                $diffDias = floor($FechaComienzo->diffInHours($FechaFinalizacion) / 24);
+                $diffHoras = $FechaComienzo->diffInHours($FechaFinalizacion) % 24;
+                $diffMinutos = $FechaComienzo->diffInMinutes($FechaFinalizacion) % 60;
+                $diffSegundos = $FechaComienzo->diffInSeconds($FechaFinalizacion) % 60;
+    
+                $duracion = [];
+    
+                if ($diffDias > 0) $duracion[] = "{$diffDias} días";
+                if ($diffHoras > 0) $duracion[] = "{$diffHoras} horas";
+                if ($diffMinutos > 0) $duracion[] = "{$diffMinutos} minutos";
+                if ($diffSegundos > 0) $duracion[] = "{$diffSegundos} segundos";
+    
+                $item->Duracion = !empty($duracion) ? implode(", ", $duracion) : "0 minutos";
+            }
+            return $item;
+        });
+    
+        // Tiempo por áreas
+        $tiemposareas = DB::table('ordenfabricacion')
+        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
+        ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
+        ->select(
+            'ordenfabricacion.OrdenFabricacion',
+            'partidasof_areas.PartidasOf_id',
+            'partidasof_areas.Areas_id',
+            DB::raw('GROUP_CONCAT(partidasof_areas.id) as ids'),
+            DB::raw('MIN(partidasof_areas.FechaComienzo) as FechaComienzo'), // Primer FechaComienzo
+            DB::raw('MAX(partidasof_areas.FechaTermina) as FechaTermina') // Último FechaTermina
+        )
+        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
+        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.PartidasOf_id', 'partidasof_areas.Areas_id')
+        ->get()
+        ->map(function ($item) {
+        // Si no hay FechaTermina, utilizamos FechaComienzo como valor de referencia
+        $fechaTermina = $item->FechaTermina ? $item->FechaTermina : $item->FechaComienzo;
+
+        // Cálculo de la diferencia en minutos y segundos
+        $fechaInicio = new \Carbon\Carbon($item->FechaComienzo);
+        $fechaFin = new \Carbon\Carbon($fechaTermina);
+        
+        // Calcular la duración en minutos y segundos
+        $totalMinutos = $fechaInicio->diffInMinutes($fechaFin);
+        $totalSegundos = $fechaInicio->diffInSeconds($fechaFin);
+
+        // Guardar los valores calculados
+        $item->TotalMinutos = $totalMinutos;
+        $item->TotalSegundos = $totalSegundos;
+
+        // Calcular la duración total en formato legible
+        if ($totalSegundos == 0) {
+            $item->DuracionTotal = "0 minutos";
+        } else {
+            $dias = floor($totalMinutos / (60 * 24));
+            $horas = floor(($totalMinutos % (60 * 24)) / 60);
+            $minutos = $totalMinutos % 60;
+            $segundos = $totalSegundos % 60;
+
+            $duracion = [];
+            if ($dias > 0) $duracion[] = "{$dias} días";
+            if ($horas > 0) $duracion[] = "{$horas} horas";
+            if ($minutos > 0) $duracion[] = "{$minutos} minutos";
+            if ($segundos > 0) $duracion[] = "{$segundos} segundos";
+
+            $item->DuracionTotal = !empty($duracion) ? implode(", ", $duracion) : "0 minutos";
+        }
+        $item->ids = explode(',', $item->ids);
+        return $item;
+        });
+
+
+            // Sumar los segundos de ambos conjuntos de datos
+            $totalSegundosCortes = $tiemposcortes->pluck('TotalSegundos')->map(function($segundos) {
+                return (int) $segundos; // Convertir los segundos a enteros
+            })->sum();
+            $totalSegundosAreas = $tiemposareas->pluck('TotalSegundos')->map(function($segundos) {
+                return (int) $segundos; // Convertir los segundos a enteros
+            })->sum();
+            $totalSegundos = $totalSegundosCortes + $totalSegundosAreas;
+            $duracionTotalSegundos = ($diferencia->d * 86400) + ($diferencia->h * 3600) + ($diferencia->i * 60); 
+
+            $TiempoMuerto = $duracionTotalSegundos - $totalSegundos;
+            
+            // Convertir los segundos restantes en días, horas, minutos y segundos
+            $diasMuertos = floor($TiempoMuerto / 86400);
+            $horasMuertas = floor(($TiempoMuerto % 86400) / 3600);
+            $minutosMuertos = floor(($TiempoMuerto % 3600) / 60);
+            $segundosMuertos = $TiempoMuerto % 60;
+            
+            // Construir la duración omitiendo valores en 0
+            $duracion = [];
+            
+            if ($diasMuertos > 0) $duracion[] = "{$diasMuertos} días";
+            if ($horasMuertas > 0) $duracion[] = "{$horasMuertas} horas";
+            if ($minutosMuertos > 0) $duracion[] = "{$minutosMuertos} minutos";
+            if ($segundosMuertos > 0) $duracion[] = "{$segundosMuertos} segundos";
+            
+            // Si no hay tiempo muerto, mostrar "0 segundos"
+            $TiempoMuertoFormato = !empty($duracion) ? implode(", ", $duracion) : "0 segundos";
+            
+            return response()->json([
+                'tiemposcortes' => $tiemposcortes,
+                'tiemposareas' => $tiemposareas,
+                'tiempototal' => $tiempototal,
+                'totalSegundos' => $totalSegundos . ' segundos',
+                'TiempoMuertoFormato' => $TiempoMuertoFormato
+            ]);
+            
+    } 
+
+    //Metodos anteriores
     // Controlador para las órdenes de Venta
-    public function obtenerOrdenesVenta(Request $request)
-    {
+    public function obtenerOrdenesVenta(Request $request){
         $search = $request->input('search');
         $ordenesVenta = DB::table('ordenventa')
         ->select('OrdenVenta', 'NombreCliente')
@@ -106,8 +770,7 @@ class BusquedaController extends Controller
         return response()->json($ordenesVenta);
     }
     //boton detalles de la orden de venta        
-    public function detallesventa(Request $request)
-    {
+    public function detallesventa(Request $request){
 
         $idVenta = $request->input('id');
         $total = DB::table('ordenventa')
@@ -157,8 +820,7 @@ class BusquedaController extends Controller
 
     }
     //progreso de stage
-    public function GraficarOROF(Request $request)
-    {
+    public function GraficarOROF(Request $request){
         $idVenta = $request->input('id');  // ID de la orden de venta
         $stage = $request->input('stage'); // Etapa
     
@@ -232,10 +894,8 @@ class BusquedaController extends Controller
     
         return response()->json($OR);
     }
-    
     //graficadores
-    public function Graficador(Request $request)
-    {
+    public function Graficador(Request $request){
         $idVenta = $request->input('id');
         $escaner=DB::table('ordenVenta')
         ->join('ordenfabricacion', 'ordenventa.id', '=', 'ordenfabricacion.OrdenVenta_id')
@@ -345,10 +1005,8 @@ class BusquedaController extends Controller
 
             }
     }
-
     // Controlador para las órdenes de fabricación
-    public function obtenerOrdenesFabricacion(Request $request)
-    {
+    public function obtenerOrdenesFabricacion(Request $request){
         $search = $request->input('search');
         $ordenesFabricacion = DB::table('ordenfabricacion')
         ->select(
@@ -370,8 +1028,7 @@ class BusquedaController extends Controller
         return response()->json($ordenesFabricacion);
     }
     // Graficador OF
-    public function GraficadorFabricacion(Request $request) 
-    {
+    public function GraficadorFabricacion(Request $request) {
         $idFabricacion = $request->input('id');
         $result = [];
         $escaner = DB::table('ordenfabricacion')
@@ -822,909 +1479,4 @@ class BusquedaController extends Controller
         return response()->json(['estaciones' => $result]);
     }
 
-    //detalles OF
-    public function DetallesOF(Request $request){
-        $OrdenFabricacion_num = $request->input('id');
-        $OrdenFabricacion = Ordenfabricacion::where('OrdenFabricacion',$OrdenFabricacion_num)->first();
-        if($OrdenFabricacion == ""){
-            return response()->json([
-                'Areas' => "",
-                'partidasAreas' => 0,
-                'progreso' => 0,
-                "Estatus" => "Error",
-                "Message" => "La orden de Fabricación no existe!"
-            ]);
-        }
-        $OrdenVenta = $OrdenFabricacion->OrdenVenta;        
-        $RequiereCorte = $OrdenFabricacion->Corte;//0 es igual a si, 1 es a no
-        $Estatus = ($OrdenFabricacion->Cerrada == 1)?$estatus="Abierta":"Cerrada";
-        $ProgresoTotal = $this->Area_Actual($OrdenFabricacion_num,$this->AreaEspecialEmpaque);
-        $ProgresoTotal = ($OrdenFabricacion->CantidadTotal != 0)?(100/$OrdenFabricacion->CantidadTotal)*$ProgresoTotal:0;
-        $ProgresoEmpaque = $this->Area_Actual($OrdenFabricacion_num,$this->AreaEspecialEmpaque);
-        //$PartidasOF = $OrdenFabricacion->PartidasOF->first();
-        //$Estaciones=[];
-        //$Areas =[];
-        //Estatus
-        //Linea a la que pertenece, 18 es el Area de Clasificacion
-            /*$Linea = $PartidasOF->Areas()->where('Areas_id',$this->AreaClasificacion)->first();
-            if($Linea == ""){
-                $Areas = '2,3';
-                $Area = $array = explode(",", $Areas);
-            }else{
-                $Linea = Linea::find($Linea['pivot']->Linea_id);
-                $Areas = $Linea->AreasPosibles;
-                if($Areas == ""){
-                    return response()->json([
-                        'Areas' => "",
-                        "TiempoDuracion" => 0,
-                        'partidasAreas' => "",
-                        "TiempoProductivo" => 0,
-                        'progreso' => 0,
-                        "TiempoTotal" => 0,
-                        "TiempoMuerto"=> 0,
-                        "Estaciones"=>$Estaciones,
-                        "Estatus" => $estatus,
-                    ]);
-                }
-                $Area = $array = explode(",", $Areas);
-            }*/
-            /*$Progreso=0;
-            $FechaUltima = "";
-            if (in_array($this->AreaMontaje, $array)) {
-                if($OrdenFabricacion->Escaner == 1){
-                    $Progreso = $PartidasOF->Areas()->where('Areas_id',$this->AreaMontaje)->where('TipoPartida','N')->get()->whereNotNull('pivot.Fechatermina')->SUM('pivot.Cantidad')
-                                - $PartidasOF->Areas()->where('Areas_id',$this->AreaMontaje)->where('TipoPartida','R')->get()->whereNotNull('pivot.Fechatermina')->SUM('pivot.Cantidad');
-                }else{
-                    $Progreso = $PartidasOF->Areas()->where('Areas_id',$this->AreaMontaje)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad')
-                                -$PartidasOF->Areas()->where('Areas_id',$this->AreaMontaje)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
-                }
-                $FechaUltima = $PartidasOF->Areas()->whereNotNull('FechaTermina')->where('Areas_id',$this->AreaMontaje)->orderBy('FechaTermina', 'desc')->first();
-            }else if(in_array($this->AreaEmpaque, $array)){
-                $Progreso = $PartidasOF->Areas()->where('Areas_id',$this->AreaEmpaque)->get()->SUM('pivot.Cantidad');
-                $FechaUltima = $PartidasOF->Areas()->whereNotNull('FechaTermina')->where('Areas_id',$this->AreaEmpaque)->orderBy('FechaTermina', 'desc')->first();
-            }*/
-        //Progreso
-            //$Progreso = ($Progreso/$OrdenFabricacion->CantidadTotal)*100;
-            //$Progreso = (fmod($Progreso, 1) == 0) ?$Progreso:number_format(($Progreso),2);
-        //Tiempos Duracion, Tiempo Total, Tiempo Productivo, Tiempo Mu3rto
-            /*$TiempoDuracion=0;
-            $TiempoPromedioSeg=0;
-            $FechaPrimera = $OrdenFabricacion->created_at;
-            if($Progreso >= 100){
-                if($FechaUltima!=""){
-                    $TiempoDuracion = $FechaPrimera->diff($FechaUltima['pivot']->FechaTermina);
-                    $TiempoPromedioSeg = $this->Fechas(($FechaPrimera->diffInSeconds($FechaUltima['pivot']->FechaTermina))/$OrdenFabricacion->CantidadTotal);
-                }
-            }
-            $TiempoTotal=0;
-            $TiempoProductivo=0;
-            $TiempoMuerto=0;
-            if($OrdenFabricacion->Escaner == 1){
-                //Tiempo Productivo
-                    $PartidasTiempoProductivo = $PartidasOF->Areas()->whereNotNull('FechaComienzo')->whereNotNull('FechaTermina') 
-                                    ->get();
-                    foreach($PartidasTiempoProductivo as $PTT){
-                        if($PTT['pivot']['Areas_id']!= $this->AreaPulido){
-                            $FechaPrimera=Carbon::parse($PTT['pivot']->FechaComienzo);
-                            $FechaTermina=Carbon::parse($PTT['pivot']->FechaTermina);
-                            $TiempoProductivo+=$FechaPrimera->diffInSeconds($FechaTermina);
-                        }
-                    }
-                    $TiempoProductivoEstacionAreas = $PartidasOF->Areas()->where('Areas_id',$this->AreaPulido)->get()->GroupBy('pivot.NumeroBloque');
-                    foreach($TiempoProductivoEstacionAreas as $NumE){
-                        $MenorFecha = $NumE->min(fn($item) => $item->pivot->FechaComienzo);
-                        $MayorFecha = $NumE->max(fn($item) => $item->pivot->FechaTermina);
-                        if($MayorFecha != "" AND $MenorFecha!=""){
-                            $FechaPrimera=Carbon::parse($MenorFecha);
-                            $FechaTermina=Carbon::parse($MayorFecha);
-                            $TiempoProductivo+=$FechaPrimera->diffInSeconds($FechaTermina);
-                        }
-                    }
-                    $TiempoProductivoS=$TiempoProductivo;
-                    if($TiempoProductivo!=0){
-                        $horas = floor($TiempoProductivo / 3600);
-                        $minutos = floor(($TiempoProductivo % 3600) / 60);
-                        $segundos = $TiempoProductivo % 60;
-                        if($horas!=0){$TiempoProductivo = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
-                        elseif($minutos!=0){$TiempoProductivo = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
-                        elseif($segundos!=0){$TiempoProductivo = sprintf("%02d Segundos",$segundos);}
-                        else{$TiempoProductivo = 0;}
-                    }
-                //END Tiempo Productivo
-                //Tiempo Total
-                    $TiempoTotalS=0;
-                    $FechaPrimera = $OrdenFabricacion->created_at;
-                    $NumEtiquetas = $PartidasOF->Areas()->where('Areas_id',$this->AreaClasificacion)->get()->SUM('pivot.Cantidad');
-                    for($i=0;$i<$NumEtiquetas;$i++){
-                        $MayorFecha=$PartidasOF->Areas()->whereNotNull('FechaTermina')->OrderBy('FechaTermina', 'desc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
-                        if($MayorFecha != ""){
-                            $FechaPrimera=Carbon::parse($FechaPrimera);
-                            $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
-                            $TiempoTotal+=$FechaPrimera->diffInSeconds($FechaTermina);
-                        }
-                    }
-                    $TiempoTotalS=$TiempoTotal;
-                    if($TiempoTotal !=0){
-                        $horas = floor($TiempoTotal / 3600);
-                        $minutos = floor(($TiempoTotal % 3600) / 60);
-                        $segundos = $TiempoTotal % 60;
-                        if($horas!=0){$TiempoTotal = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
-                        elseif($minutos!=0){$TiempoTotal = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
-                        elseif($segundos!=0){$TiempoTotal = sprintf("%02d Segundos",$segundos);}
-                        else{$TiempoTotal = 0;}
-                    }
-                //END Tiempo Total
-                //Tiempo Muerto
-                    $TiempoMuerto=$TiempoTotalS-$TiempoProductivoS;
-                    if($TiempoMuerto >0){
-                        $horas = floor($TiempoMuerto / 3600);
-                        $minutos = floor(($TiempoMuerto % 3600) / 60);
-                        $segundos = $TiempoMuerto % 60;
-                        if($horas!=0){$TiempoMuerto = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
-                        elseif($minutos!=0){$TiempoMuerto = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
-                        elseif($segundos!=0){$TiempoMuerto = sprintf("%02d Segundos",$segundos);}
-                        else{$TiempoMuerto = 0;}
-                    }
-                //END Tiempo Muerto 
-                //Tiempo Promedio
-                    //Hora preomedio
-
-                    //Duracion promedio
-
-                //END Tiempo Promedio
-            }else{
-                if($OrdenFabricacion->Corte == 1){
-                    $FechaPrimerRegistro = $PartidasOF->Areas()->where('Areas_id','!=',18)->first();
-                }else{
-                    $FechaPrimerRegistro = $PartidasOF->Areas()->where('Areas_id','!=',18)->where('Areas_id','!=',2)->first();
-                }
-                if($FechaPrimerRegistro != ""){
-                    $FechaPrimera=Carbon::parse($FechaPrimera);
-                    $FechaTermina=Carbon::parse($FechaPrimerRegistro['pivot']->FechaComienzo);
-                    $TiempoTotal+=$FechaPrimera->diffInSeconds($FechaTermina);
-                }
-            }
-            $Estaciones=[];
-            //Tiempo Productivo por estacion
-                $TiempoTotalEstacion=0;
-                $TiempoProductivoEstacion=0;
-                if($OrdenFabricacion->Escaner == 1){
-                    foreach($Area as $index => $AreaPosible){
-                        $TiempoEstacionSegundos = 0;
-                        if($AreaPosible != $this->AreaPulido){
-                            //Tipo de Trabajo
-                                $Retrabajo=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
-                                $Normales=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad');
-                            //Porcentaje Actual por Area
-                                $AP=$AreaPosible;
-                                $PorcentajeActual=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNotNull('FechaTermina')->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')
-                                                    -$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNull('FechaTermina')->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
-                                $PorcentajeActual = ($PorcentajeActual/$OrdenFabricacion->CantidadTotal)*100;
-                                $PorcentajeActual = (fmod($PorcentajeActual, 1) == 0) ?$PorcentajeActual:number_format($PorcentajeActual,2);
-                            //Tiempo Total
-                                $TiempoTotalEstacion=0;
-                                $MayorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->OrderBy('FechaTermina', 'desc')->first();
-                                $MenorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->OrderBy('FechaComienzo', 'asc')->first();
-                                if($MayorFecha != "" AND $MenorFecha!=""){
-                                        $FechaPrimera=Carbon::parse($MenorFecha['pivot']->FechaComienzo);
-                                        $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
-                                        $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                                }
-                                /*$NumEtiquetas = $PartidasOF->Areas()->where('Areas_id',$this->AreaClasificacion)->get()->SUM('pivot.Cantidad');
-                                $TiempoTotalEstacion=0;
-                                for($i=0;$i<$NumEtiquetas;$i++){
-                                    $MayorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->OrderBy('FechaTermina', 'desc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
-                                    $MenorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->OrderBy('FechaComienzo', 'asc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
-                                    if($MayorFecha != "" AND $MenorFecha!=""){
-                                        $FechaPrimera=Carbon::parse($MenorFecha['pivot']->FechaComienzo);
-                                        $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
-                                        $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                                    }
-                                }*/
-                                /*$TiempoEstacionSegundos = $TiempoTotalEstacion;
-                                if($TiempoTotalEstacion >0){
-                                    $TiempoTotalEstacion=$this->Fechas($TiempoTotalEstacion);
-                                }
-                            //Tiempo Productivo por Estacion
-                                $TiempoProductivoEstacionAreas = $PartidasOF->Areas()->whereNotNull('FechaTermina')->where('Areas_id',$AreaPosible)->get();
-                                $TiempoProductivoEstacion=0;
-                                foreach($TiempoProductivoEstacionAreas as $TPEA){
-                                    $FechaPrimera=Carbon::parse($TPEA['pivot']->FechaComienzo);
-                                    $FechaTermina=Carbon::parse($TPEA['pivot']->FechaTermina);
-                                    $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                                }
-                                if($TiempoProductivoEstacion>0){
-                                    $TiempoProductivoEstacion=$this->Fechas($TiempoProductivoEstacion);
-                                }
-                                $TiempoOrdenes=$TiempoTotalEstacion;
-                        }else{
-                            //Tipo de Trabajo
-                                $Retrabajo=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
-                                $Normales=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad');
-                            //Porcentaje Actual por Area
-                                $AP=$AreaPosible;
-                                $PorcentajeActual=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNotNull('FechaTermina')->where('TipoPartida','F')->get()->SUM('pivot.Cantidad')
-                                                    -$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNull('FechaTermina')->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
-                                $PorcentajeActual =($PorcentajeActual/$OrdenFabricacion->CantidadTotal)*100;
-                                $PorcentajeActual = (fmod($PorcentajeActual, 1) == 0) ?$PorcentajeActual:number_format($PorcentajeActual,2);
-                            //Tiempo Total
-                                $TiempoTotalEstacion=0;
-                                $MayorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->OrderBy('FechaTermina', 'desc')->first();
-                                $MenorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->OrderBy('FechaComienzo', 'asc')->first();
-                                if($MayorFecha != "" AND $MenorFecha!=""){
-                                        $FechaPrimera=Carbon::parse($MenorFecha['pivot']->FechaComienzo);
-                                        $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
-                                        $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                                }
-                                /*$NumEtiquetas = $PartidasOF->Areas()->where('Areas_id',$this->AreaClasificacion)->get()->SUM('pivot.Cantidad');
-                                $TiempoTotalEstacion=0;
-                                for($i=0;$i<$NumEtiquetas;$i++){
-                                    $MayorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->OrderBy('FechaTermina', 'desc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
-                                    $MenorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->OrderBy('FechaComienzo', 'asc')->get()->where('pivot.NumeroEtiqueta',$i+1)->first();
-                                    if($MayorFecha != "" AND $MenorFecha!=""){
-                                        $FechaPrimera=Carbon::parse($MenorFecha['pivot']->FechaComienzo);
-                                        $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
-                                        $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                                    }
-                                }*/
-                                /*$TiempoEstacionSegundos = $TiempoTotalEstacion;
-                                if($TiempoTotalEstacion >0){
-
-                                    $TiempoTotalEstacion=$this->Fechas($TiempoTotalEstacion);
-                                }
-                            //Tiempo Productivo por Estacion
-                                $TiempoProductivoEstacionAreas = $PartidasOF->Areas()->where('Areas_id',$this->AreaPulido)->get()->GroupBy('pivot.NumeroBloque');
-                                $TiempoProductivoEstacion=0;
-                                foreach($TiempoProductivoEstacionAreas as $NumE){
-                                    $MenorFecha = $NumE->min(fn($item) => $item->pivot->FechaComienzo);
-                                    $MayorFecha = $NumE->max(fn($item) => $item->pivot->FechaTermina);
-                                    if($MayorFecha != "" AND $MenorFecha!=""){
-                                        $FechaPrimera=Carbon::parse($MenorFecha);
-                                        $FechaTermina=Carbon::parse($MayorFecha);
-                                        $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                                    }
-                                }
-                                if($TiempoProductivoEstacion>0){
-                                    $TiempoProductivoEstacion=$this->Fechas($TiempoProductivoEstacion);
-                                }
-                                $TiempoOrdenes=$TiempoTotalEstacion;
-                        }
-                        $AreaDatos=Areas::find($AreaPosible);
-                        $Estaciones[$index] = ['PorcentajeActual' => $PorcentajeActual, 'Retrabajo' => $Retrabajo, 'Normales' => $Normales, 'TiempoOrdenes' => $TiempoOrdenes, 'AP' => $AP
-                                            ,'NombreArea'=>$AreaDatos->nombre,"TiempoProductivoEstacion"=>$TiempoProductivoEstacion, "TiempoEstacionSegundos"=>$TiempoEstacionSegundos ];
-                    }
-                }else{
-                    foreach($Area as $index => $AreaPosible){
-                        $TiempoEstacionSegundos = 0;
-                        if($AreaPosible != $this->AreaPulido){
-                            //Tipo de Trabajo
-                                $Retrabajo=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
-                                $Normales=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad');
-                            //Porcentaje Actual por Area
-                                $AP=$AreaPosible;
-                                if($AreaPosible == 2 || $AreaPosible == 3 || $AreaPosible == 17){
-                                    $PorcentajeActual=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNotNull('FechaTermina')->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')
-                                        -$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNull('FechaTermina')->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
-                                }else{
-                                    $PorcentajeActual=$PartidasOF->Areas()->where('Areas_id', $AreaPosible)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad')-
-                                        ($PartidasOF->Areas()->where('Areas_id', $AreaPosible)->where('TipoPartida','!=','F')->get()->SUM('pivot.Cantidad')
-                                        - $PartidasOF->Areas()->where('Areas_id', $AreaPosible)->where('TipoPartida','F')->get()->SUM('pivot.Cantidad'));
-                                }
-                                $PorcentajeActual = ($PorcentajeActual/$OrdenFabricacion->CantidadTotal)*100;
-                                $PorcentajeActual = (fmod($PorcentajeActual, 1) == 0) ?$PorcentajeActual:number_format($PorcentajeActual,2);
-                            //Tiempo Total
-                                $TiempoTotalEstacion=0;
-                                $MayorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNotNull('FechaTermina')->OrderBy('FechaTermina', 'desc')->first();
-                                $MenorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNotNull('FechaComienzo')->OrderBy('FechaComienzo', 'asc')->first();
-                                if($MayorFecha != "" AND $MenorFecha!=""){
-                                        $FechaPrimera=Carbon::parse($MenorFecha['pivot']->FechaComienzo);
-                                        $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
-                                        $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                                }
-                                $TiempoEstacionSegundos = $TiempoTotalEstacion;
-                                if($TiempoTotalEstacion >0){
-                                    $TiempoTotalEstacion=$this->Fechas($TiempoTotalEstacion);
-                                }
-                            //Tiempo Productivo por Estacion
-                                $TiempoProductivoEstacion=0;
-                                $TiempoProductivoEstacions=0;
-                                if($AreaPosible == 2 || $AreaPosible == 3){
-                                    $TiempoProductivoEstacionAreas = $PartidasOF->Areas()->whereNotNull('FechaTermina')->where('Areas_id',$AreaPosible)->get();
-                                    foreach($TiempoProductivoEstacionAreas as $TPEA){
-                                        $FechaPrimera=Carbon::parse($TPEA['pivot']->FechaComienzo);
-                                        $FechaTermina=Carbon::parse($TPEA['pivot']->FechaTermina);
-                                        $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                                    }
-                                }else{
-                                    $TiempoProductivoEstacionAreasA = $PartidasOF->Areas()->where('TipoPartida','!=','F')->where('Areas_id',$AreaPosible)->get();
-                                    $TiempoProductivoEstacionAreasF= $PartidasOF->Areas()->where('TipoPartida','=','F')->where('Areas_id',$AreaPosible)->get();
-                                    foreach($TiempoProductivoEstacionAreasA as $keyA => $TPEAA){
-                                        foreach($TiempoProductivoEstacionAreasF as $keyF => $TPEAF){
-                                            $CantidadA=$TPEAA['pivot']->Cantidad;
-                                            $CantidadF=$TPEAF['pivot']->Cantidad;
-                                            if($CantidadA == $CantidadF){
-                                                $FechaPrimera=Carbon::parse($TPEAA['pivot']->FechaComienzo);
-                                                $FechaTermina=Carbon::parse($TPEAF['pivot']->FechaTermina);
-                                                $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                                                unset($TiempoProductivoEstacionAreasF[$keyF]);
-                                                break;
-                                            }elseif($CantidadA > $CantidadF){
-                                                $FechaPrimera=Carbon::parse($TPEAA['pivot']->FechaComienzo);
-                                                $FechaTermina=Carbon::parse($TPEAF['pivot']->FechaTermina);
-                                                $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                                                $TPEAA['pivot']->Cantidad -= $CantidadF;
-                                                unset($TiempoProductivoEstacionAreasF[$keyF]);
-                                            }else{
-                                                $FechaPrimera=Carbon::parse($TPEAA['pivot']->FechaComienzo);
-                                                $FechaTermina=Carbon::parse($TPEAF['pivot']->FechaTermina);
-                                                $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                                                $TPEAF['pivot']->Cantidad -= $CantidadA;
-                                                unset($TiempoProductivoEstacionAreasA[$keyA]);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                if($TiempoProductivoEstacion>0){
-                                    $TiempoProductivoEstacions=$TiempoProductivoEstacion;
-                                    $TiempoProductivoEstacion=$this->Fechas($TiempoProductivoEstacion);
-                                }
-                                $TiempoOrdenes=$TiempoTotalEstacion;
-                        }else{
-                            //Tipo de Trabajo
-                                $Retrabajo=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad');
-                                $Normales=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad');
-                            //Porcentaje Actual por Area
-                                $AP=$AreaPosible;
-                                $PorcentajeActual=//($PorcentajeActual=$PartidasOF->Areas()->where('Areas_id', $AreaPosible)->where('TipoPartida','N')->get()->SUM('pivot.Cantidad'))-
-                                                ($PartidasOF->Areas()->where('Areas_id', $AreaPosible)->where('TipoPartida','=','F')->get()->SUM('pivot.Cantidad')
-                                                - $PartidasOF->Areas()->where('Areas_id', $AreaPosible)->where('TipoPartida','R')->get()->SUM('pivot.Cantidad'));
-                                if($PartidasOF->Areas()->where('Areas_id', $AreaPosible)->where('TipoPartida','=','F')->get()->SUM('pivot.Cantidad') == 0){
-                                    $PorcentajeActual=0;
-                                }
-                                $PorcentajeActual =($PorcentajeActual/$OrdenFabricacion->CantidadTotal)*100;
-                                $PorcentajeActual = (fmod($PorcentajeActual, 1) == 0) ?$PorcentajeActual:number_format($PorcentajeActual,2);
-                            //Tiempo Total
-                                $TiempoTotalEstacion=0;
-                                $MayorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNotNull('FechaTermina')->OrderBy('FechaTermina', 'desc')->first();
-                                $MenorFecha=$PartidasOF->Areas()->where('Areas_id',$AreaPosible)->whereNotNull('FechaComienzo')->OrderBy('FechaComienzo', 'asc')->first();
-                                if($MayorFecha != "" AND $MenorFecha!=""){
-                                        $FechaPrimera=Carbon::parse($MenorFecha['pivot']->FechaComienzo);
-                                        $FechaTermina=Carbon::parse($MayorFecha['pivot']->FechaTermina);
-                                        $TiempoTotalEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                                }
-                                $TiempoEstacionSegundos = $TiempoTotalEstacion;
-                                if($TiempoTotalEstacion >0){
-                                    $TiempoTotalEstacion=$this->Fechas($TiempoTotalEstacion);
-                                }
-                            //Tiempo Productivo por Estacion
-                                $TiempoProductivoEstacion=0;
-                                $TiempoProductivoEstacions=0;
-                                $TiempoProductivoEstacionAreasA = $PartidasOF->Areas()->where('TipoPartida','!=','F')->where('Areas_id',$AreaPosible)->get()->GroupBy('pivot.NumeroBloque');
-                                    foreach($TiempoProductivoEstacionAreasA as $keyA => $TPEAA){
-                                        $PrimerTPEAA = $TPEAA->first();
-                                        $PrimerTPEAF = $TPEAA->first();
-                                        $PrimerTPEAF = $PrimerTPEAF['pivot']->PartidasOF_id;
-                                        $TiempoProductivoEstacionAreasF = Partidasof_Areas::where('TipoPartida','=','F')->where('Areas_id',$AreaPosible)->where('NumeroBloque',$PrimerTPEAA['pivot']->NumeroBloque)->where('PartidasOF_id',$PrimerTPEAF)->first();
-                                        if($TiempoProductivoEstacionAreasF != ""){
-                                            $FechaPrimera=Carbon::parse($PrimerTPEAA['pivot']->FechaComienzo);
-                                            $FechaTermina=Carbon::parse($TiempoProductivoEstacionAreasF->FechaTermina);
-                                            $TiempoProductivoEstacion+=$FechaPrimera->diffInSeconds($FechaTermina);
-                                        }
-                                    }
-                                    $TiempoProductivoEstacions = $TiempoProductivoEstacion;
-                                    if($TiempoProductivoEstacion>0){
-                                        $TiempoProductivoEstacion=$this->Fechas($TiempoProductivoEstacion);
-                                    }
-                                    $TiempoOrdenes=$TiempoTotalEstacion;
-                        }
-                        $AreaDatos=Areas::find($AreaPosible);
-                        $Estaciones[$index] = ['PorcentajeActual' => $PorcentajeActual, 'Retrabajo' => $Retrabajo, 'Normales' => $Normales, 'TiempoOrdenes' => $TiempoOrdenes, 'AP' => $AP
-                                            ,'NombreArea'=>$AreaDatos->nombre,"TiempoProductivoEstacion"=>$TiempoProductivoEstacion, "TiempoEstacionSegundos"=>$TiempoEstacionSegundos];
-                        $TiempoTotal+=$TiempoProductivoEstacions;
-                        $TiempoProductivo+=$TiempoProductivoEstacions;
-                    }
-                }
-        // Asegúra que la respuesta siempre incluya una propiedad, incluso si no hay datos
-        /*if($estatus =="Abierta"){
-            $TiempoTotal = 0;
-            $TiempoProductivo = 0;
-            $TiempoMuerto = 0;
-        }
-        if($OrdenFabricacion->Escaner == 0){
-            $TiempoMuerto = $this->ConversionSegDias($TiempoTotal-$TiempoProductivo);
-            $TiempoTotal = $this->ConversionSegDias($TiempoTotal);
-            $TiempoProductivo = $this->ConversionSegDias($TiempoProductivo);
-        }*/
-        //$progreso = $this->Area_Actual($idFabricacion,$this->AreaEspecialEmpaque);
-        $OV = ($OrdenVenta->OrdenVenta != 00000) ? $OrdenVenta->OrdenVenta: "N/A";
-        $Cliente = ($OrdenVenta->OrdenVenta != 00000) ? $OrdenVenta->NombreCliente: "N/A";
-        return response()->json([
-            'progreso' => round($ProgresoTotal,2),
-            "Estatus" => $Estatus,
-            "Tiempototal" => [],//$TiempoTotal,
-            "TiempoDuracion" => [],
-            "TiempoProductivo" => [],
-            "TiempoTotal" => [],
-            "TiempoMuerto"=> [],
-            "Estaciones"=>[],
-            "TiempoPromedioSeg"=>0,
-            "RequiereCorte"=>$RequiereCorte,
-            'OV'=>$OV,
-            'Cliente'=>$Cliente,
-            'OrdenFabricacion' =>$OrdenFabricacion_num
-        ]);
-    }
-    //Detalles OV
-    public function DetallesOV(Request $request){
-        $OV = $request->id;
-        $OVdatos = OrdenVenta::where('OrdenVenta',$OV)->first();
-        if($OVdatos == "" OR $OV == '00000'){
-            return response()->json([
-            'Estatus' => "error",
-            "message" => "La Orden de Venta no existe!"
-            ]);
-        }
-        //Ordenes Estatus Porcentaje de Orden de Fabricacion
-        $EstatusOV=$OVdatos->ordenesFabricacions->where('Cerrada',1)->first();
-        if($EstatusOV == ""){
-            $EstatusOV = "Cerrada";
-        }else{
-            $EstatusOV = "Abierta";
-        }
-        $OrdenesFabricacionDatos = $OVdatos->ordenesFabricacions;
-        $PorcentajeOrdenVenta = 0;
-        $AreasDatos = [];
-        $NumeroOF = 1;
-        foreach($OrdenesFabricacionDatos as $key => $OFD){
-            if($key != 0){
-                $NumeroOF += 1;
-            }
-            $request = new Request(['id' => $OFD->OrdenFabricacion]);
-            $DetallesOrdenFabricacion = $this->DetallesOF($request);
-            $data = $DetallesOrdenFabricacion->getData(true);
-            $AreasDatos[] = [$data['OrdenFabricacion'],$data['progreso'],$data['Estaciones'],$OFD->Corte,$OFD->Urgencia]; 
-            $PorcentajeOrdenVenta += $data['progreso']; 
-        }
-        $PorcentajeOrdenVenta = $PorcentajeOrdenVenta/$NumeroOF;
-        //return $OrdenFabricacion = $OVdatos->OrdenFabricacion;
-        return response()->json([
-            'Estatus' => "success",            
-            'Cliente'=>$OVdatos->NombreCliente,
-            'OV'=>$OVdatos->OrdenVenta,
-            'OVEstatus'=>$EstatusOV,
-            'progreso' => $PorcentajeOrdenVenta,
-            'AreasDatos' => $AreasDatos,
-            /*'progreso' => round($Progreso,2),
-            "Estatus" => $estatus,
-            "Tiempototal" => $TiempoTotal,
-            "TiempoDuracion" => $TiempoDuracion,
-            "TiempoProductivo" => $TiempoProductivo,
-            "TiempoTotal" => $TiempoTotal,
-            "TiempoMuerto"=> $TiempoMuerto,
-            "Estaciones"=>$Estaciones,
-            "TiempoPromedioSeg"=>$TiempoPromedioSeg,
-            "RequiereCorte"=>$RequiereCorte,
-            'OV'=>$OV,
-            'Cliente'=>$Cliente*/
-        ]);
-    }
-    function Fechas($TiempoTotalEstacion){
-        $horas = floor($TiempoTotalEstacion / 3600);
-        $minutos = floor(($TiempoTotalEstacion % 3600) / 60);
-        $segundos = $TiempoTotalEstacion % 60;
-        if($horas!=0){$TiempoTotalEstacion = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
-        elseif($minutos!=0){$TiempoTotalEstacion = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
-        elseif($segundos!=0){$TiempoTotalEstacion = sprintf("%02d Segundos",$segundos);}
-        else{$TiempoTotalEstacion = 0;}
-        return $TiempoTotalEstacion;
-    }
-    function ConversionSegDias($Tiempo){
-        //Tiempo tiene que ser en segundos
-        if($Tiempo>0){
-            $horas = floor($Tiempo / 3600);
-            $minutos = floor(($Tiempo % 3600) / 60);
-            $segundos = $Tiempo % 60;
-            if($horas!=0){$Tiempo = sprintf("%02d Horas %02d Minutos %02d Segundos", $horas, $minutos, $segundos);}
-            elseif($minutos!=0){$Tiempo = sprintf("%02d Minutos %02d Segundos", $minutos, $segundos);}
-            elseif($segundos!=0){$Tiempo = sprintf("%02d Segundos",$segundos);}
-            else{$Tiempo = 0;}
-        }
-        return $Tiempo;
-    }
-    public function tiempoS(Request $request){
-        $idFabricacion = $request->input('id');
-        $duracionFinalCortes =  DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->select(
-            'ordenfabricacion.OrdenFabricacion',
-            'partidasof.FechaComienzo',
-            DB::raw('GROUP_CONCAT(partidasof.OrdenFabricacion_id) as ids'),
-            DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'),
-            DB::raw('MAX(partidasof.FechaFinalizacion) as FechaTermina'),
-            DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof.FechaComienzo, partidasof.FechaFinalizacion)) as TotalMinutos')
-        )
-        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
-        ->get();
-        $duracionFinal9 = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-        ->where('partidasof_areas.Areas_id', 17)
-        ->select(
-            'ordenfabricacion.OrdenFabricacion',
-            'partidasof_areas.PartidasOf_id',
-            'partidasof_areas.Areas_id',
-            DB::raw('GROUP_CONCAT(partidasof_areas.id) as ids'),
-            DB::raw('MIN(partidasof_areas.FechaComienzo) as FechaComienzo'),
-            DB::raw('MAX(partidasof_areas.FechaTermina) as FechaTermina'),
-            DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof_areas.FechaComienzo, partidasof_areas.FechaTermina)) as TotalMinutos')
-        )
-        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.PartidasOf_id', 'partidasof_areas.Areas_id')
-        ->get()
-        ->map(function ($item) {
-            if ($item->TotalMinutos == 0) {
-                $item->DuracionTotal = "0 días, 0 horas, 0 minutos";
-            } else {
-                $totalMinutos = $item->TotalMinutos;
-                $dias = floor($totalMinutos / (60 * 24));
-                $horas = floor(($totalMinutos % (60 * 24)) / 60);
-                $minutos = $totalMinutos % 60;
-
-                $duracion = [];
-                if ($dias > 0) $duracion[] = "{$dias} días";
-                if ($horas > 0) $duracion[] = "{$horas} horas";
-                if ($minutos > 0) $duracion[] = "{$minutos} minutos";
-                $item->DuracionTotal = implode(", ", $duracion);
-            }
-            $item->ids = explode(',', $item->ids);
-            return $item;
-        });
-        
-        $fechaComienzoTotal = $duracionFinalCortes->pluck('FechaComienzo')->min();
-        $fechaTerminaTotal = $duracionFinal9->pluck('FechaTermina')->max();
-
-        $fechaComienzoCarbon = Carbon::parse($fechaComienzoTotal);
-        $fechaTerminaCarbon = Carbon::parse($fechaTerminaTotal);
-        $diferencia = $fechaComienzoCarbon->diff($fechaTerminaCarbon);
-
-        $duracion = [];
-
-        if ($diferencia->d > 0) $duracion[] = "{$diferencia->d} días";
-        if ($diferencia->h > 0) $duracion[] = "{$diferencia->h} horas";
-        if ($diferencia->i > 0) $duracion[] = "{$diferencia->i} minutos";
-
-        // Si no hay diferencia de tiempo, mostrar "0 minutos"
-        $DuracionTotal = !empty($duracion) ? implode(", ", $duracion) : "0 minutos";
-
-        $tiempototal = [
-            'FechaComienzo' => $fechaComienzoCarbon->format('Y-m-d H:i'),
-            'FechaTermina' => $fechaTerminaCarbon->format('Y-m-d H:i'),
-            'DuracionTotal' => $DuracionTotal,
-        ];
-
-        // Tiempo de cortes
-        $tiemposcortes = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->select(
-            'ordenfabricacion.OrdenFabricacion',
-            'partidasof.FechaComienzo',
-            'partidasof.FechaFinalizacion', 
-            DB::raw('GROUP_CONCAT(partidasof.OrdenFabricacion_id) as ids'),
-            DB::raw('MIN(partidasof.FechaComienzo) as FechaComienzo'),
-            DB::raw('MAX(partidasof.FechaFinalizacion) as FechaTermina'),
-            DB::raw('SUM(TIMESTAMPDIFF(MINUTE, partidasof.FechaComienzo, partidasof.FechaFinalizacion)) as TotalMinutos'),
-            DB::raw('SUM(TIMESTAMPDIFF(SECOND, partidasof.FechaComienzo, partidasof.FechaFinalizacion)) as TotalSegundos')
-        )
-        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof.FechaComienzo', 'partidasof.FechaFinalizacion')
-        ->get()
-        ->map(function ($item) {
-            if ($item->TotalSegundos == 0) {
-                $item->Duracion = "0 minutos";
-            } else {
-                $FechaComienzo = Carbon::parse($item->FechaComienzo);
-                $FechaFinalizacion = Carbon::parse($item->FechaFinalizacion);
-                
-                $diffDias = floor($FechaComienzo->diffInHours($FechaFinalizacion) / 24);
-                $diffHoras = $FechaComienzo->diffInHours($FechaFinalizacion) % 24;
-                $diffMinutos = $FechaComienzo->diffInMinutes($FechaFinalizacion) % 60;
-                $diffSegundos = $FechaComienzo->diffInSeconds($FechaFinalizacion) % 60;
-    
-                $duracion = [];
-    
-                if ($diffDias > 0) $duracion[] = "{$diffDias} días";
-                if ($diffHoras > 0) $duracion[] = "{$diffHoras} horas";
-                if ($diffMinutos > 0) $duracion[] = "{$diffMinutos} minutos";
-                if ($diffSegundos > 0) $duracion[] = "{$diffSegundos} segundos";
-    
-                $item->Duracion = !empty($duracion) ? implode(", ", $duracion) : "0 minutos";
-            }
-            return $item;
-        });
-    
-        // Tiempo por áreas
-        $tiemposareas = DB::table('ordenfabricacion')
-        ->join('partidasof', 'ordenfabricacion.id', '=', 'partidasof.OrdenFabricacion_id')
-        ->join('partidasof_areas', 'partidasof.id', '=', 'partidasof_areas.PartidasOF_id')
-        ->select(
-            'ordenfabricacion.OrdenFabricacion',
-            'partidasof_areas.PartidasOf_id',
-            'partidasof_areas.Areas_id',
-            DB::raw('GROUP_CONCAT(partidasof_areas.id) as ids'),
-            DB::raw('MIN(partidasof_areas.FechaComienzo) as FechaComienzo'), // Primer FechaComienzo
-            DB::raw('MAX(partidasof_areas.FechaTermina) as FechaTermina') // Último FechaTermina
-        )
-        ->where('ordenfabricacion.OrdenFabricacion', $idFabricacion)
-        ->groupBy('ordenfabricacion.OrdenFabricacion', 'partidasof_areas.PartidasOf_id', 'partidasof_areas.Areas_id')
-        ->get()
-        ->map(function ($item) {
-        // Si no hay FechaTermina, utilizamos FechaComienzo como valor de referencia
-        $fechaTermina = $item->FechaTermina ? $item->FechaTermina : $item->FechaComienzo;
-
-        // Cálculo de la diferencia en minutos y segundos
-        $fechaInicio = new \Carbon\Carbon($item->FechaComienzo);
-        $fechaFin = new \Carbon\Carbon($fechaTermina);
-        
-        // Calcular la duración en minutos y segundos
-        $totalMinutos = $fechaInicio->diffInMinutes($fechaFin);
-        $totalSegundos = $fechaInicio->diffInSeconds($fechaFin);
-
-        // Guardar los valores calculados
-        $item->TotalMinutos = $totalMinutos;
-        $item->TotalSegundos = $totalSegundos;
-
-        // Calcular la duración total en formato legible
-        if ($totalSegundos == 0) {
-            $item->DuracionTotal = "0 minutos";
-        } else {
-            $dias = floor($totalMinutos / (60 * 24));
-            $horas = floor(($totalMinutos % (60 * 24)) / 60);
-            $minutos = $totalMinutos % 60;
-            $segundos = $totalSegundos % 60;
-
-            $duracion = [];
-            if ($dias > 0) $duracion[] = "{$dias} días";
-            if ($horas > 0) $duracion[] = "{$horas} horas";
-            if ($minutos > 0) $duracion[] = "{$minutos} minutos";
-            if ($segundos > 0) $duracion[] = "{$segundos} segundos";
-
-            $item->DuracionTotal = !empty($duracion) ? implode(", ", $duracion) : "0 minutos";
-        }
-        $item->ids = explode(',', $item->ids);
-        return $item;
-        });
-
-
-            // Sumar los segundos de ambos conjuntos de datos
-            $totalSegundosCortes = $tiemposcortes->pluck('TotalSegundos')->map(function($segundos) {
-                return (int) $segundos; // Convertir los segundos a enteros
-            })->sum();
-            $totalSegundosAreas = $tiemposareas->pluck('TotalSegundos')->map(function($segundos) {
-                return (int) $segundos; // Convertir los segundos a enteros
-            })->sum();
-            $totalSegundos = $totalSegundosCortes + $totalSegundosAreas;
-            $duracionTotalSegundos = ($diferencia->d * 86400) + ($diferencia->h * 3600) + ($diferencia->i * 60); 
-
-            $TiempoMuerto = $duracionTotalSegundos - $totalSegundos;
-            
-            // Convertir los segundos restantes en días, horas, minutos y segundos
-            $diasMuertos = floor($TiempoMuerto / 86400);
-            $horasMuertas = floor(($TiempoMuerto % 86400) / 3600);
-            $minutosMuertos = floor(($TiempoMuerto % 3600) / 60);
-            $segundosMuertos = $TiempoMuerto % 60;
-            
-            // Construir la duración omitiendo valores en 0
-            $duracion = [];
-            
-            if ($diasMuertos > 0) $duracion[] = "{$diasMuertos} días";
-            if ($horasMuertas > 0) $duracion[] = "{$horasMuertas} horas";
-            if ($minutosMuertos > 0) $duracion[] = "{$minutosMuertos} minutos";
-            if ($segundosMuertos > 0) $duracion[] = "{$segundosMuertos} segundos";
-            
-            // Si no hay tiempo muerto, mostrar "0 segundos"
-            $TiempoMuertoFormato = !empty($duracion) ? implode(", ", $duracion) : "0 segundos";
-            
-            return response()->json([
-                'tiemposcortes' => $tiemposcortes,
-                'tiemposareas' => $tiemposareas,
-                'tiempototal' => $tiempototal,
-                'totalSegundos' => $totalSegundos . ' segundos',
-                'TiempoMuertoFormato' => $TiempoMuertoFormato
-            ]);
-            
-    } 
-    //Estatus Ordenes de Fabricación
-    public function EstatusOrdenesFabricacion($FechaInicio = null, $FechaFin = null,$Estatus = null){
-        $user = Auth::user();
-        if($user->hasPermission('Vista Estatus Orden F.')){
-            if(!isset($FechaInicio)){
-                $FechaInicio = now()->subWeek()->toDateString();
-            }
-            if(!isset($FechaFin)){
-                $FechaFin = now()->toDateString();
-            }
-        $BodyTable = "";
-            if($Estatus=='Abiertas'){
-                $OrdenFabricacionAbiertas = OrdenFabricacion::where('Cerrada','1')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
-                foreach($OrdenFabricacionAbiertas as $key=>$OFA){
-                    $Usuario = "SIN CORTE";
-                    $Escaner = "Masivo";
-                    $OrdenVenta = $OFA->OrdenVenta->OrdenVenta;
-                    if($OFA->Escaner == 1){
-                        $Escaner = "Uno a uno";
-                    }
-                    $Urgencia = "Urgente";
-                    if($OFA->Urgencia == 'N'){
-                        $Urgencia = "Normal";
-                    }
-                    $LLC = "Si";
-                    if($OFA->LLC == 0){
-                        $LLC = "No";
-                    }
-                    if($OFA->ResponsableUser_id){
-                        $user= User::find($OFA->ResponsableUser_id);
-                        $Usuario = $user->name." ".$user->apellido;
-                    }
-                    $PartidaOF = $OFA->PartidasOF()->first();
-                    $UltimaEstacion = "Planeación";
-                    if($PartidaOF != ""){
-                        $PartidaOFAreas = $PartidaOF->Areas()->where('Areas_id','!=',$this->AreaClasificacion)->orderBy('Areas_id','desc')->get();
-                        if($PartidaOFAreas->count() > 0 ){
-                            $UltimaEstacion  = $PartidaOFAreas->first();
-                            $UltimaEstacion = $UltimaEstacion['pivot']->Areas_id;
-                            $UltimaEstacion = $this->AreaNombre($UltimaEstacion);
-                        }
-                    }
-                    $BodyTable .= '<tr>
-                                    <td class="text-center">'.($key+1).'</td>
-                                    <td class="text-center">'. $OFA->OrdenFabricacion.'</td>
-                                    <td class="text-center">'. $OrdenVenta .'</td>';
-                                    if(Auth::user()->hasPermission("Vista Planeacion")){
-                                        $BodyTable .= '<td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">'.$Usuario.'</span></div></td>';
-                                    }
-                    $BodyTable .= '<td class="text-center">'. $OFA->Articulo.'</td>
-                                    <td class="text-center"> 
-                                        <div class="MostrarMenos" id="collapseA'. $OFA->OrdenFabricacion.'">
-                                            '.$OFA->Descripcion.'
-                                        </div>
-                                        <a  onclick="MostrarMas(\'collapseA'. $OFA->OrdenFabricacion.'\',this);" class="btn btn-sm btn-link">Ver más</a>
-                                    </td>
-                                    <td class="text-center">'. $OFA->CantidadTotal .'</td>
-                                    <td class="text-center">'. $OFA->FechaEntrega .'</td>
-                                    <td class="text-center">'. $OFA->FechaEntregaSAP .'</td>
-                                    <td class="text-center">'.$Escaner.'</td>
-                                    <td class="text-center">'.$Urgencia.'</td>
-                                    <td class="text-center">'. $LLC.'</td>
-                                    <td class="text-center">'.$UltimaEstacion.'</td>
-                                    <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-success"><span class="fw-bold">Abierta</span></div></td>
-                                </tr>';
-                }
-                 return response()->json([
-                    'BodyTabla' => $BodyTable,
-                    "status" => 'success',
-                ]);
-            }elseif($Estatus=='Cerradas'){
-                $OrdenFabricacionCerradas = OrdenFabricacion::where('Cerrada','0')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
-                foreach($OrdenFabricacionCerradas as $key => $OFC){
-                    $OrdenVenta = $OFC->OrdenVenta->OrdenVenta;
-                    $Usuario = "SIN CORTE";
-                    $Escaner = "Masivo";
-                    if($OFC->Escaner == 1){
-                        $Escaner = "Uno a uno";
-                    }
-                    $Urgencia = "Urgente";
-                    if($OFC->Urgencia == 'N'){
-                        $Urgencia = "Normal";
-                    }
-                    $LLC = "Si";
-                    if($OFC->LLC == 0){
-                        $LLC = "No";
-                    }
-                    if($OFC->ResponsableUser_id){
-                        $user= User::find($OFC->ResponsableUser_id);
-                        $Usuario = $user->name." ".$user->apellido;
-                    }
-                    $PartidaOF = $OFC->PartidasOF()->first();
-                    $UltimaEstacion = "Planeación";
-                    if($PartidaOF != ""){
-                        $PartidaOFAreas = $PartidaOF->Areas()->where('Areas_id','!=',$this->AreaClasificacion)->orderBy('Areas_id','desc')->get();
-                        if($PartidaOFAreas->count() > 0 ){
-                            $UltimaEstacion  = $PartidaOFAreas->first();
-                            $UltimaEstacion = $UltimaEstacion['pivot']->Areas_id;
-                            $UltimaEstacion = $this->AreaNombre($UltimaEstacion);
-                        }
-                    }
-                    $BodyTable .= '<tr>
-                                    <td class="text-center">'.($key+1).'</td>
-                                    <td class="text-center">'. $OFC->OrdenFabricacion.'</td>
-                                    <td class="text-center">'. $OrdenVenta.'</td>';
-                                    if(Auth::user()->hasPermission("Vista Planeacion")){
-                                        $BodyTable .= '<td><div class="badge badge-phoenix fs--2 badge-phoenix-info"><span class="fw-bold">'.$Usuario.'</span></div></td>';
-                                    }
-                    $BodyTable .= ' <td class="text-center">'. $OFC->Articulo .'</td>
-                                    <td class="text-center"> 
-                                        <div class="MostrarMenos" id="collapseC'. $OFC->OrdenFabricacion.'">
-                                            '.$OFC->Descripcion.'
-                                        </div>
-                                        <a  onclick="MostrarMas(\'collapseC'. $OFC->OrdenFabricacion.'\',this);" class="btn btn-sm btn-link">Ver más</a>
-                                    </td>
-                                    <td class="text-center">'. $OFC->CantidadTotal .'</td>
-                                    <td class="text-center">'. $OFC->FechaEntrega .'</td>
-                                    <td class="text-center">'. $OFC->FechaEntregaSAP .'</td>
-                                    <td class="text-center">'.$Escaner.'</td>
-                                    <td class="text-center">'.$Urgencia.'</td>
-                                    <td class="text-center">'. $LLC.'</td>
-                                    <td class="text-center">'.$UltimaEstacion.'</td>
-                                    <td class="text-center"><div class="badge badge-phoenix fs--2 badge-phoenix-primary"><span class="fw-bold">Cerrada</span></div></td>
-                                </tr>';
-                }
-                return response()->json([
-                    'BodyTabla' => $BodyTable,
-                    "status" => 'success',
-                ]);
-            }else{
-                $OrdenFabricacionAbiertas = OrdenFabricacion::where('Cerrada','1')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
-                foreach($OrdenFabricacionAbiertas as $OFA){
-                    $PartidaOF = $OFA->PartidasOF()->first();
-                    $OrdenVenta = $OFA->OrdenVenta->OrdenVenta;
-                    $UltimaEstacion = "Planeación";
-                    if($PartidaOF != ""){
-                        $PartidaOFAreas = $PartidaOF->Areas()->where('Areas_id','!=',$this->AreaClasificacion)->orderBy('Areas_id','desc')->get();
-                        if($PartidaOFAreas->count() > 0 ){
-                            $UltimaEstacion  = $PartidaOFAreas->first();
-                            $UltimaEstacion = $UltimaEstacion['pivot']->Areas_id;
-                            $UltimaEstacion = $this->AreaNombre($UltimaEstacion);
-                        }
-                    }
-                    if($OFA->ResponsableUser_id){
-                        $user= User::find($OFA->ResponsableUser_id);
-                        $OFA['ResponsableUser'] = $user->name."  ".$user->apellido;
-                    }else{
-                        $OFA['ResponsableUser'] = null;
-                    }
-                    $OFA['UltimaEstacion'] = $UltimaEstacion;
-                    $OFA['OrdenVenta'] = ($OrdenVenta == '00000')?"Sin Orden Venta":$OrdenVenta;
-                }
-                $OrdenFabricacionCerradas = OrdenFabricacion::where('Cerrada','0')->whereBetween('FechaEntrega', [$FechaInicio, $FechaFin])->orderBy('OrdenFabricacion', 'asc')->get();
-                foreach($OrdenFabricacionCerradas as $OFC){
-                    $PartidaOF = $OFC->PartidasOF()->first();
-                    $OrdenVenta = $OFC->OrdenVenta->OrdenVenta;
-                    $UltimaEstacion = "Planeación";
-                    if($PartidaOF != ""){
-                        $PartidaOFAreas = $PartidaOF->Areas()->where('Areas_id','!=',$this->AreaClasificacion)->orderBy('Areas_id','desc')->get();
-                        if($PartidaOFAreas->count() > 0 ){
-                            $UltimaEstacion  = $PartidaOFAreas->first();
-                            $UltimaEstacion = $UltimaEstacion['pivot']->Areas_id;
-                            $UltimaEstacion = $this->AreaNombre($UltimaEstacion);
-                        }
-                    }
-                    if($OFC->ResponsableUser_id){
-                        $user= User::find($OFC->ResponsableUser_id);
-                        $OFC['ResponsableUser'] = $user->name."  ".$user->apellido;
-                    }
-                    else{$OFC['ResponsableUser'] = null;
-                    }
-                    $OFC['UltimaEstacion'] = $UltimaEstacion;
-                    $OFC['OrdenVenta'] = ($OrdenVenta == '00000')?"Sin Orden Venta":$OrdenVenta;
-                }
-                return view('Busqueda.EstatusOrdenesFabricacion',compact('OrdenFabricacionAbiertas','OrdenFabricacionCerradas','FechaInicio','FechaFin'));
-            }
-        }else
-        return redirect()->route('error');
-    }
-    //Sacar nombre del Area
-    public function AreaNombre($IdArea){
-        $Area = Areas::find($IdArea); 
-        return $Area->nombre;
-    }
-
-    //Funcion para traer la cantidad por Area
-    public function Area_Actual($Codigo,$Area){
-        $OF=OrdenFabricacion::where('OrdenFabricacion',$Codigo)->first();
-        $PartidasOF=$OF->PartidasOF->first();
-        $POFAreas=$PartidasOF->Areas()->where('Areas_id',$Area)->get();
-        return$totalCantidad = $POFAreas->SUM('pivot.Cantidad');
-    }
 }
