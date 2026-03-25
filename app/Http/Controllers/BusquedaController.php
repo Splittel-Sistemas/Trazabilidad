@@ -249,6 +249,7 @@ class BusquedaController extends Controller
         }
         $OV = ($OrdenVenta->OrdenVenta != 00000) ? $OrdenVenta->OrdenVenta: "N/A";
         $Cliente = ($OrdenVenta->OrdenVenta != 00000) ? $OrdenVenta->NombreCliente: "N/A";
+        $FechaFin_empaque = ($OrdenFabricacion->FechaFin == "")?$FechaFin_empaque:$OrdenFabricacion->FechaFin;
         return response()->json([
             'CantidadTotal' => $CantidadTotal,
             'Estatus' => $Estatus,

@@ -197,7 +197,7 @@
                                         </td>
                                     </tr>
                                     <tr class="bg-light">
-                                        <td class="fw-black py-0 px-5" colspan="3">Descripci&oacute;n</td>
+                                        <td class="text-center fw-black py-0 px-5" colspan="3">Descripci&oacute;n</td>
                                         <td class="text-center fw-black p-0" colspan="1">Fecha Entrega</td>
                                         <td class="text-center fw-black p-0" colspan="1">Fecha Fin</td>
                                     </tr>
