@@ -17,6 +17,7 @@
         body {
             overflow: hidden;
             background:linear-gradient(135deg, #00458f 50%,#00254d 50%);
+            background: linear-gradient(135deg, #b91313 50%, #707070 50%);
             height: 100vh;
             width: 100%;
             display: flex;
@@ -27,6 +28,8 @@
         .container {
             background: #003d82c5;
             background: #ffffffb2;
+            background: #b913139f;
+            background: #707070ad;
             padding: 12px;
             border-radius: 2.5rem;
             box-shadow: 0 0 10px rgba(15, 15, 15, 0.774);
@@ -47,11 +50,13 @@
             border-radius: 1rem;
             width: 12rem;
             border: #007bff;
+            border: #b913139f;
             border-width: 2px;
             transition: background 0.4s, color 0.3s;
         }
         .btn-select:hover{
             background:#0056b3;
+            background: #b91313;
             color: #fff;
         }
         .bg-select{
@@ -61,6 +66,7 @@
         }
         .active{
             background:#0056b3;
+            background: #b91313;
             color: #fff;
         }
         .img{
@@ -78,6 +84,7 @@
         .input-field:focus {
             transition: border-color 0.4s, color 0.3s;
             border-color: #007bff;
+            border-color: #b91313;
             outline: none;
         }
         #login-button {
@@ -88,9 +95,12 @@
             font-size: 16px;
             cursor: pointer;
             transition: 0.3s;
+            /*background-color: #b91313;
+            color: white;*/
         }
         #login-button:hover {
             background-color: #0056b3;
+            background: #b91313;
             color: white;
             transform: scale(1.1);
         }
@@ -100,14 +110,17 @@
             padding: 10px;
             border: none;
             border-radius: 90px;
-            background-color: #0056b3;
-            color: white;
+            /*background-color: #0056b3;
+            background-color: #b91313;
+            color: white;*/
             font-size: 16px;
             cursor: pointer;
             transition: 0.3s;
         }
         #login-operador:hover {
             background-color: #003d82;
+            background-color: #b91313;
+            color: white;
             transform: scale(1.1);
         }
         .bg-bubbles{
