@@ -71,6 +71,7 @@
         }
         .img{
             margin-top: 0.5rem;
+            margin-bottom: 2rem;
         }
         .input-field {
             transition: border-color 0.3s, outline 0.3s;
