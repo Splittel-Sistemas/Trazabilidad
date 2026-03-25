@@ -4,37 +4,27 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f6f8;
       margin: 0;
       padding: 0;
     }
-
     header {
-      background-color: #1e88e5;
-      color: white;
       padding: 20px 40px;
       text-align: center;
     }
-
     h1 {
       margin: 0;
       font-size: 28px;
     }
-
     .container {
       max-width: 1000px;
       margin: 30px auto;
       padding: 0 20px;
     }
-
     .module {
-      background-color: white;
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-
     .module h2 {
       margin-top: 0;
       font-size: 22px;
@@ -42,39 +32,32 @@
       border-left: 4px solid #1e88e5;
       padding-left: 10px;
     }
-
     ul.manuals {
       list-style: none;
       padding-left: 0;
     }
-
     ul.manuals li {
       margin: 10px 0;
     }
-
     ul.manuals li a {
       text-decoration: none;
       color: #1e88e5;
       font-weight: 500;
       transition: color 0.2s;
     }
-
     ul.manuals li a:hover {
       color: #1565c0;
     }
-
     footer {
       text-align: center;
       padding: 20px;
       color: #777;
       font-size: 14px;
     }
-
     @media (max-width: 600px) {
       .module h2 {
         font-size: 18px;
       }
-
       h1 {
         font-size: 22px;
       }
@@ -82,7 +65,7 @@
   </style>
 @endsection
 @section('content')
-   <header>
+   <header class="text-white bg-info">
     <h1 class="text-white">📚 Manuales de Usuario </h1>
   </header>
   <div class="container">
@@ -117,27 +100,8 @@
         $MANUAL_ROLESYPERMISOS = storage_path('app/public/Manuales/Estaciones/MANUAL_ROLESYPERMISOS_TRAZABILIDAD.pdf');
         $MANUAL_LINEAS = storage_path('app/public/Manuales/Estaciones/MANUAL_LINEAS_TRAZABILIDAD.pdf');
     @endphp
-    {{--<div class="module">
-      <h2>🏠 Módulo Home</h2>
-      <ul class="manuals">
-        <li><a href="#">📘 Registro de Usuarios</a></li>
-        <li><a href="#">📘 Asignación de Roles</a></li>
-        <li><a href="#">📘 Recuperación de Contraseña</a></li>
-      </ul>
-    </div>
-    
-    @if(Auth::user()->hasPermission("Vista Dashboard"))
-    <div class="module">
-      <h2>📈 Módulo Dashboard</h2>
-      <ul class="manuals">
-        <li><a href="#">📘 Ingreso de Productos</a></li>
-        <li><a href="#">📘 Actualización de Stock</a></li>
-        <li><a href="#">📘 Reportes de Inventario</a></li>
-      </ul>
-    </div>
-    @endif--}}
     @if(Auth::user()->hasPermission("Vista Progreso") OR Auth::user()->hasPermission("Vista Estatus Orden Fabricación"))
-        <div class="module">
+        <div class="module bg-white">
             <div class="accordion" id="accordionExample">
                 <div class="accordion-item border-top">
                     <h2 class="accordion-header" id="headingOne">
@@ -166,7 +130,7 @@
         </div>
     @endif
     @if(Auth::user()->hasPermission("Vista Reportes"))
-        <div class="module">
+        <div class="module bg-white">
             <div class="accordion" id="accordionExample">
                 <div class="accordion-item border-top">
                     <h2 class="accordion-header" id="headingOne">
@@ -193,7 +157,7 @@
             </div>
         </div>
     @endif
-    <div class="module">
+    <div class="module bg-white">
         <div class="accordion" id="accordionExample">
                 <div class="accordion-item border-top">
                     <h2 class="accordion-header" id="headingOne">
@@ -301,7 +265,7 @@
         </div>
     </div>
     @if(Auth::user()->hasPermission("Vista Etiquetas"))
-        <div class="module">
+        <div class="module bg-white">
             <div class="accordion" id="accordionExample">
                 <div class="accordion-item border-top">
                     <h2 class="accordion-header" id="headingOne">
@@ -323,7 +287,7 @@
         </div>
     @endif
     @if(Auth::user()->hasPermission("Vista Usuarios"))
-        <div class="module">
+        <div class="module bg-white">
             <div class="accordion" id="accordionExample">
                 <div class="accordion-item border-top">
                     <h2 class="accordion-header" id="headingOne">
@@ -345,7 +309,7 @@
         </div>
     @endif
     @if(Auth::user()->hasPermission("Vista Roles y permisos"))
-        <div class="module">
+        <div class="module bg-white">
             <div class="accordion" id="accordionExample">
                 <div class="accordion-item border-top">
                     <h2 class="accordion-header" id="headingOne">
@@ -367,7 +331,7 @@
         </div>
     @endif
     @if(Auth::user()->hasPermission("Vista Lineas"))
-        <div class="module">
+        <div class="module bg-white">
             <div class="accordion" id="accordionExample">
                 <div class="accordion-item border-top">
                     <h2 class="accordion-header" id="headingOne">
@@ -387,7 +351,6 @@
         </div>
     @endif
   </div>
-
   <footer>
     &copy; 2026 TOR (Trazabilidad Operaci&oacute;n y Rastreo) - Documentación de Usuario <br> Actualizada al 2026 <br> V3.0.0
   </footer>
