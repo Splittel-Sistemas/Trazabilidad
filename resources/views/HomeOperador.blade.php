@@ -2,7 +2,6 @@
 @section('title', 'Dashboard Operador')
 @section('styles')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
     .carousel-content-wrapper{ 
         max-width: 100%;
@@ -52,11 +51,37 @@
     }
     .carousel-title{
         color: #fdfdfd;
-        margin-bottom: 0.5rem; 
+        margin-bottom: 0.5rem;
+        margin-top: 1rem;
+        width: 100%;
     }
     .carousel-content{
         color: #ffffff;
-        margin-top: 0; 
+        margin-top: 2rem; 
+        margin-left: 4rem; 
+        margin-right: 4rem;
+        text-justify:distribute;
+        text-justify: inter-word;
+        min-height: 11rem;
+        max-height: 11rem;
+        overflow-y: auto;
+    }
+    .carousel-content::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    .carousel-content::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.075); 
+        border-radius: 10px;
+    }
+    .carousel-content::-webkit-scrollbar-thumb {
+        background: #fcfcfc56;
+        border-radius: 10px;
+        border: 5px solid rgba(255, 255, 255, 0.295);
+        background-clip: padding-box;
+    }
+    .carousel-content::-webkit-scrollbar-thumb:hover {
+        background: #dfdfdf3a;
     }
     #ImgSinAvisos{
         margin: 1rem 1rem 2rem 1rem;
@@ -79,7 +104,13 @@
 @endsection
 @section('content')
 @php
-    $colores = ['#FF5733', '#33B5E5', '#4CAF50', '#FFC107', '#9C27B0']; 
+    $colores = array();
+    for($i=0; $i<$Avisos->count(); $i++){
+        $r = rand(0, 150);
+        $g = rand(0, 150);
+        $b = rand(0, 150);
+        $colores[] = sprintf('#%02x%02x%02x', $r, $g, $b);
+    }
 @endphp
 @if(Auth::user()->hasPermission("Enviar Avisos"))
     <div class="d-flex justify-content-end mb-1">
@@ -119,13 +150,13 @@
                                 <div class="">
                                     {{--<button class="btn btn-warning" style="right: 1rem;width: 10%;position:absolute;"><i class="fas fa-edit"></i></button>--}}
                                     @if($Aviso->Html == 'no')
-                                    <h3 class="carousel-title">{{ ucwords($Aviso->Titulo ?? 'Avisos') }}</h3>
-                                    <p class="carousel-content">{{ $Aviso->Contenido }}</p>
+                                        <h3 class="carousel-title">{{ ucwords($Aviso->Titulo ?? 'Avisos') }}</h3>
+                                        <p class="carousel-content">{{ $Aviso->Contenido }}</p>
                                     @else
-                                    <h3 class="text-dark">{{ ucwords($Aviso->Titulo ?? 'Avisos') }}</h3>
-                                    <div class="text-dark">
-                                        {!! $Aviso->Contenido !!}
-                                    </div>
+                                        <h3 class="text-dark mb-4">{{ ucwords($Aviso->Titulo ?? 'Avisos') }}</h3>
+                                        <div class="text-dark">
+                                            {!! $Aviso->Contenido !!}
+                                        </div>
                                     @endif
                                 </div>
                             </div>
