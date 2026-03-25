@@ -85,7 +85,6 @@
    <header>
     <h1 class="text-white">📚 Manuales de Usuario </h1>
   </header>
-
   <div class="container">
     @php
         //CUANDO SE AGREGUE UN MANUAL ESTA ES LA RUTA PARA COMPROBAR SI EXISTE
@@ -390,7 +389,7 @@
   </div>
 
   <footer>
-    &copy; 2025 Sistema Trazabilidad - Documentación de Usuario <br> Actualizada al 2025
+    &copy; 2026 TOR (Trazabilidad Operaci&oacute;n y Rastreo) - Documentación de Usuario <br> Actualizada al 2026 <br> V3.0.0
   </footer>
 @endsection
 @section('scripts')

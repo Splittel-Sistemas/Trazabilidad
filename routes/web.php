@@ -239,5 +239,5 @@ Route::get('/Home',[HomeController::class, 'indexoperador'])->name('index.operad
 Route::post('/guardar-aviso', [HomeController::class, 'guardarAviso'])->name('guardarAviso');
 Route::put('/Planeacion/actualizar/fecha',[PlaneacionController:: class,'ActualizarFechaPlaneacion'])->name('ActualizarFechaPlaneacion');
 Route::get('/tiempo/promedio',[HomeController::class,'tiempopromedio'])->name('tiempopromedio');
-Route::get('/Manuales Usuario', [HomeController::class, 'ManualesUsuario'])->name('ManualesUsuario')->middleware('auth');
+Route::get('/Manual/Usuario', [HomeController::class, 'ManualesUsuario'])->name('ManualesUsuario')->middleware('auth');
 Route::get('/Manuales/{manual}', [HomeController::class, 'MostrarManual'])->name('MostrarManual')->middleware('auth');
