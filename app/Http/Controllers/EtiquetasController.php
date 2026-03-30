@@ -2620,13 +2620,14 @@ class EtiquetasController extends Controller
                     $etiqueta[0] == 31;
             });
         }else{
-            $Etiquetas = array_filter($Etiquetas, function($etiqueta) {
+            $FMX = ($CodigoCliente == $this->Fibremex)?true:false; 
+            $Etiquetas = array_filter($Etiquetas, function($etiqueta) use ($FMX) {
                 return $etiqueta[0] == 1 || 
                     $etiqueta[0] == 5 || 
-                    $etiqueta[0] == 7 || $etiqueta[0] == 8 ||
+                    $etiqueta[0] == 7 || ($etiqueta[0] == 8 AND !$FMX) ||
                     $etiqueta[0] == 9 || $etiqueta[0] == 10 ||
                     $etiqueta[0] == 11 || $etiqueta[0] == 12 ||
-                    $etiqueta[0] == 15 || $etiqueta[0] == 16 ||
+                    ($etiqueta[0] == 15 AND !$FMX) || ($etiqueta[0] == 16 AND $FMX) ||
                     $etiqueta[0] == 17 || $etiqueta[0] == 18 ||
                     $etiqueta[0] == 20 ||
                     $etiqueta[0] == 21 || $etiqueta[0] == 22 ||
