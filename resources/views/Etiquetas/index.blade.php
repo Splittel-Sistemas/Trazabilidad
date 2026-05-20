@@ -275,24 +275,24 @@
         }
 
         if(InputTipoEtiqueta == "ETIQ1" || InputTipoEtiqueta == "ETIQ3" || InputTipoEtiqueta == "ETIQ24"){
-            if(InputPaginaInicio.value == 0 || InputPaginaInicio.value == ""){
+            if(Number.parseInt(InputPaginaInicio.value) == 0 || Number.parseInt(InputPaginaInicio.value) == ""){
                 ErrorPaginaInicio.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
             }
-            if(InputPaginaFin.value == 0 || InputPaginaFin.value == ""){
+            if(Number.parseInt(InputPaginaFin.value) == 0 || Number.parseInt(InputPaginaFin.value) == ""){
                 ErrorPaginaFin.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
             }
-            if(InputPaginaFin.value<InputPaginaInicio.value){
+            if(Number.parseInt(InputPaginaFin.value)<Number.parseInt(InputPaginaInicio.value)){
                 ErrorPaginaInicio.innerHTML = "El valor inicio no puede ser mayor a valor fin.";
                 return 0;
             }
         }else if(InputTipoEtiqueta == "ETIQ2" || InputTipoEtiqueta == "ETIQ15"){
-            if(InputPaginaInicio.value == 0 || InputPaginaInicio.value == ""){
+            if(Number.parseInt(InputPaginaInicio.value) == 0 || Number.parseInt(InputPaginaInicio.value) == ""){
                 ErrorPaginaInicio.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
             }
-            if(InputPaginaFin.value == 0 || InputPaginaFin.value == ""){
+            if(Number.parseInt(InputPaginaFin.value) == 0 || Number.parseInt(InputPaginaFin.value) == ""){
                 ErrorPaginaFin.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
             }
@@ -321,15 +321,15 @@
                 return 0;
             }
         }else if(InputTipoEtiqueta == "ETIQ9"){
-             if(InputPaginaInicio.value == 0 || InputPaginaInicio.value == ""){
+             if(Number.parseInt(InputPaginaInicio.value) == 0 || Number.parseInt(InputPaginaInicio.value) == ""){
                 ErrorPaginaInicio.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
             }
-            if(InputPaginaFin.value == 0 || InputPaginaFin.value == ""){
+            if(Number.parseInt(InputPaginaFin.value) == 0 || Number.parseInt(InputPaginaFin.value) == ""){
                 ErrorPaginaFin.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
             }
-            if(InputPaginaFin.value<InputPaginaInicio.value){
+            if(Number.parseInt(InputPaginaFin.value)<Number.parseInt(InputPaginaInicio.value)){
                 ErrorPaginaInicio.innerHTML = "El valor inicio no puede ser mayor a valor fin.";
                 return 0;
             }
@@ -338,15 +338,15 @@
                 return 0;
             }
         }else if(InputTipoEtiqueta == "ETIQ10"){
-             if(InputPaginaInicio.value == 0 || InputPaginaInicio.value == ""){
+             if(Number.parseInt(InputPaginaInicio.value) == 0 || Number.parseInt(InputPaginaInicio.value) == ""){
                 ErrorPaginaInicio.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
             }
-            if(InputPaginaFin.value == 0 || InputPaginaFin.value == ""){
+            if(Number.parseInt(InputPaginaFin.value) == 0 || Number.parseInt(InputPaginaFin.value) == ""){
                 ErrorPaginaFin.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
             }
-            if(InputPaginaFin.value<InputPaginaInicio.value){
+            if(Number.parseInt(InputPaginaFin.value)<Number.parseInt(InputPaginaInicio.value)){
                 ErrorPaginaInicio.innerHTML = "El valor inicio no puede ser mayor a valor fin.";
                 return 0;
             }
@@ -365,15 +365,15 @@
                 return 0;
             }
         }else if(InputTipoEtiqueta == "ETIQ14"){
-            if(InputPaginaInicio.value == 0 || InputPaginaInicio.value == ""){
+            if(Number.parseInt(InputPaginaInicio.value) == 0 || Number.parseInt(InputPaginaInicio.value) == ""){
                 ErrorPaginaInicio.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
             }
-            if(InputPaginaFin.value == 0 || InputPaginaFin.value == ""){
+            if(Number.parseInt(InputPaginaFin.value) == 0 || Number.parseInt(InputPaginaFin.value) == ""){
                 ErrorPaginaFin.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
             }
-            if(InputPaginaFin.value<InputPaginaInicio.value){
+            if(Number.parseInt(InputPaginaFin.value)<Number.parseInt(InputPaginaInicio.value)){
                 ErrorPaginaInicio.innerHTML = "El valor inicio no puede ser mayor a valor fin.";
                 return 0;
             }
