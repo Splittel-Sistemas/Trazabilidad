@@ -296,10 +296,10 @@
                 ErrorPaginaFin.innerHTML = "Ingresa un valor mayor a 0.";
                 return 0;
             }
-            /*if(InputPaginaFin.value<InputPaginaInicio.value){
+            if(Number.parseInt(InputPaginaInicio.value)>Number.parseInt(InputPaginaFin.value)){
                 ErrorPaginaInicio.innerHTML = "El valor inicio no puede ser mayor a valor fin.";
                 return 0;
-            }*/
+            }
 
         }else if(InputTipoEtiqueta == "ETIQ5" || InputTipoEtiqueta == "ETIQ26"){
             if(CantidadEtiquetas.value == 0 || CantidadEtiquetas.value == ""){
