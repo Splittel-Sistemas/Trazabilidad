@@ -25,9 +25,9 @@ class FuncionesGeneralesController extends Controller
     }
     private function connectToSap()
     {
-        $datasource = 'DRIVER=HDBODBC;SERVERNODE=192.168.2.19:30015;CHAR_AS_UTF8=1;';
-        $username   = "USR_LECTURA";
-        $password   = "SPL.Lectura202xx7.";
+        $datasource = env('DB_ODBC_DSN');
+        $username   = env('DB_ODBC_USERNAME');
+        $password   = env('DB_ODBC_PASSWORD');
 
         
         $conn = odbc_connect($datasource, $username, $password);
