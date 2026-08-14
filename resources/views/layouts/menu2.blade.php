@@ -383,6 +383,17 @@
                                 </li>
                             @endif
                             @if(Auth::user()->hasPermission("Vista Lineas"))
+                                <li class="nav-item"><!-- Traslados-->
+                                    <p class="navbar-vertical-label">Traslados</p>
+                                    <hr class="navbar-vertical-line" /><!-- parent pages-->
+                                    <div class="nav-item-wrapper">
+                                        <a class="nav-link label-1 {{ Route::is('traslados') ? 'active' : '' }}" href="{{route('traslados')}}" role="button" data-bs-toggle="" aria-expanded="false">
+                                            <div class="d-flex align-items-center"><span class="nav-link-icon"> <span><i class="fa fa-cubes"></i></span></span></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Traslados</span></span></div>
+                                        </a>
+                                    </div>
+                                </li>
+                            @endif
+                            @if(Auth::user()->hasPermission("Vista Lineas"))
                                 <li class="nav-item"><!-- Lineas-->
                                     <p class="navbar-vertical-label">Configuraci&oacute;nes</p>
                                     <hr class="navbar-vertical-line" /><!-- parent pages-->
