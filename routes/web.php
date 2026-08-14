@@ -15,6 +15,7 @@ use App\Http\Controllers\LineasController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\DashboardControlle;
 use App\Http\Controllers\EtiquetasController;
+use App\Http\Controllers\TrasladosController;
 use GuzzleHttp\Promise\Coroutine;
 use Illuminate\Routing\Route as RoutingRoute;
 
@@ -241,3 +242,7 @@ Route::put('/Planeacion/actualizar/fecha',[PlaneacionController:: class,'Actuali
 Route::get('/tiempo/promedio',[HomeController::class,'tiempopromedio'])->name('tiempopromedio');
 Route::get('/Manual/Usuario', [HomeController::class, 'ManualesUsuario'])->name('ManualesUsuario')->middleware('auth');
 Route::get('/Manuales/{manual}', [HomeController::class, 'MostrarManual'])->name('MostrarManual')->middleware('auth');
+
+//rutas para traslado
+Route::get('/Traslados', [TrasladosController::class, 'index'])->name('traslados')->middleware('auth');
+Route::get('/Traslados/{id}', [TrasladosController::class, 'show'])->name('traslados.show')->middleware('auth');
