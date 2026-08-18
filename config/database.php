@@ -36,8 +36,7 @@ return [
             'username' => env('DB_ODBC_USERNAME'), 
             'password' => env('DB_ODBC_PASSWORD'), 
             'charset' => 'utf8',
-            'database' => 'HN_OPTRONICS', // Agregado 'database
-           
+            'database' => env('DB_ODBC_DATABASE'),
         ],
      
         'sqlite' => [
@@ -46,16 +45,6 @@ return [
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-        ],
-        'odbc' => [ 
-            'driver' => 'odbc', 
-            'dsn' => env('DB_ODBC_DSN'), 
-            'username' => env('DB_ODBC_USERNAME'), 
-            'password' => env('DB_ODBC_PASSWORD'), 
-            'charset' => 'utf8',
-            'database' => 'HN_OPTRONICS', // Agregado 'database'
-        
-            
         ],
         'mysql' => [
             'driver' => 'mysql',

@@ -10,8 +10,8 @@
     <div class="row">
         <div class="col-md-12">
             <dl class="row">
-                <dt class="col-sm-2">Recibo de Producción:</dt>
-                <dd class="col-sm-10">{{$traslado->referencia_sap}}</dd>
+                <dt class="col-sm-2">Codigo:</dt>
+                <dd class="col-sm-10">T{{str_pad($traslado->id, 6, "0", STR_PAD_LEFT)}}</dd>
             </dl>
 
             <dl class="row">
@@ -49,10 +49,12 @@
         </div>
         <div class="col-md-12">
             <div class="table-responsive mb-4">
-                <table class="table table-sm table-striped table-bordered text-center" id="table-source">
+                <table class="table table-sm table-striped table-bordered text-center">
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th>Documento</th>
+                            <th>Linea</th>
                             <th>Producto</th>
                             <th>Cantidad Enviada</th>
                             <th>Cantidad Recibida</th>
@@ -60,13 +62,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($traslado->trasladoDetalles as $detalle)
-                        <tr id="row-{{ $traslado->id }}">
-                            <td>{{ $detalle->id }}</td>
-                            <td>{{ $detalle->codigo_producto }}</td>
-                            <td>{{ $detalle->cantidad_traslado }}</td>
-                            <td>{{ $detalle->cantidad_recepcion }}</td>
-                            <td>{{ $detalle->lote }}</td>
+                        @foreach ($traslado->trasladoDetalles as $indice => $detalle)
+                        <tr>
+                            <td>{{ $indice + 1 }}</td>
+                            <td>{{ $detalle->docnum }}</td>
+                            <td>{{ $detalle->linenum }}</td>
+                            <td>{{ $detalle->itemcode }}</td>
+                            <td>{{ $detalle->quantity_transfer }}</td>
+                            <td>{{ $detalle->quantity_receive }}</td>
+                            <td>{{ $detalle->batchnum }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -90,6 +94,10 @@
 
 @section('scripts')
 <script>
-    console.info('traslado view');
+    console.info('traslado show');
+
+    window.addEventListener('DOMContentLoaded', function () {
+        $('.table').DataTable();
+    });
 </script>
 @endsection

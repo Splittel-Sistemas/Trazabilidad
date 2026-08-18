@@ -12,24 +12,25 @@ class Traslados extends Model
 {
     use HasFactory;
     protected $table = 'traslados'; 
+    protected $fillable = ['estado', 'usuario_traslado_id', 'usuario_recive_id'];
 
     public function trasladoDetalles(): HasMany
     {
-        return $this->hasMany(TrasladoDetalle::class, 'id_traslado', 'id');
+        return $this->hasMany(TrasladoDetalle::class, 'traslado_id', 'id');
     }
 
     public function ServiceLayer(): BelongsTo
     {
-        return $this->belongsTo(ServiceLayer::class, 'id', 'id_traslado');
+        return $this->belongsTo(ServiceLayer::class, 'id', 'traslado_id');
     }
 
     public function usuarioTraslado(): HasOne
     {
-        return $this->hasOne(User::class, 'id', 'id_usuario_traslado');
+        return $this->hasOne(User::class, 'id', 'usuario_traslado_id');
     }
 
     public function usuarioRecibe(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'id_usuario_recive', 'id');
+        return $this->belongsTo(User::class, 'usuario_recive_id', 'id');
     }
 }

@@ -7,14 +7,17 @@
     <h1 class="mb-4 text-center">Traslados de Almacenes</h1>
 
     <div class="row">
+        <div class="col-md-12 mb-3">
+            <a href="{{ route('traslados.create') }}" class="btn btn-sm btn-primary">Crear</a>
+        </div>
         <div class="col-md-12">
             <div class="table-responsive mb-4">
                 <h4 class="text-center">Tabla de Traslados</h4>
-                <table class="table table-striped table-bordered table-sm text-center" id="table-source">
+                <table class="table table-striped table-bordered table-sm text-center">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Recibo Producción</th>
+                            <th>Codigo</th>
                             <th>Estado</th>
                             <th>Usuario</th>
                             <th>Alta</th>
@@ -22,10 +25,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($traslados as $traslado)
-                        <tr id="row-{{ $traslado->id }}">
-                            <td>{{ $traslado->id }}</td>
-                            <td>{{ $traslado->referencia_sap }}</td>
+                        @foreach ($traslados as $indice => $traslado)
+                        <tr>
+                            <td>{{ $indice + 1 }}</td>
+                            <td>T{{ str_pad($traslado->id, 6, "0", STR_PAD_LEFT) }}</td>
                             <td>
                                 @switch($traslado->estado)
                                 @case('generado')
@@ -52,6 +55,12 @@
                             </td>
                         </tr>
                         @endforeach
+
+                        @if(count($traslados) == 0)
+                        <tr>
+                            <td colspan="6">Sin datos que mostrar</td>
+                        </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -63,5 +72,9 @@
 @section('scripts')
 <script>
     console.info('traslado view');
+
+    window.addEventListener('DOMContentLoaded', function () {
+        $('.table').DataTable();
+    });
 </script>
 @endsection

@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('traslados', function (Blueprint $table) {
             $table->id();
-            $table->integer('referencia_sap');
-            $table->enum('estado', ['generado', 'recibido', 'cancelado'])->default('generado');
-            $table->integer('id_usuario_traslado');
-            //$table->foreign('id_usuario_traslado')->references('users')->on('id');
-            $table->integer('id_usuario_recive')->nullable();
-            //$table->foreign('id_usuario_recive')->references('users')->on('id');
+            $table->enum('estado', ['Generado', 'Parcial', 'Recibido', 'Cancelado'])->default('generado');
+            $table->unsignedBigInteger('usuario_traslado_id');
+            $table->foreign('usuario_traslado_id')->references('id')->on('users');
+            $table->unsignedBigInteger('usuario_recive_id')->nullable();
+            $table->foreign('usuario_recive_id')->references('id')->on('users');
             $table->timestamps();
         });
     }
