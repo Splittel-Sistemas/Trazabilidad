@@ -31,19 +31,19 @@
                             <td>T{{ str_pad($traslado->id, 6, "0", STR_PAD_LEFT) }}</td>
                             <td>
                                 @switch($traslado->estado)
-                                @case('generado')
+                                @case('Generado')
                                 <span class="badge text-bg-primary">{{ $traslado->estado }}</span>
                                 @break
 
-                                @case('traslado')
+                                @case('Parcial')
                                 <span class="badge text-bg-info">{{ $traslado->estado }}</span>
                                 @break
 
-                                @case('recibido')
+                                @case('Recibido')
                                 <span class="badge text-bg-success">{{ $traslado->estado }}</span>
                                 @break
 
-                                @case('cancelado')
+                                @case('Cancelado')
                                 <span class="badge text-bg-danger">{{ $traslado->estado }}</span>
                                 @break
                                 @endswitch

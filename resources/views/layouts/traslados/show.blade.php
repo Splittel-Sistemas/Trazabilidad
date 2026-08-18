@@ -28,19 +28,19 @@
                 <dt class="col-sm-2">Estado:</dt>
                 <dd class="col-sm-10">
                     @switch($traslado->estado)
-                    @case('generado')
+                    @case('Generado')
                     <span class="badge text-bg-primary">{{ $traslado->estado }}</span>
                     @break
 
-                    @case('traslado')
+                    @case('Parcial')
                     <span class="badge text-bg-info">{{ $traslado->estado }}</span>
                     @break
 
-                    @case('recibido')
+                    @case('Recibido')
                     <span class="badge text-bg-success">{{ $traslado->estado }}</span>
                     @break
 
-                    @case('cancelado')
+                    @case('Cancelado')
                     <span class="badge text-bg-danger">{{ $traslado->estado }}</span>
                     @break
                     @endswitch
