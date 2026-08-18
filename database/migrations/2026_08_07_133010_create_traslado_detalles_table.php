@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('traslado_detalles', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_traslado');
-            //$table->foreign('id_traslado')->references('id')->on('traslados');
-            $table->string('codigo_producto');
-            $table->integer('cantidad_traslado');
-            $table->integer('cantidad_recepcion');
-            $table->string('lote', 50)->nullable();
+            $table->unsignedBigInteger('traslado_id');
+            $table->foreign('traslado_id')->references('id')->on('traslados');
+            $table->integer('docnum');
+            $table->integer('linenum');
+            $table->string('itemcode');
+            $table->integer('quantity_transfer');
+            $table->integer('quantity_receive');
+            $table->string('batchnum')->nullable();
             $table->timestamps();
         });
     }

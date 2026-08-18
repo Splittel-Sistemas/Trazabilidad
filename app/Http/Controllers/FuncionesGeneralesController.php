@@ -280,4 +280,72 @@ class FuncionesGeneralesController extends Controller
         $Log->log = "Usuario: ".$Usuario."  Vista: ".$Vista."  Accion: ".$Accion."[Log]:".$log;
         $Log->save();
     }
+
+    public function RecibosProduccionParaTraslados($filtro)
+    {
+        try {
+            $datasource = config('database.connections.odbc.dsn');
+            $username = config('database.connections.odbc.username');
+            $password = config('database.connections.odbc.password');
+            $bd = config('database.connections.odbc.database');
+
+            $sql = 'SELECT T00."DocNum",T100."LineNum", T100."ItemCode", SUM(T200."Quantity") AS "Quantity", T200."BatchNum"
+                    FROM ' . $bd . '."OIGN" T00
+                    INNER JOIN ' . $bd . '."IGN1" T100 ON T00."DocEntry" = T100."DocEntry"
+                    LEFT JOIN ' . $bd . '."IBT1" T200 ON T100."ItemCode" = T200."ItemCode" AND T200."BaseEntry" = T100."DocEntry" AND T200."BaseType" = T100."ObjType"
+                        AND T200."BaseLinNum" = T100."LineNum" AND T200."WhsCode" = T100."WhsCode"
+                    WHERE T00."DocDate" > \'2026-08-01\' ' . $filtro . ' AND T100."TranType" IS NOT NULL GROUP BY T00."DocNum", T100."LineNum", T100."ItemCode", T200."BatchNum"';
+
+            $conn = odbc_connect($datasource, $username, $password);
+
+            $respuestaSAP = odbc_exec($conn, $sql);
+
+            $datos = [];
+
+            if ($respuestaSAP) {
+                while ($row = odbc_fetch_array($respuestaSAP)) {
+                    $datos[$row['DocNum']][] = $row;
+                }
+            }
+
+            odbc_close($conn);
+            return $datos;
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    public function DetalleTraslado($filtro)
+    {
+        try {
+            $datasource = config('database.connections.odbc.dsn');
+            $username = config('database.connections.odbc.username');
+            $password = config('database.connections.odbc.password');
+            $bd = config('database.connections.odbc.database');
+
+            $sql = 'SELECT T00."DocNum",T100."LineNum", T100."ItemCode", SUM(T200."Quantity") AS "Quantity", T200."BatchNum"
+                    FROM ' . $bd . '."OIGN" T00
+                    INNER JOIN ' . $bd . '."IGN1" T100 ON T00."DocEntry" = T100."DocEntry"
+                    LEFT JOIN ' . $bd . '."IBT1" T200 ON T100."ItemCode" = T200."ItemCode" AND T200."BaseEntry" = T100."DocEntry" AND T200."BaseType" = T100."ObjType"
+                        AND T200."BaseLinNum" = T100."LineNum" AND T200."WhsCode" = T100."WhsCode"
+                    WHERE ' . $filtro . ' AND T100."TranType" IS NOT NULL GROUP BY T00."DocNum", T100."LineNum", T100."ItemCode", T200."BatchNum" ORDER BY T00."DocNum"';
+
+            $conn = odbc_connect($datasource, $username, $password);
+
+            $respuestaSAP = odbc_exec($conn, $sql);
+
+            $datos = [];
+
+            if ($respuestaSAP) {
+                while ($row = odbc_fetch_array($respuestaSAP)) {
+                    $datos[] = $row;
+                }
+            }
+
+            odbc_close($conn);
+            return $datos;
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
 }

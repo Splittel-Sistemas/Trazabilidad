@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('service_layer', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_traslado');
+            $table->unsignedBigInteger('traslado_id');
+            $table->foreign('traslado_id')->references('id')->on('traslados');
             $table->json('response');
             $table->timestamps();
         });
