@@ -55,12 +55,6 @@
                             </td>
                         </tr>
                         @endforeach
-
-                        @if(count($traslados) == 0)
-                        <tr>
-                            <td colspan="6">Sin datos que mostrar</td>
-                        </tr>
-                        @endif
                     </tbody>
                 </table>
             </div>
