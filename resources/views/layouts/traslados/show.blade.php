@@ -78,12 +78,12 @@
             </div>
         </div>
 
-        @if($traslado->serviceLayer?->response)
+        @if(count($traslado->serviceLayer) > 0)
         <div class="com-md-12">
             <div class="highlight">
                 <pre class="language-html">
-                        <code class="language-html">{{ trim(json_encode(json_decode($traslado->serviceLayer?->response), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) }}</code>
-                    </pre>
+                        <code class="language-html">{{ trim(json_encode(json_decode($traslado->serviceLayer), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) }}</code>
+                </pre>
             </div>
         </div>
         @endif

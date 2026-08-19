@@ -94,7 +94,7 @@ class TrasladosController extends Controller
     public function show(int $id)
     {
         $traslado = Traslados::with('trasladoDetalles')->where('id', $id)->first();
-        $serviceLayer = Traslados::with('serviceLayer')->where('id', $id)->first();
+        $serviceLayer = Traslados::with('serviceLayer')->where('id', $id)->get();
         return view('layouts.traslados.show', compact('traslado', 'serviceLayer'));
     }
 }
