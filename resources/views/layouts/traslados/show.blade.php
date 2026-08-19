@@ -82,7 +82,9 @@
         <div class="com-md-12">
             <div class="highlight">
                 <pre class="language-html">
-                        <code class="language-html">{{ trim(json_encode(json_decode($traslado->serviceLayer), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) }}</code>
+                    @foreach ($traslado->serviceLayer as $serviceLayer)
+                        <code class="language-html">{{ trim(json_encode(json_decode($serviceLayer->response), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) }}</code>
+                    @endforeach
                 </pre>
             </div>
         </div>
@@ -96,7 +98,7 @@
 <script>
     console.info('traslado show');
 
-    window.addEventListener('DOMContentLoaded', function () {
+    window.addEventListener('DOMContentLoaded', function() {
         $('.table').DataTable();
     });
 </script>
