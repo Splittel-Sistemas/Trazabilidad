@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ServiceLayer;
 use App\Models\TrasladoDetalle;
 use App\Models\Traslados;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\VarDumper\VarDumper;
 
 class TrasladosController extends Controller
 {
@@ -27,14 +28,14 @@ class TrasladosController extends Controller
 
     public function create()
     {
-        $trasladosRegistrados = TrasladoDetalle::select('docnum')->groupBy('docnum')->get();
+        $trasladosRegistrados = TrasladoDetalle::select('rp')->groupBy('rp')->get();
 
         $filtro = "";
 
         if (!empty($trasladosRegistrados) && count($trasladosRegistrados) > 0) {
             $filtro = ' AND T00."DocNum" NOT IN (';
             foreach ($trasladosRegistrados as $value) {
-                $filtro .= "'" . $value->docnum . "',";
+                $filtro .= "'" . $value->rp . "',";
             }
             $filtro = substr($filtro, 0, -1);
             $filtro .= ")";
@@ -50,7 +51,7 @@ class TrasladosController extends Controller
         try {
             $listaDocumentos = $request->listaDocumentos;
 
-            $filtro = 'T00."DocNum" IN (';
+            $filtro = 'AND T00."DocNum" IN (';
             foreach ($listaDocumentos as $value) {
                 $filtro .= "'" . $value . "',";
             }
@@ -63,17 +64,23 @@ class TrasladosController extends Controller
                 'estado' => 'Generado',
                 'usuario_traslado_id' => Auth::id(),
                 'usuario_recive_id' => null,
+                'alta' => Carbon::now()
             ]);
 
             foreach ($detalleTraslado as $detalle) {
                 DB::table('traslado_detalles')->insert([
                     'traslado_id' => $traslado->id,
-                    'docnum' => (int)$detalle['DocNum'],
+                    'of' => (int)$detalle['ORDEN FABRICACION'],
+                    'ov' => (int)$detalle['ORDEN VENTA'],
+                    'rp' => (int)$detalle['RECIBO PRODUCCION'],
+                    'cardcode' => $detalle['CardCode'],
+                    'cardname' => $detalle['CardName'],
                     'linenum' => $detalle['LineNum'],
                     'itemcode' => $detalle['ItemCode'],
+                    'dscription' => $detalle['Dscription'],
                     'quantity_transfer' => (int)$detalle['Quantity'],
                     'quantity_receive' => 0,
-                    'batchnum' => $detalle['BatchNum']
+                    'batchnum' => $detalle['BatchNum'],
                     ]);
             }
 
@@ -94,7 +101,7 @@ class TrasladosController extends Controller
     public function show(int $id)
     {
         $traslado = Traslados::with('trasladoDetalles')->where('id', $id)->first();
-        $serviceLayer = Traslados::with('serviceLayer')->where('id', $id)->get();
+        $serviceLayer = ServiceLayer::where('traslado_id', $id)->orderBy('movimiento', 'asc')->get();
         return view('layouts.traslados.show', compact('traslado', 'serviceLayer'));
     }
 }

@@ -10,6 +10,7 @@ class ServiceLayer extends Model
 {
     use HasFactory;
     protected $table = 'service_layer';
+    public $timestamps = false;
 
     public function traslado(): HasOne
     {

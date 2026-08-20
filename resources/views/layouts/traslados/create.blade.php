@@ -4,7 +4,7 @@
 
 @section('content')
 <a href="{{route('traslados')}}" class="btn btn-sm btn-primary"><i class="fa fa-arrow-left" aria-hidden="true"></i> Atras</a>
-<div class="container mt-5">
+<div class="mt-5">
     <h1 class="mb-4 text-center">Recibos de Producción Sin Traslado</h1>
 
     <div class="row">
@@ -14,8 +14,13 @@
                     <thead>
                         <tr>
                             <th><input type="checkbox" onchange="SeleccionarTodo()" id="btnSelecionarTodo"> Check</th>
-                            <th>Documento</th>
+                            <th>Orden Fabricacion</th>
+                            <th>Orden Venta</th>
+                            <th>Recibo Producción</th>
+                            <th>Cod. Cliente</th>
+                            <th>Cliente</th>
                             <th>Linea</th>
+                            <th>Cod. Producto</th>
                             <th>Producto</th>
                             <th>Cantidad</th>
                             <th>Lote</th>
@@ -31,10 +36,15 @@
                             @else
                             <td></td>
                             @endif
-                            <td>{{ $item['DocNum']}}</td>
+                            <td>{{ $item['ORDEN FABRICACION'] }}</td>
+                            <td>{{ $item['ORDEN VENTA'] }}</td>
+                            <td>{{ $item['RECIBO PRODUCCION'] }}</td>
+                            <td>{{ $item['CardCode']}}</td>
+                            <td>{{ $item['CardName']}}</td>
                             <td>{{ $item['LineNum']}}</td>
                             <td>{{ $item['ItemCode']}}</td>
-                            <td>{{ $item['Quantity']}}</td>
+                            <td>{{ $item['Dscription']}}</td>
+                            <td>{{ number_format($item['Quantity']) }}</td>
                             <td>{{ $item['BatchNum']}}</td>
                         </tr>
                         @endforeach

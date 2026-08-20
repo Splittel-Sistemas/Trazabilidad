@@ -36,7 +36,7 @@
                                 @break
 
                                 @case('Parcial')
-                                <span class="badge text-bg-info">{{ $traslado->estado }}</span>
+                                <span class="badge text-bg-warning">{{ $traslado->estado }}</span>
                                 @break
 
                                 @case('Recibido')
@@ -49,7 +49,7 @@
                                 @endswitch
                             </td>
                             <td>{{ $traslado->usuarioTraslado->name }}</td>
-                            <td>{{ $traslado->created_at }}</td>
+                            <td>{{ $traslado->alta }}</td>
                             <td>
                                 <a href="{{ route('traslados.show', $traslado->id) }}" class="btn btn-sm btn-primary">Detalles</a>
                             </td>
