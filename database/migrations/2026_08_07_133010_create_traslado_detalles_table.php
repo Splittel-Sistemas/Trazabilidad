@@ -15,13 +15,17 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('traslado_id');
             $table->foreign('traslado_id')->references('id')->on('traslados');
-            $table->integer('docnum');
+            $table->integer('of');
+            $table->integer('ov');
+            $table->integer('rp');
+            $table->string('cardcode');
+            $table->string('cardname');
             $table->integer('linenum');
             $table->string('itemcode');
+            $table->string('dscription');
             $table->integer('quantity_transfer');
             $table->integer('quantity_receive');
             $table->string('batchnum')->nullable();
-            $table->timestamps();
         });
     }
 

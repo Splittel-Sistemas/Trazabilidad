@@ -10,6 +10,7 @@ class TrasladoDetalle extends Model
 {
     use HasFactory;
     protected $table = 'traslado_detalles';
+    public $timestamps = false;
 
     public function traslados(): HasOne
     {

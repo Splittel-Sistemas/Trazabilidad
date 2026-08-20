@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('usuario_traslado_id')->references('id')->on('users');
             $table->unsignedBigInteger('usuario_recive_id')->nullable();
             $table->foreign('usuario_recive_id')->references('id')->on('users');
-            $table->timestamps();
+            $table->dateTime('alta');
         });
     }
 

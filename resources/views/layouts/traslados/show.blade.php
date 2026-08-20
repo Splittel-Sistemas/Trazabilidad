@@ -4,7 +4,7 @@
 
 @section('content')
 <a href="{{route('traslados')}}" class="btn btn-sm btn-primary"><i class="fa fa-arrow-left" aria-hidden="true"></i> Atras</a>
-<div class="container mt-5">
+<div class="mt-5">
     <h1 class="mb-4 text-center">Detalle Traslado</h1>
 
     <div class="row">
@@ -49,12 +49,17 @@
         </div>
         <div class="col-md-12">
             <div class="table-responsive mb-4">
-                <table class="table table-sm table-striped table-bordered text-center">
+                <table class="table table-sm table-striped table-bordered text-center" id="tablaPrincipal">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Documento</th>
+                            <th>Orden Fabricacion</th>
+                            <th>Orden Venta</th>
+                            <th>Recibo Producción</th>
+                            <th>Cod. Cliente</th>
+                            <th>Cliente</th>
                             <th>Linea</th>
+                            <th>Cod. Producto</th>
                             <th>Producto</th>
                             <th>Cantidad Enviada</th>
                             <th>Cantidad Recibida</th>
@@ -65,9 +70,14 @@
                         @foreach ($traslado->trasladoDetalles as $indice => $detalle)
                         <tr>
                             <td>{{ $indice + 1 }}</td>
-                            <td>{{ $detalle->docnum }}</td>
+                            <td>{{ $detalle->of }}</td>
+                            <td>{{ $detalle->ov }}</td>
+                            <td>{{ $detalle->rp }}</td>
+                            <td>{{ $detalle->cardcode }}</td>
+                            <td>{{ $detalle->cardname }}</td>
                             <td>{{ $detalle->linenum }}</td>
                             <td>{{ $detalle->itemcode }}</td>
+                            <td>{{ $detalle->dscription }}</td>
                             <td>{{ $detalle->quantity_transfer }}</td>
                             <td>{{ $detalle->quantity_receive }}</td>
                             <td>{{ $detalle->batchnum }}</td>
@@ -78,18 +88,69 @@
             </div>
         </div>
 
-        @if(count($traslado->serviceLayer) > 0)
-        <div class="com-md-12">
-            <div class="highlight">
-                <pre class="language-html">
-                    @foreach ($traslado->serviceLayer as $serviceLayer)
-                        <code class="language-html">{{ trim(json_encode(json_decode($serviceLayer->response), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) }}</code>
-                    @endforeach
-                </pre>
-            </div>
-        </div>
-        @endif
+        <div class="col-md-12">
+            @if(count($traslado->serviceLayer) > 0)
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                Ver Traslados
+            </button>
 
+            <div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Traslados Realizados</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive mb-4">
+                                <table class="table table-sm table-bordered text-center">
+                                    <tbody>
+                                        @php
+                                        $anterior = 0;
+                                        @endphp
+                                        @foreach ($traslado->serviceLayer as $indice => $service)
+                                        @if($service->movimiento != $anterior)
+                                        <tr class="table-primary">
+                                            <th colspan="4">Movimiento: {{$service->movimiento}}</th>
+                                            <th colspan="4">Realizado: {{$service->alta}}</th>
+                                        </tr>
+                                        <tr class="table-info">
+                                            <th>Orden Fabricacion</th>
+                                            <th>Orden Venta</th>
+                                            <th>Recibo Producción</th>
+                                            <th>Linea</th>
+                                            <th>Cod. Producto</th>
+                                            <th>Producto</th>
+                                            <th>Cantidad Recibida</th>
+                                            <th>Lote</th>
+                                        </tr>
+                                        @endif
+                                        <tr>
+                                            <td>{{ $service->of }}</td>
+                                            <td>{{ $service->ov }}</td>
+                                            <td>{{ $service->rp }}</td>
+                                            <td>{{ $service->linenum }}</td>
+                                            <td>{{ $service->itemcode }}</td>
+                                            <td>{{ $service->dscription }}</td>
+                                            <td>{{ $service->quantity_transfer }}</td>
+                                            <td>{{ $service->batchnum }}</td>
+                                        </tr>
+                                        @php
+                                        $anterior = $service->movimiento;
+                                        @endphp
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+        </div>
     </div>
 </div>
 @endsection
@@ -99,7 +160,7 @@
     console.info('traslado show');
 
     window.addEventListener('DOMContentLoaded', function() {
-        $('.table').DataTable();
+        $('#tablaPrincipal').DataTable();
     });
 </script>
 @endsection
