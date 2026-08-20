@@ -14,12 +14,11 @@
                     <thead>
                         <tr>
                             <th><input type="checkbox" onchange="SeleccionarTodo()" id="btnSelecionarTodo"> Check</th>
-                            <th>Orden Fabricacion</th>
                             <th>Orden Venta</th>
+                            <th>Orden Fabricacion</th>
                             <th>Recibo Producción</th>
                             <th>Cod. Cliente</th>
                             <th>Cliente</th>
-                            <th>Linea</th>
                             <th>Cod. Producto</th>
                             <th>Producto</th>
                             <th>Cantidad</th>
@@ -36,12 +35,11 @@
                             @else
                             <td></td>
                             @endif
-                            <td>{{ $item['ORDEN FABRICACION'] }}</td>
                             <td>{{ $item['ORDEN VENTA'] }}</td>
+                            <td>{{ $item['ORDEN FABRICACION'] }}</td>
                             <td>{{ $item['RECIBO PRODUCCION'] }}</td>
                             <td>{{ $item['CardCode']}}</td>
                             <td>{{ $item['CardName']}}</td>
-                            <td>{{ $item['LineNum']}}</td>
                             <td>{{ $item['ItemCode']}}</td>
                             <td>{{ $item['Dscription']}}</td>
                             <td>{{ number_format($item['Quantity']) }}</td>

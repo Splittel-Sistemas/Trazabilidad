@@ -48,12 +48,11 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Orden Fabricacion</th>
                             <th>Orden Venta</th>
+                            <th>Orden Fabricacion</th>
                             <th>Recibo Producción</th>
                             <th>Cod. Cliente</th>
                             <th>Cliente</th>
-                            <th>Linea</th>
                             <th>Cod. Producto</th>
                             <th>Producto</th>
                             <th>Cantidad Enviada</th>
@@ -65,12 +64,11 @@
                         @foreach ($traslado->trasladoDetalles as $indice => $detalle)
                         <tr>
                             <td>{{ $indice + 1 }}</td>
-                            <td>{{ $detalle->of }}</td>
                             <td>{{ $detalle->ov }}</td>
+                            <td>{{ $detalle->of }}</td>
                             <td>{{ $detalle->rp }}</td>
                             <td>{{ $detalle->cardcode }}</td>
                             <td>{{ $detalle->cardname }}</td>
-                            <td>{{ $detalle->linenum }}</td>
                             <td>{{ $detalle->itemcode }}</td>
                             <td>{{ $detalle->dscription }}</td>
                             <td>{{ $detalle->quantity_transfer }}</td>
@@ -86,14 +84,14 @@
         <div class="col-md-12">
             @if(count($traslado->serviceLayer) > 0)
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                Ver Traslados
+                Ver Movimientos
             </button>
 
             <div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Traslados Realizados</h1>
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Movimientos Realizados</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -106,15 +104,16 @@
                                         @foreach ($traslado->serviceLayer as $indice => $service)
                                         @if($service->movimiento != $anterior)
                                         <tr class="table-primary">
-                                            <th colspan="2">Movimiento: {{$service->movimiento}}</th>
-                                            <th colspan="4">Realizado por: {{$service->usuarioRecibe->name}}</th>
-                                            <th colspan="2">Fecha: {{$service->alta}}</th>
+                                            <th colspan="3">Movimiento: {{$service->movimiento}}</th>
+                                            <th colspan="3">Realizado por: {{$service->usuarioRecibe->name}}</th>
+                                            <th colspan="3">Fecha: {{$service->alta}}</th>
                                         </tr>
                                         <tr class="table-info">
-                                            <th>Orden Fabricacion</th>
                                             <th>Orden Venta</th>
+                                            <th>Orden Fabricacion</th>
                                             <th>Recibo Producción</th>
-                                            <th>Linea</th>
+                                            <th>Cod. Cliente</th>
+                                            <th>Cliente</th>
                                             <th>Cod. Producto</th>
                                             <th>Producto</th>
                                             <th>Cantidad Recibida</th>
@@ -122,10 +121,11 @@
                                         </tr>
                                         @endif
                                         <tr>
-                                            <td>{{ $service->of }}</td>
                                             <td>{{ $service->ov }}</td>
+                                            <td>{{ $service->of }}</td>
                                             <td>{{ $service->rp }}</td>
-                                            <td>{{ $service->linenum }}</td>
+                                            <td>{{ $service->cardcode }}</td>
+                                            <td>{{ $service->cardname }}</td>
                                             <td>{{ $service->itemcode }}</td>
                                             <td>{{ $service->dscription }}</td>
                                             <td>{{ $service->quantity_transfer }}</td>
