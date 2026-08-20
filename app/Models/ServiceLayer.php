@@ -16,4 +16,9 @@ class ServiceLayer extends Model
     {
         return $this->hasOne(Traslados::class);
     }
+
+    public function usuarioRecibe(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'usuario_recive_id');
+    }
 }

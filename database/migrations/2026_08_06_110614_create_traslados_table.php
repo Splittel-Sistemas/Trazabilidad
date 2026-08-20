@@ -16,8 +16,6 @@ return new class extends Migration
             $table->enum('estado', ['Generado', 'Parcial', 'Recibido', 'Cancelado'])->default('generado');
             $table->unsignedBigInteger('usuario_traslado_id');
             $table->foreign('usuario_traslado_id')->references('id')->on('users');
-            $table->unsignedBigInteger('usuario_recive_id')->nullable();
-            $table->foreign('usuario_recive_id')->references('id')->on('users');
             $table->dateTime('alta');
         });
     }

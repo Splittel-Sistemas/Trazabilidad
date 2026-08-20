@@ -20,11 +20,6 @@
             </dl>
 
             <dl class="row">
-                <dt class="col-sm-2">Recepciono Traslado:</dt>
-                <dd class="col-sm-10">{{$traslado->usuarioRecibe?->name}}</dd>
-            </dl>
-
-            <dl class="row">
                 <dt class="col-sm-2">Estado:</dt>
                 <dd class="col-sm-10">
                     @switch($traslado->estado)
@@ -33,7 +28,7 @@
                     @break
 
                     @case('Parcial')
-                    <span class="badge text-bg-info">{{ $traslado->estado }}</span>
+                    <span class="badge text-bg-warning">{{ $traslado->estado }}</span>
                     @break
 
                     @case('Recibido')
@@ -111,8 +106,9 @@
                                         @foreach ($traslado->serviceLayer as $indice => $service)
                                         @if($service->movimiento != $anterior)
                                         <tr class="table-primary">
-                                            <th colspan="4">Movimiento: {{$service->movimiento}}</th>
-                                            <th colspan="4">Realizado: {{$service->alta}}</th>
+                                            <th colspan="2">Movimiento: {{$service->movimiento}}</th>
+                                            <th colspan="4">Realizado por: {{$service->usuarioRecibe->name}}</th>
+                                            <th colspan="2">Fecha: {{$service->alta}}</th>
                                         </tr>
                                         <tr class="table-info">
                                             <th>Orden Fabricacion</th>
