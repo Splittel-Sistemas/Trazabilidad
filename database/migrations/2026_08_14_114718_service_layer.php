@@ -12,6 +12,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('traslado_id');
             $table->foreign('traslado_id')->references('id')->on('traslados');
+            $table->unsignedBigInteger('usuario_recive_id')->nullable();
+            $table->foreign('usuario_recive_id')->references('id')->on('users');
             $table->integer('movimiento');
             $table->integer('of');
             $table->integer('ov');

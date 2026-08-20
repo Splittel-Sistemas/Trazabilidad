@@ -63,7 +63,6 @@ class TrasladosController extends Controller
             $traslado = Traslados::create([
                 'estado' => 'Generado',
                 'usuario_traslado_id' => Auth::id(),
-                'usuario_recive_id' => null,
                 'alta' => Carbon::now()
             ]);
 
