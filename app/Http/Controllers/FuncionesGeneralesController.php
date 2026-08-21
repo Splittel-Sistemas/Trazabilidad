@@ -317,7 +317,7 @@ class FuncionesGeneralesController extends Controller
                     LEFT JOIN ' . $bd . '."ORDR" T400 ON T300."OriginNum" = T400."DocNum" AND T300."OriginAbs" = T400."DocEntry"
                     WHERE T00."DocDate" >= \'2026-08-20\' ' . $filtro . ' AND T100."TranType" IS NOT NULL 
                     GROUP BY T00."DocNum", T300."DocNum", T300."OriginNum", T100."LineNum", T100."ItemCode", T100."Dscription", T200."BatchNum", T400."CardCode", T400."CardName"
-                    ORDER BY T00."DocNum"';
+                    ORDER BY T00."DocNum" DESC';
 
             $conn = odbc_connect($datasource, $username, $password);
 
@@ -361,7 +361,7 @@ class FuncionesGeneralesController extends Controller
                     LEFT JOIN ' . $bd . '."ORDR" T400 ON T300."OriginNum" = T400."DocNum" AND T300."OriginAbs" = T400."DocEntry"
                     WHERE T00."DocDate" >= \'2026-08-20\' ' . $filtro . ' AND T100."TranType" IS NOT NULL 
                     GROUP BY T00."DocNum", T300."DocNum", T300."OriginNum", T100."LineNum", T100."ItemCode", T100."Dscription", T200."BatchNum", T400."CardCode", T400."CardName"
-                    ORDER BY T00."DocNum"';
+                    ORDER BY T00."DocNum" DESC';
 
             $conn = odbc_connect($datasource, $username, $password);
 
