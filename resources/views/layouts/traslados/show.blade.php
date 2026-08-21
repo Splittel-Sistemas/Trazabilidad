@@ -82,6 +82,7 @@
         </div>
 
         <div class="col-md-12">
+            <a href="{{route('traslados.showprint', $traslado->id)}}" class="btn btn-info" target="_blank">Imprimir</a>
             @if(count($traslado->serviceLayer) > 0)
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                 Ver Movimientos
@@ -140,7 +141,6 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-
                             <button type="button" class="btn btn-info" onclick="SeleccionarMovimiento()">Imprimir</button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                         </div>

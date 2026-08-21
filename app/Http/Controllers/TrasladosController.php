@@ -107,6 +107,17 @@ class TrasladosController extends Controller
         return view('layouts.traslados.show', compact('traslado', 'serviceLayer', 'movimientos'));
     }
 
+    public function showprint(int $id)
+    {
+        $traslado = Traslados::with('trasladoDetalles')->where('id', $id)->first();
+        $serviceLayer = ServiceLayer::where('traslado_id', $id)->orderBy('movimiento', 'asc')->get();
+        $movimientos = array();;
+        foreach ($serviceLayer as $services) {
+            $movimientos[$services->movimiento] = $services->movimiento;
+        }
+        return view('layouts.traslados.showprint', compact('traslado', 'serviceLayer', 'movimientos'));
+    }
+
     public function print(int $idTraslado, int $idMovimiento)
     {
         $serviceLayer = ServiceLayer::where('traslado_id', $idTraslado)->where('movimiento', $idMovimiento)->get();
