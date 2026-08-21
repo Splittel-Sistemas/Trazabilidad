@@ -92,6 +92,20 @@
         </tbody>
     </table>
 
+    <table class="mt-3 table table-sm table-borderless">
+        <tbody>
+            <tr>
+                <td style="border-bottom: 1px solid #000;">Envia:</td>
+                <td style="border-bottom: 1px solid #000;"></td>
+                <td style="border-bottom: 1px solid #000;"></td>
+                <td></td>
+                <td style="border-bottom: 1px solid #000;">Recibe:</td>
+                <td style="border-bottom: 1px solid #000;"></td>
+                <td style="border-bottom: 1px solid #000;"></td>
+            </tr>
+        </tbody>
+    </table>
+
     <script>
         window.addEventListener('DOMContentLoaded', function() {
             window.print();
