@@ -64,6 +64,7 @@
                 orderable: false,
                 targets: 0
             }],
+            order: [[2, 'des']],
             "paging": false,
             language: {
                 "decimal": "",
