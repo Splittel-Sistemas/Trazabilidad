@@ -248,4 +248,5 @@ Route::get('/Traslados', [TrasladosController::class, 'index'])->name('traslados
 Route::get('/Traslados/create', [TrasladosController::class, 'create'])->name('traslados.create')->middleware('auth');
 Route::post('/Traslados/generate', [TrasladosController::class, 'generate'])->name('traslados.generate')->middleware('auth');
 Route::get('/Traslados/{id}', [TrasladosController::class, 'show'])->name('traslados.show')->middleware('auth');
+Route::get('/Traslados/show/{id}', [TrasladosController::class, 'showprint'])->name('traslados.showprint')->middleware('auth');
 Route::get('/Traslados/print/{idTraslado}/{idMovimiento}', [TrasladosController::class, 'print'])->name('traslados.print')->middleware('auth');
