@@ -92,7 +92,7 @@
         </tbody>
     </table>
 
-    <table class="mt-3 table table-sm table-borderless">
+    <table class="table table-sm table-borderless" style="position:fixed; bottom:0;">
         <tbody>
             <tr>
                 <td style="border-bottom: 1px solid #000;">Envia:</td>

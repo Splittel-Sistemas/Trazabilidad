@@ -4,7 +4,7 @@
 
 @section('content')
 <a href="{{route('traslados')}}" class="btn btn-sm btn-primary"><i class="fa fa-arrow-left" aria-hidden="true"></i> Atras</a>
-<div class="mt-5">
+<div class="mt-5 bg-white p-5">
     <h1 class="mb-4 text-center">Recibos de Producción Sin Traslado</h1>
 
     <div class="row">
@@ -47,12 +47,6 @@
                         </tr>
                         @endforeach
                         @endforeach
-
-                        @if(count($recibosProduccionPorTrasladar) == 0)
-                        <tr>
-                            <td colspan="6">Sin datos que mostrar</td>
-                        </tr>
-                        @endif
                     </tbody>
                 </table>
                 <button class="btn btn-success" onclick="GenerarTraslado()" id="btnGenerarTraslado">Generar Traslado</button>
@@ -64,6 +58,36 @@
 
 @section('scripts')
 <script>
+    window.addEventListener('DOMContentLoaded', function() {
+        $('#tableContenido').DataTable({
+            columnDefs: [{
+                orderable: false,
+                targets: 0
+            }],
+            "paging": false,
+            language: {
+                "decimal": "",
+                "emptyTable": "No hay información",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ Entradas",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscar:",
+                "zeroRecords": "Sin resultados encontrados",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Ultimo",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            },
+        });
+    });
+
     const btnSelecionarTodo = $('#btnSelecionarTodo');
     const tableContenido = $('#tableContenido tbody');
     const btnGenerarTraslado = $('#btnGenerarTraslado');
