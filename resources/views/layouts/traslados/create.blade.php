@@ -64,8 +64,6 @@
 
 @section('scripts')
 <script>
-    console.info('traslado create');
-
     const btnSelecionarTodo = $('#btnSelecionarTodo');
     const tableContenido = $('#tableContenido tbody');
     const btnGenerarTraslado = $('#btnGenerarTraslado');

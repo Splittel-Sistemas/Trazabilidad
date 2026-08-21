@@ -80,7 +80,7 @@ class TrasladosController extends Controller
                     'quantity_transfer' => (int)$detalle['Quantity'],
                     'quantity_receive' => 0,
                     'batchnum' => $detalle['BatchNum'],
-                    ]);
+                ]);
             }
 
             if (count($detalleTraslado) == 0) {
@@ -96,11 +96,28 @@ class TrasladosController extends Controller
         }
     }
 
-
     public function show(int $id)
     {
         $traslado = Traslados::with('trasladoDetalles')->where('id', $id)->first();
         $serviceLayer = ServiceLayer::where('traslado_id', $id)->orderBy('movimiento', 'asc')->get();
-        return view('layouts.traslados.show', compact('traslado', 'serviceLayer'));
+        $movimientos = array();;
+        foreach ($serviceLayer as $services) {
+            $movimientos[$services->movimiento] = $services->movimiento;
+        }
+        return view('layouts.traslados.show', compact('traslado', 'serviceLayer', 'movimientos'));
+    }
+
+    public function print(int $idTraslado, int $idMovimiento)
+    {
+        $serviceLayer = ServiceLayer::where('traslado_id', $idTraslado)->where('movimiento', $idMovimiento)->get();
+        $listaMovimientos = [];
+        $usuario = '';
+        $fecha = '';
+        foreach ($serviceLayer as $services) {
+            $listaMovimientos[$services->ov] = $services;
+            $usuario = $services->usuarioRecibe->name;
+            $fecha = $services->alta;
+        }
+        return view('layouts.traslados.print', compact('idTraslado', 'idMovimiento', 'usuario', 'fecha', 'listaMovimientos'));
     }
 }

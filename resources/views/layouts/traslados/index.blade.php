@@ -65,8 +65,6 @@
 
 @section('scripts')
 <script>
-    console.info('traslado view');
-
     window.addEventListener('DOMContentLoaded', function () {
         $('.table').DataTable();
     });

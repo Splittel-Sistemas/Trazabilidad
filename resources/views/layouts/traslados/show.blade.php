@@ -88,7 +88,7 @@
             </button>
 
             <div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-xl">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5" id="staticBackdropLabel">Movimientos Realizados</h1>
@@ -140,6 +140,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
+
+                            <button type="button" class="btn btn-info" onclick="SeleccionarMovimiento()">Imprimir</button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                         </div>
                     </div>
@@ -152,11 +154,33 @@
 @endsection
 
 @section('scripts')
-<script>
-    console.info('traslado show');
-
+<script type="text/javascript">
     window.addEventListener('DOMContentLoaded', function() {
         $('#tablaPrincipal').DataTable();
     });
+
+    async function SeleccionarMovimiento() {
+        const {
+            value: movimiento
+        } = await Swal.fire({
+            title: "Movimiento a imprimir",
+            input: "select",
+            inputOptions: @json(array_combine($movimientos, $movimientos)),
+            inputPlaceholder: "Selecciona un movimiento",
+            showCancelButton: true,
+            inputValidator: (value) => {
+                return new Promise((resolve) => {
+                    if (value) {
+                        resolve();
+                    } else {
+                        resolve("No se a seleccionado algun movimiento.");
+                    }
+                });
+            }
+        });
+        if (movimiento) {
+            window.open("/Traslados/print/{{$traslado->id}}/" + movimiento, "_blank");
+        }
+    }
 </script>
 @endsection
