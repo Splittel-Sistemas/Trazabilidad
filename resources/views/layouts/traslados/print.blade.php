@@ -23,6 +23,13 @@
         html {
             font-size: 12px;
         }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+        }
     </style>
 </head>
 
@@ -54,7 +61,7 @@
                 </tbody>
             </table>
         </div>
-        
+
     </div>
 
     <table class="table table-sm table-bordered text-center">
