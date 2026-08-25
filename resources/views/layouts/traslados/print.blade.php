@@ -39,7 +39,7 @@
             <table class="table table-sm table-borderless">
                 <tbody>
                     <tr>
-                        <td rowspan="4"><img src="/imagenes/optronics.jpg" alt="logo" width="200px"></td>
+                        <td rowspan="5"><img src="/imagenes/optronics.jpg" alt="logo" width="200px"></td>
                         <td style="padding: 0rem;">Codigo: </td>
                         <td style="padding: 0rem;">T{{str_pad($idTraslado, 6, "0", STR_PAD_LEFT)}}</td>
                     </tr>
@@ -57,6 +57,11 @@
                     <tr>
                         <td style="padding: 0rem;">Fecha</td>
                         <td style="padding: 0rem;">{{$fecha}}</td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 0rem;">Traslado</td>
+                        <td style="padding: 0rem;">{{$docnum}}</td>
                     </tr>
                 </tbody>
             </table>

@@ -124,11 +124,13 @@ class TrasladosController extends Controller
         $listaMovimientos = [];
         $usuario = '';
         $fecha = '';
+        $docnum = '';
         foreach ($serviceLayer as $services) {
             $listaMovimientos[$services->ov] = $services;
             $usuario = $services->usuarioRecibe->name;
             $fecha = $services->alta;
+            $docnum = $services->docnum;
         }
-        return view('layouts.traslados.print', compact('idTraslado', 'idMovimiento', 'usuario', 'fecha', 'listaMovimientos'));
+        return view('layouts.traslados.print', compact('idTraslado', 'idMovimiento', 'usuario', 'fecha', 'listaMovimientos', 'docnum'));
     }
 }
