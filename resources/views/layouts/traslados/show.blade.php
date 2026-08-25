@@ -9,17 +9,17 @@
 
     <div class="row">
         <div class="col-md-12">
-            <dl class="row">
+            <dl class="row" style="margin-bottom: .25rem;">
                 <dt class="col-sm-2">Codigo:</dt>
                 <dd class="col-sm-10">T{{str_pad($traslado->id, 6, "0", STR_PAD_LEFT)}}</dd>
             </dl>
 
-            <dl class="row">
-                <dt class="col-sm-2">Genero Traslado:</dt>
+            <dl class="row" style="margin-bottom: .25rem;">
+                <dt class="col-sm-2">Genero:</dt>
                 <dd class="col-sm-10">{{$traslado->usuarioTraslado->name}}</dd>
             </dl>
 
-            <dl class="row">
+            <dl class="row" style="margin-bottom: .25rem;">
                 <dt class="col-sm-2">Estado:</dt>
                 <dd class="col-sm-10">
                     @switch($traslado->estado)
@@ -39,6 +39,23 @@
                     <span class="badge text-bg-danger">{{ $traslado->estado }}</span>
                     @break
                     @endswitch
+                </dd>
+            </dl>
+
+            <dl class="row" style="margin-bottom: .25rem;">
+                <dt class="col-sm-2">Partidas Completas:</dt>
+                <dd class="col-sm-10">
+                    @php
+                    $contador = 0;
+
+                    foreach ($traslado->trasladoDetalles as $detalle) {
+                    if ($detalle->quantity_transfer == $detalle->quantity_receive) {
+                    $contador++;
+                    }
+                    }
+
+                    echo $contador . ' / ' . count($traslado->trasladoDetalles);
+                    @endphp
                 </dd>
             </dl>
         </div>

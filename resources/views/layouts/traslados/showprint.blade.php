@@ -23,6 +23,13 @@
         html {
             font-size: 12px;
         }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+        }
     </style>
 </head>
 
@@ -33,18 +40,18 @@
                 <tbody>
                     <tr>
                         <td rowspan="4"><img src="/imagenes/optronics.jpg" alt="logo" width="200px"></td>
-                        <td>Codigo:</td>
-                        <td>T{{str_pad($traslado->id, 6, "0", STR_PAD_LEFT)}}</td>
+                        <td style="padding: 0rem;">Codigo:</td>
+                        <td style="padding: 0rem;">T{{str_pad($traslado->id, 6, "0", STR_PAD_LEFT)}}</td>
                     </tr>
 
                     <tr>
-                        <td>Genero Traslado:</td>
-                        <td>{{$traslado->usuarioTraslado->name}}</td>
+                        <td style="padding: 0rem;">Genero Traslado:</td>
+                        <td style="padding: 0rem;">{{$traslado->usuarioTraslado->name}}</td>
                     </tr>
 
                     <tr>
-                        <td>Estado:</td>
-                        <td>
+                        <td style="padding: 0rem;">Estado:</td>
+                        <td style="padding: 0rem;">
                             {{ $traslado->estado }}
                         </td>
                     </tr>
