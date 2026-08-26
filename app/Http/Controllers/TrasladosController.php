@@ -22,8 +22,28 @@ class TrasladosController extends Controller
 
     public function index()
     {
-        $trasladosCompletos = Traslados::with('trasladoDetalles')->where('estado', '=', 'Recibido')->orWhere('estado', '=', 'Cancelado')->limit(50)->get();
-        $trasladosPendientes = Traslados::with('trasladoDetalles')->whereNotIn('estado', ['Recibido', 'Cancelado'])->get();
+        $trasladosCompletos = Traslados::from('traslados as t')
+            ->leftJoin('users as u', 'u.id', '=', 't.usuario_traslado_id')
+            ->select([
+                't.id',
+                't.estado',
+                'u.name as usuario',
+                't.alta',
+            ])
+            ->whereIn('t.estado', ['Recibido', 'Cancelado'])
+            ->get();
+
+        $trasladosPendientes = Traslados::from('traslados as t')
+            ->leftJoin('users as u', 'u.id', '=', 't.usuario_traslado_id')
+            ->select([
+                't.id',
+                't.estado',
+                'u.name as usuario',
+                't.alta',
+            ])
+            ->whereNotIn('t.estado', ['Recibido', 'Cancelado'])
+            ->get();
+
         return view('layouts.traslados.index', compact('trasladosCompletos', 'trasladosPendientes'));
     }
 
@@ -180,7 +200,7 @@ class TrasladosController extends Controller
             }
 
             $botonDetalle = '<a href="/Traslados/' . $traslado['id'] . '" class="btn btn-sm btn-primary">Detalles</a>';
-            $datos[] = [$indice, 'T' . str_pad($traslado['id'], 6, "0", STR_PAD_LEFT), $estado, $traslado['usuario'], $traslado['alta'], $botonDetalle];
+            $datos[] = [$indice + 1, 'T' . str_pad($traslado['id'], 6, "0", STR_PAD_LEFT), $estado, $traslado['usuario'], $traslado['alta'], $botonDetalle];
         }
 
 

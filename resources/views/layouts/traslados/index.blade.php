@@ -57,7 +57,7 @@
                                     @break
                                     @endswitch
                                 </td>
-                                <td>{{ $traslado->usuarioTraslado->name }}</td>
+                                <td>{{ $traslado->usuario }}</td>
                                 <td>{{ $traslado->alta }}</td>
                                 <td>
                                     <a href="{{ route('traslados.show', $traslado->id) }}" class="btn btn-sm btn-primary">Detalles</a>
@@ -121,7 +121,7 @@
                                     @break
                                     @endswitch
                                 </td>
-                                <td>{{ $traslado->usuarioTraslado->name }}</td>
+                                <td>{{ $traslado->usuario }}</td>
                                 <td>{{ $traslado->alta }}</td>
                                 <td>
                                     <a href="{{ route('traslados.show', $traslado->id) }}" class="btn btn-sm btn-primary">Detalles</a>
