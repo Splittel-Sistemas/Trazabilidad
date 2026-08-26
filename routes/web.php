@@ -250,3 +250,4 @@ Route::post('/Traslados/generate', [TrasladosController::class, 'generate'])->na
 Route::get('/Traslados/{id}', [TrasladosController::class, 'show'])->name('traslados.show')->middleware('auth');
 Route::get('/Traslados/show/{id}', [TrasladosController::class, 'showprint'])->name('traslados.showprint')->middleware('auth');
 Route::get('/Traslados/print/{idTraslado}/{idMovimiento}', [TrasladosController::class, 'print'])->name('traslados.print')->middleware('auth');
+Route::post('/Traslados/dateFilter', [TrasladosController::class, 'dateFilter'])->name('traslados.dateFilter')->middleware('auth');

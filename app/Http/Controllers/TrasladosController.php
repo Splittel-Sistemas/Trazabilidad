@@ -22,8 +22,29 @@ class TrasladosController extends Controller
 
     public function index()
     {
-        $traslados = Traslados::with('trasladoDetalles')->get();
-        return view('layouts.traslados.index', compact('traslados'));
+        $trasladosCompletos = Traslados::from('traslados as t')
+            ->leftJoin('users as u', 'u.id', '=', 't.usuario_traslado_id')
+            ->select([
+                't.id',
+                't.estado',
+                'u.name as usuario',
+                't.alta',
+            ])
+            ->whereIn('t.estado', ['Recibido', 'Cancelado'])
+            ->get();
+
+        $trasladosPendientes = Traslados::from('traslados as t')
+            ->leftJoin('users as u', 'u.id', '=', 't.usuario_traslado_id')
+            ->select([
+                't.id',
+                't.estado',
+                'u.name as usuario',
+                't.alta',
+            ])
+            ->whereNotIn('t.estado', ['Recibido', 'Cancelado'])
+            ->get();
+
+        return view('layouts.traslados.index', compact('trasladosCompletos', 'trasladosPendientes'));
     }
 
     public function create()
@@ -132,5 +153,57 @@ class TrasladosController extends Controller
             $docnum = $services->docnum;
         }
         return view('layouts.traslados.print', compact('idTraslado', 'idMovimiento', 'usuario', 'fecha', 'listaMovimientos', 'docnum'));
+    }
+
+    public function dateFilter(Request $request)
+    {
+        $request->validate([
+            'fechaInicio' => ['required', 'date'],
+            'fechaFin' => ['required', 'date'],
+        ]);
+
+        $fechaInicio = $request->fechaInicio;
+        $fechaFin = $request->fechaFin . ' 23:59:59';
+
+        $datos = [];
+
+        $trasladosCompletos = Traslados::from('traslados as t')
+            ->leftJoin('users as u', 'u.id', '=', 't.usuario_traslado_id')
+            ->select([
+                't.id',
+                't.estado',
+                'u.name as usuario',
+                't.alta',
+            ])
+            ->whereIn('t.estado', ['Recibido', 'Cancelado'])
+            ->whereBetween('t.alta', [$fechaInicio, $fechaFin])
+            ->get();
+
+        foreach ($trasladosCompletos as $indice => $traslado) {
+            $estado = '';
+            switch ($traslado['estado']) {
+                case 'Generado':
+                    $estado = '<span class="badge text-bg-primary">Generado</span>';
+                    break;
+
+                case 'Parcial':
+                    $estado = '<span class="badge text-bg-warning">Parcial</span>';
+                    break;
+
+                case 'Recibido':
+                    $estado = '<span class="badge text-bg-success">Recibido</span>';
+                    break;
+
+                case 'Cancelado':
+                    $estado = '<span class="badge text-bg-danger">Cancelado</span>';
+                    break;
+            }
+
+            $botonDetalle = '<a href="/Traslados/' . $traslado['id'] . '" class="btn btn-sm btn-primary">Detalles</a>';
+            $datos[] = [$indice + 1, 'T' . str_pad($traslado['id'], 6, "0", STR_PAD_LEFT), $estado, $traslado['usuario'], $traslado['alta'], $botonDetalle];
+        }
+
+
+        return response()->json($datos);
     }
 }
