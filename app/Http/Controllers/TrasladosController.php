@@ -121,7 +121,7 @@ class TrasladosController extends Controller
     {
         $traslado = Traslados::with('trasladoDetalles')->where('id', $id)->first();
         $serviceLayer = ServiceLayer::where('traslado_id', $id)->orderBy('movimiento', 'asc')->get();
-        $movimientos = array();;
+        $movimientos = array();
         foreach ($serviceLayer as $services) {
             $movimientos[$services->movimiento] = $services->movimiento;
         }
