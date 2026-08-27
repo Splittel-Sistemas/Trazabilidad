@@ -122,8 +122,9 @@
                                         @foreach ($traslado->serviceLayer as $indice => $service)
                                         @if($service->movimiento != $anterior)
                                         <tr class="table-primary">
-                                            <th colspan="3">Movimiento: {{$service->movimiento}}</th>
-                                            <th colspan="3">Realizado por: {{$service->usuarioRecibe->name}}</th>
+                                            <th colspan="2">Movimiento: {{$service->movimiento}}</th>
+                                            <th colspan="2">DocNum: {{$service->docnum}}</th>
+                                            <th colspan="2">Realizado por: {{$service->usuarioRecibe->name}}</th>
                                             <th colspan="3">Fecha: {{$service->alta}}</th>
                                         </tr>
                                         <tr class="table-info">
