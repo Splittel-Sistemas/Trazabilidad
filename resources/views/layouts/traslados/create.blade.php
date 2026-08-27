@@ -19,8 +19,8 @@
                             <th>Recibo Producción</th>
                             <th>Cod. Cliente</th>
                             <th>Cliente</th>
-                            <th>Cod. Producto</th>
-                            <th>Producto</th>
+                            <th>N° Articulo</th>
+                            <th>Descripción</th>
                             <th>Cantidad</th>
                             <th>Lote</th>
                         </tr>
@@ -64,7 +64,9 @@
                 orderable: false,
                 targets: 0
             }],
-            order: [[2, 'des']],
+            order: [
+                [2, 'des']
+            ],
             "paging": false,
             language: {
                 "decimal": "",

@@ -70,8 +70,8 @@
                             <th>Recibo Producción</th>
                             <th>Cod. Cliente</th>
                             <th>Cliente</th>
-                            <th>Cod. Producto</th>
-                            <th>Producto</th>
+                            <th>N° Articulo</th>
+                            <th>Descripción</th>
                             <th>Cantidad Enviada</th>
                             <th>Cantidad Recibida</th>
                             <th>Lote</th>
@@ -132,8 +132,8 @@
                                             <th>Recibo Producción</th>
                                             <th>Cod. Cliente</th>
                                             <th>Cliente</th>
-                                            <th>Cod. Producto</th>
-                                            <th>Producto</th>
+                                            <th>N° Articulo</th>
+                                            <th>Descripción</th>
                                             <th>Cantidad Recibida</th>
                                             <th>Lote</th>
                                         </tr>
