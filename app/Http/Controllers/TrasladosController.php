@@ -31,6 +31,7 @@ class TrasladosController extends Controller
                 't.alta',
             ])
             ->whereIn('t.estado', ['Recibido', 'Cancelado'])
+            ->orderBy('t.id', 'desc')
             ->get();
 
         $trasladosPendientes = Traslados::from('traslados as t')
@@ -42,6 +43,7 @@ class TrasladosController extends Controller
                 't.alta',
             ])
             ->whereNotIn('t.estado', ['Recibido', 'Cancelado'])
+            ->orderBy('t.id', 'desc')
             ->get();
 
         return view('layouts.traslados.index', compact('trasladosCompletos', 'trasladosPendientes'));
@@ -120,7 +122,7 @@ class TrasladosController extends Controller
     public function show(int $id)
     {
         $traslado = Traslados::with('trasladoDetalles')->where('id', $id)->first();
-        $serviceLayer = ServiceLayer::where('traslado_id', $id)->orderBy('movimiento', 'asc')->get();
+        $serviceLayer = ServiceLayer::where('traslado_id', $id)->orderBy('movimiento', 'desc')->get();
         $movimientos = array();
         foreach ($serviceLayer as $services) {
             $movimientos[$services->movimiento] = $services->movimiento;
