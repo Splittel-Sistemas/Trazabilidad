@@ -352,15 +352,15 @@
                                             </ul>
                                         </div>
                                     </div>
-                                    <!--Etiquetas-->
-                                    @if(Auth::user()->hasPermission("Vista Etiquetas"))
-                                    <div class="nav-item-wrapper">
-                                        <a class="nav-link label-1 {{ Route::is('Etiquetas.index') ? 'active' : '' }}" href="{{route('Etiquetas.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
-                                            <div class="d-flex align-items-center"><span class="nav-link-icon"><i class="fas fa-print"></i></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Etiquetas</span></span></div>
-                                        </a>
-                                    </div>
-                                    @endif
                                 </li>
+                            @endif
+                            <!--Etiquetas-->
+                            @if(Auth::user()->hasPermission("Vista Etiquetas"))
+                                <div class="nav-item-wrapper">
+                                    <a class="nav-link label-1 {{ Route::is('Etiquetas.index') ? 'active' : '' }}" href="{{route('Etiquetas.index')}}" role="button" data-bs-toggle="" aria-expanded="false">
+                                        <div class="d-flex align-items-center"><span class="nav-link-icon"><i class="fas fa-print"></i></span><span class="nav-link-text-wrapper"><span class="nav-link-text">Etiquetas</span></span></div>
+                                    </a>
+                                </div>
                             @endif
                             @if(Auth::user()->hasPermission("Vista Usuarios"))
                                 <li class="nav-item"><!-- usuarios-->
