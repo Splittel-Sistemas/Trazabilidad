@@ -1546,7 +1546,7 @@ class EtiquetasController extends Controller
                     $pdf->SetXY(3+$SumarX , 23+$SumarY);
                     $pdf->Cell(10, 6, "(MODEL)", 0, 1, 'L', 0);
                     $pdf->SetXY(16+$SumarX , 24+$SumarY);
-                    $pdf->MultiCell(40, 0,html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 0, 'L', 0, 1);
+                    $pdf->MultiCell(45, 0,html_entity_decode($OrdenFabricacion->Descripcion, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 0, 'L', 0, 1);
 
                     $pdf->SetXY(3+$SumarX , 34+$SumarY);
                     $pdf->Cell(10, 6, "(C.O.)", 0, 1, 'L', 0);
