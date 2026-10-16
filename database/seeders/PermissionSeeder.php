@@ -134,6 +134,11 @@ class PermissionSeeder extends Seeder
                 'name' =>'Vista Etiquetas',
                 'groups' => 16, 
             ]);
+        //Permiso Traslados
+            Permission::created([
+                'name' => 'Vista Traslados',
+                'groups' => 17,
+            ])
         //Nuevas Areas
         /*Permission::create([
             'name' =>'Vista Ribonizado',

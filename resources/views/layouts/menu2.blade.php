@@ -382,7 +382,7 @@
                                     </div>
                                 </li>
                             @endif
-                            @if(Auth::user()->hasPermission("Vista Lineas"))
+                            @if(Auth::user()->hasPermission("Vista Traslados"))
                                 <li class="nav-item"><!-- Traslados-->
                                     <p class="navbar-vertical-label">Traslados</p>
                                     <hr class="navbar-vertical-line" /><!-- parent pages-->

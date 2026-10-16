@@ -3,20 +3,35 @@
 @section('title', 'Traslados de Almacenes')
 
 @section('content')
-<div class="container mt-5 bg-white p-5">
-    <h1 class="mb-4 text-center">Traslados de Almacenes</h1>
-
+<!--<div class="row gy-3 mb-2 justify-content-between">
+    <div class="col-md-9 col-auto">
+        <h4 class="mb-2 text-1100">Traslados de Almacenes</h4>
+    </div>
+</div>-->
+<nav style="--phoenix-breadcrumb-divider: '&gt;&gt;';" aria-label="breadcrumb">
+    <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="http://127.0.0.1/Laravel/Trazabilidad/public/Home">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Traslados de Almacenes</li>
+    </ol>
+</nav>
+@if(Auth::user()->hasPermission("Crear Traslado"))
+    <div class="col-md-12 mb-2 mt-3">
+        <a href="{{ route('traslados.create') }}" class="btn btn-outline-info mb-1">
+            <svg class="svg-inline--fa fa-plus" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="plus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M432 256c0 17.69-14.33 32.01-32 32.01H256v144c0 17.69-14.33 31.99-32 31.99s-32-14.3-32-31.99v-144H48c-17.67 0-32-14.32-32-32.01s14.33-31.99 32-31.99H192v-144c0-17.69 14.33-32.01 32-32.01s32 14.32 32 32.01v144h144C417.7 224 432 238.3 432 256z"></path></svg> 
+            Crear
+        </a>
+    </div>
+@endif
+<div class="container mt-3 bg-white p-5">
+    <h2 class="mb-2 text-center">Traslados de Almacenes</h2>
     <div class="row">
-        <div class="col-md-12 mb-3">
-            <a href="{{ route('traslados.create') }}" class="btn btn-sm btn-primary">Crear</a>
-        </div>
         <div class="col-md-12">
             <ul class="nav nav-pills mb-3" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Pendientes</button>
+                    <button class="btn-sm nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Pendientes</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Completados</button>
+                    <button class="btn-sm nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Completados</button>
                 </li>
             </ul>
             <div class="tab-content" id="myTabContent">
